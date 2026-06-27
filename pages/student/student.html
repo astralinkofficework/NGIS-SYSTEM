@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIA FIRST — Student Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--pri:#1F6B3A;--pri-l:#2d8653;--pri-ll:#d4ede1;--ok:#27ae60;--warn:#f39c12;--err:#e74c3c;--acc:#F2C230;--bg:#F8FAF5;--bdr:#e4e7eb;--txt:#1f2937;--txt2:#4b5563;--txt3:#9ca3af;--r:12px}
+html{font-size:14px}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.45;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#c1c5ca;border-radius:4px}
+
+/* ══════ MAIN ══════ */
+.main{min-height:100vh}
+
+/* ══════ HERO HEADER / TOP NAVBAR ══════ */
+header.topbar{display:none}
+.hh{display:flex;height:80px;position:relative;z-index:20;box-shadow:0 2px 20px rgba(0,0,0,.14)}
+.hh-brand{width:260px;flex-shrink:0;background:#fff;border-right:1px solid #E5E7EB;display:flex;align-items:center;gap:12px;padding:0 20px}
+.hh-logo-mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#1F6B3A,#2d8653);display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px;flex-shrink:0;box-shadow:0 4px 12px rgba(31,107,58,.35)}
+.hh-brand-name{font-size:13.5px;font-weight:800;color:#0f172a;line-height:1.2;letter-spacing:-.3px}
+.hh-brand-tag{font-size:10px;font-weight:500;color:#64748b;margin-top:2px;white-space:nowrap}
+.hh-banner{flex:1;position:relative;overflow:hidden;display:flex;align-items:center}
+.hh-banbg{position:absolute;inset:0;background:url('https://picsum.photos/seed/ngisinternational2025/1600/580.jpg') center/cover no-repeat}
+.hh-banbg::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,47,120,.83) 0%,rgba(20,83,180,.73) 50%,rgba(41,128,185,.62) 100%)}
+.hh-ban-inner{position:relative;z-index:2;width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.hh-center{flex:1;display:flex;align-items:center;justify-content:center;gap:12px}
+.hh-c-av{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.13);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:2px solid rgba(255,255,255,.22);display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0;box-shadow:0 0 0 4px rgba(255,255,255,.07)}
+.hh-c-name{font-size:12px;font-weight:700;color:#fff;letter-spacing:.9px;text-transform:uppercase;line-height:1.2}
+.hh-c-sub{font-size:9.5px;color:rgba(255,255,255,.55);font-weight:500;margin-top:3px;letter-spacing:.3px}
+.hh-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:6px;flex-shrink:0}
+.hh-ay{font-size:8.5px;font-weight:700;color:rgba(255,255,255,.85);background:rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:2px 10px;letter-spacing:.6px;text-transform:uppercase;white-space:nowrap}
+.hh-acts{display:flex;align-items:center;gap:6px}
+.hh-act{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16);display:grid;place-items:center;color:#fff;cursor:pointer;transition:all .25s ease;position:relative;flex-shrink:0}
+.hh-act:hover{background:rgba(255,255,255,.23);transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.hh-act .material-symbols-outlined{font-size:17px}
+.hh-act[data-badge]::after{content:attr(data-badge);position:absolute;top:-5px;right:-5px;min-width:15px;height:15px;border-radius:999px;background:#EF4444;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1.5px solid rgba(20,60,110,.5);padding:0 3px}
+.hh-profile{display:flex;align-items:center;gap:8px;padding:4px 10px 4px 5px;border-radius:9px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.16);cursor:pointer;transition:all .25s ease;flex-shrink:0}
+.hh-profile:hover{background:rgba(255,255,255,.23);transform:translateY(-2px)}
+.hh-pav{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#1F6B3A,#2d8653);display:grid;place-items:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0}
+.hh-pname{font-size:10.5px;font-weight:700;color:#fff;white-space:nowrap;line-height:1.2}
+.hh-pgrade{font-size:9px;color:rgba(255,255,255,.6);white-space:nowrap}
+.hh-parr{font-size:15px;color:rgba(255,255,255,.65);transition:transform .2s}
+.hh-profile:hover .hh-parr{transform:rotate(180deg)}
+
+/* ══════ FLOAT ROW ══════ */
+.float{display:grid;grid-template-columns:300px 1fr;gap:16px;padding:16px 24px 0;position:relative;z-index:10}
+
+/* ══════ PROFILE CARD ══════ */
+.pf{background:#fff;border-radius:24px;box-shadow:0 4px 24px rgba(37,99,235,.09),0 1px 6px rgba(0,0,0,.05);overflow:hidden}
+.pf-header{height:86px;background:linear-gradient(135deg,#BFDBFE 0%,#DBEAFE 50%,#EFF6FF 100%);position:relative;overflow:hidden}
+.pf-header::before{content:'';position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(147,197,253,.28);top:-55px;right:-35px;pointer-events:none}
+.pf-header::after{content:'';position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(191,219,254,.35);top:-15px;right:55px;pointer-events:none}
+.pf-av{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,#1abc9c,#16a085);border:5px solid #fff;position:absolute;bottom:-43px;left:18px;display:grid;place-items:center;color:#fff;font-size:24px;font-weight:800;box-shadow:0 4px 16px rgba(0,0,0,.12);letter-spacing:.5px}
+.pf-body{padding:50px 18px 16px}
+.pf-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.pf-name{font-size:19px;font-weight:800;color:#0f172a;letter-spacing:-.4px;line-height:1.2}
+.pf-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#16A34A;background:#DCFCE7;padding:4px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+.pf-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:#16A34A;display:block}
+.pf-sub{font-size:12px;font-weight:500;color:#64748b;margin-bottom:12px}
+.pf-divider{height:1px;background:#f1f5f9;margin-bottom:12px}
+.pf-meta{display:flex;flex-direction:column;gap:8px}
+.pf-r{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;line-height:1.35}
+.pf-r .material-symbols-outlined{font-size:15px;color:#2563EB;flex-shrink:0;margin-top:1px}
+.pf-btn-main{width:100%;padding:11px;border-radius:12px;font-size:13px;font-weight:700;background:#2563EB;color:#fff;text-align:center;margin-top:14px;transition:all .2s;cursor:pointer;display:block}
+.pf-btn-main:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 6px 16px rgba(37,99,235,.28)}
+.pf-icons{display:flex;gap:8px;margin-top:8px}
+.pf-ic{flex:1;height:44px;border-radius:12px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,.04);display:grid;place-items:center;cursor:pointer;transition:all .18s}
+.pf-ic:hover{border-color:#93c5fd;background:#EFF6FF;box-shadow:0 4px 12px rgba(37,99,235,.1)}
+.pf-ic .material-symbols-outlined{font-size:18px;color:#64748b;transition:color .18s}
+.pf-ic:hover .material-symbols-outlined{color:#2563EB}
+
+/* ══════ UPCOMING CARD ══════ */
+.up{background:#fff;border-radius:var(--r);box-shadow:0 1px 4px rgba(0,0,0,.06);overflow:hidden}
+.up-head{padding:12px 16px 0;display:flex;align-items:center;justify-content:space-between}
+.up-head h3{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+.up-head h3 .material-symbols-outlined{font-size:16px;color:var(--pri-l)}
+.up-head a{font-size:11px;font-weight:600;color:var(--pri-l)}
+.up-head a:hover{text-decoration:underline}
+.up-grid{display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0 0}
+.up-col{padding:6px 14px 10px;border-right:1px solid var(--bdr)}
+.up-col:last-child{border-right:none}
+.up-col-t{font-size:9.5px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
+.up-it{display:flex;align-items:flex-start;gap:6px;padding:3px 0}
+.up-dot{width:5px;height:5px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.up-it-t{font-size:11px;font-weight:600;color:var(--txt);line-height:1.3}
+.up-it-s{font-size:9.5px;color:var(--txt3);font-weight:500}
+.up-col-btn{width:100%;padding:5px;border-radius:6px;font-size:10px;font-weight:600;color:var(--pri-l);border:1px solid var(--pri-ll);text-align:center;margin-top:6px;cursor:pointer;transition:all .12s;background:transparent}
+.up-col-btn:hover{background:var(--pri-ll);border-color:var(--pri-l)}
+
+/* ══════ ROW 3: SUBJECTS + CALENDAR ══════ */
+.row3{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px 24px 0}
+.card{background:#fff;border-radius:var(--r);box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid var(--bdr);overflow:hidden}
+.card-h{padding:12px 16px 0;display:flex;align-items:center;justify-content:space-between}
+.card-h h3{font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px}
+.card-h h3 .material-symbols-outlined{font-size:16px;color:var(--pri-l)}
+.card-h .cnt{font-size:11px;color:var(--txt3);font-weight:500;margin-left:2px}
+.card-h a{font-size:11px;font-weight:600;color:var(--pri-l)}
+.card-h a:hover{text-decoration:underline}
+.card-b{padding:10px 16px 14px}
+
+/* Subject grid */
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sj-card{padding:12px;border-radius:10px;border:1px solid var(--bdr);transition:border-color .12s;cursor:pointer}
+.sj-card:hover{border-color:#c5d5e4}
+.sj-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sj-ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex-shrink:0}
+.sj-ico .material-symbols-outlined{font-size:15px;color:#fff}
+.sj-name{font-size:12px;font-weight:700;color:var(--txt);line-height:1.2}
+.sj-teacher{font-size:10px;color:var(--txt3);font-weight:500;margin-bottom:8px}
+.sj-bar-w{display:flex;align-items:center;gap:6px}
+.sj-bar{flex:1;height:4px;background:#f0f0f0;border-radius:4px;overflow:hidden}
+.sj-fill{height:100%;border-radius:4px;width:0;transition:width .8s ease}
+.sj-pct{font-size:10px;font-weight:700;color:var(--txt3);min-width:28px;text-align:right}
+
+/* Calendar split */
+.cal-split{display:flex;gap:0}
+.cal-main{flex:1;min-width:0}
+.cal-side{width:130px;border-left:1px solid var(--bdr);padding:10px 12px;flex-shrink:0}
+.cal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.cal-m{font-size:12px;font-weight:700}
+.cal-nav{display:flex;gap:2px}
+.cal-nav button{width:24px;height:24px;border-radius:6px;border:1px solid var(--bdr);background:#fff;color:var(--txt2);display:grid;place-items:center;transition:all .12s}
+.cal-nav button:hover{background:var(--pri);color:#fff;border-color:var(--pri)}
+.cal-nav button .material-symbols-outlined{font-size:13px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;text-align:center}
+.dow{font-size:9px;font-weight:700;color:var(--txt3);padding:4px 0;text-transform:uppercase}
+.day{font-size:10.5px;font-weight:500;color:var(--txt2);padding:4px 1px;border-radius:5px;position:relative;cursor:default}
+.day.mu{color:#d1d5db}
+.day.td{background:var(--pri-l);color:#fff;font-weight:700}
+.ev{display:flex;justify-content:center;gap:1px;margin-top:1px}
+.ev i{width:3.5px;height:3.5px;border-radius:50%;display:block}
+.day.td .ev i{background:rgba(255,255,255,.55)!important}
+.cal-side-t{font-size:10px;font-weight:700;color:var(--txt3);margin-bottom:8px}
+.cal-ev-item{display:flex;align-items:flex-start;gap:5px;padding:5px 0;border-bottom:1px solid #f5f5f5}
+.cal-ev-item:last-child{border-bottom:none}
+.cal-ev-dot{width:5px;height:5px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.cal-ev-t{font-size:10.5px;font-weight:600;color:var(--txt);line-height:1.3}
+.cal-ev-s{font-size:9px;color:var(--txt3)}
+
+/* ══════ ROW 4: ANNOUNCEMENTS + ATTENDANCE + QUICK LINKS ══════ */
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:16px 24px 28px}
+
+/* Announcements */
+.ann-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.ann-item:last-child{border-bottom:none}
+.ann-thumb{width:52px;height:40px;border-radius:6px;background:#e8eaed;flex-shrink:0;overflow:hidden}
+.ann-thumb img{width:100%;height:100%;object-fit:cover}
+.ann-b{flex:1;min-width:0}
+.ann-b b{font-size:11.5px;font-weight:600;display:block;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ann-b p{font-size:10px;color:var(--txt3);line-height:1.35;margin-top:1px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.ann-b .ann-time{font-size:9px;color:var(--txt3);font-weight:500;margin-top:2px}
+
+/* Attendance */
+.att-w{display:flex;gap:14px;align-items:center}
+.att-d{width:100px;height:100px;position:relative;flex-shrink:0}
+.att-d canvas{width:100%!important;height:100%!important}
+.att-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.att-p{font-size:18px;font-weight:800;color:var(--pri);line-height:1}
+.att-pl{font-size:7.5px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+.att-legend{flex:1;display:flex;flex-direction:column;gap:6px}
+.att-rw{display:flex;align-items:center;gap:7px}
+.att-rw .d{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.att-rw .l{font-size:11px;color:var(--txt2);flex:1}
+.att-rw .v{font-size:12px;font-weight:700;color:var(--txt)}
+.att-total{margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between}
+.att-total span{font-size:10px;color:var(--txt3);font-weight:600}
+.att-total b{font-size:11px;color:var(--txt);font-weight:700}
+
+/* Quick Links grid */
+.ql{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ql-a{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;border-radius:10px;cursor:pointer;transition:all .15s;position:relative}
+.ql-a:hover{background:#f8f9fa}
+.ql-ic{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;position:relative}
+.ql-ic .material-symbols-outlined{font-size:17px;color:#fff}
+.ql-ic-gold .material-symbols-outlined{color:#1F6B3A}
+.ql-ic .ql-dot{position:absolute;top:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:var(--err);color:#fff;font-size:8px;font-weight:700;display:grid;place-items:center;border:2px solid #fff}
+.ql-l{font-size:10px;font-weight:600;color:var(--txt2);text-align:center;white-space:nowrap}
+
+
+/* ══════ RESPONSIVE ══════ */
+@media(max-width:1200px){.sg{grid-template-columns:repeat(2,1fr)}.cal-side{width:110px}.row4{grid-template-columns:1fr 1fr}.row4 .card:last-child{grid-column:span 2}}
+@media(max-width:1024px){.up-grid{grid-template-columns:repeat(2,1fr)}.up-col{border-right:none}.up-col:nth-child(1),.up-col:nth-child(2){border-bottom:1px solid var(--bdr);padding-bottom:10px}.up-col:nth-child(3),.up-col:nth-child(4){border-bottom:none}}
+@media(max-width:900px){.float{grid-template-columns:1fr;padding:16px 16px 0}.row3,.row4{padding-left:16px;padding-right:16px}.hh{height:auto;flex-direction:column}.hh-brand{width:100%;height:56px;border-right:none;border-bottom:1px solid #E5E7EB}.hh-banner{height:60px}.hh-pname,.hh-pgrade{display:none}.row3{grid-template-columns:1fr}.cal-split{flex-direction:column}.cal-side{width:100%;border-left:none;border-top:1px solid var(--bdr)}}
+@media(max-width:700px){.row4{grid-template-columns:1fr}.row4 .card:last-child{grid-column:span 1}.sg{grid-template-columns:1fr 1fr}.att-w{flex-direction:column;align-items:flex-start}.att-d{width:90px;height:90px}.hh-ay{display:none}.hh-c-sub{display:none}}
+@media(max-width:480px){.sg{grid-template-columns:1fr}.ql{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- HERO HEADER -->
+  <div class="hh">
+    <div class="hh-brand">
+      <div class="hh-logo-mark">NI</div>
+      <div>
+        <div class="hh-brand-name">NGIS INTERNATIONAL</div>
+        <div class="hh-brand-tag">Learn &bull; Grow &bull; Lead</div>
+      </div>
+    </div>
+    <div class="hh-banner">
+      <div class="hh-banbg"></div>
+      <div class="hh-ban-inner">
+        <div class="hh-center">
+          <div class="hh-c-av">NI</div>
+          <div>
+            <div class="hh-c-name">NGIS INTERNATIONAL SCHOOL</div>
+            <div class="hh-c-sub">Learn &bull; Grow &bull; Lead</div>
+          </div>
+        </div>
+        <div class="hh-right">
+          <div class="hh-ay">Academic Year 2025&ndash;2026</div>
+          <div class="hh-acts">
+            <button class="hh-act" title="Search"><span class="material-symbols-outlined">search</span></button>
+            <button class="hh-act" data-badge="9" title="Notifications"><span class="material-symbols-outlined">notifications</span></button>
+            <button class="hh-act" data-badge="5" title="Messages"><span class="material-symbols-outlined">mail</span></button>
+            <div class="hh-profile">
+              <div class="hh-pav">NH</div>
+              <div>
+                <div class="hh-pname">Nrinphouneta Hok</div>
+                <div class="hh-pgrade">Grade 10 &middot; Section A</div>
+              </div>
+              <span class="material-symbols-outlined hh-parr">expand_more</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOAT ROW -->
+  <div class="float">
+    <div class="pf">
+      <div class="pf-header">
+        <div class="pf-av">NH</div>
+      </div>
+      <div class="pf-body">
+        <div class="pf-name-row">
+          <div class="pf-name">Nrinphouneta Hok</div>
+          <div class="pf-badge">Active Student</div>
+        </div>
+        <div class="pf-sub">Grade 10 &middot; Student ID: NGIS-2025-1029</div>
+        <div class="pf-divider"></div>
+        <div class="pf-meta">
+          <div class="pf-r"><span class="material-symbols-outlined">mail</span>nrinphouneta.h@ciafirst.edu.kh</div>
+          <div class="pf-r"><span class="material-symbols-outlined">phone</span>+855 12 345 678</div>
+          <div class="pf-r"><span class="material-symbols-outlined">location_on</span>Phnom Penh, Cambodia</div>
+        </div>
+        <a href="student-profile.html" class="pf-btn-main">View Full Profile</a>
+        <div class="pf-icons">
+          <div class="pf-ic" title="Messages"><span class="material-symbols-outlined">chat_bubble</span></div>
+          <div class="pf-ic" title="Timetable"><span class="material-symbols-outlined">calendar_view_week</span></div>
+          <div class="pf-ic" title="Downloads"><span class="material-symbols-outlined">download</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="up">
+      <div class="up-head"><h3><span class="material-symbols-outlined">upcoming</span>Upcoming</h3><a href="student-assignments.html">View All</a></div>
+      <div class="up-grid">
+        <div class="up-col">
+          <div class="up-col-t">Events</div>
+          <div class="up-it"><span class="up-dot" style="background:var(--pri-l)"></span><div><div class="up-it-t">Science Fair 2025</div><div class="up-it-s">Jun 20</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:#1abc9c"></span><div><div class="up-it-t">Sports Day</div><div class="up-it-s">Jul 5</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:#8e44ad"></span><div><div class="up-it-t">Parent Conference</div><div class="up-it-s">Jul 15</div></div></div>
+          <button class="up-col-btn">View All Events</button>
+        </div>
+        <div class="up-col">
+          <div class="up-col-t">Class Schedule</div>
+          <div class="up-it"><span class="up-dot" style="background:var(--ok)"></span><div><div class="up-it-t">Mathematics</div><div class="up-it-s">08:00 – 09:30</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:var(--pri)"></span><div><div class="up-it-t">English</div><div class="up-it-s">10:00 – 11:30</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:var(--err)"></span><div><div class="up-it-t">Physics</div><div class="up-it-s">13:00 – 14:30</div></div></div>
+          <button class="up-col-btn">View Schedule</button>
+        </div>
+        <div class="up-col">
+          <div class="up-col-t">Assignments</div>
+          <div class="up-it"><span class="up-dot" style="background:var(--err)"></span><div><div class="up-it-t">English Essay</div><div class="up-it-s">Due Jun 18</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:var(--err)"></span><div><div class="up-it-t">Math Problem Set</div><div class="up-it-s">Due Jun 20</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:var(--warn)"></span><div><div class="up-it-t">Physics Lab Report</div><div class="up-it-s">Due Jun 23</div></div></div>
+          <button class="up-col-btn">View All</button>
+        </div>
+        <div class="up-col">
+          <div class="up-col-t">Exams</div>
+          <div class="up-it"><span class="up-dot" style="background:var(--err)"></span><div><div class="up-it-t">Math Midterm</div><div class="up-it-s">Jun 22 · Hall A</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:var(--warn)"></span><div><div class="up-it-t">CS Final</div><div class="up-it-s">Jun 28 · Lab 02</div></div></div>
+          <div class="up-it"><span class="up-dot" style="background:var(--warn)"></span><div><div class="up-it-t">English Final</div><div class="up-it-s">Jul 2 · Hall B</div></div></div>
+          <button class="up-col-btn">View All</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: SUBJECTS + CALENDAR -->
+  <div class="row3">
+    <div class="card">
+      <div class="card-h"><h3><span class="material-symbols-outlined">menu_book</span>My Subjects<span class="cnt">(6)</span></h3><a href="student-grades.html">View All</a></div>
+      <div class="card-b">
+        <div class="sg" id="subjGrid"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3><span class="material-symbols-outlined">calendar_month</span>Calendar</h3><a href="student-calendar.html">Full View</a></div>
+      <div class="card-b" style="padding:10px 12px 14px">
+        <div class="cal-split">
+          <div class="cal-main">
+            <div class="cal-hd"><span class="cal-m">June 2025</span><div class="cal-nav"><button><span class="material-symbols-outlined">chevron_left</span></button><button><span class="material-symbols-outlined">chevron_right</span></button></div></div>
+            <div class="cal" id="calGrid"></div>
+          </div>
+          <div class="cal-side">
+            <div class="cal-side-t">Upcoming on Jun 18</div>
+            <div class="cal-ev-item"><span class="cal-ev-dot" style="background:var(--err)"></span><div><div class="cal-ev-t">English Essay Due</div><div class="cal-ev-s">11:59 PM</div></div></div>
+            <div class="cal-ev-item"><span class="cal-ev-dot" style="background:var(--ok)"></span><div><div class="cal-ev-t">Mathematics</div><div class="cal-ev-s">08:00 – 09:30</div></div></div>
+            <div class="cal-ev-item"><span class="cal-ev-dot" style="background:var(--pri-l)"></span><div><div class="cal-ev-t">English</div><div class="cal-ev-s">10:00 – 11:30</div></div></div>
+            <div class="cal-ev-item"><span class="cal-ev-dot" style="background:var(--err)"></span><div><div class="cal-ev-t">Physics</div><div class="cal-ev-s">13:00 – 14:30</div></div></div>
+            <div class="cal-ev-item"><span class="cal-ev-dot" style="background:var(--warn)"></span><div><div class="cal-ev-t">Computer Sci</div><div class="cal-ev-s">15:00 – 16:30</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 4: ANNOUNCEMENTS + ATTENDANCE + QUICK LINKS -->
+  <div class="row4">
+    <div class="card">
+      <div class="card-h"><h3><span class="material-symbols-outlined">campaign</span>Announcements</h3><a href="student-announcements.html">View All</a></div>
+      <div class="card-b">
+        <div class="ann-item"><div class="ann-thumb"><img src="https://picsum.photos/seed/lib-ext/104/80.jpg" alt=""></div><div class="ann-b"><b>Library Extended Hours</b><p>Open 7:00 AM–9:00 PM during exam season, starting Jun 20.</p><span class="ann-time">2 hours ago</span></div></div>
+        <div class="ann-item"><div class="ann-thumb"><img src="https://picsum.photos/seed/sports-day/104/80.jpg" alt=""></div><div class="ann-b"><b>Sports Day Registration Open</b><p>Sign up at PE office before July 1. Track, football & more.</p><span class="ann-time">Yesterday</span></div></div>
+        <div class="ann-item"><div class="ann-thumb"><img src="https://picsum.photos/seed/khmer-day/104/80.jpg" alt=""></div><div class="ann-b"><b>Holiday — Khmer Language Day</b><p>No classes on Thursday, June 26.</p><span class="ann-time">2 days ago</span></div></div>
+        <div class="ann-item"><div class="ann-thumb"><img src="https://picsum.photos/seed/robotics-new/104/80.jpg" alt=""></div><div class="ann-b"><b>New Course: Robotics Intro</b><p>Enroll now for next semester. Limited seats.</p><span class="ann-time">3 days ago</span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3><span class="material-symbols-outlined">pie_chart</span>Attendance Overview</h3><a href="student-attendance.html">Details</a></div>
+      <div class="card-b">
+        <div class="att-w">
+          <div class="att-d"><canvas id="attChart"></canvas><div class="att-c"><div class="att-p">92%</div><div class="att-pl">Present</div></div></div>
+          <div class="att-legend">
+            <div class="att-rw"><span class="d" style="background:var(--pri)"></span><span class="l">Present</span><span class="v">23</span></div>
+            <div class="att-rw"><span class="d" style="background:var(--err)"></span><span class="l">Absent</span><span class="v">1</span></div>
+            <div class="att-rw"><span class="d" style="background:var(--warn)"></span><span class="l">Late</span><span class="v">1</span></div>
+            <div class="att-total"><span>Total Classes</span><b>25</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3><span class="material-symbols-outlined">apps</span>Quick Links</h3></div>
+      <div class="card-b">
+        <div class="ql">
+          <a href="student-assignments.html" class="ql-a"><div class="ql-ic" style="background:#1F6B3A"><span class="material-symbols-outlined">assignment</span></div><span class="ql-l">Assignments</span></a>
+          <a href="../shared/exams.html" class="ql-a"><div class="ql-ic" style="background:var(--err)"><span class="material-symbols-outlined">quiz</span><span class="ql-dot">3</span></div><span class="ql-l">Exams</span></a>
+          <a href="student-timetable.html" class="ql-a"><div class="ql-ic" style="background:#1F6B3A"><span class="material-symbols-outlined">calendar_view_week</span></div><span class="ql-l">Timetable</span></a>
+          <a href="student-attendance.html" class="ql-a"><div class="ql-ic ql-ic-gold" style="background:#F2C230"><span class="material-symbols-outlined">checklist</span></div><span class="ql-l">Attendance</span></a>
+          <a href="student-grades.html" class="ql-a"><div class="ql-ic" style="background:#1F6B3A"><span class="material-symbols-outlined">bar_chart</span></div><span class="ql-l">Results</span></a>
+          <a href="../shared/lessons.html" class="ql-a"><div class="ql-ic ql-ic-gold" style="background:#F2C230"><span class="material-symbols-outlined">play_circle</span></div><span class="ql-l">E-Learning</span></a>
+          <a href="student-documents.html" class="ql-a"><div class="ql-ic" style="background:#1F6B3A"><span class="material-symbols-outlined">folder_open</span></div><span class="ql-l">Documents</span></a>
+          <a href="../shared/chat.html" class="ql-a"><div class="ql-ic ql-ic-gold" style="background:#F2C230"><span class="material-symbols-outlined">chat_bubble</span><span class="ql-dot">5</span></div><span class="ql-l">Messages</span></a>
+          <a href="student-notifications.html" class="ql-a"><div class="ql-ic ql-ic-gold" style="background:#F2C230"><span class="material-symbols-outlined">notifications</span></div><span class="ql-l">Notifications</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* Subjects grid */
+const subjs=[
+{i:'calculate',n:'Mathematics',t:'Mr. Heng Samnang',p:88,c:'#27ae60'},
+{i:'menu_book',n:'English',t:'Ms. Sarah Johnson',p:90,c:'#1F6B3A'},
+{i:'science',n:'Physics',t:'Dr. Pov Chanthy',p:82,c:'#e74c3c'},
+{i:'computer',n:'Computer Science',t:'Mr. Ley Visal',p:95,c:'#f39c12'},
+{i:'history_edu',n:'Khmer Language',t:'Mr. Dara Sok',p:87,c:'#8e44ad'},
+{i:'public',n:'Social Studies',t:'Ms. Horm Chanthou',p:84,c:'#1abc9c'}
+];
+document.getElementById('subjGrid').innerHTML=subjs.map(s=>`<div class="sj-card"><div class="sj-top"><div class="sj-ico" style="background:${s.c}"><span class="material-symbols-outlined">${s.i}</span></div><div class="sj-name">${s.n}</div></div><div class="sj-teacher">${s.t}</div><div class="sj-bar-w"><div class="sj-bar"><div class="sj-fill" data-w="${s.p}%" style="background:${s.c}"></div></div><div class="sj-pct">${s.p}%</div></div></div>`).join('');
+
+/* Calendar — June 2025 starts on Sunday */
+(function(){const g=document.getElementById('calGrid');['S','M','T','W','T','F','S'].forEach(d=>{const e=document.createElement('div');e.className='dow';e.textContent=d;g.appendChild(e)});const days=30,today=18;const ev={5:1,12:1,20:1};const ex={22:1};const as={18:1,23:1,25:1};for(let d=1;d<=days;d++){const c=document.createElement('div');c.className='day';if(d===today)c.classList.add('td');const dots=[];if(ev[d])dots.push('#2980b9');if(ex[d])dots.push('#e74c3c');if(as[d])dots.push('#f39c12');c.appendChild(document.createTextNode(d));if(dots.length){const dv=document.createElement('div');dv.className='ev';dots.forEach(bg=>{const i=document.createElement('i');i.style.background=bg;dv.appendChild(i)});c.appendChild(dv)}g.appendChild(c)}const rem=(7-(days%7))%7;for(let n=1;n<=rem;n++){const c=document.createElement('div');c.className='day mu';c.textContent=n;g.appendChild(c)}})();
+
+/* Attendance donut */
+(function(){const ctx=document.getElementById('attChart').getContext('2d');new Chart(ctx,{type:'doughnut',data:{labels:['Present','Absent','Late'],datasets:[{data:[23,1,1],backgroundColor:['#1F6B3A','#e74c3c','#f39c12'],borderWidth:0,hoverOffset:3,borderRadius:3}]},options:{cutout:'74%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a5276',padding:6,cornerRadius:6,titleFont:{size:10,weight:'600',family:'Inter'},bodyFont:{size:10,family:'Inter'}}},animation:{animateRotate:true,duration:900,easing:'easeOutQuart'}}})})();
+
+/* Animate bars */
+setTimeout(()=>{document.querySelectorAll('.sj-fill[data-w]').forEach(b=>{b.style.width=b.dataset.w})},300);
+</script>
+<script>window.PAGE={"role":"student","active":"dashboard"};</script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

@@ -1,0 +1,443 @@
+﻿<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Lessons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+/* Subject selector — Step 1 */
+.subject-select-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width:1024px) { .subject-select-grid { grid-template-columns: repeat(3,1fr); } }
+@media (max-width:640px)  { .subject-select-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width:400px)  { .subject-select-grid { grid-template-columns: 1fr; } }
+
+.subject-sel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-1);
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: box-shadow var(--t-base), border-color var(--t-base), transform var(--t-base);
+  cursor: pointer;
+}
+.subject-sel-card:hover {
+  box-shadow: var(--sh-2);
+  border-color: var(--primary-border);
+  transform: translateY(-3px);
+}
+.subject-sel-icon {
+  width: 60px; height: 60px; border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+}
+.subject-sel-icon .material-symbols-outlined { font-size: 30px; }
+.subject-sel-name { font-size: 15px; font-weight: 700; color: var(--heading); }
+.subject-sel-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.subject-sel-count { font-size: 11px; font-weight: 700; }
+
+/* Lesson list — Step 2 */
+.lesson-list { display: flex; flex-direction: column; gap: 12px; }
+.lesson-list-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width:640px) { .lesson-list-grid { grid-template-columns: 1fr; } }
+
+/* Preview modal */
+.preview-modal {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.preview-modal[hidden] { display: none; }
+.preview-modal-inner {
+  background: var(--surface); border-radius: var(--r-xl);
+  max-width: 700px; width: 100%; max-height: 85vh;
+  overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: var(--sh-3);
+}
+.preview-modal-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.preview-modal-body { flex: 1; overflow-y: auto; padding: 0; }
+</style>
+</head>
+<body data-page="lessons">
+<main class="main">
+
+  <!-- HERO BANNER -->
+  <div class="hero-banner">
+    <div class="hb-content">
+      <nav class="hb-crumb" aria-label="Breadcrumb">
+        <a href="../student/student.html">Home</a>
+        <span class="hb-crumb-sep">›</span>
+        <a href="departments.html">Departments</a>
+        <span class="hb-crumb-sep">›</span>
+        <span id="heroBreadcrumbDept">English</span>
+        <span class="hb-crumb-sep" id="lessonBreadSep" hidden>›</span>
+        <span id="heroBreadcrumbSubject" hidden></span>
+      </nav>
+      <h1 class="hb-title" id="heroTitle">Lessons</h1>
+      <p class="hb-sub" id="heroSub">Select a subject to view teacher-uploaded lessons</p>
+      <div class="hb-badges">
+        <span class="hb-pill" id="heroBadgeDept"><span class="material-symbols-outlined" style="font-size:13px">apartment</span>English Department</span>
+        <span class="hb-pill"><span class="material-symbols-outlined" style="font-size:13px">school</span>Grade 11 · SS2</span>
+      </div>
+    </div>
+    <div class="hb-logo-block">
+      <div class="hb-logo-ring">
+        <img src="../../assets/ngis-logo.png" alt="NGIS Logo" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
+        <span class="hb-logo-fallback" style="display:none">NG</span>
+      </div>
+      <div class="hb-school-name">
+        <b>NGIS International School</b>
+        <span class="hb-kh">សាលារៀន​អន្តរជាតិ NGIS</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- ════════════════ STEP 1: SUBJECT SELECTION ════════════ -->
+    <div id="stepSubjects">
+
+      <div class="page-head mb20">
+        <div>
+          <h2>Choose a Subject</h2>
+          <p class="muted" style="margin-top:4px">Click a subject below to browse its uploaded lessons</p>
+        </div>
+        <div class="search" style="max-width:260px">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" placeholder="Search subjects…" id="subjectSearch" aria-label="Search subjects">
+        </div>
+      </div>
+
+      <div class="subject-select-grid" id="subjectGrid">
+
+        <button class="subject-sel-card" onclick="openSubject('eng-lit','English Literature','Reading, analysis and literary appreciation','menu_book','var(--primary)')">
+          <div class="subject-sel-icon" style="background:var(--primary-soft)">
+            <span class="material-symbols-outlined" style="color:var(--primary)">menu_book</span>
+          </div>
+          <div class="subject-sel-name">English Literature</div>
+          <div class="subject-sel-desc">Reading, analysis and literary appreciation</div>
+          <span class="subject-sel-count" style="color:var(--primary)">14 lessons</span>
+        </button>
+
+        <button class="subject-sel-card" onclick="openSubject('eng-grammar','English Grammar','Grammar rules, writing and academic structure','spellcheck','var(--primary)')">
+          <div class="subject-sel-icon" style="background:var(--primary-soft)">
+            <span class="material-symbols-outlined" style="color:var(--primary)">spellcheck</span>
+          </div>
+          <div class="subject-sel-name">English Grammar</div>
+          <div class="subject-sel-desc">Grammar rules, writing and academic structure</div>
+          <span class="subject-sel-count" style="color:var(--primary)">10 lessons</span>
+        </button>
+
+        <button class="subject-sel-card" onclick="openSubject('khmer-lit','Khmer Literature','Classical and modern Khmer prose and poetry','chrome_reader_mode','#7A5C00')">
+          <div class="subject-sel-icon" style="background:var(--accent-soft)">
+            <span class="material-symbols-outlined" style="color:#7A5C00">chrome_reader_mode</span>
+          </div>
+          <div class="subject-sel-name">Khmer Literature</div>
+          <div class="subject-sel-desc">Classical and modern Khmer prose and poetry</div>
+          <span class="subject-sel-count" style="color:#7A5C00">8 lessons</span>
+        </button>
+
+        <button class="subject-sel-card" onclick="openSubject('chinese','Chinese Language','Mandarin reading, writing and conversation','language','var(--primary)')">
+          <div class="subject-sel-icon" style="background:var(--primary-soft)">
+            <span class="material-symbols-outlined" style="color:var(--primary)">language</span>
+          </div>
+          <div class="subject-sel-name">Chinese Language</div>
+          <div class="subject-sel-desc">Mandarin reading, writing and conversation</div>
+          <span class="subject-sel-count" style="color:var(--primary)">7 lessons</span>
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ════════════════ STEP 2: LESSON LIST ═════════════════ -->
+    <div id="stepLessons" hidden>
+
+      <!-- Back button + controls -->
+      <div class="flex between center gap12 mb20 wrap">
+        <div class="flex center gap12">
+          <button onclick="backToSubjects()" class="btn btn-ghost btn-sm">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Back to subjects
+          </button>
+          <div>
+            <h2 id="lessonSubjectTitle" style="font-size:20px"></h2>
+            <p class="muted" style="font-size:13px;margin-top:2px" id="lessonSubjectMeta"></p>
+          </div>
+        </div>
+        <div class="flex gap8">
+          <div class="search" style="max-width:240px">
+            <span class="material-symbols-outlined">search</span>
+            <input type="text" placeholder="Search lessons…" aria-label="Search lessons">
+          </div>
+          <div class="seg">
+            <button class="on" id="btnListView" onclick="setView('list',this)">
+              <span class="material-symbols-outlined" style="font-size:17px">view_list</span>
+            </button>
+            <button id="btnGridView" onclick="setView('grid',this)">
+              <span class="material-symbols-outlined" style="font-size:17px">grid_view</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="flex gap8 mb16 wrap">
+        <span class="subj-chip" style="background:var(--primary-soft);border-color:var(--primary-border);color:var(--primary)">All files</span>
+        <span class="subj-chip">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--primary);flex-shrink:0"></div>
+          PDFs
+        </span>
+        <span class="subj-chip">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--accent);flex-shrink:0"></div>
+          Images
+        </span>
+        <span class="subj-chip">
+          <div style="width:10px;height:10px;border-radius:2px;background:var(--surface-3);border:1px solid var(--border);flex-shrink:0"></div>
+          Links
+        </span>
+      </div>
+
+      <!-- Lesson list (list view) -->
+      <div class="lesson-list" id="lessonListView">
+
+        <div class="lesson-card">
+          <div class="lesson-file-icon pdf">PDF</div>
+          <div class="lesson-body">
+            <b>English Literature — Introduction to Shakespeare</b>
+            <small>Ms. Rin Sothea · Uploaded 22 Jun 2026 · 2.1 MB</small>
+          </div>
+          <div class="lesson-actions">
+            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Introduction to Shakespeare','PDF')">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+            <button class="icon-btn" title="Download" aria-label="Download file">
+              <span class="material-symbols-outlined">download</span>
+            </button>
+            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
+              <span class="material-symbols-outlined">bookmark_border</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lesson-card">
+          <div class="lesson-file-icon png">IMG</div>
+          <div class="lesson-body">
+            <b>Grammar Reference Chart — Tenses Overview</b>
+            <small>Ms. Rin Sothea · Uploaded 20 Jun 2026 · 0.8 MB</small>
+          </div>
+          <div class="lesson-actions">
+            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Tenses Overview','Image')">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+            <button class="icon-btn" title="Download" aria-label="Download file">
+              <span class="material-symbols-outlined">download</span>
+            </button>
+            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
+              <span class="material-symbols-outlined">bookmark</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lesson-card">
+          <div class="lesson-file-icon pdf">PDF</div>
+          <div class="lesson-body">
+            <b>Academic Writing — Essay Structure &amp; Techniques</b>
+            <small>Ms. Rin Sothea · Uploaded 18 Jun 2026 · 3.2 MB</small>
+          </div>
+          <div class="lesson-actions">
+            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Essay Structure','PDF')">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+            <button class="icon-btn" title="Download" aria-label="Download file">
+              <span class="material-symbols-outlined">download</span>
+            </button>
+            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
+              <span class="material-symbols-outlined">bookmark_border</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lesson-card">
+          <div class="lesson-file-icon link">URL</div>
+          <div class="lesson-body">
+            <b>BBC Learning English — Advanced Grammar Exercises</b>
+            <small>Ms. Rin Sothea · Added 15 Jun 2026 · External link</small>
+          </div>
+          <div class="lesson-actions">
+            <button class="icon-btn" title="Open link" aria-label="Open external link">
+              <span class="material-symbols-outlined">open_in_new</span>
+            </button>
+            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
+              <span class="material-symbols-outlined">bookmark_border</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lesson-card">
+          <div class="lesson-file-icon jpg">IMG</div>
+          <div class="lesson-body">
+            <b>Khmer Literature — Poem Analysis Worksheet</b>
+            <small>Mr. Dara Sok · Uploaded 12 Jun 2026 · 1.3 MB</small>
+          </div>
+          <div class="lesson-actions">
+            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Poem Analysis Worksheet','Image')">
+              <span class="material-symbols-outlined">visibility</span>
+            </button>
+            <button class="icon-btn" title="Download" aria-label="Download file">
+              <span class="material-symbols-outlined">download</span>
+            </button>
+            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
+              <span class="material-symbols-outlined">bookmark_border</span>
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /lesson-list -->
+
+      <!-- Grid view (hidden by default) -->
+      <div class="lesson-list-grid" id="lessonGridView" hidden>
+        <!-- Same lessons in card format, shown in 2-col grid -->
+        <div class="card card-pad card-hover" style="border-radius:var(--r-xl)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="lesson-file-icon pdf" style="width:40px;height:40px;border-radius:var(--r-md);font-size:10px">PDF</div>
+            <div class="lesson-body"><b>Cell Division — Chapter 7</b><small>Dr. Pov Chanthy · 22 Jun</small></div>
+          </div>
+          <div class="flex gap8">
+            <button class="btn btn-soft btn-sm" style="flex:1">Preview</button>
+            <button class="btn btn-ghost btn-sm"><span class="material-symbols-outlined">download</span></button>
+          </div>
+        </div>
+        <div class="card card-pad card-hover" style="border-radius:var(--r-xl)">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div class="lesson-file-icon png" style="width:40px;height:40px;border-radius:var(--r-md);font-size:10px">IMG</div>
+            <div class="lesson-body"><b>Periodic Table Poster</b><small>Ms. Kiry Sokha · 20 Jun</small></div>
+          </div>
+          <div class="flex gap8">
+            <button class="btn btn-soft btn-sm" style="flex:1">Preview</button>
+            <button class="btn btn-ghost btn-sm"><span class="material-symbols-outlined">download</span></button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /stepLessons -->
+  </div><!-- /page -->
+
+  <!-- PREVIEW MODAL -->
+  <div class="preview-modal" id="previewModal" hidden role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+    <div class="preview-modal-inner">
+      <div class="preview-modal-head">
+        <span class="material-symbols-outlined" style="color:var(--primary)">description</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:15px;font-weight:700" id="previewTitle">File Preview</div>
+          <div style="font-size:12px;color:var(--muted)" id="previewType"></div>
+        </div>
+        <button class="icon-btn" onclick="closePreview()" aria-label="Close preview">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="preview-modal-body">
+        <div class="empty" style="padding:64px 24px">
+          <span class="material-symbols-outlined">description</span>
+          <h4 id="previewFileName"></h4>
+          <p>File preview would render here in production. In demo mode, download to view.</p>
+          <button class="btn btn-primary mt16">
+            <span class="material-symbols-outlined">download</span>
+            Download file
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  try { var _t = localStorage.getItem('ngis-theme'); if (_t) document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
+  var role = (saved && saved.role) || 'student';
+  window.PAGE = { role: role, active: 'lessons' };
+  if (saved) window.CURRENT_USER = saved;
+  document.body.classList.add('ready');
+})();
+
+function openSubject(id, name, desc, icon, color) {
+  document.getElementById('stepSubjects').hidden = true;
+  document.getElementById('stepLessons').hidden = false;
+  document.getElementById('lessonSubjectTitle').textContent = name;
+  document.getElementById('lessonSubjectMeta').textContent = desc;
+  document.getElementById('heroBreadcrumbSubject').textContent = name;
+  document.getElementById('heroBreadcrumbSubject').hidden = false;
+  document.getElementById('lessonBreadSep').hidden = false;
+  document.getElementById('heroTitle').textContent = name + ' — Lessons';
+  document.getElementById('heroSub').textContent = desc;
+}
+
+function backToSubjects() {
+  document.getElementById('stepSubjects').hidden = false;
+  document.getElementById('stepLessons').hidden = true;
+  document.getElementById('heroBreadcrumbSubject').hidden = true;
+  document.getElementById('lessonBreadSep').hidden = true;
+  document.getElementById('heroTitle').textContent = 'Lessons';
+  document.getElementById('heroSub').textContent = 'Select a subject to view teacher-uploaded lessons';
+}
+
+function setView(view, btn) {
+  var listView = document.getElementById('lessonListView');
+  var gridView = document.getElementById('lessonGridView');
+  var btnList  = document.getElementById('btnListView');
+  var btnGrid  = document.getElementById('btnGridView');
+  if (view === 'list') {
+    listView.hidden = false; gridView.hidden = true;
+    btnList.classList.add('on'); btnGrid.classList.remove('on');
+  } else {
+    listView.hidden = true; gridView.hidden = false;
+    btnGrid.classList.add('on'); btnList.classList.remove('on');
+  }
+}
+
+function openPreview(name, type) {
+  document.getElementById('previewTitle').textContent = name;
+  document.getElementById('previewType').textContent = type + ' document';
+  document.getElementById('previewFileName').textContent = name;
+  document.getElementById('previewModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closePreview() {
+  document.getElementById('previewModal').hidden = true;
+  document.body.style.overflow = '';
+}
+
+document.getElementById('previewModal').addEventListener('click', function(e) {
+  if (e.target === this) closePreview();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closePreview();
+});
+</script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

@@ -7,107 +7,139 @@
 (function () {
   "use strict";
 
-  /* Full navigation per role (desktop sidebar) */
+  /* ------------------------------------------------------------------
+     Categorised navigation per role (desktop sidebar).
+     Each role has ordered GROUPS; every group has a title + icon and a
+     list of links. Dividers + section labels are rendered between groups.
+
+     Student & Parent portals are DEPARTMENT-CENTRIC: the learning modules
+     (Attendance, Assignments, Report Cards, Exams, Timetable, Lessons) are
+     intentionally NOT top-level items — they live inside each Department.
+     Teacher & Admin keep their operator tools, grouped for clarity.
+     ------------------------------------------------------------------ */
   const NAV = {
     admin: {
       brand: "Admin", meta: "New Gateway International School",
-      links: [
-        { id:"dashboard",  label:"Dashboard",   icon:"dashboard",          href:"admin.html" },
-        { id:"users",      label:"Users",       icon:"group",              href:"admin-users.html" },
-        { id:"classes",    label:"Classes",     icon:"class",              href:"admin-classes.html" },
-        { id:"timetables", label:"Timetables",  icon:"calendar_view_week", href:"admin-timetables.html" },
-        { id:"fees",       label:"Fees",        icon:"payments",           href:"admin-fees.html" },
-        { id:"reports",    label:"Reports",     icon:"assessment",         href:"admin-reports.html" },
-        { id:"logs",       label:"Audit Logs",  icon:"history",            href:"admin-logs.html" },
-        { id:"group-chat",  label:"Group Chat",  icon:"groups",             href:"group-chat.html", badge:"4" },
-        { id:"chat",        label:"Direct Chat", icon:"chat",               href:"chat.html", badge:"2" },
-        { id:"settings",    label:"Settings",    icon:"settings",           href:"admin-settings.html" },
+      groups: [
+        { label:"Main", icon:"home", links:[
+          { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/admin/admin.html" },
+        ]},
+        { label:"Management", icon:"school", links:[
+          { id:"users",       label:"Users",       icon:"group",              href:"pages/admin/admin-users.html" },
+          { id:"departments", label:"Departments", icon:"apartment",          href:"pages/shared/departments.html" },
+          { id:"classes",     label:"Classes",     icon:"school",             href:"pages/admin/admin-classes.html" },
+          { id:"timetables",  label:"Timetables",  icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
+          { id:"reports",     label:"Reports",     icon:"assessment",         href:"pages/admin/admin-reports.html" },
+          { id:"fees",        label:"Fees",        icon:"payments",           href:"pages/admin/admin-fees.html" },
+          { id:"logs",        label:"Audit Logs",  icon:"history",            href:"pages/admin/admin-logs.html" },
+        ]},
+        { label:"Communication", icon:"forum", links:[
+          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html" },
+          { id:"group-chat",    label:"Group Chat",    icon:"groups",   href:"pages/shared/group-chat.html", badge:"4" },
+          { id:"chat",          label:"Direct Chat",   icon:"chat",     href:"pages/shared/chat.html", badge:"2" },
+        ]},
+        { label:"Account", icon:"person", links:[
+          { id:"settings", label:"Settings", icon:"settings", href:"pages/admin/admin-settings.html" },
+        ]},
       ],
     },
     teacher: {
       brand: "Teacher", meta: "Academic Year 2025–26",
-      links: [
-        { id:"dashboard",    label:"Dashboard",     icon:"dashboard",          href:"teacher.html" },
-        { id:"classes",      label:"My Classes",    icon:"school",             href:"teacher-classes.html" },
-        { id:"attendance",   label:"Attendance",    icon:"how_to_reg",         href:"teacher-attendance.html" },
-        { id:"grades",       label:"Grades",        icon:"grade",              href:"teacher-grades.html" },
-        { id:"assignments",  label:"Assignments",   icon:"assignment",         href:"teacher-assignments.html" },
-        { id:"documents",    label:"Documents",     icon:"folder",             href:"teacher-documents.html" },
-        { id:"announcements",label:"Announcements", icon:"campaign",           href:"teacher-announcements.html" },
-        { id:"calendar",     label:"Calendar",      icon:"calendar_month",     href:"teacher-calendar.html" },
-        { id:"group-chat",   label:"Group Chat",    icon:"groups",             href:"group-chat.html", badge:"3" },
-        { id:"chat",         label:"Direct Chat",   icon:"chat",               href:"chat.html", badge:"2" },
-        { id:"notifications",label:"Notifications", icon:"notifications",      href:"teacher-notifications.html", badge:"3" },
-        { id:"profile",      label:"My Profile",    icon:"person",             href:"teacher-profile.html" },
+      groups: [
+        { label:"Main", icon:"home", links:[
+          { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/teacher/teacher.html" },
+        ]},
+        { label:"Teaching", icon:"school", links:[
+          { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
+          { id:"classes",     label:"My Classes",  icon:"school",    href:"pages/teacher/teacher-classes.html" },
+        ]},
+        { label:"Communication", icon:"forum", links:[
+          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"0" },
+          { id:"group-chat",    label:"Group Chat",    icon:"groups",   href:"pages/shared/group-chat.html", badge:"3" },
+          { id:"chat",          label:"Direct Chat",   icon:"chat",     href:"pages/shared/chat.html", badge:"2" },
+        ]},
+        { label:"Account", icon:"person", links:[
+          { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/teacher/teacher-notifications.html", badge:"3" },
+          { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/teacher/teacher-profile.html" },
+        ]},
       ],
     },
     student: {
       brand: "Student", meta: "Grade 11 · Section A · 2025–26",
-      links: [
-        { id:"dashboard",    label:"Dashboard",     icon:"dashboard",          href:"student.html" },
-        { id:"timetable",    label:"Timetable",     icon:"calendar_view_week", href:"student-timetable.html" },
-        { id:"assignments",  label:"Assignments",   icon:"assignment",         href:"student-assignments.html", badge:"3" },
-        { id:"grades",       label:"Grades",        icon:"grade",              href:"student-grades.html" },
-        { id:"attendance",   label:"Attendance",    icon:"how_to_reg",         href:"student-attendance.html" },
-        { id:"documents",    label:"Documents",     icon:"folder",             href:"student-documents.html" },
-        { id:"fees",         label:"Fees",          icon:"payments",           href:"student-fees.html" },
-        { id:"announcements",label:"Announcements", icon:"campaign",           href:"student-announcements.html" },
-        { id:"calendar",     label:"Calendar",      icon:"calendar_month",     href:"student-calendar.html" },
-        { id:"group-chat",   label:"Group Chat",    icon:"groups",             href:"group-chat.html", badge:"2" },
-        { id:"chat",         label:"Direct Chat",   icon:"chat",               href:"chat.html", badge:"3" },
-        { id:"notifications",label:"Notifications", icon:"notifications",      href:"student-notifications.html", badge:"5" },
-        { id:"profile",      label:"My Profile",    icon:"person",             href:"student-profile.html" },
+      groups: [
+        { label:"Main", icon:"home", links:[
+          { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/student/student.html" },
+        ]},
+        { label:"Learning", icon:"school", links:[
+          { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
+        ]},
+        { label:"Communication", icon:"forum", links:[
+          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"3" },
+          { id:"group-chat",    label:"Group Chat",    icon:"groups",   href:"pages/shared/group-chat.html", badge:"2" },
+          { id:"chat",          label:"Direct Chat",   icon:"chat",     href:"pages/shared/chat.html", badge:"3" },
+        ]},
+        { label:"Account", icon:"person", links:[
+          { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/student/student-notifications.html", badge:"5" },
+          { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/student/student-profile.html" },
+        ]},
       ],
     },
     parent: {
       brand: "Parent", meta: "Guardian Account · 2025–26",
-      links: [
-        { id:"dashboard",    label:"Dashboard",     icon:"dashboard",          href:"parent.html" },
-        { id:"children",     label:"My Children",   icon:"family_restroom",    href:"parent-children.html" },
-        { id:"attendance",   label:"Attendance",    icon:"how_to_reg",         href:"parent-attendance.html" },
-        { id:"grades",       label:"Grades",        icon:"grade",              href:"parent-grades.html" },
-        { id:"assignments",  label:"Assignments",   icon:"assignment",         href:"parent-assignments.html" },
-        { id:"fees",         label:"Fees",          icon:"payments",           href:"parent-fees.html" },
-        { id:"announcements",label:"Announcements", icon:"campaign",           href:"parent-announcements.html" },
-        { id:"calendar",     label:"Calendar",      icon:"calendar_month",     href:"parent-calendar.html" },
-        { id:"group-chat",   label:"Group Chat",    icon:"groups",             href:"group-chat.html", badge:"1" },
-        { id:"chat",         label:"Direct Chat",   icon:"chat",               href:"chat.html", badge:"1" },
-        { id:"documents",    label:"Documents",     icon:"folder",             href:"parent-documents.html" },
-        { id:"notifications",label:"Notifications", icon:"notifications",      href:"parent-notifications.html", badge:"2" },
-        { id:"profile",      label:"My Profile",    icon:"person",             href:"parent-profile.html" },
+      groups: [
+        { label:"Main", icon:"home", links:[
+          { id:"dashboard", label:"Dashboard",   icon:"dashboard",       href:"pages/parent/parent.html" },
+          { id:"children",  label:"My Children", icon:"family_restroom", href:"pages/parent/parent-children.html" },
+        ]},
+        { label:"Learning", icon:"school", links:[
+          { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
+        ]},
+        { label:"Communication", icon:"forum", links:[
+          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"1" },
+          { id:"group-chat",    label:"Group Chat",    icon:"groups",   href:"pages/shared/group-chat.html", badge:"1" },
+          { id:"chat",          label:"Direct Chat",   icon:"chat",     href:"pages/shared/chat.html", badge:"1" },
+        ]},
+        { label:"Account", icon:"person", links:[
+          { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/parent/parent-notifications.html", badge:"2" },
+          { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/parent/parent-profile.html" },
+        ]},
       ],
     },
   };
 
+  /* Department sub-pages keep "Departments" highlighted in the sidebar,
+     since these modules now live inside each department. */
+  const DEPT_CHILD = ["attendance","assignments","grades","exams","timetable","lessons","department"];
+
   /* Mobile bottom-nav: five primary destinations per role */
   const BOTTOM = {
     admin: [
-      { id:"dashboard",  label:"Home",       icon:"home",      href:"admin.html" },
-      { id:"users",      label:"Users",       icon:"group",     href:"admin-users.html" },
-      { id:"group-chat", label:"Group Chat",  icon:"groups",    href:"group-chat.html", badge:"4" },
-      { id:"reports",    label:"Reports",     icon:"assessment",href:"admin-reports.html" },
-      { id:"settings",   label:"Settings",    icon:"settings",  href:"admin-settings.html" },
+      { id:"dashboard",  label:"Home",       icon:"home",      href:"pages/admin/admin.html" },
+      { id:"users",      label:"Users",       icon:"group",     href:"pages/admin/admin-users.html" },
+      { id:"group-chat", label:"Group Chat",  icon:"groups",    href:"pages/shared/group-chat.html", badge:"4" },
+      { id:"reports",    label:"Reports",     icon:"assessment",href:"pages/admin/admin-reports.html" },
+      { id:"settings",   label:"Settings",    icon:"settings",  href:"pages/admin/admin-settings.html" },
     ],
     teacher: [
-      { id:"dashboard",  label:"Home",       icon:"home",          href:"teacher.html" },
-      { id:"classes",    label:"Classes",    icon:"school",        href:"teacher-classes.html" },
-      { id:"group-chat", label:"Group Chat", icon:"groups",        href:"group-chat.html", badge:"3" },
-      { id:"notifications",label:"Alerts",   icon:"notifications", href:"teacher-notifications.html", badge:"3" },
-      { id:"profile",    label:"Profile",    icon:"person",        href:"teacher-profile.html" },
+      { id:"dashboard",  label:"Home",       icon:"home",          href:"pages/teacher/teacher.html" },
+      { id:"classes",    label:"Classes",    icon:"school",        href:"pages/teacher/teacher-classes.html" },
+      { id:"group-chat", label:"Group Chat", icon:"groups",        href:"pages/shared/group-chat.html", badge:"3" },
+      { id:"notifications",label:"Alerts",   icon:"notifications", href:"pages/teacher/teacher-notifications.html", badge:"3" },
+      { id:"profile",    label:"Profile",    icon:"person",        href:"pages/teacher/teacher-profile.html" },
     ],
     student: [
-      { id:"dashboard",    label:"Home",       icon:"home",               href:"student.html" },
-      { id:"timetable",    label:"Schedule",   icon:"calendar_view_week", href:"student-timetable.html" },
-      { id:"group-chat",   label:"Group Chat", icon:"groups",             href:"group-chat.html", badge:"2" },
-      { id:"notifications",label:"Alerts",     icon:"notifications",      href:"student-notifications.html", badge:"5" },
-      { id:"profile",      label:"Profile",    icon:"person",             href:"student-profile.html" },
+      { id:"dashboard",    label:"Home",        icon:"home",        href:"pages/student/student.html" },
+      { id:"departments",  label:"Departments", icon:"apartment",   href:"pages/shared/departments.html" },
+      { id:"group-chat",   label:"Group Chat",  icon:"groups",      href:"pages/shared/group-chat.html", badge:"2" },
+      { id:"announcements",label:"Alerts",      icon:"campaign",    href:"pages/shared/announcements.html", badge:"3" },
+      { id:"profile",      label:"Profile",     icon:"person",      href:"pages/student/student-profile.html" },
     ],
     parent: [
-      { id:"dashboard",    label:"Home",       icon:"home",           href:"parent.html" },
-      { id:"children",     label:"Children",   icon:"family_restroom",href:"parent-children.html" },
-      { id:"group-chat",   label:"Group Chat", icon:"groups",         href:"group-chat.html", badge:"1" },
-      { id:"notifications",label:"Alerts",     icon:"notifications",  href:"parent-notifications.html", badge:"2" },
-      { id:"profile",      label:"Profile",    icon:"person",         href:"parent-profile.html" },
+      { id:"dashboard",    label:"Home",       icon:"home",           href:"pages/parent/parent.html" },
+      { id:"departments",  label:"Departments",icon:"apartment",      href:"pages/shared/departments.html" },
+      { id:"group-chat",   label:"Group Chat", icon:"groups",         href:"pages/shared/group-chat.html", badge:"1" },
+      { id:"notifications",label:"Alerts",     icon:"notifications",  href:"pages/parent/parent-notifications.html", badge:"2" },
+      { id:"profile",      label:"Profile",    icon:"person",         href:"pages/parent/parent-profile.html" },
     ],
   };
 
@@ -118,7 +150,12 @@
     parent:  { name:"Chan Dara Vuth",    role:"Parent / Guardian",    initials:"CV" },
   };
 
-  const PORTAL_HOME = { admin:"admin.html", teacher:"teacher.html", student:"student.html", parent:"parent.html" };
+  const PORTAL_HOME = { admin:"pages/admin/admin.html", teacher:"pages/teacher/teacher.html", student:"pages/student/student.html", parent:"pages/parent/parent.html" };
+
+  /* Path prefix — resolves root-relative hrefs from any depth.
+     Pages under pages/<role>/ are 2 levels deep → prefix = ../../
+     Root-level pages (index.html, project-map.html) → prefix = ''       */
+  let _P = '';
 
   function el(html) {
     const t = document.createElement("template");
@@ -142,13 +179,24 @@
   }
 
   function buildSidebar(cfg, active) {
-    const links = cfg.links.map(l =>
-      `<a class="nav-link ${l.id === active ? "active" : ""}" href="${l.href}"${l.id===active?' aria-current="page"':''}>
-         <span class="material-symbols-outlined">${l.icon}</span>
-         ${l.label}
-         ${l.badge ? `<span class="pill">${l.badge}</span>` : ""}
-       </a>`
-    ).join("");
+    const groups = cfg.groups.map((g, gi) => {
+      const links = g.links.map(l =>
+        `<a class="nav-link ${l.id === active ? "active" : ""}" href="${_P}${l.href}"${l.id===active?' aria-current="page"':''}>
+           <span class="nav-link-icon"><span class="material-symbols-outlined">${l.icon}</span></span>
+           <span class="nav-link-label">${esc(l.label)}</span>
+           ${l.badge ? `<span class="pill">${l.badge}</span>` : ""}
+         </a>`
+      ).join("");
+      return `
+        <div class="nav-group">
+          <div class="nav-group-label">
+            ${g.icon ? `<span class="material-symbols-outlined">${g.icon}</span>` : ""}
+            <span>${esc(g.label)}</span>
+          </div>
+          ${links}
+        </div>
+        ${gi < cfg.groups.length - 1 ? `<div class="nav-divider" role="separator"></div>` : ""}`;
+    }).join("");
 
     return el(`
       <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
@@ -158,12 +206,11 @@
         </div>
         <div class="side-meta"><span class="dot-live"></span>${esc(cfg.meta)}</div>
         <nav class="side-nav">
-          <div class="nav-group-label">Menu</div>
-          ${links}
+          ${groups}
         </nav>
         <div class="side-foot">
-          <a class="nav-link" href="index.html"><span class="material-symbols-outlined">help_outline</span>Help &amp; Support</a>
-          <a class="nav-link" href="index.html" style="color:var(--danger)"><span class="material-symbols-outlined">logout</span>Sign Out</a>
+          <a class="nav-link" href="${_P}index.html"><span class="nav-link-icon"><span class="material-symbols-outlined">help_outline</span></span><span class="nav-link-label">Help &amp; Support</span></a>
+          <a class="nav-link nav-link-danger" href="${_P}index.html"><span class="nav-link-icon"><span class="material-symbols-outlined">logout</span></span><span class="nav-link-label">Sign Out</span></a>
         </div>
       </aside>`);
   }
@@ -187,7 +234,7 @@
           <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode">
             <span class="material-symbols-outlined">dark_mode</span>
           </button>
-          <a class="icon-btn" href="${PORTAL_HOME[document.body.dataset.role]||'index.html'}" aria-label="Notifications">
+          <a class="icon-btn" href="${_P}${PORTAL_HOME[document.body.dataset.role]||'index.html'}" aria-label="Notifications">
             <span class="material-symbols-outlined">notifications</span>
             <span class="dot"></span>
           </a>
@@ -203,7 +250,7 @@
 
   function buildBottomNav(role, active) {
     const items = (BOTTOM[role] || BOTTOM.admin).map(it =>
-      `<a class="bn-item ${it.id===active?"active":""}" href="${it.href}"${it.id===active?' aria-current="page"':''}>
+      `<a class="bn-item ${it.id===active?"active":""}" href="${_P}${it.href}"${it.id===active?' aria-current="page"':''}>
          <span class="material-symbols-outlined">${it.icon}</span>
          <span>${it.label}</span>
          ${it.badge?`<span class="bn-badge">${it.badge}</span>`:""}
@@ -213,11 +260,12 @@
   }
 
   function buildBreadcrumb(cfg, role, active) {
-    const cur = cfg.links.find(l => l.id === active);
+    const all = cfg.groups.reduce((acc, g) => acc.concat(g.links), []);
+    const cur = all.find(l => l.id === active);
     if (!cur || active === "dashboard") return null;   // dashboards don't need a crumb
     return el(`
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="${PORTAL_HOME[role]}">${esc(cfg.brand)} Portal</a>
+        <a href="${_P}${PORTAL_HOME[role]}">${esc(cfg.brand)} Portal</a>
         <span class="material-symbols-outlined sep">chevron_right</span>
         <span class="cur" aria-current="page">${esc(cur.label)}</span>
       </nav>`);
@@ -227,6 +275,13 @@
     const PAGE = window.PAGE || { role:"admin", active:"dashboard" };
     const cfg  = NAV[PAGE.role] || NAV.admin;
     const user = PAGE.user || DEFAULT_USER[PAGE.role] || DEFAULT_USER.admin;
+    _P = (window.location.pathname || '').indexOf('/pages/') !== -1 ? '../../' : '';
+
+    // Department-centric portals: keep "Departments" lit on its sub-pages.
+    let active = PAGE.active;
+    if ((PAGE.role === "student" || PAGE.role === "parent") && DEPT_CHILD.includes(active)) {
+      active = "departments";
+    }
 
     document.body.setAttribute("data-role", PAGE.role);
 
@@ -236,18 +291,18 @@
     const shell = el(`<div class="shell"></div>`);
     main.parentNode.insertBefore(shell, main);
 
-    const sidebar = buildSidebar(cfg, PAGE.active);
+    const sidebar = buildSidebar(cfg, active);
     const scrim   = el(`<div class="scrim" id="scrim"></div>`);
     shell.appendChild(sidebar);
     shell.appendChild(main);
     document.body.appendChild(scrim);
 
     main.insertBefore(buildTopbar(user), main.firstChild);
-    document.body.appendChild(buildBottomNav(PAGE.role, PAGE.active));
+    document.body.appendChild(buildBottomNav(PAGE.role, active));
 
     // Auto-breadcrumb at the top of the page body
     const page = document.querySelector(".page");
-    const crumb = buildBreadcrumb(cfg, PAGE.role, PAGE.active);
+    const crumb = buildBreadcrumb(cfg, PAGE.role, active);
     if (page && crumb) page.insertBefore(crumb, page.firstChild);
 
     if (!document.querySelector(".toast-wrap")) {
@@ -304,7 +359,7 @@
 
     /* Interactive layer */
     const s = document.createElement("script");
-    s.src = "assets/js/app.js";
+    s.src = _P + "assets/js/app.js";
     document.body.appendChild(s);
   }
 
