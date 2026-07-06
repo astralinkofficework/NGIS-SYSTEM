@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Teacher Messaging Hub</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+/* Chat Workspace Container */
+.chat-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: calc(100vh - 120px);
+  min-height: 500px;
+  box-sizing: border-box;
+}
+
+.chat-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--txt2);
+}
+.chat-breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.chat-breadcrumbs a:hover {
+  color: var(--primary);
+}
+
+/* Chat Main Layout */
+.chat-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+  border: 1px solid var(--bdr);
+  flex: 1;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Left Sidebar: Teacher List */
+.chat-sidebar {
+  border-right: 1px solid var(--bdr);
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+.chat-sidebar-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--bdr);
+  font-weight: 700;
+  font-size: 15px;
+  color: #0f172a;
+}
+.teacher-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.teacher-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  border: 1px solid transparent;
+}
+.teacher-item:hover {
+  background: #f1f5f9;
+}
+.teacher-item.active {
+  background: #e0f2fe;
+  border-color: #bae6fd;
+}
+.teacher-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.teacher-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #94a3b8;
+  border: 2px solid #fff;
+}
+.status-dot.online {
+  background: #10b981;
+}
+.teacher-info {
+  flex: 1;
+  min-width: 0;
+}
+.teacher-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+.teacher-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.teacher-time {
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.teacher-subject {
+  font-size: 11px;
+  color: #0369a1;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.teacher-preview {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-unread-badge {
+  background: #2563eb;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 99px;
+  display: grid;
+  place-items: center;
+  padding: 0 3px;
+  box-sizing: border-box;
+}
+
+/* Right Chat Workspace */
+.chat-workspace {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  height: 100%;
+}
+
+/* Safeguarding Alert Banner */
+.safeguarding-banner {
+  background: #fef2f2;
+  border-bottom: 1px solid #fee2e2;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #ef4444;
+  font-weight: 600;
+}
+.safeguarding-banner .mi {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+.safeguarding-audit-btn {
+  font-size: 10px;
+  font-weight: 700;
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.safeguarding-audit-btn:hover {
+  background: #fca5a5;
+}
+
+.chat-workspace-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--bdr);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chat-active-teacher {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.chat-active-details {
+  display: flex;
+  flex-direction: column;
+}
+.chat-active-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.chat-active-status {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Chat Messages Bubble Area */
+.chat-messages-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #fafbfd;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.msg-group {
+  display: flex;
+  gap: 10px;
+  max-width: 75%;
+}
+.msg-group.self {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+.msg-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.msg-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+.msg-group.self .msg-bubble {
+  background: #179bb8;
+  color: #ffffff;
+  border-top-right-radius: 2px;
+}
+.msg-group.other .msg-bubble {
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  border-top-left-radius: 2px;
+}
+.msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+.msg-group.self .msg-meta {
+  justify-content: flex-end;
+}
+.msg-meta .mi {
+  font-size: 12px;
+  color: #10b981;
+}
+
+/* Attachment preview styles */
+.msg-attachment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-top: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+.msg-group.other .msg-attachment {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.msg-attachment-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #fff;
+  color: #179bb8;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.msg-attachment-details {
+  display: flex;
+  flex-direction: column;
+}
+.msg-attachment-name {
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+.msg-attachment-size {
+  font-size: 9px;
+  opacity: 0.8;
+}
+
+/* Input Area */
+.chat-workspace-input-area {
+  padding: 16px 20px;
+  border-top: 1px solid var(--bdr);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.typing-indicator {
+  font-size: 10.5px;
+  color: #64748b;
+  font-style: italic;
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+.typing-dots {
+  display: flex;
+  gap: 2px;
+}
+.typing-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #64748b;
+  animation: typingBounce 1s infinite alternate;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+.chat-input-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.chat-btn-attach {
+  background: #f1f5f9;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.chat-btn-attach:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.chat-input-text {
+  flex: 1;
+  border: 1px solid var(--bdr);
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 13px;
+  outline: none;
+  background: #f8fafc;
+  color: #1e293b;
+  transition: border-color 0.15s, background 0.15s;
+}
+.chat-input-text:focus {
+  border-color: #179bb8;
+  background: #fff;
+}
+.chat-btn-send {
+  background: #179bb8;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.chat-btn-send:hover {
+  background: #11788e;
+  transform: scale(1.05);
+}
+.chat-btn-send .mi {
+  font-size: 18px;
+}
+
+/* Safeguarding Audit Log Modal */
+.audit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.audit-modal-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.audit-modal-container {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 600px;
+  max-width: 90vw;
+  max-height: 80vh;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.audit-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.audit-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.audit-table th {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 700;
+  color: #475569;
+}
+.audit-table td {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 8px 10px;
+  color: #334155;
+}
+.audit-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.audit-badge.sent { background: #dbeafe; color: #1e40af; }
+.audit-badge.received { background: #d1fae5; color: #065f46; }
+
+/* File selection trigger */
+#hiddenFileInput {
+  display: none;
+}
+.selected-file-pill {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  color: #16a34a;
+  font-weight: 600;
+  align-self: flex-start;
+}
+.selected-file-pill span {
+  cursor: pointer;
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    grid-template-columns: 1fr;
+  }
+  .chat-sidebar {
+    display: none; /* In simple responsive layout, we show active chat only */
+  }
+  .chat-sidebar.show-mobile {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+  }
+}
+</style>
+</head>
+<body>
+<main class="main">
+  <!-- Hero Banner Header -->
+  <header class="hero" style="padding-bottom: 40px;">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <button class="htb-hamburger" id="htbHamburger" aria-label="Open menu">
+          <span class="mi">menu</span>
+        </button>
+        <a href="student.html" class="htb-home-btn">
+          <span class="mi">arrow_back</span>
+          <span>Back to Dashboard</span>
+        </a>
+      </div>
+      <div class="htb-center">
+        <img class="htb-logo" src="LOGO NGIS (2).png" alt="NGIS logo" />
+      </div>
+      <div class="htb-right" style="opacity: 0; pointer-events: none;">
+        <!-- Placeholder to center logo -->
+      </div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">Teacher Messaging Hub</h1>
+        <p class="hero-greeting">Direct safeguarding-compliant chat with your assigned instructors.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Chat Page Workspace -->
+  <div class="chat-page">
+    
+    <div class="chat-breadcrumbs">
+      <a href="student.html">Home</a>
+      <span class="sep">/</span>
+      <span class="active">Teacher Messaging</span>
+    </div>
+
+    <div class="chat-container">
+      <!-- Sidebar List -->
+      <aside class="chat-sidebar">
+        <div class="chat-sidebar-header">Assigned Instructors</div>
+        <div class="teacher-list" id="teacherList">
+          <!-- Populated by JS -->
+        </div>
+      </aside>
+
+      <!-- Chat Area -->
+      <section class="chat-workspace">
+        <!-- Safeguarding Banner -->
+        <div class="safeguarding-banner">
+          <div style="display:flex;align-items:center">
+            <span class="mi">gavel</span>
+            <span>All messaging logs are permanently audited by Administration for safeguarding compliance.</span>
+          </div>
+          <button class="safeguarding-audit-btn" id="viewAuditBtn">Transparency Logs</button>
+        </div>
+
+        <!-- Chat Header -->
+        <div class="chat-workspace-header">
+          <div class="chat-active-teacher">
+            <img class="teacher-avatar" id="activeAvatar" src="" alt="Teacher avatar">
+            <div class="chat-active-details">
+              <span class="chat-active-name" id="activeName">Teacher Name</span>
+              <span class="chat-active-status" id="activeStatus">
+                <span class="status-dot online"></span>
+                <span>Active</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Messages -->
+        <div class="chat-messages-area" id="chatMessagesArea">
+          <!-- Message history populates here -->
+        </div>
+
+        <!-- Selected Attachment Pill -->
+        <div class="chat-workspace-input-area">
+          <div class="selected-file-pill" id="filePill">
+            <span class="mi" style="font-size:14px;color:#16a34a">attachment</span>
+            <span id="fileName">file.pdf</span>
+            <span class="mi" id="removeFileBtn" style="font-size:14px;margin-left:4px">close</span>
+          </div>
+          
+          <div class="typing-indicator" id="typingIndicator">
+            <span id="typingText">Teacher is typing</span>
+            <div class="typing-dots">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+
+          <div class="chat-input-controls">
+            <input type="file" id="hiddenFileInput">
+            <button class="chat-btn-attach" id="attachBtn" title="Attach homework file">
+              <span class="mi">add_circle</span>
+            </button>
+            <input type="text" class="chat-input-text" id="chatInput" placeholder="Ask a homework question or type a message..." autocomplete="off">
+            <button class="chat-btn-send" id="sendBtn" title="Send message">
+              <span class="mi">send</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<!-- Transparency Audit Modal -->
+<div class="audit-modal-overlay" id="auditModal">
+  <div class="audit-modal-container">
+    <div class="audit-modal-header">
+      <h3 style="font-weight:700;font-size:15px;color:#0f172a;margin:0">Safeguarding Log Compliance Audit</h3>
+      <button class="id-close-btn" id="auditCloseBtn"><span class="mi">close</span></button>
+    </div>
+    <div class="audit-modal-body">
+      <div style="font-size:11.5px;color:#64748b;margin-bottom:12px;line-height:1.4">
+        As part of the NGIS Safeguarding & Student Welfare framework, all conversations are recorded under encryption. Students have full transparency over logged records.
+      </div>
+      <table class="audit-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Type</th>
+            <th>Party</th>
+            <th>Message Summary / Attachment Hash</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="auditTableBody">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Mock Student details
+  const STUDENT = {
+    name: 'Nrinphouneta Hok',
+    avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80'
+  };
+
+  // Mock Teachers list
+  const TEACHERS = [
+    {
+      id: 'T-809',
+      name: 'Mr. Sophea',
+      subject: 'Physics',
+      avatar: 'https://images.pexels.com/photos/5212320/pexels-photo-5212320.jpeg?auto=compress&cs=tinysrgb&w=120',
+      online: true,
+      unread: 1,
+      messages: [
+        { sender: 'other', text: 'Hi Nrinphouneta, regarding your question on electromagnetism: force is always perpendicular to the magnetic field. Refer to section 4.2 in the chapter 6 slides.', time: '09:12 AM', date: '2026-07-06' },
+        { sender: 'self', text: 'Thank you Mr. Sophea. I was getting confused by the direction in the diagram. Do we use the right-hand rule?', time: '09:25 AM', date: '2026-07-06' },
+        { sender: 'other', text: 'Yes, exactly! Use Fleming\'s Left-Hand Rule for force on a conductor, or the right-hand grip rule for field direction. Let me send you a graphic summarizing this.', time: '09:27 AM', date: '2026-07-06' }
+      ]
+    },
+    {
+      id: 'T-702',
+      name: 'Ms. Kiry Sokha',
+      subject: 'Biology',
+      avatar: 'https://images.pexels.com/photos/5212335/pexels-photo-5212335.jpeg?auto=compress&cs=tinysrgb&w=120',
+      online: true,
+      unread: 0,
+      messages: [
+        { sender: 'self', text: 'Hi teacher, did you grade my Chemistry Lab report?', time: 'Yesterday', date: '2026-07-05' },
+        { sender: 'other', text: 'Good job on the lab report! You scored 88%. You correctly identified the reaction products, but pay more attention to detailing the safety constants in your calculations next time.', time: 'Yesterday', date: '2026-07-05' }
+      ]
+    },
+    {
+      id: 'T-501',
+      name: 'Mr. Oudom',
+      subject: 'Mathematics',
+      avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=120',
+      online: false,
+      unread: 0,
+      messages: [
+        { sender: 'other', text: 'Hello, please submit the algebra homework 4 before Friday morning.', time: '2 days ago', date: '2026-07-04' }
+      ]
+    },
+    {
+      id: 'T-604',
+      name: 'Mrs. Neary',
+      subject: 'English Literature',
+      avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=120',
+      online: false,
+      unread: 0,
+      messages: [
+        { sender: 'self', text: 'Teacher, which textbook are we using for next week\'s seminar?', time: '3 days ago', date: '2026-07-03' },
+        { sender: 'other', text: 'Please revise Chapters 3 and 4 of "The Great Gatsby" analysis guidebook.', time: '3 days ago', date: '2026-07-03' }
+      ]
+    }
+  ];
+
+  // Initialize or read from localStorage
+  let chatData = JSON.parse(localStorage.getItem('ngis_student_chats')) || TEACHERS;
+  let auditLogs = JSON.parse(localStorage.getItem('ngis_audit_logs')) || [
+    { timestamp: '2026-07-06 09:12:04', type: 'received', party: 'Mr. Sophea', details: 'Direct message (Encrypted SHA-256 log hash: db47a19...)', status: 'Compliant' },
+    { timestamp: '2026-07-06 09:25:11', type: 'sent', party: 'Mr. Sophea', details: 'Direct message (Encrypted SHA-256 log hash: a8f8b1c...)', status: 'Compliant' },
+    { timestamp: '2026-07-06 09:27:00', type: 'received', party: 'Mr. Sophea', details: 'Direct message (Encrypted SHA-256 log hash: cc3b65e...)', status: 'Compliant' }
+  ];
+
+  let activeIndex = 0;
+  let selectedFile = null;
+
+  // Save changes helper
+  function saveState() {
+    localStorage.setItem('ngis_student_chats', JSON.stringify(chatData));
+    localStorage.setItem('ngis_audit_logs', JSON.stringify(auditLogs));
+  }
+
+  // DOM Elements
+  const listContainer = document.getElementById('teacherList');
+  const messagesArea = document.getElementById('chatMessagesArea');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const attachBtn = document.getElementById('attachBtn');
+  const fileInput = document.getElementById('hiddenFileInput');
+  const filePill = document.getElementById('filePill');
+  const fileNameSpan = document.getElementById('fileName');
+  const removeFileBtn = document.getElementById('removeFileBtn');
+  
+  const activeAvatar = document.getElementById('activeAvatar');
+  const activeName = document.getElementById('activeName');
+  const activeStatus = document.getElementById('activeStatus');
+  
+  const typingIndicator = document.getElementById('typingIndicator');
+  const typingText = document.getElementById('typingText');
+
+  // Render Sidebar
+  function renderSidebar() {
+    listContainer.innerHTML = '';
+    chatData.forEach((t, index) => {
+      const isOnline = t.online ? 'online' : '';
+      const isActiveClass = index === activeIndex ? 'active' : '';
+      const unreadHtml = t.unread > 0 ? `<span class="chat-unread-badge">${t.unread}</span>` : '';
+      const lastMsg = t.messages.length > 0 ? t.messages[t.messages.length - 1].text : 'No messages yet';
+      const lastTime = t.messages.length > 0 ? t.messages[t.messages.length - 1].time : '';
+
+      const item = document.createElement('div');
+      item.className = `teacher-item ${isActiveClass}`;
+      item.innerHTML = `
+        <div class="teacher-avatar-wrap">
+          <img class="teacher-avatar" src="${t.avatar}" alt="${t.name}">
+          <span class="status-dot ${isOnline}"></span>
+        </div>
+        <div class="teacher-info">
+          <div class="teacher-name-row">
+            <span class="teacher-name">${t.name}</span>
+            <span class="teacher-time">${lastTime}</span>
+          </div>
+          <div class="teacher-subject">${t.subject}</div>
+          <div class="teacher-preview">${lastMsg}</div>
+        </div>
+        ${unreadHtml}
+      `;
+
+      item.addEventListener('click', () => {
+        activeIndex = index;
+        t.unread = 0; // mark read
+        saveState();
+        renderSidebar();
+        loadConversation();
+      });
+
+      listContainer.appendChild(item);
+    });
+  }
+
+  // Load active chat
+  function loadConversation() {
+    const teacher = chatData[activeIndex];
+    activeAvatar.src = teacher.avatar;
+    activeName.textContent = teacher.name;
+    
+    // Status text
+    const statusText = teacher.online ? 'Online' : 'Offline';
+    const statusDotClass = teacher.online ? 'online' : '';
+    activeStatus.innerHTML = `<span class="status-dot ${statusDotClass}"></span><span>${statusText}</span>`;
+
+    // Messages body
+    messagesArea.innerHTML = '';
+    
+    if (teacher.messages.length === 0) {
+      messagesArea.innerHTML = '<div style="margin:auto;font-size:12px;color:#94a3b8;font-weight:600">No messages. Ask a homework question to start!</div>';
+      return;
+    }
+
+    teacher.messages.forEach(m => {
+      const isSelf = m.sender === 'self';
+      const groupClass = isSelf ? 'self' : 'other';
+      const avatarSrc = isSelf ? STUDENT.avatar : teacher.avatar;
+      
+      const attachmentHtml = m.attachment 
+        ? `<a href="#" class="msg-attachment" onclick="event.preventDefault(); window.toast('Downloading attached file: ${m.attachment.name}','info')">
+             <div class="msg-attachment-icon"><span class="mi">description</span></div>
+             <div class="msg-attachment-details">
+               <span class="msg-attachment-name">${m.attachment.name}</span>
+               <span class="msg-attachment-size">${m.attachment.size}</span>
+             </div>
+           </a>`
+        : '';
+
+      const bubble = document.createElement('div');
+      bubble.className = `msg-group ${groupClass}`;
+      bubble.innerHTML = `
+        <img class="msg-avatar" src="${avatarSrc}" alt="Avatar">
+        <div class="msg-content-wrapper">
+          <div class="msg-bubble">
+            <div>${m.text}</div>
+            ${attachmentHtml}
+          </div>
+          <div class="msg-meta">
+            <span>${m.time}</span>
+            ${isSelf ? '<span class="mi" style="font-size:12px;color:#10b981">done_all</span>' : ''}
+          </div>
+        </div>
+      `;
+      messagesArea.appendChild(bubble);
+    });
+
+    // Scroll to bottom
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+  }
+
+  // Send Message logic
+  function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text && !selectedFile) return;
+
+    const teacher = chatData[activeIndex];
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const fullDate = now.toISOString().split('T')[0];
+
+    // Build message
+    const msgObj = {
+      sender: 'self',
+      text: text || `Sent an attachment: ${selectedFile.name}`,
+      time: timeStr,
+      date: fullDate
+    };
+
+    if (selectedFile) {
+      msgObj.attachment = {
+        name: selectedFile.name,
+        size: selectedFile.size
+      };
+    }
+
+    // Append to conversation
+    teacher.messages.push(msgObj);
+
+    // Append to audit logs
+    const auditObj = {
+      timestamp: `${fullDate} ${now.toTimeString().split(' ')[0]}`,
+      type: 'sent',
+      party: teacher.name,
+      details: selectedFile 
+        ? `Attachment: ${selectedFile.name} (SHA-256: mock_${Math.random().toString(36).substr(2, 8)})` 
+        : `Message: "${text.substring(0, 30)}..."`,
+      status: 'Compliant'
+    };
+    auditLogs.unshift(auditObj);
+
+    // Reset fields
+    chatInput.value = '';
+    selectedFile = null;
+    filePill.style.display = 'none';
+    
+    saveState();
+    renderSidebar();
+    loadConversation();
+
+    // Trigger mock auto-reply simulation after 3 seconds
+    if (teacher.online) {
+      setTimeout(() => {
+        showTypingIndicator(teacher.name);
+        setTimeout(() => {
+          hideTypingIndicator();
+          simulateReply(teacher);
+        }, 3000);
+      }, 1500);
+    }
+  }
+
+  function simulateReply(teacher) {
+    const answers = [
+      "Let me review your files and I will grade it shortly.",
+      "Good question. Review lecture slides 12 and 15, then attempt question 3 again.",
+      "I will hold a review session tomorrow during the homeroom period. Please prepare your questions.",
+      "Yes, that calculation looks correct. Make sure to present your final answers in SI units."
+    ];
+    const text = answers[Math.floor(Math.random() * answers.length)];
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const fullDate = now.toISOString().split('T')[0];
+
+    const replyObj = {
+      sender: 'other',
+      text: text,
+      time: timeStr,
+      date: fullDate
+    };
+    teacher.messages.push(replyObj);
+
+    // Log received audit
+    const auditObj = {
+      timestamp: `${fullDate} ${now.toTimeString().split(' ')[0]}`,
+      type: 'received',
+      party: teacher.name,
+      details: `Message: "${text.substring(0, 30)}..."`,
+      status: 'Compliant'
+    };
+    auditLogs.unshift(auditObj);
+
+    saveState();
+    renderSidebar();
+    loadConversation();
+    window.toast(`New message from ${teacher.name}`, 'info');
+  }
+
+  function showTypingIndicator(name) {
+    typingText.textContent = `${name} is writing`;
+    typingIndicator.style.display = 'flex';
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+  }
+  function hideTypingIndicator() {
+    typingIndicator.style.display = 'none';
+  }
+
+  // Attachment controls
+  attachBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    selectedFile = {
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB'
+    };
+    fileNameSpan.textContent = selectedFile.name;
+    filePill.style.display = 'inline-flex';
+  });
+  removeFileBtn.addEventListener('click', () => {
+    selectedFile = null;
+    filePill.style.display = 'none';
+    fileInput.value = '';
+  });
+
+  // Action button triggers
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  // Safeguarding logs modal
+  const auditModal = document.getElementById('auditModal');
+  const viewAuditBtn = document.getElementById('viewAuditBtn');
+  const auditCloseBtn = document.getElementById('auditCloseBtn');
+  const auditTableBody = document.getElementById('auditTableBody');
+
+  function renderAuditLogs() {
+    auditTableBody.innerHTML = '';
+    auditLogs.forEach(log => {
+      const badgeClass = log.type === 'sent' ? 'sent' : 'received';
+      const typeText = log.type === 'sent' ? 'Sent' : 'Received';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td style="white-space:nowrap">${log.timestamp}</td>
+        <td><span class="audit-badge ${badgeClass}">${typeText}</span></td>
+        <td style="font-weight:700">${log.party}</td>
+        <td>${log.details}</td>
+        <td><span style="color:#10b981;font-weight:700">✓ ${log.status}</span></td>
+      `;
+      auditTableBody.appendChild(row);
+    });
+  }
+
+  viewAuditBtn.addEventListener('click', () => {
+    renderAuditLogs();
+    auditModal.classList.add('show');
+  });
+  auditCloseBtn.addEventListener('click', () => {
+    auditModal.classList.remove('show');
+  });
+  auditModal.addEventListener('click', (e) => {
+    if (e.target === auditModal) auditModal.classList.remove('show');
+  });
+
+  // Initial runs
+  renderSidebar();
+  loadConversation();
+
+})();
+</script>
+</body>
+</html>

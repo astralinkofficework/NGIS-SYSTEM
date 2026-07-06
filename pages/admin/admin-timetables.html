@@ -1,29 +1,68 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>NGIS — Timetable Management</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 </head>
 <body>
 <main class="main">
+<div id="heroBanner"></div>
 <div class="page">
 
-  <div class="page-head anim-up">
-    <div>
-      <div class="eyebrow">Admin Portal</div>
-      <h1>Timetable Management</h1>
-      <p>Configure weekly schedules for all classes and teachers.</p>
+  <section class="zero-upload-board anim-up" aria-label="Zero-typing timetable workflow">
+    <div class="zero-panel">
+      <div class="zero-board-head">
+        <div>
+          <div class="zero-kicker">Timetable Board</div>
+          <h2>One upload creates the full cascade.</h2>
+        </div>
+        <button class="btn btn-primary btn-sm" data-open-drawer="uploadTimetableDrawer">
+          <span class="material-symbols-outlined">add_photo_alternate</span> Upload Once
+        </button>
+      </div>
+      <div class="zero-drop-preview" data-open-drawer="uploadTimetableDrawer">
+        <div>
+          <span class="mi">drive_folder_upload</span>
+          <b>Drop PNG, JPG, PDF, or ZIP here</b>
+          <small>NGIS suggests class, version, status, Telegram audience, and archive action.</small>
+        </div>
+      </div>
     </div>
-    <div class="head-actions">
-      <button class="btn btn-ghost" onclick="window.toast('Exporting timetable…','info')"><span class="material-symbols-outlined">download</span>Export PDF</button>
-      <button class="btn btn-primary" onclick="window.toast('Auto-generate schedule?','info')"><span class="material-symbols-outlined">auto_fix_high</span>Auto-Generate</button>
+    <div class="zero-panel">
+      <div class="zero-board-head">
+        <div>
+          <div class="zero-kicker">Automation Pipeline</div>
+          <h2>System actions after admin approval</h2>
+        </div>
+      </div>
+      <div class="zero-pipeline">
+        <div class="auto-step"><span class="mi">badge</span><div><b>Class matching</b><span>Filename and OCR hints map files to Grade 10-A, 10-B, 11-A, and more.</span></div><span class="auto-status">Ready</span></div>
+        <div class="auto-step"><span class="mi">history</span><div><b>Version and archive</b><span>New upload becomes vNext while the active timetable is locked and archived.</span></div><span class="auto-status">Auto</span></div>
+        <div class="auto-step"><span class="mi">hub</span><div><b>Portal sync</b><span>Student, parent, teacher, attendance, and calendar views receive the published file.</span></div><span class="auto-status">Unified</span></div>
+        <div class="auto-step"><span class="mi">send</span><div><b>Telegram notification</b><span>One Notification Center handles class group, parents, teachers, and read tracking.</span></div><span class="auto-status">Queued</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Conflict Warnings Center -->
+  <div class="card anim-up" id="conflictAlertCard" style="border-color:#d97706;background:rgba(217,119,6,.03);margin-bottom:16px;">
+    <div class="card-pad" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="mi" style="color:#d97706;font-size:24px;">warning</span>
+        <div>
+          <b style="color:#d97706;font-size:13.5px;">Schedule Conflict Detected</b>
+          <p style="margin:2px 0 0 0;font-size:11.5px;color:#475569;">
+            Teacher <b>Dr. Jenkins</b> is double-booked on <b>Monday 08:00–10:00</b> for Class 11-A (Rm 302) and Class 12-A (Rm 302).
+          </p>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-primary" id="resolveConflictBtn" onclick="resolveTimetableConflict()" style="background:#d97706;border-color:#d97706;">Assign Substitute Teacher</button>
     </div>
   </div>
 
@@ -33,6 +72,7 @@
       <div class="flex gap8">
         <select class="select" style="width:auto"><option>Grade 11-A</option><option>Grade 11-B</option><option>Grade 12-A</option><option>Grade 10-A</option></select>
         <select class="select" style="width:auto"><option>Week of Jan 27</option></select>
+        <button class="btn btn-primary btn-sm" data-open-drawer="uploadTimetableDrawer"><span class="material-symbols-outlined">upload_file</span>Upload Timetable</button>
       </div>
     </div>
     <div class="card-pad" style="overflow-x:auto">
@@ -88,9 +128,298 @@
       </table>
     </div>
   </div>
+
+  <div class="card mt16 anim-up-2">
+    <div class="card-head">
+      <div><h3>Uploaded Timetables</h3><div class="sub">Image or PDF schedules by class</div></div>
+    </div>
+    <div class="card-pad" style="padding-top:0">
+      <div class="timetable-board-grid">
+        <div class="tt-board-card">
+          <h4>Grade 11-A</h4>
+          <p>v3 Published. Student preview, parent alert, and teacher package are active.</p>
+          <div class="tt-board-actions">
+            <button class="btn btn-xs btn-ghost">View</button>
+            <button class="btn btn-xs btn-ghost" data-open-drawer="uploadTimetableDrawer">Replace</button>
+            <button class="btn btn-xs btn-ghost">Notify Again</button>
+          </div>
+        </div>
+        <div class="tt-board-card">
+          <h4>Grade 10-B</h4>
+          <p>v2 Draft. Awaiting approval before Telegram and portal release.</p>
+          <div class="tt-board-actions">
+            <button class="btn btn-xs btn-primary">Publish</button>
+            <button class="btn btn-xs btn-ghost" data-open-drawer="uploadTimetableDrawer">Replace</button>
+          </div>
+        </div>
+        <div class="tt-board-card">
+          <h4>Grade 12-A</h4>
+          <p>v5 Published with exam-week priority pin and parent read tracking.</p>
+          <div class="tt-board-actions">
+            <button class="btn btn-xs btn-ghost">View</button>
+            <button class="btn btn-xs btn-ghost">Export ICS</button>
+          </div>
+        </div>
+        <div class="tt-board-card">
+          <h4>Emergency Mode</h4>
+          <p>Replace all class timetables and send urgent multi-language alerts.</p>
+          <div class="tt-board-actions">
+            <button class="btn btn-xs btn-ghost" data-open-drawer="uploadTimetableDrawer">Bulk Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl" id="uploadedTimetablesTable">
+        <thead><tr><th>Class</th><th>Campus</th><th>Department</th><th>File</th><th>Uploaded</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b style="font-size:13px">11-A</b></td>
+            <td>Sen Sok</td><td>English</td>
+            <td><div class="flex center gap8"><span class="material-symbols-outlined" style="font-size:18px;color:var(--danger)">picture_as_pdf</span>11-A Timetable.pdf</div></td>
+            <td class="faint" style="font-size:12px">Uploaded: Jan 24, 2026</td>
+            <td><div class="flex gap4 wrap">
+              <button class="icon-btn" title="Preview"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>
+              <button class="icon-btn" title="Replace" data-open-drawer="uploadTimetableDrawer"><span class="material-symbols-outlined" style="font-size:16px">upload_file</span></button>
+              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Timetable deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><b style="font-size:13px">10-B</b></td>
+            <td>Depo</td><td>Khmer</td>
+            <td><div class="flex center gap8"><span class="material-symbols-outlined" style="font-size:18px;color:var(--primary)">image</span>10-B Timetable.png</div></td>
+            <td class="faint" style="font-size:12px">Uploaded: Jan 22, 2026</td>
+            <td><div class="flex gap4 wrap">
+              <button class="icon-btn" title="Preview"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>
+              <button class="icon-btn" title="Replace" data-open-drawer="uploadTimetableDrawer"><span class="material-symbols-outlined" style="font-size:16px">upload_file</span></button>
+              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Timetable deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><b style="font-size:13px">12-A</b></td>
+            <td>Bak Touk</td><td>Chinese</td>
+            <td><div class="flex center gap8"><span class="material-symbols-outlined" style="font-size:18px;color:var(--danger)">picture_as_pdf</span>12-A Timetable.pdf</div></td>
+            <td class="faint" style="font-size:12px">Uploaded: Jan 18, 2026</td>
+            <td><div class="flex gap4 wrap">
+              <button class="icon-btn" title="Preview"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>
+              <button class="icon-btn" title="Replace" data-open-drawer="uploadTimetableDrawer"><span class="material-symbols-outlined" style="font-size:16px">upload_file</span></button>
+              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Timetable deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
+            </div></td>
+          </tr>
+          <tr>
+            <td><b style="font-size:13px">10-A</b></td>
+            <td>Sen Sok</td><td>English</td>
+            <td><div class="flex center gap8"><span class="material-symbols-outlined" style="font-size:18px;color:var(--primary)">image</span>10-A Timetable.jpg</div></td>
+            <td class="faint" style="font-size:12px">Uploaded: Jan 15, 2026</td>
+            <td><div class="flex gap4 wrap">
+              <button class="icon-btn" title="Preview"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>
+              <button class="icon-btn" title="Replace" data-open-drawer="uploadTimetableDrawer"><span class="material-symbols-outlined" style="font-size:16px">upload_file</span></button>
+              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Timetable deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div><!-- /page -->
+
+<!-- ═══ Upload Timetable drawer ═══ -->
+<div class="drawer-overlay" data-drawer="uploadTimetableDrawer">
+  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="uploadTimetableTitle">
+    <div class="drawer-head">
+      <div><h3 id="uploadTimetableTitle">Upload Timetable</h3><div class="sub">Attach schedules to NGIS divisions</div></div>
+      <button class="icon-btn" data-close-drawer aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="drawer-body">
+      <!-- Drawer tabs -->
+      <div style="display:flex;gap:10px;margin-bottom:16px;border-bottom:1px solid #e2e8f0;padding-bottom:10px">
+        <button class="btn btn-xs btn-primary" id="btnSingleUpload" onclick="switchUploadMode('single')">Single Upload</button>
+        <button class="btn btn-xs btn-ghost" id="btnBulkUpload" onclick="switchUploadMode('bulk')">Bulk ZIP Upload</button>
+      </div>
+
+      <form id="uploadTimetableForm" onsubmit="return false">
+        <div class="drawer-section-label">Zero-Typing Confirmation</div>
+        <div class="pill-row" style="margin-bottom:14px">
+          <span class="system-pill"><span class="mi">manage_search</span>Detect class from filename</span>
+          <span class="system-pill"><span class="mi">history</span>Auto-version</span>
+          <span class="system-pill"><span class="mi">archive</span>Archive old file</span>
+          <span class="system-pill"><span class="mi">notifications_active</span>Notify audience</span>
+        </div>
+        <!-- Single Mode -->
+        <div id="singleUploadFields">
+          <div class="drawer-section-label">Assign To</div>
+          <div class="drawer-grid" style="margin-bottom:12px">
+            <div class="field"><label class="label">Campus</label><select class="select" id="uttCampus"><option>Sen Sok</option><option>Depo</option><option>Bak Touk</option></select></div>
+            <div class="field"><label class="label">Department</label><select class="select" id="uttDept"><option>English</option><option>Khmer</option><option>Chinese</option></select></div>
+            <div class="field field-full"><label class="label">Class</label><select class="select" id="uttClass"><option>10-A</option><option>10-B</option><option>11-A</option><option>11-B</option><option>12-A</option><option>12-B</option></select></div>
+          </div>
+        </div>
+        
+        <!-- Bulk Mode -->
+        <div id="bulkUploadFields" style="display:none">
+          <div class="drawer-section-label">ZIP Bulk Upload Options</div>
+          <p style="font-size:11.5px;color:#64748b;margin:0 0 12px 0;line-height:1.4">
+            Upload a <b>.zip</b> archive containing PNG, JPG, or PDF schedules. Filenames will be parsed automatically using NGIS class names (e.g. <code>11A_timetable.pdf</code> -> Class 11-A, <code>10B.png</code> -> Class 10-B).
+          </p>
+          <div class="field" style="margin-bottom:12px">
+            <label class="label">Default Campus for Bulk Files</label>
+            <select class="select" id="bulkCampus"><option>Sen Sok</option><option>Depo</option><option>Bak Touk</option></select>
+          </div>
+        </div>
+
+        <div class="drawer-section-label">File Dropzone</div>
+        <div class="dropzone" onclick="document.getElementById('fileInputEl').click()" style="cursor:pointer;text-align:center;padding:24px;border:2px dashed #cbd5e1;border-radius:8px;">
+          <input type="file" id="fileInputEl" accept="image/*,.pdf,.zip" style="display:none" onchange="handleFileSelected(this)">
+          <span class="material-symbols-outlined" style="font-size:32px;color:#94a3b8">cloud_upload</span>
+          <b id="dropzoneText" style="display:block;margin-top:8px;font-size:12.5px;">Click to upload or drag and drop</b>
+          <small id="dropzoneSubtext" style="display:block;color:#94a3b8;font-size:10.5px;margin-top:2px;">Image, PDF, or ZIP (Max 25MB)</small>
+        </div>
+      </form>
+    </div>
+    <div class="drawer-foot">
+      <button class="btn btn-ghost" data-close-drawer>Cancel</button>
+      <button class="btn btn-primary" id="uttUploadBtn">Upload & Parse</button>
+    </div>
+  </aside>
+</div>
+
 </main>
 <script>window.PAGE={"role":"admin","active":"timetables"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Mr. Heng Samnang',
+  id: 'Admin ID: ADM-2026-001',
+  grade: 'School Administrator',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  title: 'Timetables',
+  greeting: 'Create and manage school-wide timetables.',
+  breadcrumbs: [{ label: 'Timetables' }],
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'admin-settings.html',
+  notifLink: 'admin-logs.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 4,
+  ddRows: [
+    { icon: 'admin_panel_settings', text: 'School Administration' },
+    { icon: 'groups', text: '5,200 active users' },
+    { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Since: Jan 2018' },
+    { icon: 'verified', text: 'Principal Administrator' }
+  ]
+};</script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  var activeMode = 'single';
+  var selectedFile = null;
+
+  window.switchUploadMode = function(mode) {
+    activeMode = mode;
+    var btnSingle = document.getElementById('btnSingleUpload');
+    var btnBulk = document.getElementById('btnBulkUpload');
+    var divSingle = document.getElementById('singleUploadFields');
+    var divBulk = document.getElementById('bulkUploadFields');
+
+    if (mode === 'single') {
+      btnSingle.className = 'btn btn-xs btn-primary';
+      btnBulk.className = 'btn btn-xs btn-ghost';
+      divSingle.style.display = 'block';
+      divBulk.style.display = 'none';
+    } else {
+      btnSingle.className = 'btn btn-xs btn-ghost';
+      btnBulk.className = 'btn btn-xs btn-primary';
+      divSingle.style.display = 'none';
+      divBulk.style.display = 'block';
+    }
+  };
+
+  window.handleFileSelected = function(input) {
+    if (input.files && input.files[0]) {
+      selectedFile = input.files[0];
+      document.getElementById('dropzoneText').textContent = selectedFile.name;
+      document.getElementById('dropzoneSubtext').textContent = (selectedFile.size / 1024).toFixed(1) + ' KB · Ready to import';
+    }
+  };
+
+  function rowActionsHtml() {
+    return '<div class="flex gap4 wrap">' +
+      '<button class="icon-btn" title="Preview"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>' +
+      '<button class="icon-btn" title="Replace" data-open-drawer="uploadTimetableDrawer"><span class="material-symbols-outlined" style="font-size:16px">upload_file</span></button>' +
+      '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast(\'Timetable deleted\',\'error\')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
+    '</div>';
+  }
+
+  function appendRow(cls, campus, dept, filename) {
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><b style="font-size:13px">' + cls + '</b></td>' +
+      '<td>' + campus + '</td><td>' + dept + '</td>' +
+      '<td><div class="flex center gap8"><span class="material-symbols-outlined" style="font-size:18px;color:var(--danger)">picture_as_pdf</span>' + filename + '</div></td>' +
+      '<td class="faint" style="font-size:12px">Uploaded: just now</td>' +
+      '<td>' + rowActionsHtml() + '</td>';
+    document.querySelector('#uploadedTimetablesTable tbody').prepend(tr);
+  }
+
+  function uploadTimetable() {
+    var ov = document.querySelector('.drawer-overlay[data-drawer="uploadTimetableDrawer"]');
+
+    if (activeMode === 'single') {
+      var campus = document.getElementById('uttCampus').value;
+      var dept = document.getElementById('uttDept').value;
+      var cls = document.getElementById('uttClass').value;
+      var fileName = selectedFile ? selectedFile.name : cls + ' Timetable.pdf';
+
+      appendRow(cls, campus, dept, fileName);
+      window.toast('Timetable uploaded for Class ' + cls, 'success');
+    } else {
+      // ZIP Bulk Simulation
+      window.toast('Extracting and parsing ZIP archive...', 'info');
+      setTimeout(function() {
+        // Mock parsed filenames
+        var filesParsed = [
+          { name: '11B_schedule.pdf', cls: '11-B', dept: 'Khmer' },
+          { name: '12B_schedule.png', cls: '12-B', dept: 'Chinese' }
+        ];
+        var campus = document.getElementById('bulkCampus').value;
+
+        filesParsed.forEach(function(f) {
+          appendRow(f.cls, campus, f.dept, f.name);
+        });
+
+        window.toast('ZIP parsed successfully! Added 2 schedules.', 'success');
+      }, 1000);
+    }
+
+    if (ov) ov.classList.remove('show');
+    document.getElementById('uploadTimetableForm').reset();
+    document.getElementById('dropzoneText').textContent = 'Click to upload or drag and drop';
+    document.getElementById('dropzoneSubtext').textContent = 'Image, PDF, or ZIP (Max 25MB)';
+    selectedFile = null;
+  }
+
+  window.resolveTimetableConflict = function() {
+    var card = document.getElementById('conflictAlertCard');
+    if (card) card.style.display = 'none';
+
+    // Highlight substitute mapped row in the timetable view
+    var cells = document.querySelectorAll('.tbl tbody tr td');
+    cells.forEach(function(cell) {
+      if (cell.innerHTML.includes('Dr. Jenkins')) {
+        cell.innerHTML = '<div style="background:#fef3c7;border-left:3px solid #d97706;padding:8px 10px;border-radius:6px"><b style="font-size:12px">Adv. Math <span class="badge amber" style="font-size:8px;padding:1px 3px">SUB</span></b><div class="faint" style="font-size:11px">Mr. Sopheak (Sub) · Rm 302</div></div>';
+      }
+    });
+
+    window.toast('Substitute teacher Mr. Sopheak assigned. Conflict cleared!', 'success');
+  };
+
+  document.getElementById('uttUploadBtn').addEventListener('click', uploadTimetable);
+
+  if (new URLSearchParams(location.search).get('add') === '1') {
+    document.querySelector('.drawer-overlay[data-drawer="uploadTimetableDrawer"]').classList.add('show');
+  }
+})();
+</script>
 </body>
 </html>

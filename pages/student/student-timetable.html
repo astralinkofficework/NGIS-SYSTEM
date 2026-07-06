@@ -1,106 +1,348 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>NGIS — Timetable</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Student Timetable</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+  .tt-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px; }
+  .tt-chip {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 9px; border-radius:99px;
+    font-size:11px; font-weight:600; letter-spacing:.3px;
+    background:rgba(25,149,173,.08); color:#179bb8;
+  }
+  .tt-chip.green {
+    background:rgba(22,163,74,.08); color:#16a34a;
+  }
+  .tt-chip .material-symbols-outlined { font-size:13px; }
+
+  /* Interactive Matrix Styles */
+  .grid-card {
+    background:#ffffff;
+    border-radius:20px;
+    border:1px solid var(--bdr);
+    box-shadow:0 4px 16px rgba(0, 0, 0, 0.02);
+    overflow:hidden;
+    margin-top:16px;
+  }
+  .tt-slot-active {
+    position:relative;
+    border:2px solid #10b981 !important;
+    background:rgba(16,185,129,0.06) !important;
+    animation:pulseBorder 2s infinite alternate;
+  }
+  @keyframes pulseBorder {
+    from { box-shadow: 0 0 2px rgba(16,185,129,0.4); }
+    to { box-shadow: 0 0 10px rgba(16,185,129,0.8); }
+  }
+
+  .slot-btn {
+    text-align:left;
+    width:100%;
+    border:none;
+    background:transparent;
+    padding:0;
+    cursor:pointer;
+    font-family:inherit;
+  }
+
+  /* Live Period Ticker */
+  .ticker-bar {
+    background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius:16px;
+    padding:16px 20px;
+    color:#fff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:16px;
+    margin-top:16px;
+  }
+</style>
 </head>
 <body>
 <main class="main">
-<div class="page">
+  <div id="heroBanner"></div>
+  <div class="page">
 
-  <div class="page-head anim-up">
-    <div>
-      <div class="eyebrow">Student Portal</div>
-      <h1>Timetable</h1>
-      <p>Your weekly class schedule for Grade 11 · Section A.</p>
+    <!-- Live Period Ticker -->
+    <div class="ticker-bar anim-up">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="mi" style="color:#10b981;font-size:28px;">schedule</span>
+        <div>
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:0.5px">Active Session Tracker</span>
+          <h4 style="margin:2px 0 0 0;font-size:14px;color:#fff;" id="tickerText">Loading schedule tracker…</h4>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-sm btn-ghost" onclick="exportICSFile()" style="color:#fff;border-color:rgba(255,255,255,0.25);">
+          <span class="mi">calendar_today</span>Export (.ICS) Calendar
+        </button>
+      </div>
     </div>
-    <div class="head-actions">
-      <button class="btn btn-ghost" onclick="window.toast('Timetable downloaded as PDF','success')"><span class="material-symbols-outlined">download</span>Download PDF</button>
+
+    <!-- Weekly Schedule Matrix -->
+    <div class="grid-card anim-up-2">
+      <div class="card-head">
+        <div>
+          <h3>Weekly Timetable Grid</h3>
+          <div class="tt-meta">
+            <span class="sub">Academic Year 2025–26</span>
+            <span class="tt-chip"><span class="mi">school</span>Grade 10 — Class 10A</span>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="window.print()">
+          <span class="mi">print</span>Print Schedule
+        </button>
+      </div>
+      
+      <div class="card-pad" style="overflow-x:auto; padding:20px;">
+        <table class="tbl" style="min-width:800px; border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th style="width:100px">Time Slot</th>
+              <th>Monday</th>
+              <th>Tuesday</th>
+              <th>Wednesday</th>
+              <th>Thursday</th>
+              <th>Friday</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="faint mono" style="font-size:12px">08:00–10:00</td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
+                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #179bb8;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Adv. Math</b>
+                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
+                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #8b5cf6;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Physics</b>
+                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
+                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #179bb8;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Adv. Math</b>
+                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('English Literature', 'Ms. Rin', 'Room 108', 'Syllabus: Shakespeare Studies')">
+                  <div id="activePeriodSlot" class="tt-slot-active" style="border-left:3px solid #10b981;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">English Lit <span style="font-size:9px;background:#10b981;color:#fff;padding:1px 3px;border-radius:3px;margin-left:4px">Active Now</span></b>
+                    <div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Computer Science', 'Dr. Lim', 'Computer Lab 2', 'Syllabus: Sorting Algorithms')">
+                  <div style="background:rgba(245,158,11,.07);border-left:3px solid #f59e0b;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">CS</b>
+                    <div class="faint" style="font-size:11px">Dr. Lim · Lab 02</div>
+                  </div>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td class="faint mono" style="font-size:12px">10:00–10:20</td>
+              <td colspan="5" style="text-align:center"><span class="faint" style="font-size:12.5px;letter-spacing:1px">RECREATIONAL BREAK</span></td>
+            </tr>
+            <tr>
+              <td class="faint mono" style="font-size:12px">10:20–12:00</td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
+                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #8b5cf6;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Physics</b>
+                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
+                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #179bb8;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Adv. Math</b>
+                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Khmer Literature', 'Mr. Chan', 'Room 112', 'Syllabus: Mid-term review')">
+                  <div style="background:rgba(16,185,129,.07);border-left:3px solid #10b981;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Khmer</b>
+                    <div class="faint" style="font-size:11px">Mr. Chan · Rm 112</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
+                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #8b5cf6;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Physics</b>
+                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('English Literature', 'Ms. Rin', 'Room 108', 'Syllabus: Shakespeare Studies')">
+                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #179bb8;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">English Lit</b>
+                    <div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div>
+                  </div>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td class="faint mono" style="font-size:12px">12:00–13:00</td>
+              <td colspan="5" style="text-align:center"><span class="faint" style="font-size:12.5px;letter-spacing:1px">LUNCH REPAST</span></td>
+            </tr>
+            <tr>
+              <td class="faint mono" style="font-size:12px">13:00–15:00</td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('English Literature', 'Ms. Rin', 'Room 108', 'Syllabus: Shakespeare Studies')">
+                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #179bb8;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">English Lit</b>
+                    <div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Computer Science', 'Dr. Lim', 'Computer Lab 2', 'Syllabus: Sorting Algorithms')">
+                  <div style="background:rgba(245,158,11,.07);border-left:3px solid #f59e0b;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">CS</b>
+                    <div class="faint" style="font-size:11px">Dr. Lim · Lab 02</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
+                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #8b5cf6;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Physics</b>
+                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
+                  </div>
+                </button>
+              </td>
+              <td>
+                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
+                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #179bb8;padding:8px 10px;border-radius:6px">
+                    <b style="font-size:12px">Adv. Math</b>
+                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
+                  </div>
+                </button>
+              </td>
+              <td style="color:var(--faint);text-align:center;font-size:12px;background:#f8fafc">Free Study Period</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
-
-  <div class="card mt4 anim-up">
-    <div class="card-head">
-      <div><h3>Weekly Schedule</h3><div class="sub">Semester 2 · AY 2025–26 · Grade 11-A</div></div>
-      <select class="select" style="width:auto">
-        <option>Week of Jan 27</option>
-        <option>Week of Feb 3</option>
-      </select>
-    </div>
-    <div class="card-pad" style="overflow-x:auto">
-      <table class="tbl" style="min-width:680px">
-        <thead>
-          <tr>
-            <th style="width:90px">Time</th>
-            <th style="background:rgba(59,130,246,.06)">Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="faint mono" style="font-size:12px">08:00–10:00</td>
-            <td style="background:var(--surface-2)">
-              <div style="background:var(--accent-soft);border-left:3px solid var(--accent);padding:8px 10px;border-radius:6px">
-                <b style="font-size:12px">Adv. Mathematics</b>
-                <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
-                <span class="badge green" style="font-size:10px;margin-top:4px">In session</span>
-              </div>
-            </td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Physics</b><div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div></div></td>
-            <td><div style="background:var(--accent-soft);border-left:3px solid var(--accent);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Adv. Mathematics</b><div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">English Lit</b><div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Computer Science</b><div class="faint" style="font-size:11px">Dr. Lim · Lab 02</div></div></td>
-          </tr>
-          <tr>
-            <td class="faint mono" style="font-size:12px">10:00–10:20</td>
-            <td colspan="5" style="text-align:center;background:var(--surface-2)"><span class="faint" style="font-size:12px">— Break —</span></td>
-          </tr>
-          <tr>
-            <td class="faint mono" style="font-size:12px">10:20–12:00</td>
-            <td style="background:var(--surface-2)"><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Physics</b><div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div></div></td>
-            <td><div style="background:var(--accent-soft);border-left:3px solid var(--accent);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Adv. Mathematics</b><div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Khmer Language</b><div class="faint" style="font-size:11px">Mr. Chan · Rm 112</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Physics</b><div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">English Lit</b><div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div></div></td>
-          </tr>
-          <tr>
-            <td class="faint mono" style="font-size:12px">12:00–13:00</td>
-            <td colspan="5" style="text-align:center;background:var(--surface-2)"><span class="faint" style="font-size:12px">— Lunch Break —</span></td>
-          </tr>
-          <tr>
-            <td class="faint mono" style="font-size:12px">13:00–15:00</td>
-            <td style="background:var(--surface-2)"><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">English Literature</b><div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Computer Science</b><div class="faint" style="font-size:11px">Dr. Lim · Lab 02</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Physics</b><div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div></div></td>
-            <td><div style="background:var(--accent-soft);border-left:3px solid var(--accent);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Adv. Mathematics</b><div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div></div></td>
-            <td style="color:var(--faint);text-align:center;font-size:12px">Free Period</td>
-          </tr>
-          <tr>
-            <td class="faint mono" style="font-size:12px">15:00–16:30</td>
-            <td style="background:var(--surface-2);color:var(--faint);text-align:center;font-size:12px">Study Hall</td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Khmer Language</b><div class="faint" style="font-size:11px">Mr. Chan · Rm 112</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Computer Science</b><div class="faint" style="font-size:11px">Dr. Lim · Lab 02</div></div></td>
-            <td><div style="background:var(--primary-soft);border-left:3px solid var(--primary);padding:8px 10px;border-radius:6px"><b style="font-size:12px">Khmer Language</b><div class="faint" style="font-size:11px">Mr. Chan · Rm 112</div></div></td>
-            <td style="color:var(--faint);text-align:center;font-size:12px">Study Hall</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</div>
 </main>
+
+<script>
+(function () {
+  // Mock tracker dates
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  
+  function updateTicker() {
+    const ticker = document.getElementById('tickerText');
+    const now = new Date();
+    const dayName = days[now.getDay()];
+    
+    // Simulate schedule matches
+    if (dayName === "Saturday" || dayName === "Sunday") {
+      ticker.textContent = "Current Period: Free Study Period (Weekend). Stay rested!";
+    } else {
+      ticker.textContent = "Current: English Lit (10:20 - 12:00) • Ms. Rin (Rm 108). Next: Lunch Repast (12:00).";
+    }
+  }
+
+  // Client-Side Offline ICS Export (RFC 5545)
+  window.exportICSFile = function() {
+    let icsContent = 
+      "BEGIN:VCALENDAR\n" +
+      "VERSION:2.0\n" +
+      "PRODID:-//NGIS School//ERP Calendar//EN\n" +
+      "CALSCALE:GREGORIAN\n" +
+      "METHOD:PUBLISH\n" +
+      "BEGIN:VEVENT\n" +
+      "UID:ngis-math-10a@school.com\n" +
+      "DTSTAMP:20260706T120000Z\n" +
+      "DTSTART:20260706T080000\n" +
+      "DTEND:20260706T100000\n" +
+      "SUMMARY:Advanced Mathematics\n" +
+      "DESCRIPTION:Adviser: Dr. Sarah Jenkins. Class 10A.\n" +
+      "LOCATION:Room 302\n" +
+      "END:VEVENT\n" +
+      "BEGIN:VEVENT\n" +
+      "UID:ngis-physics-10a@school.com\n" +
+      "DTSTAMP:20260706T120000Z\n" +
+      "DTSTART:20260706T102000\n" +
+      "DTEND:20260706T120000\n" +
+      "SUMMARY:Physics Mechanics\n" +
+      "DESCRIPTION:Adviser: Dr. Pov. Lab 04.\n" +
+      "LOCATION:Physics Lab 4\n" +
+      "END:VEVENT\n" +
+      "END:VCALENDAR";
+
+    var blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'NGIS_Class10A_Timetable.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.toast('ICS Calendar Exported!', 'success');
+  };
+
+  window.openClassDetail = function(subject, teacher, location, syllabus) {
+    window.toast(`${subject} Detail: ${teacher} | Location: ${location} | ${syllabus}`, 'info');
+  };
+
+  updateTicker();
+  setInterval(updateTicker, 60000);
+
+})();
+</script>
 <script>window.PAGE={"role":"student","active":"timetable"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'student-profile.html',
+  notifLink: 'student-notifications.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 3,
+  title: 'Timetable',
+  greeting: 'Verify subject allocations, current room sessions, and export to calendars.',
+  breadcrumbs: [{ label: 'Timetable' }],
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+  ]
+};</script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 </body>
 </html>

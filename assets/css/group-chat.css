@@ -6,17 +6,40 @@
 /* ── Layout override ────────────────────────────────────────── */
 body[data-page="group-chat"] .main {
   padding: 0 !important;
+  height: 100vh;
   overflow: hidden;
-  height: calc(100vh - var(--topbar-h, 64px));
   display: flex;
+  flex-direction: column;
 }
 
+/* ── iPad/Tablet (761–1024px): hide sidebar so group chat is truly full-width ── */
+@media (min-width: 761px) and (max-width: 1024px) {
+  body[data-page="group-chat"] .sidebar {
+    transform: translateX(-100%);
+    width: min(var(--sidebar-w), 85vw);
+    box-shadow: 8px 0 32px rgba(0,0,0,.18);
+  }
+  body[data-page="group-chat"] .sidebar.open { transform: translateX(0); }
+  body[data-page="group-chat"] .main { margin-left: 0 !important; }
+}
+
+/* Hero banner — topbar only (no body/greeting) on group-chat page */
+body[data-page="group-chat"] .hero {
+  padding-bottom: 0;
+  border-bottom: 1px solid rgba(255,255,255,.15);
+}
+body[data-page="group-chat"] .hero::before,
+body[data-page="group-chat"] .hero::after  { display: none; }
+body[data-page="group-chat"] .hero-topbar  { padding: 0 24px; min-height: 56px; }
+body[data-page="group-chat"] .hero-body    { display: none; }
+
 .group-shell {
-  display: flex;
+  display: grid;
+  grid-template-columns: 260px 1fr;
   flex: 1;
-  width: 100%;
-  height: 100%;
+  min-height: 0;
   overflow: hidden;
+  position: relative;
 }
 
 /* ── Demo banner ─────────────────────────────────────────────── */
@@ -34,14 +57,14 @@ body[data-page="group-chat"] .main {
 
 /* ── Class panel (left column) ──────────────────────────────── */
 .class-panel {
-  width: 300px;
-  min-width: 300px;
+  width: 260px;
+  min-width: 260px;
   border-right: 1px solid var(--border, #e2e8f0);
   display: flex;
   flex-direction: column;
   background: var(--surface, #f8fafc);
   overflow: hidden;
-  transition: transform 250ms cubic-bezier(.4,0,.2,1);
+  transition: transform 250ms ease;
 }
 
 .cp-head {
@@ -52,13 +75,55 @@ body[data-page="group-chat"] .main {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .cp-head h2 {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text, #111827);
   margin: 0;
+}
+
+/* Search bar */
+.cp-search-bar {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2, #f1f5f9);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 20px;
+  margin: 0 12px 10px;
+  flex-shrink: 0;
+}
+
+.cp-search-bar .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--faint, #94a3b8);
+}
+
+.cp-search-bar input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13.5px;
+  outline: none;
+  color: var(--text, #111827);
+  font-family: inherit;
+}
+
+.cp-search-bar input::placeholder { color: var(--faint, #94a3b8); }
+
+/* Department separator label */
+.dept-sep-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--faint, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 10px 16px 4px;
+  user-select: none;
 }
 
 /* Class list scroll */
@@ -69,6 +134,7 @@ body[data-page="group-chat"] .main {
 
 .class-list::-webkit-scrollbar { width: 4px; }
 .class-list::-webkit-scrollbar-thumb { background: var(--border, #e2e8f0); border-radius: 4px; }
+.class-list { scrollbar-width: thin; scrollbar-color: var(--border, #e2e8f0) transparent; }
 
 /* Individual class item */
 .class-item {
@@ -77,30 +143,31 @@ body[data-page="group-chat"] .main {
   gap: 12px;
   padding: 12px 16px;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-light, #f1f5f9);
+  border-bottom: 1px solid var(--border, #e2e8f0);
   transition: background 150ms;
   position: relative;
 }
 
 .class-item:hover  { background: var(--hover, #f1f5f9); }
-.class-item.active { background: #eff6ff; }
+.class-item.active { background: var(--primary-soft); }
 
 /* Class avatar (letter-based icon) */
 .class-ava {
-  width: 46px;
-  height: 46px;
-  min-width: 46px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 10px;
   background: var(--primary, #2563eb);
   color: #fff;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
-.class-item.active .class-ava { background: #1d4ed8; }
+.class-item.active .class-ava { background: var(--primary); }
 
 .class-info {
   flex: 1;
@@ -129,17 +196,17 @@ body[data-page="group-chat"] .main {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 5px;
+  gap: 4px;
 }
 
 .class-time {
   font-size: 11px;
-  color: var(--muted, #64748b);
+  color: var(--faint, #94a3b8);
   white-space: nowrap;
 }
 
 .unread-badge {
-  background: var(--primary, #2563eb);
+  background: var(--primary);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -167,13 +234,13 @@ body[data-page="group-chat"] .main {
 .class-empty-state .material-symbols-outlined { font-size: 40px; color: var(--border, #e2e8f0); }
 .class-empty-state p { font-size: 13px; line-height: 1.5; }
 
-/* ── Group Chat window (right side) ────────────────────────── */
+/* ── Group Chat window (center) ────────────────────────────── */
 .gchat-win {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg, #fff);
+  background: var(--surface-2, #f1f5f9);
   min-width: 0;
 }
 
@@ -194,7 +261,7 @@ body[data-page="group-chat"] .main {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: #eff6ff;
+  background: var(--primary-soft);
   display: grid;
   place-items: center;
   margin-bottom: 4px;
@@ -202,7 +269,7 @@ body[data-page="group-chat"] .main {
 
 .gchat-empty .ico-wrap .material-symbols-outlined {
   font-size: 36px;
-  color: var(--primary, #2563eb);
+  color: var(--primary);
 }
 
 .gchat-empty h3 { font-size: 20px; font-weight: 700; color: var(--text, #111827); }
@@ -229,8 +296,6 @@ body[data-page="group-chat"] .main {
   flex-shrink: 0;
 }
 
-.back-btn { display: none; }
-
 .class-header-ava {
   width: 40px;
   height: 40px;
@@ -240,15 +305,16 @@ body[data-page="group-chat"] .main {
   color: #fff;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .gchat-hinfo { flex: 1; min-width: 0; }
 
 .gchat-hname {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text, #111827);
   display: block;
   white-space: nowrap;
@@ -263,7 +329,7 @@ body[data-page="group-chat"] .main {
   height: 36px;
   min-width: 36px;
   border: none;
-  background: none;
+  background: transparent;
   border-radius: 50%;
   cursor: pointer;
   display: grid;
@@ -272,8 +338,12 @@ body[data-page="group-chat"] .main {
   transition: background 150ms, color 150ms;
 }
 
-.chat-icon-btn:hover  { background: var(--hover, #f1f5f9); color: var(--primary, #2563eb); }
+.chat-icon-btn:hover  { background: var(--surface-2, #f1f5f9); color: var(--primary); }
 .chat-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* These desktop-hide rules must come AFTER .chat-icon-btn { display:grid } to win the cascade */
+.hamburger-btn { display: none; }
+.back-btn      { display: none; }
 
 /* ── Messages area ────────────────────────────────────────── */
 .gmsg-area {
@@ -283,10 +353,12 @@ body[data-page="group-chat"] .main {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  scroll-behavior: smooth;
 }
 
 .gmsg-area::-webkit-scrollbar { width: 4px; }
 .gmsg-area::-webkit-scrollbar-thumb { background: var(--border, #e2e8f0); border-radius: 4px; }
+.gmsg-area { scrollbar-width: thin; scrollbar-color: var(--border, #e2e8f0) transparent; }
 
 /* Date separator */
 .date-sep {
@@ -406,7 +478,7 @@ body[data-page="group-chat"] .main {
 
 /* Outgoing bubble */
 .gmsg-row.outgoing .gmsg-bubble {
-  background: var(--primary, #2563eb);
+  background: var(--primary);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
@@ -549,31 +621,293 @@ body[data-page="group-chat"] .main {
 
 .gmsg-input-wrap textarea::placeholder { color: var(--muted, #94a3b8); }
 
-.send-btn { color: var(--primary, #2563eb); }
-.send-btn:not(:disabled):hover { background: #eff6ff; }
-.send-btn:disabled { color: var(--muted, #94a3b8); }
+.send-btn { background: var(--primary) !important; color: #fff !important; }
+.send-btn:not(:disabled):hover { background: var(--primary-hover) !important; }
+.send-btn:disabled { background: var(--surface-2, #f1f5f9) !important; color: var(--faint, #94a3b8) !important; }
 
-/* ── Responsive — Mobile (≤768px) ────────────────────────── */
-@media (max-width: 768px) {
+/* ── Member panel (right column) ───────────────────────────── */
+.member-panel {
+  width: 240px;
+  min-width: 240px;
+  border-left: 1px solid var(--border, #e2e8f0);
+  background: var(--surface, #f8fafc);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mp-head {
+  padding: 0 16px;
+  height: 64px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.mp-head h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--heading, #111827);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mp-count {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface-2, #f1f5f9);
+  color: var(--faint, #94a3b8);
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+.member-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.member-list::-webkit-scrollbar { width: 4px; }
+.member-list::-webkit-scrollbar-thumb { background: var(--border, #e2e8f0); border-radius: 4px; }
+.member-list { scrollbar-width: thin; scrollbar-color: var(--border, #e2e8f0) transparent; }
+
+.member-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--faint, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 8px 14px 4px;
+  user-select: none;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  transition: background 150ms;
+  cursor: default;
+}
+
+.member-item:hover { background: var(--surface-2, #f1f5f9); }
+.member-item.offline { opacity: 0.55; }
+
+/* Avatar wrapper for photo or initials + dot */
+.m-ava-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.m-ava {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.m-ava-init {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Online dot */
+.m-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--surface, #f8fafc);
+}
+
+.m-dot.online  { background: var(--success, #22c55e); }
+.m-dot.away    { background: var(--warning, #f59e0b); }
+.m-dot.offline { background: var(--faint, #94a3b8); }
+
+.m-info { flex: 1; min-width: 0; }
+
+.m-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--heading, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m-role {
+  font-size: 11px;
+  color: var(--faint, #94a3b8);
+  margin-top: 1px;
+}
+
+.m-role.teacher { color: #16a34a; }
+.m-role.student { color: var(--faint, #94a3b8); }
+
+.member-more {
+  font-size: 12px;
+  color: var(--primary);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.member-more:hover { text-decoration: underline; }
+
+/* ── Member panel: empty state (before group selected) ───── */
+.mp-empty {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.mp-empty-hdr {
+  padding: 0 16px;
+  height: 64px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--heading, #111827);
+  flex-shrink: 0;
+}
+
+.mp-empty-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--muted, #64748b);
+}
+
+.mp-empty-ico {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-soft);
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+}
+
+.mp-empty-ico .material-symbols-outlined {
+  font-size: 28px;
+  color: var(--primary);
+}
+
+.mp-empty-body p {
+  font-size: 13px;
+  max-width: 180px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Member content wrapper (shown after group selected) */
+.mp-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Group open animations ──────────────────────────────────── */
+@keyframes gchat-appear {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes gchat-fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+
+.gchat-active.anim-in {
+  animation: gchat-appear 0.22s cubic-bezier(.25,.46,.45,.94) both;
+}
+.gchat-empty.anim-out {
+  animation: gchat-fade-out 0.15s ease both;
+  pointer-events: none;
+}
+
+/* ── Responsive — Tablet + Mobile (≤1024px): full-screen on open ─ */
+@media (max-width: 1024px) {
+  /* Hide hero banner on mobile — group chat needs the full screen */
+  body[data-page="group-chat"] .hero { display: none !important; }
+
+  /* Animate bottom nav out when group chat is open */
+  body[data-page="group-chat"] .bottomnav {
+    transition: transform 0.25s cubic-bezier(.25,.46,.45,.94),
+                opacity   0.25s ease;
+  }
+  body[data-page="group-chat"].chat-open .bottomnav {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Topbar and sidebar — hide when group is open */
+  body[data-page="group-chat"].chat-open .topbar  { display: none !important; }
+  body[data-page="group-chat"].chat-open .sidebar { display: none !important; }
+
+  .hamburger-btn { display: grid; }
+
+  .group-shell {
+    grid-template-columns: 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
   .back-btn { display: grid; }
-
-  .group-shell { position: relative; overflow: hidden; }
 
   .class-panel {
     position: absolute;
     inset: 0;
-    width: 100%;
     z-index: 10;
+    width: 100%;
+    transition: transform 250ms ease;
   }
 
-  .class-panel.panel-hidden {
-    transform: translateX(-100%);
-  }
+  .class-panel.panel-hidden { transform: translateX(-100%); }
 
   .gchat-win {
     position: absolute;
     inset: 0;
+    z-index: 5;
   }
+
+  .member-panel {
+    display: flex;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 15;
+    transform: translateX(100%);
+    transition: transform 250ms ease;
+    box-shadow: -4px 0 24px rgba(0,0,0,.12);
+  }
+
+  .member-panel.panel-open { transform: translateX(0); }
 
   .gmsg-content { max-width: 80%; }
 }
@@ -592,9 +926,29 @@ body[data-page="group-chat"] .main {
 }
 
 [data-theme="dark"] .class-item.active {
-  background: #1e3a5f;
+  background: var(--primary-soft);
 }
 
 [data-theme="dark"] .gchat-empty .ico-wrap {
   background: #1e293b;
+}
+
+[data-theme="dark"] .member-panel {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .m-dot {
+  border-color: var(--surface);
+}
+
+
+/* ── Large desktop (≥1025px): Always 3-column layout ─ */
+@media (min-width: 1025px) {
+  .group-shell {
+    grid-template-columns: 260px 1fr 240px;
+  }
+  .member-panel {
+    display: flex;
+  }
 }

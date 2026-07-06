@@ -1,125 +1,259 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat — NGIS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Messages — NGIS</title>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
   <link rel="stylesheet" href="../../assets/css/chat.css">
-  <style>
-    /* Reduce FOUC */
-    body { opacity: 0; }
-    body.ready { opacity: 1; transition: opacity .12s; }
-  </style>
+  <style>body{opacity:0}body.ready{opacity:1;transition:opacity .12s}</style>
 </head>
 <body data-page="chat">
-
-<!-- layout.js injects sidebar + topbar into .main as first children -->
 <main class="main" id="chatMain">
 
-  <!-- Demo mode banner (hidden until needed) -->
-  <div class="demo-banner" id="demoBanner" hidden>
-    <span class="material-symbols-outlined" style="font-size:16px">info</span>
-    Demo mode — connect a server to enable live messaging. See <code>server/</code> to get started.
-  </div>
+  <div id="heroBanner"></div>
 
   <div class="chat-shell">
 
-    <!-- ─────────────────────────────────────────────────────────
-         LEFT: Conversations panel
-         ───────────────────────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════
+         LEFT: Conversations + People Search
+         ══════════════════════════════════════ -->
     <aside class="conv-panel" id="convPanel" aria-label="Conversations">
 
-      <!-- Panel header -->
       <div class="cp-head">
+        <button class="chat-icon-btn hamburger-btn" id="menuBtn" aria-label="Open menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <h2>Messages</h2>
-        <button class="chat-icon-btn" id="newChatBtn" aria-label="New conversation" title="New message">
+        <button class="chat-icon-btn" aria-label="New message" title="New message">
           <span class="material-symbols-outlined">edit_square</span>
         </button>
       </div>
 
-      <!-- Search -->
+      <!-- People search (replaces modal) -->
       <div class="cp-search">
         <div class="chat-search-wrap">
           <span class="material-symbols-outlined" aria-hidden="true">search</span>
           <input
             type="search"
-            id="convSearch"
-            placeholder="Search conversations…"
+            id="peopleSearch"
+            placeholder="Search people…"
             autocomplete="off"
-            aria-label="Search conversations"
+            aria-label="Search people"
           >
         </div>
       </div>
 
+      <!-- Inline people search results (shown while typing) -->
+      <div class="people-results" id="peopleResults" aria-label="Search results" aria-live="polite"></div>
+
+      <!-- Recent conversations label -->
+      <div class="conv-section-label" id="recentLabel">Recent Messages</div>
+
       <!-- Conversation list -->
       <div class="conv-list" id="convList" role="listbox" aria-label="Conversations">
-        <!-- Populated by chat.js -->
-        <div class="conv-empty-state">
-          <span class="material-symbols-outlined">chat_bubble_outline</span>
-          <p>Loading conversations…</p>
+
+        <!-- Admin -->
+        <div class="conv-item" data-conv="admin-1" role="option" aria-selected="false" tabindex="0">
+          <div class="ava-wrap">
+            <div class="conv-ava-init" style="background:#d97706">HS</div>
+            <span class="s-dot online"></span>
+          </div>
+          <div class="conv-info">
+            <div class="conv-top">
+              <span class="conv-name">Mr. Heng Samnang</span>
+              <span class="conv-time">2m</span>
+            </div>
+            <div class="conv-preview">Your schedule change has been confirmed.</div>
+          </div>
+          <span class="conv-badge">1</span>
         </div>
-      </div>
 
-    </aside>
+        <!-- Teacher -->
+        <div class="conv-item" data-conv="teacher-1" role="option" tabindex="0">
+          <div class="ava-wrap">
+            <img class="conv-ava" src="https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80" alt="Dr. Sarah Jenkins">
+            <span class="s-dot online"></span>
+          </div>
+          <div class="conv-info">
+            <div class="conv-top">
+              <span class="conv-name">Dr. Sarah Jenkins</span>
+              <span class="conv-time">1h</span>
+            </div>
+            <div class="conv-preview">Don't forget the assignment is due tonight!</div>
+          </div>
+        </div>
 
-    <!-- ─────────────────────────────────────────────────────────
-         RIGHT: Chat window
-         ───────────────────────────────────────────────────────── -->
+        <!-- Counselor -->
+        <div class="conv-item" data-conv="counselor-1" role="option" tabindex="0">
+          <div class="ava-wrap">
+            <div class="conv-ava-init" style="background:#7c3aed">CS</div>
+            <span class="s-dot away"></span>
+          </div>
+          <div class="conv-info">
+            <div class="conv-top">
+              <span class="conv-name">Mrs. Channary Sot</span>
+              <span class="conv-time">3h</span>
+            </div>
+            <div class="conv-preview">Please come by the office tomorrow morning.</div>
+          </div>
+        </div>
+
+        <!-- IT Support -->
+        <div class="conv-item" data-conv="it-1" role="option" tabindex="0">
+          <div class="ava-wrap">
+            <div class="conv-ava-init" style="background:#0891b2">IT</div>
+            <span class="s-dot offline"></span>
+          </div>
+          <div class="conv-info">
+            <div class="conv-top">
+              <span class="conv-name">IT Support</span>
+              <span class="conv-time">Yesterday</span>
+            </div>
+            <div class="conv-preview">Your account issue has been resolved.</div>
+          </div>
+        </div>
+
+        <!-- Librarian -->
+        <div class="conv-item" data-conv="lib-1" role="option" tabindex="0">
+          <div class="ava-wrap">
+            <div class="conv-ava-init" style="background:#16a34a">ML</div>
+            <span class="s-dot offline"></span>
+          </div>
+          <div class="conv-info">
+            <div class="conv-top">
+              <span class="conv-name">Ms. Maly Lon</span>
+              <span class="conv-time">Mon</span>
+            </div>
+            <div class="conv-preview">The book you requested is now available.</div>
+          </div>
+        </div>
+
+      </div><!-- /conv-list -->
+    </aside><!-- /conv-panel -->
+
+    <!-- ══════════════════════════════════════
+         RIGHT: Chat window (active by default)
+         ══════════════════════════════════════ -->
     <section class="chat-win" id="chatWin" aria-label="Chat window">
 
-      <!-- Empty / select-a-conversation state -->
-      <div class="chat-select-state" id="chatEmpty">
+      <!-- Empty state: shown until a conversation is selected -->
+      <div class="chat-select-state" id="chatSelectState">
         <div class="ico-wrap">
-          <span class="material-symbols-outlined">forum</span>
+          <span class="material-symbols-outlined">chat</span>
         </div>
-        <h3>School Messenger</h3>
-        <p>Select a conversation or start a new message with a teacher or admin.</p>
-        <button class="btn btn-primary" id="startChatBtn">
-          <span class="material-symbols-outlined" style="font-size:18px;vertical-align:middle;margin-right:4px">edit_square</span>
-          New Message
-        </button>
+        <h3>Select a conversation to start messaging</h3>
+        <p>Choose someone from the list on the left to open the chat.</p>
       </div>
 
-      <!-- Active chat (hidden until a conversation is opened) -->
-      <div class="chat-active" id="chatActive" hidden aria-live="polite">
+      <div class="chat-active" id="chatActive" aria-live="polite" style="display:none">
 
-        <!-- Chat header -->
+        <!-- Header -->
         <header class="chat-header">
           <button class="chat-icon-btn back-btn" id="backBtn" aria-label="Back to conversations">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
-
-          <!-- Avatar + status dot (populated by JS) -->
-          <div id="chatHAvaCont">
-            <div class="ava-wrap">
-              <div class="hava-init" style="background:var(--primary);color:#fff;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:700;">?</div>
-            </div>
+          <div class="ava-wrap" id="chatHAvaCont">
+            <div class="conv-ava-init" style="background:#d97706;width:40px;height:40px;font-size:14px">HS</div>
+            <span class="s-dot online"></span>
           </div>
-
           <div class="chat-hinfo">
-            <span class="chat-hname" id="chatHName">—</span>
-            <span class="chat-hstatus" id="chatHStatus">Offline</span>
+            <span class="chat-hname" id="chatHName">Mr. Heng Samnang</span>
+            <span class="chat-hstatus is-online" id="chatHStatus">Online · Administrator</span>
           </div>
-
           <div class="chat-hactions">
-            <button class="chat-icon-btn" aria-label="More options" title="More options">
+            <button class="chat-icon-btn" aria-label="More options">
               <span class="material-symbols-outlined">more_vert</span>
             </button>
           </div>
         </header>
 
-        <!-- Messages scroll area -->
-        <div class="msg-area" id="msgArea" role="log" aria-label="Messages" aria-live="polite">
-          <!-- Messages injected by chat.js -->
-        </div>
+        <!-- Messages -->
+        <div class="msg-area" id="msgArea" role="log" aria-label="Messages">
 
-        <!-- Typing indicator (shown when other person is typing) -->
-        <div class="typing-row" id="typingRow" aria-live="polite" aria-label="Typing indicator">
+          <div class="msg-date-sep">Yesterday</div>
+
+          <!-- Outgoing -->
+          <div class="msg-row out">
+            <div class="msg-group">
+              <div class="msg-bubble">Good morning! I wanted to ask about changing my elective from Chinese to French. Is that possible?</div>
+              <div class="msg-meta"><span>10:05 AM</span></div>
+            </div>
+          </div>
+
+          <!-- Incoming -->
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble">Good morning! Of course — let me check the availability for the French class in your grade level.</div>
+              <div class="msg-meta"><span>10:12 AM</span></div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble grp-mid">French 10A currently has 3 open seats. I will submit the transfer request now.</div>
+              <div class="msg-meta"><span>10:13 AM</span></div>
+            </div>
+          </div>
+
+          <!-- Outgoing -->
+          <div class="msg-row out">
+            <div class="msg-group">
+              <div class="msg-bubble">That's great! Thank you so much, Mr. Samnang. When will the change take effect?</div>
+              <div class="msg-meta"><span>10:15 AM</span></div>
+            </div>
+          </div>
+
+          <!-- Incoming -->
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble">The change will take effect from next Monday. You will receive a confirmation email as well. 😊</div>
+              <div class="msg-meta"><span>10:18 AM</span></div>
+            </div>
+          </div>
+
+          <div class="msg-date-sep">Today</div>
+
+          <!-- Incoming (new) -->
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble">Good morning! Your schedule change request has been confirmed. French 10A starts Monday at 2:00 PM in Room 8A. ✅</div>
+              <div class="msg-meta"><span>08:30 AM</span>
+                <span class="msg-tick read">
+                  <span class="material-symbols-outlined">done_all</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble grp-mid">Please check your updated timetable on the portal. Let me know if you need anything else!</div>
+              <div class="msg-meta"><span>08:31 AM</span></div>
+            </div>
+          </div>
+
+          <!-- Outgoing -->
+          <div class="msg-row out">
+            <div class="msg-group">
+              <div class="msg-bubble">Wonderful! Thank you so much for your help! I really appreciate it 🙏</div>
+              <div class="msg-meta"><span>08:45 AM</span>
+                <span class="msg-tick read">
+                  <span class="material-symbols-outlined">done_all</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /msg-area -->
+
+        <!-- Typing indicator -->
+        <div class="typing-row" id="typingRow">
           <div class="msg-ava-spacer"></div>
           <div class="typing-bubble">
             <span class="typing-dot"></span>
@@ -128,32 +262,22 @@
           </div>
         </div>
 
-        <!-- Message input area -->
+        <!-- Input -->
         <div class="msg-input-area">
-
-          <!-- Emoji picker (hidden by default) -->
           <div class="emoji-picker" id="emojiPicker" hidden aria-label="Emoji picker">
             <div class="emoji-grid" id="emojiGrid"></div>
           </div>
-
           <form class="msg-form" id="msgForm" aria-label="Send a message">
-            <!-- Emoji toggle -->
-            <button
-              type="button"
-              class="chat-icon-btn"
-              id="emojiBtn"
-              aria-label="Open emoji picker"
-              aria-expanded="false"
-              aria-controls="emojiPicker"
-            >
+            <button type="button" class="chat-icon-btn" id="emojiBtn" aria-label="Emoji" aria-expanded="false" aria-controls="emojiPicker">
               <span class="material-symbols-outlined">sentiment_satisfied</span>
             </button>
-
-            <!-- Text input -->
+            <button type="button" class="chat-icon-btn" aria-label="Attach file" title="Attach file">
+              <span class="material-symbols-outlined">attach_file</span>
+            </button>
             <div class="msg-input-wrap">
               <textarea
                 id="msgInput"
-                placeholder="Type a message…"
+                placeholder="Message Mr. Heng Samnang…"
                 rows="1"
                 maxlength="2000"
                 aria-label="Message text"
@@ -161,103 +285,242 @@
                 spellcheck="true"
               ></textarea>
             </div>
-
-            <!-- Send button -->
-            <button
-              type="submit"
-              class="chat-icon-btn send-btn"
-              id="sendBtn"
-              aria-label="Send message"
-              disabled
-            >
+            <button type="submit" class="chat-icon-btn send-btn" id="sendBtn" aria-label="Send" disabled>
               <span class="material-symbols-outlined">send</span>
             </button>
           </form>
         </div>
 
       </div><!-- /chat-active -->
-
     </section><!-- /chat-win -->
 
   </div><!-- /chat-shell -->
+</main>
 
-</main><!-- /main -->
-
-<!-- ─────────────────────────────────────────────────────────────
-     NEW MESSAGE MODAL
-     ───────────────────────────────────────────────────────────── -->
-<div
-  class="modal-overlay"
-  id="newChatModal"
-  hidden
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="modalTitle"
->
-  <div class="chat-modal">
-
-    <div class="cm-head">
-      <h3 id="modalTitle">New Message</h3>
-      <button class="chat-icon-btn" id="closeModal" aria-label="Close dialog">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-
-    <div class="cm-search">
-      <div class="chat-search-wrap">
-        <span class="material-symbols-outlined" aria-hidden="true">search</span>
-        <input
-          type="search"
-          id="userSearch"
-          placeholder="Search by name…"
-          autocomplete="off"
-          aria-label="Search users"
-        >
-      </div>
-    </div>
-
-    <div class="user-results" id="userResults" role="listbox" aria-label="Search results">
-      <p class="search-placeholder">Search for a teacher, admin, or support to start a conversation.</p>
-    </div>
-
-  </div>
-</div>
-
-<!-- ─────────────────────────────────────────────────────────────
+<!-- ═══════════════════════════════════════════
      Scripts
-     ───────────────────────────────────────────────────────────── -->
+     ═══════════════════════════════════════════ -->
 <script>
 (function () {
-  /* Theme init (must run before layout.js) */
-  var t = localStorage.getItem("ngis-theme") || "light";
-  document.documentElement.setAttribute("data-theme", t);
-
-  /* Resolve logged-in user's role for sidebar nav */
+  var t = localStorage.getItem('ngis-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
   var saved = null;
-  try { saved = JSON.parse(localStorage.getItem("ngis_chat_user") || "null"); } catch (e) {}
-  var role = saved?.role || window.CURRENT_USER?.role || "student";
-
-  /* Layout engine config */
-  window.PAGE = { role: role, active: "chat" };
-
-  /* Chat server URL — change to your production URL when deploying */
-  window.CHAT_SERVER = "http://localhost:3001";
-
-  /* Pass resolved user to chat.js */
+  try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
+  var role = (saved && saved.role) || 'student';
+  window.PAGE = { role: role, active: 'chat' };
+  window.CHAT_SERVER = 'http://localhost:3001';
   if (saved) window.CURRENT_USER = saved;
-
-  document.body.classList.add("ready");
+  document.body.classList.add('ready');
 })();
 </script>
 
-<!-- Layout engine (sidebar + topbar + mobile nav) -->
+<script>window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: '../student/student-profile.html',
+  notifLink: '../student/student-notifications.html',
+  chatLink: 'chat.html',
+  notifCount: 3,
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+  ],
+  title: 'Messages',
+  greeting: 'Chat with teachers, classmates, and school staff.',
+  breadcrumbs: [{ label: 'Messages' }]
+};</script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
-
-<!-- Socket.io client -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-
-<!-- Chat logic -->
 <script src="../../assets/js/chat.js"></script>
+
+<!-- People search + chat UI interactions -->
+<script>
+(function () {
+  /* ── People directory ─────────────────── */
+  var PEOPLE = [
+    { id: 'admin-1',      name: 'Mr. Heng Samnang',  role: 'Administrator',       initials: 'HS', color: '#d97706', status: 'online'  },
+    { id: 'teacher-1',   name: 'Dr. Sarah Jenkins',  role: 'Mathematics Teacher', initials: 'SJ', color: '#16a34a', status: 'online'  },
+    { id: 'counselor-1', name: 'Mrs. Channary Sot',  role: 'School Counselor',    initials: 'CS', color: '#7c3aed', status: 'away'    },
+    { id: 'it-1',         name: 'IT Support',          role: 'IT Department',       initials: 'IT', color: '#0891b2', status: 'offline' },
+    { id: 'lib-1',        name: 'Ms. Maly Lon',        role: 'Librarian',            initials: 'ML', color: '#16a34a', status: 'offline' },
+    { id: 'teacher-2',   name: 'Mr. Dara Prum',       role: 'English Teacher',      initials: 'DP', color: '#2563eb', status: 'offline' },
+    { id: 'teacher-3',   name: 'Ms. Sopheap Keo',     role: 'Science Teacher',      initials: 'SK', color: '#ea580c', status: 'online'  },
+    { id: 'admin-2',      name: 'Ms. Bopha Rith',      role: 'Finance Office',       initials: 'BR', color: '#db2777', status: 'offline' },
+    { id: 'student-1',   name: 'Ratha Sok',            role: 'Student · Grade 10A',  initials: 'RS', color: '#2563eb', status: 'online'  },
+    { id: 'student-2',   name: 'Ly Channary',          role: 'Student · Grade 10A',  initials: 'LC', color: '#16a34a', status: 'online'  },
+  ];
+
+  var searchInput  = document.getElementById('peopleSearch');
+  var resultsEl    = document.getElementById('peopleResults');
+  var recentLabel  = document.getElementById('recentLabel');
+  var convList     = document.getElementById('convList');
+  var convPanel    = document.getElementById('convPanel');
+  var chatWin      = document.getElementById('chatWin');
+  var chatActive   = document.getElementById('chatActive');
+  var chatSelectSt = document.getElementById('chatSelectState');
+  var msgArea      = document.getElementById('msgArea');
+  var msgInput     = document.getElementById('msgInput');
+  var sendBtn      = document.getElementById('sendBtn');
+
+  /* ── Open a conversation ────────────────────────────────────── */
+  function openConversation(convId) {
+    convList.querySelectorAll('.conv-item').forEach(function (el) {
+      el.classList.remove('active');
+      el.setAttribute('aria-selected', 'false');
+      var badge = el.querySelector('.conv-badge');
+      if (badge) badge.remove();
+    });
+    var item = convList.querySelector('[data-conv="' + convId + '"]');
+    if (item) {
+      item.classList.add('active');
+      item.setAttribute('aria-selected', 'true');
+    }
+
+    var firstOpen = chatActive.style.display !== 'flex';
+
+    if (firstOpen) {
+      /* Animate empty state out, then reveal active chat */
+      chatSelectSt.classList.add('anim-out');
+      setTimeout(function () {
+        chatSelectSt.style.display = 'none';
+        chatSelectSt.classList.remove('anim-out');
+        chatActive.style.display = 'flex';
+        /* Force reflow so animation triggers fresh */
+        void chatActive.offsetWidth;
+        chatActive.classList.remove('anim-in');
+        chatActive.classList.add('anim-in');
+        if (msgArea) msgArea.scrollTop = msgArea.scrollHeight;
+      }, 140);
+    } else {
+      /* Already open — just scroll to latest */
+      if (msgArea) msgArea.scrollTop = msgArea.scrollHeight;
+    }
+
+    /* Mobile full-screen: slide panel away */
+    if (window.innerWidth <= 1024) {
+      convPanel.classList.add('hidden-mobile');
+      chatWin.classList.add('show-mobile');
+      document.body.classList.add('chat-open');
+    }
+  }
+
+  /* ── People search ──────────────────────────────────────────── */
+  function renderResults(people) {
+    if (!people.length) {
+      resultsEl.innerHTML = '<p class="no-results">No people found</p>';
+    } else {
+      resultsEl.innerHTML = people.map(function (p) {
+        return '<div class="people-result-item" data-id="' + p.id + '">' +
+          '<div class="pr-ava-wrap">' +
+            '<div class="pr-ava-init" style="background:' + p.color + '">' + p.initials + '</div>' +
+            '<span class="m-dot ' + p.status + '"></span>' +
+          '</div>' +
+          '<div class="pr-info">' +
+            '<div class="pr-name">' + p.name + '</div>' +
+            '<div class="pr-role">' + p.role + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+    resultsEl.classList.add('visible');
+    recentLabel.hidden = true;
+    convList.hidden    = true;
+  }
+
+  function clearSearch() {
+    searchInput.value = '';
+    resultsEl.innerHTML = '';
+    resultsEl.classList.remove('visible');
+    recentLabel.hidden = false;
+    convList.hidden    = false;
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      var q = this.value.trim().toLowerCase();
+      if (!q) { clearSearch(); return; }
+      renderResults(PEOPLE.filter(function (p) {
+        return p.name.toLowerCase().includes(q) || p.role.toLowerCase().includes(q);
+      }));
+    });
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') clearSearch();
+    });
+  }
+
+  if (resultsEl) {
+    resultsEl.addEventListener('click', function (e) {
+      var item = e.target.closest('.people-result-item');
+      if (!item) return;
+      clearSearch();
+      openConversation(item.dataset.id);
+    });
+  }
+
+  /* ── Conversation list ──────────────────────────────────────── */
+  if (convList) {
+    convList.addEventListener('click', function (e) {
+      var item = e.target.closest('.conv-item');
+      if (item) openConversation(item.dataset.conv);
+    });
+  }
+
+  /* ── Back button (mobile) ───────────────────────────────────── */
+  var backBtn = document.getElementById('backBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', function () {
+      convPanel.classList.remove('hidden-mobile');
+      chatWin.classList.remove('show-mobile');
+      document.body.classList.remove('chat-open');
+    });
+  }
+
+  /* ── Message input ──────────────────────────────────────────── */
+  if (msgInput && sendBtn) {
+    msgInput.addEventListener('input', function () {
+      sendBtn.disabled = !this.value.trim();
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 130) + 'px';
+    });
+    msgInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('msgForm').dispatchEvent(new Event('submit'));
+      }
+    });
+  }
+
+  /* ── Form submit — demo append ──────────────────────────────── */
+  var msgForm = document.getElementById('msgForm');
+  if (msgForm && msgInput && msgArea) {
+    msgForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = msgInput.value.trim();
+      if (!text) return;
+      var row = document.createElement('div');
+      row.className = 'msg-row out';
+      row.innerHTML = '<div class="msg-group">' +
+        '<div class="msg-bubble">' + text.replace(/</g, '&lt;') + '</div>' +
+        '<div class="msg-meta"><span>' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + '</span></div>' +
+        '</div>';
+      msgArea.appendChild(row);
+      msgInput.value = '';
+      msgInput.style.height = '';
+      sendBtn.disabled = true;
+      msgArea.scrollTop = msgArea.scrollHeight;
+    });
+  }
+})();
+</script>
 
 </body>
 </html>

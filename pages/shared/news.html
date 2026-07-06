@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — School News & Announcements</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+/* News Board Styling */
+.news-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 80px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+/* Header styled in alignment with premium layout */
+.news-header-banner {
+  background: linear-gradient(135deg, #1e3a8a 0%, #179bb8 100%);
+  border-radius: 20px;
+  padding: 40px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(30, 41, 59, 0.05);
+}
+.news-header-banner::after {
+  content: '';
+  position: absolute;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.05);
+  top: -80px; right: -40px;
+}
+.news-header-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+.news-header-subtitle {
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+
+/* Search & Filters */
+.news-filter-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid var(--bdr);
+}
+.news-search-bar {
+  position: relative;
+  max-width: 320px;
+  width: 100%;
+}
+.news-search-bar input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  outline: none;
+  background: #f8fafc;
+}
+.news-search-bar input:focus {
+  border-color: #179bb8;
+  background: #fff;
+}
+.news-search-bar .mi {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 18px;
+}
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+}
+.filter-tab {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-tab:hover {
+  background: #f8fafc;
+}
+.filter-tab.active {
+  background: #179bb8;
+  color: #fff;
+  border-color: #179bb8;
+}
+
+/* News Grid */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.news-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--bdr);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.22s, box-shadow 0.22s;
+}
+.news-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+.news-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  background: #f1f5f9;
+}
+.news-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.news-card-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tag-urgent { background: #fee2e2; color: #ef4444; }
+.tag-normal { background: #e0f2fe; color: #0284c7; }
+.tag-events { background: #fef3c7; color: #d97706; }
+.tag-exams { background: #f5f3ff; color: #7c3aed; }
+
+.news-card-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.news-card-date {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.news-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  line-height: 1.35;
+}
+.news-card-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.45;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.news-card-readmore {
+  margin-top: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: #179bb8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  align-self: flex-start;
+}
+.news-card-readmore:hover {
+  color: #11788e;
+}
+.news-card-readmore .mi {
+  font-size: 16px;
+}
+
+/* Detail Modal */
+.news-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 2200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.news-modal-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.news-modal-container {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 580px;
+  max-width: 90vw;
+  max-height: 85vh;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.news-modal-img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.news-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+.news-modal-date-line {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.news-modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
+}
+.news-modal-audience {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+.news-modal-content {
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+  .news-filter-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .news-search-bar {
+    max-width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+<main class="main">
+  <!-- Layout Banner matching system standard -->
+  <header class="hero" style="padding-bottom: 40px;">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <a href="../../index.html" class="htb-home-btn">
+          <span class="mi">arrow_back</span>
+          <span>Back to Home</span>
+        </a>
+      </div>
+      <div class="htb-center">
+        <img class="htb-logo" src="../student/LOGO NGIS (2).png" alt="NGIS logo" />
+      </div>
+      <div class="htb-right" style="opacity:0; pointer-events:none;">
+        <!-- Center helper spacer -->
+      </div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">NGIS Campus News Board</h1>
+        <p class="hero-greeting">Stay informed with direct notices, exam timelines, and school events.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- News Page Workspace -->
+  <div class="news-page">
+    
+    <!-- Filter bar -->
+    <div class="news-filter-panel">
+      <div class="news-search-bar">
+        <span class="mi">search</span>
+        <input type="search" id="newsSearchInput" placeholder="Search notices by title..." />
+      </div>
+      
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All News</button>
+        <button class="filter-tab" data-filter="urgent">Urgent</button>
+        <button class="filter-tab" data-filter="events">Events</button>
+        <button class="filter-tab" data-filter="exams">Exams</button>
+      </div>
+    </div>
+
+    <!-- Dynamic News Grid -->
+    <div class="news-grid" id="newsGrid">
+      <!-- Injected by JavaScript dynamically -->
+    </div>
+
+  </div>
+</main>
+
+<!-- Read More Detail Modal -->
+<div class="news-modal-overlay" id="newsModal">
+  <div class="news-modal-container">
+    <button class="id-close-btn" id="newsModalClose" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.8);z-index:10;"><span class="mi">close</span></button>
+    <img class="news-modal-img" id="modalImg" src="" alt="Post header image">
+    <div class="news-modal-body">
+      <div class="news-modal-date-line" id="modalDate">July 6, 2026</div>
+      <h2 class="news-modal-title" id="modalTitle">Post Title</h2>
+      <span class="news-modal-audience" id="modalAudience">Target: All</span>
+      <div class="news-modal-content" id="modalContent">Full article details...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // Mock News seed database
+  const MOCK_NEWS = [
+    {
+      id: 1,
+      title: "School Closure Alert: Inclement Weather Warning",
+      desc: "Due to heavy rain forecast and flash flood alerts issued by municipal authorities, NGIS Sen Sok campus will be closed tomorrow. E-learning lessons will be delivered online.",
+      image: "https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=600",
+      priority: "urgent",
+      audience: "Parents, Students, Teachers",
+      date: "July 6, 2026"
+    },
+    {
+      id: 2,
+      title: "NGIS Annual Sports Day 2026 Registration Open",
+      desc: "Get ready for the NGIS annual sports day championships! Events include track and field races, swimming tournaments, and basketball brackets. Register your entry before July 12.",
+      image: "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=600",
+      priority: "events",
+      audience: "All Students",
+      date: "July 5, 2026"
+    },
+    {
+      id: 3,
+      title: "Secondary Term 2 Examination Timetables Released",
+      desc: "The schedules for Secondary Term 2 examinations have been compiled. Detail lists are pinned on student dashboard portals. Be sure to coordinate study loads with your advisory teachers.",
+      image: "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=600",
+      priority: "exams",
+      audience: "Students, Teachers",
+      date: "July 4, 2026"
+    },
+    {
+      id: 4,
+      title: "Science Exhibition Booth Allocations Pinned",
+      desc: "Students presenting projects in the NGIS Science and Robotics Fair can check their booth mappings in the courtyard directory. Booth setup begins this Thursday morning at 8:00 AM.",
+      image: "https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=600",
+      priority: "events",
+      audience: "Students",
+      date: "July 2, 2026"
+    }
+  ];
+
+  // Initialize or read from localStorage
+  if (!localStorage.getItem('ngis_news_posts')) {
+    localStorage.setItem('ngis_news_posts', JSON.stringify(MOCK_NEWS));
+  }
+
+  // Get data helper
+  function getNews() {
+    return JSON.parse(localStorage.getItem('ngis_news_posts')) || MOCK_NEWS;
+  }
+
+  const newsGrid = document.getElementById('newsGrid');
+  const searchInput = document.getElementById('newsSearchInput');
+  const tabs = document.querySelectorAll('.filter-tab');
+
+  let activeFilter = 'all';
+  let searchQuery = '';
+
+  // Render Grid
+  function renderFeed() {
+    const posts = getNews();
+    newsGrid.innerHTML = '';
+
+    // Filter matching posts
+    const filtered = posts.filter(post => {
+      // 1. Tag matching
+      if (activeFilter !== 'all' && post.priority !== activeFilter) return false;
+      // 2. Search matching
+      if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      newsGrid.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:40px;font-size:13px;color:#94a3b8;font-weight:700">No announcements match search criteria.</div>';
+      return;
+    }
+
+    // Render Cards
+    filtered.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'news-card';
+      card.innerHTML = `
+        <div class="news-card-img-wrap">
+          <img class="news-card-img" src="${p.image}" alt="Card image">
+          <span class="news-card-tag tag-${p.priority}">${p.priority}</span>
+        </div>
+        <div class="news-card-body">
+          <div class="news-card-date">${p.date}</div>
+          <h3 class="news-card-title">${p.title}</h3>
+          <p class="news-card-desc">${p.desc}</p>
+          <button class="news-card-readmore" data-post-id="${p.id}">
+            <span>Read more</span>
+            <span class="mi">arrow_right_alt</span>
+          </button>
+        </div>
+      `;
+      
+      // Wire click detail modal trigger
+      card.querySelector('.news-card-readmore').addEventListener('click', () => {
+        openDetail(p);
+      });
+
+      newsGrid.appendChild(card);
+    });
+  }
+
+  // Modal display elements
+  const modal = document.getElementById('newsModal');
+  const modalClose = document.getElementById('newsModalClose');
+  const modalImg = document.getElementById('modalImg');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDate = document.getElementById('modalDate');
+  const modalAudience = document.getElementById('modalAudience');
+  const modalContent = document.getElementById('modalContent');
+
+  function openDetail(post) {
+    modalImg.src = post.image;
+    modalTitle.textContent = post.title;
+    modalDate.textContent = post.date;
+    modalAudience.textContent = `Target Audience: ${post.audience}`;
+    modalContent.innerHTML = post.desc.replace(/\n/g, '<br>');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // Filters logic
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeFilter = tab.dataset.filter;
+      renderFeed();
+    });
+  });
+
+  searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    renderFeed();
+  });
+
+  // Initial render
+  renderFeed();
+
+  // Listen to storage events to sync posts across tabs (if admin publishes news)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'ngis_news_posts') renderFeed();
+  });
+
+})();
+</script>
+</body>
+</html>

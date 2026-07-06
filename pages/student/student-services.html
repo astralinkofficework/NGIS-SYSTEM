@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Student Services Hub</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+/* Services Hub Styling */
+.services-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.services-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--txt2);
+}
+.services-breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.services-breadcrumbs a:hover {
+  color: var(--primary);
+}
+
+.services-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Sidebar Tab Selectors */
+.services-sidebar {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--bdr);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.services-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+.services-tab-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+.services-tab-btn.active {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.services-tab-btn .mi {
+  font-size: 18px;
+}
+
+/* Tab Panels */
+.services-content-panel {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--bdr);
+  padding: 24px;
+  min-height: 480px;
+  display: none;
+}
+.services-content-panel.active {
+  display: block;
+}
+
+.panel-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+.panel-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.panel-desc {
+  font-size: 12.5px;
+  color: #64748b;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* Card lists */
+.item-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+.item-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+/* Inputs & forms styles inside tabs */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #334155;
+}
+.form-control {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  background: #f8fafc;
+}
+.form-control:focus {
+  border-color: #179bb8;
+  background: #fff;
+}
+
+/* Election ballot box */
+.candidate-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+.candidate-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s;
+}
+.candidate-card.selected {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+.candidate-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
+/* Lost & found grid */
+.lost-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.lost-item-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.lost-item-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+.lost-item-body {
+  padding: 12px;
+}
+
+@media (max-width: 900px) {
+  .services-layout {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<main class="main">
+  <!-- Hero Banner Header -->
+  <header class="hero" style="padding-bottom: 40px;">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <button class="htb-hamburger" id="htbHamburger" aria-label="Open menu">
+          <span class="mi">menu</span>
+        </button>
+        <a href="student.html" class="htb-home-btn">
+          <span class="mi">arrow_back</span>
+          <span>Back to Dashboard</span>
+        </a>
+      </div>
+      <div class="htb-center">
+        <img class="htb-logo" src="LOGO NGIS (2).png" alt="NGIS logo" />
+      </div>
+      <div class="htb-right" style="opacity: 0; pointer-events: none;">
+        <!-- Placeholder to center logo -->
+      </div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">Student Services Hub</h1>
+        <p class="hero-greeting">Digital wallet, behavior reports, counseling appointments, and campus utilities.</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Workspace -->
+  <div class="services-page">
+    
+    <div class="services-breadcrumbs">
+      <a href="student.html">Home</a>
+      <span class="sep">/</span>
+      <span class="active">Services Hub</span>
+    </div>
+
+    <div class="services-layout">
+      <!-- Sidebar selectors -->
+      <aside class="services-sidebar">
+        <button class="services-tab-btn active" data-tab="certificates"><span class="mi">emoji_events</span>Certificates & Awards</button>
+        <button class="services-tab-btn" data-tab="behavior"><span class="mi">assignment_ind</span>Behavior & Discipline</button>
+        <button class="services-tab-btn" data-tab="clubs"><span class="mi">groups</span>Clubs & Activities</button>
+        <button class="services-tab-btn" data-tab="counseling"><span class="mi">psychology</span>Counseling & Career</button>
+        <button class="services-tab-btn" data-tab="lostfound"><span class="mi">search_check</span>Lost & Found</button>
+        <button class="services-tab-btn" data-tab="voting"><span class="mi">how_to_vote</span>School Elections</button>
+        <button class="services-tab-btn" data-tab="competitions"><span class="mi">military_tech</span>Competitions</button>
+        <button class="services-tab-btn" data-tab="feedback"><span class="mi">rate_review</span>Suggestions Box</button>
+      </aside>
+
+      <!-- Main Panels -->
+      <section class="services-workspace">
+        
+        <!-- Tab 1: Certificates -->
+        <div class="services-content-panel active" id="tab-certificates">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">emoji_events</span>Digital Credentials & Awards</h2>
+            <p class="panel-desc">Download and verify your achievements, credentials, and tournament prizes.</p>
+          </div>
+          
+          <div class="item-card">
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="mi" style="font-size:32px;color:#facc15">verified</span>
+              <div>
+                <h4 style="margin:0;font-size:14px;font-weight:700">Perfect Attendance Certificate (Q2)</h4>
+                <p style="margin:2px 0 0 0;font-size:11px;color:#64748b">Granted for 100% attendance during Term 2 of 2025/26 term.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm btn-ghost" onclick="window.toast('Downloading PDF...','info')">Download PDF</button>
+              <button class="btn btn-sm btn-primary" onclick="window.toast('Security Verification Token: NGIS-CERT-0482819','info')">Verify QR</button>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="mi" style="font-size:32px;color:#10b981">workspace_premium</span>
+              <div>
+                <h4 style="margin:0;font-size:14px;font-weight:700">Honor Roll Certificate - Academic Excellence</h4>
+                <p style="margin:2px 0 0 0;font-size:11px;color:#64748b">Granted for obtaining a GPA of 3.87 in Term 1.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm btn-ghost" onclick="window.toast('Downloading PDF...','info')">Download PDF</button>
+              <button class="btn btn-sm btn-primary" onclick="window.toast('Security Verification Token: NGIS-CERT-0192834','info')">Verify QR</button>
+            </div>
+          </div>
+          
+          <div class="item-card">
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="mi" style="font-size:32px;color:#ef4444">sports_handball</span>
+              <div>
+                <h4 style="margin:0;font-size:14px;font-weight:700">Yellow Falcon House Swimming MVP</h4>
+                <p style="margin:2px 0 0 0;font-size:11px;color:#64748b">1st place in the 100m freestyle and overall swimming MVP.</p>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm btn-ghost" onclick="window.toast('Downloading PDF...','info')">Download PDF</button>
+              <button class="btn btn-sm btn-primary" onclick="window.toast('Security Verification Token: NGIS-CERT-0839210','info')">Verify QR</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Behavior & Discipline -->
+        <div class="services-content-panel" id="tab-behavior">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">assignment_ind</span>Growth & Discipline Record</h2>
+            <p class="panel-desc">Review your behavioral metrics, growth milestones, and submit responses/appeals.</p>
+          </div>
+          
+          <h3 style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:10px">Behavioral Growth Timeline</h3>
+          <div style="border-left:2px solid #e2e8f0;padding-left:16px;margin-bottom:24px;display:flex;flex-direction:column;gap:12px">
+            <div style="position:relative">
+              <span style="position:absolute;left:-22px;top:2px;width:10px;height:10px;border-radius:50%;background:#10b981;border:2px solid #fff"></span>
+              <div style="font-size:12.5px;font-weight:700;color:#0f172a">Excellent Collaboration in Lab Project</div>
+              <div style="font-size:10.5px;color:#94a3b8">Jun 25, 2026 • Ms. Kiry Sokha (Biology)</div>
+              <p style="margin:4px 0 0 0;font-size:11.5px;color:#64748b">Assisted other students with sorting optics variables. Highly cooperative.</p>
+            </div>
+            <div style="position:relative">
+              <span style="position:absolute;left:-22px;top:2px;width:10px;height:10px;border-radius:50%;background:#10b981;border:2px solid #fff"></span>
+              <div style="font-size:12.5px;font-weight:700;color:#0f172a">100% Weekly Attendance Streak</div>
+              <div style="font-size:10.5px;color:#94a3b8">Jun 18, 2026 • System Log</div>
+              <p style="margin:4px 0 0 0;font-size:11.5px;color:#64748b">Perfect attendance across all class sessions during week 14.</p>
+            </div>
+            <div style="position:relative">
+              <span style="position:absolute;left:-22px;top:2px;width:10px;height:10px;border-radius:50%;background:#ef4444;border:2px solid #fff"></span>
+              <div style="font-size:12.5px;font-weight:700;color:#ef4444">Corrective Action: Tardy to Homeroom</div>
+              <div style="font-size:10.5px;color:#94a3b8">Jun 10, 2026 • Mr. Sophea (Physics)</div>
+              <p style="margin:4px 0 0 0;font-size:11.5px;color:#64748b">Arrived 15 minutes late to the period without a pass.</p>
+            </div>
+          </div>
+
+          <h3 style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:10px">Discipline Cases & Appeals</h3>
+          <div class="item-card" style="border-color:#fca5a5;background:#fff8f8;flex-direction:column;align-items:stretch">
+            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #fee2e2;padding-bottom:10px;margin-bottom:10px">
+              <div>
+                <span class="badge red" style="font-size:9.5px;padding:2px 6px;">Under Review</span>
+                <span style="font-size:12.5px;font-weight:700;margin-left:8px;color:#991b1b">Case DISC-2026-004: Unexcused Absence Streak</span>
+              </div>
+              <span style="font-size:10.5px;color:#94a3b8">Reported: Jun 30, 2026</span>
+            </div>
+            <p style="font-size:11.5px;color:#7f1d1d;margin:0 0 12px 0;line-height:1.4">
+              Student has missed three consecutive homeroom sessions without submitting a medical note or parental excuse letter.
+            </p>
+            
+            <div id="appealFormArea">
+              <div style="font-size:11.5px;font-weight:700;color:#0f172a;margin-bottom:6px">Submit Appeal Statement / Acknowledgment:</div>
+              <textarea class="form-control" id="appealText" style="width:100%;height:60px;resize:none;margin-bottom:8px" placeholder="Provide details here (e.g. 'I was sick and parent will email the medical note')..."></textarea>
+              <button class="btn btn-sm btn-primary" onclick="submitAppeal()">Submit Appeal Statement</button>
+            </div>
+            
+            <div id="appealStatusArea" style="display:none;font-size:11.5px;color:#16a34a;font-weight:700">
+              ✓ Appeal statement successfully recorded! Status updated to: "Awaiting Admin Review"
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Clubs & Activities -->
+        <div class="services-content-panel" id="tab-clubs">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">groups</span>Student Clubs & Hub</h2>
+            <p class="panel-desc">Join active school clubs, check rosters, and browse leaderboards.</p>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 260px;gap:20px;">
+            <div>
+              <h3 style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:12px">My Memberships</h3>
+              <div class="item-card" style="padding:12px 16px;">
+                <div>
+                  <h4 style="margin:0;font-size:13px;font-weight:700">Computer Science & Algorithms Club</h4>
+                  <p style="margin:2px 0 0 0;font-size:11px;color:#64748b">Role: Active Member • Meeting: Wednesday @ 3:00 PM</p>
+                </div>
+                <button class="btn btn-sm btn-ghost" onclick="window.toast('Opening club announcements...','info')">View Feed</button>
+              </div>
+
+              <div class="item-card" style="padding:12px 16px;">
+                <div>
+                  <h4 style="margin:0;font-size:13px;font-weight:700">NGIS Varsity Swimming Team</h4>
+                  <p style="margin:2px 0 0 0;font-size:11px;color:#64748b">Role: Swimmer • Meeting: Mon/Fri @ 7:00 AM</p>
+                </div>
+                <button class="btn btn-sm btn-ghost" onclick="window.toast('Opening team feed...','info')">View Feed</button>
+              </div>
+
+              <h3 style="font-size:13.5px;font-weight:800;color:#334155;margin-top:20px;margin-bottom:12px">Join New Club</h3>
+              <div class="form-group" style="margin-bottom:12px">
+                <label class="form-label">Select Club</label>
+                <select class="form-control" id="clubSelect">
+                  <option>Robotics & Automation Society</option>
+                  <option>Debate & Public Speaking</option>
+                  <option>Drama & Theater Guild</option>
+                  <option>Visual Arts & Design Lab</option>
+                </select>
+              </div>
+              <button class="btn btn-primary" onclick="submitClubRequest()">Submit Join Request</button>
+            </div>
+
+            <!-- Club Leaderboard sidebar -->
+            <div style="background:#f8fafc;border-radius:14px;padding:16px;border:1px solid #e2e8f0;">
+              <h4 style="margin:0 0 10px 0;font-size:12px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px">Club Points Board</h4>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;color:#0f172a">
+                  <span>1. Robotics Society</span>
+                  <span style="color:#10b981">850 pts</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;color:#334155">
+                  <span>2. CompSci Club</span>
+                  <span style="color:#10b981">790 pts</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;color:#334155">
+                  <span>3. Debate Society</span>
+                  <span style="color:#d97706">640 pts</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;color:#64748b">
+                  <span>4. Theater Guild</span>
+                  <span>450 pts</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Counseling -->
+        <div class="services-content-panel" id="tab-counseling">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">psychology</span>Counseling & Career Guidance</h2>
+            <p class="panel-desc">Book counseling sessions, check scholarship roadmaps, and target universities.</p>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 280px;gap:20px">
+            <div>
+              <h3 style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:12px">Schedule Session</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label">Counselor</label>
+                  <select class="form-control" id="counselorSelect">
+                    <option>Mrs. Sophy (Academic advisor)</option>
+                    <option>Dr. James (University guidance)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Topic</label>
+                  <select class="form-control" id="counselorTopic">
+                    <option>University Recommendation Letters</option>
+                    <option>Scholarship Deadlines</option>
+                    <option>Academic Load Consultation</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Date</label>
+                  <input type="date" class="form-control" id="counselorDate" value="2026-07-10" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Preferred Time Slot</label>
+                  <select class="form-control" id="counselorTime">
+                    <option>10:00 AM - 10:30 AM</option>
+                    <option>02:00 PM - 02:30 PM</option>
+                    <option>03:30 PM - 04:00 PM</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="submitCounselorBooking()">Schedule Appointment</button>
+            </div>
+
+            <!-- University Roadmap -->
+            <div style="background:#f8fafc;border-radius:14px;padding:16px;border:1px solid #e2e8f0;display:flex;flex-direction:column;gap:12px">
+              <h4 style="margin:0;font-size:12px;font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:0.5px">College Roadmap</h4>
+              <div style="font-size:11px;border-bottom:1px solid #e2e8f0;padding-bottom:8px">
+                <div style="font-weight:700;color:#0f172a">Stanford University</div>
+                <div style="color:#64748b;margin-top:2px">Deadline: Nov 1 • Transcript Sent</div>
+              </div>
+              <div style="font-size:11px;border-bottom:1px solid #e2e8f0;padding-bottom:8px">
+                <div style="font-weight:700;color:#0f172a">National Univ of Singapore</div>
+                <div style="color:#64748b;margin-top:2px">Deadline: Jan 15 • Rec Letters Pending</div>
+              </div>
+              <div style="font-size:11px">
+                <div style="font-weight:700;color:#0f172a">Yale University</div>
+                <div style="color:#64748b;margin-top:2px">Deadline: Jan 1 • Awaiting Essay Draft</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Lost & Found -->
+        <div class="services-content-panel" id="tab-lostfound">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">search_check</span>Lost & Found Registry</h2>
+            <p class="panel-desc">Browse reported lost/found items on campus, or log a new item to claim.</p>
+          </div>
+
+          <h3 style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:12px">Log Found/Lost Item</h3>
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="form-group">
+              <label class="form-label">Item Description</label>
+              <input type="text" class="form-control" id="lostItemName" placeholder="e.g. Casio Calculator, Black Pencil Case" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select class="form-control" id="lostItemType">
+                <option>Lost Item</option>
+                <option>Found Item</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location (Last seen/Found)</label>
+              <input type="text" class="form-control" id="lostItemLoc" placeholder="e.g. Library, Classroom 10A" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Attachment (Mock Upload)</label>
+              <button class="btn btn-ghost" style="font-size:12px;padding:8px" onclick="window.toast('Mock image upload triggered','info')">Attach Photo</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-bottom:24px" onclick="submitLostItem()">Register Item Alert</button>
+
+          <h3 style="font-size:13.5px;font-weight:800;color:#334155;margin-bottom:12px">Active Campus Catalog</h3>
+          <div class="lost-grid" id="lostCatalog">
+            <div class="lost-item-card">
+              <img class="lost-item-img" src="https://images.pexels.com/photos/163016/pexels-photo-163016.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Item image" />
+              <div class="lost-item-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <span class="badge amber" style="font-size:9px;padding:1px 4px">Found</span>
+                  <span style="font-size:9.5px;color:#94a3b8">Jul 5</span>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:#1e293b">Casio Calculator (Grey)</div>
+                <div style="font-size:10px;color:#64748b;margin-top:2px">Location: Chemistry Lab table</div>
+              </div>
+            </div>
+            
+            <div class="lost-item-card">
+              <img class="lost-item-img" src="https://images.pexels.com/photos/908284/pexels-photo-908284.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Item image" />
+              <div class="lost-item-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <span class="badge red" style="font-size:9px;padding:1px 4px">Lost</span>
+                  <span style="font-size:9.5px;color:#94a3b8">Jul 4</span>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:#1e293b">Black leather pencil case</div>
+                <div style="font-size:10px;color:#64748b;margin-top:2px">Location: Near Cafeteria exit</div>
+              </div>
+            </div>
+
+            <div class="lost-item-card">
+              <img class="lost-item-img" src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Item image" />
+              <div class="lost-item-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <span class="badge amber" style="font-size:9px;padding:1px 4px">Found</span>
+                  <span style="font-size:9.5px;color:#94a3b8">Jul 3</span>
+                </div>
+                <div style="font-size:12px;font-weight:700;color:#1e293b">Water Bottle (Blue)</div>
+                <div style="font-size:10px;color:#64748b;margin-top:2px">Location: Basketball field benches</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 6: School Elections -->
+        <div class="services-content-panel" id="tab-voting">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">how_to_vote</span>School Council Elections</h2>
+            <p class="panel-desc">Cast your vote securely. One-ballot limit is tied to your Student ID card.</p>
+          </div>
+
+          <div id="votingBoothContent">
+            <div style="background:#eff6ff;padding:12px 16px;border-radius:12px;border:1px solid #dbeafe;font-size:12px;color:#1e40af;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px">
+              <span class="mi">info</span>
+              <span>Ballot Open: Student Council General President 2026</span>
+            </div>
+
+            <div class="candidate-grid">
+              <div class="candidate-card" id="cand-a">
+                <img class="candidate-photo" src="https://images.pexels.com/photos/1438081/pexels-photo-1438081.jpeg?auto=compress&cs=tinysrgb&w=120" />
+                <h4 style="margin:0;font-size:13.5px;font-weight:700">Sokun Nisa</h4>
+                <div style="font-size:10.5px;color:#0d9488;font-weight:600;margin-top:2px">Party: Progressive Student Front</div>
+                <p style="font-size:11px;color:#64748b;margin:8px 0 16px 0;line-height:1.4">"Dedicated to expanding library working hours, adding sports gear checkout racks, and establishing cafeteria suggestion menus."</p>
+                <button class="btn btn-sm btn-primary" onclick="castVote('Sokun Nisa', 'cand-a')">Vote for Nisa</button>
+              </div>
+
+              <div class="candidate-card" id="cand-b">
+                <img class="candidate-photo" src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=120" />
+                <h4 style="margin:0;font-size:13.5px;font-weight:700">Chan Rith</h4>
+                <div style="font-size:10.5px;color:#0369a1;font-weight:600;margin-top:2px">Party: Technology & Innovation Alliance</div>
+                <p style="font-size:11px;color:#64748b;margin:8px 0 16px 0;line-height:1.4">"Focusing on introducing weekly coding workshops, improvement of playground campus WiFi grids, and inter-house video gaming clubs."</p>
+                <button class="btn btn-sm btn-primary" onclick="castVote('Chan Rith', 'cand-b')">Vote for Rith</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="voteSubmittedArea" style="display:none;text-align:center;padding:40px 20px;">
+            <span class="mi" style="font-size:64px;color:#10b981">how_to_vote</span>
+            <h3 style="font-size:18px;font-weight:800;color:#0f172a;margin:16px 0 8px 0">Ballot Cast Successfully</h3>
+            <p style="font-size:12.5px;color:#64748b;max-width:340px;margin:0 auto 20px auto;line-height:1.5">
+              Thank you for participating! Your vote has been securely recorded. One-vote-per-student rules are enforced.
+            </p>
+            <div style="display:inline-block;padding:8px 16px;background:#f1f5f9;border-radius:10px;font-size:11px;font-family:monospace;color:#475569">
+              AUDIT COMPLIANCE HASH: <span id="ballotHash">VOTE_7fa3b91c...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 7: Competitions -->
+        <div class="services-content-panel" id="tab-competitions">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">military_tech</span>Competition Registration</h2>
+            <p class="panel-desc">Browse, register, and track entries for school-level or inter-school tournaments.</p>
+          </div>
+
+          <div class="item-card">
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="mi" style="font-size:32px;color:#8b5cf6">robotics</span>
+              <div>
+                <h4 style="margin:0;font-size:14px;font-weight:700">Cambodia National Robotics Olympiad 2026</h4>
+                <p style="margin:2px 0 0 0;font-size:11px;color:#64748b">Deadline: Aug 10 • Teams of 3 • Open to Grade 10-12</p>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary" onclick="window.toast('Robotics Registration Submitted!','success')">Register Team</button>
+          </div>
+
+          <div class="item-card">
+            <div style="display:flex;align-items:center;gap:16px">
+              <span class="mi" style="font-size:32px;color:#179bb8">science</span>
+              <div>
+                <h4 style="margin:0;font-size:14px;font-weight:700">Inter-High Science Quiz Bowl</h4>
+                <p style="margin:2px 0 0 0;font-size:11px;color:#64748b">Completed on Jun 15 • Scored: 2nd Place Team Prize</p>
+              </div>
+            </div>
+            <span class="badge blue">Completed (Prize Issued)</span>
+          </div>
+        </div>
+
+        <!-- Tab 8: Suggestions & Feedback -->
+        <div class="services-content-panel" id="tab-feedback">
+          <div class="panel-header">
+            <h2 class="panel-title"><span class="mi">rate_review</span>Student Suggestion Box</h2>
+            <p class="panel-desc">Submit suggestions, feedback, or complaints anonymously to school administration.</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="form-control" id="feedbackCategory">
+                <option>Facilities & Campus</option>
+                <option>Academic Curriculum</option>
+                <option>Cafeteria & Meals</option>
+                <option>School Bus Transport</option>
+              </select>
+            </div>
+            <div class="form-group" style="justify-content:center;padding-top:16px">
+              <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#334155;cursor:pointer">
+                <input type="checkbox" id="feedbackAnon" /> Submit Anonymously
+              </label>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:12px">
+            <label class="form-label">Suggestion Details</label>
+            <textarea class="form-control" id="feedbackDetails" style="width:100%;height:100px;resize:none" placeholder="Provide detailed observations..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="submitFeedback()">Submit Feedback</button>
+        </div>
+
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<script>
+(function() {
+  // Navigation tabs
+  const tabBtns = document.querySelectorAll('.services-tab-btn');
+  const panels = document.querySelectorAll('.services-content-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const targetPanel = document.getElementById(`tab-${btn.dataset.tab}`);
+      if (targetPanel) targetPanel.classList.add('active');
+    });
+  });
+
+  // Action methods
+  window.submitAppeal = function() {
+    const txt = document.getElementById('appealText').value.trim();
+    if (!txt) return;
+    document.getElementById('appealFormArea').style.display = 'none';
+    document.getElementById('appealStatusArea').style.display = 'block';
+    
+    // Log to audit log
+    let auditLogs = JSON.parse(localStorage.getItem('ngis_audit_logs')) || [];
+    auditLogs.unshift({
+      timestamp: new Date().toLocaleString(),
+      type: 'sent',
+      party: 'Discipline Board',
+      details: `Discipline Appeal Submitted: "${txt.substring(0, 30)}..."`,
+      status: 'Compliant'
+    });
+    localStorage.setItem('ngis_audit_logs', JSON.stringify(auditLogs));
+    window.toast('Appeal submitted to discipline queue.', 'success');
+  };
+
+  window.submitClubRequest = function() {
+    const club = document.getElementById('clubSelect').value;
+    window.toast(`Membership request routed for: ${club}`, 'success');
+  };
+
+  window.submitCounselorBooking = function() {
+    const date = document.getElementById('counselorDate').value;
+    const time = document.getElementById('counselorTime').value;
+    window.toast(`Counseling Session Confirmed: ${date} @ ${time}`, 'success');
+  };
+
+  window.submitLostItem = function() {
+    const name = document.getElementById('lostItemName').value.trim();
+    const type = document.getElementById('lostItemType').value;
+    const loc = document.getElementById('lostItemLoc').value.trim();
+    if (!name || !loc) return;
+    
+    window.toast(`${type} registered successfully! Catalog updated.`, 'success');
+    document.getElementById('lostItemName').value = '';
+    document.getElementById('lostItemLoc').value = '';
+  };
+
+  window.castVote = function(candidate, cardId) {
+    document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById(cardId).classList.add('selected');
+    
+    setTimeout(() => {
+      document.getElementById('votingBoothContent').style.display = 'none';
+      document.getElementById('voteSubmittedArea').style.display = 'block';
+      const hash = 'VOTE_' + Math.floor(100000 + Math.random() * 900000).toString(16).toUpperCase();
+      document.getElementById('ballotHash').textContent = hash;
+      
+      // Save vote state
+      localStorage.setItem('ngis_student_voted', 'true');
+      
+      window.toast(`Vote recorded for ${candidate}`, 'success');
+    }, 400);
+  };
+
+  window.submitFeedback = function() {
+    const txt = document.getElementById('feedbackDetails').value.trim();
+    if (!txt) return;
+    window.toast('Feedback submitted anonymously to admin inbox.', 'success');
+    document.getElementById('feedbackDetails').value = '';
+  };
+
+  // Restore Vote state on load
+  if (localStorage.getItem('ngis_student_voted') === 'true') {
+    document.getElementById('votingBoothContent').style.display = 'none';
+    document.getElementById('voteSubmittedArea').style.display = 'block';
+  }
+
+})();
+</script>
+
+<script>window.PAGE={"role":"student","active":"services"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'student-profile.html',
+  notifLink: 'student-notifications.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 3,
+  title: 'Services Hub',
+  greeting: 'Access digital credentials, behavioral audits, lost & found catalogs, and voting centers.',
+  breadcrumbs: [{ label: 'Services Hub' }],
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+  ]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

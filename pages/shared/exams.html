@@ -1,293 +1,430 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>NGIS — Exams</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+
+/* ════════════════════════════════════
+   EXAM NOTICE — Page styles
+   ════════════════════════════════════ */
+
+/* ── Two-column layout ── */
+.ex-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 960px) { .ex-layout { grid-template-columns: 1fr; } }
+
+/* ── Filter tabs ── */
+.ex-tabs { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.ex-tab {
+  padding: 5px 13px; border-radius: 99px; font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--border);
+  background: transparent; color: var(--muted);
+  cursor: pointer; transition: all .15s;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.ex-tab:hover { color: var(--text); border-color: var(--border-strong); }
+.ex-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.ex-tab-n {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; border-radius: 99px;
+  font-size: 10px; font-weight: 800; padding: 0 4px;
+  background: rgba(255,255,255,.22);
+}
+.ex-tab:not(.active) .ex-tab-n { background: var(--surface-3); color: var(--text); }
+
+/* ── Exam card grid — max 6 columns, responsive wrap ── */
+.ex-card-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  padding: 16px;
+}
+@media (max-width: 1100px) { .ex-card-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 760px)  { .ex-card-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; } }
+@media (max-width: 520px)  { .ex-card-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 10px; } }
+@media (max-width: 340px)  { .ex-card-grid { grid-template-columns: 1fr; } }
+
+/* ── Individual exam card ── */
+.ex-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow .18s, transform .18s, border-color .18s;
+  cursor: default;
+}
+.ex-card:hover {
+  box-shadow: var(--sh-2);
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+
+/* Date blob at top of card */
+.ex-card-date {
+  width: 44px; height: 48px;
+  border-radius: 10px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ex-card-date .d { font-size: 20px; font-weight: 900; line-height: 1; }
+.ex-card-date .m { font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; opacity: .75; margin-top: 2px; }
+.ex-card-date.upcoming  { background: rgba(37,99,235,.09);   color: #2563eb; }
+.ex-card-date.completed { background: rgba(100,116,139,.08); color: #64748b; }
+.ex-card-date.missed    { background: rgba(225,29,72,.08);   color: #e11d48; }
+
+.ex-card-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+  /* allow wrapping — no ellipsis so full name shows */
+}
+
+/* Badge row at bottom */
+.ex-card-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ex-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: 99px;
+  font-size: 9px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  flex-shrink: 0;
+}
+.ex-badge.upcoming  { background: rgba(37,99,235,.1);   color: #2563eb; }
+.ex-badge.completed { background: rgba(100,116,139,.1); color: #64748b; }
+.ex-badge.missed    { background: rgba(225,29,72,.1);   color: #e11d48; }
+
+.ex-score {
+  font-size: 15px; font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+}
+
+/* dark mode card */
+[data-theme="dark"] .ex-card { background: var(--surface); border-color: var(--border); }
+
+/* ── Sidebar: schedule image ── */
+.ex-schedule-img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  object-fit: cover;
+  background: var(--surface-3);  /* placeholder bg while image loads */
+  min-height: 160px;
+}
+
+/* Image placeholder when no real image */
+.ex-schedule-placeholder {
+  width: 100%;
+  min-height: 172px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary) 0%, #237A42 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+  padding: 24px 20px;
+  text-align: center;
+}
+.ex-schedule-placeholder .material-symbols-outlined { font-size: 36px; opacity: .85; }
+.ex-schedule-placeholder span { font-size: 13px; font-weight: 700; opacity: .9; }
+.ex-schedule-placeholder small { font-size: 11px; opacity: .65; }
+
+/* ── Exam Materials list ── */
+.lesson-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.lesson-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--sh-1);
+}
+.lesson-body {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.lesson-body b     { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lesson-body small { color: var(--muted); font-size: 12px; }
+.lesson-file-icon {
+  width: 34px; height: 34px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 800; letter-spacing: .02em;
+  color: #fff; flex-shrink: 0;
+}
+.lesson-file-icon.pdf { background: #e11d48; }
+.lesson-file-icon.doc { background: #2563eb; }
+.lesson-file-icon.xls { background: #16a34a; }
+.lesson-file-icon.img { background: #7c3aed; }
+[data-theme="dark"] .lesson-card { background: var(--surface-2); border-color: var(--border); }
+
+/* ── Mobile page padding ── */
+@media (max-width: 480px) {
+  .page { padding: 14px 12px 80px; }
+  .ex-stat-val { font-size: 26px; }
+  .ex-tabs { gap: 3px; }
+  .ex-tab  { padding: 4px 10px; font-size: 11px; }
+}
+
+</style>
 </head>
 <body data-page="exams">
 <main class="main">
-
-  <!-- HERO BANNER -->
-  <div class="hero-banner">
-    <div class="hb-content">
-      <nav class="hb-crumb" aria-label="Breadcrumb">
-        <a href="../student/student.html">Home</a>
-        <span class="hb-crumb-sep">›</span>
-        <span>Exams</span>
-      </nav>
-      <h1 class="hb-title">Examinations</h1>
-      <p class="hb-sub">Semester 2 Finals · 14–25 July 2026 · NGIS International School</p>
-      <div class="hb-badges">
-        <span class="hb-pill hb-pill-alert"><span class="material-symbols-outlined" style="font-size:13px">timer</span>20 days to go</span>
-        <span class="hb-pill"><span class="material-symbols-outlined" style="font-size:13px">edit_note</span>5 exams scheduled</span>
-        <span class="hb-pill"><span class="material-symbols-outlined" style="font-size:13px">school</span>Grade 11 · SS2</span>
-      </div>
-    </div>
-    <div class="hb-logo-block">
-      <div class="hb-logo-ring">
-        <img src="../../assets/ngis-logo.png" alt="NGIS Logo" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-        <span class="hb-logo-fallback" style="display:none">NG</span>
-      </div>
-      <div class="hb-school-name">
-        <b>NGIS International School</b>
-        <span class="hb-kh">សាលារៀន​អន្តរជាតិ NGIS</span>
-      </div>
-    </div>
-  </div>
-
+  <div id="heroBanner"></div>
   <div class="page">
 
-    <!-- Important notice card -->
-    <div class="card mb24" style="border-radius:var(--r-xl);border-left:4px solid var(--danger);background:rgba(239,68,68,.04)">
-      <div class="card-pad">
-        <div class="flex center gap10">
-          <span class="material-symbols-outlined" style="font-size:22px;color:var(--danger);flex-shrink:0">info</span>
+    <!-- ── Main Layout ── -->
+    <div class="ex-layout anim-up-3">
+
+      <!-- LEFT: Exam card grid -->
+      <div class="card">
+        <div class="card-head" style="flex-wrap:wrap;gap:10px">
           <div>
-            <div style="font-size:14px;font-weight:700;color:var(--danger)">Exam Regulations Reminder</div>
-            <p style="font-size:13px;color:var(--muted);margin-top:3px">
-              Bring your <strong>NGIS Student ID</strong> to every exam session. No electronic devices allowed in halls.
-              Arrive at least <strong>15 minutes early</strong>. Late entry not permitted after 10 minutes.
-            </p>
+            <h3>My Exam Schedule</h3>
+            <div class="sub">AY 2025–26 · Semester 2</div>
           </div>
+          <div class="ex-tabs">
+            <button class="ex-tab active" data-filter="all" onclick="filterExams(this)">
+              All <span class="ex-tab-n">18</span>
+            </button>
+            <button class="ex-tab" data-filter="upcoming" onclick="filterExams(this)">
+              Upcoming <span class="ex-tab-n">6</span>
+            </button>
+            <button class="ex-tab" data-filter="completed" onclick="filterExams(this)">
+              Done <span class="ex-tab-n">12</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="ex-card-grid" id="examList">
+
+          <!-- ── Upcoming ── -->
+          <div class="ex-card" data-status="upcoming">
+            <div class="ex-card-date upcoming"><div class="d">29</div><div class="m">Jun</div></div>
+            <div class="ex-card-name">Physics — Mid-Term Examination</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="upcoming">
+            <div class="ex-card-date upcoming"><div class="d">02</div><div class="m">Jul</div></div>
+            <div class="ex-card-name">Advanced Mathematics — Ch.7–10 Test</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="upcoming">
+            <div class="ex-card-date upcoming"><div class="d">14</div><div class="m">Jul</div></div>
+            <div class="ex-card-name">English Literature — Mid-Term Examination</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="upcoming">
+            <div class="ex-card-date upcoming"><div class="d">16</div><div class="m">Jul</div></div>
+            <div class="ex-card-name">English Grammar &amp; Writing</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="upcoming">
+            <div class="ex-card-date upcoming"><div class="d">18</div><div class="m">Jul</div></div>
+            <div class="ex-card-name">Khmer Literature — Mid-Term Examination</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="upcoming">
+            <div class="ex-card-date upcoming"><div class="d">23</div><div class="m">Jul</div></div>
+            <div class="ex-card-name">Chinese Language &amp; Writing</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge upcoming">Upcoming</span>
+            </div>
+          </div>
+
+          <!-- ── Completed ── -->
+          <div class="ex-card" data-status="completed">
+            <div class="ex-card-date completed"><div class="d">15</div><div class="m">Jun</div></div>
+            <div class="ex-card-name">Chemistry — Practical Assessment</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge completed">Done</span>
+              <span class="ex-score">88%</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="completed">
+            <div class="ex-card-date completed"><div class="d">10</div><div class="m">Jun</div></div>
+            <div class="ex-card-name">Khmer Literature — End of Term</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge completed">Done</span>
+              <span class="ex-score">91%</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="completed">
+            <div class="ex-card-date completed"><div class="d">28</div><div class="m">May</div></div>
+            <div class="ex-card-name">Computer Science — Practical Project</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge completed">Done</span>
+              <span class="ex-score">94%</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="completed">
+            <div class="ex-card-date completed"><div class="d">20</div><div class="m">May</div></div>
+            <div class="ex-card-name">Advanced Mathematics — Mid-Year Test</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge completed">Done</span>
+              <span class="ex-score">85%</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="completed">
+            <div class="ex-card-date completed"><div class="d">12</div><div class="m">May</div></div>
+            <div class="ex-card-name">Biology — Chapter 1–4 Assessment</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge completed">Done</span>
+              <span class="ex-score">79%</span>
+            </div>
+          </div>
+
+          <div class="ex-card" data-status="completed">
+            <div class="ex-card-date completed"><div class="d">04</div><div class="m">Apr</div></div>
+            <div class="ex-card-name">Physics — Chapter 1–3 Quiz</div>
+            <div class="ex-card-foot">
+              <span class="ex-badge completed">Done</span>
+              <span class="ex-score">92%</span>
+            </div>
+          </div>
+
         </div>
       </div>
-    </div>
 
-    <!-- Two-column layout -->
-    <div class="col-main" style="gap:24px">
+      <!-- RIGHT: Sidebar -->
+      <div style="display:flex;flex-direction:column;gap:14px">
 
-      <!-- LEFT: Exam timetable list -->
-      <div style="flex:2;display:flex;flex-direction:column;gap:16px">
-
-        <div class="flex between center mb4">
-          <h2 style="font-size:20px">My Exam Schedule</h2>
-          <button class="btn btn-soft btn-sm">
-            <span class="material-symbols-outlined">download</span>
-            Download PDF
-          </button>
-        </div>
-
-        <!-- Week 1 -->
-        <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:4px 0 8px;border-bottom:1px solid var(--border)">
-          Week 1 — 14–18 July
-        </div>
-
-        <div class="exam-card">
-          <div class="exam-date-block">
-            <div class="exam-day">14</div>
-            <div class="exam-mon">July</div>
-          </div>
-          <div class="exam-body">
-            <div class="flex between center gap8 flex-wrap">
-              <h4>English Literature</h4>
-              <span class="badge red">20 days</span>
-            </div>
-            <p>Hall A · 09:00 – 11:00 · 2 hours · Seat: A-24</p>
-            <div class="flex center gap8 mt12">
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">location_on</span>Hall A</span>
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">access_time</span>09:00 – 11:00</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-            <button class="btn btn-ghost btn-sm">
-              <span class="material-symbols-outlined">download</span>
-              Materials
-            </button>
-          </div>
-        </div>
-
-        <div class="exam-card">
-          <div class="exam-date-block">
-            <div class="exam-day">16</div>
-            <div class="exam-mon">July</div>
-          </div>
-          <div class="exam-body">
-            <div class="flex between center gap8 flex-wrap">
-              <h4>English Grammar &amp; Writing</h4>
-              <span class="badge amber">22 days</span>
-            </div>
-            <p>Hall B · 09:00 – 11:00 · 2 hours · Seat: B-11</p>
-            <div class="flex center gap8 mt12">
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">location_on</span>Hall B</span>
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">access_time</span>09:00 – 11:00</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-            <button class="btn btn-ghost btn-sm">
-              <span class="material-symbols-outlined">download</span>
-              Materials
-            </button>
-          </div>
-        </div>
-
-        <div class="exam-card">
-          <div class="exam-date-block">
-            <div class="exam-day">18</div>
-            <div class="exam-mon">July</div>
-          </div>
-          <div class="exam-body">
-            <div class="flex between center gap8 flex-wrap">
-              <h4>Khmer Literature</h4>
-              <span class="badge gray">24 days</span>
-            </div>
-            <p>Hall A · 13:00 – 15:00 · 2 hours · Seat: A-24</p>
-            <div class="flex center gap8 mt12">
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">location_on</span>Hall A</span>
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">access_time</span>13:00 – 15:00</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-            <button class="btn btn-ghost btn-sm">
-              <span class="material-symbols-outlined">download</span>
-              Materials
-            </button>
-          </div>
-        </div>
-
-        <!-- Week 2 -->
-        <div style="font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:4px 0 8px;border-bottom:1px solid var(--border);margin-top:8px">
-          Week 2 — 21–25 July
-        </div>
-
-        <div class="exam-card">
-          <div class="exam-date-block">
-            <div class="exam-day">21</div>
-            <div class="exam-mon">July</div>
-          </div>
-          <div class="exam-body">
-            <div class="flex between center gap8 flex-wrap">
-              <h4>Khmer Writing &amp; Composition</h4>
-              <span class="badge gray">27 days</span>
-            </div>
-            <p>Hall C · 09:00 – 11:00 · 2 hours · Seat: C-07</p>
-            <div class="flex center gap8 mt12">
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">location_on</span>Hall C</span>
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">access_time</span>09:00 – 11:00</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-            <button class="btn btn-ghost btn-sm">
-              <span class="material-symbols-outlined">download</span>
-              Materials
-            </button>
-          </div>
-        </div>
-
-        <div class="exam-card">
-          <div class="exam-date-block">
-            <div class="exam-day">23</div>
-            <div class="exam-mon">July</div>
-          </div>
-          <div class="exam-body">
-            <div class="flex between center gap8 flex-wrap">
-              <h4>Chinese Language &amp; Writing</h4>
-              <span class="badge gray">29 days</span>
-            </div>
-            <p>Hall A · 09:00 – 11:00 · 2 hours · Seat: A-24</p>
-            <div class="flex center gap8 mt12">
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">location_on</span>Hall A</span>
-              <span class="badge gray"><span class="material-symbols-outlined" style="font-size:13px">access_time</span>09:00 – 11:00</span>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-            <button class="btn btn-ghost btn-sm">
-              <span class="material-symbols-outlined">download</span>
-              Materials
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT: Sidebar info -->
-      <div style="flex:1;display:flex;flex-direction:column;gap:16px">
-
-        <!-- Countdown -->
-        <div class="card card-pad" style="border-radius:var(--r-xl);text-align:center;background:var(--primary);color:#fff">
-          <div style="font-size:48px;font-weight:800;line-height:1;letter-spacing:-.03em">20</div>
-          <div style="font-size:14px;font-weight:600;opacity:.9;margin-top:4px">days until first exam</div>
-          <div style="font-size:13px;opacity:.75;margin-top:6px">English Literature · Hall A · 14 Jul</div>
-        </div>
-
-        <!-- Exam materials download -->
-        <div class="card" style="border-radius:var(--r-xl)">
-          <div class="card-head">
-            <div>
-              <div class="flex center gap8">
-                <span class="material-symbols-outlined" style="font-size:18px;color:var(--primary)">folder_open</span>
-                <h3>Exam Materials</h3>
+        <!-- Exam Schedule image (main visual) -->
+        <div class="card" style="overflow:hidden">
+          <div class="card-head" style="padding-bottom:12px">
+            <div style="display:flex;align-items:center;gap:7px">
+              <span class="material-symbols-outlined" style="font-size:17px;color:var(--primary)">calendar_month</span>
+              <div>
+                <h3>Exam Schedule</h3>
+                <div class="sub" style="margin-top:2px">Semester 2 · 2025–26</div>
               </div>
-              <div class="sub">Downloadable resources</div>
             </div>
           </div>
-          <div class="card-pad" style="display:flex;flex-direction:column;gap:10px">
-            <div class="lesson-card" style="padding:10px 12px">
-              <div class="lesson-file-icon pdf" style="width:36px;height:36px;border-radius:var(--r-sm);font-size:9px">PDF</div>
-              <div class="lesson-body"><b style="font-size:13px">Official Exam Regulations</b><small>Admin · Jun 2026</small></div>
-              <button class="icon-btn" title="Download" aria-label="Download">
-                <span class="material-symbols-outlined">download</span>
-              </button>
-            </div>
-            <div class="lesson-card" style="padding:10px 12px">
-              <div class="lesson-file-icon pdf" style="width:36px;height:36px;border-radius:var(--r-sm);font-size:9px">PDF</div>
-              <div class="lesson-body"><b style="font-size:13px">Mathematics Formula Sheet</b><small>Mr. Heng · Jun 2026</small></div>
-              <button class="icon-btn" title="Download" aria-label="Download">
-                <span class="material-symbols-outlined">download</span>
-              </button>
-            </div>
-            <div class="lesson-card" style="padding:10px 12px">
-              <div class="lesson-file-icon pdf" style="width:36px;height:36px;border-radius:var(--r-sm);font-size:9px">PDF</div>
-              <div class="lesson-body"><b style="font-size:13px">Hall Seating Plan — S2 2026</b><small>Admin · 7 Jul 2026</small></div>
-              <button class="icon-btn" title="Download" aria-label="Download">
-                <span class="material-symbols-outlined">download</span>
-              </button>
+          <!-- Placeholder visual — swap src for a real image when available -->
+          <div style="padding:0 16px 16px">
+            <div class="ex-schedule-placeholder">
+              <span class="material-symbols-outlined fill">event_note</span>
+              <span>Official Exam Schedule</span>
+              <small>Semester 2 · AY 2025–26<br>Posted by Admin · Jun 2026</small>
             </div>
           </div>
         </div>
 
-        <!-- Instructions card -->
-        <div class="card card-pad" style="border-radius:var(--r-xl)">
-          <div class="flex center gap8 mb12">
-            <span class="material-symbols-outlined" style="font-size:18px;color:var(--primary)">checklist</span>
-            <h3>Exam Day Checklist</h3>
+        <!-- Exam Materials -->
+        <div class="card">
+          <div class="card-head">
+            <div style="display:flex;align-items:center;gap:7px">
+              <span class="material-symbols-outlined" style="font-size:17px;color:var(--primary)">folder_open</span>
+              <div>
+                <h3>Exam Materials</h3>
+                <div class="sub" style="margin-top:2px">Downloadable resources</div>
+              </div>
+            </div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:9px;font-size:13px">
-            <div class="flex center gap8">
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--success)">check_circle</span>
-              <span>Bring NGIS Student ID card</span>
+          <div class="card-pad" style="display:flex;flex-direction:column;gap:9px">
+
+            <div class="lesson-card">
+              <div class="lesson-file-icon pdf">PDF</div>
+              <div class="lesson-body">
+                <b>Exam Regulations 2026</b>
+                <small>Admin · Jun 2026</small>
+              </div>
+              <button class="icon-btn" title="Download" aria-label="Download">
+                <span class="material-symbols-outlined">download</span>
+              </button>
             </div>
-            <div class="flex center gap8">
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--success)">check_circle</span>
-              <span>Blue or black ballpoint pen (2+)</span>
+
+            <div class="lesson-card">
+              <div class="lesson-file-icon pdf">PDF</div>
+              <div class="lesson-body">
+                <b>Maths Formula Sheet</b>
+                <small>Mr. Heng · Jun 2026</small>
+              </div>
+              <button class="icon-btn" title="Download" aria-label="Download">
+                <span class="material-symbols-outlined">download</span>
+              </button>
             </div>
-            <div class="flex center gap8">
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--success)">check_circle</span>
-              <span>Arrive 15 minutes early</span>
+
+            <div class="lesson-card">
+              <div class="lesson-file-icon pdf">PDF</div>
+              <div class="lesson-body">
+                <b>Hall Seating Plan S2</b>
+                <small>Admin · 7 Jul 2026</small>
+              </div>
+              <button class="icon-btn" title="Download" aria-label="Download">
+                <span class="material-symbols-outlined">download</span>
+              </button>
             </div>
-            <div class="flex center gap8">
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--danger)">cancel</span>
-              <span style="color:var(--muted)">No mobile phones in exam hall</span>
-            </div>
-            <div class="flex center gap8">
-              <span class="material-symbols-outlined" style="font-size:16px;color:var(--danger)">cancel</span>
-              <span style="color:var(--muted)">No food or drinks (water OK)</span>
-            </div>
+
           </div>
         </div>
 
       </div>
+      <!-- end sidebar -->
 
-    </div><!-- /col-main -->
+    </div>
+    <!-- end ex-layout -->
 
-  </div><!-- /page -->
+  </div>
 </main>
+
+<script>
+/* ── Filter Tabs ── */
+function filterExams(tab) {
+  var filter = tab.getAttribute('data-filter');
+  document.querySelectorAll('.ex-tab').forEach(function(t) { t.classList.remove('active'); });
+  tab.classList.add('active');
+  document.querySelectorAll('.ex-card').forEach(function(card) {
+    card.style.display = (filter === 'all' || card.getAttribute('data-status') === filter) ? '' : 'none';
+  });
+}
+</script>
 
 <script>
 (function () {
@@ -300,6 +437,30 @@
   document.body.classList.add('ready');
 })();
 </script>
+<script>window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: '../student/student-profile.html',
+  notifLink: '../student/student-notifications.html',
+  chatLink: 'chat.html',
+  notifCount: 3,
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+  ],
+  title: 'Examinations',
+  greeting: 'Your upcoming and past exam schedule for this semester.',
+  breadcrumbs: [{ label: 'Examinations' }]
+};</script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 </body>
 </html>

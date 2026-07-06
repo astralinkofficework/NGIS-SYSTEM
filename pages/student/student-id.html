@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Digital Student ID</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+.id-page { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+.id-grid { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; }
+@media(max-width:760px){ .id-grid { grid-template-columns: 1fr; } }
+
+/* ── Physical ID Card ── */
+.id-card-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.id-card {
+  width: 340px; min-height: 210px;
+  background: linear-gradient(135deg, #1F6B3A 0%, #237A42 60%, #2E8B50 100%);
+  border-radius: 18px; padding: 20px 22px 18px;
+  box-shadow: 0 8px 32px rgba(31,107,58,.35), 0 2px 8px rgba(0,0,0,.12);
+  position: relative; overflow: hidden; color: #fff;
+}
+.id-card::before {
+  content:''; position:absolute; top:-40px; right:-40px;
+  width:160px; height:160px; border-radius:50%;
+  background: rgba(242,194,48,.12); pointer-events:none;
+}
+.id-card::after {
+  content:''; position:absolute; bottom:-30px; left:10%;
+  width:120px; height:120px; border-radius:50%;
+  background: rgba(255,255,255,.05); pointer-events:none;
+}
+.id-school-header { display:flex; align-items:center; gap:10px; margin-bottom:14px; position:relative; z-index:1; }
+.id-school-logo { width:36px; height:36px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:11px; font-weight:800; color:var(--primary); flex-shrink:0; overflow:hidden; }
+.id-school-logo img { width:100%; height:100%; object-fit:contain; padding:3px; }
+.id-school-name { font-size:10px; font-weight:700; color:rgba(255,255,255,.9); line-height:1.3; text-transform:uppercase; letter-spacing:.04em; }
+.id-card-body { display:flex; gap:14px; align-items:flex-start; position:relative; z-index:1; }
+.id-photo { width:68px; height:84px; border-radius:10px; object-fit:cover; border:2px solid rgba(255,255,255,.6); flex-shrink:0; background:rgba(255,255,255,.15); display:grid; place-items:center; }
+.id-photo-fallback { font-size:24px; font-weight:800; color:#fff; }
+.id-info { flex:1; min-width:0; }
+.id-name { font-size:15px; font-weight:800; color:#fff; line-height:1.2; }
+.id-detail { font-size:11px; color:rgba(255,255,255,.8); margin-top:3px; line-height:1.5; }
+.id-student-no { font-size:13px; font-weight:700; color:var(--accent); margin-top:8px; font-family:var(--mono); letter-spacing:.06em; }
+.id-card-footer { margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.2); display:flex; align-items:center; justify-content:space-between; position:relative; z-index:1; }
+.id-validity { font-size:10px; color:rgba(255,255,255,.7); }
+.id-validity b { color:#fff; }
+.id-qr-block { width:52px; height:52px; background:#fff; border-radius:6px; display:grid; place-items:center; }
+.id-qr-block svg { width:44px; height:44px; }
+
+/* ── QR Pattern (CSS only) ── */
+.qr-pattern { display:grid; grid-template-columns:repeat(7,1fr); gap:1.5px; padding:2px; }
+.qr-cell { width:5px; height:5px; border-radius:0.5px; }
+.qr-cell.on { background:#1F6B3A; }
+.qr-cell.off { background:transparent; }
+
+/* ── Card Actions ── */
+.id-actions { display:flex; gap:8px; width:340px; }
+.id-actions .btn { flex:1; justify-content:center; font-size:13px; min-height:38px; }
+
+/* ── Right Panel ── */
+.id-right { display:flex; flex-direction:column; gap:16px; }
+.id-info-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-xl); padding:20px; box-shadow:var(--sh-1); }
+.id-info-card h3 { font-size:15px; margin-bottom:14px; }
+.id-rows { display:flex; flex-direction:column; gap:10px; }
+.id-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); font-size:13.5px; }
+.id-row:last-child { border-bottom:none; padding-bottom:0; }
+.id-row .lbl { color:var(--muted); display:flex; align-items:center; gap:7px; }
+.id-row .lbl .material-symbols-outlined { font-size:16px; color:var(--faint); }
+.id-row .val { font-weight:700; color:var(--heading); text-align:right; }
+.id-status-badge { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:700; padding:3px 10px; border-radius:var(--r-pill); }
+.id-status-active { background:var(--primary-soft); color:var(--primary); }
+
+/* ── Usage Guide ── */
+.id-usage { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-xl); padding:18px 20px; box-shadow:var(--sh-1); }
+.id-usage h3 { font-size:14px; margin-bottom:12px; }
+.id-use-item { display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
+.id-use-item:last-child { border-bottom:none; }
+.id-use-ico { width:36px; height:36px; border-radius:var(--r-md); display:grid; place-items:center; flex-shrink:0; }
+.id-use-ico .material-symbols-outlined { font-size:18px; }
+.id-use-body b { font-size:13px; font-weight:600; display:block; }
+.id-use-body small { font-size:12px; color:var(--muted); }
+
+/* Offline notice */
+.id-offline-notice { background:var(--accent-soft); border:1px solid var(--accent-border); border-radius:var(--r-md); padding:10px 14px; display:flex; align-items:center; gap:10px; font-size:13px; color:#7A5C00; }
+.id-offline-notice .material-symbols-outlined { font-size:18px; flex-shrink:0; }
+</style>
+</head>
+<body data-page="student-id">
+<main class="main">
+<div id="heroBanner"></div>
+<div class="page id-page">
+
+<div class="id-grid anim-up">
+
+  <!-- LEFT: ID Card -->
+  <div class="id-card-wrap">
+    <!-- The Card -->
+    <div class="id-card" id="studentIdCard">
+      <div class="id-school-header">
+        <div class="id-school-logo">
+          <img src="LOGO NGIS (2).png" alt="NGIS" onerror="this.style.display='none';this.parentNode.textContent='N'">
+        </div>
+        <div class="id-school-name">New Gateway International School<br>សាលាអន្តរជាតិ ញូ ហ្គេតវ៉េ</div>
+      </div>
+      <div class="id-card-body">
+        <img src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=120" class="id-photo" id="idPhoto" alt="Student Photo" onerror="this.style.display='none';document.getElementById('idPhotoFb').style.display='grid'">
+        <div class="id-photo id-photo-fallback" id="idPhotoFb" style="display:none">NH</div>
+        <div class="id-info">
+          <div class="id-name" id="idName">Nrinphouneta Hok</div>
+          <div class="id-detail" id="idDetail">Grade 10 — Science Stream<br>Class 10A · AY 2025–26</div>
+          <div class="id-student-no" id="idNo">ID: 2026-STD-0142</div>
+        </div>
+      </div>
+      <div class="id-card-footer">
+        <div class="id-validity">Valid until <b>Aug 2027</b></div>
+        <div class="id-qr-block" title="Scan for identity verification">
+          <!-- CSS QR pattern -->
+          <div class="qr-pattern" id="qrPattern"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="id-actions">
+      <button class="btn btn-primary btn-sm" onclick="downloadId()">
+        <span class="material-symbols-outlined">download</span> Save
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="printId()">
+        <span class="material-symbols-outlined">print</span> Print
+      </button>
+      <button class="btn btn-soft btn-sm" onclick="shareId()">
+        <span class="material-symbols-outlined">qr_code</span> QR
+      </button>
+    </div>
+
+    <!-- Offline notice -->
+    <div class="id-offline-notice" style="width:340px">
+      <span class="material-symbols-outlined">offline_bolt</span>
+      <span>This ID card is <b>cached offline</b> — works without internet at the gate, library, and cafeteria.</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: Info + Usage -->
+  <div class="id-right">
+
+    <div class="id-info-card">
+      <h3>Student Information</h3>
+      <div class="id-rows">
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">badge</span>Student ID</span><span class="val mono">2026-STD-0142</span></div>
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">person</span>Full Name</span><span class="val">Nrinphouneta Hok</span></div>
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">school</span>Grade & Class</span><span class="val">Grade 10 · Class 10A</span></div>
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">apartment</span>Stream</span><span class="val">Science Stream</span></div>
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">home</span>Homeroom</span><span class="val">Mr. Chea Sophea</span></div>
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">group</span>House</span><span class="val">Phoenix House 🔴</span></div>
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">calendar_today</span>Enrolled</span><span class="val">September 2024</span></div>
+        <div class="id-row"><span class="lbl"><span class="material-symbols-outlined">verified</span>Status</span><span class="val"><span class="id-status-badge id-status-active"><span class="material-symbols-outlined" style="font-size:13px">circle</span>Active</span></span></div>
+      </div>
+    </div>
+
+    <div class="id-usage">
+      <h3>Where to use your Digital ID</h3>
+      <div class="id-use-item">
+        <div class="id-use-ico t-green"><span class="material-symbols-outlined">gate</span></div>
+        <div class="id-use-body"><b>School Gate Entry</b><small>Show QR code to the scanner for daily entry</small></div>
+      </div>
+      <div class="id-use-item">
+        <div class="id-use-ico t-amber"><span class="material-symbols-outlined">local_library</span></div>
+        <div class="id-use-body"><b>Library Book Checkout</b><small>Scan to borrow or return library books</small></div>
+      </div>
+      <div class="id-use-item">
+        <div class="id-use-ico t-blue"><span class="material-symbols-outlined">restaurant</span></div>
+        <div class="id-use-body"><b>Cafeteria Payments</b><small>Tap QR for cashless cafeteria transactions</small></div>
+      </div>
+      <div class="id-use-item">
+        <div class="id-use-ico t-purple"><span class="material-symbols-outlined">how_to_reg</span></div>
+        <div class="id-use-body"><b>Exam & Event Registration</b><small>Present QR at exam hall or school events</small></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /page -->
+</main>
+
+<script>
+/* ── QR Pattern Generator (decorative) ── */
+(function(){
+  const pat = [
+    1,1,1,1,1,1,0,
+    1,0,0,0,1,0,1,
+    1,0,1,0,1,0,1,
+    1,0,0,0,1,1,0,
+    1,1,1,1,1,0,1,
+    0,1,0,1,0,1,0,
+    1,0,1,0,1,1,1
+  ];
+  const qr = document.getElementById('qrPattern');
+  if(qr){
+    pat.forEach(function(c){ const d=document.createElement('div'); d.className='qr-cell '+(c?'on':'off'); qr.appendChild(d); });
+  }
+})();
+
+function downloadId(){
+  window.toast && window.toast('ID card saved to your device.','success');
+}
+function printId(){
+  window.print();
+}
+function shareId(){
+  if(navigator.clipboard){ navigator.clipboard.writeText(window.location.href); }
+  window.toast && window.toast('QR code link copied to clipboard!','success');
+}
+
+(function(){
+  try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}
+  window.PAGE={role:'student',active:'dashboard'};
+  document.body.classList.add('ready');
+})();
+</script>
+<script>window.HERO_CONFIG={
+  name:'Nrinphouneta Hok',id:'Student ID: 2026-STD-0142',grade:'Grade 10',
+  avatar:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink:'../../index.html',signOutLink:'../../index.html',
+  profileLink:'student-profile.html',notifLink:'student-notifications.html',
+  chatLink:'../shared/chat.html',notifCount:3,
+  ddRows:[{icon:'school',text:'Grade 10 — Science Stream'},{icon:'class',text:'Class 10A'},{icon:'email',text:'nrinphouneta@ngis.edu.kh'},{icon:'calendar_today',text:'Enrolled: Sep 2024'},{icon:'emoji_events',text:'GPA: 3.87 / 4.00'}],
+  title:'Digital Student ID',greeting:'Your official NGIS digital identity card.',
+  breadcrumbs:[{label:'Student ID'}]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

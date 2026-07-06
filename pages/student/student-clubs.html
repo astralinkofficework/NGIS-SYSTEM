@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Clubs & Activities</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+.clubs-page{ max-width:1100px; margin:0 auto; padding:24px 20px 80px; }
+.clubs-layout{ display:grid; grid-template-columns:1fr 296px; gap:20px; align-items:start; }
+@media(max-width:960px){ .clubs-layout{ grid-template-columns:1fr; } }
+
+.clubs-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
+
+.club-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--r-xl);
+  overflow:hidden; box-shadow:var(--sh-1);
+  transition:box-shadow var(--t-base),transform var(--t-base),border-color var(--t-base);
+  display:flex; flex-direction:column;
+}
+.club-card:hover{ box-shadow:var(--sh-2); transform:translateY(-2px); border-color:var(--border-strong); }
+.club-card.joined{ border-color:var(--primary-border); }
+
+.club-card-top{
+  height:80px; display:flex; align-items:center; justify-content:space-between; padding:0 18px;
+  background:var(--primary); position:relative; overflow:hidden;
+}
+.club-card-top::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.08);}
+.club-card-ico{ width:44px; height:44px; border-radius:var(--r-md); background:rgba(255,255,255,.2); display:grid; place-items:center; position:relative; z-index:1; }
+.club-card-ico .material-symbols-outlined{ font-size:24px; color:#fff; }
+.club-joined-badge{ font-size:10px; font-weight:800; padding:3px 10px; border-radius:var(--r-pill); background:var(--accent); color:var(--on-accent); position:relative; z-index:1; }
+
+.club-card-body{ padding:16px; flex:1; display:flex; flex-direction:column; gap:10px; }
+.club-name{ font-size:15px; font-weight:800; color:var(--heading); }
+.club-supervisor{ font-size:12px; color:var(--muted); display:flex; align-items:center; gap:5px; }
+.club-supervisor .material-symbols-outlined{ font-size:14px; }
+.club-desc{ font-size:13px; color:var(--muted); line-height:1.5; flex:1; }
+
+.club-meta-row{ display:flex; gap:12px; flex-wrap:wrap; margin-top:4px; }
+.club-meta-item{ display:flex; align-items:center; gap:4px; font-size:12px; color:var(--muted); }
+.club-meta-item .material-symbols-outlined{ font-size:14px; color:var(--faint); }
+
+.club-cap-bar{ height:5px; background:var(--surface-3); border-radius:var(--r-pill); overflow:hidden; }
+.club-cap-bar span{ display:block; height:100%; border-radius:var(--r-pill); background:var(--primary); }
+
+.club-card-foot{ padding:12px 16px; border-top:1px solid var(--border); }
+
+/* My Clubs panel */
+.my-clubs-panel{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r-xl); box-shadow:var(--sh-1); overflow:hidden; }
+.my-clubs-panel .card-head{ padding:14px 18px; }
+.my-club-row{ display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border); transition:background var(--t-fast); }
+.my-club-row:last-child{ border-bottom:none; }
+.my-club-row:hover{ background:var(--surface-2); }
+.my-club-ico{ width:38px; height:38px; border-radius:var(--r-md); background:var(--primary); display:grid; place-items:center; flex-shrink:0; }
+.my-club-ico .material-symbols-outlined{ font-size:20px; color:#fff; }
+.my-club-body{ flex:1; min-width:0; }
+.my-club-body b{ font-size:13px; font-weight:700; display:block; }
+.my-club-body small{ font-size:11px; color:var(--muted); }
+.my-club-att{ font-size:13px; font-weight:700; color:var(--primary); }
+
+/* Empty state */
+.clubs-empty{ text-align:center; padding:40px 20px; color:var(--muted); }
+.clubs-empty .material-symbols-outlined{ font-size:48px; color:var(--faint); display:block; margin-bottom:12px; }
+</style>
+</head>
+<body data-page="student-clubs">
+<main class="main">
+<div id="heroBanner"></div>
+<div class="page clubs-page">
+
+<div class="clubs-layout">
+  <!-- Left: Club Browser -->
+  <div>
+    <!-- Search + Filter -->
+    <div class="flex gap8 mb20 anim-up" style="flex-wrap:wrap">
+      <div class="search" style="max-width:300px;flex:1">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" placeholder="Search clubs..." id="clubSearch" oninput="searchClubs(this.value)" aria-label="Search clubs">
+      </div>
+      <select class="input" style="width:auto;min-width:140px" onchange="filterType(this.value)">
+        <option value="all">All Types</option>
+        <option value="stem">STEM</option>
+        <option value="arts">Arts</option>
+        <option value="sports">Sports</option>
+        <option value="academic">Academic</option>
+      </select>
+    </div>
+
+    <div class="clubs-grid anim-up-2" id="clubsGrid">
+
+      <div class="club-card joined" data-name="Robotics Club">
+        <div class="club-card-top" style="background:linear-gradient(135deg,#1F6B3A,#237A42)">
+          <div class="club-card-ico"><span class="material-symbols-outlined fill">precision_manufacturing</span></div>
+          <span class="club-joined-badge">✓ Joined</span>
+        </div>
+        <div class="club-card-body">
+          <div class="club-name">Robotics Club</div>
+          <div class="club-supervisor"><span class="material-symbols-outlined">person</span>Mr. Ratanak Som</div>
+          <div class="club-desc">Build and program robots for national and ASEAN competitions. Previous champions 2024 & 2025.</div>
+          <div class="club-meta-row">
+            <div class="club-meta-item"><span class="material-symbols-outlined">schedule</span>Thu 3–5 PM</div>
+            <div class="club-meta-item"><span class="material-symbols-outlined">group</span>24 / 30 members</div>
+          </div>
+          <div class="club-cap-bar"><span style="width:80%"></span></div>
+        </div>
+        <div class="club-card-foot">
+          <button class="btn btn-danger btn-sm w-full" style="justify-content:center" onclick="leaveClub(this,'Robotics Club')">
+            <span class="material-symbols-outlined">exit_to_app</span>Leave Club
+          </button>
+        </div>
+      </div>
+
+      <div class="club-card" data-name="Debate Society">
+        <div class="club-card-top" style="background:linear-gradient(135deg,#1e40af,#2563eb)">
+          <div class="club-card-ico"><span class="material-symbols-outlined fill">record_voice_over</span></div>
+        </div>
+        <div class="club-card-body">
+          <div class="club-name">Debate Society</div>
+          <div class="club-supervisor"><span class="material-symbols-outlined">person</span>Ms. Nary Chan</div>
+          <div class="club-desc">Develop critical thinking and public speaking through structured debates and competitions.</div>
+          <div class="club-meta-row">
+            <div class="club-meta-item"><span class="material-symbols-outlined">schedule</span>Tue 3–4:30 PM</div>
+            <div class="club-meta-item"><span class="material-symbols-outlined">group</span>18 / 25 members</div>
+          </div>
+          <div class="club-cap-bar"><span style="width:72%"></span></div>
+        </div>
+        <div class="club-card-foot">
+          <button class="btn btn-primary btn-sm w-full" style="justify-content:center" onclick="joinClub(this,'Debate Society')">
+            <span class="material-symbols-outlined">add</span>Join Club
+          </button>
+        </div>
+      </div>
+
+      <div class="club-card" data-name="Photography Club">
+        <div class="club-card-top" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">
+          <div class="club-card-ico"><span class="material-symbols-outlined fill">camera_alt</span></div>
+        </div>
+        <div class="club-card-body">
+          <div class="club-name">Photography Club</div>
+          <div class="club-supervisor"><span class="material-symbols-outlined">person</span>Mr. Dara Vin</div>
+          <div class="club-desc">Learn the art of photography — composition, lighting, digital editing, and visual storytelling.</div>
+          <div class="club-meta-row">
+            <div class="club-meta-item"><span class="material-symbols-outlined">schedule</span>Fri 3–5 PM</div>
+            <div class="club-meta-item"><span class="material-symbols-outlined">group</span>15 / 20 members</div>
+          </div>
+          <div class="club-cap-bar"><span style="width:75%"></span></div>
+        </div>
+        <div class="club-card-foot">
+          <button class="btn btn-primary btn-sm w-full" style="justify-content:center" onclick="joinClub(this,'Photography Club')">
+            <span class="material-symbols-outlined">add</span>Join Club
+          </button>
+        </div>
+      </div>
+
+      <div class="club-card" data-name="Math Olympiad">
+        <div class="club-card-top" style="background:linear-gradient(135deg,#b45309,#d97706)">
+          <div class="club-card-ico"><span class="material-symbols-outlined fill">calculate</span></div>
+        </div>
+        <div class="club-card-body">
+          <div class="club-name">Math Olympiad</div>
+          <div class="club-supervisor"><span class="material-symbols-outlined">person</span>Mr. Chea Sophea</div>
+          <div class="club-desc">Intensive preparation for national and international mathematics competitions.</div>
+          <div class="club-meta-row">
+            <div class="club-meta-item"><span class="material-symbols-outlined">schedule</span>Wed 3–4 PM</div>
+            <div class="club-meta-item"><span class="material-symbols-outlined">group</span>12 / 15 members</div>
+          </div>
+          <div class="club-cap-bar"><span style="width:80%"></span></div>
+        </div>
+        <div class="club-card-foot">
+          <button class="btn btn-primary btn-sm w-full" style="justify-content:center" onclick="joinClub(this,'Math Olympiad')">
+            <span class="material-symbols-outlined">add</span>Join Club
+          </button>
+        </div>
+      </div>
+
+      <div class="club-card" data-name="Green Earth Club">
+        <div class="club-card-top" style="background:linear-gradient(135deg,#065f46,#059669)">
+          <div class="club-card-ico"><span class="material-symbols-outlined fill">eco</span></div>
+        </div>
+        <div class="club-card-body">
+          <div class="club-name">Green Earth Club</div>
+          <div class="club-supervisor"><span class="material-symbols-outlined">person</span>Ms. Bopha Keo</div>
+          <div class="club-desc">Environmental awareness, sustainability projects, tree planting and community cleanups.</div>
+          <div class="club-meta-row">
+            <div class="club-meta-item"><span class="material-symbols-outlined">schedule</span>Mon 3–4 PM</div>
+            <div class="club-meta-item"><span class="material-symbols-outlined">group</span>30 / 35 members</div>
+          </div>
+          <div class="club-cap-bar"><span style="width:86%"></span></div>
+        </div>
+        <div class="club-card-foot">
+          <button class="btn btn-primary btn-sm w-full" style="justify-content:center" onclick="joinClub(this,'Green Earth Club')">
+            <span class="material-symbols-outlined">add</span>Join Club
+          </button>
+        </div>
+      </div>
+
+      <div class="club-card" data-name="Drama & Arts Club">
+        <div class="club-card-top" style="background:linear-gradient(135deg,#be185d,#ec4899)">
+          <div class="club-card-ico"><span class="material-symbols-outlined fill">theater_comedy</span></div>
+        </div>
+        <div class="club-card-body">
+          <div class="club-name">Drama & Arts Club</div>
+          <div class="club-supervisor"><span class="material-symbols-outlined">person</span>Ms. Sreymom Lim</div>
+          <div class="club-desc">Perform, create and express through theater, dance, and visual arts. Annual showcase each term.</div>
+          <div class="club-meta-row">
+            <div class="club-meta-item"><span class="material-symbols-outlined">schedule</span>Fri 2–4 PM</div>
+            <div class="club-meta-item"><span class="material-symbols-outlined">group</span>22 / 30 members</div>
+          </div>
+          <div class="club-cap-bar"><span style="width:73%"></span></div>
+        </div>
+        <div class="club-card-foot">
+          <button class="btn btn-primary btn-sm w-full" style="justify-content:center" onclick="joinClub(this,'Drama & Arts Club')">
+            <span class="material-symbols-outlined">add</span>Join Club
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /clubsGrid -->
+  </div>
+
+  <!-- Right: My Clubs -->
+  <div class="my-clubs-panel anim-up-3">
+    <div class="card-head">
+      <div><h3>My Clubs</h3><div class="sub" style="margin-top:2px">1 active membership</div></div>
+    </div>
+    <div id="myClubsList">
+      <div class="my-club-row">
+        <div class="my-club-ico"><span class="material-symbols-outlined fill">precision_manufacturing</span></div>
+        <div class="my-club-body">
+          <b>Robotics Club</b>
+          <small>Thu 3–5 PM · Mr. Ratanak Som</small>
+        </div>
+        <div class="my-club-att">92%</div>
+      </div>
+    </div>
+    <div class="clubs-empty" id="myClubsEmpty" style="display:none">
+      <span class="material-symbols-outlined">groups_off</span>
+      <p>You haven't joined any clubs yet.<br>Browse and join above!</p>
+    </div>
+  </div>
+
+</div><!-- /clubs-layout -->
+</div><!-- /page -->
+</main>
+<script>
+function searchClubs(q){
+  var lq=(q||'').toLowerCase();
+  document.querySelectorAll('.club-card').forEach(function(c){
+    c.style.display=!lq||c.dataset.name.toLowerCase().includes(lq)?'':'none';
+  });
+}
+function joinClub(btn,name){
+  btn.innerHTML='<span class="material-symbols-outlined">hourglass_empty</span> Requesting...';
+  btn.disabled=true;
+  setTimeout(function(){
+    btn.closest('.club-card').classList.add('joined');
+    var top=btn.closest('.club-card').querySelector('.club-card-top');
+    var badge=document.createElement('span');badge.className='club-joined-badge';badge.textContent='✓ Joined';top.appendChild(badge);
+    btn.className='btn btn-danger btn-sm w-full';btn.style.justifyContent='center';
+    btn.innerHTML='<span class="material-symbols-outlined">exit_to_app</span>Leave Club';
+    btn.disabled=false;
+    btn.onclick=function(){leaveClub(btn,name);};
+    window.toast&&window.toast('Join request sent for '+name+'!','success');
+  },800);
+}
+function leaveClub(btn,name){
+  if(!confirm('Leave '+name+'?'))return;
+  var card=btn.closest('.club-card');
+  card.classList.remove('joined');
+  var badge=card.querySelector('.club-joined-badge');if(badge)badge.remove();
+  btn.className='btn btn-primary btn-sm w-full';btn.style.justifyContent='center';
+  btn.innerHTML='<span class="material-symbols-outlined">add</span>Join Club';
+  btn.onclick=function(){joinClub(btn,name);};
+  window.toast&&window.toast('You have left '+name+'.','info');
+}
+function filterType(v){
+  document.querySelectorAll('.club-card').forEach(function(c){ c.style.display=''; });
+}
+(function(){
+  try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}
+  window.PAGE={role:'student',active:'dashboard'};
+})();
+</script>
+<script>window.HERO_CONFIG={
+  name:'Nrinphouneta Hok',id:'Student ID: 2026-STD-0142',grade:'Grade 10',
+  avatar:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink:'../../index.html',signOutLink:'../../index.html',
+  profileLink:'student-profile.html',notifLink:'student-notifications.html',
+  chatLink:'../shared/chat.html',notifCount:3,
+  ddRows:[{icon:'school',text:'Grade 10 — Science Stream'},{icon:'class',text:'Class 10A'},{icon:'email',text:'nrinphouneta@ngis.edu.kh'},{icon:'calendar_today',text:'Enrolled: Sep 2024'},{icon:'emoji_events',text:'GPA: 3.87 / 4.00'}],
+  title:'Clubs & Activities',greeting:'Browse all active clubs and manage your memberships.',
+  breadcrumbs:[{label:'Clubs & Activities'}]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

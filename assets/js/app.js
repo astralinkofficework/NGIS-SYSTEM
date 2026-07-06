@@ -475,6 +475,134 @@
   }
 
   /* ══════════════════════════════════════════════════
+     12. OVERLAYS — Drawer / Modal
+     Trigger: [data-open-drawer="id"] / [data-open-modal="id"]
+     Target:  .drawer-overlay[data-drawer="id"] / .modal-overlay[data-modal="id"]
+     Close:   click backdrop, [data-close-drawer]/[data-close-modal], Escape
+     ══════════════════════════════════════════════════ */
+  function openOverlay(sel, id) {
+    const ov = document.querySelector(`${sel}[data-${sel === ".drawer-overlay" ? "drawer" : "modal"}="${id}"]`);
+    if (ov) ov.classList.add("show");
+  }
+
+  function wireOverlays() {
+    document.querySelectorAll("[data-open-drawer]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.preventDefault();
+        openOverlay(".drawer-overlay", btn.getAttribute("data-open-drawer"));
+      });
+    });
+    document.querySelectorAll("[data-open-modal]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.preventDefault();
+        openOverlay(".modal-overlay", btn.getAttribute("data-open-modal"));
+      });
+    });
+    document.querySelectorAll(".drawer-overlay, .modal-overlay").forEach(ov => {
+      ov.addEventListener("click", e => { if (e.target === ov) ov.classList.remove("show"); });
+      ov.querySelectorAll("[data-close-drawer],[data-close-modal]").forEach(btn => {
+        btn.addEventListener("click", () => ov.classList.remove("show"));
+      });
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Escape") return;
+      document.querySelectorAll(".drawer-overlay.show, .modal-overlay.show").forEach(ov => ov.classList.remove("show"));
+    });
+  }
+
+  window.closeOverlay = function (el) {
+    const ov = el.closest(".drawer-overlay, .modal-overlay");
+    if (ov) ov.classList.remove("show");
+  };
+  window.openDrawer = id => openOverlay(".drawer-overlay", id);
+  window.openModal  = id => openOverlay(".modal-overlay", id);
+
+  /* ══════════════════════════════════════════════════
+     13. TABS
+     .tabs > .tab-btn[data-tab] toggles sibling
+     .tab-panel[data-tab-panel] within the same wrapper.
+     ══════════════════════════════════════════════════ */
+  function wireTabs() {
+    document.querySelectorAll(".tabs").forEach(tabs => {
+      const btns = tabs.querySelectorAll(".tab-btn");
+      const wrap = tabs.parentElement;
+      if (!wrap) return;
+      btns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-tab");
+          btns.forEach(b => b.classList.toggle("active", b === btn));
+          wrap.querySelectorAll(":scope > .tab-panel").forEach(p => {
+            p.classList.toggle("active", p.getAttribute("data-tab-panel") === key);
+          });
+        });
+      });
+    });
+  }
+
+  /* ══════════════════════════════════════════════════
+     14. DROPZONE — click or drag files onto .dropzone
+     ══════════════════════════════════════════════════ */
+  function wireDropzone() {
+    function handleFiles(dz, files) {
+      let list = dz.nextElementSibling;
+      if (!list || !list.classList.contains("dz-file-list")) {
+        list = document.createElement("div");
+        list.className = "dz-file-list";
+        dz.after(list);
+      }
+      Array.from(files).forEach(f => {
+        const row = document.createElement("div");
+        row.className = "dz-file";
+        row.innerHTML = `<span class="material-symbols-outlined">description</span><span>${f.name}</span><button class="icon-btn" type="button" aria-label="Remove"><span class="material-symbols-outlined" style="font-size:16px">close</span></button>`;
+        row.querySelector("button").addEventListener("click", () => row.remove());
+        list.appendChild(row);
+      });
+      if (window.toast) window.toast(files.length > 1 ? `${files.length} files added` : `${files[0].name} added`, "success");
+    }
+
+    document.querySelectorAll(".dropzone").forEach(dz => {
+      const input = dz.querySelector("input[type=file]");
+      if (!input) return;
+      dz.addEventListener("click", () => input.click());
+      dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("drag"); });
+      dz.addEventListener("dragleave", () => dz.classList.remove("drag"));
+      dz.addEventListener("drop", e => {
+        e.preventDefault();
+        dz.classList.remove("drag");
+        if (e.dataTransfer.files.length) handleFiles(dz, e.dataTransfer.files);
+      });
+      input.addEventListener("change", () => { if (input.files.length) handleFiles(dz, input.files); });
+    });
+  }
+
+  /* ══════════════════════════════════════════════════
+     15. AVATAR UPLOAD — click edit badge to preview a photo
+     ══════════════════════════════════════════════════ */
+  function wireAvatarUpload() {
+    document.querySelectorAll(".avatar-upload").forEach(au => {
+      const input = au.querySelector("input[type=file]");
+      const img = au.querySelector("img, .au-fallback");
+      const edit = au.querySelector(".au-edit");
+      if (!input) return;
+      if (edit) edit.addEventListener("click", e => { e.stopPropagation(); input.click(); });
+      input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file || !img) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (img.tagName === "IMG") { img.src = reader.result; }
+          else {
+            const newImg = document.createElement("img");
+            newImg.src = reader.result;
+            img.replaceWith(newImg);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  }
+
+  /* ══════════════════════════════════════════════════
      INIT
      ══════════════════════════════════════════════════ */
   function init() {
@@ -489,6 +617,10 @@
     wireGlobalSearch();
     wireSelectFilter();
     fixTimetableScroll();
+    wireOverlays();
+    wireTabs();
+    wireDropzone();
+    wireAvatarUpload();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

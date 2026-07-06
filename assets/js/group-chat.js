@@ -289,7 +289,7 @@
     document.getElementById("gchatEmpty").hidden = true;
 
     // Mobile: slide to chat
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= 1024) {
       document.getElementById("classPanel").classList.add("panel-hidden");
     }
 
@@ -579,6 +579,7 @@
   /* ── Back button (mobile) ──────────────────────────────── */
   document.getElementById("gchatBackBtn").addEventListener("click", () => {
     document.getElementById("classPanel").classList.remove("panel-hidden");
+    document.body.classList.remove("chat-open");
     currentClassId = null;
     typingUsers.clear();
     renderTypingIndicator();
@@ -622,7 +623,7 @@
     }
   }
 
-  function show(id)    { const el = document.getElementById(id); if (el) el.hidden = false; }
+  function show(id)    { const el = document.getElementById(id); if (el) el.style.display = 'flex'; }
 
   function setEl(id, text) {
     const el = document.getElementById(id);

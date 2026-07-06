@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — News Control Console</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+/* Admin News Board Layout */
+.admin-news-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px 80px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.news-dashboard-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Forms Card */
+.admin-news-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--bdr);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+  padding: 20px;
+}
+.card-title-row {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Form details */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.form-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-control {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  background: #f8fafc;
+}
+.form-control:focus {
+  border-color: #179bb8;
+  background: #fff;
+}
+
+/* Table management */
+.news-table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--bdr);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+  overflow: hidden;
+}
+
+.table-title-row {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.news-tbl {
+  width: 100%;
+  border-collapse: collapse;
+}
+.news-tbl th {
+  background: #f8fafc;
+  padding: 12px 16px;
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #475569;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+.news-tbl td {
+  padding: 12px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+.news-tbl tr:last-child td {
+  border-bottom: none;
+}
+
+.tag-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.priority-urgent { background: #fee2e2; color: #ef4444; }
+.priority-events { background: #fef3c7; color: #d97706; }
+.priority-exams { background: #f5f3ff; color: #7c3aed; }
+
+@media (max-width: 992px) {
+  .news-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<main class="main">
+  <!-- Layout Banner matching system standard -->
+  <header class="hero" style="padding-bottom: 40px;">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <a href="admin.html" class="htb-home-btn">
+          <span class="mi">arrow_back</span>
+          <span>Back to Dashboard</span>
+        </a>
+      </div>
+      <div class="htb-center">
+        <img class="htb-logo" src="../student/LOGO NGIS (2).png" alt="NGIS logo" />
+      </div>
+      <div class="htb-right" style="opacity:0; pointer-events:none;">
+        <!-- Center helper spacer -->
+      </div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">NGIS Campus News Manager</h1>
+        <p class="hero-greeting">Compose news articles, priority alerts, and push updates in real-time.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-news-page">
+    <section class="news-automation-strip" aria-label="News publishing automation">
+      <div class="news-auto-card">
+        <div class="news-auto-head"><span class="mi">edit_note</span><div class="news-auto-kicker">Step 1</div></div>
+        <h2>Create News</h2>
+        <p>Admin writes the title and message. The public page never needs hardcoded content.</p>
+      </div>
+      <div class="news-auto-card">
+        <div class="news-auto-head"><span class="mi">image</span><div class="news-auto-kicker">Step 2</div></div>
+        <h2>Upload Image</h2>
+        <p>Cover media becomes part of the news record and renders dynamically on the public feed.</p>
+      </div>
+      <div class="news-auto-card">
+        <div class="news-auto-head"><span class="mi">groups</span><div class="news-auto-kicker">Step 3</div></div>
+        <h2>Select Audience</h2>
+        <p>Student, parent, teacher, class, grade, and school-wide targeting share one model.</p>
+      </div>
+      <div class="news-auto-card">
+        <div class="news-auto-head"><span class="mi">send</span><div class="news-auto-kicker">Step 4</div></div>
+        <h2>Publish</h2>
+        <p>Website feed, Telegram broadcast, priority pinning, and read tracking are queued together.</p>
+      </div>
+    </section>
+    
+    <div class="news-dashboard-grid">
+      <!-- Left side: Compose Panel -->
+      <aside class="admin-news-card">
+        <div class="card-title-row">
+          <h3 class="card-title">Publish Announcement</h3>
+          <span class="mi" style="color:#179bb8">post_add</span>
+        </div>
+        
+        <form id="newsDraftForm" onsubmit="return false">
+          <div class="form-group">
+            <label class="form-label">Article Title</label>
+            <input type="text" class="form-control" id="postTitle" placeholder="e.g. Science Fair Registration Open" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Priority Alert Category</label>
+            <select class="form-control" id="postPriority">
+              <option value="all">General News</option>
+              <option value="urgent">Urgent Alert</option>
+              <option value="events">School Event</option>
+              <option value="exams">Academic / Exam</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Target Audience</label>
+            <input type="text" class="form-control" id="postAudience" value="Students, Parents" placeholder="e.g. Parents, Staff" required />
+          </div>
+
+          <div class="news-form-row">
+            <div class="form-group">
+              <label class="form-label">Publish Timing</label>
+              <select class="form-control" id="postTiming">
+                <option value="instant">Instant Publish</option>
+                <option value="scheduled">Schedule for Later</option>
+                <option value="draft">Save as Draft</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Expiry Rule</label>
+              <select class="form-control" id="postExpiry">
+                <option value="none">No Expiry</option>
+                <option value="7">Auto Archive in 7 Days</option>
+                <option value="30">Auto Archive in 30 Days</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Cover Image Link (URL)</label>
+            <select class="form-control" id="postImage">
+              <option value="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=600">Science / Classroom</option>
+              <option value="https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=600">Weather / Heavy Rain</option>
+              <option value="https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=600">Sports / Field</option>
+              <option value="https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=600">Exam / Library</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full Article Details</label>
+            <textarea class="form-control" id="postDesc" style="height:120px;resize:none" placeholder="Provide full announcement text here..." required></textarea>
+          </div>
+
+          <div class="pill-row" style="margin-bottom:14px">
+            <span class="system-pill"><span class="mi">push_pin</span>Urgent auto-pins</span>
+            <span class="system-pill"><span class="mi">telegram</span>Telegram queued</span>
+            <span class="system-pill"><span class="mi">visibility</span>Read tracking</span>
+            <span class="system-pill"><span class="mi">translate</span>Khmer/English ready</span>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%" onclick="publishAnnouncement()">Publish Notice</button>
+        </form>
+      </aside>
+
+      <!-- Right side: Published List -->
+      <section class="news-table-card">
+        <div class="table-title-row">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="mi" style="color:#64748b">table_chart</span>
+            <h3 class="card-title">Campus Registry Feed</h3>
+          </div>
+          <a href="../shared/news.html" target="_blank" class="btn btn-sm btn-ghost" style="font-weight:700">Preview Public News Feed →</a>
+        </div>
+
+        <table class="news-tbl">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Audience</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th style="width:80px;text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="newsRegistryBody">
+            <!-- Dynamic list -->
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<script>
+(function() {
+  const MOCK_NEWS = [
+    {
+      id: 1,
+      title: "School Closure Alert: Inclement Weather Warning",
+      desc: "Due to heavy rain forecast and flash flood alerts issued by municipal authorities, NGIS Sen Sok campus will be closed tomorrow. E-learning lessons will be delivered online.",
+      image: "https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=600",
+      priority: "urgent",
+      audience: "Parents, Students, Teachers",
+      date: "July 6, 2026"
+    },
+    {
+      id: 2,
+      title: "NGIS Annual Sports Day 2026 Registration Open",
+      desc: "Get ready for the NGIS annual sports day championships! Events include track and field races, swimming tournaments, and basketball brackets. Register your entry before July 12.",
+      image: "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=600",
+      priority: "events",
+      audience: "All Students",
+      date: "July 5, 2026"
+    },
+    {
+      id: 3,
+      title: "Secondary Term 2 Examination Timetables Released",
+      desc: "The schedules for Secondary Term 2 examinations have been compiled. Detail lists are pinned on student dashboard portals. Be sure to coordinate study loads with your advisory teachers.",
+      image: "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=600",
+      priority: "exams",
+      audience: "Students, Teachers",
+      date: "July 4, 2026"
+    }
+  ];
+
+  // Initialize or read from localStorage
+  if (!localStorage.getItem('ngis_news_posts')) {
+    localStorage.setItem('ngis_news_posts', JSON.stringify(MOCK_NEWS));
+  }
+
+  function getNews() {
+    return JSON.parse(localStorage.getItem('ngis_news_posts')) || MOCK_NEWS;
+  }
+
+  const tableBody = document.getElementById('newsRegistryBody');
+
+  // Render Admin list table
+  function renderRegistryTable() {
+    const posts = getNews();
+    tableBody.innerHTML = '';
+
+    if (posts.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#94a3b8">No announcements logged in registry.</td></tr>';
+      return;
+    }
+
+    posts.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:700">${p.title}</td>
+        <td><span class="tag-badge priority-${p.priority}">${p.priority === 'all' ? 'general' : p.priority}</span></td>
+        <td><span style="font-size:11.5px;color:#64748b">${p.audience}</span></td>
+        <td style="font-family:monospace;font-size:11.5px">${p.date}</td>
+        <td><span class="tag-badge priority-${p.priority}">${p.status || 'published'}</span></td>
+        <td style="text-align:right">
+          <button class="btn-icon-label" style="color:var(--danger);padding:4px;" onclick="deletePost(${p.id})">
+            <span class="mi" style="font-size:16px">delete</span>
+          </button>
+        </td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  // Publish Notice
+  window.publishAnnouncement = function() {
+    const title = document.getElementById('postTitle').value.trim();
+    const priority = document.getElementById('postPriority').value;
+    const audience = document.getElementById('postAudience').value.trim();
+    const image = document.getElementById('postImage').value;
+    const desc = document.getElementById('postDesc').value.trim();
+    const timing = document.getElementById('postTiming').value;
+    const expiry = document.getElementById('postExpiry').value;
+
+    if (!title || !desc || !audience) {
+      window.toast('Please check all input fields.','error');
+      return;
+    }
+
+    const posts = getNews();
+    const newPost = {
+      id: Date.now(),
+      title: title,
+      priority: priority,
+      audience: audience,
+      image: image,
+      desc: desc,
+      status: timing === 'draft' ? 'draft' : timing === 'scheduled' ? 'scheduled' : 'published',
+      pinned: priority === 'urgent',
+      telegramQueued: timing !== 'draft',
+      expiresInDays: expiry,
+      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    };
+
+    posts.unshift(newPost);
+    localStorage.setItem('ngis_news_posts', JSON.stringify(posts));
+    window.toast(timing === 'draft' ? 'Draft saved.' : 'Notice published and notification workflow queued.','success');
+
+    // Reset Form
+    document.getElementById('postTitle').value = '';
+    document.getElementById('postAudience').value = 'Students, Parents';
+    document.getElementById('postDesc').value = '';
+
+    renderRegistryTable();
+  };
+
+  // Delete Notice
+  window.deletePost = function(id) {
+    let posts = getNews();
+    posts = posts.filter(p => p.id !== id);
+    localStorage.setItem('ngis_news_posts', JSON.stringify(posts));
+    window.toast('Announcement deleted.','success');
+    renderRegistryTable();
+  };
+
+  // Initial render
+  renderRegistryTable();
+
+})();
+</script>
+<script>window.PAGE={"role":"admin","active":"news"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Mr. Heng Samnang',
+  id: 'Admin ID: ADM-2026-001',
+  grade: 'School Administrator',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  title: 'Enterprise Management Console',
+  greeting: 'Compose, preview and publish campus news logs.',
+  breadcrumbs: [{ label: 'News CMS' }],
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'admin-settings.html',
+  notifLink: 'admin-logs.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 4,
+  ddRows: [
+    { icon: 'admin_panel_settings', text: 'School Administration' },
+    { icon: 'groups', text: '5,200 active users' },
+    { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Since: Jan 2018' },
+    { icon: 'verified', text: 'Principal Administrator' }
+  ]
+};</script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

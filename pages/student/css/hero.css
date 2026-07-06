@@ -1,0 +1,420 @@
+/* ══════════════════════════════════════
+   HERO — Teal Banner
+   ══════════════════════════════════════ */
+
+.hero {
+  position: relative;
+  width: 100%;
+  background: #179bb8;
+  overflow: hidden;
+  padding-bottom: 72px;
+}
+
+/* Decorative blobs for depth */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 340px; height: 340px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  top: -100px; right: -80px;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.05);
+  bottom: 10px; left: 8%;
+  pointer-events: none;
+}
+
+/* ── Topbar ── */
+.hero-topbar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px 0;
+}
+
+/* Centred logo — absolute so it doesn't push left/right items */
+.htb-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.htb-logo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  pointer-events: all;
+}
+
+/* Left cluster: hamburger + breadcrumb */
+.htb-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Hamburger — hidden on desktop, shown on mobile */
+.htb-hamburger {
+  display: none;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  place-items: center;
+  transition: background .18s;
+  flex-shrink: 0;
+}
+.htb-hamburger:hover { background: rgba(255,255,255,.15); }
+.htb-hamburger .mi   { font-size: 22px; }
+
+@media (max-width: 760px) {
+  .htb-hamburger { display: grid; }
+}
+
+/* Right cluster: icons + profile */
+.htb-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Home link — flat, no box */
+.htb-home-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255,255,255,.82);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color .15s;
+  white-space: nowrap;
+}
+.htb-home-btn:hover { color: #fff; }
+.htb-home-btn .mi   { font-size: 16px; }
+
+/* Straight divider line */
+.hero-rule {
+  margin: 10px 24px 0;
+  height: 1px;
+  background: rgba(255,255,255,.2);
+}
+
+.htb-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,.88);
+  cursor: pointer;
+  transition: background .18s;
+  position: relative;
+  flex-shrink: 0;
+}
+.htb-icon:hover { background: rgba(255,255,255,.15); }
+.htb-icon .mi   { font-size: 22px; }
+
+.htb-badge {
+  position: absolute;
+  top: -1px; right: -1px;
+  min-width: 16px; height: 16px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+/* ── Profile trigger ── */
+.htb-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+  padding: 4px 8px 4px 4px;
+  border-radius: 10px;
+  transition: background .18s;
+}
+.htb-profile:hover { background: rgba(255,255,255,.12); }
+
+.htb-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.5);
+  flex-shrink: 0;
+}
+
+.htb-pinfo     { display: flex; flex-direction: column; }
+.htb-pname-row { display: flex; align-items: center; gap: 2px; }
+.htb-pname     { font-size: 12px; font-weight: 700; color: #fff; line-height: 1.2; white-space: nowrap; }
+.htb-pgrade    { font-size: 10px; color: rgba(255,255,255,.65); white-space: nowrap; }
+.htb-parr      { font-size: 16px; color: rgba(255,255,255,.75); transition: transform .22s ease; flex-shrink: 0; line-height: 1; }
+.htb-parr.open { transform: rotate(180deg); }
+
+/* ══════════════════════════════════════
+   PROFILE DROPDOWN — Desktop (≥ 601px)
+   position: fixed so hero overflow:hidden can't clip it
+   top/right set by JS via getBoundingClientRect
+   ══════════════════════════════════════ */
+.htb-dropdown {
+  position: fixed;
+  width: 288px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.18), 0 4px 16px rgba(0,0,0,.08);
+  z-index: 1500;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px) scale(.96);
+  transition: opacity .22s ease, transform .25s cubic-bezier(.34,1.3,.64,1);
+  overflow: hidden;
+}
+.htb-dropdown.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0) scale(1);
+}
+
+/* Shared inner parts */
+.htb-dd-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 18px 18px 15px;
+  background: linear-gradient(135deg, #1e40af 0%, #179bb8 100%);
+}
+.htb-dd-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.55);
+  flex-shrink: 0;
+}
+.htb-dd-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+.htb-dd-id {
+  font-size: 10px;
+  color: rgba(255,255,255,.65);
+  margin-top: 3px;
+}
+
+.htb-dd-divider { height: 1px; background: #f1f5f9; }
+
+.htb-dd-info {
+  padding: 10px 16px 8px;
+  display: flex;
+  flex-direction: column;
+}
+.htb-dd-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #374151;
+  padding: 6px 0;
+  border-bottom: 1px solid #f9fafb;
+}
+.htb-dd-row:last-child { border-bottom: none; }
+.htb-dd-row .mi { font-size: 16px; color: #179bb8; flex-shrink: 0; }
+
+.htb-dd-actions {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.htb-dd-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-decoration: none;
+  transition: background .15s;
+}
+.htb-dd-btn:hover { background: #f1f5f9; }
+.htb-dd-btn .mi { font-size: 17px; color: #6b7280; flex-shrink: 0; }
+.htb-dd-btn-danger { color: #ef4444; }
+.htb-dd-btn-danger .mi { color: #ef4444; }
+.htb-dd-btn-danger:hover { background: #fef2f2; }
+
+/* ══════════════════════════════════════
+   DROPDOWN — Mobile bottom sheet (≤ 600px)
+   ══════════════════════════════════════ */
+@media (max-width: 600px) {
+  .htb-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 22px 22px 0 0;
+    transform: translateY(24px) scale(1);
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .htb-dropdown.open {
+    transform: translateY(0) scale(1);
+  }
+  /* Drag handle */
+  .htb-dropdown::before {
+    content: '';
+    display: block;
+    width: 36px; height: 4px;
+    background: #d1d5db;
+    border-radius: 999px;
+    margin: 10px auto 4px;
+  }
+  .htb-dd-header { padding: 16px 20px 14px; gap: 14px; }
+  .htb-dd-avatar  { width: 52px; height: 52px; }
+  .htb-dd-name    { font-size: 15px; }
+  .htb-dd-info    { padding: 8px 20px; }
+  .htb-dd-row     { font-size: 13px; padding: 8px 0; }
+  .htb-dd-row .mi { font-size: 18px; }
+  .htb-dd-actions { padding: 8px 12px 24px; }
+  .htb-dd-btn     { padding: 12px 14px; font-size: 13px; border-radius: 12px; }
+  .htb-dd-btn .mi { font-size: 19px; }
+}
+
+/* ── Hero Body ── */
+.hero-body {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 20px 32px 24px;
+}
+
+.hero-text { flex: 1; }
+
+.hero-breadcrumb {
+  font-size: 12px;
+  color: rgba(255,255,255,.7);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-breadcrumb a {
+  color: rgba(255,255,255,.7);
+  text-decoration: none;
+  transition: color .15s;
+}
+.hero-breadcrumb a:hover { color: #fff; }
+
+.hero-breadcrumb-sep { color: rgba(255,255,255,.4); }
+
+.hero-date {
+  font-size: 13px;
+  color: rgba(255,255,255,.8);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.hero-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -.4px;
+  line-height: 1.15;
+  margin-bottom: 6px;
+}
+
+.hero-greeting {
+  font-size: 14px;
+  color: rgba(255,255,255,.78);
+  font-weight: 400;
+}
+
+/* ── Logo area — centred in hero body ── */
+.hero-logo-area {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.hero-school-img {
+  height: 80px;
+  width: auto;
+  max-width: 260px;
+  object-fit: contain;
+}
+
+/* ── Responsive ── */
+
+/* Tablet ≤ 768px */
+@media (max-width: 768px) {
+  .hero-body      { padding: 16px 20px 22px; }
+  .hero-title     { font-size: 22px; }
+  .hero-logo-area { display: none; }
+}
+
+/* ≤ 640px: collapse profile text + home label to icon-only */
+@media (max-width: 640px) {
+  .htb-pinfo                    { display: none; }
+  .htb-home-btn span:last-child { display: none; }
+  .htb-right                    { gap: 2px; }
+  .htb-left                     { gap: 2px; }
+}
+
+/* ≤ 480px: tighten padding, smaller icons */
+@media (max-width: 480px) {
+  .hero           { padding-bottom: 60px; }
+  .hero-topbar    { padding: 8px 10px 0; }
+  .hero-rule      { margin: 8px 10px 0; }
+  .hero-title     { font-size: 18px; }
+  .hero-date      { font-size: 11px; }
+  .hero-greeting  { font-size: 12px; }
+  .htb-icon       { width: 32px; height: 32px; }
+  .htb-icon .mi   { font-size: 20px; }
+  .htb-hamburger  { width: 32px; height: 32px; }
+  .htb-hamburger .mi { font-size: 20px; }
+  .htb-avatar     { width: 28px; height: 28px; }
+}
+
+/* Backdrop for mobile bottom sheet */
+.htb-dd-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.45);
+  z-index: 599;
+  opacity: 0;
+  transition: opacity .22s ease;
+}
+.htb-dd-backdrop.open { opacity: 1; }
+@media (max-width: 600px) {
+  .htb-dd-backdrop { display: block; pointer-events: none; }
+  .htb-dd-backdrop.open { pointer-events: all; }
+}

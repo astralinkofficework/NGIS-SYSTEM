@@ -1,100 +1,442 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Group Chat — NGIS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
   <link rel="stylesheet" href="../../assets/css/group-chat.css">
-  <style>
-    /* Reduce FOUC */
-    body { opacity: 0; }
-    body.ready { opacity: 1; transition: opacity .12s; }
-  </style>
+  <style>body{opacity:0}body.ready{opacity:1;transition:opacity .12s}</style>
 </head>
 <body data-page="group-chat">
-
-<!-- layout.js injects sidebar + topbar into .main as first children -->
 <main class="main" id="groupChatMain">
 
-  <!-- Demo mode banner (hidden until needed) -->
-  <div class="demo-banner" id="demoBanner" hidden>
-    <span class="material-symbols-outlined" style="font-size:16px">info</span>
-    Demo mode — connect a server for live group messaging. See <code>server/</code> to get started.
-  </div>
+  <div id="heroBanner"></div>
 
   <div class="group-shell">
 
-    <!-- ─────────────────────────────────────────────────────
-         LEFT: Class list panel
-         ───────────────────────────────────────────────────── -->
+    <!-- ══════════════════════════════════════
+         LEFT: Class / Department list
+         ══════════════════════════════════════ -->
     <aside class="class-panel" id="classPanel" aria-label="Class list">
 
-      <!-- Panel header -->
       <div class="cp-head">
-        <h2>Classes</h2>
+        <button class="chat-icon-btn hamburger-btn" id="menuBtn" aria-label="Open menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <h2>Group Chats</h2>
+        <button class="chat-icon-btn" aria-label="New group chat" title="New group chat">
+          <span class="material-symbols-outlined">edit_square</span>
+        </button>
       </div>
 
-      <!-- Class list -->
-      <div class="class-list" id="classList" role="listbox" aria-label="Your classes">
-        <!-- Populated by group-chat.js -->
-        <div class="class-empty-state">
-          <span class="material-symbols-outlined">school</span>
-          <p>Loading your classes…</p>
+      <!-- Search -->
+      <div class="cp-search-bar-wrap">
+        <div class="cp-search-bar">
+          <span class="material-symbols-outlined">search</span>
+          <input type="search" id="classSearch" placeholder="Search group chats..." autocomplete="off" aria-label="Search group chats">
         </div>
       </div>
 
+      <!-- Class list -->
+      <div class="class-list" id="classList" role="listbox">
+
+        <!-- ── English Department — 8 subjects ── -->
+        <div class="dept-sep-label">English Department</div>
+
+        <div class="class-item" data-class="eng-reading" role="option" aria-selected="false" tabindex="0">
+          <div class="class-ava" style="background:#0d9488">RC</div>
+          <div class="class-info">
+            <div class="class-name">Reading &amp; Comprehension</div>
+            <div class="class-last-msg">Dr. Jenkins: Essay due Friday</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">2m</span>
+            <span class="unread-badge">3</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="eng-writing" role="option" tabindex="0">
+          <div class="class-ava" style="background:#0891b2">WC</div>
+          <div class="class-info">
+            <div class="class-name">Writing &amp; Composition</div>
+            <div class="class-last-msg">Draft submitted ✓</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">1h</span>
+            <span class="unread-badge">1</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="eng-grammar" role="option" tabindex="0">
+          <div class="class-ava" style="background:#0f766e">GR</div>
+          <div class="class-info">
+            <div class="class-name">Grammar</div>
+            <div class="class-last-msg">Chapter 5 exercises posted</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">3h</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="eng-listening" role="option" tabindex="0">
+          <div class="class-ava" style="background:#0369a1">LS</div>
+          <div class="class-info">
+            <div class="class-name">Listening &amp; Speaking</div>
+            <div class="class-last-msg">Audio file for Week 7 uploaded</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">5h</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="eng-literature" role="option" tabindex="0">
+          <div class="class-ava" style="background:#2563eb">LT</div>
+          <div class="class-info">
+            <div class="class-name">Literature</div>
+            <div class="class-last-msg">Reading: Chapter 12 by Monday</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">Yesterday</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="eng-ielts" role="option" tabindex="0">
+          <div class="class-ava" style="background:#1d4ed8">IE</div>
+          <div class="class-info">
+            <div class="class-name">IELTS Preparation</div>
+            <div class="class-last-msg">Mock test results shared</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">Yesterday</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="eng-vocab" role="option" tabindex="0">
+          <div class="class-ava" style="background:#1e40af">VO</div>
+          <div class="class-info">
+            <div class="class-name">Vocabulary</div>
+            <div class="class-last-msg">Word list for Week 8 ready</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">2d</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="eng-pronun" role="option" tabindex="0">
+          <div class="class-ava" style="background:#3b82f6">PR</div>
+          <div class="class-info">
+            <div class="class-name">Pronunciation</div>
+            <div class="class-last-msg">Recording exercise uploaded</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">3d</span>
+          </div>
+        </div>
+
+        <!-- ── Khmer Department — 6 subjects ── -->
+        <div class="dept-sep-label">Khmer Department</div>
+
+        <div class="class-item" data-class="kh-literature" role="option" tabindex="0">
+          <div class="class-ava" style="background:#dc2626">អក</div>
+          <div class="class-info">
+            <div class="class-name">អក្សរសាស្ត្រខ្មែរ</div>
+            <div class="class-last-msg">ការងារផ្ទះត្រូវបញ្ជូន</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">5h</span>
+            <span class="unread-badge">2</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="kh-grammar" role="option" tabindex="0">
+          <div class="class-ava" style="background:#b91c1c">វយ</div>
+          <div class="class-info">
+            <div class="class-name">វេយ្យករណ៍ខ្មែរ</div>
+            <div class="class-last-msg">ជំពូកទី ៦ ត្រូវរៀន</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">Yesterday</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="kh-writing" role="option" tabindex="0">
+          <div class="class-ava" style="background:#b45309">សរ</div>
+          <div class="class-info">
+            <div class="class-name">សរសេរខ្មែរ</div>
+            <div class="class-last-msg">New essay topic assigned</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">Yesterday</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="kh-history" role="option" tabindex="0">
+          <div class="class-ava" style="background:#92400e">ប្រ</div>
+          <div class="class-info">
+            <div class="class-name">ប្រវត្តិ &amp; វប្បធម៌</div>
+            <div class="class-last-msg">Resources added to portal</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">2d</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="kh-reading" role="option" tabindex="0">
+          <div class="class-ava" style="background:#78350f">អាន</div>
+          <div class="class-info">
+            <div class="class-name">ការអានយល់ន័យ</div>
+            <div class="class-last-msg">Passage for this week shared</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">3d</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="kh-speaking" role="option" tabindex="0">
+          <div class="class-ava" style="background:#d97706">និយ</div>
+          <div class="class-info">
+            <div class="class-name">និយាយ &amp; បង្ហាញ</div>
+            <div class="class-last-msg">Oral test: next Thursday</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">4d</span>
+          </div>
+        </div>
+
+        <!-- ── Chinese Department — 4 subjects ── -->
+        <div class="dept-sep-label">Chinese Department</div>
+
+        <div class="class-item" data-class="zh-speaking" role="option" tabindex="0">
+          <div class="class-ava" style="background:#7c3aed">口语</div>
+          <div class="class-info">
+            <div class="class-name">口语 · Speaking</div>
+            <div class="class-last-msg">Dialogue practice uploaded</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">2d</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="zh-writing" role="option" tabindex="0">
+          <div class="class-ava" style="background:#6d28d9">写作</div>
+          <div class="class-info">
+            <div class="class-name">写作 · Writing</div>
+            <div class="class-last-msg">Essay topic: My School Life</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">3d</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="zh-characters" role="option" tabindex="0">
+          <div class="class-ava" style="background:#5b21b6">汉字</div>
+          <div class="class-info">
+            <div class="class-name">汉字 · Characters</div>
+            <div class="class-last-msg">Quiz on characters next week</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">4d</span>
+          </div>
+        </div>
+
+        <div class="class-item" data-class="zh-culture" role="option" tabindex="0">
+          <div class="class-ava" style="background:#4c1d95">文化</div>
+          <div class="class-info">
+            <div class="class-name">文化 · Culture</div>
+            <div class="class-last-msg">Dragon Boat Festival reading</div>
+          </div>
+          <div class="class-meta">
+            <span class="class-time">5d</span>
+          </div>
+        </div>
+
+      </div>
     </aside>
 
-    <!-- ─────────────────────────────────────────────────────
-         RIGHT: Group chat window
-         ───────────────────────────────────────────────────── -->
-    <section class="gchat-win" id="gchatWin" aria-label="Group chat window">
+    <!-- ══════════════════════════════════════
+         CENTER: Chat window
+         ══════════════════════════════════════ -->
+    <section class="gchat-win" id="gchatWin" aria-label="Group chat">
 
-      <!-- Empty / select-a-class state -->
+      <!-- Empty state: shown until a class is selected -->
       <div class="gchat-empty" id="gchatEmpty">
         <div class="ico-wrap">
           <span class="material-symbols-outlined">groups</span>
         </div>
-        <h3>Class Group Chat</h3>
-        <p>Select a class from the list to view its group conversation.</p>
+        <h3>Select a group chat</h3>
+        <p>Choose a conversation from the list to start messaging.</p>
       </div>
 
-      <!-- Active chat (hidden until a class is selected) -->
-      <div class="gchat-active" id="gchatActive" hidden aria-live="polite">
+      <div class="gchat-active" id="gchatActive" aria-live="polite" style="display:none">
 
-        <!-- Chat header -->
+        <!-- Header -->
         <header class="gchat-header">
           <button class="chat-icon-btn back-btn" id="gchatBackBtn" aria-label="Back to class list">
             <span class="material-symbols-outlined">arrow_back</span>
           </button>
-
-          <!-- Class avatar -->
-          <div class="class-header-ava" id="gchatHeaderAva">GA</div>
-
+          <div class="class-header-ava" id="gchatHeaderAva" style="background:#0d9488">M10</div>
           <div class="gchat-hinfo">
-            <span class="gchat-hname" id="gchatHName">Class Name</span>
-            <span class="gchat-hmeta" id="gchatHMeta">Group Chat</span>
+            <span class="gchat-hname" id="gchatHName">Math — Grade 10A</span>
+            <span class="gchat-hmeta" id="gchatHMeta">24 members · Dr. Sarah Jenkins</span>
           </div>
-
-          <div>
-            <button class="chat-icon-btn" aria-label="More options" title="More options">
-              <span class="material-symbols-outlined">more_vert</span>
-            </button>
-          </div>
+          <button class="chat-icon-btn" id="toggleMemberBtn" aria-label="Toggle member list" title="Members">
+            <span class="material-symbols-outlined">group</span>
+          </button>
+          <button class="chat-icon-btn" aria-label="More options">
+            <span class="material-symbols-outlined">more_vert</span>
+          </button>
         </header>
 
-        <!-- Messages scroll area -->
-        <div class="gmsg-area" id="gmsgArea" role="log" aria-label="Messages" aria-live="polite">
-          <!-- Messages injected by group-chat.js -->
-        </div>
+        <!-- Messages -->
+        <div class="gmsg-area" id="gmsgArea" role="log" aria-label="Messages">
+
+          <div class="date-sep">Yesterday</div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-teacher">SJ</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Dr. Sarah Jenkins</span>
+                <span class="role-badge rb-teacher">Teacher</span>
+              </div>
+              <div class="gmsg-bubble">Good afternoon class! Tomorrow we will start Chapter 6 on Calculus. Please make sure you have reviewed Chapter 5 thoroughly.</div>
+              <div class="gmsg-time">02:30 PM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row grouped">
+            <div class="gmsg-ava role-teacher">SJ</div>
+            <div class="gmsg-content">
+              <div class="gmsg-bubble">Homework: Complete exercises 5.1 to 5.8 from your textbook. Due tonight by 11:59 PM. 📚</div>
+              <div class="gmsg-time">02:31 PM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-student">RS</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Ratha Sok</span>
+                <span class="role-badge rb-student">Student</span>
+              </div>
+              <div class="gmsg-bubble">Understood! Is the quiz on Chapter 5 open-book?</div>
+              <div class="gmsg-time">03:15 PM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-teacher">SJ</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Dr. Sarah Jenkins</span>
+                <span class="role-badge rb-teacher">Teacher</span>
+              </div>
+              <div class="gmsg-bubble">No, the quiz is closed-book. Focus on formulas and theorems from pages 142–158.</div>
+              <div class="gmsg-time">03:18 PM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-student">LC</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Ly Channary</span>
+                <span class="role-badge rb-student">Student</span>
+              </div>
+              <div class="gmsg-bubble">Thank you teacher! I'll review it tonight 🙏</div>
+              <div class="gmsg-time">03:22 PM</div>
+            </div>
+          </div>
+
+          <div class="date-sep">Today</div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-student">LC</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Ly Channary</span>
+                <span class="role-badge rb-student">Student</span>
+              </div>
+              <div class="gmsg-bubble">Good morning everyone! Has anyone started the Chapter 6 problems?</div>
+              <div class="gmsg-time">07:45 AM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-student">VD</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Vuth Dara</span>
+                <span class="role-badge rb-student">Student</span>
+              </div>
+              <div class="gmsg-bubble">I finished exercises 5.1–5.4. Problem 5.3b was tricky!</div>
+              <div class="gmsg-time">07:52 AM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-teacher">SJ</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Dr. Sarah Jenkins</span>
+                <span class="role-badge rb-teacher">Teacher</span>
+              </div>
+              <div class="gmsg-bubble">Good morning class! 🌟 Today's session starts at 10:00 AM in Room 12B. Don't forget your calculators.</div>
+              <div class="gmsg-time">08:00 AM</div>
+            </div>
+          </div>
+          <div class="gmsg-row grouped">
+            <div class="gmsg-ava role-teacher">SJ</div>
+            <div class="gmsg-content">
+              <div class="gmsg-bubble">Also, last week's quiz results are now available on the portal. Great job everyone — class average was 87%! 🎉</div>
+              <div class="gmsg-time">08:02 AM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row outgoing">
+            <div class="gmsg-content">
+              <div class="gmsg-bubble">Good morning Dr. Jenkins! Will we cover integration by parts today?</div>
+              <div class="gmsg-time">08:15 AM</div>
+            </div>
+          </div>
+          <div class="gmsg-row outgoing grouped">
+            <div class="gmsg-content">
+              <div class="gmsg-bubble">Also, thank you for posting the review notes — they were really helpful! 🙏</div>
+              <div class="gmsg-time">08:15 AM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-teacher">SJ</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Dr. Sarah Jenkins</span>
+                <span class="role-badge rb-teacher">Teacher</span>
+              </div>
+              <div class="gmsg-bubble">Yes! We'll cover integration by parts today. Remember the LIATE rule. And you're very welcome! 😊 See you all at 10!</div>
+              <div class="gmsg-time">08:22 AM</div>
+            </div>
+          </div>
+
+          <div class="gmsg-row">
+            <div class="gmsg-ava role-student">RS</div>
+            <div class="gmsg-content">
+              <div class="gmsg-sender-info">
+                <span class="gmsg-sender-name">Ratha Sok</span>
+                <span class="role-badge rb-student">Student</span>
+              </div>
+              <div class="gmsg-bubble">See you at 10, teacher! 👋</div>
+              <div class="gmsg-time">08:25 AM</div>
+            </div>
+          </div>
+
+        </div><!-- /gmsg-area -->
 
         <!-- Typing indicator -->
-        <div class="typing-row" id="typingRow" aria-live="polite" aria-label="Typing indicator">
+        <div class="typing-row" id="typingRow">
           <div class="typing-bubble">
             <span class="typing-dot"></span>
             <span class="typing-dot"></span>
@@ -103,98 +445,396 @@
           <span class="typing-name" id="typingName"></span>
         </div>
 
-        <!-- Message input area -->
+        <!-- Input area -->
         <div class="gmsg-input-area">
-
-          <!-- Emoji picker (hidden by default) -->
           <div class="emoji-picker" id="emojiPicker" hidden aria-label="Emoji picker">
             <div class="emoji-grid" id="emojiGrid"></div>
           </div>
-
-          <form class="gmsg-form" id="gmsgForm" aria-label="Send a message">
-
-            <!-- Emoji toggle -->
-            <button
-              type="button"
-              class="chat-icon-btn"
-              id="gemojiBtn"
-              aria-label="Open emoji picker"
-              aria-expanded="false"
-              aria-controls="emojiPicker"
-            >
+          <form class="gmsg-form" id="gmsgForm" aria-label="Send message">
+            <button type="button" class="chat-icon-btn" id="gemojiBtn" aria-label="Emoji" title="Emoji">
               <span class="material-symbols-outlined">sentiment_satisfied</span>
             </button>
-
-            <!-- Text input -->
+            <button type="button" class="chat-icon-btn" aria-label="Attach file" title="Attach file">
+              <span class="material-symbols-outlined">attach_file</span>
+            </button>
             <div class="gmsg-input-wrap">
-              <textarea
-                id="gmsgInput"
-                placeholder="Type a message to your class…"
-                rows="1"
-                maxlength="2000"
-                aria-label="Message text"
-                autocomplete="off"
-                spellcheck="true"
-              ></textarea>
+              <textarea id="gmsgInput" placeholder="Message Math — Grade 10A…" rows="1" maxlength="2000" autocomplete="off" spellcheck="true" aria-label="Message text"></textarea>
             </div>
-
-            <!-- Send button -->
-            <button
-              type="submit"
-              class="chat-icon-btn send-btn"
-              id="gsendBtn"
-              aria-label="Send message"
-              disabled
-            >
+            <button type="submit" class="chat-icon-btn send-btn" id="gsendBtn" aria-label="Send" disabled>
               <span class="material-symbols-outlined">send</span>
             </button>
-
           </form>
         </div>
 
       </div><!-- /gchat-active -->
-
     </section><!-- /gchat-win -->
 
+    <!-- ══════════════════════════════════════
+         RIGHT: Member list
+         ══════════════════════════════════════ -->
+    <aside class="member-panel" id="memberPanel" aria-label="Group members">
+
+      <!-- Empty state: shown before any group is selected -->
+      <div class="mp-empty" id="mpEmpty">
+        <div class="mp-empty-hdr">Group Details</div>
+        <div class="mp-empty-body">
+          <div class="mp-empty-ico">
+            <span class="material-symbols-outlined">groups</span>
+          </div>
+          <p>Select a group chat to view group details and members.</p>
+        </div>
+      </div>
+
+      <!-- Member content: shown after a group is selected -->
+      <div class="mp-content" id="mpContent" style="display:none">
+
+      <div class="mp-head">
+        <h3>Members <span class="mp-count" id="memberCount">24</span></h3>
+        <button class="chat-icon-btn" id="closeMemberBtn" aria-label="Close member list" title="Close">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="member-list" id="memberList">
+
+        <div class="member-section-label">Online — 5</div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <img class="m-ava" src="https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80" alt="Dr. Sarah Jenkins">
+            <span class="m-dot online"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Dr. Sarah Jenkins</div>
+            <div class="m-role teacher">Teacher</div>
+          </div>
+        </div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <img class="m-ava" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80" alt="Nrinphouneta Hok">
+            <span class="m-dot online"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Nrinphouneta Hok</div>
+            <div class="m-role" style="color:#179bb8;font-weight:600">You</div>
+          </div>
+        </div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#16a34a;color:#fff">LC</div>
+            <span class="m-dot online"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Ly Channary</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#2563eb;color:#fff">RS</div>
+            <span class="m-dot online"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Ratha Sok</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#7c3aed;color:#fff">VD</div>
+            <span class="m-dot online"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Vuth Dara</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-section-label">Away — 3</div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#ea580c;color:#fff">SK</div>
+            <span class="m-dot away"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Sophal Kim</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#0891b2;color:#fff">MC</div>
+            <span class="m-dot away"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Mony Chan</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-item">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#d97706;color:#fff">BL</div>
+            <span class="m-dot away"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Bunna Lim</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-section-label">Offline — 16</div>
+
+        <div class="member-item offline">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#94a3b8;color:#fff">SP</div>
+            <span class="m-dot offline"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Sreyleak Pov</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-item offline">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#94a3b8;color:#fff">KN</div>
+            <span class="m-dot offline"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Kagna Noun</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-item offline">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#94a3b8;color:#fff">PH</div>
+            <span class="m-dot offline"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Panha Heng</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-item offline">
+          <div class="m-ava-wrap">
+            <div class="m-ava-init" style="background:#94a3b8;color:#fff">DR</div>
+            <span class="m-dot offline"></span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">Dara Ros</div>
+            <div class="m-role student">Student</div>
+          </div>
+        </div>
+
+        <div class="member-more">+12 more members</div>
+
+      </div><!-- /member-list -->
+      </div><!-- /mp-content -->
+    </aside><!-- /member-panel -->
+
   </div><!-- /group-shell -->
+</main>
 
-</main><!-- /main -->
-
-<!-- ─────────────────────────────────────────────────────────────
+<!-- ═══════════════════════════════════════════
      Scripts
-     ───────────────────────────────────────────────────────────── -->
+     ═══════════════════════════════════════════ -->
 <script>
 (function () {
-  /* Theme init (must run before layout.js) */
-  var t = localStorage.getItem("ngis-theme") || "light";
-  document.documentElement.setAttribute("data-theme", t);
-
-  /* Resolve logged-in user's role for sidebar nav */
+  var t = localStorage.getItem('ngis-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
   var saved = null;
-  try { saved = JSON.parse(localStorage.getItem("ngis_chat_user") || "null"); } catch (e) {}
-  var role = saved?.role || window.CURRENT_USER?.role || "student";
-
-  /* Layout engine config */
-  window.PAGE = { role: role, active: "group-chat" };
-
-  /* Group Chat server URL */
-  window.GROUP_CHAT_SERVER = "http://localhost:3001";
-
-  /* Pass resolved user to group-chat.js */
+  try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
+  var role = (saved && saved.role) || 'student';
+  window.PAGE = { role: role, active: 'group-chat' };
+  window.GROUP_CHAT_SERVER = 'http://localhost:3001';
   if (saved) window.CURRENT_USER = saved;
-
-  document.body.classList.add("ready");
+  document.body.classList.add('ready');
 })();
 </script>
 
-<!-- Layout engine (sidebar + topbar + mobile nav) -->
+<script>window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: '../student/student-profile.html',
+  notifLink: '../student/student-notifications.html',
+  chatLink: 'chat.html',
+  notifCount: 3,
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+  ],
+  title: 'Group Chat',
+  greeting: 'Collaborate with your class group.',
+  breadcrumbs: [{ label: 'Messages', href: 'chat.html' }, { label: 'Group Chat' }]
+};</script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
-
-<!-- Socket.io client -->
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-
-<!-- Group chat logic -->
 <script src="../../assets/js/group-chat.js"></script>
+
+<!-- Class switching + member panel toggle -->
+<script>
+(function () {
+  var classList    = document.getElementById('classList');
+  var classPanel   = document.getElementById('classPanel');
+  var gchatWin     = document.getElementById('gchatWin');
+  var gchatActive  = document.getElementById('gchatActive');
+  var gchatEmpty   = document.getElementById('gchatEmpty');
+  var memberPanel  = document.getElementById('memberPanel');
+  var mpEmpty      = document.getElementById('mpEmpty');
+  var mpContent    = document.getElementById('mpContent');
+  var area         = document.getElementById('gmsgArea');
+  var input        = document.getElementById('gmsgInput');
+  var sendBtn      = document.getElementById('gsendBtn');
+
+  /* ── Open a class chat ──────────────────────────────────────── */
+  function openClass(classId) {
+    classList.querySelectorAll('.class-item').forEach(function (el) {
+      el.classList.remove('active');
+      el.setAttribute('aria-selected', 'false');
+    });
+    var item = classList.querySelector('[data-class="' + classId + '"]');
+    if (item) {
+      item.classList.add('active');
+      item.setAttribute('aria-selected', 'true');
+    }
+
+
+    var firstOpen = gchatActive.style.display !== 'flex';
+
+    if (firstOpen) {
+      /* Fade empty state out, then animate chat panel in */
+      gchatEmpty.classList.add('anim-out');
+      setTimeout(function () {
+        gchatEmpty.style.display = 'none';
+        gchatEmpty.classList.remove('anim-out');
+        gchatActive.style.display = 'flex';
+        void gchatActive.offsetWidth; /* reflow so animation triggers fresh */
+        gchatActive.classList.remove('anim-in');
+        gchatActive.classList.add('anim-in');
+        if (area) area.scrollTop = area.scrollHeight;
+      }, 140);
+    } else {
+      gchatEmpty.style.display = 'none';
+      if (area) area.scrollTop = area.scrollHeight;
+    }
+
+    /* Reveal member content, hide member panel empty state */
+    if (mpEmpty)   mpEmpty.style.display   = 'none';
+    if (mpContent) {
+      mpContent.style.display      = 'flex';
+      mpContent.style.flexDirection = 'column';
+      mpContent.style.flex          = '1';
+      mpContent.style.overflow      = 'hidden';
+      mpContent.style.minHeight     = '0';
+    }
+    /* Mark class as selected (used by tablet overlay) */
+    document.body.classList.add('class-open');
+    /* Mobile full-screen: slide class panel away */
+    if (window.innerWidth <= 1024) {
+      classPanel.classList.add('panel-hidden');
+      document.body.classList.add('chat-open');
+    }
+  }
+
+  /* ── Class list ─────────────────────────────────────────────── */
+  if (classList) {
+    classList.addEventListener('click', function (e) {
+      var item = e.target.closest('.class-item');
+      if (item) openClass(item.dataset.class);
+    });
+  }
+
+  /* ── Class search filter ────────────────────────────────────── */
+  var classSearch = document.getElementById('classSearch');
+  if (classSearch) {
+    classSearch.addEventListener('input', function () {
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('.class-item').forEach(function (el) {
+        var name = el.querySelector('.class-name');
+        el.style.display = (!q || (name && name.textContent.toLowerCase().includes(q))) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ── Back button (mobile) ───────────────────────────────────── */
+  var backBtn = document.getElementById('gchatBackBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', function () {
+      classPanel.classList.remove('panel-hidden');
+      document.body.classList.remove('chat-open');
+    });
+  }
+
+  /* ── Member panel toggle ────────────────────────────────────── */
+  var toggleMemberBtn = document.getElementById('toggleMemberBtn');
+  if (toggleMemberBtn && memberPanel) {
+    toggleMemberBtn.addEventListener('click', function () {
+      memberPanel.classList.toggle('panel-open');
+    });
+  }
+
+  /* ── Member panel close ─────────────────────────────────────── */
+  var closeMemberBtn = document.getElementById('closeMemberBtn');
+  if (closeMemberBtn && memberPanel) {
+    closeMemberBtn.addEventListener('click', function () {
+      memberPanel.classList.remove('panel-open');
+    });
+  }
+
+  /* ── Message input ──────────────────────────────────────────── */
+  if (input && sendBtn) {
+    input.addEventListener('input', function () {
+      sendBtn.disabled = !this.value.trim();
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('gmsgForm').dispatchEvent(new Event('submit'));
+      }
+    });
+  }
+
+  /* ── Form submit — demo append ──────────────────────────────── */
+  var form = document.getElementById('gmsgForm');
+  if (form && input && area) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = input.value.trim();
+      if (!text) return;
+      var row = document.createElement('div');
+      row.className = 'gmsg-row outgoing';
+      row.innerHTML = '<div class="gmsg-content"><div class="gmsg-bubble">' +
+        text.replace(/</g, '&lt;') + '</div>' +
+        '<div class="gmsg-time">' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + '</div></div>';
+      area.appendChild(row);
+      input.value = '';
+      input.style.height = '';
+      sendBtn.disabled = true;
+      area.scrollTop = area.scrollHeight;
+    });
+  }
+})();
+</script>
 
 </body>
 </html>

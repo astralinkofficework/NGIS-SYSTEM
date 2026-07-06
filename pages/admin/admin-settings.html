@@ -1,70 +1,269 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>NGIS — System Settings</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+  .settings-nav-item { display:block; width:100%; text-align:left; border:none; background:none; font:inherit; padding:13px 15px; border-radius:8px; cursor:pointer; color:var(--muted); font-weight:600; font-size:14px; }
+  .settings-nav-item:hover { background:var(--surface-2); color:var(--text); }
+  .settings-nav-item.active { background:var(--accent-soft); color:var(--accent); }
+  .settings-panel { display:none; }
+  .settings-panel.active { display:flex; flex-direction:column; gap:16px; }
+</style>
 </head>
 <body>
 <main class="main">
+<div id="heroBanner"></div>
 <div class="page">
-
-  <div class="page-head anim-up">
-    <div>
-      <div class="eyebrow">Admin Portal</div>
-      <h1>System Settings</h1>
-      <p>Configure school information, notifications, integrations, and security.</p>
-    </div>
-    <div class="head-actions">
-      <button class="btn btn-primary" onclick="window.toast('Settings saved successfully','success')"><span class="material-symbols-outlined">save</span>Save Changes</button>
-    </div>
-  </div>
 
   <div class="col-main mt4 anim-up">
     <div style="flex:0 0 220px">
       <div class="card card-pad">
         <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px">Settings</div>
-        <div class="row-item" style="border:none;background:var(--accent-soft);border-radius:8px;cursor:pointer"><div class="row-body"><b style="color:var(--accent)">School Info</b></div></div>
-        <div class="row-item" style="border:none;cursor:pointer"><div class="row-body"><span class="muted">Academic Year</span></div></div>
-        <div class="row-item" style="border:none;cursor:pointer"><div class="row-body"><span class="muted">Notifications</span></div></div>
-        <div class="row-item" style="border:none;cursor:pointer"><div class="row-body"><span class="muted">Security & 2FA</span></div></div>
-        <div class="row-item" style="border:none;cursor:pointer"><div class="row-body"><span class="muted">Integrations</span></div></div>
-        <div class="row-item" style="border:none;cursor:pointer"><div class="row-body"><span class="muted">Backup & Data</span></div></div>
+        <button class="settings-nav-item active" data-settings-tab="school">School Info</button>
+        <button class="settings-nav-item" data-settings-tab="academic">Academic Year</button>
+        <button class="settings-nav-item" data-settings-tab="notifications">Notifications</button>
+        <button class="settings-nav-item" data-settings-tab="security">Security &amp; 2FA</button>
+        <button class="settings-nav-item" data-settings-tab="integrations">Integrations</button>
+        <button class="settings-nav-item" data-settings-tab="backup">Backup &amp; Data</button>
+        <button class="settings-nav-item" data-settings-tab="campuses">Campus Settings</button>
+        <button class="settings-nav-item" data-settings-tab="departments">Department Settings</button>
+        <button class="settings-nav-item" data-settings-tab="roles">Roles &amp; Permissions</button>
       </div>
     </div>
+
     <div class="stack" style="flex:1">
-      <div class="card">
-        <div class="card-head"><h3>School Information</h3></div>
-        <div class="card-pad" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="form-group"><label class="label">School Name (English)</label><input class="input" value="New Gateway International School"></div>
-          <div class="form-group"><label class="label">School Name (Khmer)</label><input class="input" value="សាលារៀនអន្តរជាតិ"></div>
-          <div class="form-group"><label class="label">School Code</label><input class="input" value="NGIS-PNH"></div>
-          <div class="form-group"><label class="label">Academic Year</label><input class="input" value="2025–2026"></div>
-          <div class="form-group" style="grid-column:1/-1"><label class="label">Address</label><input class="input" value="St. 598, Phnom Penh, Cambodia"></div>
-          <div class="form-group"><label class="label">Phone</label><input class="input" value="+855 23 000 000"></div>
-          <div class="form-group"><label class="label">Email</label><input class="input" value="admin@ngis.edu.kh"></div>
+
+      <div class="settings-panel active" data-settings-panel="school">
+        <div class="card">
+          <div class="card-head"><h3>School Information</h3></div>
+          <div class="card-pad" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field"><label class="label">School Name (English)</label><input class="input" value="New Gateway International School"></div>
+            <div class="field"><label class="label">School Name (Khmer)</label><input class="input" value="សាលារៀនអន្តរជាតិ"></div>
+            <div class="field"><label class="label">School Code</label><input class="input" value="NGIS-PNH"></div>
+            <div class="field"><label class="label">Academic Year</label><input class="input" value="2025–2026"></div>
+            <div class="field" style="grid-column:1/-1"><label class="label">Address</label><input class="input" value="St. 598, Phnom Penh, Cambodia"></div>
+            <div class="field"><label class="label">Phone</label><input class="input" value="+855 23 000 000"></div>
+            <div class="field"><label class="label">Email</label><input class="input" value="admin@ngis.edu.kh"></div>
+          </div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-head"><h3>Security Settings</h3></div>
-        <div class="card-pad" style="display:grid;gap:16px">
-          <div class="flex between center"><div><b>Two-Factor Authentication</b><div class="faint" style="font-size:13px">Require 2FA for all admin accounts</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
-          <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>Session Timeout</b><div class="faint" style="font-size:13px">Auto-logout after inactivity</div></div><select class="select" style="width:auto"><option>30 minutes</option><option>1 hour</option><option>4 hours</option></select></div>
-          <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>IP Allowlist</b><div class="faint" style="font-size:13px">Restrict admin access to school network</div></div><label class="switch"><input type="checkbox"><span></span></label></div>
-          <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>Audit Logging</b><div class="faint" style="font-size:13px">Log all user actions for compliance</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+
+      <div class="settings-panel" data-settings-panel="academic">
+        <div class="card">
+          <div class="card-head"><div><h3>Academic Year</h3><div class="sub">Terms, semesters, and grading periods</div></div></div>
+          <div class="card-pad" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field"><label class="label">Current Academic Year</label><input class="input" value="2025–2026"></div>
+            <div class="field"><label class="label">Current Semester</label><select class="select"><option>Semester 1</option><option selected>Semester 2</option></select></div>
+            <div class="field"><label class="label">Semester 1 Start</label><input class="input" type="date" value="2025-09-01"></div>
+            <div class="field"><label class="label">Semester 1 End</label><input class="input" type="date" value="2026-01-16"></div>
+            <div class="field"><label class="label">Semester 2 Start</label><input class="input" type="date" value="2026-01-26"></div>
+            <div class="field"><label class="label">Semester 2 End</label><input class="input" type="date" value="2026-06-12"></div>
+          </div>
         </div>
       </div>
+
+      <div class="settings-panel" data-settings-panel="notifications">
+        <div class="card">
+          <div class="card-head"><h3>Notification Preferences</h3></div>
+          <div class="card-pad" style="display:grid;gap:16px">
+            <div class="flex between center"><div><b>New Student Enrollments</b><div class="faint" style="font-size:13px">Notify admins when a student is added</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>New Teacher Accounts</b><div class="faint" style="font-size:13px">Notify admins when a teacher is added</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>Assignment Submissions</b><div class="faint" style="font-size:13px">Notify when students submit work</div></div><label class="switch"><input type="checkbox"><span></span></label></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>Attendance Missing</b><div class="faint" style="font-size:13px">Alert when a class hasn't taken attendance</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>System Alerts</b><div class="faint" style="font-size:13px">Backup failures, security events</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" data-settings-panel="security">
+        <div class="card">
+          <div class="card-head"><h3>Security Settings</h3></div>
+          <div class="card-pad" style="display:grid;gap:16px">
+            <div class="flex between center"><div><b>Two-Factor Authentication</b><div class="faint" style="font-size:13px">Require 2FA for all admin accounts</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>Session Timeout</b><div class="faint" style="font-size:13px">Auto-logout after inactivity</div></div><select class="select" style="width:auto"><option>30 minutes</option><option>1 hour</option><option>4 hours</option></select></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>IP Allowlist</b><div class="faint" style="font-size:13px">Restrict admin access to school network</div></div><label class="switch"><input type="checkbox"><span></span></label></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><div><b>Audit Logging</b><div class="faint" style="font-size:13px">Log all user actions for compliance</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" data-settings-panel="integrations">
+        <div class="card">
+          <div class="card-head"><h3>System Integrations &amp; Telegram Bot</h3></div>
+          <div class="card-pad" style="display:grid;gap:20px">
+            
+            <div style="border-bottom:1px solid var(--border);padding-bottom:16px">
+              <div class="flex between center">
+                <div>
+                  <b>Telegram API Gateway</b>
+                  <div class="faint" style="font-size:12.5px;margin-top:2px">Send real-time alerts to students and parents via active chat hooks.</div>
+                </div>
+                <label class="switch"><input type="checkbox" checked id="tgBotEnabled"><span></span></label>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+                <div class="field"><label class="label">Telegram Bot Token</label><input class="input" type="password" id="tgBotToken" value="629384910:AAF9X-c003L_m1202A-NGISB"></div>
+                <div class="field"><label class="label">Default Channel Chat ID</label><input class="input" id="tgChatId" value="-1001839201948"></div>
+              </div>
+              <div style="margin-top:10px;display:flex;gap:8px">
+                <button class="btn btn-ghost btn-sm" onclick="window.toast('Telegram API endpoint connection established successfully. Ping response: 24ms.','success')">Test Connection</button>
+                <button class="btn btn-primary btn-sm" onclick="window.toast('Telegram API configs saved','success')">Save Configuration</button>
+              </div>
+            </div>
+
+            <div style="border-bottom:1px solid var(--border);padding-bottom:16px">
+              <b>Rate Limits &amp; Security Checks</b>
+              <div class="faint" style="font-size:12.5px;margin-top:2px">Prevent bot flood suspensions by limiting message frequency.</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+                <div class="field"><label class="label">Max Messages Per Minute (per User)</label><input class="input" type="number" value="5"></div>
+                <div class="field"><label class="label">Burst Threshold Limit</label><input class="input" type="number" value="15"></div>
+              </div>
+            </div>
+
+            <div>
+              <b>Delivery Queue Logs</b>
+              <div class="faint" style="font-size:12.5px;margin-top:2px;margin-bottom:10px">Live status audits of the Telegram notification queue.</div>
+              <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+                <table class="tbl" style="margin:0;font-size:12px">
+                  <thead>
+                    <tr><th>Recipient ID</th><th>Notification Event</th><th>Status</th><th>Timestamp</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>@nrin_hok</td><td>Calculus integration grades published</td><td><span class="badge green">Sent</span></td><td class="faint mono">Just now</td></tr>
+                    <tr><td>@parent_hok</td><td>Unexcused absence alert case DISC-2026-004</td><td><span class="badge green">Sent</span></td><td class="faint mono">10m ago</td></tr>
+                    <tr><td>@kosal_mony</td><td>Chemistry lab substitution assignment</td><td><span class="badge green">Sent</span></td><td class="faint mono">1h ago</td></tr>
+                    <tr><td>-1001839201948</td><td>Term 2 Exam schedule file released</td><td><span class="badge green">Sent</span></td><td class="faint mono">3h ago</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" data-settings-panel="backup">
+        <div class="card">
+          <div class="card-head"><div><h3>Backup &amp; Data</h3><div class="sub">Nightly automatic backups</div></div></div>
+          <div class="card-pad" style="display:grid;gap:16px">
+            <div class="flex between center"><div><b>Automatic Nightly Backup</b><div class="faint" style="font-size:13px">Runs every day at 02:00</div></div><label class="switch"><input type="checkbox" checked><span></span></label></div>
+            <div class="flex between center" style="padding-top:12px;border-top:1px solid var(--border)"><span class="muted" style="font-size:13px">Last backup</span><b style="font-size:13px">Today, 02:00 — Success</b></div>
+            <div class="flex gap8" style="padding-top:12px;border-top:1px solid var(--border)">
+              <button class="btn btn-ghost btn-sm" onclick="window.toast('Backup started…','info')"><span class="material-symbols-outlined">backup</span>Run Backup Now</button>
+              <button class="btn btn-ghost btn-sm" onclick="window.toast('Restoring from latest backup…','warning')"><span class="material-symbols-outlined">restore</span>Restore</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" data-settings-panel="campuses">
+        <div class="card">
+          <div class="card-head"><div><h3>Campus Settings</h3><div class="sub">Default values applied to new campuses</div></div><a class="link-btn" href="admin-campuses.html">Manage Campuses</a></div>
+          <div class="card-pad" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field"><label class="label">Default Timezone</label><select class="select"><option>Asia/Phnom_Penh (UTC+7)</option></select></div>
+            <div class="field"><label class="label">Default Class Capacity</label><input class="input" value="35"></div>
+            <div class="field field-full"><label class="label">Active Campuses</label>
+              <div class="chip-check-group">
+                <label class="chip-check"><input type="checkbox" checked><span><span class="material-symbols-outlined">check</span>Sen Sok</span></label>
+                <label class="chip-check"><input type="checkbox" checked><span><span class="material-symbols-outlined">check</span>Depo</span></label>
+                <label class="chip-check"><input type="checkbox" checked><span><span class="material-symbols-outlined">check</span>Bak Touk</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" data-settings-panel="departments">
+        <div class="card">
+          <div class="card-head"><div><h3>Department Settings</h3><div class="sub">Default values applied to new departments</div></div><a class="link-btn" href="admin-departments.html">Manage Departments</a></div>
+          <div class="card-pad" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="field"><label class="label">Default Grading Scale</label><select class="select"><option>Letter (A–F)</option><option>Percentage</option><option>GPA (4.0)</option></select></div>
+            <div class="field"><label class="label">Passing Threshold</label><input class="input" value="60%"></div>
+            <div class="field field-full"><label class="label">Active Departments</label>
+              <div class="chip-check-group">
+                <label class="chip-check"><input type="checkbox" checked><span><span class="material-symbols-outlined">check</span>English</span></label>
+                <label class="chip-check"><input type="checkbox" checked><span><span class="material-symbols-outlined">check</span>Khmer</span></label>
+                <label class="chip-check"><input type="checkbox" checked><span><span class="material-symbols-outlined">check</span>Chinese</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" data-settings-panel="roles">
+        <div class="card">
+          <div class="card-head"><div><h3>Roles &amp; Permissions</h3><div class="sub">Default permission template for new Admin accounts</div></div></div>
+          <div class="card-pad" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Add</span><span class="switch"><input type="checkbox" checked><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Edit</span><span class="switch"><input type="checkbox" checked><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Delete</span><span class="switch"><input type="checkbox"><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can View Reports</span><span class="switch"><input type="checkbox" checked><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Manage Users</span><span class="switch"><input type="checkbox"><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Manage Exams</span><span class="switch"><input type="checkbox"><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Manage Lessons</span><span class="switch"><input type="checkbox"><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Manage Attendance</span><span class="switch"><input type="checkbox"><span></span></span></label>
+            <label class="flex between center"><span style="font-size:13px;font-weight:600">Can Manage Settings</span><span class="switch"><input type="checkbox"><span></span></span></label>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div><!-- /page -->
 </main>
 <script>window.PAGE={"role":"admin","active":"settings"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Mr. Heng Samnang',
+  id: 'Admin ID: ADM-2026-001',
+  grade: 'School Administrator',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  title: 'School Settings',
+  greeting: 'Configure school-wide settings and preferences.',
+  breadcrumbs: [{ label: 'School Settings' }],
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'admin-settings.html',
+  notifLink: 'admin-logs.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 4,
+  ddRows: [
+    { icon: 'admin_panel_settings', text: 'School Administration' },
+    { icon: 'groups', text: '5,200 active users' },
+    { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Since: Jan 2018' },
+    { icon: 'verified', text: 'Principal Administrator' }
+  ]
+};</script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  var navBtns = document.querySelectorAll('.settings-nav-item');
+  function selectTab(key) {
+    var btn = document.querySelector('.settings-nav-item[data-settings-tab="' + key + '"]');
+    if (!btn) return false;
+    navBtns.forEach(function (b) { b.classList.toggle('active', b === btn); });
+    document.querySelectorAll('.settings-panel').forEach(function (p) {
+      p.classList.toggle('active', p.getAttribute('data-settings-panel') === key);
+    });
+    return true;
+  }
+  navBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      selectTab(btn.getAttribute('data-settings-tab'));
+    });
+  });
+
+  var requestedTab = new URLSearchParams(location.search).get('tab');
+  if (requestedTab) selectTab(requestedTab);
+})();
+</script>
 </body>
 </html>

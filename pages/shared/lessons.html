@@ -3,373 +3,579 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Lessons</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>NGIS — Resource Library</title>
+<meta name="description" content="Browse and download teacher-uploaded learning materials from the NGIS Digital Resource Library.">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="css/lessons.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
-<style>
-/* Subject selector — Step 1 */
-.subject-select-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-@media (max-width:1024px) { .subject-select-grid { grid-template-columns: repeat(3,1fr); } }
-@media (max-width:640px)  { .subject-select-grid { grid-template-columns: repeat(2,1fr); } }
-@media (max-width:400px)  { .subject-select-grid { grid-template-columns: 1fr; } }
-
-.subject-sel-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-xl);
-  box-shadow: var(--sh-1);
-  padding: 20px;
-  text-align: center;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  transition: box-shadow var(--t-base), border-color var(--t-base), transform var(--t-base);
-  cursor: pointer;
-}
-.subject-sel-card:hover {
-  box-shadow: var(--sh-2);
-  border-color: var(--primary-border);
-  transform: translateY(-3px);
-}
-.subject-sel-icon {
-  width: 60px; height: 60px; border-radius: var(--r-lg);
-  display: flex; align-items: center; justify-content: center;
-}
-.subject-sel-icon .material-symbols-outlined { font-size: 30px; }
-.subject-sel-name { font-size: 15px; font-weight: 700; color: var(--heading); }
-.subject-sel-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
-.subject-sel-count { font-size: 11px; font-weight: 700; }
-
-/* Lesson list — Step 2 */
-.lesson-list { display: flex; flex-direction: column; gap: 12px; }
-.lesson-list-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-@media (max-width:640px) { .lesson-list-grid { grid-template-columns: 1fr; } }
-
-/* Preview modal */
-.preview-modal {
-  position: fixed; inset: 0; z-index: 100;
-  background: rgba(0,0,0,.75); backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 24px;
-}
-.preview-modal[hidden] { display: none; }
-.preview-modal-inner {
-  background: var(--surface); border-radius: var(--r-xl);
-  max-width: 700px; width: 100%; max-height: 85vh;
-  overflow: hidden; display: flex; flex-direction: column;
-  box-shadow: var(--sh-3);
-}
-.preview-modal-head {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px 20px; border-bottom: 1px solid var(--border);
-}
-.preview-modal-body { flex: 1; overflow-y: auto; padding: 0; }
-</style>
 </head>
 <body data-page="lessons">
 <main class="main">
+<div id="heroBanner"></div>
+<div class="page lib-page">
 
-  <!-- HERO BANNER -->
-  <div class="hero-banner">
-    <div class="hb-content">
-      <nav class="hb-crumb" aria-label="Breadcrumb">
-        <a href="../student/student.html">Home</a>
-        <span class="hb-crumb-sep">›</span>
-        <a href="departments.html">Departments</a>
-        <span class="hb-crumb-sep">›</span>
-        <span id="heroBreadcrumbDept">English</span>
-        <span class="hb-crumb-sep" id="lessonBreadSep" hidden>›</span>
-        <span id="heroBreadcrumbSubject" hidden></span>
-      </nav>
-      <h1 class="hb-title" id="heroTitle">Lessons</h1>
-      <p class="hb-sub" id="heroSub">Select a subject to view teacher-uploaded lessons</p>
-      <div class="hb-badges">
-        <span class="hb-pill" id="heroBadgeDept"><span class="material-symbols-outlined" style="font-size:13px">apartment</span>English Department</span>
-        <span class="hb-pill"><span class="material-symbols-outlined" style="font-size:13px">school</span>Grade 11 · SS2</span>
-      </div>
+<!-- ══ STEP 1 — Subject Selection ══ -->
+<section id="stepSubjects">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../../pages/student/student.html">Student Portal</a>
+    <span class="material-symbols-outlined sep">chevron_right</span>
+    <span class="cur" aria-current="page">Departments</span>
+  </nav>
+  <div class="subj-header-wrap">
+    <div>
+    
+      <h1 class="subj-title">Academic Subjects</h1>
+      <p class="subj-desc">Select a subject below to browse class handouts, slides, and learning materials.</p>
     </div>
-    <div class="hb-logo-block">
-      <div class="hb-logo-ring">
-        <img src="../../assets/ngis-logo.png" alt="NGIS Logo" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-        <span class="hb-logo-fallback" style="display:none">NG</span>
-      </div>
-      <div class="hb-school-name">
-        <b>NGIS International School</b>
-        <span class="hb-kh">សាលារៀន​អន្តរជាតិ NGIS</span>
-      </div>
+    <div class="subj-search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search subjects..." id="subjectSearch" oninput="filterSubjects(this.value)" aria-label="Search subjects">
     </div>
   </div>
 
-  <div class="page">
+  <div class="subj-grid" id="subjectGrid">
 
-    <!-- ════════════════ STEP 1: SUBJECT SELECTION ════════════ -->
-    <div id="stepSubjects">
-
-      <div class="page-head mb20">
-        <div>
-          <h2>Choose a Subject</h2>
-          <p class="muted" style="margin-top:4px">Click a subject below to browse its uploaded lessons</p>
-        </div>
-        <div class="search" style="max-width:260px">
-          <span class="material-symbols-outlined">search</span>
-          <input type="text" placeholder="Search subjects…" id="subjectSearch" aria-label="Search subjects">
-        </div>
+    <button class="subj-card" data-name="Mathematics" onclick="openSubject('math','Mathematics','Algebra · Calculus · Geometry','calculate','#1565c0','#e3f2fd','Mr. Chea Sophea','Mathematics','Semester 1, AY 2025–26','Science Department','Core subject covering algebra, calculus and analytic geometry.',48)">
+      <div class="subj-card-icon"><i class="fa-solid fa-calculator"></i></div>
+      <div>
+        <div class="subj-card-name">Mathematics</div>
+        <p class="subj-card-desc">Algebra · Calculus · Geometry</p>
       </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 48 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
 
-      <div class="subject-select-grid" id="subjectGrid">
+    <button class="subj-card" data-name="Physics" onclick="openSubject('physics','Physics','Mechanics · Electricity · Waves','bolt','#6a1b9a','#f3e5f5','Mr. Dara Vin','Science Department','Semester 1, AY 2025–26','Science Department','Covers classical mechanics, electromagnetism and thermodynamics.',36)">
+      <div class="subj-card-icon"><i class="fa-solid fa-bolt"></i></div>
+      <div>
+        <div class="subj-card-name">Physics</div>
+        <p class="subj-card-desc">Mechanics · Electricity · Waves</p>
+      </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 36 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
 
-        <button class="subject-sel-card" onclick="openSubject('eng-lit','English Literature','Reading, analysis and literary appreciation','menu_book','var(--primary)')">
-          <div class="subject-sel-icon" style="background:var(--primary-soft)">
-            <span class="material-symbols-outlined" style="color:var(--primary)">menu_book</span>
-          </div>
-          <div class="subject-sel-name">English Literature</div>
-          <div class="subject-sel-desc">Reading, analysis and literary appreciation</div>
-          <span class="subject-sel-count" style="color:var(--primary)">14 lessons</span>
-        </button>
+    <button class="subj-card" data-name="Chemistry" onclick="openSubject('chemistry','Chemistry','Atoms · Reactions · Periodic Table','science','#00695c','#e0f2f1','Ms. Sreymom Lim','Science Department','Semester 1, AY 2025–26','Science Department','Atomic structure, chemical reactions and the periodic table.',29)">
+      <div class="subj-card-icon"><i class="fa-solid fa-flask"></i></div>
+      <div>
+        <div class="subj-card-name">Chemistry</div>
+        <p class="subj-card-desc">Atoms · Reactions · Periodic Table</p>
+      </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 29 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
 
-        <button class="subject-sel-card" onclick="openSubject('eng-grammar','English Grammar','Grammar rules, writing and academic structure','spellcheck','var(--primary)')">
-          <div class="subject-sel-icon" style="background:var(--primary-soft)">
-            <span class="material-symbols-outlined" style="color:var(--primary)">spellcheck</span>
-          </div>
-          <div class="subject-sel-name">English Grammar</div>
-          <div class="subject-sel-desc">Grammar rules, writing and academic structure</div>
-          <span class="subject-sel-count" style="color:var(--primary)">10 lessons</span>
-        </button>
+    <button class="subj-card" data-name="Biology" onclick="openSubject('biology','Biology','Cells · Genetics · Ecosystems','biotech','#2e7d32','#e8f5e9','Mr. Sopheak Pich','Science Department','Semester 1, AY 2025–26','Science Department','Cell biology, genetics and ecological systems.',31)">
+      <div class="subj-card-icon"><i class="fa-solid fa-dna"></i></div>
+      <div>
+        <div class="subj-card-name">Biology</div>
+        <p class="subj-card-desc">Cells · Genetics · Ecosystems</p>
+      </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 31 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
 
-        <button class="subject-sel-card" onclick="openSubject('khmer-lit','Khmer Literature','Classical and modern Khmer prose and poetry','chrome_reader_mode','#7A5C00')">
-          <div class="subject-sel-icon" style="background:var(--accent-soft)">
-            <span class="material-symbols-outlined" style="color:#7A5C00">chrome_reader_mode</span>
-          </div>
-          <div class="subject-sel-name">Khmer Literature</div>
-          <div class="subject-sel-desc">Classical and modern Khmer prose and poetry</div>
-          <span class="subject-sel-count" style="color:#7A5C00">8 lessons</span>
-        </button>
+    <button class="subj-card" data-name="English" onclick="openSubject('english','English Language','Literature · Grammar · Writing','menu_book','#b71c1c','#ffebee','Ms. Nary Chan','Languages Department','Semester 1, AY 2025–26','Languages Department','English literature, advanced grammar and academic writing.',22)">
+      <div class="subj-card-icon"><i class="fa-solid fa-book"></i></div>
+      <div>
+        <div class="subj-card-name">English Language</div>
+        <p class="subj-card-desc">Literature · Grammar · Writing</p>
+      </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 22 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
 
-        <button class="subject-sel-card" onclick="openSubject('chinese','Chinese Language','Mandarin reading, writing and conversation','language','var(--primary)')">
-          <div class="subject-sel-icon" style="background:var(--primary-soft)">
-            <span class="material-symbols-outlined" style="color:var(--primary)">language</span>
-          </div>
-          <div class="subject-sel-name">Chinese Language</div>
-          <div class="subject-sel-desc">Mandarin reading, writing and conversation</div>
-          <span class="subject-sel-count" style="color:var(--primary)">7 lessons</span>
-        </button>
+    <button class="subj-card" data-name="History" onclick="openSubject('history','History','Cambodian · World · Modern Era','history_edu','#c62828','#fce4ec','Mr. Virak Heng','Humanities Department','Semester 1, AY 2025–26','Humanities Department','World and Cambodian modern history with primary sources.',18)">
+      <div class="subj-card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+      <div>
+        <div class="subj-card-name">History</div>
+        <p class="subj-card-desc">Cambodian · World · Modern Era</p>
+      </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 18 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
 
+    <button class="subj-card" data-name="Geography" onclick="openSubject('geography','Geography','Maps · Environment · Climate','public','#e65100','#fff3e0','Ms. Bopha Keo','Humanities Department','Semester 1, AY 2025–26','Humanities Department','Physical geography, cartography and environmental studies.',15)">
+      <div class="subj-card-icon"><i class="fa-solid fa-earth-americas"></i></div>
+      <div>
+        <div class="subj-card-name">Geography</div>
+        <p class="subj-card-desc">Maps · Environment · Climate</p>
+      </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 15 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
+
+    <button class="subj-card" data-name="Computer Science" onclick="openSubject('cs','Computer Science','Programming · Algorithms · Data','computer','#1565c0','#e8eaf6','Mr. Ratanak Som','Technology Department','Semester 1, AY 2025–26','Technology Department','Programming, algorithms, data structures and digital literacy.',40)">
+      <div class="subj-card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+      <div>
+        <div class="subj-card-name">Computer Science</div>
+        <p class="subj-card-desc">Programming · Algorithms · Data</p>
+      </div>
+      <div class="subj-card-footer">
+        <span><i class="fa-regular fa-folder-open"></i> 40 resources</span>
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+    </button>
+
+  </div>
+
+  <div id="subjEmptyState" class="subj-empty" hidden>
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <h4>No subjects found</h4>
+    <p>Try a different keyword</p>
+  </div>
+</section><!-- /stepSubjects -->
+
+<!-- ══ STEP 2 — Library Workspace ══ -->
+<div id="stepLibrary" hidden>
+<div class="lib-workspace" id="libWorkspace">
+
+  <!-- ═══ LEFT SIDEBAR ═══ -->
+  <aside class="lib-sidebar" id="libSidebar">
+
+    <!-- Course Content Title Header -->
+    <div class="lib-sidebar-header-row">
+      <h2 class="lib-sidebar-title">Course Content</h2>
+      <button class="lib-back-btn lib-sidebar-close-btn" onclick="closeMobileSidebar()" aria-label="Close sidebar">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Search / Filter -->
+    <div class="lib-sidebar-search-row">
+      <div class="lib-sidebar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search lesson..." id="sidebarSearch" oninput="searchResources(this.value)" aria-label="Search resources">
+      </div>
+      <button class="lib-sidebar-filter-btn" title="Filter" aria-label="Filter content">
+        <span class="material-symbols-outlined">tune</span>
+      </button>
+    </div>
+
+    <!-- Lesson List -->
+    <div class="lib-sidebar-list scrollbar-thin">
+      <div id="sidebarListLabel" style="display:none">All Lessons</div>
+      <div id="folderList">
+        <!-- Injected dynamically by lessons.js -->
       </div>
     </div>
 
-    <!-- ════════════════ STEP 2: LESSON LIST ═════════════════ -->
-    <div id="stepLessons" hidden>
-
-      <!-- Back button + controls -->
-      <div class="flex between center gap12 mb20 wrap">
-        <div class="flex center gap12">
-          <button onclick="backToSubjects()" class="btn btn-ghost btn-sm">
-            <span class="material-symbols-outlined">arrow_back</span>
-            Back to subjects
-          </button>
-          <div>
-            <h2 id="lessonSubjectTitle" style="font-size:20px"></h2>
-            <p class="muted" style="font-size:13px;margin-top:2px" id="lessonSubjectMeta"></p>
-          </div>
-        </div>
-        <div class="flex gap8">
-          <div class="search" style="max-width:240px">
-            <span class="material-symbols-outlined">search</span>
-            <input type="text" placeholder="Search lessons…" aria-label="Search lessons">
-          </div>
-          <div class="seg">
-            <button class="on" id="btnListView" onclick="setView('list',this)">
-              <span class="material-symbols-outlined" style="font-size:17px">view_list</span>
-            </button>
-            <button id="btnGridView" onclick="setView('grid',this)">
-              <span class="material-symbols-outlined" style="font-size:17px">grid_view</span>
-            </button>
-          </div>
-        </div>
+    <!-- Sidebar Help Banner -->
+    <div class="lib-sidebar-help-card">
+      <div class="lib-sidebar-help-title">Need help understanding?</div>
+      <p class="lib-sidebar-help-desc">Ask your teacher or join the discussion with classmates.</p>
+      <div class="lib-sidebar-help-actions">
+        <button class="lib-sidebar-help-btn" onclick="copyLinkGeneric()"><i class="fa-regular fa-comment-dots"></i> Ask a Question</button>
+        <button class="lib-sidebar-help-btn btn-group-chat"><i class="fa-solid fa-users"></i> Join Group Chat</button>
       </div>
+    </div>
 
-      <!-- Filter chips -->
-      <div class="flex gap8 mb16 wrap">
-        <span class="subj-chip" style="background:var(--primary-soft);border-color:var(--primary-border);color:var(--primary)">All files</span>
-        <span class="subj-chip">
-          <div style="width:10px;height:10px;border-radius:2px;background:var(--primary);flex-shrink:0"></div>
-          PDFs
-        </span>
-        <span class="subj-chip">
-          <div style="width:10px;height:10px;border-radius:2px;background:var(--accent);flex-shrink:0"></div>
-          Images
-        </span>
-        <span class="subj-chip">
-          <div style="width:10px;height:10px;border-radius:2px;background:var(--surface-3);border:1px solid var(--border);flex-shrink:0"></div>
-          Links
-        </span>
-      </div>
+    <!-- Hidden elements to preserve JS updates -->
+    <div style="display:none">
+      <img src="https://images.pexels.com/photos/5212324/pexels-photo-5212324.jpeg?auto=compress&cs=tinysrgb&w=80" id="teacherAvatar" alt="">
+      <span id="teacherName"></span>
+      <span id="teacherDept"></span>
+    </div>
 
-      <!-- Lesson list (list view) -->
-      <div class="lesson-list" id="lessonListView">
+  </aside>
 
-        <div class="lesson-card">
-          <div class="lesson-file-icon pdf">PDF</div>
-          <div class="lesson-body">
-            <b>English Literature — Introduction to Shakespeare</b>
-            <small>Ms. Rin Sothea · Uploaded 22 Jun 2026 · 2.1 MB</small>
-          </div>
-          <div class="lesson-actions">
-            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Introduction to Shakespeare','PDF')">
-              <span class="material-symbols-outlined">visibility</span>
-            </button>
-            <button class="icon-btn" title="Download" aria-label="Download file">
-              <span class="material-symbols-outlined">download</span>
-            </button>
-            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
-              <span class="material-symbols-outlined">bookmark_border</span>
-            </button>
-          </div>
+  <!-- ═══ MAIN WORKSPACE ═══ -->
+  <div class="lib-main">
+
+    <!-- Scrollable content area -->
+    <div class="lib-viewer-panel" id="libViewerPanel">
+
+      <!-- Back to Subjects, Title, View Options -->
+      <div class="lib-subject-header-row">
+        <button class="lib-back-btn" onclick="backToSubjects()">
+          <i class="fa-solid fa-arrow-left"></i> Back to subjects
+        </button>
+        <button class="lib-mobile-menu-btn" id="sidebarToggle" onclick="toggleMobileSidebar()" aria-label="Open lesson list">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="lib-subject-title-wrap">
+          <h1 class="lib-subject-title" id="libTitle">Mathematics</h1>
+          <p class="lib-subject-desc" id="libSub">Algebra, calculus and problem solving</p>
         </div>
 
-        <div class="lesson-card">
-          <div class="lesson-file-icon png">IMG</div>
-          <div class="lesson-body">
-            <b>Grammar Reference Chart — Tenses Overview</b>
-            <small>Ms. Rin Sothea · Uploaded 20 Jun 2026 · 0.8 MB</small>
-          </div>
-          <div class="lesson-actions">
-            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Tenses Overview','Image')">
-              <span class="material-symbols-outlined">visibility</span>
-            </button>
-            <button class="icon-btn" title="Download" aria-label="Download file">
-              <span class="material-symbols-outlined">download</span>
-            </button>
-            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
-              <span class="material-symbols-outlined">bookmark</span>
-            </button>
-          </div>
+        <div class="lib-view-toggles">
+          <button class="lib-view-toggle-btn active" title="Grid View" aria-label="Grid view"><i class="fa-solid fa-grip-vertical"></i></button>
+          <button class="lib-view-toggle-btn" title="List View" aria-label="List view"><i class="fa-solid fa-list"></i></button>
         </div>
-
-        <div class="lesson-card">
-          <div class="lesson-file-icon pdf">PDF</div>
-          <div class="lesson-body">
-            <b>Academic Writing — Essay Structure &amp; Techniques</b>
-            <small>Ms. Rin Sothea · Uploaded 18 Jun 2026 · 3.2 MB</small>
-          </div>
-          <div class="lesson-actions">
-            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Essay Structure','PDF')">
-              <span class="material-symbols-outlined">visibility</span>
-            </button>
-            <button class="icon-btn" title="Download" aria-label="Download file">
-              <span class="material-symbols-outlined">download</span>
-            </button>
-            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
-              <span class="material-symbols-outlined">bookmark_border</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="lesson-card">
-          <div class="lesson-file-icon link">URL</div>
-          <div class="lesson-body">
-            <b>BBC Learning English — Advanced Grammar Exercises</b>
-            <small>Ms. Rin Sothea · Added 15 Jun 2026 · External link</small>
-          </div>
-          <div class="lesson-actions">
-            <button class="icon-btn" title="Open link" aria-label="Open external link">
-              <span class="material-symbols-outlined">open_in_new</span>
-            </button>
-            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
-              <span class="material-symbols-outlined">bookmark_border</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="lesson-card">
-          <div class="lesson-file-icon jpg">IMG</div>
-          <div class="lesson-body">
-            <b>Khmer Literature — Poem Analysis Worksheet</b>
-            <small>Mr. Dara Sok · Uploaded 12 Jun 2026 · 1.3 MB</small>
-          </div>
-          <div class="lesson-actions">
-            <button class="icon-btn" title="Preview" aria-label="Preview file" onclick="openPreview('Poem Analysis Worksheet','Image')">
-              <span class="material-symbols-outlined">visibility</span>
-            </button>
-            <button class="icon-btn" title="Download" aria-label="Download file">
-              <span class="material-symbols-outlined">download</span>
-            </button>
-            <button class="icon-btn" title="Bookmark" aria-label="Bookmark lesson">
-              <span class="material-symbols-outlined">bookmark_border</span>
-            </button>
-          </div>
-        </div>
-
-      </div><!-- /lesson-list -->
-
-      <!-- Grid view (hidden by default) -->
-      <div class="lesson-list-grid" id="lessonGridView" hidden>
-        <!-- Same lessons in card format, shown in 2-col grid -->
-        <div class="card card-pad card-hover" style="border-radius:var(--r-xl)">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <div class="lesson-file-icon pdf" style="width:40px;height:40px;border-radius:var(--r-md);font-size:10px">PDF</div>
-            <div class="lesson-body"><b>Cell Division — Chapter 7</b><small>Dr. Pov Chanthy · 22 Jun</small></div>
-          </div>
-          <div class="flex gap8">
-            <button class="btn btn-soft btn-sm" style="flex:1">Preview</button>
-            <button class="btn btn-ghost btn-sm"><span class="material-symbols-outlined">download</span></button>
-          </div>
-        </div>
-        <div class="card card-pad card-hover" style="border-radius:var(--r-xl)">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <div class="lesson-file-icon png" style="width:40px;height:40px;border-radius:var(--r-md);font-size:10px">IMG</div>
-            <div class="lesson-body"><b>Periodic Table Poster</b><small>Ms. Kiry Sokha · 20 Jun</small></div>
-          </div>
-          <div class="flex gap8">
-            <button class="btn btn-soft btn-sm" style="flex:1">Preview</button>
-            <button class="btn btn-ghost btn-sm"><span class="material-symbols-outlined">download</span></button>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /stepLessons -->
-  </div><!-- /page -->
-
-  <!-- PREVIEW MODAL -->
-  <div class="preview-modal" id="previewModal" hidden role="dialog" aria-modal="true" aria-labelledby="previewTitle">
-    <div class="preview-modal-inner">
-      <div class="preview-modal-head">
-        <span class="material-symbols-outlined" style="color:var(--primary)">description</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:15px;font-weight:700" id="previewTitle">File Preview</div>
-          <div style="font-size:12px;color:var(--muted)" id="previewType"></div>
-        </div>
-        <button class="icon-btn" onclick="closePreview()" aria-label="Close preview">
-          <span class="material-symbols-outlined">close</span>
+        <button class="lib-view-toggle-btn lib-panel-collapse-btn" id="toggleDetailsBtn" title="Hide details panel" aria-label="Toggle details panel" onclick="toggleDetailsPanel()">
+          <i class="fa-solid fa-angles-right" id="toggleDetailsIcon"></i>
         </button>
       </div>
-      <div class="preview-modal-body">
-        <div class="empty" style="padding:64px 24px">
-          <span class="material-symbols-outlined">description</span>
-          <h4 id="previewFileName"></h4>
-          <p>File preview would render here in production. In demo mode, download to view.</p>
-          <button class="btn btn-primary mt16">
-            <span class="material-symbols-outlined">download</span>
-            Download file
-          </button>
+
+      <!-- Placeholder (no file selected) -->
+      <div class="lib-viewer-placeholder" id="viewerPlaceholder">
+        <div class="lib-viewer-placeholder-header" style="width:100%; text-align:left; margin-bottom:20px;">
+
+          <!-- Filter Tabs chips -->
+          <div class="lib-filter-bar">
+            <button class="lib-tab active" data-type="all" onclick="filterType(this, 'all')"><i class="fa-solid fa-folder-open" style="font-size:11px; margin-right:4px;"></i> All Files</button>
+            <button class="lib-tab" data-type="lesson" onclick="filterType(this, 'lesson')"><i class="fa-solid fa-file-pdf" style="font-size:11px; margin-right:4px; color:#ef4444;"></i> PDFs</button>
+            <button class="lib-tab" data-type="worksheet" onclick="filterType(this, 'worksheet')"><i class="fa-solid fa-image" style="font-size:11px; margin-right:4px; color:#f57c00;"></i> Images</button>
+            <button class="lib-tab" data-type="link" onclick="filterType(this, 'link')"><i class="fa-solid fa-link" style="font-size:11px; margin-right:4px; color:#2563eb;"></i> Links</button>
+
+            <div class="lib-sort-select">
+              <span>Sort by: <b>Latest</b></span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource list dynamically populated by lessons.js -->
+        <div id="resourceList" style="width:100%; display:flex; flex-direction:column; gap:10px;">
+          <!-- Injected dynamically by lessons.js -->
+        </div>
+
+        <!-- Empty State inside resource list -->
+        <div id="resourceEmpty" class="lib-empty" hidden>
+          <span class="material-symbols-outlined">search_off</span>
+          <h4>No files found</h4>
+          <p>Try changing your search query or file filters.</p>
         </div>
       </div>
+
+      <!-- Active workspace (hidden until file selected) -->
+      <div id="rpvWorkspace" hidden class="rpv-workspace">
+
+        <!-- ── Hero/Preview Header Card ── -->
+        <section class="rpv-hero-card">
+          <div class="rpv-hero-card-inner">
+            <div class="rpv-hero-top">
+              <!-- Cover thumbnail -->
+              <div class="rpv-hero-thumb" id="rpvThumbPlaceholder" aria-hidden="true"></div>
+              <!-- Icon -->
+              <div class="rpv-hero-icon" id="rpvFileIconWrap">
+                <span class="material-symbols-outlined" id="rpvFileIcon">picture_as_pdf</span>
+              </div>
+              <!-- Body -->
+              <div class="rpv-hero-body">
+                <div class="rpv-hero-meta-top">
+                  <span class="rpv-badge" id="rpvFtypeBadge">LECTURE</span>
+                  <span class="rpv-recommended-badge">Recommended</span>
+                </div>
+                <h2 class="rpv-hero-title" id="rpvResTitle">Chapter 3 — Linear Equations &amp; Inequalities</h2>
+                <p class="rpv-hero-desc" id="rpvResDesc">Mr. Chea Sophea · Uploaded 22 Jun 2026 · 2.1 MB</p>
+                <div class="rpv-hero-metarow">
+                  <span><span class="material-symbols-outlined">person</span><span id="rpvMetaTeacher">Teacher</span></span>
+                  <span><span class="material-symbols-outlined">calendar_today</span><span id="rpvMetaDate">—</span></span>
+                  <span><span class="material-symbols-outlined">description</span><span id="rpvMetaSize">—</span></span>
+                  <span><span class="material-symbols-outlined">download</span><span id="rpvMetaDownloads">0</span></span>
+                </div>
+                <div class="rpv-hero-tags" id="rpvTags"></div>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="rpv-hero-actions">
+              <button class="rpv-btn-action" onclick="document.getElementById('viewerSection').scrollIntoView({behavior: 'smooth'})" title="Preview" aria-label="Preview"><i class="fa-regular fa-eye"></i></button>
+              <button class="rpv-btn-action" onclick="copyLinkGeneric()" title="Share" aria-label="Share"><i class="fa-solid fa-share-nodes"></i></button>
+              <button class="rpv-btn-action" id="rpvDlBtn" onclick="downloadPreview()" title="Download" aria-label="Download"><i class="fa-solid fa-arrow-down"></i></button>
+              <button class="rpv-btn-action" id="rpvBmBarBtn" onclick="togglePreviewBookmark()" title="Bookmark" aria-label="Bookmark"><span class="material-symbols-outlined">bookmark_border</span></button>
+            </div>
+
+            <!-- Hidden helper for dynamic script support -->
+            <button id="rpvBmBtn" style="display:none" aria-hidden="true" tabindex="-1"><span class="material-symbols-outlined">bookmark_border</span></button>
+          </div>
+        </section>
+
+        <!-- ── Document Viewer ── -->
+        <section class="rpv-viewer-section" id="viewerSection">
+          <!-- Document body -->
+          <div class="rpv-viewer-body" id="rpvEmbedBody">
+            <div class="rpv-paper" id="rpvPaper">
+              <div id="rpvFrameWrap" class="rpv-frame-wrap">
+                <!-- dynamically loaded -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Page indicator & control toolbar at bottom -->
+          <div class="rpv-viewer-bottom-bar">
+            <div class="rpv-page-nav-wrap">
+              <span id="rpvPageCur">1</span> / <span id="rpvPageTotal">5</span>
+            </div>
+            <div class="rpv-zoom-wrap">
+              <button class="rpv-zoom-btn" onclick="rpvZoom(-10)" title="Zoom out" aria-label="Zoom out"><i class="fa-solid fa-minus"></i></button>
+              <span class="rpv-zoom-label" id="rpvZoomLabel" onclick="rpvZoom(100 - _rpvZoom)" title="Reset zoom" role="button" tabindex="0">100%</span>
+              <button class="rpv-zoom-btn" onclick="rpvZoom(10)" title="Zoom in" aria-label="Zoom in"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <button class="rpv-zoom-btn rpv-rotate-btn" onclick="rpvRotate()" title="Rotate" aria-label="Rotate document"><i class="fa-solid fa-rotate-right"></i></button>
+            <button class="rpv-fullscreen-btn" onclick="expandViewer()" title="Fullscreen" aria-label="Open fullscreen preview"><i class="fa-solid fa-expand"></i></button>
+          </div>
+        </section>
+
+        <!-- ── Tabs: Description / Attachments / Notes / References / Related / Links ── -->
+        <section class="rpv-tabs-card">
+          <div class="rpv-tab-bar" role="tablist" aria-label="Lesson resource tabs">
+            <button class="rpv-tab active" data-tab="description" onclick="rpvSwitchTab(this,'description')" role="tab" aria-selected="true">
+              <span class="material-symbols-outlined">description</span> Description
+            </button>
+            <button class="rpv-tab" data-tab="attachments" onclick="rpvSwitchTab(this,'attachments')" role="tab" aria-selected="false">
+              <span class="material-symbols-outlined">attach_file</span> Attachments <span class="rpv-tab-count">0</span>
+            </button>
+            <button class="rpv-tab" data-tab="notes" onclick="rpvSwitchTab(this,'notes')" role="tab" aria-selected="false">
+              <span class="material-symbols-outlined">forum</span> Teacher Notes
+            </button>
+            <button class="rpv-tab" data-tab="refs" onclick="rpvSwitchTab(this,'refs')" role="tab" aria-selected="false">
+              <span class="material-symbols-outlined">menu_book</span> References
+            </button>
+            <button class="rpv-tab" data-tab="related" onclick="rpvSwitchTab(this,'related')" role="tab" aria-selected="false">
+              <span class="material-symbols-outlined">grid_view</span> Related Lessons <span class="rpv-tab-count">0</span>
+            </button>
+            <button class="rpv-tab" data-tab="links" onclick="rpvSwitchTab(this,'links')" role="tab" aria-selected="false">
+              <span class="material-symbols-outlined">open_in_new</span> External Links <span class="rpv-tab-count">0</span>
+            </button>
+          </div>
+
+          <div class="rpv-tab-panes">
+            <!-- Description -->
+            <div class="rpv-tab-pane active" id="rpv-tab-description" role="tabpanel">
+              <p class="rpv-tab-desc-text" id="rpvDescText">This chapter introduces the basic concepts of linear equations and inequalities, solving methods, and real-life applications with examples and practice problems.</p>
+              <div class="rpv-tab-desc-tags" id="rpvDescMeta"></div>
+            </div>
+
+            <!-- Attachments -->
+            <div class="rpv-tab-pane" id="rpv-tab-attachments" role="tabpanel">
+              <div class="rpv-attach-grid" id="rpvAttachmentsList"></div>
+              <div class="rpv-empty-mini" id="rpvAttachmentsEmpty" hidden>
+                <span class="material-symbols-outlined">attach_file_off</span>
+                <p>No attachments for this lesson yet.</p>
+              </div>
+            </div>
+
+            <!-- Teacher Notes -->
+            <div class="rpv-tab-pane" id="rpv-tab-notes" role="tabpanel">
+              <div class="rpv-notes-card">
+                <div class="rpv-notes-head">
+                  <img id="rpvNotesAvatar" src="https://images.pexels.com/photos/5212324/pexels-photo-5212324.jpeg?auto=compress&cs=tinysrgb&w=80" alt="" class="rpv-notes-avatar">
+                  <div>
+                    <div class="rpv-notes-teacher" id="rpvNotesTeacher">Teacher</div>
+                    <div class="rpv-notes-date" id="rpvNotesDate">Posted by teacher</div>
+                  </div>
+                </div>
+                <p class="rpv-notes-text" id="rpvNotesText"></p>
+                <div id="rpvNotesRestricted"></div>
+              </div>
+            </div>
+
+            <!-- References -->
+            <div class="rpv-tab-pane" id="rpv-tab-refs" role="tabpanel">
+              <ul class="rpv-refs-list" id="rpvRefsList"></ul>
+              <div class="rpv-empty-mini" id="rpvRefsEmpty" hidden>
+                <span class="material-symbols-outlined">menu_book</span>
+                <p>No references listed for this lesson.</p>
+              </div>
+            </div>
+
+            <!-- Related Lessons -->
+            <div class="rpv-tab-pane" id="rpv-tab-related" role="tabpanel">
+              <div class="rpv-related-grid" id="rpvRelatedGrid"></div>
+              <div class="rpv-empty-mini" id="rpvRelatedEmpty" hidden>
+                <span class="material-symbols-outlined">folder_off</span>
+                <p>No related lessons found.</p>
+              </div>
+            </div>
+
+            <!-- External Links -->
+            <div class="rpv-tab-pane" id="rpv-tab-links" role="tabpanel">
+              <div class="rpv-links-list" id="rpvLinksList"></div>
+              <div class="rpv-empty-mini" id="rpvLinksEmpty" hidden>
+                <span class="material-symbols-outlined">link_off</span>
+                <p>No external links for this lesson.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Bottom Pagination Bar ── -->
+        <div class="rpv-pagination-bar">
+          <button class="rpv-pag-btn" onclick="if(typeof _lsnGoTo==='function')_lsnGoTo(_lsnPage-1)"><i class="fa-solid fa-arrow-left"></i> Previous Lesson</button>
+
+          <div class="rpv-pag-progress-wrap">
+            <div class="rpv-pag-progress-text">Lesson 1 of 8</div>
+          </div>
+
+          <button class="rpv-pag-btn next" onclick="if(typeof _lsnGoTo==='function')_lsnGoTo(_lsnPage+1)">Next Lesson <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+
+      </div><!-- /rpvWorkspace -->
+
+    </div><!-- /libViewerPanel -->
+
+  </div><!-- /lib-main -->
+
+  <!-- ═══ RIGHT DETAILS SIDEBAR ═══ -->
+  <aside class="lib-infopanel" id="libInfoPanel">
+    <div class="lib-panel-inner">
+
+      <!-- Card 1: Teacher + Class Info -->
+      <div class="lib-panel-card">
+        <div class="lib-panel-card-title">Class</div>
+        <div class="lib-panel-teacher-row">
+          <img src="https://images.pexels.com/photos/5212324/pexels-photo-5212324.jpeg?auto=compress&cs=tinysrgb&w=80" alt="Teacher" class="lib-panel-avatar" id="panelTeacherAvatar">
+          <div class="lib-panel-teacher-info">
+            <div class="lib-panel-tname" id="panelTeacherName">Mr. Chea Sophea</div>
+            <div class="lib-panel-tdept" id="panelTeacherDept">Mathematics Teacher</div>
+          </div>
+        </div>
+        <button class="lib-panel-action-btn"><i class="fa-regular fa-envelope"></i> Message</button>
+        <ul class="lib-info-rows">
+          <li><span class="lbl">Subject</span><span class="val" id="siSubject">—</span></li>
+          <li><span class="lbl">Semester</span><span class="val" id="siSemester">—</span></li>
+          <li><span class="lbl">Department</span><span class="val" id="siDept">—</span></li>
+        </ul>
+        <p class="lib-panel-help-text" id="siDesc"></p>
+      </div>
+
+      <!-- Card 2: File Stats -->
+      <div class="lib-panel-card">
+        <div class="lib-panel-card-title">File Stats</div>
+        <ul class="lib-info-rows">
+          <li><span class="lbl"><span class="material-symbols-outlined">visibility</span> Views</span><span class="val" id="rpvRightViews">—</span></li>
+          <li><span class="lbl"><span class="material-symbols-outlined">download</span> Downloads</span><span class="val" id="rpvRightDownloads">—</span></li>
+          <li><span class="lbl"><span class="material-symbols-outlined">hard_drive</span> File Size</span><span class="val" id="rpvRightSize">—</span></li>
+        </ul>
+      </div>
+
+      <!-- Card 3: Related Resources -->
+      <div class="lib-panel-card">
+        <div class="lib-panel-card-title">Related Resources</div>
+        <div class="lib-related-list" id="rpvRightRelated"></div>
+      </div>
+
+      <!-- Card 4: Your Progress -->
+      <div class="lib-panel-card">
+        <div class="lib-panel-card-title">Your Progress</div>
+        <div class="lib-panel-progress-content">
+          <div class="lib-panel-radial-ring">
+            <svg class="circular-chart" viewBox="0 0 36 36">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="circle" stroke-dasharray="68, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            </svg>
+            <div class="lib-panel-radial-val">
+              <div class="percent">68%</div>
+              <div class="lbl">Done</div>
+            </div>
+          </div>
+          <ul class="lib-panel-progress-list">
+            <li><span class="dot completed"></span><span class="lbl">Completed</span><span class="val">11</span></li>
+            <li><span class="dot in-progress"></span><span class="lbl">In progress</span><span class="val">2</span></li>
+            <li><span class="dot not-started"></span><span class="lbl">Not started</span><span class="val">3</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 5: Upcoming Lessons -->
+      <div class="lib-panel-card">
+        <div class="lib-panel-card-title">Upcoming Lessons</div>
+        <ul class="lib-panel-upcoming-list">
+          <li>
+            <div class="ico-wrap"><i class="fa-regular fa-file-lines"></i></div>
+            <div class="body">
+              <div class="name">3.2 Solving Linear Equations</div>
+              <div class="time">Tomorrow</div>
+            </div>
+            <i class="fa-regular fa-calendar-check cal-ico"></i>
+          </li>
+          <li>
+            <div class="ico-wrap"><i class="fa-regular fa-file-lines"></i></div>
+            <div class="body">
+              <div class="name">3.3 Linear Inequalities</div>
+              <div class="time">24 May 2026</div>
+            </div>
+            <i class="fa-regular fa-calendar-check cal-ico"></i>
+          </li>
+          <li>
+            <div class="ico-wrap"><i class="fa-regular fa-file-lines"></i></div>
+            <div class="body">
+              <div class="name">3.4 Graphing Inequalities</div>
+              <div class="time">26 May 2026</div>
+            </div>
+            <i class="fa-regular fa-calendar-check cal-ico"></i>
+          </li>
+        </ul>
+        <button class="lib-panel-action-btn ghost">View all lessons</button>
+      </div>
+
+      <!-- Card 6: Quick Actions -->
+      <div class="lib-panel-card">
+        <div class="lib-panel-card-title">Quick Actions</div>
+        <ul class="lib-panel-actions-list">
+          <li><button onclick="downloadPreview()"><i class="fa-solid fa-circle-down"></i> Download All Materials</button></li>
+          <li><button onclick="togglePreviewBookmark()"><i class="fa-regular fa-bookmark"></i> Add to My Bookmarks</button></li>
+          <li><button onclick="copyLinkGeneric()"><i class="fa-solid fa-share-nodes"></i> Share this Subject</button></li>
+        </ul>
+      </div>
+
+      <!-- Card 7: Need Help? -->
+      <div class="lib-panel-card">
+        <div class="lib-panel-card-title">Need Help?</div>
+        <p class="lib-panel-help-text">Stuck on a topic? Get help from your teacher or classmates.</p>
+        <button class="lib-panel-action-btn"><i class="fa-regular fa-comments"></i> Join Discussion</button>
+      </div>
+
+      <!-- Hidden nodes for JS support -->
+      <div style="display:none">
+        <span id="detailSemester"></span>
+        <span id="detailSubject"></span>
+      </div>
+
+    </div>
+  </aside>
+
+</div><!-- /lib-workspace -->
+</div><!-- /stepLibrary -->
+
+<!-- Preview Modal -->
+<div class="lib-modal" id="previewModal" hidden role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+  <div class="lib-modal-inner">
+    <div class="lib-modal-head">
+      <span class="lib-modal-icon material-symbols-outlined" id="previewTypeIcon">description</span>
+      <div class="lib-modal-title-wrap">
+        <div class="lib-modal-title" id="previewTitle">File Preview</div>
+        <div class="lib-modal-sub" id="previewType">PDF</div>
+      </div>
+      <div class="lib-modal-actions">
+        <button class="rpv-tool-btn" title="Download" onclick="downloadPreview()" aria-label="Download"><i class="fa-solid fa-arrow-down" style="font-size:13px;"></i></button>
+        <button class="rpv-tool-btn" title="Print" onclick="window.print()" aria-label="Print"><i class="fa-solid fa-print" style="font-size:13px;"></i></button>
+        <button class="rpv-tool-btn" title="Copy Link" onclick="copyLinkGeneric()" aria-label="Copy link"><i class="fa-solid fa-link" style="font-size:13px;"></i></button>
+        <div class="rpv-toolbar-sep"></div>
+        <button class="rpv-tool-btn" title="Close" onclick="closePreview()" aria-label="Close"><i class="fa-solid fa-xmark" style="font-size:15px;"></i></button>
+      </div>
+    </div>
+    <div class="lib-modal-body" id="previewBody">
+      <!-- loaded dynamically by JS -->
     </div>
   </div>
+</div>
+
+<div class="lib-scrim" id="libScrim" onclick="closeMobileSidebar()"></div>
+
+</div><!-- /page -->
 </main>
 
 <script>
@@ -382,62 +588,83 @@
   if (saved) window.CURRENT_USER = saved;
   document.body.classList.add('ready');
 })();
-
-function openSubject(id, name, desc, icon, color) {
-  document.getElementById('stepSubjects').hidden = true;
-  document.getElementById('stepLessons').hidden = false;
-  document.getElementById('lessonSubjectTitle').textContent = name;
-  document.getElementById('lessonSubjectMeta').textContent = desc;
-  document.getElementById('heroBreadcrumbSubject').textContent = name;
-  document.getElementById('heroBreadcrumbSubject').hidden = false;
-  document.getElementById('lessonBreadSep').hidden = false;
-  document.getElementById('heroTitle').textContent = name + ' — Lessons';
-  document.getElementById('heroSub').textContent = desc;
-}
-
-function backToSubjects() {
-  document.getElementById('stepSubjects').hidden = false;
-  document.getElementById('stepLessons').hidden = true;
-  document.getElementById('heroBreadcrumbSubject').hidden = true;
-  document.getElementById('lessonBreadSep').hidden = true;
-  document.getElementById('heroTitle').textContent = 'Lessons';
-  document.getElementById('heroSub').textContent = 'Select a subject to view teacher-uploaded lessons';
-}
-
-function setView(view, btn) {
-  var listView = document.getElementById('lessonListView');
-  var gridView = document.getElementById('lessonGridView');
-  var btnList  = document.getElementById('btnListView');
-  var btnGrid  = document.getElementById('btnGridView');
-  if (view === 'list') {
-    listView.hidden = false; gridView.hidden = true;
-    btnList.classList.add('on'); btnGrid.classList.remove('on');
-  } else {
-    listView.hidden = true; gridView.hidden = false;
-    btnGrid.classList.add('on'); btnList.classList.remove('on');
-  }
-}
-
-function openPreview(name, type) {
-  document.getElementById('previewTitle').textContent = name;
-  document.getElementById('previewType').textContent = type + ' document';
-  document.getElementById('previewFileName').textContent = name;
-  document.getElementById('previewModal').hidden = false;
-  document.body.style.overflow = 'hidden';
-}
-
-function closePreview() {
-  document.getElementById('previewModal').hidden = true;
-  document.body.style.overflow = '';
-}
-
-document.getElementById('previewModal').addEventListener('click', function(e) {
-  if (e.target === this) closePreview();
-});
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closePreview();
-});
 </script>
+<script>window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: '../student/student-profile.html',
+  notifLink: '../student/student-notifications.html',
+  chatLink: 'chat.html',
+  notifCount: 3,
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+  ],
+  title: 'Resource Library',
+  greeting: 'Browse and download teacher-uploaded learning materials.',
+  breadcrumbs: [{ label: 'Library' }]
+};</script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script src="js/lessons.js"></script>
+<script>
+(function() {
+  var originalOpenSubject = window.openSubject;
+  if (originalOpenSubject) {
+    window.openSubject = function(id, name, sub, icon, color, bg, teacher, subject, semester, dept, desc, count) {
+      var card = document.querySelector('.subj-card[data-name="' + name + '"]');
+      if (card) {
+        card.classList.add('subj-card-morph');
+      }
+      var stepSubjects = document.getElementById('stepSubjects');
+      stepSubjects.classList.add('step-transition-out');
+
+      setTimeout(function() {
+        originalOpenSubject(id, name, sub, icon, color, bg, teacher, subject, semester, dept, desc, count);
+        if (card) card.classList.remove('subj-card-morph');
+        stepSubjects.classList.remove('step-transition-out');
+
+        var stepLibrary = document.getElementById('stepLibrary');
+        stepLibrary.classList.add('step-transition-in');
+
+        var viewer = document.getElementById('libViewerPanel');
+        if (viewer) viewer.scrollTop = 0;
+
+        setTimeout(function() {
+          stepLibrary.classList.remove('step-transition-in');
+        }, 500);
+      }, 250);
+    };
+  }
+
+  var originalBackToSubjects = window.backToSubjects;
+  if (originalBackToSubjects) {
+    window.backToSubjects = function() {
+      var stepLibrary = document.getElementById('stepLibrary');
+      stepLibrary.classList.add('step-transition-out');
+
+      setTimeout(function() {
+        originalBackToSubjects();
+        stepLibrary.classList.remove('step-transition-out');
+
+        var stepSubjects = document.getElementById('stepSubjects');
+        stepSubjects.classList.add('step-transition-in');
+
+        setTimeout(function() {
+          stepSubjects.classList.remove('step-transition-in');
+        }, 500);
+      }, 250);
+    };
+  }
+})();
+</script>
 </body>
 </html>

@@ -131,9 +131,9 @@
   /* ── DOM refs ─────────────────────────────────────────────── */
   const $ = (id) => document.getElementById(id);
   const convList    = $("convList");
-  const convSearch  = $("convSearch");
+  const convSearch  = $("peopleSearch");
   const chatWin     = $("chatWin");
-  const chatEmpty   = $("chatEmpty");
+  const chatEmpty   = $("chatSelectState");
   const chatActive  = $("chatActive");
   const chatHName   = $("chatHName");
   const chatHStatus = $("chatHStatus");
@@ -234,8 +234,8 @@
     chatHStatus.className = "chat-hstatus" + (u?.status === "online" ? " is-online" : "");
 
     // Show chat window
-    chatEmpty.hidden = true;
-    chatActive.hidden = false;
+    if (chatEmpty) chatEmpty.style.display = 'none';
+    chatActive.style.display = 'flex';
 
     // Mobile transition
     chatWin.classList.add("show-mobile");
@@ -730,7 +730,7 @@
     });
 
     // Conversation search
-    convSearch.addEventListener("input", () => renderConvList(convSearch.value));
+    if (convSearch) convSearch.addEventListener("input", () => renderConvList(convSearch.value));
 
     // Send form
     msgForm.addEventListener("submit", (ev) => {
@@ -771,9 +771,9 @@
       if (btn) btn.addEventListener("click", openModalFn);
     });
 
-    closeModal.addEventListener("click", closeModalFn);
+    if (closeModal) closeModal.addEventListener("click", closeModalFn);
 
-    newChatModal.addEventListener("click", (ev) => {
+    if (newChatModal) newChatModal.addEventListener("click", (ev) => {
       if (ev.target === newChatModal) closeModalFn();
     });
 
@@ -785,19 +785,19 @@
     });
 
     // User search in modal
-    userSearch.addEventListener("input", () => {
+    if (userSearch) userSearch.addEventListener("input", () => {
       clearTimeout(searchDebounce);
       searchDebounce = setTimeout(() => searchUsers(userSearch.value), 280);
     });
 
     // Start chat from user result
-    userResults.addEventListener("click", (ev) => {
+    if (userResults) userResults.addEventListener("click", (ev) => {
       const item = ev.target.closest(".user-result-item");
       if (!item) return;
       startConversation(item.dataset.uid, item.dataset.uname, item.dataset.urole);
     });
 
-    userResults.addEventListener("keydown", (ev) => {
+    if (userResults) userResults.addEventListener("keydown", (ev) => {
       if (ev.key === "Enter") {
         const item = ev.target.closest(".user-result-item");
         if (item) startConversation(item.dataset.uid, item.dataset.uname, item.dataset.urole);
@@ -805,12 +805,13 @@
     });
 
     // Back button (mobile)
-    backBtn.addEventListener("click", () => {
+    if (backBtn) backBtn.addEventListener("click", () => {
       chatWin.classList.remove("show-mobile");
       document.querySelector(".conv-panel")?.classList.remove("hidden-mobile");
+      document.body.classList.remove("chat-open");
       activeConvId = null;
-      chatActive.hidden = true;
-      chatEmpty.hidden = false;
+      chatActive.style.display = 'none';
+      if (chatEmpty) chatEmpty.style.display = '';
     });
 
     // Initial send button state

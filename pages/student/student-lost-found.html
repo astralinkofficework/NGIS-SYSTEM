@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Lost & Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+.lf-page{ max-width:960px; margin:0 auto; padding:24px 20px 80px; }
+.lf-layout{ display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; }
+@media(max-width:900px){ .lf-layout{ grid-template-columns:1fr; } }
+
+.lf-tabs{ display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap; }
+.lf-tab{ padding:6px 18px; border-radius:var(--r-pill); font-size:13px; font-weight:700; border:2px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all var(--t-fast); display:flex; align-items:center; gap:6px; }
+.lf-tab:hover{ border-color:var(--border-strong); color:var(--text); }
+.lf-tab.active-lost{ background:#e11d48; color:#fff; border-color:#e11d48; }
+.lf-tab.active-found{ background:var(--primary); color:#fff; border-color:var(--primary); }
+.lf-tab.active-all{ background:var(--text); color:var(--surface); border-color:var(--text); }
+
+.lf-item{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r-xl); padding:18px 20px; box-shadow:var(--sh-1); margin-bottom:12px; transition:border-color var(--t-fast),box-shadow var(--t-fast); }
+.lf-item:hover{ border-color:var(--border-strong); box-shadow:var(--sh-2); }
+.lf-item-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.lf-item-title{ font-size:15px; font-weight:700; color:var(--heading); }
+.lf-type-tag{ font-size:10px; font-weight:800; text-transform:uppercase; padding:3px 10px; border-radius:var(--r-pill); letter-spacing:.05em; flex-shrink:0; }
+.lf-type-lost{ background:rgba(225,29,72,.1); color:#e11d48; }
+.lf-type-found{ background:var(--primary-soft); color:var(--primary); }
+.lf-item-desc{ font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
+.lf-item-meta{ display:flex; gap:16px; flex-wrap:wrap; }
+.lf-meta-item{ display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); }
+.lf-meta-item .material-symbols-outlined{ font-size:15px; color:var(--faint); }
+.lf-item-actions{ margin-top:12px; padding-top:12px; border-top:1px solid var(--border); display:flex; gap:8px; }
+
+/* Report form */
+.lf-report-form{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r-xl); padding:20px; box-shadow:var(--sh-1); }
+.lf-report-form h3{ font-size:15px; margin-bottom:4px; }
+.lf-report-form .sub{ font-size:13px; color:var(--muted); margin-bottom:18px; }
+.lf-type-seg{ display:flex; gap:8px; margin-bottom:16px; }
+.lf-type-opt{ flex:1; padding:10px; border:2px solid var(--border); border-radius:var(--r-md); text-align:center; cursor:pointer; font-size:13px; font-weight:700; color:var(--muted); transition:all var(--t-fast); }
+.lf-type-opt.selected-lost{ border-color:#e11d48; background:rgba(225,29,72,.06); color:#e11d48; }
+.lf-type-opt.selected-found{ border-color:var(--primary); background:var(--primary-soft); color:var(--primary); }
+</style>
+</head>
+<body data-page="student-lostfound">
+<main class="main">
+<div id="heroBanner"></div>
+<div class="page lf-page">
+
+<div class="lf-layout">
+  <!-- Left: Items List -->
+  <div>
+    <div class="lf-tabs anim-up">
+      <button class="lf-tab active-all" data-filter="all" onclick="filterLF(this,'all')">All Items <span class="badge gray" style="font-size:10px">4</span></button>
+      <button class="lf-tab" data-filter="lost" onclick="filterLF(this,'lost')"><span class="material-symbols-outlined" style="font-size:14px">search_off</span>Lost <span class="badge red" style="font-size:10px">2</span></button>
+      <button class="lf-tab" data-filter="found" onclick="filterLF(this,'found')"><span class="material-symbols-outlined" style="font-size:14px">search</span>Found <span class="badge green" style="font-size:10px">2</span></button>
+    </div>
+
+    <div id="lfList" class="anim-up-2">
+
+      <div class="lf-item" data-type="lost">
+        <div class="lf-item-head">
+          <div>
+            <div class="lf-item-title">Blue Water Bottle</div>
+          </div>
+          <span class="lf-type-tag lf-type-lost">Lost</span>
+        </div>
+        <div class="lf-item-desc">500ml blue Thermos brand bottle. Initials 'NK' scratched on the bottom. Last seen near the cafeteria area.</div>
+        <div class="lf-item-meta">
+          <div class="lf-meta-item"><span class="material-symbols-outlined">location_on</span>Cafeteria Area</div>
+          <div class="lf-meta-item"><span class="material-symbols-outlined">calendar_today</span>July 4, 2026</div>
+          <div class="lf-meta-item"><span class="material-symbols-outlined">person</span>Nrinphouneta Hok</div>
+        </div>
+        <div class="lf-item-actions">
+          <button class="btn btn-soft btn-sm" onclick="window.toast&&window.toast('Contact request sent to the reporter.','success')">
+            <span class="material-symbols-outlined">chat</span> I found this!
+          </button>
+        </div>
+      </div>
+
+      <div class="lf-item" data-type="found">
+        <div class="lf-item-head">
+          <div><div class="lf-item-title">Glasses Case (Black)</div></div>
+          <span class="lf-type-tag lf-type-found">Found</span>
+        </div>
+        <div class="lf-item-desc">A black hard-shell glasses case. No glasses inside. Found near the library entrance. Currently held at the admin office.</div>
+        <div class="lf-item-meta">
+          <div class="lf-meta-item"><span class="material-symbols-outlined">location_on</span>Library Entrance</div>
+          <div class="lf-meta-item"><span class="material-symbols-outlined">calendar_today</span>July 5, 2026</div>
+          <div class="lf-meta-item"><span class="material-symbols-outlined">person</span>Admin Office</div>
+        </div>
+        <div class="lf-item-actions">
+          <button class="btn btn-primary btn-sm" onclick="window.toast&&window.toast('Claim submitted. Please collect from Admin Office with your Student ID.','success')">
+            <span class="material-symbols-outlined">check_circle</span> This is mine
+          </button>
+        </div>
+      </div>
+
+      <div class="lf-item" data-type="found">
+        <div class="lf-item-head">
+          <div><div class="lf-item-title">USB Flash Drive (Pink)</div></div>
+          <span class="lf-type-tag lf-type-found">Found</span>
+        </div>
+        <div class="lf-item-desc">16GB SanDisk USB drive, pink color. Found on a desk in Room 204 after class. Held by the teacher.</div>
+        <div class="lf-item-meta">
+          <div class="lf-meta-item"><span class="material-symbols-outlined">location_on</span>Room 204</div>
+          <div class="lf-meta-item"><span class="material-symbols-outlined">calendar_today</span>July 3, 2026</div>
+          <div class="lf-meta-item"><span class="material-symbols-outlined">person</span>Mr. Ratanak Som</div>
+        </div>
+        <div class="lf-item-actions">
+          <button class="btn btn-primary btn-sm" onclick="window.toast&&window.toast('Claim submitted. Collect from Room 204 teacher.','success')">
+            <span class="material-symbols-outlined">check_circle</span> This is mine
+          </button>
+        </div>
+      </div>
+
+      <div class="lf-item" data-type="lost" style="opacity:.55">
+        <div class="lf-item-head">
+          <div><div class="lf-item-title">Scientific Calculator</div></div>
+          <span class="badge gray" style="font-size:11px">Claimed</span>
+        </div>
+        <div class="lf-item-desc">Casio FX-991ES Plus, has a cat sticker on the back. This item has been claimed and returned to its owner.</div>
+        <div class="lf-item-meta">
+          <div class="lf-meta-item"><span class="material-symbols-outlined">location_on</span>Physics Lab</div>
+          <div class="lf-meta-item"><span class="material-symbols-outlined">calendar_today</span>July 2, 2026</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right: Report Form -->
+  <div class="lf-report-form anim-up-3">
+    <h3>Report an Item</h3>
+    <div class="sub">Lost something or found an item? Report it here.</div>
+    <div class="lf-type-seg">
+      <div class="lf-type-opt" id="optLost" onclick="selectType('lost')">😟 I Lost Something</div>
+      <div class="lf-type-opt" id="optFound" onclick="selectType('found')">😊 I Found Something</div>
+    </div>
+    <div class="field"><label class="label">Item Name *</label><input class="input" id="lfItem" placeholder="e.g. Blue water bottle"></div>
+    <div class="field"><label class="label">Description *</label><textarea class="textarea" id="lfDesc" placeholder="Color, brand, identifying marks..." style="min-height:72px"></textarea></div>
+    <div class="field"><label class="label">Location *</label><input class="input" id="lfLoc" placeholder="e.g. Cafeteria, Room 204, Library..."></div>
+    <button class="btn btn-primary w-full" style="justify-content:center;margin-top:4px" onclick="submitReport()">
+      <span class="material-symbols-outlined">send</span> Submit Report
+    </button>
+  </div>
+
+</div>
+</div>
+</main>
+<script>
+var _lfType='';
+function selectType(t){
+  _lfType=t;
+  document.getElementById('optLost').className='lf-type-opt'+(t==='lost'?' selected-lost':'');
+  document.getElementById('optFound').className='lf-type-opt'+(t==='found'?' selected-found':'');
+}
+function filterLF(btn,f){
+  document.querySelectorAll('.lf-tab').forEach(function(b){b.className='lf-tab';});
+  btn.className='lf-tab active-'+f;
+  document.querySelectorAll('#lfList .lf-item').forEach(function(i){
+    i.style.display=(f==='all'||i.dataset.type===f)?'':'none';
+  });
+}
+function submitReport(){
+  var item=document.getElementById('lfItem').value.trim();
+  var desc=document.getElementById('lfDesc').value.trim();
+  var loc=document.getElementById('lfLoc').value.trim();
+  if(!_lfType){window.toast&&window.toast('Please select Lost or Found.','error');return;}
+  if(!item||!desc||!loc){window.toast&&window.toast('Please fill all required fields.','error');return;}
+  window.toast&&window.toast('Report submitted! Admin will review it shortly.','success');
+  document.getElementById('lfItem').value='';
+  document.getElementById('lfDesc').value='';
+  document.getElementById('lfLoc').value='';
+  _lfType='';
+  document.getElementById('optLost').className='lf-type-opt';
+  document.getElementById('optFound').className='lf-type-opt';
+}
+(function(){
+  try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}
+  window.PAGE={role:'student',active:'dashboard'};
+})();
+</script>
+<script>window.HERO_CONFIG={
+  name:'Nrinphouneta Hok',id:'Student ID: 2026-STD-0142',grade:'Grade 10',
+  avatar:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink:'../../index.html',signOutLink:'../../index.html',
+  profileLink:'student-profile.html',notifLink:'student-notifications.html',
+  chatLink:'../shared/chat.html',notifCount:3,
+  ddRows:[{icon:'school',text:'Grade 10 — Science Stream'},{icon:'class',text:'Class 10A'},{icon:'email',text:'nrinphouneta@ngis.edu.kh'},{icon:'calendar_today',text:'Enrolled: Sep 2024'},{icon:'emoji_events',text:'GPA: 3.87 / 4.00'}],
+  title:'Lost & Found',greeting:'Report lost items or help return found ones.',
+  breadcrumbs:[{label:'Lost & Found'}]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — School Elections & Voting</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+.elect-page{ max-width:900px; margin:0 auto; padding:24px 20px 80px; }
+
+/* Election header */
+.elect-header{ background:var(--gradient-hero); border-radius:var(--r-xl); padding:28px 32px; color:#fff; margin-bottom:24px; position:relative; overflow:hidden; }
+.elect-header::before{ content:''; position:absolute; top:-40px; right:-40px; width:160px; height:160px; border-radius:50%; background:rgba(242,194,48,.12); pointer-events:none; }
+.elect-header-badge{ display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.3); padding:5px 14px; border-radius:var(--r-pill); font-size:12px; font-weight:700; color:#fff; margin-bottom:12px; }
+.elect-header h2{ font-size:22px; font-weight:800; color:#fff; margin-bottom:6px; }
+.elect-header p{ font-size:14px; color:rgba(255,255,255,.82); }
+.elect-deadline{ display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,255,255,.9); margin-top:14px; font-weight:600; }
+
+/* Candidates */
+.candidates-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:18px; margin-bottom:24px; }
+
+.candidate-card{
+  background:var(--surface); border:2px solid var(--border); border-radius:var(--r-xl);
+  padding:22px 20px; box-shadow:var(--sh-1); cursor:pointer;
+  transition:all var(--t-base); position:relative; overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;
+}
+.candidate-card:hover:not(.voted):not(.disabled){ border-color:var(--primary-border); box-shadow:var(--sh-2); transform:translateY(-2px); }
+.candidate-card.selected{ border-color:var(--primary); background:var(--primary-soft); }
+.candidate-card.voted.winner{ border-color:var(--accent); background:var(--accent-soft); }
+
+.candidate-photo{
+  width:72px; height:72px; border-radius:50%; object-fit:cover;
+  border:3px solid var(--border); background:var(--surface-3);
+  display:grid; place-items:center; font-size:22px; font-weight:800; color:var(--muted);
+}
+.candidate-card.selected .candidate-photo{ border-color:var(--primary); }
+.candidate-name{ font-size:16px; font-weight:800; color:var(--heading); }
+.candidate-grade{ font-size:12px; color:var(--muted); font-weight:600; }
+.candidate-manifesto{ font-size:13px; color:var(--muted); line-height:1.55; }
+.candidate-vote-btn{ width:100%; padding:10px; border-radius:var(--r-md); border:2px solid var(--primary); background:transparent; color:var(--primary); font-size:14px; font-weight:700; cursor:pointer; transition:all var(--t-fast); font-family:var(--sans); }
+.candidate-vote-btn:hover{ background:var(--primary); color:#fff; }
+.candidate-card.selected .candidate-vote-btn{ background:var(--primary); color:#fff; }
+.candidate-card.voted .candidate-vote-btn{ cursor:default; border-color:var(--border); color:var(--muted); }
+
+/* Vote bar */
+.vote-bar-wrap{ width:100%; }
+.vote-bar-label{ display:flex; justify-content:space-between; font-size:12px; font-weight:600; margin-bottom:4px; }
+.vote-bar{ height:7px; background:var(--surface-3); border-radius:var(--r-pill); overflow:hidden; }
+.vote-bar span{ display:block; height:100%; border-radius:var(--r-pill); background:var(--primary); transition:width .8s cubic-bezier(.4,0,.2,1); }
+.candidate-card.voted.winner .vote-bar span{ background:var(--accent); }
+
+/* Confirm button */
+.elect-submit{ padding:22px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-xl); box-shadow:var(--sh-1); text-align:center; }
+.elect-submit p{ font-size:13px; color:var(--muted); margin-bottom:14px; }
+
+/* Already voted state */
+.voted-banner{ background:var(--primary-soft); border:1px solid var(--primary-border); border-radius:var(--r-xl); padding:20px 24px; display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+.voted-banner .material-symbols-outlined{ font-size:36px; color:var(--primary); flex-shrink:0; }
+.voted-banner h3{ font-size:16px; color:var(--heading); }
+.voted-banner p{ font-size:13px; color:var(--muted); margin-top:3px; }
+</style>
+</head>
+<body data-page="student-elections">
+<main class="main">
+<div id="heroBanner"></div>
+<div class="page elect-page">
+
+<!-- Election Banner -->
+<div class="elect-header anim-up">
+  <div class="elect-header-badge"><span class="material-symbols-outlined fill" style="font-size:16px">how_to_vote</span> Active Election</div>
+  <h2>Student Council President 2026–27</h2>
+  <p>One vote per student. Your vote is anonymous and encrypted. Results announced July 12, 2026.</p>
+  <div class="elect-deadline">
+    <span class="material-symbols-outlined">timer</span>
+    Voting closes: <b>July 10, 2026 at 4:00 PM</b> · 87 votes cast so far
+  </div>
+</div>
+
+<!-- Already voted banner (hidden until vote) -->
+<div class="voted-banner" id="votedBanner" style="display:none">
+  <span class="material-symbols-outlined fill">verified</span>
+  <div>
+    <h3>Your vote has been recorded!</h3>
+    <p>Thank you for participating. Results will be announced on July 12, 2026. Your ballot is anonymous and secure.</p>
+  </div>
+</div>
+
+<!-- Candidates -->
+<div class="candidates-grid anim-up-2" id="candidatesGrid">
+
+  <div class="candidate-card" id="cand-c1" onclick="selectCandidate('c1')">
+    <div class="candidate-photo">KM</div>
+    <div class="candidate-name">Kosal Rith Mony</div>
+    <div class="candidate-grade">Grade 11 · Class 11B</div>
+    <div class="candidate-manifesto">"I will work to improve the school canteen menu and organize more cultural events that celebrate our heritage."</div>
+    <div class="vote-bar-wrap" id="bar-c1" style="display:none">
+      <div class="vote-bar-label"><span>Votes</span><span id="pct-c1">0%</span></div>
+      <div class="vote-bar"><span id="bspan-c1" style="width:0%"></span></div>
+    </div>
+    <button class="candidate-vote-btn" id="btn-c1">Select Kosal</button>
+  </div>
+
+  <div class="candidate-card" id="cand-c2" onclick="selectCandidate('c2')">
+    <div class="candidate-photo">SC</div>
+    <div class="candidate-name">Sreyleak Chhun</div>
+    <div class="candidate-grade">Grade 11 · Class 11A</div>
+    <div class="candidate-manifesto">"My focus is on improving digital learning resources and creating more quiet study spaces for exam preparation."</div>
+    <div class="vote-bar-wrap" id="bar-c2" style="display:none">
+      <div class="vote-bar-label"><span>Votes</span><span id="pct-c2">0%</span></div>
+      <div class="vote-bar"><span id="bspan-c2" style="width:0%"></span></div>
+    </div>
+    <button class="candidate-vote-btn" id="btn-c2">Select Sreyleak</button>
+  </div>
+
+  <div class="candidate-card" id="cand-c3" onclick="selectCandidate('c3')">
+    <div class="candidate-photo">PV</div>
+    <div class="candidate-name">Panha Vuth</div>
+    <div class="candidate-grade">Grade 10 · Class 10B</div>
+    <div class="candidate-manifesto">"I want to launch a peer tutoring program and upgrade the sports facilities so every student has access."</div>
+    <div class="vote-bar-wrap" id="bar-c3" style="display:none">
+      <div class="vote-bar-label"><span>Votes</span><span id="pct-c3">0%</span></div>
+      <div class="vote-bar"><span id="bspan-c3" style="width:0%"></span></div>
+    </div>
+    <button class="candidate-vote-btn" id="btn-c3">Select Panha</button>
+  </div>
+
+</div>
+
+<!-- Confirm vote -->
+<div class="elect-submit anim-up-3" id="electSubmit">
+  <p>Select a candidate above, then confirm your vote. You can only vote once.</p>
+  <button class="btn btn-primary" id="confirmVoteBtn" disabled onclick="confirmVote()" style="min-width:200px;justify-content:center">
+    <span class="material-symbols-outlined">how_to_vote</span> Confirm My Vote
+  </button>
+</div>
+
+</div>
+</main>
+<script>
+var _selected=null;
+var _voted=false;
+var _votes={c1:34,c2:31,c3:22};
+var _total=87;
+
+function selectCandidate(id){
+  if(_voted) return;
+  _selected=id;
+  ['c1','c2','c3'].forEach(function(c){
+    var card=document.getElementById('cand-'+c);
+    card.classList.toggle('selected',c===id);
+    document.getElementById('btn-'+c).textContent=c===id?'✓ Selected':('Select '+{c1:'Kosal',c2:'Sreyleak',c3:'Panha'}[c]);
+  });
+  document.getElementById('confirmVoteBtn').disabled=false;
+}
+
+function confirmVote(){
+  if(!_selected||_voted) return;
+  _voted=true;
+  _votes[_selected]++;
+  _total++;
+  /* Show results */
+  ['c1','c2','c3'].forEach(function(c){
+    var pct=Math.round((_votes[c]/_total)*100);
+    document.getElementById('pct-'+c).textContent=pct+'%';
+    document.getElementById('bspan-'+c).style.width=pct+'%';
+    document.getElementById('bar-'+c).style.display='';
+    var card=document.getElementById('cand-'+c);
+    card.classList.add('voted');
+    card.onclick=null;
+    document.getElementById('btn-'+c).textContent=c===_selected?'✓ Your Vote':''+_votes[c]+' votes';
+    if(c===_selected) card.classList.add('winner');
+  });
+  document.getElementById('votedBanner').style.display='flex';
+  document.getElementById('electSubmit').style.display='none';
+  window.toast&&window.toast('Your vote has been recorded securely!','success');
+}
+
+(function(){
+  try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}
+  window.PAGE={role:'student',active:'dashboard'};
+})();
+</script>
+<script>window.HERO_CONFIG={
+  name:'Nrinphouneta Hok',id:'Student ID: 2026-STD-0142',grade:'Grade 10',
+  avatar:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm:'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink:'../../index.html',signOutLink:'../../index.html',
+  profileLink:'student-profile.html',notifLink:'student-notifications.html',
+  chatLink:'../shared/chat.html',notifCount:3,
+  ddRows:[{icon:'school',text:'Grade 10 — Science Stream'},{icon:'class',text:'Class 10A'},{icon:'email',text:'nrinphouneta@ngis.edu.kh'},{icon:'calendar_today',text:'Enrolled: Sep 2024'},{icon:'emoji_events',text:'GPA: 3.87 / 4.00'}],
+  title:'School Elections',greeting:'Cast your vote for Student Council. One vote per student, fully anonymous.',
+  breadcrumbs:[{label:'Elections & Voting'}]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

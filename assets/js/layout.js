@@ -24,22 +24,47 @@
         { label:"Main", icon:"home", links:[
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/admin/admin.html" },
         ]},
-        { label:"Management", icon:"school", links:[
-          { id:"users",       label:"Users",       icon:"group",              href:"pages/admin/admin-users.html" },
-          { id:"departments", label:"Departments", icon:"apartment",          href:"pages/shared/departments.html" },
+        { id:"users", label:"User Management", icon:"group", collapsible:true, links:[
+          { id:"students",   label:"Students",   icon:"school",             href:"pages/admin/admin-users.html?role=students" },
+          { id:"teachers",   label:"Teachers",   icon:"co_present",         href:"pages/admin/admin-users.html?role=teachers" },
+          { id:"parents",    label:"Parents",    icon:"family_restroom",    href:"pages/admin/admin-users.html?role=parents" },
+          { id:"admins",     label:"Admins",     icon:"admin_panel_settings", href:"pages/admin/admin-users.html?role=admins" },
+          { id:"principals", label:"Principals", icon:"military_tech",      href:"pages/admin/admin-users.html?role=principals" },
+        ]},
+        { id:"academic", label:"Academic", icon:"apartment", collapsible:true, links:[
+          { id:"departments", label:"Departments", icon:"apartment",          href:"pages/admin/admin-departments.html" },
+          { id:"campuses",    label:"Campuses",    icon:"location_city",      href:"pages/admin/admin-campuses.html" },
           { id:"classes",     label:"Classes",     icon:"school",             href:"pages/admin/admin-classes.html" },
-          { id:"timetables",  label:"Timetables",  icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
-          { id:"reports",     label:"Reports",     icon:"assessment",         href:"pages/admin/admin-reports.html" },
-          { id:"fees",        label:"Fees",        icon:"payments",           href:"pages/admin/admin-fees.html" },
-          { id:"logs",        label:"Audit Logs",  icon:"history",            href:"pages/admin/admin-logs.html" },
+          { id:"timetables",  label:"Timetable",   icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
         ]},
-        { label:"Communication", icon:"forum", links:[
-          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html" },
-          { id:"group-chat",    label:"Group Chat",    icon:"groups",   href:"pages/shared/group-chat.html", badge:"4" },
-          { id:"chat",          label:"Direct Chat",   icon:"chat",     href:"pages/shared/chat.html", badge:"2" },
+        { id:"learning", label:"Learning", icon:"menu_book", collapsible:true, links:[
+          { id:"lessons",     label:"Lessons",     icon:"menu_book",  href:"pages/admin/admin-lessons.html" },
+          { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/admin/admin-assignments.html" },
+          { id:"exams",       label:"Exams",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
+          { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
         ]},
-        { label:"Account", icon:"person", links:[
-          { id:"settings", label:"Settings", icon:"settings", href:"pages/admin/admin-settings.html" },
+        { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
+          { id:"attendance", label:"Attendance",      icon:"how_to_reg", href:"pages/admin/admin-attendance.html" },
+          { id:"profiles",   label:"Student Profiles", icon:"badge",     href:"pages/admin/admin-students.html" },
+          { id:"reports",    label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
+        ]},
+        { id:"comms", label:"Communication", icon:"forum", collapsible:true, links:[
+          { id:"announcements",  label:"Announcements", icon:"campaign",  href:"pages/shared/announcements.html" },
+          { id:"news",           label:"News CMS",       icon:"newspaper", href:"pages/admin/admin-news.html" },
+          { id:"notifications",  label:"Notifications", icon:"notifications", href:"pages/admin/admin-logs.html" },
+          { id:"group-chat",     label:"Group Chat",    icon:"groups",   href:"pages/shared/group-chat.html", badge:"4" },
+          { id:"chat",           label:"Direct Chat",   icon:"chat",     href:"pages/shared/chat.html", badge:"2" },
+        ]},
+        { id:"administration", label:"Administration", icon:"admin_panel_settings", collapsible:true, links:[
+          { id:"logs",        label:"Audit Logs",         icon:"history",     href:"pages/admin/admin-logs.html" },
+          { id:"roles",       label:"Roles & Permissions", icon:"shield_person", href:"pages/admin/admin-settings.html?tab=roles" },
+          { id:"settings",    label:"System Settings",    icon:"settings",    href:"pages/admin/admin-settings.html" },
+          { id:"backup",      label:"Backup & Restore",   icon:"backup",      href:"pages/admin/admin-settings.html?tab=backup" },
+        ]},
+        { id:"account", label:"Account", icon:"person", collapsible:true, links:[
+          { id:"profile",     label:"My Profile", icon:"person",  href:"pages/admin/admin-settings.html" },
+          { id:"preferences", label:"Preferences", icon:"tune",   href:"pages/admin/admin-settings.html?tab=notifications" },
+          { id:"logout",      label:"Logout",     icon:"logout",  href:"index.html" },
         ]},
       ],
     },
@@ -72,6 +97,7 @@
         ]},
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
+          { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
         ]},
         { label:"Communication", icon:"forum", links:[
           { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"3" },
@@ -130,7 +156,7 @@
     student: [
       { id:"dashboard",    label:"Home",        icon:"home",        href:"pages/student/student.html" },
       { id:"departments",  label:"Departments", icon:"apartment",   href:"pages/shared/departments.html" },
-      { id:"group-chat",   label:"Group Chat",  icon:"groups",      href:"pages/shared/group-chat.html", badge:"2" },
+      { id:"services",     label:"Services",    icon:"grid_view",   href:"pages/student/student-services.html" },
       { id:"announcements",label:"Alerts",      icon:"campaign",    href:"pages/shared/announcements.html", badge:"3" },
       { id:"profile",      label:"Profile",     icon:"person",      href:"pages/student/student-profile.html" },
     ],
@@ -187,13 +213,24 @@
            ${l.badge ? `<span class="pill">${l.badge}</span>` : ""}
          </a>`
       ).join("");
+      const groupActive = g.id === active || g.links.some(l => l.id === active);
+      const labelInner = `${g.icon ? `<span class="material-symbols-outlined">${g.icon}</span>` : ""}<span>${esc(g.label)}</span>${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
+
+      let label, linksHtml;
+      if (g.collapsible) {
+        label = `<button type="button" class="nav-group-label" aria-expanded="false" title="${esc(g.label)}">${labelInner}</button>`;
+        linksHtml = `<div class="nav-group-links"><div>${links}</div></div>`;
+      } else if (g.href) {
+        label = `<a class="nav-group-label nav-group-label-link${groupActive ? " active" : ""}" href="${_P}${g.href}">${labelInner}</a>`;
+        linksHtml = links;
+      } else {
+        label = `<div class="nav-group-label">${labelInner}</div>`;
+        linksHtml = links;
+      }
       return `
-        <div class="nav-group">
-          <div class="nav-group-label">
-            ${g.icon ? `<span class="material-symbols-outlined">${g.icon}</span>` : ""}
-            <span>${esc(g.label)}</span>
-          </div>
-          ${links}
+        <div class="nav-group${g.collapsible ? " collapsible" : ""}"${g.id ? ` data-group-id="${g.id}"` : ""}>
+          ${label}
+          ${linksHtml}
         </div>
         ${gi < cfg.groups.length - 1 ? `<div class="nav-divider" role="separator"></div>` : ""}`;
     }).join("");
@@ -201,10 +238,8 @@
     return el(`
       <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
         <div class="side-brand">
-          <div class="brand-mark"><span class="ngis-logo">NG</span></div>
-          <div class="brand-text"><b>NGIS</b><span>${esc(cfg.brand)} Portal</span></div>
+          <img src="${_P}pages/student/LOGO NGIS (2).png" alt="New Gateway International School" class="side-brand-img">
         </div>
-        <div class="side-meta"><span class="dot-live"></span>${esc(cfg.meta)}</div>
         <nav class="side-nav">
           ${groups}
         </nav>
@@ -297,7 +332,65 @@
     shell.appendChild(main);
     document.body.appendChild(scrim);
 
-    main.insertBefore(buildTopbar(user), main.firstChild);
+    /* ── Sidebar accordion (collapsible groups — admin only) ── */
+    const OPEN_GROUP_KEY = `ngis-${PAGE.role}-open-group`;
+    const collapsibleGroups = Array.from(sidebar.querySelectorAll('.nav-group.collapsible'));
+    if (collapsibleGroups.length) {
+      const activeGroupEl = collapsibleGroups.find(g => g.querySelector('.nav-link.active'));
+      const initialId = activeGroupEl ? activeGroupEl.dataset.groupId : store.get(OPEN_GROUP_KEY);
+
+      const setGroupExpanded = (groupEl, expanded) => {
+        groupEl.classList.toggle('expanded', expanded);
+        const btn = groupEl.querySelector('.nav-group-label');
+        if (btn && btn.tagName === 'BUTTON') btn.setAttribute('aria-expanded', String(expanded));
+      };
+
+      collapsibleGroups.forEach(g => setGroupExpanded(g, g.dataset.groupId === initialId));
+
+      collapsibleGroups.forEach(g => {
+        const btn = g.querySelector('.nav-group-label');
+        if (!btn || btn.tagName !== 'BUTTON') return;
+        btn.addEventListener('click', () => {
+          const willOpen = !g.classList.contains('expanded');
+          collapsibleGroups.forEach(other => setGroupExpanded(other, other === g && willOpen));
+          store.set(OPEN_GROUP_KEY, willOpen ? g.dataset.groupId : '');
+        });
+      });
+    }
+
+    /* ── Sidebar collapse / expand (desktop) ── */
+    const collapseBtn = el(`
+      <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar">
+        <span class="material-symbols-outlined">left_panel_close</span>
+      </button>`);
+    sidebar.querySelector('.side-brand').appendChild(collapseBtn);
+
+    const expandBtn = el(`
+      <button class="sidebar-expand-btn" id="sidebarExpandBtn" title="Expand sidebar" aria-label="Expand sidebar">
+        <span class="material-symbols-outlined">left_panel_open</span>
+      </button>`);
+    document.body.appendChild(expandBtn);
+
+    const COLLAPSED_KEY = 'ngis-sidebar-collapsed';
+    function setSidebarCollapsed(collapsed) {
+      if (collapsed) {
+        sidebar.classList.add('collapsed');
+        main.classList.add('sidebar-collapsed');
+        expandBtn.classList.add('visible');
+        store.set(COLLAPSED_KEY, '1');
+      } else {
+        sidebar.classList.remove('collapsed');
+        main.classList.remove('sidebar-collapsed');
+        expandBtn.classList.remove('visible');
+        store.set(COLLAPSED_KEY, '0');
+      }
+    }
+    // Restore persisted state
+    if (store.get(COLLAPSED_KEY) === '1') setSidebarCollapsed(true);
+
+    collapseBtn.addEventListener('click', () => setSidebarCollapsed(true));
+    expandBtn.addEventListener('click',   () => setSidebarCollapsed(false));
+
     document.body.appendChild(buildBottomNav(PAGE.role, active));
 
     // Auto-breadcrumb at the top of the page body
@@ -311,7 +404,8 @@
 
     /* Theme */
     applyTheme(store.get("ngis-theme") || "light");
-    document.getElementById("themeToggle").addEventListener("click", () => {
+    const themeToggle = document.getElementById("themeToggle");
+    if (themeToggle) themeToggle.addEventListener("click", () => {
       const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
       store.set("ngis-theme", next);
       applyTheme(next);
@@ -330,8 +424,8 @@
 
     /* Mobile drawer */
     const menuBtn = document.getElementById("menuBtn");
-    const openNav  = () => { sidebar.classList.add("open"); scrim.classList.add("show"); menuBtn.setAttribute("aria-expanded","true"); };
-    const closeNav = () => { sidebar.classList.remove("open"); scrim.classList.remove("show"); menuBtn.setAttribute("aria-expanded","false"); };
+    const openNav  = () => { sidebar.classList.add("open"); scrim.classList.add("show"); if (menuBtn) menuBtn.setAttribute("aria-expanded","true"); };
+    const closeNav = () => { sidebar.classList.remove("open"); scrim.classList.remove("show"); if (menuBtn) menuBtn.setAttribute("aria-expanded","false"); };
     if (menuBtn) menuBtn.addEventListener("click", () => sidebar.classList.contains("open") ? closeNav() : openNav());
     scrim.addEventListener("click", closeNav);
     sidebar.querySelectorAll(".nav-link").forEach(a => a.addEventListener("click", closeNav));

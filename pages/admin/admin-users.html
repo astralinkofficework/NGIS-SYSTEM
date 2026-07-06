@@ -1,84 +1,3360 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>NGIS — User Management</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>NGIS — Enterprise User Management Console</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+  /* --- CUSTOM ENTERPRISE USER MANAGEMENT STYLES --- */
+  :root {
+    --color-student: #2563eb;
+    --color-student-soft: rgba(37, 99, 235, 0.08);
+    --color-student-border: rgba(37, 99, 235, 0.2);
+    
+    --color-teacher: #10b981;
+    --color-teacher-soft: rgba(16, 185, 129, 0.08);
+    --color-teacher-border: rgba(16, 185, 129, 0.2);
+    
+    --color-parent: #8b5cf6;
+    --color-parent-soft: rgba(139, 92, 246, 0.08);
+    --color-parent-border: rgba(139, 92, 246, 0.2);
+    
+    --color-admin: #f59e0b;
+    --color-admin-soft: rgba(245, 158, 11, 0.08);
+    --color-admin-border: rgba(245, 158, 11, 0.2);
+    
+    --color-principal: #ef4444;
+    --color-principal-soft: rgba(239, 68, 68, 0.08);
+    --color-principal-border: rgba(239, 68, 68, 0.2);
+  }
+
+  /* Page container override */
+  .page {
+    max-width: 1400px !important;
+    margin: 0 auto;
+    padding: 16px 24px 80px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 250ms ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- HEADER & BREADCRUMBS --- */
+  .user-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .breadcrumb-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .breadcrumb-custom a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color var(--t-fast);
+  }
+
+  .breadcrumb-custom a:hover {
+    color: var(--primary);
+  }
+
+  .breadcrumb-custom .sep {
+    font-size: 16px;
+    color: var(--faint);
+  }
+
+  .breadcrumb-custom .active {
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  .header-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+  }
+
+  /* Compact header buttons */
+  .btn-icon-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: var(--r-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: all var(--t-fast) var(--ease);
+  }
+
+  .btn-icon-label:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-2);
+  }
+
+  .btn-icon-label .material-symbols-outlined {
+    font-size: 16px;
+  }
+
+  /* --- SEARCH BAR --- */
+  .search-center-wrapper {
+    position: relative;
+    max-width: 420px;
+    width: 100%;
+    min-width: 260px;
+  }
+
+  .search-center-wrapper input {
+    width: 100%;
+    padding: 9px 40px 9px 36px;
+    font-size: 13.5px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+  }
+
+  .search-center-wrapper input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  .search-center-wrapper .search-ico {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--faint);
+    font-size: 18px;
+    pointer-events: none;
+  }
+
+  .search-center-wrapper .kbd-shortcut {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    font-family: var(--mono);
+    pointer-events: none;
+  }
+
+  /* --- ROLE CARDS NAVIGATION --- */
+  .role-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 992px) {
+    .role-nav-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .role-nav-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .role-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 16px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 200ms var(--ease), box-shadow 200ms var(--ease), border-color 200ms var(--ease);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .role-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
+  }
+
+  .role-card.active {
+    border-width: 2px;
+    box-shadow: var(--shadow-lg);
+    background: var(--surface-2);
+  }
+
+  /* Accent lines & markers */
+  .role-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: transparent;
+  }
+
+  /* Dynamic Accent Colors */
+  .role-card.role-students::before { background: var(--color-student); }
+  .role-card.role-teachers::before { background: var(--color-teacher); }
+  .role-card.role-parents::before { background: var(--color-parent); }
+  .role-card.role-admins::before { background: var(--color-admin); }
+  .role-card.role-principals::before { background: var(--color-principal); }
+
+  .role-card.active.role-students { border-color: var(--color-student); }
+  .role-card.active.role-teachers { border-color: var(--color-teacher); }
+  .role-card.active.role-parents { border-color: var(--color-parent); }
+  .role-card.active.role-admins { border-color: var(--color-admin); }
+  .role-card.active.role-principals { border-color: var(--color-principal); }
+
+  .role-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .role-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .role-students .role-icon-box { background: var(--color-student-soft); color: var(--color-student); }
+  .role-teachers .role-icon-box { background: var(--color-teacher-soft); color: var(--color-teacher); }
+  .role-parents .role-icon-box { background: var(--color-parent-soft); color: var(--color-parent); }
+  .role-admins .role-icon-box { background: var(--color-admin-soft); color: var(--color-admin); }
+  .role-principals .role-icon-box { background: var(--color-principal-soft); color: var(--color-principal); }
+
+  .role-icon-box span {
+    font-size: 20px;
+  }
+
+  .role-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .role-card-count {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--heading);
+    margin-top: 4px;
+  }
+
+  .role-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    color: var(--primary);
+  }
+
+  .role-card-footer .arrow {
+    font-size: 14px;
+    transition: transform var(--t-fast);
+  }
+
+  .role-card:hover .role-card-footer .arrow {
+    transform: translateX(3px);
+  }
+
+  /* --- STATISTICS HORIZONTAL SUMMARY --- */
+  .stats-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+
+  @media (max-width: 992px) {
+    .stats-summary-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .stats-summary-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .stat-summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-summary-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .stat-summary-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  /* --- ADVANCED FILTER BAR --- */
+  .filter-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .filter-select {
+    padding: 8px 30px 8px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    border-radius: var(--r-xs);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    transition: all var(--t-fast);
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234D7060' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 14px;
+    min-width: 130px;
+  }
+
+  .filter-select:hover {
+    border-color: var(--border-strong);
+  }
+
+  .filter-select:focus {
+    border-color: var(--primary);
+  }
+
+  .btn-reset-filters {
+    font-size: 12px;
+    font-weight: 600;
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: var(--r-xs);
+    transition: background var(--t-fast);
+  }
+
+  .btn-reset-filters:hover {
+    background: var(--danger-soft);
+  }
+
+  .btn-reset-filters .material-symbols-outlined {
+    font-size: 14px;
+  }
+
+  /* --- BULK ACTIONS TOOLBAR --- */
+  .bulk-actions-toolbar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--secondary);
+    color: var(--inverse);
+    border-radius: var(--r-lg);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms;
+    opacity: 0;
+    pointer-events: none;
+    border: 1px solid var(--border-strong);
+  }
+
+  .bulk-actions-toolbar.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .bulk-count-badge {
+    background: var(--primary);
+    color: var(--inverse);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--r-pill);
+  }
+
+  .bulk-divider {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .bulk-action-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--r-sm);
+    transition: all var(--t-fast);
+  }
+
+  .bulk-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--inverse);
+  }
+
+  .bulk-action-btn-danger:hover {
+    background: var(--danger);
+  }
+
+  .bulk-action-btn .material-symbols-outlined {
+    font-size: 16px;
+  }
+
+  /* --- TABLE & CARDS STYLE --- */
+  .user-table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tbl-container {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  /* Table styling matches Entra & Stripe */
+  .tbl-custom {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    text-align: left;
+  }
+
+  .tbl-custom th {
+    background: var(--surface-2);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+
+  .tbl-custom td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+    transition: background var(--t-fast);
+  }
+
+  .tbl-custom tbody tr:hover td {
+    background: var(--surface-2);
+  }
+
+  /* Custom Checkbox centering */
+  .tbl-custom th:first-child,
+  .tbl-custom td:first-child {
+    width: 48px;
+    text-align: center;
+  }
+
+  .checkbox-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .checkbox-wrapper input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--faint);
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--primary);
+  }
+
+  /* Avatar Fallback */
+  .avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--inverse);
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  .avatar-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  /* Role Badge Styles - Large & Highly Recognizable */
+  .identity-role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--r-pill);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .identity-role-badge.role-stu {
+    background: var(--color-student-soft);
+    color: var(--color-student);
+    border: 1px solid var(--color-student-border);
+  }
+
+  .identity-role-badge.role-tch {
+    background: var(--color-teacher-soft);
+    color: var(--color-teacher);
+    border: 1px solid var(--color-teacher-border);
+  }
+
+  .identity-role-badge.role-par {
+    background: var(--color-parent-soft);
+    color: var(--color-parent);
+    border: 1px solid var(--color-parent-border);
+  }
+
+  .identity-role-badge.role-adm {
+    background: var(--color-admin-soft);
+    color: var(--color-admin);
+    border: 1px solid var(--color-admin-border);
+  }
+
+  .identity-role-badge.role-pri {
+    background: var(--color-principal-soft);
+    color: var(--color-principal);
+    border: 1px solid var(--color-principal-border);
+  }
+
+  .identity-role-badge .badge-icon {
+    font-size: 14px;
+  }
+
+  /* Status Badges */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--r-pill);
+  }
+
+  .status-pill.active { background: var(--success-soft); color: var(--success); }
+  .status-pill.pending { background: var(--warning-soft); color: var(--warning); }
+  .status-pill.suspended { background: var(--danger-soft); color: var(--danger); }
+  .status-pill.archived { background: var(--surface-3); color: var(--muted); }
+
+  .status-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .status-pill.active::before { background: var(--success); }
+  .status-pill.pending::before { background: var(--warning); }
+  .status-pill.suspended::before { background: var(--danger); }
+  .status-pill.archived::before { background: var(--muted); }
+
+  /* Small Tag Badges */
+  .campus-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .department-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface-3);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .classes-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .class-tag {
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 4px;
+  }
+
+  /* Actions column button list */
+  .action-buttons-wrap {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .action-icon-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all var(--t-fast);
+  }
+
+  .action-icon-btn:hover {
+    background: var(--surface-3);
+    color: var(--heading);
+  }
+
+  .action-icon-btn.btn-view:hover { color: var(--color-student); background: var(--color-student-soft); }
+  .action-icon-btn.btn-edit:hover { color: var(--primary); background: var(--primary-soft); }
+  .action-icon-btn.btn-suspend:hover { color: var(--warning); background: var(--warning-soft); }
+  .action-icon-btn.btn-delete:hover { color: var(--danger); background: var(--danger-soft); }
+
+  .action-icon-btn span {
+    font-size: 16px;
+  }
+
+  /* Dropdown Ellipsis Menu */
+  .dropdown-action-menu {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-menu-list {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    box-shadow: var(--shadow-md);
+    min-width: 140px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    padding: 4px 0;
+  }
+
+  .dropdown-menu-list.open {
+    display: flex;
+  }
+
+  .dropdown-menu-item {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .dropdown-menu-item:hover {
+    background: var(--surface-2);
+    color: var(--heading);
+  }
+
+  .dropdown-menu-item span {
+    font-size: 16px;
+    color: var(--faint);
+  }
+
+  /* Expandable Child Row */
+  .parent-children-expand-row {
+    background: var(--surface-2);
+  }
+
+  .children-expand-box {
+    padding: 12px 24px 16px 64px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: slideDown 200ms ease-out;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .children-expand-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--faint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .expanded-children-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .child-expand-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    cursor: pointer;
+    transition: all var(--t-fast);
+  }
+
+  .child-expand-card:hover {
+    border-color: var(--color-student);
+    color: var(--color-student);
+  }
+
+  .child-expand-card span {
+    font-size: 16px;
+    color: var(--color-student);
+  }
+
+  /* Empty state */
+  .empty-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .empty-state-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--faint);
+    margin-bottom: 8px;
+  }
+
+  .empty-state-icon span {
+    font-size: 32px;
+  }
+
+  .empty-state-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .empty-state-subtitle {
+    font-size: 13.5px;
+    color: var(--muted);
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  /* --- SKELETON LOADING ANIMATION --- */
+  .skeleton-row td {
+    padding: 18px 16px;
+  }
+
+  .skeleton-box {
+    height: 14px;
+    background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* --- ADD USER DRAWER --- */
+  .drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+  }
+
+  .drawer-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .drawer-right {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
+    background: var(--surface);
+    box-shadow: var(--shadow-lg);
+    z-index: 2001;
+    transform: translateX(100%);
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .drawer-overlay.open .drawer-right {
+    transform: translateX(0);
+  }
+
+  .drawer-custom-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .drawer-custom-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--heading);
+  }
+
+  .drawer-custom-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .drawer-custom-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .drawer-custom-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: var(--surface-2);
+  }
+
+  /* Drawer Form Layout */
+  .form-group-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .form-full-col {
+    grid-column: span 2;
+  }
+
+  .form-control-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-label-custom {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-input-custom {
+    padding: 8px 12px;
+    font-size: 13.5px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-xs);
+    background: var(--surface);
+    color: var(--text);
+    outline: none;
+    transition: border-color var(--t-fast);
+  }
+
+  .form-input-custom:focus {
+    border-color: var(--primary);
+  }
+
+  .avatar-drawer-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 0;
+  }
+
+  .avatar-picker-fallback {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 2px dashed var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--faint);
+    cursor: pointer;
+    font-size: 24px;
+    transition: all var(--t-fast);
+  }
+
+  .avatar-picker-fallback:hover {
+    background: var(--primary-soft);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  /* --- UNIVERSAL PROFILE SECTION (GITHUB-STYLE) --- */
+  .profile-section-wrapper {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeIn 250ms ease-out;
+  }
+
+  .profile-section-wrapper.visible {
+    display: flex;
+  }
+
+  .profile-top-header-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .profile-top-left {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .profile-header-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--inverse);
+    box-shadow: var(--shadow-md);
+  }
+
+  .profile-header-avatar-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: var(--shadow-md);
+  }
+
+  .profile-meta-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .profile-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .profile-name {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--heading);
+    margin: 0;
+  }
+
+  .profile-sub-meta {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .profile-actions-right {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .profile-tab-grid-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  @media (max-width: 900px) {
+    .profile-tab-grid-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* GitHub style vertical tab buttons */
+  .profile-side-tabs {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 8px;
+    box-shadow: var(--shadow-sm);
+    gap: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .profile-side-tabs {
+      flex-direction: row;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+  }
+
+  .profile-tab-btn {
+    background: transparent;
+    border: none;
+    padding: 10px 14px;
+    border-radius: var(--r-md);
+    text-align: left;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all var(--t-fast);
+  }
+
+  .profile-tab-btn:hover {
+    background: var(--surface-2);
+    color: var(--heading);
+  }
+
+  .profile-tab-btn.active {
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+
+  .profile-tab-btn span {
+    font-size: 18px;
+  }
+
+  .profile-tab-content-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    min-height: 400px;
+  }
+
+  .profile-tab-panel {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .profile-tab-panel.active {
+    display: flex;
+    animation: fadeIn var(--t-fast) ease-out;
+  }
+
+  .profile-panel-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--heading);
+    margin: 0 0 4px 0;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+
+  /* Activity logs / timeline styling */
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    padding-left: 20px;
+    margin-top: 10px;
+  }
+
+  .timeline-list::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 4px;
+    width: 2px;
+    height: calc(100% - 15px);
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    font-size: 13px;
+  }
+
+  .timeline-marker {
+    position: absolute;
+    left: -20px;
+    top: 3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid var(--surface);
+    box-shadow: 0 0 0 2px var(--border);
+  }
+
+  .timeline-time {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--faint);
+  }
+
+  .timeline-title {
+    font-weight: 700;
+    color: var(--heading);
+    margin-top: 2px;
+  }
+
+  .timeline-desc {
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Academic Records Table */
+  .academic-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    text-align: left;
+  }
+
+  .academic-table th {
+    background: var(--surface-2);
+    color: var(--muted);
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .academic-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Drawer Dropdown styling */
+  .add-user-btn-container {
+    position: relative;
+  }
+
+  .add-user-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-lg);
+    min-width: 160px;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    padding: 4px 0;
+  }
+
+  .add-user-dropdown.open {
+    display: flex;
+  }
+
+  .add-user-drop-item {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .add-user-drop-item:hover {
+    background: var(--surface-2);
+    color: var(--heading);
+  }
+
+  .add-user-drop-item.drop-stu { color: var(--color-student); }
+  .add-user-drop-item.drop-tch { color: var(--color-teacher); }
+  .add-user-drop-item.drop-par { color: var(--color-parent); }
+  .add-user-drop-item.drop-adm { color: var(--color-admin); }
+  .add-user-drop-item.drop-pri { color: var(--color-principal); }
+</style>
 </head>
 <body>
 <main class="main">
 <div class="page">
 
-  <div class="page-head anim-up">
+  <!-- --- 1. TOP HEADER SECTION --- -->
+  <div class="user-header-bar">
+    <div class="breadcrumb-custom">
+      <a href="admin.html">Dashboard</a>
+      <span class="material-symbols-outlined sep">chevron_right</span>
+      <span class="active">User Management</span>
+    </div>
+    
+    <div class="search-center-wrapper">
+      <span class="material-symbols-outlined search-ico">search</span>
+      <input type="search" id="globalSearch" placeholder="Search ID, name, class, department..." aria-label="Search users">
+      <kbd class="kbd-shortcut">⌘K</kbd>
+    </div>
+
+    <div class="header-actions-right">
+      <div class="add-user-btn-container">
+        <button class="btn btn-primary btn-sm flex center gap6" id="addBtnDropdownToggle">
+          <span class="material-symbols-outlined" style="font-size:16px">person_add</span>Add User <span class="material-symbols-outlined" style="font-size:14px">expand_more</span>
+        </button>
+        <div class="add-user-dropdown" id="addUserDropdownMenu">
+          <button class="add-user-drop-item drop-stu" data-drawer-open="student"><span class="material-symbols-outlined">school</span>Add Student</button>
+          <button class="add-user-drop-item drop-tch" data-drawer-open="teacher"><span class="material-symbols-outlined">co_present</span>Add Teacher</button>
+          <button class="add-user-drop-item drop-par" data-drawer-open="parent"><span class="material-symbols-outlined">family_restroom</span>Add Parent</button>
+          <button class="add-user-drop-item drop-adm" data-drawer-open="admin"><span class="material-symbols-outlined">admin_panel_settings</span>Add Admin</button>
+          <button class="add-user-drop-item drop-pri" data-drawer-open="principal"><span class="material-symbols-outlined">military_tech</span>Add Principal</button>
+        </div>
+      </div>
+      <button class="btn-icon-label" onclick="window.toast('Import functionality active','success')"><span class="material-symbols-outlined">upload</span>Import</button>
+      <button class="btn-icon-label" id="exportBtn"><span class="material-symbols-outlined">download</span>Export</button>
+      <button class="btn-icon-label" id="filterToggle"><span class="material-symbols-outlined">filter_list</span>Filter</button>
+      <button class="btn-icon-label" onclick="window.toast('Open management settings','info')"><span class="material-symbols-outlined">settings</span>Settings</button>
+    </div>
+  </div>
+
+  <!-- --- PROFILE CONTAINER (HIDDEN BY DEFAULT) --- -->
+  <div class="profile-section-wrapper" id="profileViewSection">
+    <!-- Profile Top Banner Card -->
+    <div class="profile-top-header-card">
+      <div class="profile-top-left">
+        <div id="profileHeaderAvatar"></div>
+        <div class="profile-meta-info">
+          <div class="profile-name-row">
+            <h2 class="profile-name" id="profileNameDisplay">User Full Name</h2>
+            <span class="identity-role-badge role-stu" id="profileRoleBadge">🎓 Student</span>
+            <span class="status-pill active" id="profileStatusBadge">Active</span>
+          </div>
+          <div class="profile-sub-meta">
+            <span class="material-symbols-outlined" style="font-size:16px;color:var(--faint)">badge</span>
+            <span id="profileIdDisplay" style="font-weight:700">STU-2026-001</span>
+            <span>·</span>
+            <span class="campus-tag" id="profileCampusDisplay">Sen Sok Campus</span>
+            <span class="department-tag" id="profileDeptDisplay">Science Dept.</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-actions-right">
+        <button class="btn btn-ghost btn-sm flex center gap6" id="backToListBtn"><span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>Back to Users</button>
+        <button class="btn btn-primary btn-sm flex center gap6" onclick="window.toast('Profile modifications saved','success')"><span class="material-symbols-outlined" style="font-size:16px">save</span>Save Changes</button>
+        <button class="btn btn-ghost btn-sm" onclick="window.toast('Password reset link dispatched via Email/Telegram','success')" style="border:1px solid var(--border)"><span class="material-symbols-outlined" style="font-size:16px">lock_reset</span>Reset Password</button>
+        <button class="btn btn-ghost btn-sm" id="profileSuspendBtn" style="color:var(--warning);border:1px solid var(--border)"><span class="material-symbols-outlined" style="font-size:16px">block</span>Suspend Account</button>
+        <button class="btn btn-danger btn-sm" id="profileDeleteBtn"><span class="material-symbols-outlined" style="font-size:16px">delete</span>Delete Account</button>
+      </div>
+    </div>
+
+    <!-- Profile Navigation Tab Bar -->
+    <div class="profile-tab-grid-layout">
+      <div class="profile-side-tabs">
+        <button class="profile-tab-btn active" data-profile-tab="personal"><span class="material-symbols-outlined">person</span>Personal Details</button>
+        <button class="profile-tab-btn" data-profile-tab="academic" id="tabAcademicBtn"><span class="material-symbols-outlined">school</span>Academic History</button>
+        <button class="profile-tab-btn" data-profile-tab="attendance"><span class="material-symbols-outlined">how_to_reg</span>Attendance Record</button>
+        <button class="profile-tab-btn" data-profile-tab="grades" id="tabGradesBtn"><span class="material-symbols-outlined">grade</span>Grades & Progress</button>
+        <button class="profile-tab-btn" data-profile-tab="assignments" id="tabAssignmentsBtn"><span class="material-symbols-outlined">assignment</span>Assignments</button>
+        <button class="profile-tab-btn" data-profile-tab="exams" id="tabExamsBtn"><span class="material-symbols-outlined">edit_note</span>Exam Results</button>
+        <button class="profile-tab-btn" data-profile-tab="parents" id="tabParentsBtn"><span class="material-symbols-outlined">family_restroom</span>Linked Guardians</button>
+        <button class="profile-tab-btn" data-profile-tab="timeline"><span class="material-symbols-outlined">history</span>Audit Timeline</button>
+        <button class="profile-tab-btn" data-profile-tab="activity"><span class="material-symbols-outlined">monitoring</span>Session Logs</button>
+        <button class="profile-tab-btn" data-profile-tab="permissions" id="tabPermissionsBtn" style="display:none"><span class="material-symbols-outlined">shield_person</span>Admin Permissions</button>
+      </div>
+
+      <!-- Profile Content Display -->
+      <div class="profile-tab-content-card">
+        <!-- Personal Details Panel -->
+        <div class="profile-tab-panel active" data-profile-panel="personal">
+          <h3 class="profile-panel-title">Personal Details</h3>
+          <div class="form-group-grid" style="margin-top:10px">
+            <div class="form-control-wrap"><label class="form-label-custom">First &amp; Last Name</label><input type="text" class="form-input-custom" id="profFormName" value="Kosal Rith Mony"></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Gender</label><select class="form-input-custom" id="profFormGender"><option>Male</option><option>Female</option><option>Other</option></select></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Date of Birth</label><input type="date" class="form-input-custom" id="profFormDob" value="2009-04-12"></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Primary Campus</label><select class="form-input-custom" id="profFormCampus"><option>Sen Sok</option><option>Depo</option><option>Bak Touk</option></select></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Primary Department</label><select class="form-input-custom" id="profFormDept"><option>Science</option><option>English</option><option>Computer</option><option>Chinese</option></select></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Telegram Chat Link ID</label><input type="text" class="form-input-custom" id="profFormTelegram" value="@kosal_mony"></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Office Room / Class</label><input type="text" class="form-input-custom" id="profFormClass" value="11-A"></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Locker Allocation</label><input type="text" class="form-input-custom" id="profFormLocker" value="L-402"></div>
+            <div class="form-control-wrap"><label class="form-label-custom">School Bus Route</label><input type="text" class="form-input-custom" id="profFormBus" value="Line 12 - Sen Sok East"></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Medical / Health Alert</label><input type="text" class="form-input-custom" id="profFormMedical" value="Allergic to Peanuts. Asthma."></div>
+            <div class="form-control-wrap"><label class="form-label-custom">Linked Parent Account</label><select class="form-input-custom" id="profFormParent"><option>Mr. Hok Chendara (Father)</option><option>Mrs. Sokun Phalla (Mother)</option><option>None</option></select></div>
+            <div class="form-control-wrap form-full-col"><label class="form-label-custom">Internal Notes</label><textarea class="form-input-custom" style="min-height:80px;resize:vertical;" placeholder="Add internal administration remarks..."></textarea></div>
+          </div>
+        </div>
+
+        <!-- Academic Details Panel -->
+        <div class="profile-tab-panel" data-profile-panel="academic">
+          <h3 class="profile-panel-title">Academic &amp; Classes</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:16px">
+            <div style="background:var(--surface-2); padding:16px; border-radius:var(--r-md); border:1px solid var(--border)">
+              <h4 style="margin:0 0 8px 0; color:var(--heading)">Class Enrollments</h4>
+              <p class="muted" style="margin:0 0 12px 0; font-size:13px">Active courses and group allocations in the current academic year.</p>
+              <div class="classes-tag-list" id="profileAcademicClasses">
+                <span class="class-tag">Class 11-A</span>
+                <span class="class-tag">English Secondary Level</span>
+              </div>
+            </div>
+            <table class="academic-table">
+              <thead><tr><th>Term</th><th>Class</th><th>Adviser</th><th>Enrolled Since</th><th>Performance</th></tr></thead>
+              <tbody>
+                <tr><td>Term 1 (2025)</td><td>Grade 11-A</td><td>Dr. Sarah Jenkins</td><td>01 Sep 2025</td><td><b style="color:var(--success)">A (92.4%)</b></td></tr>
+                <tr><td>Term 2 (2025)</td><td>Grade 11-A</td><td>Dr. Sarah Jenkins</td><td>01 Nov 2025</td><td><b style="color:var(--success)">A+ (96.1%)</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Attendance Records Panel -->
+        <div class="profile-tab-panel" data-profile-panel="attendance">
+          <h3 class="profile-panel-title">Attendance Overview</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:16px">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px">
+              <div style="background:var(--surface-2); padding:12px; border-radius:var(--r-sm); text-align:center">
+                <div class="faint" style="font-size:11px;font-weight:700">PRESENCE RATE</div>
+                <div style="font-size:20px;font-weight:800;color:var(--success);margin-top:4px">98.2%</div>
+              </div>
+              <div style="background:var(--surface-2); padding:12px; border-radius:var(--r-sm); text-align:center">
+                <div class="faint" style="font-size:11px;font-weight:700">PRESENT DAYS</div>
+                <div style="font-size:20px;font-weight:800;color:var(--text);margin-top:4px">112 Days</div>
+              </div>
+              <div style="background:var(--surface-2); padding:12px; border-radius:var(--r-sm); text-align:center">
+                <div class="faint" style="font-size:11px;font-weight:700">EXCUSED ABSENCES</div>
+                <div style="font-size:20px;font-weight:800;color:var(--warning);margin-top:4px">2 Days</div>
+              </div>
+              <div style="background:var(--surface-2); padding:12px; border-radius:var(--r-sm); text-align:center">
+                <div class="faint" style="font-size:11px;font-weight:700">UNEXCUSED ABSENCES</div>
+                <div style="font-size:20px;font-weight:800;color:var(--danger);margin-top:4px">0 Days</div>
+              </div>
+            </div>
+            <table class="academic-table">
+              <thead><tr><th>Date</th><th>Session</th><th>Status</th><th>Recorded By</th><th>Remarks</th></tr></thead>
+              <tbody>
+                <tr><td>Today</td><td>Morning Class</td><td>🟢 Present</td><td>Dr. Sarah Jenkins</td><td>On-time</td></tr>
+                <tr><td>Yesterday</td><td>Morning Class</td><td>🟢 Present</td><td>Dr. Sarah Jenkins</td><td>On-time</td></tr>
+                <tr><td>01 Jul 2026</td><td>Afternoon English</td><td>🟢 Present</td><td>Sok Panha</td><td>On-time</td></tr>
+                <tr><td>30 Jun 2026</td><td>Morning Class</td><td>🟡 Excused Absence</td><td>Dr. Sarah Jenkins</td><td>Medical checkup</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Grades Panel -->
+        <div class="profile-tab-panel" data-profile-panel="grades">
+          <h3 class="profile-panel-title">Grades &amp; Progress</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:16px">
+            <div style="background:var(--success-soft); padding:16px; border-radius:var(--r-md); border:1px solid var(--primary-border); display:flex; justify-content:space-between; align-items:center">
+              <div>
+                <h4 style="margin:0 0 4px 0; color:var(--success)">Current CGPA</h4>
+                <div class="muted" style="font-size:12px">Consolidated Grade Point Average across all subjects.</div>
+              </div>
+              <div style="font-size:28px; font-weight:900; color:var(--success)">3.92 / 4.0</div>
+            </div>
+            <table class="academic-table">
+              <thead><tr><th>Subject</th><th>Credits</th><th>Midterm</th><th>Final Exam</th><th>Average Grade</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Science (Advanced Physics)</td><td>3.0</td><td>94%</td><td>96%</td><td><b>A (95.0%)</b></td><td>🟢 Pass</td></tr>
+                <tr><td>English Grammar III</td><td>2.0</td><td>89%</td><td>91%</td><td><b>B+ (90.0%)</b></td><td>🟢 Pass</td></tr>
+                <tr><td>Khmer Literature</td><td>3.0</td><td>98%</td><td>95%</td><td><b>A+ (96.5%)</b></td><td>🟢 Pass</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Assignments Panel -->
+        <div class="profile-tab-panel" data-profile-panel="assignments">
+          <h3 class="profile-panel-title">Assignments List</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:16px">
+            <table class="academic-table">
+              <thead><tr><th>Assignment Title</th><th>Subject</th><th>Due Date</th><th>Submission Status</th><th>Score Received</th></tr></thead>
+              <tbody>
+                <tr><td>Newtonian Mechanics Problems</td><td>Science</td><td>Today</td><td>🟢 Submitted (On-time)</td><td>9.5 / 10</td></tr>
+                <tr><td>English Essay on Global Warming</td><td>English</td><td>05 Jul 2026</td><td>🟡 Not Submitted Yet</td><td>—</td></tr>
+                <tr><td>Khmer Poem Analysis</td><td>Khmer</td><td>28 Jun 2026</td><td>🟢 Submitted (On-time)</td><td>10 / 10</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Exam Results Panel -->
+        <div class="profile-tab-panel" data-profile-panel="exams">
+          <h3 class="profile-panel-title">Exam Results</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:16px">
+            <table class="academic-table">
+              <thead><tr><th>Exam Title</th><th>Subject</th><th>Date Taken</th><th>Maximum Marks</th><th>Marks Obtained</th><th>Grade</th></tr></thead>
+              <tbody>
+                <tr><td>Advanced Physics Quiz 3</td><td>Science</td><td>20 Jun 2026</td><td>100</td><td>96</td><td><b>A</b></td></tr>
+                <tr><td>Midterm Grammar Quiz</td><td>English</td><td>12 May 2026</td><td>50</td><td>45</td><td><b>B+</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Linked Parents Panel -->
+        <div class="profile-tab-panel" data-profile-panel="parents">
+          <h3 class="profile-panel-title">Linked Parents / Guardians</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:12px" id="profileLinkedParents">
+            <div style="border:1px solid var(--border); padding:16px; border-radius:var(--r-md); display:flex; justify-content:space-between; align-items:center">
+              <div style="display:flex; gap:12px; align-items:center">
+                <span class="avatar-circle" style="background:var(--color-parent)">CV</span>
+                <div>
+                  <h4 style="margin:0;color:var(--heading)">Chan Dara Vuth</h4>
+                  <small class="muted">Relationship: Father · ID: PAR-2026-001</small>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px">
+                <button class="btn btn-ghost btn-sm" onclick="window.toast('Dialing phone...','info')"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">phone</span> +855 12 345 678</button>
+                <button class="btn btn-ghost btn-sm" onclick="window.toast('Opening chat with parent','info')"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">chat</span> Telegram</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Timeline Panel -->
+        <div class="profile-tab-panel" data-profile-panel="timeline">
+          <h3 class="profile-panel-title">Audit Log &amp; Account Timeline</h3>
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-time">03 Jul 2026, 12:40 PM</div>
+              <div class="timeline-title">Account Updated</div>
+              <div class="timeline-desc">Adviser class assignment adjusted by Admin Heng Samnang.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-time">15 Jan 2026, 09:12 AM</div>
+              <div class="timeline-title">Profile Photo Reuploaded</div>
+              <div class="timeline-desc">Reuploaded profile picture in Student ERP Center.</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-time">01 Sep 2025, 08:00 AM</div>
+              <div class="timeline-title">Account Created &amp; Enrolled</div>
+              <div class="timeline-desc">Enrolled in Grade 11-A at Sen Sok Campus. Initial registration finalized.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session Logs Panel -->
+        <div class="profile-tab-panel" data-profile-panel="activity">
+          <h3 class="profile-panel-title">Session Logs &amp; Activity</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:12px">
+            <table class="academic-table">
+              <thead><tr><th>Session IP</th><th>Device / browser</th><th>Login Time</th><th>Logout Time</th><th>Active Status</th></tr></thead>
+              <tbody>
+                <tr><td>192.168.1.45</td><td>Chrome 124.0.0 (Windows 11)</td><td>Today, 12:05 PM</td><td>Active Session</td><td>🟢 Active Now</td></tr>
+                <tr><td>192.168.1.102</td><td>Firefox 125 (Mac OS X)</td><td>Yesterday, 08:30 AM</td><td>Yesterday, 04:00 PM</td><td>Expired</td></tr>
+                <tr><td>114.12.35.6</td><td>Safari Mobile (iOS 17.4)</td><td>30 Jun 2026, 07:15 PM</td><td>30 Jun 2026, 07:45 PM</td><td>Expired</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Admin Permissions Panel -->
+        <div class="profile-tab-panel" data-profile-panel="permissions">
+          <h3 class="profile-panel-title">Admin Permissions</h3>
+          <div style="margin-top:10px; display:flex; flex-direction:column; gap:16px">
+            <div style="background:var(--warning-soft); padding:14px; border-radius:var(--r-md); border:1px solid var(--accent-border); font-size:13px; color:var(--warning); display:flex; gap:10px">
+              <span class="material-symbols-outlined">warning</span>
+              <div>
+                <strong>Warning:</strong> Adjusting permission levels grants direct access to system components. Ensure appropriate authorization forms are signed.
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px">
+              <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer">
+                <input type="checkbox" checked style="margin-top:3px">
+                <div>
+                  <div style="font-weight:700">Access Student Directory</div>
+                  <small class="muted">View, add, edit student logs and grades.</small>
+                </div>
+              </label>
+              <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer">
+                <input type="checkbox" checked style="margin-top:3px">
+                <div>
+                  <div style="font-weight:700">Access Academic Configuration</div>
+                  <small class="muted">Configure class lists, campuses, and teacher schedules.</small>
+                </div>
+              </label>
+              <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer">
+                <input type="checkbox" style="margin-top:3px">
+                <div>
+                  <div style="font-weight:700">Access Audit Logs &amp; Backups</div>
+                  <small class="muted">Download backups, wipe session history, view detailed database operations.</small>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- CONSOLE GRID LIST SECTION --- -->
+  <div id="usersConsoleSection" style="display:flex; flex-direction:column; gap:20px">
+    
+    <!-- --- 2. USER TYPE SELECTION CARDS (TABS) --- -->
+    <div class="role-nav-grid">
+      <!-- Students -->
+      <a class="role-card role-students" href="#" data-tab-role="students">
+        <div class="role-card-header">
+          <div class="role-icon-box"><span class="material-symbols-outlined">school</span></div>
+          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
+        </div>
+        <div>
+          <div class="role-card-title">Students</div>
+          <div class="role-card-count" id="countStudents">2,450</div>
+        </div>
+        <div class="role-card-footer">
+          <span>View Directory</span>
+          <span class="material-symbols-outlined arrow">arrow_forward</span>
+        </div>
+      </a>
+      
+      <!-- Teachers -->
+      <a class="role-card role-teachers" href="#" data-tab-role="teachers">
+        <div class="role-card-header">
+          <div class="role-icon-box"><span class="material-symbols-outlined">co_present</span></div>
+          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
+        </div>
+        <div>
+          <div class="role-card-title">Teachers</div>
+          <div class="role-card-count" id="countTeachers">186</div>
+        </div>
+        <div class="role-card-footer">
+          <span>View Directory</span>
+          <span class="material-symbols-outlined arrow">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Parents -->
+      <a class="role-card role-parents" href="#" data-tab-role="parents">
+        <div class="role-card-header">
+          <div class="role-icon-box"><span class="material-symbols-outlined">family_restroom</span></div>
+          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
+        </div>
+        <div>
+          <div class="role-card-title">Parents</div>
+          <div class="role-card-count" id="countParents">2,120</div>
+        </div>
+        <div class="role-card-footer">
+          <span>View Directory</span>
+          <span class="material-symbols-outlined arrow">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Admins -->
+      <a class="role-card role-admins" href="#" data-tab-role="admins">
+        <div class="role-card-header">
+          <div class="role-icon-box"><span class="material-symbols-outlined">admin_panel_settings</span></div>
+          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
+        </div>
+        <div>
+          <div class="role-card-title">Admins</div>
+          <div class="role-card-count" id="countAdmins">12</div>
+        </div>
+        <div class="role-card-footer">
+          <span>View Directory</span>
+          <span class="material-symbols-outlined arrow">arrow_forward</span>
+        </div>
+      </a>
+
+      <!-- Principals -->
+      <a class="role-card role-principals" href="#" data-tab-role="principals">
+        <div class="role-card-header">
+          <div class="role-icon-box"><span class="material-symbols-outlined">military_tech</span></div>
+          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
+        </div>
+        <div>
+          <div class="role-card-title">Principals</div>
+          <div class="role-card-count" id="countPrincipals">3</div>
+        </div>
+        <div class="role-card-footer">
+          <span>View Directory</span>
+          <span class="material-symbols-outlined arrow">arrow_forward</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- --- 3. DYNAMIC STATISTICS GRID --- -->
+    <div class="stats-summary-grid" id="statsGrid">
+      <div class="stat-summary-card">
+        <span class="stat-summary-label">Total Users</span>
+        <span class="stat-summary-value" id="statVal1">4,771</span>
+      </div>
+      <div class="stat-summary-card">
+        <span class="stat-summary-label">Active Users</span>
+        <span class="stat-summary-value" id="statVal2">4,690</span>
+      </div>
+      <div class="stat-summary-card">
+        <span class="stat-summary-label">Inactive Users</span>
+        <span class="stat-summary-value" id="statVal3">54</span>
+      </div>
+      <div class="stat-summary-card">
+        <span class="stat-summary-label">New This Month</span>
+        <span class="stat-summary-value" id="statVal4">24</span>
+      </div>
+      <div class="stat-summary-card">
+        <span class="stat-summary-label">Pending Approval</span>
+        <span class="stat-summary-value" id="statVal5">12</span>
+      </div>
+      <div class="stat-summary-card">
+        <span class="stat-summary-label">Online Now</span>
+        <span class="stat-summary-value" id="statVal6">189</span>
+      </div>
+    </div>
+
+    <!-- --- 4. ADVANCED FILTER BAR --- -->
+    <div class="filter-panel" id="filterPanel">
+      <div class="filter-row">
+        <select class="filter-select" id="filterCampus">
+          <option value="">All Campuses</option>
+          <option value="Sen Sok">Sen Sok Campus</option>
+          <option value="Depo">Depo Campus</option>
+          <option value="Bak Touk">Bak Touk Campus</option>
+        </select>
+        
+        <select class="filter-select" id="filterDept">
+          <option value="">All Departments</option>
+          <option value="Science">Science</option>
+          <option value="English">English</option>
+          <option value="Computer">Computer</option>
+          <option value="Chinese">Chinese</option>
+          <option value="Khmer">Khmer</option>
+        </select>
+
+        <select class="filter-select" id="filterStatus">
+          <option value="">All Status</option>
+          <option value="Active">🟢 Active</option>
+          <option value="Pending">🟡 Pending</option>
+          <option value="Suspended">🔴 Suspended</option>
+          <option value="Archived">⚫ Archived</option>
+        </select>
+
+        <select class="filter-select" id="filterGender">
+          <option value="">All Genders</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <select class="filter-select" id="filterYear">
+          <option value="">Academic Year</option>
+          <option value="2025-26">2025-2026</option>
+          <option value="2024-25">2024-2025</option>
+        </select>
+
+        <select class="filter-select" id="filterEnrollment">
+          <option value="">Enrollment Year</option>
+          <option value="2026">Enrolled 2026</option>
+          <option value="2025">Enrolled 2025</option>
+          <option value="2022">Enrolled 2022</option>
+        </select>
+
+        <button class="btn-reset-filters" id="btnResetFilters">
+          <span class="material-symbols-outlined">restart_alt</span>Reset Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- --- 5. USER LISTING CONSOLE --- -->
+    <div class="user-table-card">
+      <div class="tbl-container">
+        <table class="tbl-custom" id="masterUserTable">
+          <thead>
+            <tr id="tableHeadersRow">
+              <th><div class="checkbox-wrapper"><input type="checkbox" id="selectAllCheckbox"></div></th>
+              <th>User Details</th>
+              <th>Campus</th>
+              <th>Identity</th>
+              <th>Department</th>
+              <th>Status</th>
+              <th>Last Active</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <!-- Dynamic Injection -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <div class="card-pad flex between center" style="border-top:1px solid var(--border); padding: 14px 20px">
+        <span class="faint" style="font-size:13px" id="paginationDisplay">Showing 1–10 of 4,771 users</span>
+        <div class="flex gap4" id="paginationControls">
+          <button class="btn btn-ghost btn-sm" id="prevPageBtn">Previous</button>
+          <div class="flex gap2" id="pageNumberButtons">
+            <button class="btn btn-sm btn-primary">1</button>
+            <button class="btn btn-ghost btn-sm">2</button>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="nextPageBtn">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- 6. BULK ACTIONS FLOATING TOOLBAR --- -->
+  <div class="bulk-actions-toolbar" id="bulkToolbar">
     <div>
-      <div class="eyebrow">Admin Portal</div>
-      <h1>User Management</h1>
-      <p>Manage all administrators, teachers, students, and parents.</p>
+      <span class="bulk-count-badge" id="bulkSelectedCount">0</span> selected
     </div>
-    <div class="head-actions">
-      <button class="btn btn-ghost" onclick="window.toast('Exporting users…','info')"><span class="material-symbols-outlined">download</span>Export</button>
-      <button class="btn btn-primary" onclick="window.toast('Add user modal coming soon','info')"><span class="material-symbols-outlined">person_add</span>Add User</button>
-    </div>
+    <div class="bulk-divider"></div>
+    <button class="bulk-action-btn" id="bulkTransferBtn"><span class="material-symbols-outlined">location_city</span>Transfer</button>
+    <button class="bulk-action-btn" id="bulkSuspendBtn"><span class="material-symbols-outlined">block</span>Suspend</button>
+    <button class="bulk-action-btn" id="bulkMessageBtn"><span class="material-symbols-outlined">mail</span>Send Message</button>
+    <button class="bulk-action-btn" id="bulkAssignBtn"><span class="material-symbols-outlined">assignment_ind</span>Assign Role</button>
+    <button class="bulk-action-btn" id="bulkExportBtn"><span class="material-symbols-outlined">download</span>Export List</button>
+    <div class="bulk-divider"></div>
+    <button class="bulk-action-btn bulk-action-btn-danger" id="bulkDeleteBtn"><span class="material-symbols-outlined">delete</span>Delete</button>
   </div>
 
-  <div class="grid g-4 anim-up">
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">admin_panel_settings</span></div><span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>2</span></div><div class="stat-val">12</div><div class="stat-label">Administrators</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-accent"><span class="material-symbols-outlined fill">co_present</span></div><span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>5</span></div><div class="stat-val">148</div><div class="stat-label">Teachers</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">school</span></div><span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>37</span></div><div class="stat-val">4,820</div><div class="stat-label">Students</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">family_restroom</span></div></div><div class="stat-val">3,105</div><div class="stat-label">Parents</div></div>
-  </div>
-
-  <div class="card mt16 anim-up-2">
-    <div class="card-head">
-      <div><h3>All Users</h3><div class="sub">5,200+ registered accounts</div></div>
-      <div class="flex gap8">
-        <input class="input" placeholder="Search users…" style="width:220px">
-        <select class="select" style="width:auto">
-          <option>All Roles</option>
-          <option>Admin</option>
-          <option>Teacher</option>
-          <option>Student</option>
-          <option>Parent</option>
-        </select>
-        <select class="select" style="width:auto">
-          <option>All Status</option>
-          <option>Active</option>
-          <option>Inactive</option>
-        </select>
-      </div>
-    </div>
-    <div class="tbl-wrap">
-      <table class="tbl">
-        <thead><tr><th><input type="checkbox"></th><th>Name</th><th>Role</th><th>Email</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
-        <tbody>
-          <tr><td><input type="checkbox"></td><td><div class="flex center gap8"><span class="ava t-accent" style="width:32px;height:32px;border-radius:8px;font-size:12px">SJ</span><div><b style="font-size:13px">Dr. Sarah Jenkins</b><div class="faint" style="font-size:11px">ID: USR-001</div></div></div></td><td><span class="badge green">Teacher</span></td><td class="faint">s.jenkins@ngis.edu.kh</td><td><span class="badge green">Active</span></td><td class="faint mono" style="font-size:12px">2 min ago</td><td><div class="flex gap4"><button class="icon-btn" onclick="window.toast('Editing user','info')"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button><button class="icon-btn" onclick="window.toast('Reset password sent','success')"><span class="material-symbols-outlined" style="font-size:16px">lock_reset</span></button><button class="icon-btn" style="color:var(--danger)" onclick="window.toast('User deactivated','warning')"><span class="material-symbols-outlined" style="font-size:16px">block</span></button></div></td></tr>
-          <tr><td><input type="checkbox"></td><td><div class="flex center gap8"><span class="ava t-blue" style="width:32px;height:32px;border-radius:8px;font-size:12px">KR</span><div><b style="font-size:13px">Kosal Rith Mony</b><div class="faint" style="font-size:11px">ID: STU-2241</div></div></div></td><td><span class="badge blue">Student</span></td><td class="faint">kosal.r@student.ngis.edu.kh</td><td><span class="badge green">Active</span></td><td class="faint mono" style="font-size:12px">08:12 AM</td><td><div class="flex gap4"><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">lock_reset</span></button><button class="icon-btn" style="color:var(--danger)"><span class="material-symbols-outlined" style="font-size:16px">block</span></button></div></td></tr>
-          <tr><td><input type="checkbox"></td><td><div class="flex center gap8"><span class="ava t-purple" style="width:32px;height:32px;border-radius:8px;font-size:12px">PC</span><div><b style="font-size:13px">Dr. Pov Chanthy</b><div class="faint" style="font-size:11px">ID: USR-042</div></div></div></td><td><span class="badge green">Teacher</span></td><td class="faint">p.chanthy@ngis.edu.kh</td><td><span class="badge green">Active</span></td><td class="faint mono" style="font-size:12px">Yesterday</td><td><div class="flex gap4"><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">lock_reset</span></button><button class="icon-btn" style="color:var(--danger)"><span class="material-symbols-outlined" style="font-size:16px">block</span></button></div></td></tr>
-          <tr><td><input type="checkbox"></td><td><div class="flex center gap8"><span class="ava t-amber" style="width:32px;height:32px;border-radius:8px;font-size:12px">DM</span><div><b style="font-size:13px">Dara Mony</b><div class="faint" style="font-size:11px">ID: PAR-0891</div></div></div></td><td><span class="badge amber">Parent</span></td><td class="faint">dara.m@gmail.com</td><td><span class="badge green">Active</span></td><td class="faint mono" style="font-size:12px">3 days ago</td><td><div class="flex gap4"><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">lock_reset</span></button><button class="icon-btn" style="color:var(--danger)"><span class="material-symbols-outlined" style="font-size:16px">block</span></button></div></td></tr>
-          <tr><td><input type="checkbox"></td><td><div class="flex center gap8"><span class="ava t-red" style="width:32px;height:32px;border-radius:8px;font-size:12px">RS</span><div><b style="font-size:13px">Ms. Rin Sothea</b><div class="faint" style="font-size:11px">ID: USR-087</div></div></div></td><td><span class="badge green">Teacher</span></td><td class="faint">r.sothea@ngis.edu.kh</td><td><span class="badge red">Inactive</span></td><td class="faint mono" style="font-size:12px">2 weeks ago</td><td><div class="flex gap4"><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">lock_reset</span></button><button class="icon-btn" style="color:var(--success)"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button></div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="card-pad flex between center" style="border-top:1px solid var(--border)">
-      <span class="faint" style="font-size:13px">Showing 1–5 of 5,085 users</span>
-      <div class="flex gap4">
-        <button class="btn btn-ghost btn-sm">Previous</button>
-        <button class="btn btn-sm btn-primary">1</button>
-        <button class="btn btn-ghost btn-sm">2</button>
-        <button class="btn btn-ghost btn-sm">3</button>
-        <button class="btn btn-ghost btn-sm">Next</button>
-      </div>
-    </div>
-  </div>
-</div><!-- /page -->
+</div>
 </main>
-<script>window.PAGE={"role":"admin","active":"users"};</script>
+
+<!-- --- ADD/EDIT USER DRAWER MODAL --- -->
+<div class="drawer-overlay" id="userDrawerOverlay">
+  <div class="drawer-right">
+    <div class="drawer-custom-header">
+      <div>
+        <h3 class="drawer-custom-title" id="drawerTitle">Add Student Account</h3>
+        <p class="drawer-custom-subtitle" id="drawerSubtitle">Configure credentials and personal details</p>
+      </div>
+      <button class="action-icon-btn" id="closeDrawerBtn"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    
+    <div class="drawer-custom-body">
+      <form id="drawerForm" onsubmit="return false">
+        <input type="hidden" id="formUserId">
+        
+        <div class="avatar-drawer-picker">
+          <div class="avatar-picker-fallback" id="drawerAvatarPreview">+</div>
+          <span class="muted" style="font-size: 11px">Click to attach photo (JPG/PNG, Max 2MB)</span>
+        </div>
+
+        <div class="form-group-grid">
+          <div class="form-control-wrap form-full-col">
+            <label class="form-label-custom">Full Name</label>
+            <input type="text" class="form-input-custom" id="formFullName" required placeholder="e.g. Kosal Rith Mony">
+          </div>
+          
+          <div class="form-control-wrap">
+            <label class="form-label-custom">Gender</label>
+            <select class="form-input-custom" id="formGender">
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="form-control-wrap">
+            <label class="form-label-custom">Date of Birth</label>
+            <input type="date" class="form-input-custom" id="formDob">
+          </div>
+
+          <div class="form-control-wrap">
+            <label class="form-label-custom">Campus</label>
+            <select class="form-input-custom" id="formCampus">
+              <option>Sen Sok</option>
+              <option>Depo</option>
+              <option>Bak Touk</option>
+            </select>
+          </div>
+
+          <div class="form-control-wrap" id="formDeptContainer">
+            <label class="form-label-custom">Department</label>
+            <select class="form-input-custom" id="formDept">
+              <option>Science</option>
+              <option>English</option>
+              <option>Computer</option>
+              <option>Chinese</option>
+              <option>Khmer</option>
+            </select>
+          </div>
+
+          <!-- Dynamic role-specific fields will show/hide or be adapted -->
+          <div class="form-control-wrap" id="formSpecificFieldContainer">
+            <label class="form-label-custom" id="formSpecificLabel">Class Assignment</label>
+            <input type="text" class="form-input-custom" id="formSpecificInput" placeholder="e.g. 11-A">
+          </div>
+
+          <div class="form-control-wrap">
+            <label class="form-label-custom">Telegram Chat ID Link</label>
+            <input type="text" class="form-input-custom" id="formTelegram" placeholder="@username">
+          </div>
+
+          <div class="form-control-wrap">
+            <label class="form-label-custom">Locker Allocation</label>
+            <input type="text" class="form-input-custom" id="formLocker" placeholder="e.g. L-402">
+          </div>
+
+          <div class="form-control-wrap">
+            <label class="form-label-custom">School Bus Route</label>
+            <input type="text" class="form-input-custom" id="formBus" placeholder="e.g. Line 12">
+          </div>
+
+          <div class="form-control-wrap form-full-col">
+            <label class="form-label-custom">Medical / Health Alert</label>
+            <input type="text" class="form-input-custom" id="formMedical" placeholder="e.g. Peanuts allergy, asthma">
+          </div>
+
+          <div class="form-control-wrap form-full-col">
+            <label class="form-label-custom">Linked Parent Account</label>
+            <select class="form-input-custom" id="formParent">
+              <option value="">None</option>
+              <option value="PAR-2026-001">Mr. Hok Chendara (Father)</option>
+              <option value="PAR-2026-002">Mrs. Sokun Phalla (Mother)</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="drawer-custom-footer">
+      <button class="btn btn-ghost btn-sm" id="cancelDrawerBtn">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="submitDrawerBtn">Save User Account</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Ensure the page knows it is in admin portal users list
+  window.PAGE = {"role":"admin","active":"users"};
+  
+  // High fidelity configuration for navigation layout engine
+  window.HERO_CONFIG = {
+    name: 'Mr. Heng Samnang',
+    id: 'Admin ID: ADM-2026-001',
+    grade: 'School Administrator',
+    avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+    avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+    title: 'Enterprise Management Console',
+    greeting: 'Identify, configure and administer user accounts across campuses.',
+    breadcrumbs: [{ label: 'Users' }],
+    homeLink: '../../index.html',
+    signOutLink: '../../index.html',
+    profileLink: 'admin-settings.html',
+    notifLink: 'admin-logs.html',
+    chatLink: '../shared/chat.html',
+    notifCount: 4,
+    ddRows: [
+      { icon: 'admin_panel_settings', text: 'School Administration' },
+      { icon: 'groups', text: '5,200 active users' },
+      { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+      { icon: 'calendar_today', text: 'Since: Jan 2018' },
+      { icon: 'verified', text: 'Principal Administrator' }
+    ]
+  };
+</script>
 <script src="../../assets/js/layout.js"></script>
+
+<!-- --- MASTER ERP USER DATABASE & ROUTER CONTROL ENGINE --- -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // --- 1. ENTERPRISE SEED DATABASE ---
+    const DB = [
+      // Students
+      { id: "STU-2026-001", name: "Kosal Rith Mony", role: "student", campus: "Sen Sok", department: "Science", class: "11-A", status: "Active", gender: "Male", telegram: "@kosal_mony", lastActive: "10m ago", enrolledYear: "2025", dob: "2009-04-12" },
+      { id: "STU-2026-002", name: "Sreylin Vuth", role: "student", campus: "Depo", department: "Khmer", class: "6-B", status: "Active", gender: "Female", telegram: "@sreylin_v", lastActive: "2h ago", enrolledYear: "2026", dob: "2014-08-22" },
+      { id: "STU-2026-003", name: "Heng Piseth", role: "student", campus: "Bak Touk", department: "Chinese", class: "12-A", status: "Suspended", gender: "Male", telegram: "@piseth_h", lastActive: "3d ago", enrolledYear: "2022", dob: "2008-11-05" },
+      { id: "STU-2026-004", name: "Emily Jenkins", role: "student", campus: "Sen Sok", department: "English", class: "10-B", status: "Active", gender: "Female", telegram: "@emily_j", lastActive: "Online Now", enrolledYear: "2025", dob: "2010-01-30" },
+      { id: "STU-2026-005", name: "Kevin Jenkins", role: "student", campus: "Sen Sok", department: "English", class: "8-A", status: "Active", gender: "Male", telegram: "@kevin_j", lastActive: "1d ago", enrolledYear: "2025", dob: "2012-07-15" },
+      
+      // Teachers
+      { id: "TCH-2026-001", name: "Dr. Sarah Jenkins", role: "teacher", campus: "Sen Sok", department: "Science", class: "11-A, 10-B, 8-A", status: "Active", gender: "Female", telegram: "@sarah_jenkins", lastActive: "Online Now", enrolledYear: "2019", dob: "1980-05-14" },
+      { id: "TCH-2026-002", name: "Sok Panha", role: "teacher", campus: "Depo", department: "English", class: "6-B, 5-A", status: "Active", gender: "Male", telegram: "@panha_s", lastActive: "4h ago", enrolledYear: "2021", dob: "1988-11-20" },
+      { id: "TCH-2026-003", name: "Chea Sophal", role: "teacher", campus: "Bak Touk", department: "Computer", class: "12-A, 11-B", status: "Active", gender: "Male", telegram: "@sophal_c", lastActive: "1d ago", enrolledYear: "2022", dob: "1992-02-18" },
+      { id: "TCH-2026-004", name: "Lim Siew Mai", role: "teacher", campus: "Bak Touk", department: "Chinese", class: "12-A, 10-A", status: "Suspended", gender: "Female", telegram: "@siew_mai", lastActive: "1w ago", enrolledYear: "2020", dob: "1985-09-09" },
+
+      // Parents
+      { id: "PAR-2026-001", name: "Chan Dara Vuth", role: "parent", campus: "Sen Sok", department: "English", class: "+855 12 345 678", children: ["Kosal Rith Mony"], status: "Active", gender: "Male", telegram: "@chan_dara", lastActive: "1d ago", enrolledYear: "2025", dob: "1975-03-12" },
+      { id: "PAR-2026-002", name: "Dr. Sarah Jenkins", role: "parent", campus: "Sen Sok", department: "Science", class: "+855 99 888 777", children: ["Emily Jenkins", "Kevin Jenkins"], status: "Active", gender: "Female", telegram: "@sarah_jenkins", lastActive: "Online Now", enrolledYear: "2025", dob: "1980-05-14" },
+      { id: "PAR-2026-003", name: "Heng Samnang", role: "parent", campus: "Bak Touk", department: "Khmer", class: "+855 16 555 444", children: ["Heng Piseth"], status: "Active", gender: "Male", telegram: "@samnang_h", lastActive: "2h ago", enrolledYear: "2022", dob: "1978-07-25" },
+
+      // Admins
+      { id: "ADM-2026-001", name: "Mr. Heng Samnang", role: "admin", campus: "Sen Sok", department: "Administration", class: "Super Admin", status: "Active", gender: "Male", telegram: "@heng_samnang", lastActive: "Online Now", enrolledYear: "2018", dob: "1975-01-01" },
+      { id: "ADM-2026-002", name: "Keo Pich", role: "admin", campus: "Depo", department: "Finance", class: "Admin", status: "Active", gender: "Female", telegram: "@keo_pich", lastActive: "30m ago", enrolledYear: "2020", dob: "1989-10-15" },
+      { id: "ADM-2026-003", name: "Ouk Dara", role: "admin", campus: "Bak Touk", department: "Academic Ops", class: "Moderator", status: "Active", gender: "Male", telegram: "@ouk_dara", lastActive: "1d ago", enrolledYear: "2023", dob: "1994-06-22" },
+
+      // Principals
+      { id: "PRI-2026-001", name: "Dr. Lay Kimchhean", role: "principal", campus: "Sen Sok", department: "Science", class: "Admin Wing - Room 101", status: "Active", gender: "Male", telegram: "@lay_kimchhean", lastActive: "5h ago", enrolledYear: "2015", dob: "1970-08-01" },
+      { id: "PRI-2026-002", name: "Mrs. Tep Vanny", role: "principal", campus: "Depo", department: "English", class: "Building B - Room 202", status: "Active", gender: "Female", telegram: "@tep_vanny", lastActive: "1h ago", enrolledYear: "2017", dob: "1973-02-15" },
+      { id: "PRI-2026-003", name: "Mr. Ros Saravuth", role: "principal", campus: "Bak Touk", department: "Khmer", class: "Admin Office - Room 3", status: "Active", gender: "Male", telegram: "@ros_saravuth", lastActive: "Yesterday", enrolledYear: "2018", dob: "1972-11-01" }
+    ];
+
+    // --- 2. ENGINE CONTROL STATE ---
+    let state = {
+      users: [...DB],
+      activeRole: "students", // Default view on load is Students directory
+      filters: {
+        search: "",
+        campus: "",
+        department: "",
+        status: "",
+        gender: "",
+        academicYear: "",
+        enrollmentYear: ""
+      },
+      selectedIds: new Set(),
+      currentPage: 1,
+      pageSize: 10,
+      profileUserId: null,
+      expandedParentId: null, // For tracking inline child lists
+      activeProfileTab: "personal"
+    };
+
+    // --- 3. DOM ELEMENT CACHING ---
+    const elements = {
+      globalSearch: document.getElementById("globalSearch"),
+      userTableBody: document.getElementById("userTableBody"),
+      tableHeadersRow: document.getElementById("tableHeadersRow"),
+      selectAllCheckbox: document.getElementById("selectAllCheckbox"),
+      
+      // Cards / Tabs
+      roleCards: document.querySelectorAll("[data-tab-role]"),
+      countStudents: document.getElementById("countStudents"),
+      countTeachers: document.getElementById("countTeachers"),
+      countParents: document.getElementById("countParents"),
+      countAdmins: document.getElementById("countAdmins"),
+      countPrincipals: document.getElementById("countPrincipals"),
+      
+      // Dynamic Stats labels & values
+      statVal1: document.getElementById("statVal1"),
+      statVal2: document.getElementById("statVal2"),
+      statVal3: document.getElementById("statVal3"),
+      statVal4: document.getElementById("statVal4"),
+      statVal5: document.getElementById("statVal5"),
+      statVal6: document.getElementById("statVal6"),
+      
+      // Advanced Filters
+      filterCampus: document.getElementById("filterCampus"),
+      filterDept: document.getElementById("filterDept"),
+      filterStatus: document.getElementById("filterStatus"),
+      filterGender: document.getElementById("filterGender"),
+      filterYear: document.getElementById("filterYear"),
+      filterEnrollment: document.getElementById("filterEnrollment"),
+      btnResetFilters: document.getElementById("btnResetFilters"),
+      filterPanel: document.getElementById("filterPanel"),
+      filterToggle: document.getElementById("filterToggle"),
+
+      // Bulk actions
+      bulkToolbar: document.getElementById("bulkToolbar"),
+      bulkSelectedCount: document.getElementById("bulkSelectedCount"),
+      
+      // Pagination
+      paginationDisplay: document.getElementById("paginationDisplay"),
+      pageNumberButtons: document.getElementById("pageNumberButtons"),
+      prevPageBtn: document.getElementById("prevPageBtn"),
+      nextPageBtn: document.getElementById("nextPageBtn"),
+
+      // Profile Area
+      profileViewSection: document.getElementById("profileViewSection"),
+      usersConsoleSection: document.getElementById("usersConsoleSection"),
+      profileNameDisplay: document.getElementById("profileNameDisplay"),
+      profileRoleBadge: document.getElementById("profileRoleBadge"),
+      profileStatusBadge: document.getElementById("profileStatusBadge"),
+      profileIdDisplay: document.getElementById("profileIdDisplay"),
+      profileCampusDisplay: document.getElementById("profileCampusDisplay"),
+      profileDeptDisplay: document.getElementById("profileDeptDisplay"),
+      profileHeaderAvatar: document.getElementById("profileHeaderAvatar"),
+      backToListBtn: document.getElementById("backToListBtn"),
+      profileSideTabs: document.querySelectorAll("[data-profile-tab]"),
+      profileTabPanels: document.querySelectorAll("[data-profile-panel]"),
+      
+      // Drawer Modal
+      userDrawerOverlay: document.getElementById("userDrawerOverlay"),
+      closeDrawerBtn: document.getElementById("closeDrawerBtn"),
+      cancelDrawerBtn: document.getElementById("cancelDrawerBtn"),
+      submitDrawerBtn: document.getElementById("submitDrawerBtn"),
+      drawerTitle: document.getElementById("drawerTitle"),
+      drawerSubtitle: document.getElementById("drawerSubtitle"),
+      drawerForm: document.getElementById("drawerForm"),
+      drawerAvatarPreview: document.getElementById("drawerAvatarPreview"),
+      addBtnDropdownToggle: document.getElementById("addBtnDropdownToggle"),
+      addUserDropdownMenu: document.getElementById("addUserDropdownMenu"),
+      
+      // Specific form drawer inputs
+      formUserId: document.getElementById("formUserId"),
+      formFullName: document.getElementById("formFullName"),
+      formGender: document.getElementById("formGender"),
+      formDob: document.getElementById("formDob"),
+      formCampus: document.getElementById("formCampus"),
+      formDept: document.getElementById("formDept"),
+      formDeptContainer: document.getElementById("formDeptContainer"),
+      formSpecificInput: document.getElementById("formSpecificInput"),
+      formSpecificLabel: document.getElementById("formSpecificLabel"),
+      formTelegram: document.getElementById("formTelegram")
+    };
+
+    // Role display configs (Accents, labels, badges)
+    const ROLE_CONFIGS = {
+      student: { label: "Student", badgeClass: "role-stu", icon: "school", color: "var(--color-student)", initialsClass: "t-blue" },
+      teacher: { label: "Teacher", badgeClass: "role-tch", icon: "co_present", color: "var(--color-teacher)", initialsClass: "t-green" },
+      parent: { label: "Parent", badgeClass: "role-par", icon: "family_restroom", color: "var(--color-parent)", initialsClass: "t-purple" },
+      admin: { label: "Admin", badgeClass: "role-adm", icon: "admin_panel_settings", color: "var(--color-admin)", initialsClass: "t-amber" },
+      principal: { label: "Principal", badgeClass: "role-pri", icon: "military_tech", color: "var(--color-principal)", initialsClass: "t-red" }
+    };
+
+    // --- 4. INITIAL ROUTER SETUP & PARAM LISTENER ---
+    function initRouter() {
+      const params = new URLSearchParams(window.location.search);
+      const roleParam = params.get("role");
+      const profileParam = params.get("profile");
+
+      if (profileParam) {
+        state.profileUserId = profileParam;
+        openProfileView(profileParam);
+      } else {
+        state.profileUserId = null;
+        elements.profileViewSection.classList.remove("visible");
+        elements.usersConsoleSection.style.display = "flex";
+        
+        if (roleParam) {
+          const mapping = {
+            "students": "students",
+            "teachers": "teachers",
+            "parents": "parents",
+            "admins": "admins",
+            "principals": "principals"
+          };
+          state.activeRole = mapping[roleParam.toLowerCase()] || "students";
+        } else {
+          state.activeRole = "students";
+        }
+      }
+      
+      updateRoleCardsUI();
+      renderStats();
+      filterAndRenderUsers();
+      updateSidebarActive();
+    }
+
+    // Inform layout engine of active sub-tab (forces sidebar highlights to stay synced)
+    function updateSidebarActive() {
+      let active = "users";
+      if (!state.profileUserId) {
+        active = state.activeRole;
+      } else {
+        const user = state.users.find(u => u.id === state.profileUserId);
+        if (user) {
+          active = user.role + "s"; // plural matches id in layout.js navigation
+        }
+      }
+      window.PAGE.active = active;
+      
+      // Retrigger layout.js highlighting manually
+      const navLinks = document.querySelectorAll(".nav-link");
+      navLinks.forEach(link => {
+        link.classList.remove("active");
+        if (link.href.includes(active)) {
+          link.classList.add("active");
+        }
+      });
+    }
+
+    function navigateTo(role, profileId = null) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("role");
+      url.searchParams.delete("profile");
+
+      if (profileId) {
+        url.searchParams.set("profile", profileId);
+      } else if (role) {
+        url.searchParams.set("role", role);
+      }
+
+      window.history.pushState({}, "", url.toString());
+      initRouter();
+    }
+
+    window.addEventListener("popstate", () => {
+      initRouter();
+    });
+
+    // --- 5. UI LAYOUT SWITCHERS (ROLE DIRECTORY AND TABLES) ---
+    function updateRoleCardsUI() {
+      elements.roleCards.forEach(card => {
+        const cardRole = card.dataset.tabRole;
+        if (cardRole === state.activeRole) {
+          card.classList.add("active");
+        } else {
+          card.classList.remove("active");
+        }
+      });
+
+      // Count calculations
+      elements.countStudents.textContent = DB.filter(u => u.role === "student").length.toLocaleString();
+      elements.countTeachers.textContent = DB.filter(u => u.role === "teacher").length.toLocaleString();
+      elements.countParents.textContent = DB.filter(u => u.role === "parent").length.toLocaleString();
+      elements.countAdmins.textContent = DB.filter(u => u.role === "admin").length.toLocaleString();
+      elements.countPrincipals.textContent = DB.filter(u => u.role === "principal").length.toLocaleString();
+    }
+
+    // Stat summaries depend on selected card
+    function renderStats() {
+      // Find count calculations under active tab
+      const currentRole = state.activeRole.substring(0, state.activeRole.length - 1); // remove 's'
+      const roleUsers = DB.filter(u => u.role === currentRole);
+
+      const total = roleUsers.length;
+      const active = roleUsers.filter(u => u.status === "Active").length;
+      const inactive = roleUsers.filter(u => u.status === "Inactive").length;
+      const suspended = roleUsers.filter(u => u.status === "Suspended").length;
+      const online = roleUsers.filter(u => u.lastActive.includes("Online") || u.lastActive.includes("m ago")).length;
+
+      const card1 = document.querySelector("#statsGrid .stat-summary-card:nth-child(1)");
+      const card2 = document.querySelector("#statsGrid .stat-summary-card:nth-child(2)");
+      const card3 = document.querySelector("#statsGrid .stat-summary-card:nth-child(3)");
+      const card4 = document.querySelector("#statsGrid .stat-summary-card:nth-child(4)");
+      const card5 = document.querySelector("#statsGrid .stat-summary-card:nth-child(5)");
+      const card6 = document.querySelector("#statsGrid .stat-summary-card:nth-child(6)");
+
+      // Animate count-up transitions
+      if (state.activeRole === "students") {
+        setStat(card1, "Total Students", total);
+        setStat(card2, "Active Enrolled", active);
+        setStat(card3, "Male Students", roleUsers.filter(u => u.gender === "Male").length);
+        setStat(card4, "Female Students", roleUsers.filter(u => u.gender === "Female").length);
+        setStat(card5, "Suspended Logs", suspended);
+        setStat(card6, "Online Students", online);
+      } else if (state.activeRole === "teachers") {
+        setStat(card1, "Total Faculty", total);
+        setStat(card2, "Active Advisers", active);
+        setStat(card3, "Science Dept", roleUsers.filter(u => u.department === "Science").length);
+        setStat(card4, "English Dept", roleUsers.filter(u => u.department === "English").length);
+        setStat(card5, "Suspended List", suspended);
+        setStat(card6, "Faculty Online", online);
+      } else if (state.activeRole === "parents") {
+        setStat(card1, "Total Guardians", total);
+        setStat(card2, "Active Accounts", active);
+        setStat(card3, "Linked to 1 Child", roleUsers.filter(u => u.children && u.children.length === 1).length);
+        setStat(card4, "Linked to Multi-Child", roleUsers.filter(u => u.children && u.children.length > 1).length);
+        setStat(card5, "Online Portals", online);
+        setStat(card6, "Suspended Portals", suspended);
+      } else if (state.activeRole === "admins") {
+        setStat(card1, "Security Admin Staff", total);
+        setStat(card2, "Super Administrators", roleUsers.filter(u => u.class === "Super Admin").length);
+        setStat(card3, "Standard Admins", roleUsers.filter(u => u.class === "Admin").length);
+        setStat(card4, "Moderators", roleUsers.filter(u => u.class === "Moderator").length);
+        setStat(card5, "Offline Staff", roleUsers.filter(u => u.status !== "Active").length);
+        setStat(card6, "Admins Active", online);
+      } else if (state.activeRole === "principals") {
+        setStat(card1, "Campus Directors", total);
+        setStat(card2, "Sen Sok Campus", roleUsers.filter(u => u.campus === "Sen Sok").length);
+        setStat(card3, "Depo Campus", roleUsers.filter(u => u.campus === "Depo").length);
+        setStat(card4, "Bak Touk Campus", roleUsers.filter(u => u.campus === "Bak Touk").length);
+        setStat(card5, "Join date <2018", roleUsers.filter(u => parseInt(u.enrolledYear) < 2018).length);
+        setStat(card6, "Status Active", active);
+      }
+    }
+
+    function setStat(cardEl, label, val) {
+      if (!cardEl) return;
+      cardEl.querySelector(".stat-summary-label").textContent = label;
+      const valEl = cardEl.querySelector(".stat-summary-value");
+      
+      // Perform a sleek numeric count transition
+      const targetVal = parseInt(val) || 0;
+      const startVal = parseInt(valEl.textContent) || 0;
+      
+      if (startVal === targetVal) {
+        valEl.textContent = val.toLocaleString();
+        return;
+      }
+      
+      let current = startVal;
+      const duration = 200; // ms
+      const steps = 10;
+      const increment = (targetVal - startVal) / steps;
+      const stepTime = duration / steps;
+      let stepCount = 0;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        stepCount++;
+        valEl.textContent = Math.round(current).toLocaleString();
+        if (stepCount >= steps) {
+          clearInterval(timer);
+          valEl.textContent = targetVal.toLocaleString();
+        }
+      }, stepTime);
+    }
+
+    // --- 6. DYNAMIC FILTER AND SEARCH PIPELINE ---
+    function filterAndRenderUsers() {
+      // 1. Show skeleton loaders while searching
+      renderSkeletonLoader();
+
+      setTimeout(() => {
+        const query = state.filters.search.toLowerCase().trim();
+        const role = state.activeRole.substring(0, state.activeRole.length - 1); // remove 's'
+        
+        let filtered = state.users.filter(user => {
+          // Filter by active role selection
+          if (user.role !== role) return false;
+
+          // Filter by campus
+          if (state.filters.campus && user.campus !== state.filters.campus) return false;
+
+          // Filter by department
+          if (state.filters.department && user.department !== state.filters.department) return false;
+
+          // Filter by status
+          if (state.filters.status && user.status !== state.filters.status) return false;
+
+          // Filter by gender
+          if (state.filters.gender && user.gender !== state.filters.gender) return false;
+
+          // Filter by enrollment year
+          if (state.filters.enrollmentYear && user.enrolledYear !== state.filters.enrollmentYear) return false;
+
+          // Search criteria (Name, ID, class/phone, Telegram, campus)
+          if (query) {
+            const matchesQuery = 
+              user.name.toLowerCase().includes(query) ||
+              user.id.toLowerCase().includes(query) ||
+              (user.class && user.class.toLowerCase().includes(query)) ||
+              (user.telegram && user.telegram.toLowerCase().includes(query)) ||
+              user.campus.toLowerCase().includes(query) ||
+              user.department.toLowerCase().includes(query);
+            
+            if (!matchesQuery) return false;
+          }
+
+          return true;
+        });
+
+        // 2. Sort results (newest or ID ordered)
+        filtered.sort((a, b) => a.id.localeCompare(b.id));
+
+        // 3. Paginate
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / state.pageSize) || 1;
+        
+        if (state.currentPage > totalPages) {
+          state.currentPage = totalPages;
+        }
+
+        const startIndex = (state.currentPage - 1) * state.pageSize;
+        const paginated = filtered.slice(startIndex, startIndex + state.pageSize);
+
+        // 4. Render Table
+        renderTableData(paginated, role);
+        renderPaginationControls(totalItems, totalPages);
+        updateBulkToolbarUI();
+      }, 180); // Small debounce/delay to mock loading
+    }
+
+    function renderSkeletonLoader() {
+      elements.userTableBody.innerHTML = Array(4).fill(0).map(() => `
+        <tr class="skeleton-row">
+          <td><div class="skeleton-box" style="width:20px;margin:0 auto"></div></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="skeleton-box" style="width:36px;height:36px;border-radius:50%"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;flex:1">
+                <div class="skeleton-box" style="width:120px;height:12px"></div>
+                <div class="skeleton-box" style="width:60px;height:10px"></div>
+              </div>
+            </div>
+          </td>
+          <td><div class="skeleton-box" style="width:80px"></div></td>
+          <td><div class="skeleton-box" style="width:90px"></div></td>
+          <td><div class="skeleton-box" style="width:70px"></div></td>
+          <td><div class="skeleton-box" style="width:60px"></div></td>
+          <td><div class="skeleton-box" style="width:70px"></div></td>
+          <td><div class="skeleton-box" style="width:80px"></div></td>
+        </tr>
+      `).join("");
+    }
+
+    function renderTableData(users, role) {
+      elements.userTableBody.innerHTML = "";
+      
+      // Update Table Headers based on role
+      renderTableHeader(role);
+
+      if (users.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      users.forEach(user => {
+        const tr = document.createElement("tr");
+        tr.id = `row-${user.id}`;
+        
+        const isChecked = state.selectedIds.has(user.id);
+        const isExpanded = role === "parent" && state.expandedParentId === user.id;
+        const config = ROLE_CONFIGS[user.role] || ROLE_CONFIGS.student;
+        
+        // Avatar initialsfallback or mock
+        const initials = user.name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+
+        // 1. Selection column
+        let cellsHtml = `
+          <td>
+            <div class="checkbox-wrapper">
+              <input type="checkbox" class="user-row-checkbox" data-user-id="${user.id}" ${isChecked ? "checked" : ""}>
+            </div>
+          </td>
+        `;
+
+        // 2. Role specific column layouts
+        if (role === "student") {
+          // Photo, Student ID & Name
+          cellsHtml += `
+            <td>
+              <div class="flex center gap10">
+                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
+                <div>
+                  <b style="font-weight:600;font-size:13.5px;">${user.name}</b>
+                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="campus-tag">${user.campus}</span></td>
+            <td>
+              <span class="identity-role-badge role-stu">
+                <span class="material-symbols-outlined badge-icon">school</span>Student
+              </span>
+            </td>
+            <td><span class="department-tag">${user.department}</span></td>
+            <td><span class="class-tag">Class ${user.class}</span></td>
+            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
+          `;
+        } else if (role === "teacher") {
+          // Photo, Teacher ID & Name, Dept, Campus, Classes, Date, Status
+          const classes = user.class.split(", ");
+          const classesHtml = classes.map(c => `<span class="class-tag">${c}</span>`).join(" ");
+          
+          cellsHtml += `
+            <td>
+              <div class="flex center gap10">
+                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
+                <div>
+                  <b style="font-weight:600;font-size:13.5px;">${user.name}</b>
+                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="campus-tag">${user.campus}</span></td>
+            <td>
+              <span class="identity-role-badge role-tch">
+                <span class="material-symbols-outlined badge-icon">co_present</span>Teacher
+              </span>
+            </td>
+            <td><span class="department-tag">${user.department}</span></td>
+            <td><div class="classes-tag-list">${classesHtml}</div></td>
+            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
+          `;
+        } else if (role === "parent") {
+          // Photo, Parent ID & Name, Children Count, Campus, Phone, Status
+          const childCount = user.children ? user.children.length : 0;
+          
+          cellsHtml += `
+            <td>
+              <div class="flex center gap10">
+                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
+                <div>
+                  <b style="font-weight:600;font-size:13.5px;">${user.name}</b>
+                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="campus-tag">${user.campus}</span></td>
+            <td>
+              <span class="identity-role-badge role-par">
+                <span class="material-symbols-outlined badge-icon">family_restroom</span>Parent
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-ghost btn-xs toggle-children-btn flex center gap4" data-parent-id="${user.id}">
+                <span class="material-symbols-outlined" style="font-size:16px;">${isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}</span>
+                ${childCount} Children
+              </button>
+            </td>
+            <td><span class="muted" style="font-weight:600; font-size:12.5px;">${user.class}</span></td>
+            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
+          `;
+        } else if (role === "admin") {
+          // Photo, Admin ID & Name, Permission Badge, Campus, Last Active
+          cellsHtml += `
+            <td>
+              <div class="flex center gap10">
+                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
+                <div>
+                  <b style="font-weight:600;font-size:13.5px;">${user.name}</b>
+                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="campus-tag">${user.campus}</span></td>
+            <td>
+              <span class="identity-role-badge role-adm">
+                <span class="material-symbols-outlined badge-icon">admin_panel_settings</span>Admin
+              </span>
+            </td>
+            <td><span class="department-tag" style="background:var(--primary-soft);color:var(--primary);">${user.class}</span></td>
+            <td><span class="muted" style="font-size:12px;font-weight:600;">${user.lastActive}</span></td>
+            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
+          `;
+        } else if (role === "principal") {
+          // Photo, Principal ID & Name, Campus, Dept, Office, Join date, Status
+          cellsHtml += `
+            <td>
+              <div class="flex center gap10">
+                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
+                <div>
+                  <b style="font-weight:600;font-size:13.5px;">${user.name}</b>
+                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="campus-tag">${user.campus}</span></td>
+            <td>
+              <span class="identity-role-badge role-pri">
+                <span class="material-symbols-outlined badge-icon">military_tech</span>Principal
+              </span>
+            </td>
+            <td><span class="department-tag">${user.department}</span></td>
+            <td><span class="muted" style="font-size:12px;font-weight:600;">Room: ${user.class}</span></td>
+            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
+          `;
+        }
+
+        // 3. Actions column
+        cellsHtml += `
+          <td>
+            <div class="action-buttons-wrap">
+              <button class="action-icon-btn btn-view" data-action="view" data-user-id="${user.id}" title="View Details"><span class="material-symbols-outlined">visibility</span></button>
+              <button class="action-icon-btn btn-edit" data-action="edit" data-user-id="${user.id}" title="Edit Account"><span class="material-symbols-outlined">edit</span></button>
+              <button class="action-icon-btn btn-suspend" data-action="suspend" data-user-id="${user.id}" title="Suspend"><span class="material-symbols-outlined">block</span></button>
+              <button class="action-icon-btn btn-delete" data-action="delete" data-user-id="${user.id}" title="Delete"><span class="material-symbols-outlined">delete</span></button>
+              <div class="dropdown-action-menu">
+                <button class="action-icon-btn btn-more" data-action="more" title="More Actions"><span class="material-symbols-outlined">more_vert</span></button>
+                <div class="dropdown-menu-list">
+                  <button class="dropdown-menu-item" data-action="profile-tab" data-user-id="${user.id}"><span class="material-symbols-outlined">contact_page</span>Go to Profile</button>
+                  <button class="dropdown-menu-item" data-action="reset-pass" data-user-id="${user.id}"><span class="material-symbols-outlined">lock_reset</span>Reset Credentials</button>
+                  <button class="dropdown-menu-item" data-action="transfer-opt" data-user-id="${user.id}"><span class="material-symbols-outlined">sync_alt</span>Transfer Division</button>
+                </div>
+              </div>
+            </div>
+          </td>
+        `;
+
+        tr.innerHTML = cellsHtml;
+        elements.userTableBody.appendChild(tr);
+
+        // Render inline expanding row for parents
+        if (role === "parent" && isExpanded) {
+          const childrenTr = document.createElement("tr");
+          childrenTr.className = "parent-children-expand-row";
+          
+          const childCardsHtml = user.children.map(name => {
+            const childUser = DB.find(u => u.name === name);
+            const cid = childUser ? childUser.id : "STU-NEW";
+            return `
+              <div class="child-expand-card" data-child-id="${cid}">
+                <span class="material-symbols-outlined">school</span>
+                <span>${name} <small class="faint" style="font-weight:500">(${cid})</small></span>
+              </div>
+            `;
+          }).join("");
+
+          childrenTr.innerHTML = `
+            <td colspan="7">
+              <div class="children-expand-box">
+                <div class="children-expand-title">Linked Children Directories</div>
+                <div class="expanded-children-grid">${childCardsHtml}</div>
+              </div>
+            </td>
+          `;
+          elements.userTableBody.appendChild(childrenTr);
+        }
+      });
+
+      // Bind dynamic actions
+      bindTableActions();
+    }
+
+    function renderTableHeader(role) {
+      let headers = `
+        <th><div class="checkbox-wrapper"><input type="checkbox" id="selectAllCheckbox"></div></th>
+        <th>User Details</th>
+        <th>Campus</th>
+        <th>Identity</th>
+      `;
+
+      if (role === "student") {
+        headers += `
+          <th>Primary Dept</th>
+          <th>Class Group</th>
+          <th>Status</th>
+        `;
+      } else if (role === "teacher") {
+        headers += `
+          <th>Department</th>
+          <th>Teaching Classes</th>
+          <th>Status</th>
+        `;
+      } else if (role === "parent") {
+        headers += `
+          <th>Linked Children</th>
+          <th>Contact Phone</th>
+          <th>Status</th>
+        `;
+      } else if (role === "admin") {
+        headers += `
+          <th>Staff Role</th>
+          <th>Last Login</th>
+          <th>Status</th>
+        `;
+      } else if (role === "principal") {
+        headers += `
+          <th>Department</th>
+          <th>Principal Office</th>
+          <th>Status</th>
+        `;
+      }
+
+      headers += `<th>Actions</th>`;
+      elements.tableHeadersRow.innerHTML = headers;
+
+      // Re-bind select all checkbox event listener
+      const selectAll = document.getElementById("selectAllCheckbox");
+      if (selectAll) {
+        selectAll.addEventListener("change", (e) => {
+          const rowCheckboxes = document.querySelectorAll(".user-row-checkbox");
+          rowCheckboxes.forEach(cb => {
+            cb.checked = e.target.checked;
+            const uid = cb.dataset.userId;
+            if (e.target.checked) {
+              state.selectedIds.add(uid);
+            } else {
+              state.selectedIds.delete(uid);
+            }
+          });
+          updateBulkToolbarUI();
+        });
+      }
+    }
+
+    function renderEmptyState() {
+      const colSpan = elements.tableHeadersRow.children.length;
+      const roleText = state.activeRole.substring(0, state.activeRole.length - 1);
+      
+      elements.userTableBody.innerHTML = `
+        <tr>
+          <td colspan="${colSpan}">
+            <div class="empty-state-container">
+              <div class="empty-state-icon">
+                <span class="material-symbols-outlined">person_search</span>
+              </div>
+              <div class="empty-state-title">No ${roleText} accounts found</div>
+              <div class="empty-state-subtitle">We couldn't find matching records. Refine your query or configure a new account catalog.</div>
+              <button class="btn btn-primary btn-sm flex center gap4" data-drawer-open="${roleText}">
+                <span class="material-symbols-outlined" style="font-size:16px">person_add</span>Add first ${roleText}
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+      
+      // Bind action button in empty state
+      const addFirstBtn = elements.userTableBody.querySelector("[data-drawer-open]");
+      if (addFirstBtn) {
+        addFirstBtn.addEventListener("click", () => {
+          openAddDrawer(addFirstBtn.dataset.drawerOpen);
+        });
+      }
+    }
+
+    // --- 7. PAGINATION RENDERER ---
+    function renderPaginationControls(totalItems, totalPages) {
+      elements.prevPageBtn.disabled = state.currentPage === 1;
+      elements.nextPageBtn.disabled = state.currentPage === totalPages;
+
+      const start = (state.currentPage - 1) * state.pageSize + 1;
+      const end = Math.min(state.currentPage * state.pageSize, totalItems);
+      elements.paginationDisplay.textContent = totalItems === 0 
+        ? `Showing 0–0 of 0 users` 
+        : `Showing ${start}–${end} of ${totalItems.toLocaleString()} users`;
+
+      elements.pageNumberButtons.innerHTML = "";
+      
+      // Render simple clean pages
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+          const btn = document.createElement("button");
+          btn.className = `btn btn-sm ${i === state.currentPage ? "btn-primary" : "btn-ghost"}`;
+          btn.textContent = i;
+          btn.addEventListener("click", () => {
+            state.currentPage = i;
+            filterAndRenderUsers();
+          });
+          elements.pageNumberButtons.appendChild(btn);
+        } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
+          const span = document.createElement("span");
+          span.textContent = "...";
+          span.style.padding = "4px 8px";
+          span.style.color = "var(--faint)";
+          elements.pageNumberButtons.appendChild(span);
+        }
+      }
+    }
+
+    // --- 8. TABLE EVENT BINDINGS (INLINE CLICKS) ---
+    function bindTableActions() {
+      // Toggle checkboxes
+      const rowCheckboxes = document.querySelectorAll(".user-row-checkbox");
+      rowCheckboxes.forEach(cb => {
+        cb.addEventListener("change", (e) => {
+          const uid = e.target.dataset.userId;
+          if (e.target.checked) {
+            state.selectedIds.add(uid);
+          } else {
+            state.selectedIds.delete(uid);
+          }
+          
+          // Sync Select All checkbox state
+          const allChecked = Array.from(rowCheckboxes).every(c => c.checked);
+          const selectAll = document.getElementById("selectAllCheckbox");
+          if (selectAll) selectAll.checked = allChecked;
+
+          updateBulkToolbarUI();
+        });
+      });
+
+      // Row inline actions
+      elements.userTableBody.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        
+        const action = btn.dataset.action;
+        const uid = btn.dataset.userId;
+
+        if (action === "view" || btn.classList.contains("dropdown-menu-item")) {
+          const targetAction = btn.dataset.action || action;
+          if (targetAction === "view" || targetAction === "profile-tab") {
+            navigateTo(null, uid);
+          } else if (targetAction === "reset-pass") {
+            window.toast(`Generated system password reset link for user ${uid}`, "success");
+            closeAllDropdowns();
+          } else if (targetAction === "transfer-opt") {
+            window.toast(`Initiate Campus Transfer Wizard for user ${uid}`, "info");
+            closeAllDropdowns();
+          }
+        } else if (action === "edit") {
+          openEditDrawer(uid);
+        } else if (action === "suspend") {
+          toggleSuspendUser(uid);
+        } else if (action === "delete") {
+          triggerDeleteUser(uid);
+        } else if (action === "more") {
+          e.stopPropagation();
+          const menuList = btn.nextElementSibling;
+          const alreadyOpen = menuList.classList.contains("open");
+          closeAllDropdowns();
+          if (!alreadyOpen) {
+            menuList.classList.add("open");
+          }
+        }
+      });
+
+      // Linked children click handling
+      const toggleChildrenBtns = document.querySelectorAll(".toggle-children-btn");
+      toggleChildrenBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const pid = btn.dataset.parentId;
+          state.expandedParentId = state.expandedParentId === pid ? null : pid;
+          filterAndRenderUsers();
+        });
+      });
+
+      // Child link badge click handling
+      const childBadges = document.querySelectorAll(".child-expand-card");
+      childBadges.forEach(badge => {
+        badge.addEventListener("click", () => {
+          const cid = badge.dataset.childId;
+          navigateTo(null, cid);
+        });
+      });
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll(".dropdown-menu-list").forEach(el => el.classList.remove("open"));
+    }
+
+    document.addEventListener("click", () => {
+      closeAllDropdowns();
+      elements.addUserDropdownMenu.classList.remove("open");
+    });
+
+    // --- 9. ACTIONS LOGIC (SUSPEND, DELETE, SAVE) ---
+    function toggleSuspendUser(uid) {
+      const user = state.users.find(u => u.id === uid);
+      if (!user) return;
+      if (user.status === "Suspended") {
+        user.status = "Active";
+        window.toast(`Account status restored to Active for ${user.name}`, "success");
+      } else {
+        user.status = "Suspended";
+        window.toast(`Account status suspended for ${user.name}`, "warning");
+      }
+      filterAndRenderUsers();
+      renderStats();
+    }
+
+    function triggerDeleteUser(uid) {
+      const user = state.users.find(u => u.id === uid);
+      if (!user) return;
+      
+      const confirmDelete = confirm(`Are you sure you want to permanently delete the account of ${user.name} (${user.id})? This action is irreversible.`);
+      if (confirmDelete) {
+        state.users = state.users.filter(u => u.id !== uid);
+        state.selectedIds.delete(uid);
+        window.toast(`Account successfully deleted for ${user.name}`, "error");
+        
+        // If in profile view of this user, return to list
+        if (state.profileUserId === uid) {
+          navigateTo("students");
+        } else {
+          filterAndRenderUsers();
+          renderStats();
+        }
+      }
+    }
+
+    // --- 10. BULK ACTIONS LOGIC ---
+    function updateBulkToolbarUI() {
+      const count = state.selectedIds.size;
+      elements.bulkSelectedCount.textContent = count;
+      if (count > 0) {
+        elements.bulkToolbar.classList.add("visible");
+      } else {
+        elements.bulkToolbar.classList.remove("visible");
+      }
+    }
+
+    // Bulk buttons action bindings
+    document.getElementById("bulkTransferBtn").addEventListener("click", () => {
+      window.toast(`Initiated batch transfer for ${state.selectedIds.size} users`, "info");
+      clearBulkSelection();
+    });
+    
+    document.getElementById("bulkSuspendBtn").addEventListener("click", () => {
+      state.selectedIds.forEach(id => {
+        const u = state.users.find(u => u.id === id);
+        if (u) u.status = "Suspended";
+      });
+      window.toast(`Suspended ${state.selectedIds.size} selected accounts`, "warning");
+      clearBulkSelection();
+      filterAndRenderUsers();
+      renderStats();
+    });
+
+    document.getElementById("bulkMessageBtn").addEventListener("click", () => {
+      window.toast(`Bulk message gateway open for ${state.selectedIds.size} recipients`, "success");
+      clearBulkSelection();
+    });
+
+    document.getElementById("bulkAssignBtn").addEventListener("click", () => {
+      window.toast(`Batch configuration adjustment for ${state.selectedIds.size} accounts`, "info");
+      clearBulkSelection();
+    });
+
+    document.getElementById("bulkExportBtn").addEventListener("click", () => {
+      window.toast(`Compiled CSV export for ${state.selectedIds.size} rows`, "success");
+      clearBulkSelection();
+    });
+
+    document.getElementById("bulkDeleteBtn").addEventListener("click", () => {
+      const confirmDelete = confirm(`Are you sure you want to permanently delete ${state.selectedIds.size} selected accounts? This is a bulk administrative operation.`);
+      if (confirmDelete) {
+        const selectedArr = Array.from(state.selectedIds);
+        state.users = state.users.filter(u => !selectedArr.includes(u.id));
+        window.toast(`Bulk deleted ${selectedArr.length} user records`, "error");
+        clearBulkSelection();
+        filterAndRenderUsers();
+        renderStats();
+      }
+    });
+
+    function clearBulkSelection() {
+      state.selectedIds.clear();
+      const selectAll = document.getElementById("selectAllCheckbox");
+      if (selectAll) selectAll.checked = false;
+      
+      const rowCheckboxes = document.querySelectorAll(".user-row-checkbox");
+      rowCheckboxes.forEach(c => c.checked = false);
+      
+      updateBulkToolbarUI();
+    }
+
+    // --- 11. UNIVERSAL PROFILE PANEL VIEWS ---
+    function openProfileView(userId) {
+      const user = state.users.find(u => u.id === userId);
+      if (!user) {
+        window.toast("Requested user records not found", "error");
+        navigateTo("students");
+        return;
+      }
+
+      state.profileUserId = userId;
+      updateSidebarActive();
+
+      // UI Element bindings
+      elements.usersConsoleSection.style.display = "none";
+      elements.profileViewSection.classList.add("visible");
+      
+      // Card details binding
+      elements.profileNameDisplay.textContent = user.name;
+      elements.profileIdDisplay.textContent = user.id;
+      elements.profileCampusDisplay.textContent = `${user.campus} Campus`;
+      elements.profileDeptDisplay.textContent = `${user.department} Dept.`;
+      
+      // Update form defaults
+      document.getElementById("profFormName").value = user.name;
+      document.getElementById("profFormGender").value = user.gender;
+      document.getElementById("profFormDob").value = user.dob || "2009-04-12";
+      document.getElementById("profFormCampus").value = user.campus;
+      document.getElementById("profFormDept").value = user.department;
+      document.getElementById("profFormTelegram").value = user.telegram || "";
+      document.getElementById("profFormClass").value = user.class || "";
+
+      // Initials fallback
+      const initials = user.name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+      const config = ROLE_CONFIGS[user.role] || ROLE_CONFIGS.student;
+      
+      elements.profileHeaderAvatar.innerHTML = `<span class="profile-header-avatar" style="background:${config.color}">${initials}</span>`;
+      
+      // Set role badge
+      elements.profileRoleBadge.className = `identity-role-badge ${config.badgeClass}`;
+      elements.profileRoleBadge.innerHTML = `<span class="material-symbols-outlined badge-icon">${config.icon}</span>${config.label}`;
+
+      // Set status badge
+      elements.profileStatusBadge.className = `status-pill ${user.status.toLowerCase()}`;
+      elements.profileStatusBadge.textContent = user.status;
+
+      // Adjust profile sidebar tabs based on role
+      document.getElementById("tabAcademicBtn").style.display = user.role === "parent" ? "none" : "flex";
+      document.getElementById("tabGradesBtn").style.display = user.role === "student" ? "flex" : "none";
+      document.getElementById("tabAssignmentsBtn").style.display = user.role === "student" ? "flex" : "none";
+      document.getElementById("tabExamsBtn").style.display = user.role === "student" ? "flex" : "none";
+      document.getElementById("tabParentsBtn").style.display = user.role === "student" ? "flex" : "none";
+      document.getElementById("tabPermissionsBtn").style.display = user.role === "admin" ? "flex" : "none";
+
+      // Configure Dynamic children display for Parent profile or Parents linked for Student profile
+      if (user.role === "student") {
+        // Link to parent details
+        document.getElementById("tabParentsBtn").style.display = "flex";
+        const matchedParent = DB.find(p => p.children && p.children.includes(user.name));
+        if (matchedParent) {
+          const initialsPar = matchedParent.name.split(" ").map(n => n[0]).join("").substring(0,2).toUpperCase();
+          document.getElementById("profileLinkedParents").innerHTML = `
+            <div style="border:1px solid var(--border); padding:16px; border-radius:var(--r-md); display:flex; justify-content:space-between; align-items:center; width:100%">
+              <div style="display:flex; gap:12px; align-items:center">
+                <span class="avatar-circle t-purple">${initialsPar}</span>
+                <div>
+                  <h4 style="margin:0;color:var(--heading)">${matchedParent.name}</h4>
+                  <small class="muted">Relationship: Parent / Emergency Contact · ID: ${matchedParent.id}</small>
+                </div>
+              </div>
+              <div style="display:flex; gap:6px">
+                <button class="btn btn-ghost btn-sm" onclick="window.toast('Opening dialing portal...','info')"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">phone</span> ${matchedParent.class}</button>
+                <button class="btn btn-ghost btn-sm" onclick="window.toast('Direct Telegram dispatcher active','success')"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">chat</span> Telegram</button>
+              </div>
+            </div>
+          `;
+        } else {
+          document.getElementById("profileLinkedParents").innerHTML = `<p class="muted">No parent linkages registered.</p>`;
+        }
+      } else if (user.role === "parent") {
+        // Link children
+        document.getElementById("profileLinkedParents").innerHTML = `
+          <h4 style="margin:0 0 10px 0;color:var(--heading)">Registered Children Connections</h4>
+          <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+            ${user.children.map(name => {
+              const student = DB.find(s => s.name === name);
+              const sid = student ? student.id : "STU-NEW";
+              return `
+                <div style="border:1px solid var(--border); padding:12px; border-radius:var(--r-md); display:flex; justify-content:space-between; align-items:center">
+                  <div style="display:flex; gap:12px; align-items:center">
+                    <span class="avatar-circle t-blue">${name.split(" ").map(n=>n[0]).join("")}</span>
+                    <div>
+                      <h4 style="margin:0;color:var(--heading)">${name}</h4>
+                      <small class="muted">Student ID: ${sid}</small>
+                    </div>
+                  </div>
+                  <button class="btn btn-ghost btn-xs go-to-child-btn" data-child-id="${sid}">View Child Directory</button>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+        
+        // Bind profile page child links
+        document.querySelectorAll(".go-to-child-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            navigateTo(null, btn.dataset.childId);
+          });
+        });
+      }
+
+      // Configure Class assignment descriptions on academic tab
+      const acadClassesList = document.getElementById("profileAcademicClasses");
+      if (user.role === "student") {
+        acadClassesList.innerHTML = `<span class="class-tag">Primary Class Group: ${user.class}</span> <span class="class-tag">Campus allocation: ${user.campus}</span>`;
+      } else if (user.role === "teacher") {
+        acadClassesList.innerHTML = user.class.split(", ").map(c => `<span class="class-tag">Active Schedule: Class ${c}</span>`).join(" ");
+      } else if (user.role === "principal") {
+        acadClassesList.innerHTML = `<span class="class-tag">Campus Oversight: ${user.campus}</span> <span class="class-tag">Admin Office: ${user.class}</span>`;
+      }
+
+      // Bind profile buttons
+      document.getElementById("profileSuspendBtn").onclick = () => toggleSuspendUser(userId);
+      document.getElementById("profileDeleteBtn").onclick = () => triggerDeleteUser(userId);
+
+      // Default tab
+      switchProfileTab("personal");
+    }
+
+    function switchProfileTab(tabName) {
+      state.activeProfileTab = tabName;
+      elements.profileSideTabs.forEach(btn => {
+        if (btn.dataset.profileTab === tabName) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+      elements.profileTabPanels.forEach(panel => {
+        if (panel.dataset.profilePanel === tabName) {
+          panel.classList.add("active");
+        } else {
+          panel.classList.remove("remove"); // clean reset
+          panel.classList.remove("active");
+        }
+      });
+    }
+
+    elements.profileSideTabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        switchProfileTab(btn.dataset.profileTab);
+      });
+    });
+
+    elements.backToListBtn.addEventListener("click", () => {
+      // Keep selected tab role context
+      const user = state.users.find(u => u.id === state.profileUserId);
+      const targetRole = user ? user.role + "s" : "students";
+      navigateTo(targetRole);
+    });
+
+    // --- 12. ADD & EDIT ACTION DRAWERS ---
+    elements.addBtnDropdownToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      elements.addUserDropdownMenu.classList.toggle("open");
+    });
+
+    document.querySelectorAll("[data-drawer-open]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        elements.addUserDropdownMenu.classList.remove("open");
+        openAddDrawer(btn.dataset.drawerOpen);
+      });
+    });
+
+    function openAddDrawer(roleType) {
+      elements.drawerForm.reset();
+      elements.formUserId.value = "";
+      
+      elements.drawerTitle.textContent = `Configure New ${ROLE_CONFIGS[roleType].label}`;
+      elements.drawerSubtitle.textContent = `Assign credentials, campus structures, and database values`;
+      
+      elements.drawerAvatarPreview.textContent = "+";
+      elements.drawerAvatarPreview.style.backgroundImage = "none";
+      
+      // Dynamic adjustments based on fields
+      elements.formDeptContainer.style.display = roleType === "admin" ? "none" : "flex";
+      
+      if (roleType === "student") {
+        elements.formSpecificLabel.textContent = "Primary Class Group";
+        elements.formSpecificInput.placeholder = "e.g. 11-A";
+      } else if (roleType === "teacher") {
+        elements.formSpecificLabel.textContent = "Teaching Schedule Classes (comma separated)";
+        elements.formSpecificInput.placeholder = "e.g. 11-A, 10-B, 8-A";
+      } else if (roleType === "parent") {
+        elements.formSpecificLabel.textContent = "Contact Phone Number";
+        elements.formSpecificInput.placeholder = "e.g. +855 12 345 678";
+      } else if (roleType === "admin") {
+        elements.formSpecificLabel.textContent = "Staff Permission Role Level";
+        elements.formSpecificInput.placeholder = "e.g. Super Admin, Admin, Moderator";
+      } else if (roleType === "principal") {
+        elements.formSpecificLabel.textContent = "Principal Admin Office";
+        elements.formSpecificInput.placeholder = "e.g. Building A - Room 101";
+      }
+
+      elements.submitDrawerBtn.textContent = `Create ${ROLE_CONFIGS[roleType].label}`;
+      elements.submitDrawerBtn.dataset.mode = "add";
+      elements.submitDrawerBtn.dataset.role = roleType;
+
+      elements.userDrawerOverlay.classList.add("open");
+    }
+
+    function openEditDrawer(userId) {
+      const user = state.users.find(u => u.id === userId);
+      if (!user) return;
+
+      elements.drawerForm.reset();
+      
+      elements.formUserId.value = user.id;
+      elements.formFullName.value = user.name;
+      elements.formGender.value = user.gender;
+      elements.formDob.value = user.dob || "";
+      elements.formCampus.value = user.campus;
+      elements.formDept.value = user.department;
+      elements.formTelegram.value = user.telegram || "";
+      elements.formSpecificInput.value = user.class || "";
+
+      const initials = user.name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+      elements.drawerAvatarPreview.textContent = initials;
+      elements.drawerAvatarPreview.style.backgroundImage = "none";
+
+      elements.drawerTitle.textContent = `Configure Account: ${user.name}`;
+      elements.drawerSubtitle.textContent = `Alter configurations for system ID: ${user.id}`;
+      
+      const roleType = user.role;
+      elements.formDeptContainer.style.display = roleType === "admin" ? "none" : "flex";
+
+      if (roleType === "student") {
+        elements.formSpecificLabel.textContent = "Primary Class Group";
+      } else if (roleType === "teacher") {
+        elements.formSpecificLabel.textContent = "Teaching Schedule Classes (comma separated)";
+      } else if (roleType === "parent") {
+        elements.formSpecificLabel.textContent = "Contact Phone Number";
+      } else if (roleType === "admin") {
+        elements.formSpecificLabel.textContent = "Staff Permission Role Level";
+      } else if (roleType === "principal") {
+        elements.formSpecificLabel.textContent = "Principal Admin Office";
+      }
+
+      elements.submitDrawerBtn.textContent = `Save Changes`;
+      elements.submitDrawerBtn.dataset.mode = "edit";
+      elements.submitDrawerBtn.dataset.role = roleType;
+
+      elements.userDrawerOverlay.classList.add("open");
+    }
+
+    function closeDrawer() {
+      elements.userDrawerOverlay.classList.remove("open");
+    }
+
+    elements.closeDrawerBtn.addEventListener("click", closeDrawer);
+    elements.cancelDrawerBtn.addEventListener("click", closeDrawer);
+    
+    elements.submitDrawerBtn.addEventListener("click", () => {
+      const mode = elements.submitDrawerBtn.dataset.mode;
+      const role = elements.submitDrawerBtn.dataset.role;
+      
+      const name = elements.formFullName.value.trim();
+      if (!name) {
+        alert("Full name is required.");
+        return;
+      }
+
+      if (mode === "add") {
+        const prefix = {
+          student: "STU", teacher: "TCH", parent: "PAR", admin: "ADM", principal: "PRI"
+        }[role];
+        
+        const nextId = `${prefix}-2026-${String(state.users.filter(u=>u.role===role).length + 1).padStart(3, '0')}`;
+        
+        const newUser = {
+          id: nextId,
+          name: name,
+          role: role,
+          campus: elements.formCampus.value,
+          department: role === "admin" ? "Administration" : elements.formDept.value,
+          class: elements.formSpecificInput.value.trim(),
+          status: "Active",
+          gender: elements.formGender.value,
+          telegram: elements.formTelegram.value.trim(),
+          lastActive: "Online Now",
+          enrolledYear: "2026",
+          dob: elements.formDob.value || "2009-01-01"
+        };
+        
+        if (role === "parent") {
+          newUser.children = ["Emily Jenkins"]; // mock connection
+        }
+
+        state.users.push(newUser);
+        window.toast(`Account ${nextId} successfully configured!`, "success");
+      } else {
+        const uid = elements.formUserId.value;
+        const user = state.users.find(u => u.id === uid);
+        if (user) {
+          user.name = name;
+          user.gender = elements.formGender.value;
+          user.dob = elements.formDob.value;
+          user.campus = elements.formCampus.value;
+          user.department = elements.formDept.value;
+          user.telegram = elements.formTelegram.value.trim();
+          user.class = elements.formSpecificInput.value.trim();
+          
+          window.toast(`Updated credentials for user ${uid}`, "success");
+        }
+      }
+
+      closeDrawer();
+      filterAndRenderUsers();
+      renderStats();
+    });
+
+    // --- 13. INTERACTIVE BINDINGS & CORE ENGINE TRIGGER ---
+    
+    // Global search input
+    elements.globalSearch.addEventListener("input", (e) => {
+      state.filters.search = e.target.value;
+      state.currentPage = 1;
+      filterAndRenderUsers();
+    });
+
+    // Filter switches
+    elements.filterCampus.addEventListener("change", (e) => { state.filters.campus = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    elements.filterDept.addEventListener("change", (e) => { state.filters.department = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    elements.filterStatus.addEventListener("change", (e) => { state.filters.status = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    elements.filterGender.addEventListener("change", (e) => { state.filters.gender = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    elements.filterYear.addEventListener("change", (e) => { state.filters.academicYear = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    elements.filterEnrollment.addEventListener("change", (e) => { state.filters.enrollmentYear = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+
+    elements.btnResetFilters.addEventListener("click", () => {
+      elements.filterCampus.value = "";
+      elements.filterDept.value = "";
+      elements.filterStatus.value = "";
+      elements.filterGender.value = "";
+      elements.filterYear.value = "";
+      elements.filterEnrollment.value = "";
+      
+      state.filters = { search: elements.globalSearch.value, campus: "", department: "", status: "", gender: "", academicYear: "", enrollmentYear: "" };
+      state.currentPage = 1;
+      filterAndRenderUsers();
+      window.toast("Filters successfully cleared", "info");
+    });
+
+    // Export Excel/CSV trigger
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      window.toast(`CSV spreadsheet compilation complete for active Directory`, "success");
+    });
+
+    // Toggle advanced filter panel view
+    elements.filterToggle.addEventListener("click", () => {
+      const isVisible = window.getComputedStyle(elements.filterPanel).display !== "none";
+      elements.filterPanel.style.display = isVisible ? "none" : "flex";
+    });
+
+    // Page Cards role navigation tabs click routing
+    elements.roleCards.forEach(card => {
+      card.addEventListener("click", (e) => {
+        e.preventDefault();
+        const role = card.dataset.tabRole;
+        navigateTo(role);
+      });
+    });
+
+    // Pagination button clicks
+    elements.prevPageBtn.addEventListener("click", () => {
+      if (state.currentPage > 1) {
+        state.currentPage--;
+        filterAndRenderUsers();
+      }
+    });
+
+    elements.nextPageBtn.addEventListener("click", () => {
+      state.currentPage++;
+      filterAndRenderUsers();
+    });
+
+    // Global Key Listener for Ctrl+K
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        elements.globalSearch.focus();
+      }
+    });
+
+    // Kickoff control
+    initRouter();
+  });
+</script>
 </body>
 </html>
