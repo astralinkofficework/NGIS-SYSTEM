@@ -40,7 +40,7 @@
   var groupChatLink = C.groupChatLink || '../shared/group-chat.html';
 
   /* ── Build hero HTML ── */
-  var compact = C.compact === true;
+  var compact = C.showHeroBody === true ? false : true;
   var html =
     '<div class="hero' + (compact ? ' hero-compact' : '') + '">' +
 
