@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Student Services</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+.parent-services { max-width: 1400px; margin: 0 auto; padding: 16px 24px 40px; display: flex; flex-direction: column; gap: 16px; }
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; box-shadow: var(--sh-1); }
+.stat-card .val { font-size: 28px; font-weight: 800; color: var(--heading); line-height: 1; }
+.stat-card .lbl { font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 6px; }
+.req-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; margin-bottom: 12px; background: var(--surface); }
+.req-card h4 { margin: 0; font-size: 14px; font-weight: 700; }
+.req-card p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+.status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+.status-open { background: var(--accent-soft); color: #7A5C00; }
+.status-pending { background: var(--primary-soft); color: var(--primary); }
+.status-in_progress { background: #dbeafe; color: #1e40af; }
+.status-completed { background: #dcfce7; color: #15803d; }
+.status-rejected { background: var(--danger-soft); color: var(--danger); }
+.priority-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+.priority-normal { background: var(--surface-3); color: var(--muted); }
+.priority-high { background: #ffedd5; color: #c2410c; }
+.priority-urgent { background: var(--danger-soft); color: var(--danger); }
+.child-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.child-tab { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: var(--r-pill); border: 1px solid var(--border-strong); background: var(--surface); font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.child-tab.on { background: var(--primary-soft); border-color: var(--primary-border); color: var(--primary); }
+@media (max-width: 900px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .stat-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="main">
+  <header class="hero" style="padding-bottom: 40px;">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <button class="htb-hamburger" id="htbHamburger" aria-label="Open menu"><span class="mi">menu</span></button>
+        <a href="parent.html" class="htb-home-btn"><span class="mi">arrow_back</span><span>Back to Dashboard</span></a>
+      </div>
+      <div class="htb-center"><img class="htb-logo" src="LOGO NGIS (2).png" alt="NGIS logo" /></div>
+      <div class="htb-right" style="opacity:0;pointer-events:none;"></div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">Student Services</h1>
+        <p class="hero-greeting">View and track service requests for your children.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="parent-services">
+    <div class="child-tabs">
+      <button class="child-tab on" data-child="2026-STD-0142">Nrinphouneta Hok</button>
+      <button class="child-tab" data-child="2026-STD-0143">Kosal Rith Mony</button>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="val" id="pOpen">0</div><div class="lbl">Open</div></div>
+      <div class="stat-card"><div class="val" id="pPending">0</div><div class="lbl">Pending Review</div></div>
+      <div class="stat-card"><div class="val" id="pProgress">0</div><div class="lbl">In Progress</div></div>
+      <div class="stat-card"><div class="val" id="pCompleted">0</div><div class="lbl">Completed</div></div>
+    </div>
+
+    <div id="parentRequests"></div>
+  </div>
+</main>
+
+<script>
+const API = '/api/service-requests';
+let currentChild = '2026-STD-0142';
+
+function badge(status) {
+  const map = { open: 'status-open', pending: 'status-pending', in_progress: 'status-in_progress', completed: 'status-completed', rejected: 'status-rejected' };
+  return `<span class="status-badge ${map[status] || 'status-open'}">${status.replace('_',' ')}</span>`;
+}
+function priorityBadge(p) {
+  const map = { normal: 'priority-normal', high: 'priority-high', urgent: 'priority-urgent' };
+  return `<span class="priority-badge ${map[p] || 'priority-normal'}">${p}</span>`;
+}
+
+async function loadParent() {
+  const res = await fetch(`${API}?studentId=${currentChild}`);
+  const json = await res.json();
+  const items = json.data || [];
+  document.getElementById('pOpen').textContent = items.filter(i => i.status === 'open').length;
+  document.getElementById('pPending').textContent = items.filter(i => i.status === 'pending').length;
+  document.getElementById('pProgress').textContent = items.filter(i => i.status === 'in_progress').length;
+  document.getElementById('pCompleted').textContent = items.filter(i => i.status === 'completed').length;
+  renderParent(items);
+}
+
+function renderParent(items) {
+  const el = document.getElementById('parentRequests');
+  if (!items.length) { el.innerHTML = '<div class="empty"><span class="material-symbols-outlined">inbox</span><h4>No requests yet</h4><p>When your child submits a service request, it will appear here.</p></div>'; return; }
+  el.innerHTML = items.map(r => `
+    <div class="req-card">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <b style="font-size:14px;font-weight:700">${r.id}</b>
+        ${badge(r.status)}
+        ${priorityBadge(r.priority)}
+        <span style="margin-left:auto;font-size:12px;color:var(--muted)">${r.date}</span>
+      </div>
+      <h4>${r.title}</h4>
+      <p>${r.description || 'No description provided.'}</p>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted)">${r.category.replace('_',' ')} · ${r.type.replace('_',' ')} · ${r.campus}</div>
+      ${r.comments && r.comments.length ? `<div style="margin-top:10px">${r.comments.map(c => `<div class="comment-box"><div class="by">${c.by}</div><div class="txt">${c.text}</div><div class="dt">${c.date}</div></div>`).join('')}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+document.querySelectorAll('.child-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.child-tab').forEach(t => t.classList.remove('on'));
+    tab.classList.add('on');
+    currentChild = tab.dataset.child;
+    loadParent();
+  });
+});
+
+loadParent();
+</script>
+<script>window.PAGE={"role":"parent","active":"services"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Chan Dara Vuth', id: 'Parent / Guardian', grade: 'Parent',
+  avatar: 'https://images.pexels.com/photos/3771509/pexels-photo-3771509.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3771509/pexels-photo-3771509.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html', profileLink: 'parent-profile.html',
+  notifLink: 'parent-notifications.html', chatLink: '../shared/chat.html', notifCount: 2,
+  title: 'Student Services', greeting: 'View and track service requests for your children.',
+  breadcrumbs: [{ label: 'Student Services' }],
+  ddRows: [
+    { icon: 'family_restroom', text: 'Parent / Guardian' }, { icon: 'school', text: 'NGIS Main Campus' },
+    { icon: 'email', text: 'parent@ngis.edu.kh' }, { icon: 'calendar_today', text: 'Enrolled: Sep 2024' }
+  ]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+</body>
+</html>

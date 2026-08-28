@@ -143,6 +143,15 @@ const DB = {
   /* ── Feedback ── */
   feedback: [],
 
+  /* ── Service Requests ── */
+  serviceRequests: [
+    { id: "SR-1001", studentId: "2026-STD-0142", studentName: "Nrinphouneta Hok", category: "document", type: "certificate", title: "Perfect Attendance Certificate", description: "Requesting certificate for Semester 1.", status: "completed", priority: "normal", campus: "Sensok", assignee: "Admin Office", date: "2026-06-28", updatedAt: "2026-06-30", comments: [{ by: "Admin", text: "Approved and generated.", date: "2026-06-30" }] },
+    { id: "SR-1002", studentId: "2026-STD-0142", studentName: "Nrinphouneta Hok", category: "academic", type: "class_change", title: "Math Advanced Placement", description: "Request to move to Math AP class for S2.", status: "in_progress", priority: "high", campus: "Sensok", assignee: "Mr. Chea Sophea", date: "2026-07-05", updatedAt: "2026-07-05", comments: [] },
+    { id: "SR-1003", studentId: "2026-STD-0143", studentName: "Kosal Rith Mony", category: "administration", type: "status_change", title: "Address Update", description: "Change of residential address.", status: "pending", priority: "normal", campus: "Sensok", assignee: "", date: "2026-07-06", updatedAt: "2026-07-06", comments: [] },
+    { id: "SR-1004", studentId: "2026-STD-0144", studentName: "Sophea Chan", category: "support", type: "counselor", title: "Counselor Appointment", description: "Need guidance on subject selection.", status: "open", priority: "normal", campus: "TK", assignee: "", date: "2026-07-06", updatedAt: "2026-07-06", comments: [] },
+    { id: "SR-1005", studentId: "2026-STD-0142", studentName: "Nrinphouneta Hok", category: "document", type: "transcript", title: "Official Transcript", description: "Need transcript for university application.", status: "open", priority: "urgent", campus: "Sensok", assignee: "", date: "2026-07-07", updatedAt: "2026-07-07", comments: [] },
+  ],
+
   /* ── Team Projects ── */
   projects: [
     {
@@ -327,7 +336,58 @@ app.post("/api/feedback", (req, res) => {
   res.status(201).json({ data: entry, message: "Feedback submitted successfully" });
 });
 
-/* ── TEAM PROJECTS ── */
+/* ── SERVICE REQUESTS ── */
+app.get("/api/service-requests", (req, res) => {
+  const { status, category, type, campus, studentId } = req.query;
+  let items = DB.serviceRequests;
+  if (status && status !== "all") items = items.filter(r => r.status === status);
+  if (category) items = items.filter(r => r.category === category);
+  if (type) items = items.filter(r => r.type === type);
+  if (campus) items = items.filter(r => r.campus === campus);
+  if (studentId) items = items.filter(r => r.studentId === studentId);
+  items.sort((a, b) => new Date(b.date) - new Date(a.date));
+  res.json({ data: items, meta: { total: items.length } });
+});
+
+app.get("/api/service-requests/:id", (req, res) => {
+  const item = DB.serviceRequests.find(r => r.id === req.params.id);
+  if (!item) return res.status(404).json({ error: { code: "NOT_FOUND", message: "Service request not found" } });
+  res.json({ data: item });
+});
+
+app.post("/api/service-requests", (req, res) => {
+  const { studentId, studentName, category, type, title, description, priority, campus } = req.body;
+  if (!studentId || !category || !type || !title) return res.status(400).json({ error: { code: "VALIDATION_ERROR", message: "studentId, category, type, and title are required" } });
+  const id = "SR-" + (1000 + DB.serviceRequests.length + 1);
+  const entry = {
+    id, studentId, studentName: studentName || "Student", category, type, title, description: description || "",
+    status: "open", priority: priority || "normal", campus: campus || "Sensok", assignee: "",
+    date: new Date().toISOString().slice(0,10), updatedAt: new Date().toISOString().slice(0,10), comments: []
+  };
+  DB.serviceRequests.push(entry);
+  res.status(201).json({ data: entry, message: "Service request submitted" });
+});
+
+app.put("/api/service-requests/:id", (req, res) => {
+  const idx = DB.serviceRequests.findIndex(r => r.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: { code: "NOT_FOUND", message: "Service request not found" } });
+  const allowed = ["status", "priority", "assignee", "campus"];
+  allowed.forEach(f => { if (req.body[f] !== undefined) DB.serviceRequests[idx][f] = req.body[f]; });
+  if (req.body.comment) {
+    DB.serviceRequests[idx].comments.push({ by: req.body.commentBy || "Admin", text: req.body.comment, date: new Date().toISOString().slice(0,10) });
+  }
+  DB.serviceRequests[idx].updatedAt = new Date().toISOString().slice(0,10);
+  res.json({ data: DB.serviceRequests[idx] });
+});
+
+app.delete("/api/service-requests/:id", (req, res) => {
+  const idx = DB.serviceRequests.findIndex(r => r.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: { code: "NOT_FOUND", message: "Service request not found" } });
+  DB.serviceRequests.splice(idx, 1);
+  res.json({ data: null, message: "Deleted successfully" });
+});
+
+/* ── DASHBOARD SUMMARY ── */
 app.get("/api/projects", (_req, res) => {
   res.json({ data: DB.projects, meta: { total: DB.projects.length } });
 });
@@ -360,6 +420,7 @@ app.get("/api/dashboard/:role", (req, res) => {
       gpa: 3.87,
       clubs: DB.clubs.slice(0, 2),
       certificates: DB.certificates.length,
+      serviceRequests: DB.serviceRequests.filter(r => r.studentId === "2026-STD-0142").length,
     });
   } else if (role === "admin") {
     Object.assign(base, {
@@ -367,6 +428,8 @@ app.get("/api/dashboard/:role", (req, res) => {
       totalClubs:    DB.clubs.length,
       openLostFound: DB.lostFound.filter(i => i.status === "open").length,
       openElections: DB.elections.filter(e => e.status === "open").length,
+      openServiceRequests: DB.serviceRequests.filter(r => r.status === "open" || r.status === "pending").length,
+      totalServiceRequests: DB.serviceRequests.length,
     });
   }
   res.json({ data: base });

@@ -44,9 +44,9 @@
           { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
         ]},
         { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
-          { id:"attendance", label:"Attendance",      icon:"how_to_reg", href:"pages/admin/admin-attendance.html" },
-          { id:"profiles",   label:"Student Profiles", icon:"badge",     href:"pages/admin/admin-students.html" },
-          { id:"reports",    label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
+          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
+          { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
+          { id:"reports",     label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
         ]},
         { id:"comms", label:"Communication", icon:"forum", collapsible:true, links:[
           { id:"announcements",  label:"Announcements", icon:"campaign",  href:"pages/shared/announcements.html" },
@@ -119,6 +119,7 @@
         ]},
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
+          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/parent/parent-services.html" },
         ]},
         { label:"Communication", icon:"forum", links:[
           { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"1" },
@@ -156,16 +157,16 @@
     student: [
       { id:"dashboard",    label:"Home",        icon:"home",        href:"pages/student/student.html" },
       { id:"departments",  label:"Departments", icon:"apartment",   href:"pages/shared/departments.html" },
-      { id:"services",     label:"Services",    icon:"grid_view",   href:"pages/student/student-services.html" },
+      { id:"services",     label:"Services",    icon:"assignment",  href:"pages/student/student-services.html" },
       { id:"announcements",label:"Alerts",      icon:"campaign",    href:"pages/shared/announcements.html", badge:"3" },
       { id:"profile",      label:"Profile",     icon:"person",      href:"pages/student/student-profile.html" },
     ],
     parent: [
       { id:"dashboard",    label:"Home",       icon:"home",           href:"pages/parent/parent.html" },
       { id:"departments",  label:"Departments",icon:"apartment",      href:"pages/shared/departments.html" },
+      { id:"services",     label:"Services",   icon:"assignment",     href:"pages/parent/parent-services.html" },
       { id:"group-chat",   label:"Group Chat", icon:"groups",         href:"pages/shared/group-chat.html", badge:"1" },
       { id:"notifications",label:"Alerts",     icon:"notifications",  href:"pages/parent/parent-notifications.html", badge:"2" },
-      { id:"profile",      label:"Profile",    icon:"person",         href:"pages/parent/parent-profile.html" },
     ],
   };
 

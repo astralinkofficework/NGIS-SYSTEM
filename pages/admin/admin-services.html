@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Student Services Admin</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+.admin-services { max-width: 1400px; margin: 0 auto; padding: 16px 24px 40px; display: flex; flex-direction: column; gap: 16px; }
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; box-shadow: var(--sh-1); }
+.stat-card .val { font-size: 28px; font-weight: 800; color: var(--heading); line-height: 1; }
+.stat-card .lbl { font-size: 12px; font-weight: 600; color: var(--muted); margin-top: 6px; }
+.filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.filters select, .filters input { font-size: 13px; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); }
+.req-table { width: 100%; border-collapse: collapse; }
+.req-table th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 12px 14px; background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.req-table td { padding: 14px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.req-table tr:hover { background: var(--surface-2); }
+.status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+.status-open { background: var(--accent-soft); color: #7A5C00; }
+.status-pending { background: var(--primary-soft); color: var(--primary); }
+.status-in_progress { background: #dbeafe; color: #1e40af; }
+.status-completed { background: #dcfce7; color: #15803d; }
+.status-rejected { background: var(--danger-soft); color: var(--danger); }
+.priority-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+.priority-normal { background: var(--surface-3); color: var(--muted); }
+.priority-high { background: #ffedd5; color: #c2410c; }
+.priority-urgent { background: var(--danger-soft); color: var(--danger); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(10,34,20,.50); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal { background: var(--surface); border-radius: var(--r-xl); box-shadow: var(--sh-3); padding: 22px; width: 520px; max-width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal h3 { font-size: 16px; margin-bottom: 6px; }
+.modal p { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.comment-box { background: var(--surface-2); border-radius: var(--r-md); padding: 12px; margin-top: 8px; }
+.comment-box .by { font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: .06em; }
+.comment-box .txt { font-size: 13px; color: var(--text); margin-top: 4px; }
+.comment-box .dt { font-size: 11px; color: var(--faint); margin-top: 4px; }
+@media (max-width: 900px) { .stat-row { grid-template-columns: repeat(2, 1fr); } .tbl-wrap { overflow-x: auto; } }
+@media (max-width: 600px) { .stat-row { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main class="main">
+  <header class="hero" style="padding-bottom: 40px;">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <button class="htb-hamburger" id="htbHamburger" aria-label="Open menu"><span class="mi">menu</span></button>
+        <a href="admin.html" class="htb-home-btn"><span class="mi">arrow_back</span><span>Back to Dashboard</span></a>
+      </div>
+      <div class="htb-center"><img class="htb-logo" src="LOGO NGIS (2).png" alt="NGIS logo" /></div>
+      <div class="htb-right" style="opacity:0;pointer-events:none;"></div>
+    </div>
+    <div class="hero-rule"></div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">Student Services</h1>
+        <p class="hero-greeting">Review, approve, and process student service requests across all campuses.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-services">
+    <div class="stat-row">
+      <div class="stat-card"><div class="val" id="aOpen">0</div><div class="lbl">Open</div></div>
+      <div class="stat-card"><div class="val" id="aPending">0</div><div class="lbl">Pending Review</div></div>
+      <div class="stat-card"><div class="val" id="aProgress">0</div><div class="lbl">In Progress</div></div>
+      <div class="stat-card"><div class="val" id="aCompleted">0</div><div class="lbl">Completed</div></div>
+    </div>
+
+    <div class="filters">
+      <select id="filterStatus" onchange="loadAdmin()">
+        <option value="">All Statuses</option>
+        <option value="open">Open</option>
+        <option value="pending">Pending</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <select id="filterCampus" onchange="loadAdmin()">
+        <option value="">All Campuses</option>
+        <option>Sensok</option>
+        <option>TK</option>
+      </select>
+      <input type="text" id="filterQ" placeholder="Search requests..." oninput="loadAdmin()">
+    </div>
+
+    <div class="tbl-wrap">
+      <table class="req-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>Student</th><th>Category</th><th>Type</th><th>Title</th><th>Campus</th><th>Status</th><th>Priority</th><th>Date</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="adminTable"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <h3 id="modalTitle">Request Details</h3>
+    <p id="modalDesc"></p>
+    <div id="modalComments"></div>
+    <div class="form-group" style="margin-top:12px">
+      <label class="form-label">Add Comment</label>
+      <input class="form-control" id="modalComment" placeholder="Type a comment...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" onclick="saveModal()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '/api/service-requests';
+let currentId = null;
+
+async function loadAdmin() {
+  const status = document.getElementById('filterStatus').value;
+  const campus = document.getElementById('filterCampus').value;
+  const q = document.getElementById('filterQ').value.trim();
+  let url = API + '?';
+  if (status) url += `status=${encodeURIComponent(status)}&`;
+  if (campus) url += `campus=${encodeURIComponent(campus)}&`;
+  const res = await fetch(url);
+  const json = await res.json();
+  let items = json.data || [];
+  if (q) { const lq = q.toLowerCase(); items = items.filter(r => r.id.toLowerCase().includes(lq) || r.studentName.toLowerCase().includes(lq) || r.title.toLowerCase().includes(lq)); }
+  document.getElementById('aOpen').textContent = items.filter(i => i.status === 'open').length;
+  document.getElementById('aPending').textContent = items.filter(i => i.status === 'pending').length;
+  document.getElementById('aProgress').textContent = items.filter(i => i.status === 'in_progress').length;
+  document.getElementById('aCompleted').textContent = items.filter(i => i.status === 'completed').length;
+  renderAdmin(items);
+}
+
+function badge(status) {
+  const map = { open: 'status-open', pending: 'status-pending', in_progress: 'status-in_progress', completed: 'status-completed', rejected: 'status-rejected' };
+  return `<span class="status-badge ${map[status] || 'status-open'}">${status.replace('_',' ')}</span>`;
+}
+function priorityBadge(p) {
+  const map = { normal: 'priority-normal', high: 'priority-high', urgent: 'priority-urgent' };
+  return `<span class="priority-badge ${map[p] || 'priority-normal'}">${p}</span>`;
+}
+
+function renderAdmin(items) {
+  const tbody = document.getElementById('adminTable');
+  if (!items.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--muted)">No requests found</td></tr>'; return; }
+  tbody.innerHTML = items.map(r => `
+    <tr>
+      <td><b>${r.id}</b></td>
+      <td>${r.studentName}</td>
+      <td>${r.category.replace('_',' ')}</td>
+      <td>${r.type.replace('_',' ')}</td>
+      <td>${r.title}</td>
+      <td>${r.campus}</td>
+      <td>${badge(r.status)}</td>
+      <td>${priorityBadge(r.priority)}</td>
+      <td>${r.date}</td>
+      <td><button class="btn btn-sm btn-soft" onclick="openModal('${r.id}')">Review</button></td>
+    </tr>
+  `).join('');
+}
+
+async function openModal(id) {
+  currentId = id;
+  const res = await fetch(`${API}/${id}`);
+  const r = await res.json();
+  const data = r.data;
+  document.getElementById('modalTitle').textContent = data.id + ' — ' + data.title;
+  document.getElementById('modalDesc').textContent = data.description || 'No description provided.';
+  const comments = data.comments || [];
+  document.getElementById('modalComments').innerHTML = comments.length ? comments.map(c => `<div class="comment-box"><div class="by">${c.by}</div><div class="txt">${c.text}</div><div class="dt">${c.date}</div></div>`).join('') : '<p style="color:var(--muted);font-size:13px">No comments yet.</p>';
+  document.getElementById('modalComment').value = '';
+  document.getElementById('detailModal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('detailModal').classList.remove('show'); currentId = null; }
+
+async function saveModal() {
+  if (!currentId) return;
+  const comment = document.getElementById('modalComment').value.trim();
+  const body = { status: 'in_progress', comment, commentBy: 'Admin' };
+  const res = await fetch(`${API}/${currentId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (res.ok) { window.toast('Request updated', 'success'); closeModal(); loadAdmin(); }
+  else { window.toast('Failed to update', 'error'); }
+}
+
+document.getElementById('detailModal').addEventListener('click', (e) => { if (e.target.id === 'detailModal') closeModal(); });
+loadAdmin();
+</script>
+<script>window.PAGE={"role":"admin","active":"services"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Sok Panha Heng', id: 'Super Administrator', grade: 'Admin',
+  avatar: 'https://images.pexels.com/photos/3771509/pexels-photo-3771509.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3771509/pexels-photo-3771509.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html', profileLink: 'admin-settings.html',
+  notifLink: 'admin-logs.html', chatLink: '../shared/chat.html', notifCount: 4,
+  title: 'Student Services', greeting: 'Review, approve, and process student service requests across all campuses.',
+  breadcrumbs: [{ label: 'Student Services' }],
+  ddRows: [
+    { icon: 'admin_panel_settings', text: 'Super Administrator' }, { icon: 'school', text: 'NGIS Main Campus' },
+    { icon: 'email', text: 'admin@ngis.edu.kh' }, { icon: 'calendar_today', text: 'Since 2024' }
+  ]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+</body>
+</html>
