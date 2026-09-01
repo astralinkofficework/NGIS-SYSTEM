@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NGIS — Audit Log</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body>
+<main class="main">
+  <header class="hero">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <a href="../../index.html" class="htb-home-btn"><span class="mi">home</span><span>Home</span></a>
+      </div>
+      <div class="htb-right">
+        <div class="htb-profile">
+          <div class="htb-pinfo">
+            <span class="htb-pname">Admin</span>
+            <div class="htb-pgrade">Audit trail</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">Audit Log</h1>
+        <p class="hero-greeting">Recent system actions from the connected ERP.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="page anim-up">
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Recent activity</h3><div class="sub" id="countLabel">Loading…</div></div>
+        <button class="btn btn-ghost btn-sm" id="btnRefresh">Refresh</button>
+      </div>
+      <div class="card-pad" id="list"><p class="muted">Loading…</p></div>
+    </div>
+  </div>
+</main>
+<script>window.PAGE={"role":"admin","active":"audit"};</script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
+
+  async function load() {
+    const el = document.getElementById('list');
+    try {
+      const res = await NGISAuth.api('/api/admin/audit?limit=50');
+      const rows = res.data || [];
+      document.getElementById('countLabel').textContent = rows.length + ' events';
+
+      if (!rows.length) {
+        el.innerHTML = '<p class="muted">No audit events yet. Create a grade or account to generate logs.</p>';
+        return;
+      }
+
+      el.innerHTML = `
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Resource</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r => `
+                <tr>
+                  <td class="mono" style="font-size:12px">${esc((r.created_at||'').replace('T',' ').slice(0,19))}</td>
+                  <td>${esc(r.actor_name || r.actor_email || r.actor_id || 'system')}</td>
+                  <td><span class="badge blue">${esc(r.action)}</span></td>
+                  <td>${esc(r.resource)}${r.resource_id ? ' <span class="faint">#' + esc(String(r.resource_id).slice(0,8)) + '</span>' : ''}</td>
+                  <td class="faint" style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis">${esc(r.new_value || '')}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    } catch (err) {
+      el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
+    }
+  }
+
+  document.getElementById('btnRefresh').addEventListener('click', load);
+  setTimeout(load, 200);
+})();
+</script>
+</body>
+</html>
