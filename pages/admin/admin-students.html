@@ -1,14 +1,107 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8">
+<meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Redirecting...</title>
-  <script>
-    window.location.replace("admin-users.html?role=students");
-  </script>
+<title>NGIS — Students</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
 </head>
 <body>
-  <p>Redirecting to <a href="admin-users.html?role=students">User Management</a>...</p>
+<main class="main">
+
+  <header class="hero">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <a href="../../index.html" class="htb-home-btn"><span class="mi">home</span><span>Home</span></a>
+      </div>
+      <div class="htb-right">
+        <div class="htb-profile">
+          <div class="htb-pinfo">
+            <span class="htb-pname" data-user="name">Admin</span>
+            <div class="htb-pgrade">Students Directory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">Students</h1>
+        <p class="hero-greeting">Live directory from the connected database.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="page anim-up">
+    <div class="card">
+      <div class="card-head">
+        <div><h3>All Students</h3><div class="sub" id="totalLabel">Loading…</div></div>
+        <a class="btn btn-ghost btn-sm" href="admin-users.html?role=students">Full user manager</a>
+      </div>
+      <div class="card-pad" id="list"><p class="muted">Loading…</p></div>
+    </div>
+  </div>
+
+</main>
+<script>window.PAGE={"role":"admin","active":"students"};</script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
+
+  async function load() {
+    const el = document.getElementById('list');
+    try {
+      const res = await NGISAuth.api('/api/admin/students');
+      const rows = res.data || [];
+      document.getElementById('totalLabel').textContent = (res.meta?.total ?? rows.length) + ' students';
+
+      if (!rows.length) {
+        el.innerHTML = '<p class="muted">No students in database yet.</p>';
+        return;
+      }
+
+      el.innerHTML = `
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Student #</th>
+                <th>Grade / Class</th>
+                <th>Email</th>
+                <th>GPA</th>
+                <th>Attendance</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(s => `
+                <tr>
+                  <td><b>${esc(s.first_name)} ${esc(s.last_name)}</b></td>
+                  <td class="mono" style="font-size:12px">${esc(s.student_number)}</td>
+                  <td>${esc(s.grade)} · ${esc(s.class_id || '—')}</td>
+                  <td class="faint" style="font-size:12px">${esc(s.email)}</td>
+                  <td>${s.gpa != null ? Number(s.gpa).toFixed(2) : '—'}</td>
+                  <td>${s.attendance_rate != null ? Math.round(s.attendance_rate) + '%' : '—'}</td>
+                  <td><span class="badge green">${esc(s.status || 'active')}</span></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    } catch (err) {
+      el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
+    }
+  }
+
+  setTimeout(load, 200);
+})();
+</script>
 </body>
 </html>
