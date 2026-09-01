@@ -8,6 +8,7 @@ const express = require("express");
 const { v4: uuidv4 } = require("uuid");
 const { getDb } = require("../db/connection");
 const { authenticate, requireRole } = require("../middleware/auth");
+const { createNotification } = require("./notifications");
 
 const router = express.Router();
 
@@ -19,13 +20,6 @@ function letterFromPercent(p) {
   return "F";
 }
 
-/**
- * GET /api/grades
- * Student: own grades
- * Parent: ?studentId= (must be linked)
- * Teacher: grades they recorded
- * Admin: all (optional filters)
- */
 router.get("/", authenticate, (req, res) => {
   const db = getDb();
   const role = req.user.role;
@@ -96,10 +90,6 @@ router.get("/", authenticate, (req, res) => {
   return res.status(403).json({ error: { code: "FORBIDDEN", message: "Access denied" } });
 });
 
-/**
- * POST /api/grades
- * Teacher or Admin enters a grade
- */
 router.post("/", authenticate, requireRole("teacher", "admin"), (req, res) => {
   const db = getDb();
   const { studentId, subjectId, classId, assessmentType, assessmentTitle, score, maxScore, comments } = req.body;
@@ -120,6 +110,7 @@ router.post("/", authenticate, requireRole("teacher", "admin"), (req, res) => {
   const max = maxScore || 100;
   const percentage = (Number(score) / max) * 100;
   const letter = letterFromPercent(percentage);
+  const title = assessmentTitle || "Assessment";
 
   const id = uuidv4();
   db.prepare(`
@@ -128,10 +119,24 @@ router.post("/", authenticate, requireRole("teacher", "admin"), (req, res) => {
   `).run(
     id, studentId, subjectId, classId,
     assessmentType || "exam",
-    assessmentTitle || "Assessment",
+    title,
     score, max, letter, percentage,
     recordedBy, comments || ""
   );
+
+  // Notify student
+  try {
+    const student = db.prepare(`SELECT user_id FROM students WHERE id = ?`).get(studentId);
+    if (student) {
+      createNotification(db, {
+        userId: student.user_id,
+        type: "grade",
+        title: "New grade posted",
+        message: `${title}: ${score}/${max} (${letter})`,
+        link: "/pages/student/student-grades.html",
+      });
+    }
+  } catch (_) { /* non-fatal */ }
 
   const created = db.prepare(`SELECT * FROM grades WHERE id = ?`).get(id);
   res.status(201).json({ data: created });
