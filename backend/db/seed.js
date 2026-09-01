@@ -40,6 +40,7 @@ const insertAssignment = db.prepare(`INSERT OR IGNORE INTO assignments (id, titl
 const insertGrade = db.prepare(`INSERT OR IGNORE INTO grades (id, student_id, subject_id, class_id, assessment_type, assessment_title, score, max_score, letter_grade, percentage, recorded_by, comments) VALUES (@id, @student_id, @subject_id, @class_id, @assessment_type, @assessment_title, @score, @max_score, @letter_grade, @percentage, @recorded_by, @comments)`);
 const insertAttendance = db.prepare(`INSERT OR IGNORE INTO attendance (id, student_id, class_id, date, status, marked_by, notes) VALUES (@id, @student_id, @class_id, @date, @status, @marked_by, @notes)`);
 const insertAnnouncement = db.prepare(`INSERT OR IGNORE INTO announcements (id, title, body, audience, priority, pinned, published, created_by) VALUES (@id, @title, @body, @audience, @priority, @pinned, @published, @created_by)`);
+const insertNotification = db.prepare(`INSERT OR IGNORE INTO notifications (id, user_id, type, title, message, link, read) VALUES (@id, @user_id, @type, @title, @message, @link, @read)`);
 
 insertClass.run({ id: IDS.class10A, name: "10A", grade: "Grade 10", academic_year: "2025-26", campus: "Sensok", capacity: 35, homeroom_teacher_id: null });
 insertClass.run({ id: IDS.class11B, name: "11B", grade: "Grade 11", academic_year: "2025-26", campus: "Sensok", capacity: 32, homeroom_teacher_id: null });
@@ -98,7 +99,14 @@ insertGrade.run({ id: "grade-002", student_id: IDS.student, subject_id: "subj-ma
   { id: "ann-004", title: "Staff Briefing Thursday", body: "Short briefing at 15:30 in the conference room. Agenda will be emailed.", audience: "teachers", priority: "normal", pinned: 0, published: 1, created_by: IDS.adminUser },
 ].forEach(a => insertAnnouncement.run(a));
 
-console.log("  ✓ Assignments, grades, attendance, announcements");
+[
+  { id: "notif-1", user_id: IDS.studentUser, type: "grade", title: "New grade posted", message: "Algebra Quiz 3: 92/100 (A)", link: "/pages/student/student-grades.html", read: 0 },
+  { id: "notif-2", user_id: IDS.studentUser, type: "assignment", title: "Assignment due soon", message: "Mathematics Problem Set 4 is due on 10 September.", link: "/pages/student/student-assignments.html", read: 0 },
+  { id: "notif-3", user_id: IDS.studentUser, type: "announcement", title: "School notice", message: "Welcome to the Connected NGIS Portal.", link: "/pages/student/student-announcements.html", read: 1 },
+  { id: "notif-4", user_id: IDS.parentUser, type: "info", title: "Parent meeting", message: "Parent-Teacher Meeting — Book Your Slot.", link: "/pages/parent/parent-announcements.html", read: 0 },
+].forEach(n => insertNotification.run(n));
+
+console.log("  ✓ Assignments, grades, attendance, announcements, notifications");
 console.log("══════════════════════════════════════════════");
 console.log("  password123 → all demo accounts");
 console.log("══════════════════════════════════════════════\n");
