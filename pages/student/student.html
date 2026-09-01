@@ -5,22 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>NGIS — Student Dashboard</title>
 
-<!-- Framework -->
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
-
-<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-
-<!-- Third-party -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-<!-- Auth (must load early) -->
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
 
-<!-- Page styles -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/hero.css">
 <link rel="stylesheet" href="css/profile.css">
@@ -33,96 +26,26 @@
 <link rel="stylesheet" href="css/overlap.css">
 <link rel="stylesheet" href="css/responsive.css">
 <style>
-.id-modal-overlay {
-  position: fixed; inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-  z-index: 2000;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.id-modal-overlay.show { opacity: 1; pointer-events: all; }
-.id-modal-container {
-  background: #ffffff; border-radius: 24px;
-  width: 360px; max-width: 92vw;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  transform: scale(0.9) translateY(20px);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: flex; flex-direction: column; align-items: center;
-}
-.id-modal-overlay.show .id-modal-container { transform: scale(1) translateY(0); }
-.id-modal-header {
-  width: 100%; padding: 16px 20px;
-  display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 1px solid #f1f5f9; box-sizing: border-box;
-}
-.id-modal-title { font-size: 15px; font-weight: 700; color: #0f172a; }
-.id-close-btn {
-  background: transparent; border: none; cursor: pointer;
-  color: #64748b; display: grid; place-items: center;
-  width: 32px; height: 32px; border-radius: 50%;
-}
-.id-close-btn:hover { background: #f1f5f9; color: #0f172a; }
-.id-modal-body {
-  padding: 20px; display: flex; flex-direction: column;
-  align-items: center; gap: 16px; width: 100%; box-sizing: border-box;
-}
-.id-card-wrapper { perspective: 1000px; width: 300px; height: 450px; cursor: pointer; }
-.id-card-inner {
-  position: relative; width: 100%; height: 100%;
-  text-align: center; transition: transform 0.6s; transform-style: preserve-3d;
-}
-.id-card-wrapper.flipped .id-card-inner { transform: rotateY(180deg); }
-.id-card-face {
-  position: absolute; width: 100%; height: 100%;
-  backface-visibility: hidden; border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;
-}
-.id-card-front {
-  background: linear-gradient(135deg, #179bb8 0%, #11788e 100%);
-  color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 20px;
-}
-.id-card-back {
-  background: #ffffff; color: #0f172a; border: 2px solid #179bb8;
-  transform: rotateY(180deg); padding: 20px;
-}
-.id-card-logo-area { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
-.id-card-logo { height: 32px; width: auto; filter: brightness(0) invert(1); }
-.id-card-school-name { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; line-height: 1.2; }
-.id-card-photo-frame {
-  width: 110px; height: 110px; border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  overflow: hidden; margin: 0 auto 12px; background: #fff;
-}
-.id-card-photo { width: 100%; height: 100%; object-fit: cover; }
-.id-card-name { font-size: 18px; font-weight: 800; margin-bottom: 3px; letter-spacing: -0.3px; }
-.id-card-title-badge {
-  display: inline-block; background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 2px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; margin-bottom: 16px;
-}
-.id-card-details-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-  text-align: left; font-size: 10.5px; margin-top: auto;
-  border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px;
-}
-.id-card-label { color: rgba(255, 255, 255, 0.7); font-weight: 600; margin-bottom: 1px; }
-.id-card-val { font-weight: 700; color: #ffffff; }
-.id-card-qr-area { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 12px; }
-.id-card-qr-svg { width: 96px; height: 96px; padding: 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; }
-.id-card-back-header { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; text-align: left; width: 100%; }
-.id-card-rules { font-size: 9px; color: #64748b; text-align: left; line-height: 1.3; margin-bottom: 10px; padding-left: 12px; }
-.id-card-rules li { margin-bottom: 3px; }
-.id-card-flip-prompt { font-size: 10.5px; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 4px; margin-top: 4px; }
-.id-modal-footer {
-  width: 100%; padding: 10px 20px; background: #f8fafc;
-  border-top: 1px solid #f1f5f9; display: flex; justify-content: center;
-  align-items: center; font-size: 10.5px; font-weight: 700; color: #10b981; gap: 5px;
-}
+.id-modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.6);backdrop-filter:blur(8px);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
+.id-modal-overlay.show{opacity:1;pointer-events:all}
+.id-modal-container{background:#fff;border-radius:24px;width:360px;max-width:92vw;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);overflow:hidden;transform:scale(.9) translateY(20px);transition:transform .3s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column;align-items:center}
+.id-modal-overlay.show .id-modal-container{transform:scale(1) translateY(0)}
+.id-modal-header{width:100%;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;box-sizing:border-box}
+.id-modal-title{font-size:15px;font-weight:700;color:#0f172a}
+.id-close-btn{background:transparent;border:none;cursor:pointer;color:#64748b;display:grid;place-items:center;width:32px;height:32px;border-radius:50%}
+.id-modal-body{padding:20px;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;box-sizing:border-box}
+.id-card-wrapper{perspective:1000px;width:300px;height:450px;cursor:pointer}
+.id-card-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform .6s;transform-style:preserve-3d}
+.id-card-wrapper.flipped .id-card-inner{transform:rotateY(180deg)}
+.id-card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:20px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box}
+.id-card-front{background:linear-gradient(135deg,#179bb8 0%,#11788e 100%);color:#fff;border:1px solid rgba(255,255,255,.1);padding:20px}
+.id-card-back{background:#fff;color:#0f172a;border:2px solid #179bb8;transform:rotateY(180deg);padding:20px}
+.id-card-name{font-size:18px;font-weight:800;margin-bottom:3px}
+.id-card-title-badge{display:inline-block;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.3);padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700;margin-bottom:16px}
+.id-card-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;font-size:10.5px;margin-top:auto;border-top:1px solid rgba(255,255,255,.15);padding-top:10px}
+.id-card-label{color:rgba(255,255,255,.7);font-weight:600}
+.id-card-val{font-weight:700;color:#fff}
+.id-modal-footer{width:100%;padding:10px 20px;background:#f8fafc;border-top:1px solid #f1f5f9;display:flex;justify-content:center;align-items:center;font-size:10.5px;font-weight:700;color:#10b981;gap:5px}
 </style>
 </head>
 <body>
@@ -131,13 +54,9 @@
 <div id="heroBanner"></div>
 
 <div class="dash-overlap">
-
-  <!-- Profile Summary (will be hydrated by auth) -->
   <div class="ov-profile">
     <div class="ov-profile-header">
-      <img class="ov-avatar"
-        src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160"
-        alt="Student">
+      <img class="ov-avatar" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Student">
       <div class="ov-profile-name">Loading...</div>
       <div class="ov-profile-grade">—</div>
       <span class="ov-profile-badge">Active Student</span>
@@ -154,7 +73,6 @@
     </div>
   </div>
 
-  <!-- Upcoming (kept for now — will be connected later) -->
   <div class="ov-upcoming">
     <div class="ov-card-head">
       <div class="ov-card-title"><span class="mi">event_note</span>Upcoming</div>
@@ -164,16 +82,14 @@
       <div class="ov-inner-panel">
         <div class="ov-inner-head"><span class="mi" style="color:#179bb8">celebration</span>Events</div>
         <div class="ov-inner-item"><div class="ov-inner-item-t">Science Fair 2026</div><div class="ov-inner-item-s">Coming soon</div></div>
-        <div class="ov-inner-item"><div class="ov-inner-item-t">Sports Day</div><div class="ov-inner-item-s">Coming soon</div></div>
       </div>
       <div class="ov-inner-panel">
         <div class="ov-inner-head"><span class="mi" style="color:#16a34a">assignment</span>Assignments</div>
-        <div class="ov-inner-item"><div class="ov-inner-item-t">No pending assignments</div><div class="ov-inner-item-s">You're all caught up</div></div>
+        <div class="ov-inner-item"><div class="ov-inner-item-t">Loading…</div><div class="ov-inner-item-s">From database</div></div>
       </div>
     </div>
   </div>
 
-  <!-- Deadlines -->
   <div class="ov-deadlines">
     <div class="ov-card-head">
       <div class="ov-card-title"><span class="mi" style="color:#e11d48">schedule</span>Deadlines</div>
@@ -184,8 +100,8 @@
       <div class="ov-deadline-item">
         <div class="ov-deadline-dot" style="background:#16a34a"></div>
         <div>
-          <div class="ov-deadline-item-t">No upcoming deadlines</div>
-          <div class="ov-deadline-item-s">Check back later</div>
+          <div class="ov-deadline-item-t">Loading…</div>
+          <div class="ov-deadline-item-s">From database</div>
         </div>
       </div>
     </div>
@@ -201,30 +117,16 @@
       <div class="promo-left-sub">Explore learning, grow beyond limits</div>
     </div>
   </div>
-
 </div>
 
 <div class="dash">
   <div class="row2">
     <div class="subj-card">
-      <div class="sec-head">
-        <div class="sec-head-l">
-          <span class="mi">menu_book</span>
-          <h3>My Subjects</h3>
-        </div>
-      </div>
-      <div class="subj-list">
-        <div class="subj-grid" id="subjGrid"></div>
-      </div>
+      <div class="sec-head"><div class="sec-head-l"><span class="mi">menu_book</span><h3>My Subjects</h3></div></div>
+      <div class="subj-list"><div class="subj-grid" id="subjGrid"></div></div>
     </div>
-
     <div class="cal-card">
-      <div class="sec-head">
-        <div class="sec-head-l">
-          <span class="mi">calendar_month</span>
-          <h3>Calendar</h3>
-        </div>
-      </div>
+      <div class="sec-head"><div class="sec-head-l"><span class="mi">calendar_month</span><h3>Calendar</h3></div></div>
       <div class="cal-inner">
         <div class="cal-main"><div class="cal-grid" id="calGrid"></div></div>
         <div class="cal-side" id="calSide"></div>
@@ -234,30 +136,18 @@
 
   <div class="row3">
     <div class="ann-card">
-      <div class="sec-head">
-        <div class="sec-head-l">
-          <span class="mi" style="color:var(--blue-mid)">campaign</span>
-          <h3>Announcements</h3>
-        </div>
-      </div>
+      <div class="sec-head"><div class="sec-head-l"><span class="mi" style="color:var(--blue-mid)">campaign</span><h3>Announcements</h3></div></div>
       <div class="ann-list">
-        <div class="ann-item">
-          <div class="ann-body">
-            <div class="ann-title">Welcome to the Connected NGIS Portal</div>
-            <div class="ann-desc">You are now logged in with real authentication.</div>
-            <div class="ann-time">Just now</div>
-          </div>
-        </div>
+        <div class="ann-item"><div class="ann-body">
+          <div class="ann-title">Loading announcements…</div>
+          <div class="ann-desc">Connected to live API</div>
+          <div class="ann-time">—</div>
+        </div></div>
       </div>
     </div>
 
     <div class="att-card">
-      <div class="att-head">
-        <div class="att-head-l">
-          <span class="mi">track_changes</span>
-          <h3>Attendance Overview</h3>
-        </div>
-      </div>
+      <div class="att-head"><div class="att-head-l"><span class="mi">track_changes</span><h3>Attendance Overview</h3></div></div>
       <div class="att-body">
         <div class="att-donut-wrap">
           <canvas id="attChart"></canvas>
@@ -270,47 +160,29 @@
     </div>
 
     <div class="ql-card">
-      <div class="sec-head">
-        <div class="sec-head-l">
-          <span class="mi" style="color:var(--blue-mid)">link</span>
-          <h3>Quick Links</h3>
-        </div>
-      </div>
+      <div class="sec-head"><div class="sec-head-l"><span class="mi" style="color:var(--blue-mid)">link</span><h3>Quick Links</h3></div></div>
       <div class="ql-body">
         <div class="ql-grid">
-          <a href="student-assignments.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#eff6ff"><span class="mi" style="color:#2563eb">assignment</span></div>
-            <span class="ql-label">Assignments</span>
-          </a>
-          <a href="student-grades.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#faf5ff"><span class="mi" style="color:#7c3aed">bar_chart</span></div>
-            <span class="ql-label">Results</span>
-          </a>
-          <a href="student-timetable.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#f0fdf4"><span class="mi" style="color:#16a34a">calendar_view_week</span></div>
-            <span class="ql-label">Timetable</span>
-          </a>
-          <a href="student-profile.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#faf5ff"><span class="mi" style="color:#7c3aed">account_circle</span></div>
-            <span class="ql-label">My Profile</span>
-          </a>
+          <a href="student-assignments.html" class="ql-item"><div class="ql-icon-wrap" style="background:#eff6ff"><span class="mi" style="color:#2563eb">assignment</span></div><span class="ql-label">Assignments</span></a>
+          <a href="student-grades.html" class="ql-item"><div class="ql-icon-wrap" style="background:#faf5ff"><span class="mi" style="color:#7c3aed">bar_chart</span></div><span class="ql-label">Results</span></a>
+          <a href="student-timetable.html" class="ql-item"><div class="ql-icon-wrap" style="background:#f0fdf4"><span class="mi" style="color:#16a34a">calendar_view_week</span></div><span class="ql-label">Timetable</span></a>
+          <a href="student-profile.html" class="ql-item"><div class="ql-icon-wrap" style="background:#faf5ff"><span class="mi" style="color:#7c3aed">account_circle</span></div><span class="ql-label">My Profile</span></a>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-</div><!-- /.main -->
+</div>
 
 <script src="js/hero.js"></script>
 <script src="js/subjects.js"></script>
 <script src="js/calendar.js"></script>
 <script src="js/attendance.js"></script>
-
 <script>window.PAGE = {"role":"student","active":"dashboard"};</script>
 <script src="../../assets/js/layout.js"></script>
+<script src="js/live-dashboard.js"></script>
 
-<!-- Digital ID Modal (simplified) -->
 <div class="id-modal-overlay" id="idModal">
   <div class="id-modal-container">
     <div class="id-modal-header">
@@ -321,35 +193,18 @@
       <div class="id-card-wrapper" id="idCardWrap">
         <div class="id-card-inner">
           <div class="id-card-face id-card-front">
-            <div class="id-card-logo-area">
-              <span class="id-card-school-name">New Gateway<br>International School</span>
-            </div>
-            <div class="id-card-photo-frame">
-              <img class="id-card-photo" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Student">
-            </div>
             <div class="id-card-name" id="idCardName">Student</div>
             <span class="id-card-title-badge">Student ID</span>
             <div class="id-card-details-grid">
-              <div>
-                <div class="id-card-label">Grade</div>
-                <div class="id-card-val" id="idCardGrade">—</div>
-              </div>
-              <div>
-                <div class="id-card-label">Student ID</div>
-                <div class="id-card-val" id="idCardNumber">—</div>
-              </div>
+              <div><div class="id-card-label">Grade</div><div class="id-card-val" id="idCardGrade">—</div></div>
+              <div><div class="id-card-label">Student ID</div><div class="id-card-val" id="idCardNumber">—</div></div>
             </div>
           </div>
           <div class="id-card-face id-card-back">
-            <div class="id-card-back-header">Student Verification</div>
-            <ul class="id-card-rules">
-              <li>This card remains the property of NGIS.</li>
-              <li>QR code is valid for attendance and gate entry.</li>
-            </ul>
+            <div>Student Verification</div>
           </div>
         </div>
       </div>
-      <div class="id-card-flip-prompt"><span class="mi">sync_alt</span> Click card to flip</div>
     </div>
     <div class="id-modal-footer"><span class="mi">verified_user</span> Authenticated Session</div>
   </div>
@@ -361,9 +216,7 @@
   const openBtn = document.getElementById('viewIdBtn');
   const closeBtn = document.getElementById('idCloseBtn');
   const cardWrap = document.getElementById('idCardWrap');
-
   function openModal() {
-    // Update ID card with real data if available
     if (window.NGIS_CURRENT_USER) {
       const u = window.NGIS_CURRENT_USER;
       const s = window.NGIS_CURRENT_STUDENT;
@@ -384,12 +237,10 @@
     document.body.style.overflow = '';
     cardWrap.classList.remove('flipped');
   }
-
   if (openBtn) openBtn.addEventListener('click', openModal);
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (cardWrap) cardWrap.addEventListener('click', () => cardWrap.classList.toggle('flipped'));
   modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 })();
 </script>
 </body>
