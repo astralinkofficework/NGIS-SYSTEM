@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
@@ -8,159 +8,160 @@
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
 </head>
 <body>
 <main class="main">
 <div id="heroBanner"></div>
 <div class="page">
 
-  <div class="col-main mt4 anim-up">
+  <div class="col-main anim-up">
     <div class="stack" style="flex:2">
 
       <div class="card">
         <div class="card-head"><h3>Compose Announcement</h3></div>
-        <div class="card-pad" style="display:grid;gap:14px">
-          <div>
-            <label class="label">Title</label>
-            <input class="input" placeholder="Announcement title…">
-          </div>
-          <div>
-            <label class="label">Message</label>
-            <textarea class="input" rows="4" placeholder="Write your message here…" style="resize:vertical;line-height:1.6"></textarea>
-          </div>
-          <div class="flex gap12">
-            <div style="flex:1">
-              <label class="label">Post To</label>
-              <select class="select">
-                <option>All My Classes</option>
-                <option>11-A Math</option>
-                <option>11-B ML</option>
-                <option>12-B Stats</option>
-                <option>10-A Calc</option>
-              </select>
+        <div class="card-pad">
+          <form id="createForm" style="display:grid;gap:14px">
+            <div>
+              <label class="label">Title</label>
+              <input class="input" name="title" required placeholder="Announcement title…" style="width:100%">
             </div>
-            <div style="flex:1">
-              <label class="label">Priority</label>
-              <select class="select">
-                <option>Normal</option>
-                <option>Important</option>
-                <option>Urgent</option>
-              </select>
+            <div>
+              <label class="label">Message</label>
+              <textarea class="input" name="body" required rows="4" placeholder="Write your message…" style="width:100%;resize:vertical;line-height:1.6"></textarea>
             </div>
-          </div>
-          <div class="flex between center">
-            <div class="flex gap8">
-              <button class="btn btn-ghost btn-sm"><span class="material-symbols-outlined">attach_file</span>Attach</button>
-              <button class="btn btn-ghost btn-sm"><span class="material-symbols-outlined">schedule_send</span>Schedule</button>
+            <div class="flex gap12 wrap">
+              <div style="flex:1;min-width:140px">
+                <label class="label">Audience</label>
+                <select class="select" name="audience" style="width:100%">
+                  <option value="all">Everyone</option>
+                  <option value="students">Students</option>
+                  <option value="parents">Parents</option>
+                  <option value="teachers">Teachers</option>
+                  <option value="class:cls-10a">Class 10A</option>
+                  <option value="grade:Grade 10">Grade 10</option>
+                </select>
+              </div>
+              <div style="flex:1;min-width:120px">
+                <label class="label">Priority</label>
+                <select class="select" name="priority" style="width:100%">
+                  <option value="normal">Normal</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+              <div style="display:flex;align-items:flex-end;gap:8px">
+                <label style="font-size:13px;display:flex;align-items:center;gap:6px">
+                  <input type="checkbox" name="pinned"> Pin
+                </label>
+              </div>
             </div>
-            <button class="btn btn-primary" onclick="window.toast('Announcement posted to all classes','success')"><span class="material-symbols-outlined">send</span>Post Now</button>
-          </div>
+            <div class="flex between center">
+              <p id="formMsg" class="muted" style="font-size:13px;margin:0"></p>
+              <button type="submit" class="btn btn-primary">
+                <span class="material-symbols-outlined">send</span> Post Now
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-head"><div><h3>My Announcements</h3><div class="sub">Posted by you this month</div></div></div>
-        <div class="card-pad">
-          <div class="tl-item">
-            <div class="tl-dot t-accent"><span class="material-symbols-outlined">campaign</span></div>
-            <div class="tl-body">
-              <b>Exam Schedule Update</b>
-              <p>Grade 11-A: Final exam moved to Feb 15, 9:00 AM, Room 302. Please review chapters 7–12 thoroughly.</p>
-              <div class="faint" style="font-size:11px;margin-top:6px">Posted to: 11-A Math · 2 hours ago · 28 read</div>
-            </div>
-            <div class="tl-time">2h ago</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot t-blue"><span class="material-symbols-outlined">assignment</span></div>
-            <div class="tl-body">
-              <b>Assignment 3 Released</b>
-              <p>Integration Problems Set 3 is now available on the portal. Due January 28 by 8:00 AM. No late submissions.</p>
-              <div class="faint" style="font-size:11px;margin-top:6px">Posted to: 11-A Math · Yesterday · 32 read</div>
-            </div>
-            <div class="tl-time">1d ago</div>
-          </div>
-          <div class="tl-item" style="border:none">
-            <div class="tl-dot t-amber"><span class="material-symbols-outlined">event</span></div>
-            <div class="tl-body">
-              <b>Office Hours Change — This Week</b>
-              <p>Thursday office hours are moved to 4–5 PM due to a mandatory staff meeting. Room 302.</p>
-              <div class="faint" style="font-size:11px;margin-top:6px">Posted to: All My Classes · 3 days ago · 87 read</div>
-            </div>
-            <div class="tl-time">3d ago</div>
-          </div>
-        </div>
+        <div class="card-head"><div><h3>Announcements</h3><div class="sub">Live from database</div></div></div>
+        <div class="card-pad" id="list"><p class="muted">Loading…</p></div>
       </div>
 
-    </div>
-
-    <div class="stack">
-      <div class="card">
-        <div class="card-head"><h3>School Notices</h3><span class="badge red">2 urgent</span></div>
-        <div class="card-pad">
-          <div class="tl-item">
-            <div class="tl-dot t-red"><span class="material-symbols-outlined">priority_high</span></div>
-            <div class="tl-body">
-              <b>Exam Week: Feb 14–21</b>
-              <p>All teachers must submit final grades by Feb 22, 5 PM.</p>
-            </div>
-            <div class="tl-time">2h ago</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot t-blue"><span class="material-symbols-outlined">groups</span></div>
-            <div class="tl-body">
-              <b>Staff Meeting — Feb 1</b>
-              <p>Mandatory for all teaching staff. 3 PM in Conference Room A.</p>
-            </div>
-            <div class="tl-time">1d ago</div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-dot t-green"><span class="material-symbols-outlined">sports</span></div>
-            <div class="tl-body">
-              <b>Sports Day — Feb 7</b>
-              <p>Teachers: supervise your assigned area. Schedule attached.</p>
-            </div>
-            <div class="tl-time">2d ago</div>
-          </div>
-          <div class="tl-item" style="border:none">
-            <div class="tl-dot t-purple"><span class="material-symbols-outlined">waving_hand</span></div>
-            <div class="tl-body">
-              <b>Parent–Teacher Conference — Feb 20</b>
-              <p>Virtual format. Book your time slot by Feb 15.</p>
-            </div>
-            <div class="tl-time">3d ago</div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
 </div>
 </main>
-<script>window.HERO_CONFIG = {
-  name: 'Dr. Sarah Jenkins',
-  id: 'Teacher ID: TCH-2026-088',
-  grade: 'Mathematics Teacher',
+<script>window.PAGE={"role":"teacher","active":"announcements"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'teacher', active: 'announcements', name: 'Teacher', id: 'Teacher', grade: 'Teacher',
   avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: 'teacher-profile.html',
-  notifLink: 'teacher-notifications.html',
-  chatLink: '../shared/chat.html',
-  notifCount: 2,
-  title: 'Announcements',
-  greeting: 'Post and manage announcements to your classes.',
-  breadcrumbs: [{ label: 'Announcements' }],
-  ddRows: [
-    { icon: 'work', text: 'Mathematics Department' },
-    { icon: 'class', text: 'Grade 11-A, 10-C, 12-B' },
-    { icon: 'email', text: 'sarah.jenkins@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Since: Aug 2019' },
-    { icon: 'star', text: 'Senior Teacher' }
-  ]
-};</script>
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'teacher-profile.html', notifLink: 'teacher-notifications.html', chatLink: '../shared/chat.html',
+  notifCount: 0, title: 'Announcements', greeting: 'Post notices to students and parents.',
+  breadcrumbs: [{ label: 'Announcements' }], ddRows: []
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
-<script>window.PAGE={"role":"teacher","active":"announcements"};</script>
 <script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
+  function badge(p) {
+    if (p === 'urgent') return '<span class="badge red">Urgent</span>';
+    if (p === 'high') return '<span class="badge amber">High</span>';
+    return '<span class="badge blue">Normal</span>';
+  }
+
+  async function load() {
+    const el = document.getElementById('list');
+    try {
+      const res = await NGISAuth.api('/api/announcements?all=1');
+      const items = res.data || [];
+      if (!items.length) { el.innerHTML = '<p class="muted">No announcements yet.</p>'; return; }
+      el.innerHTML = items.map(a => `
+        <div style="padding:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px">
+          <div class="flex between center mb8">
+            <div>
+              <b>${esc(a.title)}</b>
+              <div class="faint" style="font-size:11px">${esc(a.author_name||'')} · ${esc(a.audience)} · ${(a.created_at||'').slice(0,10)}</div>
+            </div>
+            <div class="flex gap8">${a.pinned ? '<span class="badge green">Pinned</span>' : ''}${badge(a.priority)}</div>
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin:0 0 8px">${esc(a.body)}</p>
+          <button class="btn btn-sm btn-ghost" data-del="${a.id}" style="color:var(--danger)">Delete</button>
+        </div>`).join('');
+
+      el.querySelectorAll('[data-del]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Delete this announcement?')) return;
+          try {
+            await NGISAuth.api('/api/announcements/' + btn.dataset.del, { method: 'DELETE' });
+            load();
+          } catch (err) { alert(err.message); }
+        });
+      });
+    } catch (err) {
+      el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
+    }
+  }
+
+  document.getElementById('createForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const msg = document.getElementById('formMsg');
+    msg.textContent = 'Posting…';
+    try {
+      await NGISAuth.api('/api/announcements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: fd.get('title'),
+          body: fd.get('body'),
+          audience: fd.get('audience'),
+          priority: fd.get('priority'),
+          pinned: fd.get('pinned') === 'on',
+          published: true,
+        }),
+      });
+      msg.textContent = 'Posted!';
+      e.target.reset();
+      load();
+    } catch (err) {
+      msg.textContent = err.message || 'Failed';
+    }
+  });
+
+  setTimeout(load, 200);
+})();
+</script>
 </body>
 </html>
