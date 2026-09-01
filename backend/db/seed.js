@@ -39,10 +39,10 @@ const insertClassSubject = db.prepare(`INSERT OR IGNORE INTO class_subjects (id,
 const insertAssignment = db.prepare(`INSERT OR IGNORE INTO assignments (id, title, description, subject_id, class_id, teacher_id, due_date, max_score, status, published_at) VALUES (@id, @title, @description, @subject_id, @class_id, @teacher_id, @due_date, @max_score, @status, datetime('now'))`);
 const insertGrade = db.prepare(`INSERT OR IGNORE INTO grades (id, student_id, subject_id, class_id, assessment_type, assessment_title, score, max_score, letter_grade, percentage, recorded_by, comments) VALUES (@id, @student_id, @subject_id, @class_id, @assessment_type, @assessment_title, @score, @max_score, @letter_grade, @percentage, @recorded_by, @comments)`);
 const insertAttendance = db.prepare(`INSERT OR IGNORE INTO attendance (id, student_id, class_id, date, status, marked_by, notes) VALUES (@id, @student_id, @class_id, @date, @status, @marked_by, @notes)`);
+const insertAnnouncement = db.prepare(`INSERT OR IGNORE INTO announcements (id, title, body, audience, priority, pinned, published, created_by) VALUES (@id, @title, @body, @audience, @priority, @pinned, @published, @created_by)`);
 
 insertClass.run({ id: IDS.class10A, name: "10A", grade: "Grade 10", academic_year: "2025-26", campus: "Sensok", capacity: 35, homeroom_teacher_id: null });
 insertClass.run({ id: IDS.class11B, name: "11B", grade: "Grade 11", academic_year: "2025-26", campus: "Sensok", capacity: 32, homeroom_teacher_id: null });
-console.log("  ✓ Classes");
 
 [
   { id: "subj-math", code: "MATH", name: "Mathematics", department: "Science" },
@@ -51,7 +51,6 @@ console.log("  ✓ Classes");
   { id: "subj-eng",  code: "ENG",  name: "English", department: "Languages" },
   { id: "subj-hist", code: "HIST", name: "History", department: "Humanities" },
 ].forEach(s => insertSubject.run(s));
-console.log("  ✓ Subjects");
 
 insertUser.run({ id: IDS.adminUser, email: "admin@ngis.edu.kh", password_hash: hash, role: "admin", first_name: "System", last_name: "Administrator", phone: "+855 23 000 001" });
 insertUser.run({ id: IDS.teacherUser, email: "sophea@ngis.edu.kh", password_hash: hash, role: "teacher", first_name: "Chea", last_name: "Sophea", phone: "+855 98 765 432" });
@@ -64,7 +63,7 @@ insertStudent.run({ id: IDS.student, user_id: IDS.studentUser, student_number: "
 insertUser.run({ id: IDS.parentUser, email: "parent.hok@gmail.com", password_hash: hash, role: "parent", first_name: "Sokha", last_name: "Hok", phone: "+855 12 999 888" });
 insertParent.run({ id: IDS.parent, user_id: IDS.parentUser, relationship: "father" });
 insertParentStudent.run({ parent_id: IDS.parent, student_id: IDS.student, is_primary: 1 });
-console.log("  ✓ Users (admin/teacher/student/parent)");
+console.log("  ✓ Users / classes / subjects");
 
 [
   { id: "cs-1", class_id: IDS.class10A, subject_id: "subj-math", teacher_id: IDS.teacher },
@@ -80,35 +79,28 @@ console.log("  ✓ Users (admin/teacher/student/parent)");
   { id: "asgn-003", title: "Chemistry Worksheet — Periodic Table", description: "Element groups worksheet.", subject_id: "subj-chem", class_id: IDS.class10A, teacher_id: IDS.teacher, due_date: "2026-09-08", max_score: 30, status: "published" },
   { id: "asgn-004", title: "English Book Review", description: "500-word novel review.", subject_id: "subj-eng", class_id: IDS.class10A, teacher_id: IDS.teacher, due_date: "2026-09-15", max_score: 40, status: "published" },
 ].forEach(a => insertAssignment.run(a));
-console.log("  ✓ Assignments");
 
 insertGrade.run({ id: "grade-001", student_id: IDS.student, subject_id: "subj-phys", class_id: IDS.class10A, assessment_type: "lab", assessment_title: "Chemistry Practical", score: 88, max_score: 100, letter_grade: "A", percentage: 88, recorded_by: IDS.teacher, comments: "Excellent performance." });
 insertGrade.run({ id: "grade-002", student_id: IDS.student, subject_id: "subj-math", class_id: IDS.class10A, assessment_type: "quiz", assessment_title: "Algebra Quiz 3", score: 92, max_score: 100, letter_grade: "A", percentage: 92, recorded_by: IDS.teacher, comments: "Outstanding work." });
-console.log("  ✓ Grades");
 
-// Sample attendance — last 5 school-ish days
-const attDays = [
+[
   { id: "att-1", date: "2026-08-25", status: "present" },
   { id: "att-2", date: "2026-08-26", status: "present" },
   { id: "att-3", date: "2026-08-27", status: "late", notes: "Arrived 10 min late" },
   { id: "att-4", date: "2026-08-28", status: "present" },
   { id: "att-5", date: "2026-08-29", status: "absent", notes: "Family event" },
-];
-attDays.forEach(a => insertAttendance.run({
-  id: a.id,
-  student_id: IDS.student,
-  class_id: IDS.class10A,
-  date: a.date,
-  status: a.status,
-  marked_by: IDS.teacher,
-  notes: a.notes || null,
-}));
-console.log("  ✓ Attendance (5 days)");
+].forEach(a => insertAttendance.run({ id: a.id, student_id: IDS.student, class_id: IDS.class10A, date: a.date, status: a.status, marked_by: IDS.teacher, notes: a.notes || null }));
 
+[
+  { id: "ann-001", title: "Welcome to the Connected NGIS Portal", body: "All portals now share one live database. Sign in with your role account to see real data.", audience: "all", priority: "high", pinned: 1, published: 1, created_by: IDS.adminUser },
+  { id: "ann-002", title: "Parent-Teacher Meeting — Book Your Slot", body: "Meetings will be held on 6 February. Please book a slot with your child's homeroom teacher.", audience: "parents", priority: "normal", pinned: 0, published: 1, created_by: IDS.adminUser },
+  { id: "ann-003", title: "Math Assignment Due Next Week", body: "Problem Set 4 is due on 10 September. Submit through the Assignments page.", audience: "students", priority: "normal", pinned: 0, published: 1, created_by: IDS.teacherUser },
+  { id: "ann-004", title: "Staff Briefing Thursday", body: "Short briefing at 15:30 in the conference room. Agenda will be emailed.", audience: "teachers", priority: "normal", pinned: 0, published: 1, created_by: IDS.adminUser },
+].forEach(a => insertAnnouncement.run(a));
+
+console.log("  ✓ Assignments, grades, attendance, announcements");
 console.log("══════════════════════════════════════════════");
 console.log("  password123 → all demo accounts");
-console.log("  admin@ngis.edu.kh | sophea@ngis.edu.kh");
-console.log("  nrinphouneta@ngis.edu.kh | parent.hok@gmail.com");
 console.log("══════════════════════════════════════════════\n");
 
 closeDb();
