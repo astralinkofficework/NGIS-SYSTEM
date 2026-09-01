@@ -1,7 +1,5 @@
 /**
  * NGIS School ERP — Authentication Routes
- * POST /api/auth/login
- * GET  /api/auth/me
  */
 
 "use strict";
@@ -13,10 +11,6 @@ const { signToken, authenticate } = require("../middleware/auth");
 
 const router = express.Router();
 
-/**
- * POST /api/auth/login
- * Body: { email, password }
- */
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -53,12 +47,9 @@ router.post("/login", (req, res) => {
     });
   }
 
-  // Update last login
   db.prepare(`UPDATE users SET last_login_at = datetime('now') WHERE id = ?`).run(user.id);
 
   const token = signToken(user);
-
-  // Build response (never send password_hash)
   const profile = {
     id: user.id,
     email: user.email,
@@ -69,7 +60,6 @@ router.post("/login", (req, res) => {
     avatarUrl: user.avatar_url,
   };
 
-  // Attach role-specific profile data
   if (user.role === "student") {
     const student = db.prepare(`SELECT * FROM students WHERE user_id = ?`).get(user.id);
     if (student) profile.student = student;
@@ -90,18 +80,9 @@ router.post("/login", (req, res) => {
     }
   }
 
-  res.json({
-    data: {
-      token,
-      user: profile,
-    },
-  });
+  res.json({ data: { token, user: profile } });
 });
 
-/**
- * GET /api/auth/me
- * Returns the currently authenticated user
- */
 router.get("/me", authenticate, (req, res) => {
   const db = getDb();
   const profile = { ...req.user };
@@ -127,6 +108,43 @@ router.get("/me", authenticate, (req, res) => {
   }
 
   res.json({ data: profile });
+});
+
+/**
+ * POST /api/auth/change-password
+ * Body: { currentPassword, newPassword }
+ */
+router.post("/change-password", authenticate, (req, res) => {
+  const { currentPassword, newPassword } = req.body || {};
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({
+      error: { code: "VALIDATION_ERROR", message: "currentPassword and newPassword are required" },
+    });
+  }
+
+  if (String(newPassword).length < 8) {
+    return res.status(400).json({
+      error: { code: "VALIDATION_ERROR", message: "New password must be at least 8 characters" },
+    });
+  }
+
+  const db = getDb();
+  const user = db.prepare(`SELECT id, password_hash FROM users WHERE id = ?`).get(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: { code: "NOT_FOUND", message: "User not found" } });
+  }
+
+  if (!bcrypt.compareSync(currentPassword, user.password_hash)) {
+    return res.status(401).json({
+      error: { code: "INVALID_CREDENTIALS", message: "Current password is incorrect" },
+    });
+  }
+
+  const hash = bcrypt.hashSync(newPassword, 10);
+  db.prepare(`UPDATE users SET password_hash = ?, updated_at = datetime('now') WHERE id = ?`).run(hash, user.id);
+
+  res.json({ message: "Password updated successfully" });
 });
 
 module.exports = router;
