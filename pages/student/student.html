@@ -15,7 +15,12 @@
 <!-- Third-party -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-<!-- Page styles (load order matters — base first, responsive last) -->
+<!-- Auth (must load early) -->
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+
+<!-- Page styles -->
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/hero.css">
 <link rel="stylesheet" href="css/profile.css">
@@ -28,707 +33,242 @@
 <link rel="stylesheet" href="css/overlap.css">
 <link rel="stylesheet" href="css/responsive.css">
 <style>
-/* Digital ID Modal Styles */
 .id-modal-overlay {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(8px);
   z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
   transition: opacity 0.3s ease;
 }
-.id-modal-overlay.show {
-  opacity: 1;
-  pointer-events: all;
-}
+.id-modal-overlay.show { opacity: 1; pointer-events: all; }
 .id-modal-container {
-  background: #ffffff;
-  border-radius: 24px;
-  width: 360px;
-  max-width: 92vw;
+  background: #ffffff; border-radius: 24px;
+  width: 360px; max-width: 92vw;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   transform: scale(0.9) translateY(20px);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: flex; flex-direction: column; align-items: center;
 }
-.id-modal-overlay.show .id-modal-container {
-  transform: scale(1) translateY(0);
-}
+.id-modal-overlay.show .id-modal-container { transform: scale(1) translateY(0); }
 .id-modal-header {
-  width: 100%;
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #f1f5f9;
-  box-sizing: border-box;
+  width: 100%; padding: 16px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid #f1f5f9; box-sizing: border-box;
 }
-.id-modal-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-}
+.id-modal-title { font-size: 15px; font-weight: 700; color: #0f172a; }
 .id-close-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: #64748b;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  transition: background 0.2s;
+  background: transparent; border: none; cursor: pointer;
+  color: #64748b; display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: 50%;
 }
-.id-close-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
+.id-close-btn:hover { background: #f1f5f9; color: #0f172a; }
 .id-modal-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  box-sizing: border-box;
+  padding: 20px; display: flex; flex-direction: column;
+  align-items: center; gap: 16px; width: 100%; box-sizing: border-box;
 }
-.id-card-wrapper {
-  perspective: 1000px;
-  width: 300px;
-  height: 450px;
-  cursor: pointer;
-}
+.id-card-wrapper { perspective: 1000px; width: 300px; height: 450px; cursor: pointer; }
 .id-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
+  position: relative; width: 100%; height: 100%;
+  text-align: center; transition: transform 0.6s; transform-style: preserve-3d;
 }
-.id-card-wrapper.flipped .id-card-inner {
-  transform: rotateY(180deg);
-}
+.id-card-wrapper.flipped .id-card-inner { transform: rotateY(180deg); }
 .id-card-face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 20px;
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; border-radius: 20px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
+  display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;
 }
 .id-card-front {
   background: linear-gradient(135deg, #179bb8 0%, #11788e 100%);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px;
+  color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 20px;
 }
 .id-card-back {
-  background: #ffffff;
-  color: #0f172a;
-  border: 2px solid #179bb8;
-  transform: rotateY(180deg);
-  padding: 20px;
+  background: #ffffff; color: #0f172a; border: 2px solid #179bb8;
+  transform: rotateY(180deg); padding: 20px;
 }
-.id-card-logo-area {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.id-card-logo {
-  height: 32px;
-  width: auto;
-  filter: brightness(0) invert(1);
-}
-.id-card-school-name {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  text-align: left;
-  line-height: 1.2;
-}
+.id-card-logo-area { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; }
+.id-card-logo { height: 32px; width: auto; filter: brightness(0) invert(1); }
+.id-card-school-name { font-size: 10px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; text-align: left; line-height: 1.2; }
 .id-card-photo-frame {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
+  width: 110px; height: 110px; border-radius: 50%;
   border: 3px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  margin: 0 auto 12px;
-  background: #fff;
+  overflow: hidden; margin: 0 auto 12px; background: #fff;
 }
-.id-card-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.id-card-name {
-  font-size: 18px;
-  font-weight: 800;
-  margin-bottom: 3px;
-  letter-spacing: -0.3px;
-}
+.id-card-photo { width: 100%; height: 100%; object-fit: cover; }
+.id-card-name { font-size: 18px; font-weight: 800; margin-bottom: 3px; letter-spacing: -0.3px; }
 .id-card-title-badge {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.25);
+  display: inline-block; background: rgba(255, 255, 255, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  margin-bottom: 16px;
+  padding: 2px 10px; border-radius: 999px; font-size: 10px; font-weight: 700; margin-bottom: 16px;
 }
 .id-card-details-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  text-align: left;
-  font-size: 10.5px;
-  margin-top: auto;
-  border-top: 1px solid rgba(255,255,255,0.15);
-  padding-top: 10px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  text-align: left; font-size: 10.5px; margin-top: auto;
+  border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px;
 }
-.id-card-label {
-  color: rgba(255, 255, 255, 0.7);
-  font-weight: 600;
-  margin-bottom: 1px;
-}
-.id-card-val {
-  font-weight: 700;
-  color: #ffffff;
-}
-.id-card-barcode-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  margin-top: auto;
-  margin-bottom: 10px;
-}
-.id-card-barcode-svg {
-  width: 160px;
-  height: 40px;
-}
-.id-card-qr-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 12px;
-}
-.id-card-qr-svg {
-  width: 96px;
-  height: 96px;
-  padding: 6px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-}
-.id-card-back-header {
-  font-size: 12px;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 4px;
-  text-align: left;
-  width: 100%;
-}
-.id-card-rules {
-  font-size: 9px;
-  color: #64748b;
-  text-align: left;
-  line-height: 1.3;
-  margin-bottom: 10px;
-  padding-left: 12px;
-}
-.id-card-rules li {
-  margin-bottom: 3px;
-}
-.id-card-flip-prompt {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-}
-.id-card-flip-prompt .mi {
-  font-size: 13px;
-}
+.id-card-label { color: rgba(255, 255, 255, 0.7); font-weight: 600; margin-bottom: 1px; }
+.id-card-val { font-weight: 700; color: #ffffff; }
+.id-card-qr-area { display: flex; flex-direction: column; align-items: center; gap: 4px; margin-bottom: 12px; }
+.id-card-qr-svg { width: 96px; height: 96px; padding: 6px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; }
+.id-card-back-header { font-size: 12px; font-weight: 700; color: #1e293b; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; text-align: left; width: 100%; }
+.id-card-rules { font-size: 9px; color: #64748b; text-align: left; line-height: 1.3; margin-bottom: 10px; padding-left: 12px; }
+.id-card-rules li { margin-bottom: 3px; }
+.id-card-flip-prompt { font-size: 10.5px; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 4px; margin-top: 4px; }
 .id-modal-footer {
-  width: 100%;
-  padding: 10px 20px;
-  background: #f8fafc;
-  border-top: 1px solid #f1f5f9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: #10b981;
-  gap: 5px;
-  box-sizing: border-box;
-}
-.id-modal-footer .mi {
-  font-size: 14px;
+  width: 100%; padding: 10px 20px; background: #f8fafc;
+  border-top: 1px solid #f1f5f9; display: flex; justify-content: center;
+  align-items: center; font-size: 10.5px; font-weight: 700; color: #10b981; gap: 5px;
 }
 </style>
 </head>
 <body>
 <div class="main">
 
-<!-- ═══════════════ HERO BANNER ═══════════════ -->
-<!-- Built and injected by js/hero.js -->
 <div id="heroBanner"></div>
 
-<!-- ═══════════════ OVERLAPPING GRID ═══════════════ -->
 <div class="dash-overlap">
 
-  <!-- Column 1: Profile Summary -->
+  <!-- Profile Summary (will be hydrated by auth) -->
   <div class="ov-profile">
     <div class="ov-profile-header">
       <img class="ov-avatar"
         src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160"
-        alt="Nrinphouneta Hok">
-      <div class="ov-profile-name">Nrinphouneta Hok</div>
-      <div class="ov-profile-grade">Grade 10 &nbsp;·&nbsp; CIAF-10029</div>
+        alt="Student">
+      <div class="ov-profile-name">Loading...</div>
+      <div class="ov-profile-grade">—</div>
       <span class="ov-profile-badge">Active Student</span>
     </div>
     <div class="ov-profile-body">
-      <div class="ov-info-row">
-        <span class="mi">mail</span>nrinphouneta.hok@ciaschool.edu.kh
-      </div>
-      <div class="ov-info-row">
-        <span class="mi">phone</span>+855 12 345 678
-      </div>
-      <div class="ov-info-row">
-        <span class="mi">location_on</span>Phnom Penh, Cambodia
-      </div>
+      <div class="ov-info-row"><span class="mi">mail</span>—</div>
+      <div class="ov-info-row"><span class="mi">phone</span>—</div>
+      <div class="ov-info-row"><span class="mi">location_on</span>Phnom Penh, Cambodia</div>
     </div>
     <div class="ov-actions">
       <button class="ov-btn-main" id="viewIdBtn"><span class="mi">badge</span>Digital ID Card</button>
-      <button class="ov-btn-ic" title="Messages" aria-label="Messages" onclick="window.location.href='student-chat.html'"><span class="mi">chat_bubble</span></button>
-      <button class="ov-btn-ic" title="Timetable" aria-label="Timetable" onclick="window.location.href='student-timetable.html'"><span class="mi">calendar_view_week</span></button>
+      <button class="ov-btn-ic" title="Messages" onclick="window.location.href='student-chat.html'"><span class="mi">chat_bubble</span></button>
+      <button class="ov-btn-ic" title="Timetable" onclick="window.location.href='student-timetable.html'"><span class="mi">calendar_view_week</span></button>
     </div>
   </div>
 
-  <!-- Column 2: Upcoming -->
+  <!-- Upcoming (kept for now — will be connected later) -->
   <div class="ov-upcoming">
     <div class="ov-card-head">
-      <div class="ov-card-title">
-        <span class="mi">event_note</span>Upcoming
-      </div>
+      <div class="ov-card-title"><span class="mi">event_note</span>Upcoming</div>
       <a href="student-calendar.html" class="ov-card-link">View All</a>
     </div>
     <div class="ov-inner-grid">
-
-      <!-- Events -->
       <div class="ov-inner-panel">
-        <div class="ov-inner-head">
-          <span class="mi" style="color:#179bb8">celebration</span>Events
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Science Fair 2025</div>
-          <div class="ov-inner-item-s">Jun 27 · 09:00 AM</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Student Council</div>
-          <div class="ov-inner-item-s">Jun 30 · 10:00 AM</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Sports Day</div>
-          <div class="ov-inner-item-s">Jul 4 · 07:30 AM</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Art Exhibition</div>
-          <div class="ov-inner-item-s">Jul 8 · 01:00 PM</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Graduation Prep</div>
-          <div class="ov-inner-item-s">Jul 12 · 02:00 PM</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Cultural Night</div>
-          <div class="ov-inner-item-s">Jul 18 · 06:00 PM</div>
-        </div>
+        <div class="ov-inner-head"><span class="mi" style="color:#179bb8">celebration</span>Events</div>
+        <div class="ov-inner-item"><div class="ov-inner-item-t">Science Fair 2026</div><div class="ov-inner-item-s">Coming soon</div></div>
+        <div class="ov-inner-item"><div class="ov-inner-item-t">Sports Day</div><div class="ov-inner-item-s">Coming soon</div></div>
       </div>
-
-      <!-- Assignments -->
       <div class="ov-inner-panel">
-        <div class="ov-inner-head">
-          <span class="mi" style="color:#16a34a">assignment</span>Assignments
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Physics Essay Draft</div>
-          <div class="ov-inner-item-s">Due: Thu, 26 Jun</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Math Problem Set 4</div>
-          <div class="ov-inner-item-s">Due: Fri, 27 Jun</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Chemistry Lab Report</div>
-          <div class="ov-inner-item-s">Submitted · Graded: 88%</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">History Essay</div>
-          <div class="ov-inner-item-s">Due: Mon, 30 Jun</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">Biology Worksheet</div>
-          <div class="ov-inner-item-s">Due: Tue, 1 Jul</div>
-        </div>
-        <div class="ov-inner-item">
-          <div class="ov-inner-item-t">English Book Review</div>
-          <div class="ov-inner-item-s">Due: Wed, 2 Jul</div>
-        </div>
+        <div class="ov-inner-head"><span class="mi" style="color:#16a34a">assignment</span>Assignments</div>
+        <div class="ov-inner-item"><div class="ov-inner-item-t">No pending assignments</div><div class="ov-inner-item-s">You're all caught up</div></div>
       </div>
-
-      <!-- School Activity Feed -->
-      <div class="ov-inner-panel" style="padding:0;overflow:hidden;display:flex;flex-direction:column;align-self:start">
-
-        <div class="ov-inner-head" style="padding:8px 10px;border-bottom:1px solid #f3f4f6;margin:0;flex-shrink:0">
-          <span class="mi" style="color:#e11d48;flex-shrink:0">rss_feed</span>
-          <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">School Activity Feed</span>
-          <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:#e11d48;letter-spacing:.04em">
-            <span style="width:6px;height:6px;border-radius:50%;background:#e11d48;animation:feedPulse 1.4s ease-in-out infinite"></span>LIVE
-          </span>
-        </div>
-
-        <!-- Scrollable feed body — 3 items visible, rest scroll -->
-        <div style="overflow-y:auto;max-height:243px">
-
-          <!-- Assignment -->
-          <div style="display:flex;border-bottom:1px solid #f3f4f6">
-            <div style="width:3px;flex-shrink:0;background:#e11d48;border-radius:0"></div>
-            <div style="flex:1;min-width:0;padding:7px 9px">
-              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
-                <span style="flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#e11d48;background:#fee2e2;padding:1px 5px;border-radius:3px;white-space:nowrap">Assign</span>
-                <span style="font-size:10px;color:#9ca3af;margin-left:auto;flex-shrink:0;white-space:nowrap">12m ago</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#1f2937;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Physics Essay Draft posted</div>
-              <div style="font-size:10px;color:#9ca3af;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Due Thu 26 Jun · Mr. Sophea</div>
-            </div>
-          </div>
-
-          <!-- Exam -->
-          <div style="display:flex;border-bottom:1px solid #f3f4f6">
-            <div style="width:3px;flex-shrink:0;background:#f97316"></div>
-            <div style="flex:1;min-width:0;padding:7px 9px">
-              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
-                <span style="flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#c2410c;background:#ffedd5;padding:1px 5px;border-radius:3px;white-space:nowrap">Exam</span>
-                <span style="font-size:10px;color:#9ca3af;margin-left:auto;flex-shrink:0;white-space:nowrap">1h ago</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#1f2937;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Biology Semester 2 announced</div>
-              <div style="font-size:10px;color:#9ca3af;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">28 Jun · Hall A · 09:00 AM</div>
-            </div>
-          </div>
-
-          <!-- Achievement -->
-          <div style="display:flex;border-bottom:1px solid #f3f4f6">
-            <div style="width:3px;flex-shrink:0;background:#16a34a"></div>
-            <div style="flex:1;min-width:0;padding:7px 9px">
-              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
-                <span style="flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#15803d;background:#dcfce7;padding:1px 5px;border-radius:3px;white-space:nowrap">Achievement</span>
-                <span style="font-size:10px;color:#9ca3af;margin-left:auto;flex-shrink:0;white-space:nowrap">2h ago</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#1f2937;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">You scored 88% on Chemistry Lab</div>
-              <div style="font-size:10px;color:#9ca3af;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Graded by Ms. Kiry Sokha</div>
-            </div>
-          </div>
-
-          <!-- Teacher Update -->
-          <div style="display:flex;border-bottom:1px solid #f3f4f6">
-            <div style="width:3px;flex-shrink:0;background:#0ea5e9"></div>
-            <div style="flex:1;min-width:0;padding:7px 9px">
-              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
-                <span style="flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#0369a1;background:#e0f2fe;padding:1px 5px;border-radius:3px;white-space:nowrap">Update</span>
-                <span style="font-size:10px;color:#9ca3af;margin-left:auto;flex-shrink:0;white-space:nowrap">3h ago</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#1f2937;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">2 new lessons in Mathematics</div>
-              <div style="font-size:10px;color:#9ca3af;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Posted by Mr. Chea Sophea</div>
-            </div>
-          </div>
-
-          <!-- Event -->
-          <div style="display:flex;border-bottom:1px solid #f3f4f6">
-            <div style="width:3px;flex-shrink:0;background:#7c3aed"></div>
-            <div style="flex:1;min-width:0;padding:7px 9px">
-              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
-                <span style="flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6d28d9;background:#ede9fe;padding:1px 5px;border-radius:3px;white-space:nowrap">Event</span>
-                <span style="font-size:10px;color:#9ca3af;margin-left:auto;flex-shrink:0;white-space:nowrap">Yesterday</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#1f2937;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Science Fair — Registration open</div>
-              <div style="font-size:10px;color:#9ca3af;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Deadline: 5 Jul · Grade 10–12</div>
-            </div>
-          </div>
-
-          <!-- Grade -->
-          <div style="display:flex">
-            <div style="width:3px;flex-shrink:0;background:#eab308"></div>
-            <div style="flex:1;min-width:0;padding:7px 9px">
-              <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
-                <span style="flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#a16207;background:#fef9c3;padding:1px 5px;border-radius:3px;white-space:nowrap">Grade</span>
-                <span style="font-size:10px;color:#9ca3af;margin-left:auto;flex-shrink:0;white-space:nowrap">2d ago</span>
-              </div>
-              <div style="font-size:11.5px;font-weight:600;color:#1f2937;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Semester 1 Report Card published</div>
-              <div style="font-size:10px;color:#9ca3af;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Uploaded by Jane Doe</div>
-            </div>
-          </div>
-
-        </div><!-- /scroll body -->
-      </div>
-      <style>
-        @keyframes feedPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-      </style>
-
     </div>
   </div>
 
-  <!-- Column 3: Deadlines -->
+  <!-- Deadlines -->
   <div class="ov-deadlines">
     <div class="ov-card-head">
-      <div class="ov-card-title">
-        <span class="mi" style="color:#e11d48">schedule</span>Deadlines
-      </div>
+      <div class="ov-card-title"><span class="mi" style="color:#e11d48">schedule</span>Deadlines</div>
       <a href="student-assignments.html" class="ov-card-link">View All</a>
     </div>
-
-    <!-- Assessments -->
     <div class="ov-deadline-panel">
-      <div class="ov-deadline-head">
-        <span class="mi" style="color:#e11d48">assignment</span>Assessments
-      </div>
-      <div class="ov-deadline-item">
-        <div class="ov-deadline-dot" style="background:#ef4444"></div>
-        <div>
-          <div class="ov-deadline-item-t">History Essay</div>
-          <div class="ov-deadline-item-s">Due: Jun 27, 11:59 PM</div>
-          <span class="ov-tag ov-tag-red">Urgent</span>
-        </div>
-      </div>
-      <div class="ov-deadline-item">
-        <div class="ov-deadline-dot" style="background:#f59e0b"></div>
-        <div>
-          <div class="ov-deadline-item-t">Math Problem Set</div>
-          <div class="ov-deadline-item-s">Due: Jun 29, 11:59 PM</div>
-          <span class="ov-tag ov-tag-amber">Soon</span>
-        </div>
-      </div>
+      <div class="ov-deadline-head"><span class="mi" style="color:#e11d48">assignment</span>Assessments</div>
       <div class="ov-deadline-item">
         <div class="ov-deadline-dot" style="background:#16a34a"></div>
         <div>
-          <div class="ov-deadline-item-t">Science Report</div>
-          <div class="ov-deadline-item-s">Due: Jul 3</div>
-          <span class="ov-tag ov-tag-green">On track</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Exam & Quizzes -->
-    <div class="ov-deadline-panel">
-      <div class="ov-deadline-head">
-        <span class="mi" style="color:#7c3aed">quiz</span>Exam &amp; Quizzes
-      </div>
-      <div class="ov-deadline-item">
-        <div class="ov-deadline-dot" style="background:#ef4444"></div>
-        <div>
-          <div class="ov-deadline-item-t">Midterm Exam</div>
-          <div class="ov-deadline-item-s">Jul 5 – Jul 9</div>
-          <span class="ov-tag ov-tag-red">Upcoming</span>
-        </div>
-      </div>
-      <div class="ov-deadline-item">
-        <div class="ov-deadline-dot" style="background:#f59e0b"></div>
-        <div>
-          <div class="ov-deadline-item-t">Science Test</div>
-          <div class="ov-deadline-item-s">Jul 12, 09:00 AM</div>
-          <span class="ov-tag ov-tag-amber">Prepare</span>
+          <div class="ov-deadline-item-t">No upcoming deadlines</div>
+          <div class="ov-deadline-item-s">Check back later</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Row 2, Col 1+2: Promo Slideshow (Deadlines spans both rows) -->
   <div class="promo-slideshow" id="promoSlideshow">
     <div class="promo-track" id="promoTrack">
-      <div class="promo-slide"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=320&fit=crop" alt="School Banner 1"></div>
-      <div class="promo-slide"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&h=320&fit=crop" alt="School Banner 2"></div>
-      <div class="promo-slide"><img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1200&h=320&fit=crop" alt="School Banner 3"></div>
+      <div class="promo-slide"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=320&fit=crop" alt="School Banner"></div>
     </div>
-    <!-- Full-image colour tint -->
     <div class="promo-left" aria-hidden="true"></div>
-    <!-- Text on top of tint -->
     <div class="promo-text">
       <div class="promo-left-title">Empowering Future<br>Leaders</div>
       <div class="promo-left-sub">Explore learning, grow beyond limits</div>
     </div>
-    <button class="promo-arrow promo-prev" id="promoPrev" aria-label="Previous"><span class="mi">chevron_left</span></button>
-    <button class="promo-arrow promo-next" id="promoNext" aria-label="Next"><span class="mi">chevron_right</span></button>
-    <div class="promo-dots" id="promoDots">
-      <button class="promo-dot active" data-i="0"></button>
-      <button class="promo-dot" data-i="1"></button>
-      <button class="promo-dot" data-i="2"></button>
-    </div>
   </div>
 
 </div>
-<!-- ═══════════════ DASHBOARD ═══════════════ -->
+
 <div class="dash">
-
-  <!-- ROW 2: MY SUBJECTS + CALENDAR ────────────────── -->
   <div class="row2">
-
-    <!-- My Subjects -->
     <div class="subj-card">
       <div class="sec-head">
         <div class="sec-head-l">
           <span class="mi">menu_book</span>
           <h3>My Subjects</h3>
-          <span class="cnt">(6)</span>
         </div>
-        <a href="#" class="sec-link">View All</a>
       </div>
       <div class="subj-list">
         <div class="subj-grid" id="subjGrid"></div>
       </div>
     </div>
 
-    <!-- Calendar -->
     <div class="cal-card">
       <div class="sec-head">
         <div class="sec-head-l">
           <span class="mi">calendar_month</span>
           <h3>Calendar</h3>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <button class="cal-nav-btn"><span class="mi">chevron_left</span></button>
-          <span class="cal-month">June 2025</span>
-          <button class="cal-nav-btn"><span class="mi">chevron_right</span></button>
-          <a href="#" class="sec-link" style="margin-left:4px">View Full Calendar</a>
-        </div>
       </div>
       <div class="cal-inner">
-        <div class="cal-main">
-          <div class="cal-grid" id="calGrid"></div>
-        </div>
-        <div class="cal-side" id="calSide">
-          <div class="cal-side-title">Events on Jun 25</div>
-          <!-- JS populates events here -->
-        </div>
+        <div class="cal-main"><div class="cal-grid" id="calGrid"></div></div>
+        <div class="cal-side" id="calSide"></div>
       </div>
     </div>
-
   </div>
 
-  <!-- ROW 3: ANNOUNCEMENTS + ATTENDANCE + QUICK LINKS ── -->
   <div class="row3">
-
-    <!-- Announcements -->
     <div class="ann-card">
       <div class="sec-head">
         <div class="sec-head-l">
           <span class="mi" style="color:var(--blue-mid)">campaign</span>
           <h3>Announcements</h3>
         </div>
-        <a href="#" class="sec-link">View All</a>
       </div>
       <div class="ann-list">
         <div class="ann-item">
-          <img class="ann-thumb"
-            src="https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=120"
-            alt="">
           <div class="ann-body">
-            <div class="ann-title">Library Update</div>
-            <div class="ann-desc">New books have been added to the digital library.</div>
-            <div class="ann-time">2 hours ago</div>
-          </div>
-        </div>
-        <div class="ann-item">
-          <img class="ann-thumb"
-            src="https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=120"
-            alt="">
-          <div class="ann-body">
-            <div class="ann-title">Sports Day 2025</div>
-            <div class="ann-desc">Join us for the annual sports day on July 15th!</div>
-            <div class="ann-time">1 day ago</div>
-          </div>
-        </div>
-        <div class="ann-item">
-          <img class="ann-thumb"
-            src="https://images.pexels.com/photos/1550337/pexels-photo-1550337.jpeg?auto=compress&cs=tinysrgb&w=120"
-            alt="">
-          <div class="ann-body">
-            <div class="ann-title">School Holiday Notice</div>
-            <div class="ann-desc">School will be closed on July 7th for public holiday.</div>
-            <div class="ann-time">2 days ago</div>
+            <div class="ann-title">Welcome to the Connected NGIS Portal</div>
+            <div class="ann-desc">You are now logged in with real authentication.</div>
+            <div class="ann-time">Just now</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Attendance Overview -->
     <div class="att-card">
       <div class="att-head">
         <div class="att-head-l">
           <span class="mi">track_changes</span>
           <h3>Attendance Overview</h3>
         </div>
-        <div class="att-filter">
-          This Month <span class="mi">expand_more</span>
-        </div>
       </div>
       <div class="att-body">
         <div class="att-donut-wrap">
           <canvas id="attChart"></canvas>
           <div class="att-donut-center">
-            <div class="att-pct">92%</div>
+            <div class="att-pct">—</div>
             <div class="att-pct-lbl">Present</div>
           </div>
-        </div>
-        <div class="att-legend">
-          <div class="att-leg-row">
-            <span class="att-leg-dot" style="background:var(--green)"></span>
-            <span class="att-leg-label">Present</span>
-            <span class="att-leg-val">22</span>
-          </div>
-          <div class="att-leg-row">
-            <span class="att-leg-dot" style="background:var(--red)"></span>
-            <span class="att-leg-label">Absent</span>
-            <span class="att-leg-val">2</span>
-          </div>
-          <div class="att-leg-row">
-            <span class="att-leg-dot" style="background:var(--orange)"></span>
-            <span class="att-leg-label">Late</span>
-            <span class="att-leg-val">1</span>
-          </div>
-        </div>
-        <div class="att-total-row">
-          <span>Total Classes</span>
-          <b>25</b>
         </div>
       </div>
     </div>
 
-    <!-- Quick Links -->
     <div class="ql-card">
       <div class="sec-head">
         <div class="sec-head-l">
@@ -742,54 +282,13 @@
             <div class="ql-icon-wrap" style="background:#eff6ff"><span class="mi" style="color:#2563eb">assignment</span></div>
             <span class="ql-label">Assignments</span>
           </a>
-          <a href="student-announcements.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#fef3c7"><span class="mi" style="color:#d97706">campaign</span></div>
-            <span class="ql-label">Announcements</span>
-          </a>
-          <a href="student-timetable.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#f0fdf4"><span class="mi" style="color:#16a34a">calendar_view_week</span></div>
-            <span class="ql-label">Timetable</span>
-          </a>
-          <a href="student-services.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#e0f2fe"><span class="mi" style="color:#0284c7">grid_view</span></div>
-            <span class="ql-label">Student Services</span>
-          </a>
           <a href="student-grades.html" class="ql-item">
             <div class="ql-icon-wrap" style="background:#faf5ff"><span class="mi" style="color:#7c3aed">bar_chart</span></div>
             <span class="ql-label">Results</span>
           </a>
-          <a href="student-chat.html" class="ql-item" style="position:relative">
-            <div class="ql-icon-wrap" style="background:#f0fdf4">
-              <span class="mi" style="color:#16a34a">chat</span>
-              <span class="ql-badge" style="background:#2563eb">2</span>
-            </div>
-            <span class="ql-label">Teacher Chat</span>
-          </a>
-        </div>
-        <div class="ql-divider"></div>
-        <div class="ql-grid">
-          <a href="../shared/lessons.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#ecfeff"><span class="mi" style="color:#0891b2">menu_book</span></div>
-            <span class="ql-label">E-Learning</span>
-          </a>
-          <a href="student-documents.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#f0fdf4"><span class="mi" style="color:#16a34a">local_library</span></div>
-            <span class="ql-label">Library</span>
-          </a>
-          <a href="student-calendar.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#fff7ed"><span class="mi" style="color:#ea580c">calendar_month</span></div>
-            <span class="ql-label">Calendar</span>
-          </a>
-          <a href="student-notifications.html" class="ql-item" style="position:relative">
-            <div class="ql-icon-wrap" style="background:#fef2f2">
-              <span class="mi" style="color:#ef4444">notifications</span>
-              <span class="ql-badge">3</span>
-            </div>
-            <span class="ql-label">Notifications</span>
-          </a>
-          <a href="student-services.html" class="ql-item">
-            <div class="ql-icon-wrap" style="background:#e0f2fe"><span class="mi" style="color:#0284c7">grid_view</span></div>
-            <span class="ql-label">Services Hub</span>
+          <a href="student-timetable.html" class="ql-item">
+            <div class="ql-icon-wrap" style="background:#f0fdf4"><span class="mi" style="color:#16a34a">calendar_view_week</span></div>
+            <span class="ql-label">Timetable</span>
           </a>
           <a href="student-profile.html" class="ql-item">
             <div class="ql-icon-wrap" style="background:#faf5ff"><span class="mi" style="color:#7c3aed">account_circle</span></div>
@@ -798,179 +297,61 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 </div><!-- /.main -->
 
-<!-- ═══════════════ PAGE SCRIPTS ═══════════════ -->
 <script src="js/hero.js"></script>
 <script src="js/subjects.js"></script>
 <script src="js/calendar.js"></script>
 <script src="js/attendance.js"></script>
 
-<!-- Promo Slideshow -->
-<script>
-(function () {
-  var track  = document.getElementById('promoTrack');
-  var dots   = document.querySelectorAll('#promoDots .promo-dot');
-  var total  = document.querySelectorAll('.promo-slide').length;
-  var cur    = 0, timer;
-
-  function goTo(n) {
-    cur = (n + total) % total;
-    track.style.transform = 'translateX(-' + cur * 100 + '%)';
-    dots.forEach(function(d, i) { d.classList.toggle('active', i === cur); });
-  }
-
-  function start() { timer = setInterval(function() { goTo(cur + 1); }, 6000); }
-  function reset() { clearInterval(timer); start(); }
-
-  document.getElementById('promoNext').addEventListener('click', function() { goTo(cur + 1); reset(); });
-  document.getElementById('promoPrev').addEventListener('click', function() { goTo(cur - 1); reset(); });
-  dots.forEach(function(d) {
-    d.addEventListener('click', function() { goTo(+this.dataset.i); reset(); });
-  });
-
-  start();
-})();
-</script>
-
-<!-- Layout engine (must be last) -->
 <script>window.PAGE = {"role":"student","active":"dashboard"};</script>
 <script src="../../assets/js/layout.js"></script>
 
-<!-- Digital Student ID Card Modal -->
+<!-- Digital ID Modal (simplified) -->
 <div class="id-modal-overlay" id="idModal">
   <div class="id-modal-container">
     <div class="id-modal-header">
       <span class="id-modal-title">Digital Student ID Card</span>
-      <button class="id-close-btn" id="idCloseBtn" aria-label="Close modal">
-        <span class="mi">close</span>
-      </button>
+      <button class="id-close-btn" id="idCloseBtn"><span class="mi">close</span></button>
     </div>
     <div class="id-modal-body">
       <div class="id-card-wrapper" id="idCardWrap">
         <div class="id-card-inner">
-          <!-- Front Face -->
           <div class="id-card-face id-card-front">
             <div class="id-card-logo-area">
-              <img class="id-card-logo" src="LOGO NGIS (2).png" alt="NGIS logo">
               <span class="id-card-school-name">New Gateway<br>International School</span>
             </div>
             <div class="id-card-photo-frame">
-              <img class="id-card-photo" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Student photo">
+              <img class="id-card-photo" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Student">
             </div>
-            <div class="id-card-name">Nrinphouneta Hok</div>
+            <div class="id-card-name" id="idCardName">Student</div>
             <span class="id-card-title-badge">Student ID</span>
             <div class="id-card-details-grid">
               <div>
-                <div class="id-card-label">Grade / Section</div>
-                <div class="id-card-val">Grade 11-A</div>
+                <div class="id-card-label">Grade</div>
+                <div class="id-card-val" id="idCardGrade">—</div>
               </div>
               <div>
                 <div class="id-card-label">Student ID</div>
-                <div class="id-card-val">NGIS-2026-104</div>
-              </div>
-              <div>
-                <div class="id-card-label">House Color</div>
-                <div class="id-card-val" style="color:#facc15">Yellow Falcon</div>
-              </div>
-              <div>
-                <div class="id-card-label">Status</div>
-                <div class="id-card-val" style="color:#4ade80">Active Enrolled</div>
+                <div class="id-card-val" id="idCardNumber">—</div>
               </div>
             </div>
           </div>
-          <!-- Back Face -->
           <div class="id-card-face id-card-back">
-            <div class="id-card-back-header">Student Verification Regulations</div>
+            <div class="id-card-back-header">Student Verification</div>
             <ul class="id-card-rules">
-              <li>This card remains the property of NGIS and is non-transferable.</li>
-              <li>Loss of card must be reported to the administration immediately.</li>
-              <li>QR code is valid for attendance, gate entry, cafeteria, and library checkouts.</li>
-              <li>Usage is logged and subject to student behavioral policies.</li>
+              <li>This card remains the property of NGIS.</li>
+              <li>QR code is valid for attendance and gate entry.</li>
             </ul>
-            
-            <div class="id-card-qr-area">
-              <!-- SVG Offline QR Code -->
-              <svg class="id-card-qr-svg" viewBox="0 0 21 21" style="image-rendering:pixelated;">
-                <!-- Finder TL -->
-                <rect x="0" y="0" width="7" height="7" fill="#0f172a" />
-                <rect x="1" y="1" width="5" height="5" fill="white" />
-                <rect x="2" y="2" width="3" height="3" fill="#0f172a" />
-                <!-- Finder TR -->
-                <rect x="14" y="0" width="7" height="7" fill="#0f172a" />
-                <rect x="15" y="1" width="5" height="5" fill="white" />
-                <rect x="16" y="2" width="3" height="3" fill="#0f172a" />
-                <!-- Finder BL -->
-                <rect x="0" y="14" width="7" height="7" fill="#0f172a" />
-                <rect x="1" y="15" width="5" height="5" fill="white" />
-                <rect x="2" y="16" width="3" height="3" fill="#0f172a" />
-                <!-- Bottom Right Alignment Marker -->
-                <rect x="14" y="14" width="3" height="3" fill="#0f172a" />
-                <rect x="15" y="15" width="1" height="1" fill="white" />
-                <!-- Random Offline Data modules -->
-                <rect x="8" y="2" width="2" height="1" fill="#0f172a" />
-                <rect x="11" y="1" width="1" height="3" fill="#0f172a" />
-                <rect x="9" y="5" width="3" height="1" fill="#0f172a" />
-                <rect x="8" y="8" width="1" height="5" fill="#0f172a" />
-                <rect x="10" y="10" width="4" height="1" fill="#0f172a" />
-                <rect x="12" y="7" width="2" height="2" fill="#0f172a" />
-                <rect x="18" y="9" width="2" height="2" fill="#0f172a" />
-                <rect x="5" y="9" width="2" height="3" fill="#0f172a" />
-                <rect x="15" y="18" width="3" height="1" fill="#0f172a" />
-                <rect x="9" y="15" width="1" height="4" fill="#0f172a" />
-                <rect x="18" y="15" width="1" height="3" fill="#0f172a" />
-              </svg>
-              <div style="font-size:8.5px;font-weight:700;color:#64748b;letter-spacing:0.5px">SCAN FOR GATE ACCESS / ATTENDANCE</div>
-            </div>
-
-            <div class="id-card-barcode-area">
-              <!-- SVG Offline Barcode -->
-              <svg class="id-card-barcode-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
-                <rect x="0" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="3" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="6" y="0" width="3" height="20" fill="#0f172a" />
-                <rect x="10" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="13" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="17" y="0" width="4" height="20" fill="#0f172a" />
-                <rect x="22" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="25" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="29" y="0" width="3" height="20" fill="#0f172a" />
-                <rect x="34" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="36" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="40" y="0" width="4" height="20" fill="#0f172a" />
-                <rect x="46" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="48" y="0" width="3" height="20" fill="#0f172a" />
-                <rect x="53" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="57" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="60" y="0" width="4" height="20" fill="#0f172a" />
-                <rect x="66" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="70" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="73" y="0" width="3" height="20" fill="#0f172a" />
-                <rect x="78" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="82" y="0" width="4" height="20" fill="#0f172a" />
-                <rect x="88" y="0" width="1" height="20" fill="#0f172a" />
-                <rect x="91" y="0" width="3" height="20" fill="#0f172a" />
-                <rect x="96" y="0" width="2" height="20" fill="#0f172a" />
-                <rect x="99" y="0" width="1" height="20" fill="#0f172a" />
-              </svg>
-              <div style="font-size:8px;font-weight:700;color:#64748b;letter-spacing:1px">NGIS-2026-104</div>
-            </div>
           </div>
         </div>
       </div>
-      <div class="id-card-flip-prompt">
-        <span class="mi">sync_alt</span>
-        <span>Click card to flip front/back</span>
-      </div>
+      <div class="id-card-flip-prompt"><span class="mi">sync_alt</span> Click card to flip</div>
     </div>
-    <div class="id-modal-footer">
-      <span class="mi">wifi_off</span>
-      <span>Offline Active (Cached in Browser)</span>
-    </div>
+    <div class="id-modal-footer"><span class="mi">verified_user</span> Authenticated Session</div>
   </div>
 </div>
 
@@ -978,15 +359,26 @@
 (function() {
   const modal = document.getElementById('idModal');
   const openBtn = document.getElementById('viewIdBtn');
-  const openBtnTop = document.getElementById('viewIdBtnTop');
   const closeBtn = document.getElementById('idCloseBtn');
   const cardWrap = document.getElementById('idCardWrap');
 
   function openModal() {
+    // Update ID card with real data if available
+    if (window.NGIS_CURRENT_USER) {
+      const u = window.NGIS_CURRENT_USER;
+      const s = window.NGIS_CURRENT_STUDENT;
+      const nameEl = document.getElementById('idCardName');
+      if (nameEl) nameEl.textContent = `${u.firstName || ''} ${u.lastName || ''}`.trim();
+      if (s) {
+        const g = document.getElementById('idCardGrade');
+        const n = document.getElementById('idCardNumber');
+        if (g) g.textContent = s.grade || '—';
+        if (n) n.textContent = s.student_number || '—';
+      }
+    }
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
   }
-
   function closeModal() {
     modal.classList.remove('show');
     document.body.style.overflow = '';
@@ -994,16 +386,10 @@
   }
 
   if (openBtn) openBtn.addEventListener('click', openModal);
-  if (openBtnTop) openBtnTop.addEventListener('click', openModal);
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
   if (cardWrap) cardWrap.addEventListener('click', () => cardWrap.classList.toggle('flipped'));
-
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
-  });
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 })();
 </script>
 </body>
