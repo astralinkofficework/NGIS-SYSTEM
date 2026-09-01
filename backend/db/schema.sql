@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS teachers (
   user_id         TEXT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
   employee_number TEXT UNIQUE,
   department      TEXT,
-  qualifications  TEXT, -- JSON array as text
+  qualifications  TEXT,
   hire_date       TEXT,
   status          TEXT NOT NULL DEFAULT 'active',
   created_at      TEXT NOT NULL DEFAULT (datetime('now')),
@@ -77,9 +77,9 @@ CREATE TABLE IF NOT EXISTS teachers (
 -- ── Classes ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS classes (
   id            TEXT PRIMARY KEY,
-  name          TEXT NOT NULL,          -- e.g. "10A"
-  grade         TEXT NOT NULL,          -- e.g. "Grade 10"
-  academic_year TEXT NOT NULL,          -- e.g. "2025-26"
+  name          TEXT NOT NULL,
+  grade         TEXT NOT NULL,
+  academic_year TEXT NOT NULL,
   campus        TEXT DEFAULT 'Sensok',
   homeroom_teacher_id TEXT REFERENCES teachers(id),
   capacity      INTEGER DEFAULT 40,
@@ -87,9 +87,6 @@ CREATE TABLE IF NOT EXISTS classes (
   created_at    TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
 );
-
--- Add foreign key from students to classes after classes table exists
--- (SQLite limitation handled in application or by recreating)
 
 -- ── Subjects ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS subjects (
@@ -146,13 +143,13 @@ CREATE TABLE IF NOT EXISTS submissions (
   UNIQUE(assignment_id, student_id)
 );
 
--- ── Grades (for exams / other assessments) ─────────────────
+-- ── Grades ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS grades (
   id               TEXT PRIMARY KEY,
   student_id       TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
   subject_id       TEXT NOT NULL REFERENCES subjects(id),
   class_id         TEXT NOT NULL REFERENCES classes(id),
-  assessment_type  TEXT NOT NULL, -- midterm, final, quiz, etc.
+  assessment_type  TEXT NOT NULL,
   assessment_title TEXT NOT NULL,
   score            REAL NOT NULL,
   max_score        REAL NOT NULL DEFAULT 100,
@@ -166,12 +163,29 @@ CREATE TABLE IF NOT EXISTS grades (
 
 CREATE INDEX IF NOT EXISTS idx_grades_student ON grades(student_id);
 
+-- ── Attendance ─────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS attendance (
+  id          TEXT PRIMARY KEY,
+  student_id  TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  class_id    TEXT NOT NULL REFERENCES classes(id),
+  date        TEXT NOT NULL, -- YYYY-MM-DD
+  status      TEXT NOT NULL CHECK(status IN ('present','absent','late','excused')),
+  marked_by   TEXT REFERENCES teachers(id),
+  notes       TEXT,
+  created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(student_id, class_id, date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_attendance_student ON attendance(student_id);
+CREATE INDEX IF NOT EXISTS idx_attendance_class_date ON attendance(class_id, date);
+
 -- ── Announcements ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS announcements (
   id          TEXT PRIMARY KEY,
   title       TEXT NOT NULL,
   body        TEXT NOT NULL,
-  audience    TEXT NOT NULL DEFAULT 'all', -- all, students, parents, teachers, class:ID, grade:X
+  audience    TEXT NOT NULL DEFAULT 'all',
   priority    TEXT NOT NULL DEFAULT 'normal' CHECK(priority IN ('normal','high','urgent')),
   pinned      INTEGER DEFAULT 0,
   published   INTEGER DEFAULT 1,
