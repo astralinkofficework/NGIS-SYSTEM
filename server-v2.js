@@ -22,6 +22,7 @@ const gradesRoutes = require("./backend/routes/grades");
 const attendanceRoutes = require("./backend/routes/attendance");
 const announcementRoutes = require("./backend/routes/announcements");
 const notificationRoutes = require("./backend/routes/notifications");
+const adminRoutes = require("./backend/routes/admin");
 const { authenticate, requireRole } = require("./backend/middleware/auth");
 
 const app = express();
@@ -54,6 +55,7 @@ app.use("/api/grades", gradesRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", version: "2.0.0", name: "NGIS Connected School ERP", time: new Date().toISOString() });
@@ -92,7 +94,7 @@ app.get("*", (req, res) => {
 const server = http.createServer(app);
 server.listen(PORT, () => {
   console.log(`NGIS ERP v2 → http://localhost:${PORT}`);
-  console.log("APIs: auth, students, parent, assignments, grades, attendance, announcements, notifications");
+  console.log("APIs: auth, students, parent, assignments, grades, attendance, announcements, notifications, admin");
   console.log("Demo password: password123");
 });
 server.on("error", (err) => {
