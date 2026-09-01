@@ -9,6 +9,9 @@
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="css/dashboard.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
 </head>
 <body>
 <main class="main">
@@ -17,9 +20,9 @@
 
   <section class="mt16 anim-up-2" aria-label="Quick actions">
     <div class="quick-grid">
-      <a class="quick" href="student-services.html"><span class="qi t-blue"><span class="material-symbols-outlined">grid_view</span></span><span><b>Student Services</b><small>Review requests</small></span></a>
-      <a class="quick" href="teacher-grades.html"><span class="qi t-blue"><span class="material-symbols-outlined">grade</span></span><span><b>Enter grades</b><small>14 to mark</small></span></a>
-      <a class="quick" href="teacher-assignments.html"><span class="qi t-amber"><span class="material-symbols-outlined">post_add</span></span><span><b>New assignment</b><small>Create &amp; assign</small></span></a>
+      <a class="quick" href="teacher-attendance.html"><span class="qi t-blue"><span class="material-symbols-outlined">how_to_reg</span></span><span><b>Attendance</b><small>Mark classes</small></span></a>
+      <a class="quick" href="teacher-grades.html"><span class="qi t-blue"><span class="material-symbols-outlined">grade</span></span><span><b>Enter grades</b><small>Assessments</small></span></a>
+      <a class="quick" href="teacher-assignments.html"><span class="qi t-amber"><span class="material-symbols-outlined">post_add</span></span><span><b>New assignment</b><small>Create & assign</small></span></a>
       <a class="quick" href="teacher-announcements.html"><span class="qi t-purple"><span class="material-symbols-outlined">campaign</span></span><span><b>Announcement</b><small>Post to classes</small></span></a>
     </div>
   </section>
@@ -29,42 +32,23 @@
 
       <div class="card">
         <div class="card-head">
-          <div><h3>Today's schedule</h3><div class="sub">Monday, 27 January</div></div>
+          <div><h3>Today's schedule</h3><div class="sub" id="todayDate">—</div></div>
           <a class="link-btn" href="teacher-calendar.html">Full calendar</a>
         </div>
         <div class="card-pad" style="display:flex;flex-direction:column;gap:9px">
           <div class="row-item">
-            <span class="timechip">08:00</span>
-            <div class="row-body"><b>Grade 11-A · Advanced Maths</b><small>Room 302 · 28 students</small></div>
-            <a class="btn btn-soft btn-sm" href="teacher-attendance.html">Attendance</a>
-          </div>
-          <div class="row-item">
-            <span class="timechip">10:00</span>
-            <div class="row-body"><b>Grade 10-C · Algebra</b><small>Room 210 · 31 students</small></div>
-            <a class="btn btn-soft btn-sm" href="teacher-attendance.html">Attendance</a>
-          </div>
-          <div class="row-item">
-            <span class="timechip">13:00</span>
-            <div class="row-body"><b>Grade 12-B · Calculus</b><small>Room 305 · 24 students</small></div>
-            <span class="badge gray">Done</span>
+            <div class="row-body"><b>Connected ERP Active</b><small>Timetable data will appear here in the next phase</small></div>
+            <span class="badge green">Authenticated</span>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-head"><div><h3>Recent announcements</h3></div><a class="link-btn" href="teacher-announcements.html">View all</a></div>
+        <div class="card-head"><div><h3>System status</h3></div></div>
         <div class="card-pad" style="display:flex;flex-direction:column;gap:10px">
           <div class="notif-card notif-blue">
-            <div class="flex between center"><b style="font-size:14px">Staff meeting moved to Thursday</b><small class="faint">1h ago</small></div>
-            <p class="muted mt4" style="font-size:13px">Now 15:30 in the conference room. Agenda shared by email.</p>
-          </div>
-          <div class="notif-card notif-amber">
-            <div class="flex between center"><b style="font-size:14px">Exam papers due to office</b><small class="faint">Yesterday</small></div>
-            <p class="muted mt4" style="font-size:13px">Submit Semester 2 question papers for review by 5 February.</p>
-          </div>
-          <div class="notif-card notif-read">
-            <div class="flex between center"><b style="font-size:14px">New grading scale guidance</b><small class="faint">3 days ago</small></div>
-            <p class="muted mt4" style="font-size:13px">Updated rubric is available under Documents.</p>
+            <div class="flex between center"><b style="font-size:14px">You are logged in securely</b><small class="faint">Just now</small></div>
+            <p class="muted mt4" style="font-size:13px">JWT authentication and role-based access control are active.</p>
           </div>
         </div>
       </div>
@@ -74,29 +58,16 @@
     <div class="stack" style="flex:1">
 
       <div class="card card-pad">
-        <div class="flex between center mb12"><h3>Today's attendance</h3><span class="badge blue">1 of 3 taken</span></div>
-        <div class="att-figure"><b>96%</b><span>present so far</span></div>
-        <div class="bar green mt12"><span style="width:96%"></span></div>
-        <p class="muted mt12" style="font-size:13px">Grade 12-B recorded: 23 present, 1 absent.</p>
+        <div class="flex between center mb12"><h3>Teacher profile</h3><span class="badge blue">Active</span></div>
+        <p class="muted" style="font-size:13px" id="teacherInfo">Loading…</p>
       </div>
 
       <div class="card">
-        <div class="card-head"><div><h3>Upcoming events</h3></div></div>
+        <div class="card-head"><div><h3>Quick links</h3></div></div>
         <div class="card-pad" style="display:flex;flex-direction:column;gap:9px">
-          <div class="row-item"><span class="row-ico t-red"><span class="material-symbols-outlined">edit_note</span></span><div class="row-body"><b>Maths exam (11-A)</b><small>14 Feb · 09:00 · Hall A</small></div></div>
-          <div class="row-item"><span class="row-ico t-blue"><span class="material-symbols-outlined">groups</span></span><div class="row-body"><b>Staff meeting</b><small>30 Jan · 15:30</small></div></div>
-          <div class="row-item"><span class="row-ico t-green"><span class="material-symbols-outlined">celebration</span></span><div class="row-body"><b>Founder's Day</b><small>3 Feb · all day</small></div></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><div><h3>Recent activity</h3></div></div>
-        <div class="card-pad">
-          <div class="timeline">
-            <div class="tl-item"><span class="tl-dot t-green"><span class="material-symbols-outlined">how_to_reg</span></span><div class="tl-body"><b>Attendance taken</b><p>Grade 12-B Calculus</p></div><span class="tl-time">13:05</span></div>
-            <div class="tl-item"><span class="tl-dot t-blue"><span class="material-symbols-outlined">grade</span></span><div class="tl-body"><b>Grades published</b><p>Grade 10-C algebra quiz</p></div><span class="tl-time">Sun</span></div>
-            <div class="tl-item"><span class="tl-dot t-amber"><span class="material-symbols-outlined">post_add</span></span><div class="tl-body"><b>Assignment created</b><p>11-A — Integration practice set</p></div><span class="tl-time">Fri</span></div>
-          </div>
+          <div class="row-item"><span class="row-ico t-blue"><span class="material-symbols-outlined">class</span></span><div class="row-body"><b>My Classes</b><small><a href="teacher-classes.html">Open</a></small></div></div>
+          <div class="row-item"><span class="row-ico t-green"><span class="material-symbols-outlined">assignment</span></span><div class="row-body"><b>Assignments</b><small><a href="teacher-assignments.html">Open</a></small></div></div>
+          <div class="row-item"><span class="row-ico t-amber"><span class="material-symbols-outlined">grade</span></span><div class="row-body"><b>Grades</b><small><a href="teacher-grades.html">Open</a></small></div></div>
         </div>
       </div>
 
@@ -106,13 +77,14 @@
 </div>
 </main>
 <script>window.PAGE={"role":"teacher","active":"dashboard"};</script>
-<script>window.HERO_CONFIG = {
+<script>
+window.HERO_CONFIG = {
   role: 'teacher',
   active: 'dashboard',
   isDashboard: true,
-  name: 'Dr. Sarah Jenkins',
-  id: 'Teacher ID: TCH-2026-088',
-  grade: 'Mathematics Teacher',
+  name: 'Teacher',
+  id: 'Teacher',
+  grade: 'Teacher',
   avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
@@ -120,18 +92,44 @@
   profileLink: 'teacher-profile.html',
   notifLink: 'teacher-notifications.html',
   chatLink: '../shared/chat.html',
-  notifCount: 2,
+  notifCount: 0,
   title: 'Welcome to your dashboard',
-  greeting: 'Good morning, Dr. Jenkins! You have 3 classes today.',
-  ddRows: [
-    { icon: 'work', text: 'Mathematics Department' },
-    { icon: 'class', text: 'Grade 11-A, 10-C, 12-B' },
-    { icon: 'email', text: 'sarah.jenkins@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Since: Aug 2019' },
-    { icon: 'star', text: 'Senior Teacher' }
-  ]
-};</script>
+  greeting: 'You are securely logged in.',
+  ddRows: []
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script>
+(function() {
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now = new Date();
+  const dateEl = document.getElementById('todayDate');
+  if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+
+  const check = setInterval(() => {
+    if (!window.NGIS_CURRENT_USER) return;
+    clearInterval(check);
+
+    const user = window.NGIS_CURRENT_USER;
+    const teacher = window.NGIS_CURRENT_TEACHER;
+
+    if (window.HERO_CONFIG) {
+      window.HERO_CONFIG.name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      window.HERO_CONFIG.greeting = `Good day, ${user.firstName || 'Teacher'}!`;
+    }
+
+    const info = document.getElementById('teacherInfo');
+    if (info) {
+      info.innerHTML = `
+        <b>${user.firstName || ''} ${user.lastName || ''}</b><br>
+        ${user.email || ''}<br>
+        ${teacher?.department || 'Department'} · ${teacher?.employee_number || ''}
+      `;
+    }
+  }, 100);
+})();
+</script>
 </body>
 </html>
