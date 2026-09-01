@@ -39,6 +39,50 @@
   </header>
 
   <div class="page anim-up">
+
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head">
+        <div><h3>Add Student</h3><div class="sub">Creates user login + student profile</div></div>
+        <button class="btn btn-primary btn-sm" id="btnToggleForm">Show form</button>
+      </div>
+      <div class="card-pad" id="createWrap" style="display:none">
+        <form id="createForm" style="display:grid;gap:12px;grid-template-columns:1fr 1fr">
+          <label style="font-size:13px;font-weight:600">First name
+            <input class="input" name="firstName" required style="width:100%;margin-top:4px">
+          </label>
+          <label style="font-size:13px;font-weight:600">Last name
+            <input class="input" name="lastName" required style="width:100%;margin-top:4px">
+          </label>
+          <label style="font-size:13px;font-weight:600">Email
+            <input class="input" type="email" name="email" required style="width:100%;margin-top:4px">
+          </label>
+          <label style="font-size:13px;font-weight:600">Phone
+            <input class="input" name="phone" style="width:100%;margin-top:4px">
+          </label>
+          <label style="font-size:13px;font-weight:600">Student number
+            <input class="input" name="studentNumber" required placeholder="2026-STD-0150" style="width:100%;margin-top:4px">
+          </label>
+          <label style="font-size:13px;font-weight:600">Grade
+            <input class="input" name="grade" required placeholder="Grade 10" style="width:100%;margin-top:4px">
+          </label>
+          <label style="font-size:13px;font-weight:600">Class
+            <select class="select" name="classId" style="width:100%;margin-top:4px">
+              <option value="cls-10a">10A</option>
+              <option value="cls-11b">11B</option>
+              <option value="">Unassigned</option>
+            </select>
+          </label>
+          <label style="font-size:13px;font-weight:600">Temp password (optional)
+            <input class="input" name="password" placeholder="defaults to password123" style="width:100%;margin-top:4px">
+          </label>
+          <div style="grid-column:1/-1;display:flex;gap:8px;align-items:center">
+            <button type="submit" class="btn btn-primary">Create student</button>
+            <span id="createMsg" class="muted" style="font-size:13px"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-head">
         <div><h3>All Students</h3><div class="sub" id="totalLabel">Loading…</div></div>
@@ -53,7 +97,16 @@
 <script src="../../assets/js/layout.js"></script>
 <script>
 (function () {
-  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>');
+  }
+
+  const wrap = document.getElementById('createWrap');
+  document.getElementById('btnToggleForm').addEventListener('click', () => {
+    const open = wrap.style.display !== 'none';
+    wrap.style.display = open ? 'none' : 'block';
+    document.getElementById('btnToggleForm').textContent = open ? 'Show form' : 'Hide form';
+  });
 
   async function load() {
     const el = document.getElementById('list');
@@ -99,6 +152,40 @@
       el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
     }
   }
+
+  document.getElementById('createForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const msg = document.getElementById('createMsg');
+    msg.textContent = 'Creating…';
+
+    const body = {
+      firstName: fd.get('firstName'),
+      lastName: fd.get('lastName'),
+      email: fd.get('email'),
+      phone: fd.get('phone') || undefined,
+      studentNumber: fd.get('studentNumber'),
+      grade: fd.get('grade'),
+      classId: fd.get('classId') || undefined,
+      password: fd.get('password') || undefined,
+    };
+
+    try {
+      const res = await NGISAuth.api('/api/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const temp = res.meta?.temporaryPassword;
+      msg.textContent = temp
+        ? `Created. Temporary password: ${temp}`
+        : 'Student created successfully.';
+      e.target.reset();
+      load();
+    } catch (err) {
+      msg.textContent = err.message || 'Failed';
+    }
+  });
 
   setTimeout(load, 200);
 })();
