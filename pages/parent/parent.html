@@ -9,6 +9,9 @@
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="css/dashboard.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
 </head>
 <body>
 <main class="main">
@@ -16,18 +19,17 @@
 <div class="page">
 
   <section class="mt16 anim-up-2" aria-label="Choose child">
-    <div class="flex gap8 wrap">
-      <button class="child-tab on"><span class="ava t-blue" style="width:24px;height:24px;font-size:10px">KM</span>Kosal · Grade 11-A</button>
-      <button class="child-tab"><span class="ava t-purple" style="width:24px;height:24px;font-size:10px">SM</span>Sophea · Grade 8-B</button>
+    <div class="flex gap8 wrap" id="childrenList">
+      <span class="muted">Loading children…</span>
     </div>
   </section>
 
   <section class="mt16 anim-up-2" aria-label="Quick actions">
     <div class="quick-grid">
       <a class="quick" href="parent-grades.html"><span class="qi t-green"><span class="material-symbols-outlined">grade</span></span><span><b>Grades</b><small>Report card</small></span></a>
-      <a class="quick" href="student-services.html"><span class="qi t-blue"><span class="material-symbols-outlined">grid_view</span></span><span><b>Student Services</b><small>Requests & documents</small></span></a>
-      <a class="quick" href="parent-fees.html"><span class="qi t-amber"><span class="material-symbols-outlined">payments</span></span><span><b>Pay fees</b><small>$240 due</small></span></a>
-      <a class="quick" href="parent-announcements.html"><span class="qi t-purple"><span class="material-symbols-outlined">campaign</span></span><span><b>Messages</b><small>2 new</small></span></a>
+      <a class="quick" href="parent-assignments.html"><span class="qi t-blue"><span class="material-symbols-outlined">assignment</span></span><span><b>Assignments</b><small>Homework status</small></span></a>
+      <a class="quick" href="parent-fees.html"><span class="qi t-amber"><span class="material-symbols-outlined">payments</span></span><span><b>Pay fees</b><small>View invoices</small></span></a>
+      <a class="quick" href="parent-announcements.html"><span class="qi t-purple"><span class="material-symbols-outlined">campaign</span></span><span><b>Messages</b><small>School updates</small></span></a>
     </div>
   </section>
 
@@ -36,13 +38,11 @@
 
       <div class="card">
         <div class="card-head">
-          <div><h3>Kosal's schedule today</h3><div class="sub">Monday, 27 January</div></div>
+          <div><h3 id="childScheduleTitle">Child's schedule today</h3><div class="sub" id="todayDate">—</div></div>
           <a class="link-btn" href="parent-calendar.html">Calendar</a>
         </div>
-        <div class="card-pad" style="display:flex;flex-direction:column;gap:9px">
-          <div class="row-item"><span class="timechip">08:00</span><div class="row-body"><b>Advanced Mathematics</b><small>Mr. Heng Samnang · Room 302</small></div><span class="badge green">Present</span></div>
-          <div class="row-item"><span class="timechip">10:00</span><div class="row-body"><b>Physics — Mechanics</b><small>Dr. Pov Chanthy · Lab 04</small></div></div>
-          <div class="row-item"><span class="timechip">13:00</span><div class="row-body"><b>English Literature</b><small>Ms. Rin Sothea · Room 108</small></div></div>
+        <div class="card-pad" style="display:flex;flex-direction:column;gap:9px" id="scheduleList">
+          <div class="row-item"><div class="row-body"><b>No schedule data yet</b><small>Connected system — timetable coming in next phase</small></div></div>
         </div>
       </div>
 
@@ -50,16 +50,8 @@
         <div class="card-head"><div><h3>Recent announcements</h3></div><a class="link-btn" href="parent-announcements.html">View all</a></div>
         <div class="card-pad" style="display:flex;flex-direction:column;gap:10px">
           <div class="notif-card notif-blue">
-            <div class="flex between center"><b style="font-size:14px">Parent-teacher meeting invitations</b><small class="faint">2h ago</small></div>
-            <p class="muted mt4" style="font-size:13px">Book a slot for 6 February with Kosal's homeroom teacher.</p>
-          </div>
-          <div class="notif-card notif-amber">
-            <div class="flex between center"><b style="font-size:14px">Term 2 fees due 10 February</b><small class="faint">Yesterday</small></div>
-            <p class="muted mt4" style="font-size:13px">$240 outstanding for Kosal. Pay securely under Fees.</p>
-          </div>
-          <div class="notif-card notif-read">
-            <div class="flex between center"><b style="font-size:14px">Founder's Day — school closed</b><small class="faint">2 days ago</small></div>
-            <p class="muted mt4" style="font-size:13px">No classes on 3 February for both children.</p>
+            <div class="flex between center"><b style="font-size:14px">Welcome to the Connected Parent Portal</b><small class="faint">Just now</small></div>
+            <p class="muted mt4" style="font-size:13px">You are logged in with real authentication. Your linked children appear above.</p>
           </div>
         </div>
       </div>
@@ -69,29 +61,16 @@
     <div class="stack" style="flex:1">
 
       <div class="card card-pad">
-        <div class="flex between center mb12"><h3>Kosal's attendance</h3><span class="badge green">On track</span></div>
-        <div class="att-figure"><b>94%</b><span>this term</span></div>
-        <div class="bar green mt12"><span style="width:94%"></span></div>
-        <p class="muted mt12" style="font-size:13px">58 of 62 days present. 2 absences, 2 late.</p>
+        <div class="flex between center mb12"><h3>Attendance</h3><span class="badge green">On track</span></div>
+        <div class="att-figure"><b id="childAttendance">—</b><span>this term</span></div>
+        <div class="bar green mt12"><span id="attBar" style="width:0%"></span></div>
+        <p class="muted mt12" style="font-size:13px" id="attNote">Select a child to view attendance.</p>
       </div>
 
       <div class="card">
-        <div class="card-head"><div><h3>Upcoming events</h3></div></div>
-        <div class="card-pad" style="display:flex;flex-direction:column;gap:9px">
-          <div class="row-item"><span class="row-ico t-red"><span class="material-symbols-outlined">edit_note</span></span><div class="row-body"><b>Maths exam (Kosal)</b><small>14 Feb · 09:00</small></div></div>
-          <div class="row-item"><span class="row-ico t-blue"><span class="material-symbols-outlined">groups</span></span><div class="row-body"><b>Parent-teacher meeting</b><small>6 Feb · book a slot</small></div></div>
-          <div class="row-item"><span class="row-ico t-amber"><span class="material-symbols-outlined">payments</span></span><div class="row-body"><b>Fee deadline</b><small>10 Feb</small></div></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><div><h3>Recent activity</h3></div></div>
-        <div class="card-pad">
-          <div class="timeline">
-            <div class="tl-item"><span class="tl-dot t-blue"><span class="material-symbols-outlined">grade</span></span><div class="tl-body"><b>New grade</b><p>Kosal — Chemistry quiz 88%</p></div><span class="tl-time">Sun</span></div>
-            <div class="tl-item"><span class="tl-dot t-green"><span class="material-symbols-outlined">how_to_reg</span></span><div class="tl-body"><b>Marked present</b><p>Sophea — all classes Friday</p></div><span class="tl-time">Fri</span></div>
-            <div class="tl-item"><span class="tl-dot t-amber"><span class="material-symbols-outlined">receipt_long</span></span><div class="tl-body"><b>Invoice issued</b><p>Term 2 fees — Kosal</p></div><span class="tl-time">Thu</span></div>
-          </div>
+        <div class="card-head"><div><h3>Linked children</h3></div></div>
+        <div class="card-pad" id="childrenDetail">
+          <p class="muted">Loading…</p>
         </div>
       </div>
 
@@ -101,13 +80,15 @@
 </div>
 </main>
 <script>window.PAGE={"role":"parent","active":"dashboard"};</script>
-<script>window.HERO_CONFIG = {
+<script>
+// Will be updated after auth hydration
+window.HERO_CONFIG = {
   role: 'parent',
   active: 'dashboard',
   isDashboard: true,
-  name: 'Vuth Kosal',
-  id: 'Parent ID: PAR-2026-003',
-  grade: 'Guardian Account',
+  name: 'Parent',
+  id: 'Guardian Account',
+  grade: 'Parent',
   avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
@@ -115,18 +96,93 @@
   profileLink: 'parent-profile.html',
   notifLink: 'parent-notifications.html',
   chatLink: '../shared/chat.html',
-  notifCount: 2,
+  notifCount: 0,
   title: 'Welcome to your dashboard',
-  greeting: 'Hello, Mr. Vuth! Here\'s how your children are doing this week.',
-  ddRows: [
-    { icon: 'family_restroom', text: 'Guardian — 2 Children' },
-    { icon: 'school', text: 'Kosal · Grade 11-A, Sophea · Grade 8-B' },
-    { icon: 'email', text: 'vuth.kosal@gmail.com' },
-    { icon: 'calendar_today', text: 'Since: Sep 2022' },
-    { icon: 'payments', text: '1 fee due this month' }
-  ]
-};</script>
+  greeting: 'Here is how your children are doing.',
+  ddRows: []
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script>
+(function() {
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now = new Date();
+  const dateEl = document.getElementById('todayDate');
+  if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+
+  // Wait for children to load from auth bootstrap
+  const check = setInterval(() => {
+    if (!window.NGIS_CHILDREN) return;
+    clearInterval(check);
+
+    const children = window.NGIS_CHILDREN;
+    const user = window.NGIS_CURRENT_USER || NGISAuth.getUser();
+
+    // Update hero
+    if (user && window.HERO_CONFIG) {
+      window.HERO_CONFIG.name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+      window.HERO_CONFIG.greeting = `Hello! You have ${children.length} linked child${children.length !== 1 ? 'ren' : ''}.`;
+    }
+
+    // Children tabs
+    const listEl = document.getElementById('childrenList');
+    if (listEl) {
+      if (!children.length) {
+        listEl.innerHTML = '<span class="muted">No children linked to this account.</span>';
+      } else {
+        listEl.innerHTML = children.map((c, i) => {
+          const initials = ((c.first_name || '')[0] || '') + ((c.last_name || '')[0] || '');
+          return `<button class="child-tab ${i === 0 ? 'on' : ''}" data-id="${c.id}">
+            <span class="ava t-blue" style="width:24px;height:24px;font-size:10px">${initials.toUpperCase()}</span>
+            ${c.first_name || ''} · ${c.grade || ''}
+          </button>`;
+        }).join('');
+
+        // Select first child by default
+        selectChild(children[0]);
+
+        listEl.querySelectorAll('.child-tab').forEach(btn => {
+          btn.addEventListener('click', () => {
+            listEl.querySelectorAll('.child-tab').forEach(b => b.classList.remove('on'));
+            btn.classList.add('on');
+            const child = children.find(c => c.id === btn.dataset.id);
+            if (child) selectChild(child);
+          });
+        });
+      }
+    }
+
+    // Detail list
+    const detailEl = document.getElementById('childrenDetail');
+    if (detailEl) {
+      detailEl.innerHTML = children.map(c => `
+        <div class="row-item" style="margin-bottom:8px">
+          <div class="row-body">
+            <b>${c.first_name || ''} ${c.last_name || ''}</b>
+            <small>${c.grade || ''} · ${c.student_number || ''}</small>
+          </div>
+          <span class="badge green">${Math.round(c.attendance_rate || 0)}%</span>
+        </div>
+      `).join('') || '<p class="muted">No children linked.</p>';
+    }
+
+    function selectChild(c) {
+      const title = document.getElementById('childScheduleTitle');
+      if (title) title.textContent = `${c.first_name || 'Child'}'s schedule today`;
+
+      const att = document.getElementById('childAttendance');
+      if (att) att.textContent = `${Math.round(c.attendance_rate || 0)}%`;
+
+      const bar = document.getElementById('attBar');
+      if (bar) bar.style.width = `${c.attendance_rate || 0}%`;
+
+      const note = document.getElementById('attNote');
+      if (note) note.textContent = `${c.grade || ''} · Student #${c.student_number || '—'}`;
+    }
+  }, 100);
+})();
+</script>
 </body>
 </html>
