@@ -20,6 +20,8 @@ const fs = require("fs");
 
 const { getDb } = require("./backend/db/connection");
 const authRoutes = require("./backend/routes/auth");
+const studentRoutes = require("./backend/routes/students");
+const parentRoutes = require("./backend/routes/parent");
 const { authenticate, requireRole } = require("./backend/middleware/auth");
 
 const app = express();
@@ -57,8 +59,10 @@ app.use(express.static(ROOT, {
   maxAge: "1h",
 }));
 
-/* ── Auth Routes ────────────────────────────────────────────── */
+/* ── API Routes ─────────────────────────────────────────────── */
 app.use("/api/auth", authRoutes);
+app.use("/api/students", studentRoutes);
+app.use("/api/parent", parentRoutes);
 
 /* ── Health ─────────────────────────────────────────────────── */
 app.get("/api/health", (_req, res) => {
@@ -70,9 +74,7 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-/* ── Protected example routes ───────────────────────────────── */
-
-// Current user profile (already in auth routes as /api/auth/me)
+/* ── Additional Protected Routes ────────────────────────────── */
 
 // Admin-only: list all students
 app.get("/api/admin/students", authenticate, requireRole("admin"), (req, res) => {
@@ -111,27 +113,7 @@ app.get("/api/student/dashboard", authenticate, requireRole("student"), (req, re
   });
 });
 
-// Parent: list linked children
-app.get("/api/parent/children", authenticate, requireRole("parent"), (req, res) => {
-  const db = getDb();
-  const parent = db.prepare(`SELECT * FROM parents WHERE user_id = ?`).get(req.user.id);
-
-  if (!parent) {
-    return res.status(404).json({ error: { code: "NOT_FOUND", message: "Parent profile not found" } });
-  }
-
-  const children = db.prepare(`
-    SELECT s.*, u.first_name, u.last_name, u.email
-    FROM students s
-    JOIN parent_students ps ON ps.student_id = s.id
-    JOIN users u ON u.id = s.user_id
-    WHERE ps.parent_id = ?
-  `).all(parent.id);
-
-  res.json({ data: children, meta: { total: children.length } });
-});
-
-// Teacher: own profile + assigned classes (basic)
+// Teacher: own profile
 app.get("/api/teacher/me", authenticate, requireRole("teacher"), (req, res) => {
   const db = getDb();
   const teacher = db.prepare(`SELECT * FROM teachers WHERE user_id = ?`).get(req.user.id);
@@ -167,8 +149,11 @@ server.listen(PORT, () => {
   console.log(`║   Running at:  http://localhost:${PORT}                       ║`);
   console.log("╠══════════════════════════════════════════════════════════╣");
   console.log("║   Auth Endpoints:                                        ║");
-  console.log(`║   POST /api/auth/login                                   ║`);
-  console.log(`║   GET  /api/auth/me          (requires Bearer token)     ║`);
+  console.log("║   POST /api/auth/login                                   ║");
+  console.log("║   GET  /api/auth/me                                      ║");
+  console.log("║   GET  /api/students/me                                  ║");
+  console.log("║   GET  /api/parent/children                              ║");
+  console.log("║   GET  /api/student/dashboard                            ║");
   console.log("╠══════════════════════════════════════════════════════════╣");
   console.log("║   Demo accounts (password: password123)                  ║");
   console.log("║   admin@ngis.edu.kh                                      ║");
