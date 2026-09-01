@@ -1,25 +1,21 @@
 /**
  * NGIS School ERP — Student Routes
- * Proper authorization based on role + relationship
  */
 
 "use strict";
 
 const express = require("express");
+const bcrypt = require("bcryptjs");
+const { v4: uuidv4 } = require("uuid");
 const { getDb } = require("../db/connection");
 const {
   authenticate,
   requireRole,
   loadStudentProfile,
-  loadParentProfile,
 } = require("../middleware/auth");
 
 const router = express.Router();
 
-/**
- * GET /api/students/me
- * Student can only see their own profile
- */
 router.get(
   "/me",
   authenticate,
@@ -45,12 +41,108 @@ router.get(
 );
 
 /**
- * GET /api/students/:id
- * - Admin: can view any student
- * - Teacher: can view students in their classes (simplified for now)
- * - Parent: can view only their linked children
- * - Student: can only view themselves
+ * POST /api/students
+ * Admin creates a student user + profile
+ * Body: { email, password?, firstName, lastName, phone?, studentNumber, grade, classId?, house? }
  */
+router.post("/", authenticate, requireRole("admin"), (req, res) => {
+  const db = getDb();
+  const {
+    email,
+    password,
+    firstName,
+    lastName,
+    phone,
+    studentNumber,
+    grade,
+    classId,
+    house,
+    dateOfBirth,
+  } = req.body || {};
+
+  if (!email || !firstName || !lastName || !studentNumber || !grade) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "email, firstName, lastName, studentNumber, and grade are required",
+      },
+    });
+  }
+
+  const normalizedEmail = String(email).toLowerCase().trim();
+  const existing = db.prepare(`SELECT id FROM users WHERE email = ?`).get(normalizedEmail);
+  if (existing) {
+    return res.status(409).json({
+      error: { code: "CONFLICT", message: "Email already registered" },
+    });
+  }
+
+  const existingNumber = db.prepare(`SELECT id FROM students WHERE student_number = ?`).get(studentNumber);
+  if (existingNumber) {
+    return res.status(409).json({
+      error: { code: "CONFLICT", message: "Student number already exists" },
+    });
+  }
+
+  const userId = uuidv4();
+  const studentId = uuidv4();
+  const tempPassword = password || "password123";
+  const hash = bcrypt.hashSync(tempPassword, 10);
+
+  const tx = db.transaction(() => {
+    db.prepare(`
+      INSERT INTO users (id, email, password_hash, role, status, first_name, last_name, phone)
+      VALUES (?, ?, ?, 'student', 'active', ?, ?, ?)
+    `).run(userId, normalizedEmail, hash, firstName, lastName, phone || null);
+
+    db.prepare(`
+      INSERT INTO students (id, user_id, student_number, grade, class_id, house, date_of_birth, enrollment_date, gpa, attendance_rate)
+      VALUES (?, ?, ?, ?, ?, ?, ?, date('now'), 0, 100)
+    `).run(
+      studentId,
+      userId,
+      studentNumber,
+      grade,
+      classId || null,
+      house || null,
+      dateOfBirth || null
+    );
+  });
+
+  try {
+    tx();
+  } catch (err) {
+    return res.status(500).json({
+      error: { code: "SERVER_ERROR", message: err.message || "Failed to create student" },
+    });
+  }
+
+  const created = db.prepare(`
+    SELECT s.*, u.first_name, u.last_name, u.email, u.phone
+    FROM students s JOIN users u ON u.id = s.user_id
+    WHERE s.id = ?
+  `).get(studentId);
+
+  res.status(201).json({
+    data: created,
+    meta: { temporaryPassword: password ? undefined : tempPassword },
+  });
+});
+
+router.get("/", authenticate, requireRole("admin"), (req, res) => {
+  const db = getDb();
+  const students = db
+    .prepare(
+      `SELECT s.*, u.first_name, u.last_name, u.email, u.phone
+       FROM students s
+       JOIN users u ON u.id = s.user_id
+       ORDER BY u.last_name, u.first_name`
+    )
+    .all();
+
+  res.json({ data: students, meta: { total: students.length } });
+});
+
 router.get("/:id", authenticate, (req, res) => {
   const db = getDb();
   const studentId = req.params.id;
@@ -72,7 +164,6 @@ router.get("/:id", authenticate, (req, res) => {
 
   const role = req.user.role;
 
-  // Student can only access own record
   if (role === "student") {
     if (student.user_id !== req.user.id) {
       return res.status(403).json({
@@ -81,7 +172,6 @@ router.get("/:id", authenticate, (req, res) => {
     }
   }
 
-  // Parent can only access linked children
   if (role === "parent") {
     const parent = db.prepare(`SELECT id FROM parents WHERE user_id = ?`).get(req.user.id);
     if (!parent) {
@@ -99,28 +189,7 @@ router.get("/:id", authenticate, (req, res) => {
     }
   }
 
-  // Teacher access will be refined later with class assignments
-  // Admin has full access
-
   res.json({ data: student });
-});
-
-/**
- * GET /api/students
- * Admin only (list all)
- */
-router.get("/", authenticate, requireRole("admin"), (req, res) => {
-  const db = getDb();
-  const students = db
-    .prepare(
-      `SELECT s.*, u.first_name, u.last_name, u.email, u.phone
-       FROM students s
-       JOIN users u ON u.id = s.user_id
-       ORDER BY u.last_name, u.first_name`
-    )
-    .all();
-
-  res.json({ data: students, meta: { total: students.length } });
 });
 
 module.exports = router;
