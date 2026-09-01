@@ -22,6 +22,7 @@ const { getDb } = require("./backend/db/connection");
 const authRoutes = require("./backend/routes/auth");
 const studentRoutes = require("./backend/routes/students");
 const parentRoutes = require("./backend/routes/parent");
+const assignmentRoutes = require("./backend/routes/assignments");
 const { authenticate, requireRole } = require("./backend/middleware/auth");
 
 const app = express();
@@ -63,6 +64,7 @@ app.use(express.static(ROOT, {
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/parent", parentRoutes);
+app.use("/api/assignments", assignmentRoutes);
 
 /* ── Health ─────────────────────────────────────────────────── */
 app.get("/api/health", (_req, res) => {
@@ -76,7 +78,6 @@ app.get("/api/health", (_req, res) => {
 
 /* ── Additional Protected Routes ────────────────────────────── */
 
-// Admin-only: list all students
 app.get("/api/admin/students", authenticate, requireRole("admin"), (req, res) => {
   const db = getDb();
   const students = db.prepare(`
@@ -85,23 +86,18 @@ app.get("/api/admin/students", authenticate, requireRole("admin"), (req, res) =>
     JOIN users u ON u.id = s.user_id
     ORDER BY u.last_name, u.first_name
   `).all();
-
   res.json({ data: students, meta: { total: students.length } });
 });
 
-// Student: own dashboard summary
 app.get("/api/student/dashboard", authenticate, requireRole("student"), (req, res) => {
   const db = getDb();
   const student = db.prepare(`SELECT * FROM students WHERE user_id = ?`).get(req.user.id);
-
   if (!student) {
     return res.status(404).json({ error: { code: "NOT_FOUND", message: "Student profile not found" } });
   }
-
   const unread = db.prepare(
     `SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND read = 0`
   ).get(req.user.id);
-
   res.json({
     data: {
       student,
@@ -113,24 +109,16 @@ app.get("/api/student/dashboard", authenticate, requireRole("student"), (req, re
   });
 });
 
-// Teacher: own profile
 app.get("/api/teacher/me", authenticate, requireRole("teacher"), (req, res) => {
   const db = getDb();
   const teacher = db.prepare(`SELECT * FROM teachers WHERE user_id = ?`).get(req.user.id);
-
   if (!teacher) {
     return res.status(404).json({ error: { code: "NOT_FOUND", message: "Teacher profile not found" } });
   }
-
-  res.json({
-    data: {
-      teacher,
-      user: req.user,
-    },
-  });
+  res.json({ data: { teacher, user: req.user } });
 });
 
-/* ── Catch-all for SPA-style routing ────────────────────────── */
+/* ── Catch-all ──────────────────────────────────────────────── */
 app.get("*", (req, res) => {
   if (req.path.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|map)$/)) {
     return res.status(404).send("Not found");
@@ -144,22 +132,22 @@ const server = http.createServer(app);
 server.listen(PORT, () => {
   console.log("╔══════════════════════════════════════════════════════════╗");
   console.log("║   NGIS — Connected School ERP (Phase 1)                  ║");
-  console.log("║   Real Database + Authentication + RBAC                  ║");
+  console.log("║   Real Database + Authentication + RBAC + Assignments    ║");
   console.log("╠══════════════════════════════════════════════════════════╣");
   console.log(`║   Running at:  http://localhost:${PORT}                       ║`);
   console.log("╠══════════════════════════════════════════════════════════╣");
-  console.log("║   Auth Endpoints:                                        ║");
+  console.log("║   Key Endpoints:                                         ║");
   console.log("║   POST /api/auth/login                                   ║");
   console.log("║   GET  /api/auth/me                                      ║");
-  console.log("║   GET  /api/students/me                                  ║");
+  console.log("║   GET  /api/assignments                                  ║");
+  console.log("║   POST /api/assignments                                  ║");
+  console.log("║   POST /api/assignments/:id/submit                       ║");
+  console.log("║   POST /api/assignments/:id/grade                        ║");
   console.log("║   GET  /api/parent/children                              ║");
-  console.log("║   GET  /api/student/dashboard                            ║");
   console.log("╠══════════════════════════════════════════════════════════╣");
   console.log("║   Demo accounts (password: password123)                  ║");
-  console.log("║   admin@ngis.edu.kh                                      ║");
-  console.log("║   sophea@ngis.edu.kh          (teacher)                  ║");
-  console.log("║   nrinphouneta@ngis.edu.kh    (student)                  ║");
-  console.log("║   parent.hok@gmail.com        (parent)                   ║");
+  console.log("║   admin@ngis.edu.kh / sophea@ngis.edu.kh                 ║");
+  console.log("║   nrinphouneta@ngis.edu.kh / parent.hok@gmail.com        ║");
   console.log("╚══════════════════════════════════════════════════════════╝");
 });
 
