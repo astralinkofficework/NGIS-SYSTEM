@@ -9,15 +9,42 @@ const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 const { getDb } = require("../db/connection");
 const { authenticate, requireRole } = require("../middleware/auth");
+const { writeAudit } = require("../lib/audit");
 
 const router = express.Router();
 
 router.use(authenticate, requireRole("admin"));
 
-/**
- * POST /api/admin/teachers
- * Create teacher user + profile
- */
+/** GET /api/admin/stats */
+router.get("/stats", (req, res) => {
+  const db = getDb();
+  const students = db.prepare(`SELECT COUNT(*) as c FROM students`).get().c;
+  const teachers = db.prepare(`SELECT COUNT(*) as c FROM teachers`).get().c;
+  const parents = db.prepare(`SELECT COUNT(*) as c FROM parents`).get().c;
+  const classes = db.prepare(`SELECT COUNT(*) as c FROM classes`).get().c;
+  const assignments = db.prepare(`SELECT COUNT(*) as c FROM assignments WHERE status = 'published'`).get().c;
+  const grades = db.prepare(`SELECT COUNT(*) as c FROM grades`).get().c;
+  const announcements = db.prepare(`SELECT COUNT(*) as c FROM announcements WHERE published = 1`).get().c;
+
+  res.json({
+    data: { students, teachers, parents, classes, assignments, grades, announcements },
+  });
+});
+
+/** GET /api/admin/audit?limit=20 */
+router.get("/audit", (req, res) => {
+  const db = getDb();
+  const limit = Math.min(Number(req.query.limit) || 20, 100);
+  const rows = db.prepare(`
+    SELECT a.*, u.first_name || ' ' || u.last_name as actor_name, u.email as actor_email
+    FROM audit_logs a
+    LEFT JOIN users u ON u.id = a.actor_id
+    ORDER BY a.created_at DESC
+    LIMIT ?
+  `).all(limit);
+  res.json({ data: rows, meta: { total: rows.length } });
+});
+
 router.post("/teachers", (req, res) => {
   const db = getDb();
   const { email, password, firstName, lastName, phone, employeeNumber, department } = req.body || {};
@@ -61,6 +88,15 @@ router.post("/teachers", (req, res) => {
     return res.status(500).json({ error: { code: "SERVER_ERROR", message: err.message } });
   }
 
+  writeAudit(db, {
+    actorId: req.user.id,
+    action: "create",
+    resource: "teacher",
+    resourceId: teacherId,
+    newValue: { email: normalizedEmail, employeeNumber },
+    ip: req.ip,
+  });
+
   const created = db.prepare(`
     SELECT t.*, u.first_name, u.last_name, u.email, u.phone
     FROM teachers t JOIN users u ON u.id = t.user_id
@@ -73,10 +109,6 @@ router.post("/teachers", (req, res) => {
   });
 });
 
-/**
- * POST /api/admin/parents
- * Create parent user + profile
- */
 router.post("/parents", (req, res) => {
   const db = getDb();
   const { email, password, firstName, lastName, phone, relationship } = req.body || {};
@@ -114,6 +146,15 @@ router.post("/parents", (req, res) => {
     return res.status(500).json({ error: { code: "SERVER_ERROR", message: err.message } });
   }
 
+  writeAudit(db, {
+    actorId: req.user.id,
+    action: "create",
+    resource: "parent",
+    resourceId: parentId,
+    newValue: { email: normalizedEmail },
+    ip: req.ip,
+  });
+
   const created = db.prepare(`
     SELECT p.*, u.first_name, u.last_name, u.email, u.phone
     FROM parents p JOIN users u ON u.id = p.user_id
@@ -126,10 +167,6 @@ router.post("/parents", (req, res) => {
   });
 });
 
-/**
- * POST /api/admin/link-parent-student
- * Body: { parentId, studentId, isPrimary? }
- */
 router.post("/link-parent-student", (req, res) => {
   const db = getDb();
   const { parentId, studentId, isPrimary } = req.body || {};
@@ -159,12 +196,18 @@ router.post("/link-parent-student", (req, res) => {
     VALUES (?, ?, ?)
   `).run(parentId, studentId, isPrimary ? 1 : 0);
 
+  writeAudit(db, {
+    actorId: req.user.id,
+    action: "link",
+    resource: "parent_student",
+    resourceId: `${parentId}:${studentId}`,
+    newValue: { parentId, studentId },
+    ip: req.ip,
+  });
+
   res.status(201).json({ message: "Parent linked to student", data: { parentId, studentId } });
 });
 
-/**
- * GET /api/admin/parents — list parents
- */
 router.get("/parents", (req, res) => {
   const db = getDb();
   const rows = db.prepare(`
@@ -175,9 +218,6 @@ router.get("/parents", (req, res) => {
   res.json({ data: rows, meta: { total: rows.length } });
 });
 
-/**
- * GET /api/admin/teachers — list teachers
- */
 router.get("/teachers", (req, res) => {
   const db = getDb();
   const rows = db.prepare(`
