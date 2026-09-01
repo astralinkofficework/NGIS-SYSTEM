@@ -9,6 +9,7 @@ const { v4: uuidv4 } = require("uuid");
 const { getDb } = require("../db/connection");
 const { authenticate, requireRole } = require("../middleware/auth");
 const { createNotification } = require("./notifications");
+const { writeAudit } = require("../lib/audit");
 
 const router = express.Router();
 
@@ -124,7 +125,15 @@ router.post("/", authenticate, requireRole("teacher", "admin"), (req, res) => {
     recordedBy, comments || ""
   );
 
-  // Notify student
+  writeAudit(db, {
+    actorId: req.user.id,
+    action: "create",
+    resource: "grade",
+    resourceId: id,
+    newValue: { studentId, subjectId, score, max, letter, title },
+    ip: req.ip,
+  });
+
   try {
     const student = db.prepare(`SELECT user_id FROM students WHERE id = ?`).get(studentId);
     if (student) {
