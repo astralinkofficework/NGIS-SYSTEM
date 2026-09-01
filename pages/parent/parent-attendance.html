@@ -1,100 +1,114 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Attendance</title>
+<title>NGIS — Child Attendance</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
 </head>
 <body>
 <main class="main">
 <div id="heroBanner"></div>
 <div class="page">
 
-  <div class="grid g-4 anim-up">
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">how_to_reg</span></div><span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>2%</span></div><div class="stat-val">94%</div><div class="stat-label">Overall Rate</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">event_available</span></div></div><div class="stat-val">112</div><div class="stat-label">Days Present</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">schedule</span></div></div><div class="stat-val">5</div><div class="stat-label">Days Late</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">event_busy</span></div></div><div class="stat-val">3</div><div class="stat-label">Days Absent</div></div>
+  <section class="mt16 anim-up">
+    <div class="flex gap8 wrap" id="childrenTabs"><span class="muted">Loading children…</span></div>
+  </section>
+
+  <div class="grid g-4 mt16 anim-up" style="margin-bottom:16px">
+    <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">check_circle</span></div></div><div class="stat-val" id="sPresent">—</div><div class="stat-label">Present</div></div>
+    <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">schedule</span></div></div><div class="stat-val" id="sLate">—</div><div class="stat-label">Late</div></div>
+    <div class="stat"><div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">cancel</span></div></div><div class="stat-val" id="sAbsent">—</div><div class="stat-label">Absent</div></div>
+    <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">percent</span></div></div><div class="stat-val" id="sRate">—</div><div class="stat-label">Rate</div></div>
   </div>
 
-  <div class="col-main mt16 anim-up-2">
-    <div class="stack" style="flex:2">
-      <div class="card">
-        <div class="card-head"><div><h3>Attendance History</h3></div><select class="select" style="width:auto"><option>All Subjects</option><option>Mathematics</option><option>Physics</option><option>English</option></select></div>
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Date</th><th>Day</th><th>Status</th><th>Check-in Time</th><th>Note</th><th>Action</th></tr></thead>
-            <tbody>
-              <tr><td class="faint mono" style="font-size:12px">Jan 27</td><td>Monday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">08:12 AM</td><td class="faint">—</td><td></td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 24</td><td>Friday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">07:58 AM</td><td class="faint">—</td><td></td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 22</td><td>Wednesday</td><td><span class="badge amber">Late</span></td><td class="faint" style="font-size:12px">08:34 AM</td><td class="faint" style="font-size:12px">Traffic</td><td><button class="btn btn-sm btn-ghost" onclick="window.toast('Excuse letter submitted','success')">Excuse</button></td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 20</td><td>Monday</td><td><span class="badge red">Absent</span></td><td class="faint" style="font-size:12px">—</td><td class="faint" style="font-size:12px">Medical leave</td><td><span class="badge green">Excused</span></td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 17</td><td>Friday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">08:01 AM</td><td class="faint">—</td><td></td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 15</td><td>Wednesday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">07:52 AM</td><td class="faint">—</td><td></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="stack">
-      <div class="card">
-        <div class="card-head"><h3>Attendance Summary</h3></div>
-        <div class="card-pad">
-          <div style="display:flex;align-items:baseline;gap:8px">
-            <b style="font-size:34px;font-weight:800;letter-spacing:-.02em">94%</b>
-            <span class="faint" style="font-size:13px">this term</span>
-          </div>
-          <div class="bar" style="margin-top:12px"><span style="width:94%"></span></div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin-top:18px;width:100%">
-            <div><div style="font-size:22px;font-weight:800;color:var(--success)">112</div><div class="faint" style="font-size:11px">Present</div></div>
-            <div><div style="font-size:22px;font-weight:800;color:var(--warning)">5</div><div class="faint" style="font-size:11px">Late</div></div>
-            <div><div style="font-size:22px;font-weight:800;color:var(--danger)">3</div><div class="faint" style="font-size:11px">Absent</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h3>Submit Excuse Letter</h3></div>
-        <div class="card-pad" style="display:grid;gap:12px">
-          <div><label class="label">Date of Absence</label><input class="input" type="date"></div>
-          <div><label class="label">Reason</label><textarea class="input" rows="3" placeholder="Describe the reason…" style="resize:vertical"></textarea></div>
-          <button class="btn btn-primary" onclick="window.toast('Excuse letter submitted to school','success')"><span class="material-symbols-outlined">send</span>Submit</button>
-        </div>
-      </div>
-    </div>
+  <div class="card anim-up-2">
+    <div class="card-head"><div><h3 id="title">Attendance</h3></div></div>
+    <div class="card-pad" id="list"><p class="muted">Select a child.</p></div>
   </div>
 
 </div>
 </main>
 <script>window.PAGE={"role":"parent","active":"attendance"};</script>
-<script>window.HERO_CONFIG = {
-  name: 'Mr. Vuth Kosal',
-  id: 'Parent ID: PAR-2026-003',
-  grade: 'Guardian Account',
+<script>
+window.HERO_CONFIG = {
+  role: 'parent', active: 'attendance', name: 'Parent', id: 'Guardian', grade: 'Parent',
   avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=80',
-  title: 'Attendance',
-  greeting: 'Track your children\'s school attendance records.',
-  breadcrumbs: [{ label: 'Attendance' }],
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: 'parent-profile.html',
-  notifLink: 'parent-notifications.html',
-  chatLink: '../shared/chat.html',
-  notifCount: 2,
-  ddRows: [
-    { icon: 'family_restroom', text: 'Guardian — 2 Children' },
-    { icon: 'school', text: 'Kosal · Grade 11-A, Sophea · Grade 8-B' },
-    { icon: 'email', text: 'vuth.kosal@gmail.com' },
-    { icon: 'calendar_today', text: 'Since: Sep 2022' },
-    { icon: 'payments', text: '1 fee due this month' }
-  ]
-};</script>
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'parent-profile.html', notifLink: 'parent-notifications.html', chatLink: '../shared/chat.html',
+  notifCount: 0, title: 'Attendance', greeting: 'Track your children\'s attendance.',
+  breadcrumbs: [{ label: 'Attendance' }], ddRows: []
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
+  function badge(status) {
+    const colors = { present: 'green', late: 'amber', absent: 'red', excused: 'blue' };
+    return `<span class="badge ${colors[status]||'blue'}">${esc(status)}</span>`;
+  }
+
+  async function loadAttendance(studentId, name) {
+    document.getElementById('title').textContent = (name || 'Child') + "'s Attendance";
+    const el = document.getElementById('list');
+    el.innerHTML = '<p class="muted">Loading…</p>';
+    try {
+      const res = await NGISAuth.api('/api/attendance?studentId=' + encodeURIComponent(studentId));
+      const rows = res.data || [];
+      const m = res.meta || {};
+      document.getElementById('sPresent').textContent = m.present ?? 0;
+      document.getElementById('sLate').textContent = m.late ?? 0;
+      document.getElementById('sAbsent').textContent = m.absent ?? 0;
+      document.getElementById('sRate').textContent = m.rate != null ? m.rate + '%' : '—';
+
+      if (!rows.length) { el.innerHTML = '<p class="muted">No attendance records yet.</p>'; return; }
+
+      el.innerHTML = `
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Date</th><th>Status</th><th>Notes</th></tr></thead>
+            <tbody>
+              ${rows.map(r => `<tr>
+                <td class="mono" style="font-size:13px">${esc(r.date)}</td>
+                <td>${badge(r.status)}</td>
+                <td class="faint" style="font-size:12px">${esc(r.notes || '')}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    } catch (err) {
+      el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
+    }
+  }
+
+  const check = setInterval(() => {
+    if (!window.NGIS_CHILDREN) return;
+    clearInterval(check);
+    const children = window.NGIS_CHILDREN;
+    const tabs = document.getElementById('childrenTabs');
+    if (!children.length) { tabs.innerHTML = '<span class="muted">No children linked.</span>'; return; }
+    tabs.innerHTML = children.map((c, i) =>
+      `<button class="child-tab ${i===0?'on':''}" data-id="${c.id}" data-name="${esc(c.first_name||'')}">${esc((c.first_name||'') + ' · ' + (c.grade||''))}</button>`
+    ).join('');
+    loadAttendance(children[0].id, children[0].first_name);
+    tabs.querySelectorAll('.child-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.querySelectorAll('.child-tab').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        loadAttendance(btn.dataset.id, btn.dataset.name);
+      });
+    });
+  }, 100);
+})();
+</script>
 </body>
 </html>
