@@ -33,6 +33,23 @@
 @media (max-width: 900px) { .stat-row { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .stat-row { grid-template-columns: 1fr; } }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
 </head>
 <body>
 <main class="main">
@@ -42,7 +59,7 @@
         <button class="htb-hamburger" id="htbHamburger" aria-label="Open menu"><span class="mi">menu</span></button>
         <a href="parent.html" class="htb-home-btn"><span class="mi">arrow_back</span><span>Back to Dashboard</span></a>
       </div>
-      <div class="htb-center"><img class="htb-logo" src="LOGO NGIS (2).png" alt="NGIS logo" /></div>
+      <div class="htb-center"><img class="htb-logo" src="../student/LOGO NGIS (2).png" alt="NGIS logo" /></div>
       <div class="htb-right" style="opacity:0;pointer-events:none;"></div>
     </div>
   </header>
@@ -78,8 +95,7 @@ function priorityBadge(p) {
 }
 
 async function loadParent() {
-  const res = await fetch(`${API}?studentId=${currentChild}`);
-  const json = await res.json();
+  const json = await NGISAuth.api(`${API}?studentId=${encodeURIComponent(currentChild)}`);
   const items = json.data || [];
   document.getElementById('pOpen').textContent = items.filter(i => i.status === 'open').length;
   document.getElementById('pPending').textContent = items.filter(i => i.status === 'pending').length;
@@ -132,6 +148,7 @@ loadParent();
     { icon: 'email', text: 'parent@ngis.edu.kh' }, { icon: 'calendar_today', text: 'Enrolled: Sep 2024' }
   ]
 };</script>
+
 <script src="../../assets/js/hero.js"></script>
 </body>
 </html>

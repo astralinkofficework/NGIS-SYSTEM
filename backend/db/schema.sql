@@ -208,6 +208,25 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
 
+-- ── Service Requests ───────────────────────────────────────
+CREATE TABLE IF NOT EXISTS service_requests (
+  id           TEXT PRIMARY KEY,
+  student_id   TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  category     TEXT NOT NULL,
+  type         TEXT NOT NULL,
+  title        TEXT NOT NULL,
+  description  TEXT,
+  status       TEXT NOT NULL DEFAULT 'open' CHECK(status IN ('open','pending','in_progress','completed','rejected')),
+  priority     TEXT NOT NULL DEFAULT 'normal' CHECK(priority IN ('normal','high','urgent')),
+  campus       TEXT,
+  assignee     TEXT,
+  comments     TEXT NOT NULL DEFAULT '[]',
+  created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_service_requests_student ON service_requests(student_id);
+CREATE INDEX IF NOT EXISTS idx_service_requests_status ON service_requests(status);
+
 -- ── Audit Log ──────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS audit_logs (
   id          TEXT PRIMARY KEY,

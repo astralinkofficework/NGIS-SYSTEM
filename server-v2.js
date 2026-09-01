@@ -12,6 +12,7 @@ const path = require("path");
 const http = require("http");
 const cors = require("cors");
 const fs = require("fs");
+const { execFileSync } = require("child_process");
 
 const { getDb } = require("./backend/db/connection");
 const authRoutes = require("./backend/routes/auth");
@@ -23,6 +24,7 @@ const attendanceRoutes = require("./backend/routes/attendance");
 const announcementRoutes = require("./backend/routes/announcements");
 const notificationRoutes = require("./backend/routes/notifications");
 const adminRoutes = require("./backend/routes/admin");
+const serviceRequestRoutes = require("./backend/routes/service-requests");
 const { authenticate, requireRole } = require("./backend/middleware/auth");
 
 const app = express();
@@ -31,17 +33,22 @@ const ROOT = __dirname;
 
 const DB_PATH = path.join(__dirname, "backend/db/ngis.sqlite");
 if (!fs.existsSync(DB_PATH)) {
-  console.log("Database not found. Please run: npm run db:init && npm run db:seed");
-  process.exit(1);
+  execFileSync(process.execPath, [path.join(__dirname, "backend/db/init.js")], { stdio: "inherit" });
 }
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.disable("x-powered-by");
+const allowedOrigins = (process.env.CORS_ORIGINS || "").split(",").map((origin) => origin.trim()).filter(Boolean);
+app.use(cors({
+  origin: allowedOrigins.length ? allowedOrigins : false,
+  credentials: true,
+}));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use((_req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "SAMEORIGIN");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   next();
 });
 
@@ -56,6 +63,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/service-requests", serviceRequestRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", version: "2.0.0", name: "NGIS Connected School ERP", time: new Date().toISOString() });
@@ -86,6 +94,16 @@ app.get("/api/teacher/me", authenticate, requireRole("teacher"), (req, res) => {
   res.json({ data: { teacher, user: req.user } });
 });
 
+app.use("/api", (_req, res) => {
+  res.status(404).json({ error: { code: "NOT_FOUND", message: "API route not found" } });
+});
+
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  if (res.headersSent) return;
+  res.status(err.status || 500).json({ error: { code: "INTERNAL_ERROR", message: "An unexpected server error occurred" } });
+});
+
 app.get("*", (req, res) => {
   if (req.path.match(/\.(css|js|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|map)$/)) return res.status(404).send("Not found");
   res.sendFile(path.join(ROOT, "index.html"));
@@ -95,7 +113,6 @@ const server = http.createServer(app);
 server.listen(PORT, () => {
   console.log(`NGIS ERP v2 → http://localhost:${PORT}`);
   console.log("APIs: auth, students, parent, assignments, grades, attendance, announcements, notifications, admin");
-  console.log("Demo password: password123");
 });
 server.on("error", (err) => {
   console.error(err.code === "EADDRINUSE" ? `Port ${PORT} in use` : err);

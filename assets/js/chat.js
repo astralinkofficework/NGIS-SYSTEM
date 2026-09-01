@@ -186,7 +186,7 @@
       convList.innerHTML = `
         <div class="conv-empty-state">
           <span class="material-symbols-outlined">chat_bubble_outline</span>
-          <p>${f ? "No results for "" + escHtml(f) + """ : "No conversations yet.<br>Start one below."}</p>
+          <p>${f ? 'No results for "' + escHtml(f) + '"' : "No conversations yet.<br>Start one below."}</p>
         </div>`;
       return;
     }
