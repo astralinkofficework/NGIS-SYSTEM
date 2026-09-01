@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NGIS — Accounts</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body>
+<main class="main">
+  <header class="hero">
+    <div class="hero-topbar">
+      <div class="htb-left">
+        <a href="../../index.html" class="htb-home-btn"><span class="mi">home</span><span>Home</span></a>
+      </div>
+      <div class="htb-right">
+        <div class="htb-profile">
+          <div class="htb-pinfo">
+            <span class="htb-pname">Admin</span>
+            <div class="htb-pgrade">Account management</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-body">
+      <div class="hero-text">
+        <h1 class="hero-title">Accounts</h1>
+        <p class="hero-greeting">Create teachers & parents, and link families.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="page anim-up" style="display:grid;gap:16px">
+
+    <div class="grid g-2" style="gap:16px">
+      <div class="card">
+        <div class="card-head"><h3>Create Teacher</h3></div>
+        <div class="card-pad">
+          <form id="teacherForm" style="display:grid;gap:10px">
+            <input class="input" name="firstName" placeholder="First name" required>
+            <input class="input" name="lastName" placeholder="Last name" required>
+            <input class="input" type="email" name="email" placeholder="Email" required>
+            <input class="input" name="employeeNumber" placeholder="Employee number e.g. TCH-0020" required>
+            <input class="input" name="department" placeholder="Department">
+            <input class="input" name="password" placeholder="Temp password (optional)">
+            <button class="btn btn-primary" type="submit">Create teacher</button>
+            <span id="teacherMsg" class="muted" style="font-size:13px"></span>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Create Parent</h3></div>
+        <div class="card-pad">
+          <form id="parentForm" style="display:grid;gap:10px">
+            <input class="input" name="firstName" placeholder="First name" required>
+            <input class="input" name="lastName" placeholder="Last name" required>
+            <input class="input" type="email" name="email" placeholder="Email" required>
+            <input class="input" name="phone" placeholder="Phone">
+            <select class="select" name="relationship">
+              <option value="father">Father</option>
+              <option value="mother">Mother</option>
+              <option value="guardian">Guardian</option>
+            </select>
+            <input class="input" name="password" placeholder="Temp password (optional)">
+            <button class="btn btn-primary" type="submit">Create parent</button>
+            <span id="parentMsg" class="muted" style="font-size:13px"></span>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Link Parent ↔ Student</h3></div>
+      <div class="card-pad">
+        <form id="linkForm" style="display:grid;gap:10px;grid-template-columns:1fr 1fr auto;align-items:end">
+          <label style="font-size:13px;font-weight:600">Parent
+            <select class="select" name="parentId" id="parentSelect" required style="width:100%;margin-top:4px"></select>
+          </label>
+          <label style="font-size:13px;font-weight:600">Student
+            <select class="select" name="studentId" id="studentSelect" required style="width:100%;margin-top:4px"></select>
+          </label>
+          <button class="btn btn-primary" type="submit">Link</button>
+        </form>
+        <p id="linkMsg" class="muted" style="font-size:13px;margin-top:10px"></p>
+      </div>
+    </div>
+
+    <div class="grid g-2" style="gap:16px">
+      <div class="card">
+        <div class="card-head"><h3>Teachers</h3><span class="sub" id="teacherCount">—</span></div>
+        <div class="card-pad" id="teacherList"><p class="muted">Loading…</p></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Parents</h3><span class="sub" id="parentCount">—</span></div>
+        <div class="card-pad" id="parentList"><p class="muted">Loading…</p></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+<script>window.PAGE={"role":"admin","active":"accounts"};</script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
+
+  async function loadLists() {
+    const [teachers, parents, students] = await Promise.all([
+      NGISAuth.api('/api/admin/teachers'),
+      NGISAuth.api('/api/admin/parents'),
+      NGISAuth.api('/api/admin/students'),
+    ]);
+
+    const tRows = teachers.data || [];
+    const pRows = parents.data || [];
+    const sRows = students.data || [];
+
+    document.getElementById('teacherCount').textContent = tRows.length + ' total';
+    document.getElementById('parentCount').textContent = pRows.length + ' total';
+
+    document.getElementById('teacherList').innerHTML = tRows.length
+      ? `<ul style="margin:0;padding-left:18px">${tRows.map(t =>
+          `<li style="margin-bottom:6px"><b>${esc(t.first_name)} ${esc(t.last_name)}</b> — ${esc(t.email)} <span class="faint">(${esc(t.employee_number)})</span></li>`
+        ).join('')}</ul>`
+      : '<p class="muted">No teachers yet.</p>';
+
+    document.getElementById('parentList').innerHTML = pRows.length
+      ? `<ul style="margin:0;padding-left:18px">${pRows.map(p =>
+          `<li style="margin-bottom:6px"><b>${esc(p.first_name)} ${esc(p.last_name)}</b> — ${esc(p.email)}</li>`
+        ).join('')}</ul>`
+      : '<p class="muted">No parents yet.</p>';
+
+    const parentSelect = document.getElementById('parentSelect');
+    const studentSelect = document.getElementById('studentSelect');
+    parentSelect.innerHTML = pRows.map(p =>
+      `<option value="${p.id}">${esc(p.first_name)} ${esc(p.last_name)} (${esc(p.email)})</option>`
+    ).join('') || '<option value="">No parents</option>';
+    studentSelect.innerHTML = sRows.map(s =>
+      `<option value="${s.id}">${esc(s.first_name)} ${esc(s.last_name)} — ${esc(s.student_number)}</option>`
+    ).join('') || '<option value="">No students</option>';
+  }
+
+  function bindCreate(formId, url, msgId) {
+    document.getElementById(formId).addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const body = Object.fromEntries(fd.entries());
+      if (!body.password) delete body.password;
+      const msg = document.getElementById(msgId);
+      msg.textContent = 'Creating…';
+      try {
+        const res = await NGISAuth.api(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const temp = res.meta?.temporaryPassword;
+        msg.textContent = temp ? `Created. Temp password: ${temp}` : 'Created successfully.';
+        e.target.reset();
+        loadLists();
+      } catch (err) {
+        msg.textContent = err.message || 'Failed';
+      }
+    });
+  }
+
+  bindCreate('teacherForm', '/api/admin/teachers', 'teacherMsg');
+  bindCreate('parentForm', '/api/admin/parents', 'parentMsg');
+
+  document.getElementById('linkForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const msg = document.getElementById('linkMsg');
+    msg.textContent = 'Linking…';
+    try {
+      await NGISAuth.api('/api/admin/link-parent-student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          parentId: fd.get('parentId'),
+          studentId: fd.get('studentId'),
+          isPrimary: true,
+        }),
+      });
+      msg.textContent = 'Linked successfully.';
+    } catch (err) {
+      msg.textContent = err.message || 'Failed';
+    }
+  });
+
+  setTimeout(loadLists, 200);
+})();
+</script>
+</body>
+</html>
