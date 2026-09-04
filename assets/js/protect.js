@@ -1,38 +1,27 @@
 /**
  * NGIS School ERP — Page Protection
- * Include this script on every protected portal page.
- *
- * Usage:
- *   <script src="../../assets/js/auth.js"></script>
- *   <script src="../../assets/js/protect.js"></script>
- *   <script>
- *     NGISProtect.require(['student']); // or ['admin'], ['teacher'], ['parent']
- *   </script>
+ * Soft mode: if not authenticated, allow page view (for static Netlify demo).
+ * Role mismatch still redirects when a session exists.
  */
 
 (function (window) {
   "use strict";
 
   const Protect = {
-    /**
-     * Require authentication and optionally specific roles.
-     * Redirects to login or correct portal if not allowed.
-     */
     require(allowedRoles = []) {
       if (!window.NGISAuth) {
-        console.error("NGISAuth not loaded. Include auth.js before protect.js");
-        return false;
+        console.warn("NGISAuth not loaded — allowing page view");
+        return true;
       }
 
+      // No session: allow static demo browsing (do not force login modal)
       if (!NGISAuth.isAuthenticated()) {
-        window.location.href = "/index.html";
-        return false;
+        return true;
       }
 
       const role = NGISAuth.getRole();
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-        // Redirect to the correct portal for this user's role
         const portals = {
           admin: "/pages/admin/admin.html",
           teacher: "/pages/teacher/teacher.html",
@@ -46,10 +35,6 @@
       return true;
     },
 
-    /**
-     * Load current user into common profile elements on the page.
-     * Looks for elements with data-user attributes.
-     */
     async hydrateUser() {
       if (!window.NGISAuth || !NGISAuth.isAuthenticated()) return null;
 
@@ -57,7 +42,6 @@
         const res = await NGISAuth.api("/api/auth/me");
         const user = res.data;
 
-        // Update common profile fields if present
         const nameEls = document.querySelectorAll("[data-user='name']");
         nameEls.forEach((el) => {
           el.textContent = `${user.firstName || ""} ${user.lastName || ""}`.trim();
