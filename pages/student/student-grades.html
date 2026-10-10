@@ -1,58 +1,480 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Grades</title>
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<title>NGIS — Student Performance & Academic Record</title>
+
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<!-- NGIS Framework Styles -->
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
-<script src="../../assets/js/auth.js"></script>
-<script src="../../assets/js/protect.js"></script>
-<script src="_auth-bootstrap.js"></script>
+
+<!-- Tailwind CSS (for page content) -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        forest: {
+          900: "#01281a",
+          800: "#013623",
+          700: "#1e4d38",
+          600: "#006c49",
+          100: "#e2ede6",
+          50: "#f0f6f2",
+        },
+        surface: {
+          card: "#ffffff",
+          page: "#f8fafb",
+          subtle: "#f2f5f4",
+          border: "#ffffff",
+          borderLight: "#ffffff"
+        },
+        ink: {
+          main: "#111b15",
+          muted: "#4e5d54",
+          soft: "#7d8d83"
+        }
+      },
+      fontFamily: {
+        sans: ['"Inter"', 'sans-serif'],
+        display: ['"Inter"', 'sans-serif'],
+        khmer: ['"Kantumruy Pro"', 'sans-serif']
+      }
+    }
+  }
+};
+</script>
+
+<script>
+try {
+  var _t = localStorage.getItem('ngis-theme');
+  if (_t) document.documentElement.setAttribute('data-theme', _t);
+} catch(e) {}
+</script>
+
+<style>
+/* Card stroke to color white all */
+section, .card, [class*="card"], [class*="rounded-2xl"], [class*="rounded-3xl"], .border-surface-border, .border-surface-borderLight {
+  border-color: #ffffff !important;
+}
+
+/* Base overrides */
+html, body {
+  background-color: #f8fafb;
+  color: #111b15;
+  font-family: 'Inter', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+.font-khmer {
+  font-family: 'Kantumruy Pro', sans-serif;
+  line-height: 1.6;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Ensure NGIS shell & sidebar layout integration */
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.page {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+@media (min-width: 640px) {
+  .page { padding: 28px 28px 64px; }
+}
+@media (min-width: 1024px) {
+  .page { padding: 32px 36px 72px; }
+}
+*, h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: 400 !important; }
+</style>
 </head>
-<body data-page="grades">
+<body data-page="report-cards" class="font-sans selection:bg-forest-100 selection:text-forest-800">
+
 <main class="main">
-<div id="heroBanner"></div>
+  <!-- ═══════════════ TOPBAR / HERO HEADER ═══════════════ -->
+  <!-- Injected dynamically by hero.js (matching all NGIS student pages) -->
+  <div id="heroBanner"></div>
 
-  <div class="page">
+  <!-- ═══════════════ EDITORIAL WORKSPACE ═══════════════ -->
+  <div class="page space-y-9">
 
-    <div class="grid g-3 anim-up" style="margin-bottom:16px">
-      <div class="stat">
-        <div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">grade</span></div></div>
-        <div class="stat-val" id="statCount">—</div>
-        <div class="stat-label">Assessments</div>
+    <!-- Masthead Section: Editorial Identity & Live Metrics Strip -->
+    <section class="relative bg-white rounded-3xl border border-surface-border shadow-sm overflow-hidden p-6 sm:p-8 lg:p-10">
+      <!-- Subtle Architectural Accent -->
+      <div class="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-gradient-to-br from-forest-50 to-transparent pointer-events-none opacity-80"></div>
+      
+      <div class="relative z-10 flex flex-col gap-8">
+        <!-- Top Row: Academic Year Toggle -->
+        <div class="flex items-center justify-between gap-4 border-b border-surface-borderLight pb-5">
+          <span class="text-xs font-normal uppercase tracking-wider text-ink-soft">Academic Year</span>
+          <!-- Year Selector Segmented Control -->
+          <div class="inline-flex p-1 bg-surface-subtle rounded-xl border border-surface-border" id="yearSelector">
+            <button class="px-3.5 py-1.5 text-xs font-normal rounded-lg bg-white text-forest-800 shadow-xs border border-surface-borderLight" data-year="2025-2026">
+              2025–2026 (Current)
+            </button>
+            <button class="px-3.5 py-1.5 text-xs font-medium text-ink-muted hover:text-forest-800 transition-colors" data-year="2024-2025">
+              2024–2025
+            </button>
+            <button class="px-3.5 py-1.5 text-xs font-medium text-ink-muted hover:text-forest-800 transition-colors" data-year="2023-2024">
+              2023–2024
+            </button>
+          </div>
+        </div>
+
+        <!-- Middle Row: Student Headline & Metric Strip -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <!-- Student Bio Info -->
+          <div class="lg:col-span-5 space-y-2">
+            <div>
+              <h1 class="text-3xl sm:text-4xl font-normal font-display text-forest-800 tracking-tight leading-tight">
+                Nrinphouneta Hok
+              </h1>
+              <p class="text-sm text-ink-muted mt-1 font-medium">
+                ID: <span class="font-mono text-ink-main">#SS2-2026-042</span> • Science &amp; Social Studies Stream
+              </p>
+            </div>
+            <p class="text-xs text-ink-soft flex items-center gap-1.5 pt-1">
+              <span class="material-symbols-outlined text-[16px] text-forest-700">school</span>
+              Academic Advisor: <span class="font-normal text-ink-main">Ms. Rathana Chea</span>
+            </p>
+          </div>
+
+          <!-- Academic Metrics Ribbon -->
+          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <!-- Metric 1: Cumulative GPA -->
+            <div class="bg-surface-subtle/80 rounded-2xl p-4 sm:p-5 border border-surface-border flex flex-col justify-between">
+              <div class="flex items-center justify-between text-ink-muted text-xs font-medium mb-3">
+                <span>Cumulative GPA</span>
+                <span class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-forest-700 shadow-xs">
+                  <span class="material-symbols-outlined text-[17px]">trending_up</span>
+                </span>
+              </div>
+              <div>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-3xl sm:text-4xl font-display font-normal text-forest-800 tracking-tight">3.88</span>
+                  <span class="text-[11px] font-normal text-forest-600 bg-forest-100/60 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                    <span class="material-symbols-outlined text-[13px]">arrow_upward</span>+0.12
+                  </span>
+                </div>
+                <div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-border/60 text-[11px] text-ink-soft font-medium">
+                  <span>Scale 4.0</span>
+                  <span class="text-forest-700 font-normal">S1 Verified</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric 2: Class Rank -->
+            <div class="bg-surface-subtle/80 rounded-2xl p-4 sm:p-5 border border-surface-border flex flex-col justify-between">
+              <div class="flex items-center justify-between text-ink-muted text-xs font-medium mb-3">
+                <span>Class Standing</span>
+                <span class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-forest-700 shadow-xs">
+                  <span class="material-symbols-outlined text-[17px]">workspace_premium</span>
+                </span>
+              </div>
+              <div>
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-3xl sm:text-4xl font-display font-normal text-forest-800 tracking-tight">#3</span>
+                  <span class="text-xs text-ink-muted font-medium">/ 38 students</span>
+                </div>
+                <div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-border/60 text-[11px] text-ink-soft font-medium">
+                  <span>Percentile</span>
+                  <span class="text-forest-700 font-normal">Top 8% Cohort</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric 3: Credit Completion -->
+            <div class="bg-surface-subtle/80 rounded-2xl p-4 sm:p-5 border border-surface-border flex flex-col justify-between">
+              <div class="flex items-center justify-between text-ink-muted text-xs font-medium mb-3">
+                <span>Credit Progress</span>
+                <span class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-forest-700 shadow-xs">
+                  <span class="material-symbols-outlined text-[17px]">verified</span>
+                </span>
+              </div>
+              <div>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-3xl sm:text-4xl font-display font-normal text-forest-800 tracking-tight">24<span class="text-xl font-normal text-ink-soft">/24</span></span>
+                  <span class="text-[11px] font-normal text-forest-700 bg-forest-100/60 px-1.5 py-0.5 rounded">100%</span>
+                </div>
+                <div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-border/60 text-[11px] text-ink-soft font-medium">
+                  <span>Requirements</span>
+                  <span class="text-forest-700 font-normal">Core Fulfilled</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="stat">
-        <div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">trending_up</span></div></div>
-        <div class="stat-val" id="statAvg">—</div>
-        <div class="stat-label">Average %</div>
+    </section>
+
+    <!-- Main Content Area: Reports & Academic Records -->
+    <div class="space-y-6">
+      <!-- Section Controls & View Switcher -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-normal font-display text-forest-800 tracking-tight">
+            Academic Report Cards &amp; Evaluation Record
+          </h2>
+          <p class="text-xs sm:text-sm text-ink-muted mt-0.5 font-medium">
+            Official semester records, monthly reviews, and performance evaluations
+          </p>
+        </div>
+        <div class="flex items-center gap-2.5 self-start sm:self-auto">
+          <!-- Transcript Export Button -->
+          <button onclick="window.print()" class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-normal rounded-xl bg-white border border-surface-border hover:border-forest-700 hover:text-forest-800 text-ink-main shadow-xs transition-all">
+            <span class="material-symbols-outlined text-[17px] text-forest-700">description</span>
+            <span>Export Official PDF</span>
+          </button>
+        </div>
       </div>
-      <div class="stat">
-        <div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">emoji_events</span></div></div>
-        <div class="stat-val" id="statGpa">—</div>
-        <div class="stat-label">GPA</div>
+
+      <!-- Comprehensive Editorial Table View -->
+      <div class="bg-white rounded-3xl border border-surface-border shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-surface-borderLight text-ink-soft font-normal uppercase tracking-wider text-[11px] bg-surface-subtle/50">
+                <th class="py-4 px-5">Grading Period &amp; Term</th>
+                <th class="py-4 px-4">Evaluation Track</th>
+                <th class="py-4 px-4">Status</th>
+                <th class="py-4 px-4 text-center">Score / Term GPA</th>
+                <th class="py-4 px-4">Core Breakdown / Detail</th>
+                <th class="py-4 px-5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-borderLight">
+              
+              <!-- Row 1: Semester 1 (Hero Record) -->
+              <tr class="hover:bg-surface-subtle/60 transition-colors group">
+                <td class="py-4.5 px-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-forest-50 border border-forest-100 text-forest-700 flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-[20px]">grading</span>
+                    </div>
+                    <div>
+                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុឆមាសទី១</div>
+                      <div class="text-[11px] text-ink-soft mt-0.5">Semester 1 Examination</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4.5 px-4 text-ink-muted">
+                  <div class="font-medium text-ink-main text-xs">Official Term Record</div>
+                  <div class="text-[11px] text-ink-soft">Signed by Academic Affairs</div>
+                </td>
+                <td class="py-4.5 px-4 whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-forest-50 text-forest-700 border border-forest-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                    Verified &amp; Uploaded
+                  </span>
+                </td>
+                <td class="py-4.5 px-4 text-center whitespace-nowrap">
+                  <div class="font-normal font-display text-forest-800 text-lg">3.85</div>
+                  <div class="text-[10px] font-normal text-forest-600">Honor Roll Verified</div>
+                </td>
+                <td class="py-4.5 px-4">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 rounded-lg bg-surface-subtle border border-surface-border text-[11px] font-medium text-forest-800">Khmer: <span>96</span></span>
+                    <span class="px-2 py-0.5 rounded-lg bg-surface-subtle border border-surface-border text-[11px] font-medium text-forest-800">Math: <span>94</span></span>
+                    <span class="px-2 py-0.5 rounded-lg bg-surface-subtle border border-surface-border text-[11px] font-medium text-forest-800">Physics: <span>91</span></span>
+                    <span class="px-2 py-0.5 rounded-lg bg-surface-subtle border border-surface-border text-[11px] font-medium text-forest-800">Social: <span>95</span></span>
+                  </div>
+                </td>
+                <td class="py-4.5 px-5 text-right whitespace-nowrap">
+                  <div class="inline-flex items-center gap-2">
+                    <button onclick="if(window.toast) window.toast('Downloading Semester 1 Verified Report Card…','info'); else alert('Downloading Semester 1 Verified Report Card PDF...')" class="p-2 rounded-xl border border-surface-border hover:border-forest-700 text-ink-muted hover:text-forest-800 bg-white hover:bg-surface-subtle transition-colors" title="Download Verified PDF">
+                      <span class="material-symbols-outlined text-[18px]">file_download</span>
+                    </button>
+                    <button onclick="if(window.toast) window.toast('Opening Official Semester 1 Report Card…','info'); else alert('Viewing Full Semester 1 Official Report Card (Graded by Jane Doe)')" class="px-3.5 py-1.5 bg-forest-800 hover:bg-forest-700 text-white font-normal rounded-xl text-xs shadow-xs transition-all flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-[16px]">visibility</span>
+                      <span>View Card</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 2: Monthly Assessments -->
+              <tr class="hover:bg-surface-subtle/60 transition-colors group">
+                <td class="py-4.5 px-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-surface-subtle border border-surface-border text-forest-700 flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-[20px]">assignment</span>
+                    </div>
+                    <div>
+                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុប្រឡងប្រចាំខែ</div>
+                      <div class="text-[11px] text-ink-soft mt-0.5">Monthly Assessments</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4.5 px-4 text-ink-muted">
+                  <div class="font-medium text-ink-main text-xs">Continuous Quizzes</div>
+                  <div class="text-[11px] text-ink-soft">Tracked over 4 terms</div>
+                </td>
+                <td class="py-4.5 px-4 whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-forest-50 text-forest-700 border border-forest-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                    Continuous Evaluated
+                  </span>
+                </td>
+                <td class="py-4.5 px-4 text-center whitespace-nowrap">
+                  <div class="font-normal font-display text-forest-800 text-lg">92.4%</div>
+                  <div class="text-[10px] font-normal text-forest-700">GPA 3.90 Eq.</div>
+                </td>
+                <td class="py-4.5 px-4">
+                  <div class="flex items-center gap-1.5 text-xs text-ink-muted font-medium">
+                    <span class="text-ink-soft">Curve:</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-surface-subtle text-[11px]">Oct 89.8%</span>
+                    <span class="text-ink-soft">→</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-surface-subtle text-[11px]">Nov 91.5%</span>
+                    <span class="text-ink-soft">→</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-surface-subtle text-[11px]">Dec 93.2%</span>
+                    <span class="text-ink-soft">→</span>
+                    <span class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 font-normal text-[11px]">Jan 95.0%</span>
+                  </div>
+                </td>
+                <td class="py-4.5 px-5 text-right whitespace-nowrap">
+                  <div class="inline-flex items-center gap-2">
+                    <button onclick="if(window.toast) window.toast('Downloading Monthly Summaries…','info'); else alert('Downloading Monthly Summaries (Oct–Jan)...')" class="p-2 rounded-xl border border-surface-border hover:border-forest-700 text-ink-muted hover:text-forest-800 bg-white hover:bg-surface-subtle transition-colors" title="Download Monthly Summaries">
+                      <span class="material-symbols-outlined text-[18px]">file_download</span>
+                    </button>
+                    <button onclick="if(window.toast) window.toast('Viewing Monthly Assessment Breakdown…','info'); else alert('Viewing Continuous Monthly Assessment Breakdown')" class="px-3.5 py-1.5 bg-surface-subtle hover:bg-forest-50 text-forest-800 font-normal rounded-xl border border-surface-border text-xs transition-all flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-[16px]">insights</span>
+                      <span>Breakdown</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 3: Semester 2 (In Progress) -->
+              <tr class="hover:bg-surface-subtle/60 transition-colors group">
+                <td class="py-4.5 px-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-[20px]">pending_actions</span>
+                    </div>
+                    <div>
+                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុឆមាសទី២</div>
+                      <div class="text-[11px] text-ink-soft mt-0.5">Semester 2 Examination</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4.5 px-4 text-ink-muted">
+                  <div class="font-medium text-ink-main text-xs">Final Term Grading</div>
+                  <div class="text-[11px] text-ink-soft">Faculty evaluation ongoing</div>
+                </td>
+                <td class="py-4.5 px-4 whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-amber-50 text-amber-800 border border-amber-200/60">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+                    In Progress • Active Term
+                  </span>
+                </td>
+                <td class="py-4.5 px-4 text-center whitespace-nowrap">
+                  <div class="font-normal text-ink-muted text-sm">—</div>
+                  <div class="text-[10px] text-ink-soft font-mono">Est. 18 July 2026</div>
+                </td>
+                <td class="py-4.5 px-4 text-ink-muted text-xs">
+                  <span class="text-ink-soft">Board committee review &amp; external moderation scheduled</span>
+                </td>
+                <td class="py-4.5 px-5 text-right whitespace-nowrap">
+                  <button onclick="this.innerHTML='<span class=\'material-symbols-outlined text-[16px] text-emerald-600\'>check_circle</span> Subscribed'; this.classList.add('bg-emerald-50','text-emerald-800'); if(window.toast) window.toast('Subscribed to Semester 2 notifications','success'); else alert('You will be notified as soon as Semester 2 results are published.')" class="px-3.5 py-1.5 rounded-xl border border-surface-border hover:border-forest-700 text-forest-800 font-normal bg-white hover:bg-forest-50/50 flex items-center gap-1.5 transition-all text-xs ml-auto">
+                    <span class="material-symbols-outlined text-[16px] text-forest-700">notifications_active</span>
+                    <span>Notify When Ready</span>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Row 4: Annual Cumulative -->
+              <tr class="hover:bg-surface-subtle/60 transition-colors group">
+                <td class="py-4.5 px-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-forest-100 border border-forest-200 text-forest-800 flex items-center justify-center shrink-0">
+                      <span class="material-symbols-outlined text-[20px]">military_tech</span>
+                    </div>
+                    <div>
+                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុប្រចាំឆ្នាំ</div>
+                      <div class="text-[11px] text-ink-soft mt-0.5">Annual Cumulative</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4.5 px-4 text-ink-muted">
+                  <div class="font-medium text-ink-main text-xs">Annual Projection</div>
+                  <div class="text-[11px] text-ink-soft">Ministry benchmark S1+S2</div>
+                </td>
+                <td class="py-4.5 px-4 whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-forest-100 text-forest-800 border border-forest-200">
+                    <span class="material-symbols-outlined text-[13px]">military_tech</span>
+                    Tier 1 Standing
+                  </span>
+                </td>
+                <td class="py-4.5 px-4 text-center whitespace-nowrap">
+                  <div class="font-normal text-forest-800 text-sm">3.88 – 3.92</div>
+                  <div class="text-[10px] font-normal text-forest-700">High Distinction</div>
+                </td>
+                <td class="py-4.5 px-4 text-ink-muted text-xs">
+                  <span class="text-ink-soft">Requires cumulative score &gt;90% across foundational courses</span>
+                </td>
+                <td class="py-4.5 px-5 text-right whitespace-nowrap">
+                  <button onclick="if(window.toast) window.toast('Projected GPA: 3.88 - 3.92 / 4.00','info'); else alert('Projected Cumulative GPA: 3.88 - 3.92 / 4.00 based on Semester 1 performance.')" class="px-3.5 py-1.5 border border-surface-border text-forest-800 font-normal rounded-xl hover:border-forest-700 bg-white hover:bg-forest-50/50 flex items-center gap-1.5 transition-all text-xs ml-auto">
+                    <span class="material-symbols-outlined text-[16px] text-forest-700">query_stats</span>
+                    <span>View Projected GPA</span>
+                  </button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Footer Strip -->
+        <div class="p-4 px-5 bg-surface-subtle/50 border-t border-surface-borderLight flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-soft">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-forest-700">verified</span>
+            <span>Official Academic Records • All data authenticated by Office of Academic Registry</span>
+          </div>
+          <div class="text-ink-muted font-medium">
+            Academic Session: 2025–2026
+          </div>
+        </div>
       </div>
+
     </div>
-
-    <div class="card anim-up-2">
-      <div class="card-head">
-        <div><h3>Grade Book</h3><div class="sub">Scores recorded by your teachers</div></div>
-      </div>
-      <div class="card-pad" id="gradesList">
-        <p class="muted">Loading grades…</p>
-      </div>
-    </div>
-
-  </div>
+  </div><!-- /page -->
 </main>
 
-<script>window.PAGE = { role: 'student', active: 'grades' };</script>
+<!-- Page Config & NGIS Scripts -->
+<script>
+window.PAGE = { role: 'student', active: 'grades' };
+(function () {
+  try { var _t = localStorage.getItem('ngis-theme'); if (_t) document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
+  if (saved) { window.PAGE.role = saved.role || 'student'; window.CURRENT_USER = saved; }
+  document.body.classList.add('ready');
+})();
+</script>
+
 <script>
 window.HERO_CONFIG = {
-  name: 'Student',
-  id: 'Student',
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
   grade: 'Grade 10',
   avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
@@ -61,87 +483,38 @@ window.HERO_CONFIG = {
   profileLink: 'student-profile.html',
   notifLink: 'student-notifications.html',
   chatLink: '../shared/chat.html',
-  notifCount: 0,
-  title: 'Grades',
-  greeting: 'Your assessment scores from the connected gradebook.',
-  breadcrumbs: [{ label: 'Grades' }],
-  ddRows: []
+  notifCount: 3,
+  title: 'Report Cards & Performance',
+  greeting: 'Official semester records, monthly reviews, and performance evaluations.',
+  breadcrumbs: [{ label: 'Report Cards & Performance' }],
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A · SS2 KH' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
+    { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
+  ]
 };
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+
 <script>
-(function () {
-  function esc(s) {
-    return String(s || '').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>');
-  }
-
-  async function load() {
-    const el = document.getElementById('gradesList');
-    try {
-      if (!window.NGISAuth || !NGISAuth.isAuthenticated()) {
-        el.innerHTML = '<p style="color:#b91c1c">Please sign in.</p>';
-        return;
+document.addEventListener('DOMContentLoaded', function () {
+  // Year Selector
+  const yearButtons = document.querySelectorAll('#yearSelector button');
+  yearButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      yearButtons.forEach(b => {
+        b.className = 'px-3.5 py-1.5 text-xs font-medium text-ink-muted hover:text-forest-800 transition-colors';
+      });
+      btn.className = 'px-3.5 py-1.5 text-xs font-normal rounded-lg bg-white text-forest-800 shadow-xs border border-surface-borderLight';
+      if (window.toast) {
+        window.toast('Switched to Academic Year ' + btn.textContent.trim(), 'info');
       }
-
-      const [gradesRes, meRes] = await Promise.all([
-        NGISAuth.api('/api/grades'),
-        NGISAuth.api('/api/students/me').catch(() => null),
-      ]);
-
-      const grades = gradesRes.data || [];
-      document.getElementById('statCount').textContent = grades.length;
-
-      if (grades.length) {
-        const avg = grades.reduce((s, g) => s + (Number(g.percentage) || 0), 0) / grades.length;
-        document.getElementById('statAvg').textContent = avg.toFixed(1) + '%';
-      } else {
-        document.getElementById('statAvg').textContent = '—';
-      }
-
-      if (meRes && meRes.data) {
-        const gpa = meRes.data.student?.gpa ?? meRes.data.gpa;
-        if (gpa != null) document.getElementById('statGpa').textContent = Number(gpa).toFixed(2);
-      }
-
-      if (!grades.length) {
-        el.innerHTML = '<p class="muted">No grades recorded yet.</p>';
-        return;
-      }
-
-      el.innerHTML = `
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th>Assessment</th>
-                <th>Subject</th>
-                <th>Type</th>
-                <th>Score</th>
-                <th>Letter</th>
-                <th>Comments</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${grades.map(g => `
-                <tr>
-                  <td><b>${esc(g.assessment_title)}</b></td>
-                  <td>${esc(g.subject_name || g.subject_id)}</td>
-                  <td><span class="badge blue">${esc(g.assessment_type || 'exam')}</span></td>
-                  <td class="num">${g.score}/${g.max_score} <span class="faint">(${Number(g.percentage).toFixed(0)}%)</span></td>
-                  <td><span class="badge green">${esc(g.letter_grade || '—')}</span></td>
-                  <td class="faint" style="font-size:12px">${esc(g.comments || '')}</td>
-                </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>`;
-    } catch (err) {
-      el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
-    }
-  }
-
-  setTimeout(load, 200);
-})();
+    });
+  });
+});
 </script>
 </body>
 </html>

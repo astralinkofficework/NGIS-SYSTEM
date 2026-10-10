@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════
+﻿/* ══════════════════════════════════════
    NGIS Resource Library — lessons.js
    ══════════════════════════════════════ */
 
@@ -19,21 +19,120 @@ var _currentSubjectId = '';
 ════════════════════════════════════ */
 var RESOURCES = {
   math: [
-    { id:'m1',  name:'Introduction to Algebra',             type:'lesson',    fileType:'pdf',   date:'2026-01-10', size:'1.4 MB', downloads:98,  tags:['#Algebra','#Grade10'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m2',  name:'Linear Equations & Inequalities',     type:'lesson',    fileType:'pdf',   date:'2026-01-18', size:'2.1 MB', downloads:142, tags:['#Algebra','#Chapter3'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m3',  name:'Quadratic Functions — Full Notes',    type:'lesson',    fileType:'pdf',   date:'2026-02-05', size:'3.2 MB', downloads:117, tags:['#Quadratic','#Functions'],     src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m4',  name:'Calculus: Limits & Derivatives',      type:'lesson',    fileType:'pdf',   date:'2026-02-20', size:'4.0 MB', downloads:203, tags:['#Calculus','#Grade11'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m5',  name:'Analytic Geometry — Circles',         type:'lesson',    fileType:'pdf',   date:'2026-03-01', size:'2.8 MB', downloads:89,  tags:['#Geometry','#Circles'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m6',  name:'Trigonometry Identities',             type:'lesson',    fileType:'pdf',   date:'2026-03-15', size:'1.9 MB', downloads:76,  tags:['#Trig','#Identities'],         src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m7',  name:'Algebra Practice Worksheet',          type:'worksheet', fileType:'pdf',   date:'2026-01-25', size:'0.8 MB', downloads:211, tags:['#Algebra','#Practice'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m8',  name:'Quadratic Equations Drill Sheet',     type:'worksheet', fileType:'pdf',   date:'2026-02-12', size:'0.5 MB', downloads:184, tags:['#Quadratic','#Drill'],         src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m9',  name:'Calculus Practice Problems',          type:'worksheet', fileType:'pdf',   date:'2026-02-28', size:'1.1 MB', downloads:155, tags:['#Calculus','#Problems'],       src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m10', name:'Trigonometry Worksheet Set A',        type:'worksheet', fileType:'pdf',   date:'2026-03-20', size:'0.7 MB', downloads:99,  tags:['#Trig','#Worksheet'],          src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m11', name:'2024 Final Exam — Mathematics',       type:'exam',      fileType:'pdf',   date:'2025-11-10', size:'2.3 MB', downloads:320, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m12', name:'2023 Mid-Term Exam Paper',            type:'exam',      fileType:'pdf',   date:'2025-05-15', size:'1.9 MB', downloads:280, tags:['#PastExam','#MidTerm'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m13', name:'Algebra & Calculus Formula Sheet',    type:'formula',   fileType:'pdf',   date:'2026-01-08', size:'0.3 MB', downloads:450, tags:['#Formula','#Algebra'],         src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m14', name:'Trigonometry Formula Reference',      type:'formula',   fileType:'pdf',   date:'2026-03-05', size:'0.2 MB', downloads:390, tags:['#Formula','#Trig'],            src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'m15', name:'Khan Academy — Algebra',              type:'link',      fileType:'link',  date:'2026-01-01', size:'—',      downloads:0,   tags:['#External','#Algebra'],        src:'https://www.khanacademy.org/math/algebra' },
+    {
+      id: 'm1',
+      name: 'Introduction to Algebra',
+      fullName: 'Introduction to Algebra — Fundamentals',
+      type: 'lesson',
+      fileType: 'pdf',
+      date: '2026-01-10',
+      size: '1.4 MB',
+      pages: 16,
+      readTime: '15 min read',
+      topic: 'Algebra',
+      tone: 'tone-blue',
+      formulas: ['f(x) = ax + b\nx = (-b ± √D)/2a\n∑ (x_i - μ)²'],
+      desc: 'Fundamental theorems, variables, manipulation of polynomials, and foundational abstractions.',
+      downloads: 98,
+      tags: ['#Algebra', '#Grade10'],
+      src: 'https://www.africau.edu/images/default/sample.pdf'
+    },
+    {
+      id: 'm2',
+      name: 'Linear Equations &...',
+      fullName: 'Linear Equations & Inequalities',
+      type: 'lesson',
+      fileType: 'pdf',
+      date: '2026-01-18',
+      size: '2.1 MB',
+      pages: 22,
+      readTime: '20 min read',
+      topic: 'Algebra',
+      tone: 'tone-mint',
+      formulas: ['y - y₀ = m(x - x₀)\n|ax + b| < c\nAx + By + C = 0'],
+      desc: 'Comprehensive guide to single and multivariable systems, inequalities, and solution graphs.',
+      downloads: 142,
+      tags: ['#Algebra', '#Chapter3'],
+      src: 'https://www.africau.edu/images/default/sample.pdf'
+    },
+    {
+      id: 'm3',
+      name: 'Quadratic Functions &...',
+      fullName: 'Quadratic Functions & Curves',
+      type: 'lesson',
+      fileType: 'pdf',
+      date: '2026-02-05',
+      size: '3.2 MB',
+      pages: 34,
+      readTime: '25 min read',
+      topic: 'Algebra',
+      badge: 'Exam Focus',
+      badgeClass: 'pill-green',
+      tone: 'tone-peach',
+      formulas: ['y = a(x - h)² + k\nΔ = b² - 4ac\nVertex: (-b/2a)'],
+      desc: 'Parabolic behavior, discriminant analysis, optimization scenarios, and vertex calculations.',
+      downloads: 117,
+      tags: ['#Quadratic', '#Functions'],
+      src: 'https://www.africau.edu/images/default/sample.pdf'
+    },
+    {
+      id: 'm4',
+      name: 'Calculus: Limits &...',
+      fullName: 'Calculus: Limits & Derivatives',
+      type: 'lesson',
+      fileType: 'pdf',
+      date: '2026-02-20',
+      size: '4.0 MB',
+      pages: 40,
+      readTime: 'Advanced',
+      topic: 'Calculus',
+      tone: 'tone-cyan',
+      formulas: ['lim (x→a) f(x) = L\ndy/dx = f\'(x)\nd/dx[uv] = u\'v + uv\''],
+      desc: 'Differential calculus foundational rules, continuity criteria, rate of change, and limit theorems.',
+      downloads: 203,
+      tags: ['#Calculus', '#Grade11'],
+      src: 'https://www.africau.edu/images/default/sample.pdf'
+    },
+    {
+      id: 'm5',
+      name: 'Analytic Geometry —...',
+      fullName: 'Analytic Geometry — Circles',
+      type: 'lesson',
+      fileType: 'pdf',
+      date: '2026-03-01',
+      size: '2.8 MB',
+      pages: 28,
+      readTime: '18 min read',
+      topic: 'Geometry',
+      tone: 'tone-sand',
+      formulas: ['(x - h)² + (y - k)² = r²\nx² + y² + 2gx = 0\nTangent: xx₁ + yy₁'],
+      desc: 'Conic sections, radii calculations, secant equations, and locus problems in Cartesian space.',
+      downloads: 89,
+      tags: ['#Geometry', '#Circles'],
+      src: 'https://www.africau.edu/images/default/sample.pdf'
+    },
+    {
+      id: 'm7',
+      name: 'Algebra Practice...',
+      fullName: 'Algebra Practice Worksheet',
+      type: 'worksheet',
+      fileType: 'quiz',
+      isQuiz: true,
+      date: '2026-01-25',
+      size: '0.8 MB',
+      pages: 10,
+      questions: 10,
+      readTime: 'Interactive',
+      topic: 'Interactive Exercise',
+      badge: 'Interactive Exercise',
+      badgeClass: 'pill-mint',
+      tone: 'tone-green',
+      formulas: ['[Q1] Find roots\n[Q2] Matrix det(A)\n[Q3] Solve system'],
+      desc: 'Guided multi-tier problem set with automated hint checks and self-graded mastery validation.',
+      downloads: 211,
+      tags: ['#Algebra', '#Practice'],
+      src: 'https://www.africau.edu/images/default/sample.pdf'
+    }
   ],
   physics: [
     { id:'p1',  name:'Kinematics — Motion in 1D',           type:'lesson',    fileType:'pdf',   date:'2026-01-12', size:'2.0 MB', downloads:115, tags:['#Mechanics','#Kinematics'],    src:'https://www.africau.edu/images/default/sample.pdf' },
@@ -208,7 +307,7 @@ function buildSidebarList() {
   if (!list) return;
   
   if (label) {
-    label.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-weight:700; color:var(--fg); font-size:15px; margin-bottom:12px;">'
+    label.innerHTML = '<div style="display:flex; align-items:center; gap:8px; font-weight: 400; color:var(--fg); font-size:15px; margin-bottom:12px;">'
       + '<span class="material-symbols-outlined" style="color:var(--accent); font-size:18px;">book</span>'
       + '<span>' + (isTeacher ? 'All Files' : 'All Lessons') + '</span>'
       + '<span class="tab-badge" style="background:var(--accent-light); color:var(--accent); margin-left:auto; font-size:11px; padding:2px 8px; border-radius:12px;">' + _currentResources.length + '</span>'
@@ -222,8 +321,8 @@ function buildSidebarList() {
     var fts = fileTypeStyle(r.fileType);
     
     // Custom tag format
-    var typeTag = '<span class="px-2 py-0.5 text-[10px] font-bold rounded uppercase" style="background:' + fts.bg + '; color:' + fts.color + '">' + m.label.toUpperCase() + '</span>';
-    var formatTag = '<span class="px-2 py-0.5 text-[10px] font-bold rounded uppercase text-white bg-accent-600">' + r.fileType.toUpperCase() + '</span>';
+    var typeTag = '<span class="px-2 py-0.5 text-[10px] font-normal rounded uppercase" style="background:' + fts.bg + '; color:' + fts.color + '">' + m.label.toUpperCase() + '</span>';
+    var formatTag = '<span class="px-2 py-0.5 text-[10px] font-normal rounded uppercase text-white bg-accent-600">' + r.fileType.toUpperCase() + '</span>';
     
     // Custom detail or duration
     var detail = r.fileType === 'video' ? '15 min' : 'Updated ' + fmtDate(r.date);
@@ -232,11 +331,11 @@ function buildSidebarList() {
     var activeClass = _activeId === r.id ? ' active' : '';
 
     html += '<button class="lib-folder-item' + activeClass + '" data-item-id="' + r.id + '" onclick="filterByItem(this,\'' + r.id + '\')" style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:16px; border:1px solid var(--border); border-radius:14px; background:#fff; margin-bottom:10px; width:100%; transition:all 0.2s ease; cursor:pointer; text-align:left;">'
-      + '  <div style="font-size:14px; font-weight:600; color:var(--fg); line-height:1.4; word-break:break-word;">' + escHtml(r.name) + '</div>'
+      + '  <div style="font-size:14px; font-weight: 400; color:var(--fg); line-height:1.4; word-break:break-word;">' + escHtml(r.name) + '</div>'
       + '  <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; width:100%;">'
       + '    ' + formatTag
       + '    ' + typeTag
-      + '    <span style="font-size:11px; color:var(--muted); margin-left:auto; font-weight:500;">' + detail + '</span>'
+      + '    <span style="font-size:11px; color:var(--muted); margin-left:auto; font-weight: 400;">' + detail + '</span>'
       + '  </div>'
       + '</button>';
   });
@@ -365,47 +464,47 @@ var LESSON_PAGES = [
   /* Page 1 */
   '<div class="page-content" id="page1">'
   + '  <div class="text-center mb-10">'
-  + '    <div class="text-xs font-semibold text-surface-400 uppercase tracking-widest mb-2">Grade 9 Mathematics</div>'
-  + '    <h2 class="text-3xl font-bold text-surface-900 tracking-tight mb-1">Chapter 3</h2>'
-  + '    <h3 class="text-xl font-semibold text-accent-600">Linear Equations &amp; Inequalities</h3>'
+  + '    <div class="text-xs font-normal text-surface-400 uppercase tracking-widest mb-2">Grade 9 Mathematics</div>'
+  + '    <h2 class="text-3xl font-normal text-surface-900 tracking-tight mb-1">Chapter 3</h2>'
+  + '    <h3 class="text-xl font-normal text-accent-600">Linear Equations &amp; Inequalities</h3>'
   + '    <div class="w-16 h-1 bg-accent-500 rounded-full mx-auto mt-4" style="width: 64px; height: 4px; background: var(--accent); border-radius: 9999px; margin-left: auto; margin-right: auto; margin-top: 16px;"></div>'
   + '  </div>'
   + '  <div class="mb-8">'
-  + '    <h4 class="text-lg font-bold text-surface-900 mb-3" style="font-size:18px; font-weight:700; color:var(--fg); margin-bottom:12px;">3.1 What is a Linear Equation?</h4>'
+  + '    <h4 class="text-lg font-normal text-surface-900 mb-3" style="font-size:18px; font-weight: 400; color:var(--fg); margin-bottom:12px;">3.1 What is a Linear Equation?</h4>'
   + '    <p class="text-[15px] text-surface-600 leading-relaxed mb-4" style="font-size:15px; color:var(--muted); line-height:1.625; margin-bottom:16px;">'
-  + '      A <strong>linear equation in one variable</strong> is an equation that can be written in the form:'
+  + '      A <span>linear equation in one variable</span> is an equation that can be written in the form:'
   + '    </p>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-5 text-center mb-4" style="background:#fafafa; border:1px solid var(--border); border-radius:16px; padding:20px; text-align:center; margin-bottom:16px;">'
-  + '      <span class="math-eq text-xl" style="font-size:20px; font-weight:700;">ax + b = 0</span>'
+  + '      <span class="math-eq text-xl" style="font-size:20px; font-weight: 400;">ax + b = 0</span>'
   + '    </div>'
   + '    <p class="text-[15px] text-surface-600 leading-relaxed mb-4" style="font-size:15px; color:var(--muted); line-height:1.625; margin-bottom:16px;">'
   + '      where <span class="math-eq">a</span> and <span class="math-eq">b</span> are real numbers and <span class="math-eq">a ≠ 0</span>. The solution is <span class="math-eq">x = −b/a</span>.'
   + '    </p>'
   + '  </div>'
   + '  <div class="mb-8">'
-  + '    <h4 class="text-lg font-bold text-surface-900 mb-3" style="font-size:18px; font-weight:700; color:var(--fg); margin-bottom:12px;">3.2 Solving Linear Equations</h4>'
+  + '    <h4 class="text-lg font-normal text-surface-900 mb-3" style="font-size:18px; font-weight: 400; color:var(--fg); margin-bottom:12px;">3.2 Solving Linear Equations</h4>'
   + '    <p class="text-[15px] text-surface-600 leading-relaxed mb-3" style="font-size:15px; color:var(--muted); line-height:1.625; margin-bottom:12px;">'
   + '      To solve a linear equation, isolate the variable on one side using inverse operations.'
   + '    </p>'
   + '    <div class="bg-accent-50 border border-accent-200 rounded-2xl p-5" style="background:var(--accent-light); border:1px solid #bbf7d0; border-radius:16px; padding:20px;">'
-  + '      <div class="text-xs font-bold text-accent-700 uppercase tracking-wider mb-2" style="font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Example 1</div>'
+  + '      <div class="text-xs font-normal text-accent-700 uppercase tracking-wider mb-2" style="font-size:12px; font-weight: 400; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Example 1</div>'
   + '      <p class="text-sm text-surface-700 mb-2" style="font-size:14px; color:var(--fg); margin-bottom:8px;">Solve: <span class="math-eq">3x + 7 = 22</span></p>'
   + '      <div class="space-y-1.5 text-sm text-surface-600 pl-4 border-l-2 border-accent-200" style="display:flex; flex-direction:column; gap:6px; padding-left:16px; border-left:2px solid var(--accent); font-size:14px; color:var(--muted);">'
   + '        <p style="margin:0;"><span class="math-eq">3x = 22 − 7</span></p>'
   + '        <p style="margin:0;"><span class="math-eq">3x = 15</span></p>'
-  + '        <p style="margin:0;"><span class="math-eq font-bold text-accent-700" style="font-weight:700; color:var(--accent);">x = 5</span></p>'
+  + '        <p style="margin:0;"><span class="math-eq font-normal text-accent-700" style="font-weight: 400; color:var(--accent);">x = 5</span></p>'
   + '      </div>'
   + '    </div>'
   + '  </div>'
   + '  <div class="mb-6">'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-5" style="background:#fafafa; border:1px solid var(--border); border-radius:16px; padding:20px;">'
-  + '      <div class="text-xs font-bold text-surface-500 uppercase tracking-wider mb-2" style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Example 2</div>'
+  + '      <div class="text-xs font-normal text-surface-500 uppercase tracking-wider mb-2" style="font-size:12px; font-weight: 400; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Example 2</div>'
   + '      <p class="text-sm text-surface-700 mb-2" style="font-size:14px; color:var(--fg); margin-bottom:8px;">Solve: <span class="math-eq">5(x − 2) = 3x + 6</span></p>'
   + '      <div class="space-y-1.5 text-sm text-surface-600 pl-4 border-l-2 border-surface-300" style="display:flex; flex-direction:column; gap:6px; padding-left:16px; border-left:2px solid var(--border); font-size:14px; color:var(--muted);">'
   + '        <p style="margin:0;"><span class="math-eq">5x − 10 = 3x + 6</span></p>'
   + '        <p style="margin:0;"><span class="math-eq">5x − 3x = 6 + 10</span></p>'
   + '        <p style="margin:0;"><span class="math-eq">2x = 16</span></p>'
-  + '        <p style="margin:0;"><span class="math-eq font-bold text-accent-700" style="font-weight:700; color:var(--accent);">x = 8</span></p>'
+  + '        <p style="margin:0;"><span class="math-eq font-normal text-accent-700" style="font-weight: 400; color:var(--accent);">x = 8</span></p>'
   + '      </div>'
   + '    </div>'
   + '  </div>'
@@ -414,9 +513,9 @@ var LESSON_PAGES = [
   /* Page 2 */
   '<div class="page-content" id="page2">'
   + '  <div class="mb-8">'
-  + '    <h4 class="text-lg font-bold text-surface-900 mb-3" style="font-size:18px; font-weight:700; color:var(--fg); margin-bottom:12px;">3.3 Linear Inequalities</h4>'
+  + '    <h4 class="text-lg font-normal text-surface-900 mb-3" style="font-size:18px; font-weight: 400; color:var(--fg); margin-bottom:12px;">3.3 Linear Inequalities</h4>'
   + '    <p class="text-[15px] text-surface-600 leading-relaxed mb-4" style="font-size:15px; color:var(--muted); line-height:1.625; margin-bottom:16px;">'
-  + '      A <strong>linear inequality</strong> looks similar to a linear equation but uses inequality symbols instead of an equals sign:'
+  + '      A <span>linear inequality</span> looks similar to a linear equation but uses inequality symbols instead of an equals sign:'
   + '    </p>'
   + '    <div class="grid grid-cols-2 gap-3 mb-5" style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">'
   + '      <div class="bg-surface-50 border border-surface-200 rounded-xl p-3 text-center" style="background:#fafafa; border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center;">'
@@ -439,13 +538,13 @@ var LESSON_PAGES = [
   + '    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3" style="display:flex; gap:12px; align-items:flex-start; background:#fffbeb; border:1px solid #fef3c7; border-radius:16px; padding:16px;">'
   + '      <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5" style="color:#d97706; margin-top:2px;"></i>'
   + '      <p class="text-sm text-amber-800 leading-relaxed m-0" style="font-size:14px; color:#92400e; line-height:1.625; margin:0;">'
-  + '        <strong>Important:</strong> When you multiply or divide both sides of an inequality by a negative number, you must <em>reverse</em> the inequality symbol.'
+  + '        <span>Important:</span> When you multiply or divide both sides of an inequality by a negative number, you must <em>reverse</em> the inequality symbol.'
   + '      </p>'
   + '    </div>'
   + '  </div>'
   + '  <div class="mb-8">'
   + '    <div class="bg-accent-50 border border-accent-200 rounded-2xl p-5" style="background:var(--accent-light); border:1px solid #bbf7d0; border-radius:16px; padding:20px;">'
-  + '      <div class="text-xs font-bold text-accent-700 uppercase tracking-wider mb-2" style="font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Example 3</div>'
+  + '      <div class="text-xs font-normal text-accent-700 uppercase tracking-wider mb-2" style="font-size:12px; font-weight: 400; color:var(--accent); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Example 3</div>'
   + '      <p class="text-sm text-surface-700 mb-2" style="font-size:14px; color:var(--fg); margin-bottom:8px;">Solve: <span class="math-eq">−2x + 5 &gt; 11</span></p>'
   + '      <div class="space-y-1.5 text-sm text-surface-600 pl-4 border-l-2 border-accent-200" style="display:flex; flex-direction:column; gap:6px; padding-left:16px; border-left:2px solid var(--accent); font-size:14px; color:var(--muted);">'
   + '        <p style="margin:0;"><span class="math-eq">−2x &gt; 11 − 5</span></p>'
@@ -455,7 +554,7 @@ var LESSON_PAGES = [
   + '    </div>'
   + '  </div>'
   + '  <div class="mb-6">'
-  + '    <h4 class="text-lg font-bold text-surface-900 mb-3" style="font-size:18px; font-weight:700; color:var(--fg); margin-bottom:12px;">3.4 Graphing Inequalities on a Number Line</h4>'
+  + '    <h4 class="text-lg font-normal text-surface-900 mb-3" style="font-size:18px; font-weight: 400; color:var(--fg); margin-bottom:12px;">3.4 Graphing Inequalities on a Number Line</h4>'
   + '    <p class="text-[15px] text-surface-600 leading-relaxed mb-4" style="font-size:15px; color:var(--muted); line-height:1.625; margin-bottom:16px;">'
   + '      To graph an inequality on a number line, use an open circle for strict inequalities (&lt;, &gt;) and a closed circle for inclusive inequalities (≤, ≥).'
   + '    </p>'
@@ -475,19 +574,19 @@ var LESSON_PAGES = [
   /* Page 3 */
   '<div class="page-content" id="page3">'
   + '  <div class="mb-8">'
-  + '    <h4 class="text-lg font-bold text-surface-900 mb-3" style="font-size:18px; font-weight:700; color:var(--fg); margin-bottom:12px;">3.5 Real-Life Applications</h4>'
+  + '    <h4 class="text-lg font-normal text-surface-900 mb-3" style="font-size:18px; font-weight: 400; color:var(--fg); margin-bottom:12px;">3.5 Real-Life Applications</h4>'
   + '    <p class="text-[15px] text-surface-600 leading-relaxed mb-4" style="font-size:15px; color:var(--muted); line-height:1.625; margin-bottom:16px;">'
   + '      Linear equations and inequalities are used extensively in real-world problem solving. Below are some common scenarios:'
   + '    </p>'
   + '    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-5" style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:16px; padding:20px; margin-bottom:20px;">'
-  + '      <div class="text-xs font-bold text-blue-700 uppercase tracking-wider mb-2" style="color:#1d4ed8; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Application 1 — Budgeting</div>'
+  + '      <div class="text-xs font-normal text-blue-700 uppercase tracking-wider mb-2" style="color:#1d4ed8; font-weight: 400; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Application 1 — Budgeting</div>'
   + '      <p class="text-sm text-blue-900 mb-2" style="color:#1e3a8a; font-size:14px; margin-bottom:8px;">You have $50 to spend on notebooks and pens. Notebooks cost $8 each and pens cost $2 each. Write an inequality:</p>'
   + '      <div class="bg-white/60 rounded-xl p-3 text-center" style="background:rgba(255,255,255,0.6); border-radius:12px; padding:12px; text-align:center;">'
   + '        <span class="math-eq">8n + 2p ≤ 50</span>'
   + '      </div>'
   + '    </div>'
   + '    <div class="bg-purple-50 border border-purple-200 rounded-2xl p-5 mb-5" style="background:#faf5ff; border:1px solid #e9d5ff; border-radius:16px; padding:20px; margin-bottom:20px;">'
-  + '      <div class="text-xs font-bold text-purple-700 uppercase tracking-wider mb-2" style="color:#7e22ce; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Application 2 — Temperature</div>'
+  + '      <div class="text-xs font-normal text-purple-700 uppercase tracking-wider mb-2" style="color:#7e22ce; font-weight: 400; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Application 2 — Temperature</div>'
   + '      <p class="text-sm text-purple-900 mb-2" style="color:#581c87; font-size:14px; margin-bottom:8px;">Water boils at 100°C at standard pressure. The temperature <span class="math-eq">T</span> must satisfy:</p>'
   + '      <div class="bg-white/60 rounded-xl p-3 text-center" style="background:rgba(255,255,255,0.6); border-radius:12px; padding:12px; text-align:center;">'
   + '        <span class="math-eq">T ≥ 100°C</span> for boiling to occur'
@@ -495,14 +594,14 @@ var LESSON_PAGES = [
   + '    </div>'
   + '  </div>'
   + '  <div class="mb-6">'
-  + '    <h4 class="text-lg font-bold text-surface-900 mb-3" style="font-size:18px; font-weight:700; color:var(--fg); margin-bottom:12px;">3.6 Word Problem Strategy</h4>'
+  + '    <h4 class="text-lg font-normal text-surface-900 mb-3" style="font-size:18px; font-weight: 400; color:var(--fg); margin-bottom:12px;">3.6 Word Problem Strategy</h4>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-5" style="background:#fafafa; border:1px solid var(--border); border-radius:16px; padding:20px;">'
   + '      <ol class="text-sm text-surface-600 space-y-2.5" style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;">'
-  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">1</span><span>Read the problem carefully. Identify what is given and what is asked.</span></li>'
-  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">2</span><span>Define a variable to represent the unknown quantity.</span></li>'
-  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">3</span><span>Write an equation or inequality based on the relationships described.</span></li>'
-  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">4</span><span>Solve the equation or inequality.</span></li>'
-  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">5</span><span>Check your answer in the context of the problem.</span></li>'
+  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">1</span><span>Read the problem carefully. Identify what is given and what is asked.</span></li>'
+  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">2</span><span>Define a variable to represent the unknown quantity.</span></li>'
+  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">3</span><span>Write an equation or inequality based on the relationships described.</span></li>'
+  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">4</span><span>Solve the equation or inequality.</span></li>'
+  + '        <li class="flex gap-3" style="display:flex; gap:12px; align-items:flex-start;"><span class="w-6 h-6 rounded-full bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:50%; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">5</span><span>Check your answer in the context of the problem.</span></li>'
   + '      </ol>'
   + '    </div>'
   + '  </div>'
@@ -511,40 +610,40 @@ var LESSON_PAGES = [
   /* Page 4 */
   '<div class="page-content" id="page4">'
   + '  <div class="text-center mb-8">'
-  + '    <h4 class="text-xl font-bold text-surface-900 mb-1" style="font-size:20px; font-weight:700; color:var(--fg); margin-bottom:4px;">Practice Problems</h4>'
+  + '    <h4 class="text-xl font-normal text-surface-900 mb-1" style="font-size:20px; font-weight: 400; color:var(--fg); margin-bottom:4px;">Practice Problems</h4>'
   + '    <p class="text-sm text-surface-400 m-0" style="font-size:14px; color:var(--muted); margin:0;">Solve each equation or inequality. Show all working.</p>'
   + '  </div>'
   + '  <div class="space-y-4" style="display:flex; flex-direction:column; gap:16px;">'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">1</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">1</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;"><span class="math-eq">7x − 3 = 4x + 12</span></p>'
   + '    </div>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">2</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">2</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;"><span class="math-eq">2(3y − 1) = 5y + 7</span></p>'
   + '    </div>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">3</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">3</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;"><span class="math-eq">−4x + 9 ≥ 21</span></p>'
   + '    </div>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">4</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">4</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;"><span class="math-eq">3(m + 4) &lt; 2m − 1</span></p>'
   + '    </div>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">5</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">5</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;"><span class="math-eq">(x + 2)/3 − (x − 1)/4 = 2</span></p>'
   + '    </div>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">6</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">6</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;">A taxi charges $3 plus $1.50 per kilometer. If a passenger has $24, what is the maximum distance they can travel?</p>'
   + '    </div>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">7</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">7</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;">The sum of two consecutive even numbers is 54. Find the numbers.</p>'
   + '    </div>'
   + '    <div class="bg-surface-50 border border-surface-200 rounded-2xl p-4 flex gap-4 items-start" style="display:flex; gap:16px; align-items:flex-start; padding:16px; background:#fafafa; border:1px solid var(--border); border-radius:16px;">'
-  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-bold flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; flex-shrink:0;">8</span>'
+  + '      <span class="w-8 h-8 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center text-sm font-normal flex-shrink-0" style="width:32px; height:32px; border-radius:12px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight: 400; flex-shrink:0;">8</span>'
   + '      <p class="text-sm text-surface-700 pt-1 m-0" style="font-size:14px; color:var(--fg); margin:0; padding-top:4px;"><span class="math-eq">5 − 3(2p + 1) ≤ 2p − 7</span></p>'
   + '    </div>'
   + '  </div>'
@@ -553,38 +652,38 @@ var LESSON_PAGES = [
   /* Page 5 */
   '<div class="page-content" id="page5">'
   + '  <div class="mb-8">'
-  + '    <h4 class="text-lg font-bold text-surface-900 mb-3" style="font-size:18px; font-weight:700; color:var(--fg); margin-bottom:12px;">Answer Key</h4>'
+  + '    <h4 class="text-lg font-normal text-surface-900 mb-3" style="font-size:18px; font-weight: 400; color:var(--fg); margin-bottom:12px;">Answer Key</h4>'
   + '    <div class="space-y-3" style="display:flex; flex-direction:column; gap:12px;">'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">1</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">1</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">x = 5</span></span>'
   + '      </div>'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">2</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">2</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">y = 9</span></span>'
   + '      </div>'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">3</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">3</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">x ≤ −3</span></span>'
   + '      </div>'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">4</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">4</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">m &lt; −13</span></span>'
   + '      </div>'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">5</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">5</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">x = 26</span></span>'
   + '      </div>'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">6</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">6</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">14 km</span></span>'
   + '      </div>'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">7</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">7</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">26 and 28</span></span>'
   + '      </div>'
   + '      <div class="flex items-center gap-4 p-3 rounded-xl bg-accent-50/50" style="display:flex; gap:16px; align-items:center; padding:12px; background:rgba(240,253,244,0.5); border-radius:12px;">'
-  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-bold flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0;">8</span>'
+  + '        <span class="w-6 h-6 rounded-lg bg-accent-100 text-accent-700 flex items-center justify-center text-xs font-normal flex-shrink-0" style="width:24px; height:24px; border-radius:8px; background:var(--accent-light); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight: 400; flex-shrink:0;">8</span>'
   + '        <span class="text-sm text-surface-700"><span class="math-eq">p ≥ 1</span></span>'
   + '      </div>'
   + '    </div>'
@@ -939,7 +1038,7 @@ function _rpvPopulateTabs(r) {
     refsList.innerHTML = refs.map(function(ref, i) {
       return '<li>'
         + '<span class="material-symbols-outlined">link</span>'
-        + '<div><strong style="font-size:13px;color:var(--heading)">' + escHtml(ref.title) + '</strong>'
+        + '<div><span style="font-size:13px;color:var(--heading)">' + escHtml(ref.title) + '</span>'
         + '<div style="font-size:11px;color:var(--faint);margin-top:2px">' + escHtml(ref.detail) + '</div></div>'
         + '</li>';
     }).join('');
@@ -1185,11 +1284,18 @@ function closePreview() {
   document.getElementById('previewBody').innerHTML = '';
 }
 
-document.getElementById('previewModal').addEventListener('click', function(e){
-  if (e.target === this) closePreview();
-});
+var pm = document.getElementById('previewModal');
+if (pm) {
+  pm.addEventListener('click', function(e){
+    if (e.target === this) closePreview();
+  });
+}
 document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape') closePreview();
+  if (e.key === 'Escape') {
+    closePreview();
+    oakClosePreview();
+    oakCloseQuiz();
+  }
 });
 
 /* no-op for removed view toggle — kept so any stray refs don't error */
@@ -1212,4 +1318,480 @@ function toggleDetailsPanel() {
       }
     }
   }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   OAKHAVEN / NGIS LESSON LIBRARY CONTROLLER
+   ══════════════════════════════════════════════════════════════ */
+var _oakCurrentSubject = 'math';
+var _oakCurrentTab = 'all';
+var _oakCurrentSearch = '';
+var _oakCurrentView = 'grid';
+var _oakSortDesc = true;
+var _oakBookmarkedIds = {};
+
+var OAK_SUBJECT_TITLES = {
+  math: 'MATHEMATICS',
+  physics: 'PHYSICS',
+  chemistry: 'CHEMISTRY',
+  biology: 'BIOLOGY',
+  english: 'ENGLISH LANGUAGE',
+  history: 'HISTORY',
+  geography: 'GEOGRAPHY',
+  cs: 'COMPUTER SCIENCE'
+};
+
+function oakInit() {
+  var params = new URLSearchParams(window.location.search);
+  var subjParam = params.get('subject') || params.get('dept');
+  if (subjParam && RESOURCES[subjParam]) {
+    _oakCurrentSubject = subjParam;
+  }
+  oakSwitchSubject(_oakCurrentSubject);
+}
+
+var OAK_SUBJECT_ICONS = {
+  math: { icon: 'calculate', color: '#1565c0' },
+  physics: { icon: 'bolt', color: '#6a1b9a' },
+  chemistry: { icon: 'science', color: '#00695c' },
+  biology: { icon: 'biotech', color: '#2e7d32' },
+  english: { icon: 'menu_book', color: '#b71c1c' },
+  history: { icon: 'history_edu', color: '#c62828' },
+  geography: { icon: 'public', color: '#e65100' },
+  cs: { icon: 'laptop_code', color: '#1565c0' }
+};
+
+function oakSwitchSubject(subjId) {
+  _oakCurrentSubject = subjId || 'math';
+  _currentSubjectId = _oakCurrentSubject;
+  var titleEl = document.getElementById('curSubjName');
+  if (titleEl) {
+    titleEl.textContent = OAK_SUBJECT_TITLES[_oakCurrentSubject] || _oakCurrentSubject.toUpperCase();
+  }
+  var icoEl = document.getElementById('curSubjIcon');
+  if (icoEl && OAK_SUBJECT_ICONS[_oakCurrentSubject]) {
+    icoEl.textContent = OAK_SUBJECT_ICONS[_oakCurrentSubject].icon;
+    icoEl.style.color = OAK_SUBJECT_ICONS[_oakCurrentSubject].color;
+  }
+  var htbCrumb = document.querySelector('.htb-crumb-cur');
+  if (htbCrumb && OAK_SUBJECT_TITLES[_oakCurrentSubject]) {
+    var rawTitle = OAK_SUBJECT_TITLES[_oakCurrentSubject];
+    htbCrumb.textContent = (rawTitle.charAt(0) + rawTitle.slice(1).toLowerCase()) + ' Library';
+  }
+  document.querySelectorAll('.oak-subj-item').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('onclick') && el.getAttribute('onclick').includes("'" + _oakCurrentSubject + "'"));
+  });
+  var dd = document.getElementById('oakSubjDropdown');
+  if (dd) dd.classList.remove('show');
+
+  var searchInput = document.getElementById('oakFilterInput');
+  if (searchInput) searchInput.value = '';
+  _oakCurrentSearch = '';
+
+  oakRenderCards();
+}
+
+function oakToggleSubjDropdown(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  var dd = document.getElementById('oakSubjDropdown');
+  if (dd) dd.classList.toggle('show');
+}
+document.addEventListener('click', function(e) {
+  var crumb = document.getElementById('curSubjBreadcrumb');
+  var dd = document.getElementById('oakSubjDropdown');
+  if (dd && dd.classList.contains('show')) {
+    if (crumb && !crumb.contains(e.target) && !dd.contains(e.target)) {
+      dd.classList.remove('show');
+    }
+  }
+});
+
+function oakFilterTab(tabName) {
+  _oakCurrentTab = tabName;
+  document.querySelectorAll('.oak-tab-btn').forEach(function(btn) {
+    btn.classList.remove('active');
+    btn.setAttribute('aria-selected', 'false');
+  });
+  var activeBtn = document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1));
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+    activeBtn.setAttribute('aria-selected', 'true');
+  }
+  oakRenderCards();
+}
+
+function oakSearchResources(query) {
+  _oakCurrentSearch = (query || '').toLowerCase().trim();
+  oakRenderCards();
+}
+
+function oakGlobalSearch(query) {
+  _oakCurrentSearch = (query || '').toLowerCase().trim();
+  var filterInput = document.getElementById('oakFilterInput');
+  if (filterInput) filterInput.value = query;
+  oakRenderCards();
+}
+
+function oakSetView(mode) {
+  _oakCurrentView = mode;
+  var gridBtn = document.getElementById('oakViewGridBtn');
+  var listBtn = document.getElementById('oakViewListBtn');
+  var gridEl = document.getElementById('resourceGrid');
+  var listEl = document.getElementById('resourceList');
+
+  if (gridBtn) gridBtn.classList.toggle('active', mode === 'grid');
+  if (listBtn) listBtn.classList.toggle('active', mode === 'list');
+
+  if (gridEl) gridEl.style.display = mode === 'grid' ? 'grid' : 'none';
+  if (listEl) listEl.style.display = mode === 'list' ? 'flex' : 'none';
+}
+
+var _oakSortActive = false;
+var _oakSortDesc = true;
+
+function oakToggleSort() {
+  _oakSortActive = true;
+  _oakSortDesc = !_oakSortDesc;
+  var btn = document.getElementById('oakSortBtn');
+  if (btn) {
+    var label = btn.querySelector('span');
+    if (label) label.textContent = _oakSortDesc ? 'Sort by Date' : 'Sort by Date (Oldest)';
+  }
+  oakRenderCards();
+}
+
+function oakRenderCards() {
+  var rawList = RESOURCES[_oakCurrentSubject] || [];
+  var filtered = rawList.filter(function(r) {
+    if (_oakCurrentTab === 'documents') {
+      if (r.type !== 'lesson' && r.type !== 'exam') return false;
+    } else if (_oakCurrentTab === 'worksheets') {
+      if (r.type !== 'worksheet') return false;
+    } else if (_oakCurrentTab === 'notes') {
+      if (r.type !== 'formula' && r.type !== 'note') return false;
+    }
+    if (_oakCurrentSearch) {
+      var matchName = (r.name || '').toLowerCase().includes(_oakCurrentSearch);
+      var matchFull = (r.fullName || '').toLowerCase().includes(_oakCurrentSearch);
+      var matchTopic = (r.topic || '').toLowerCase().includes(_oakCurrentSearch);
+      var matchDesc = (r.desc || '').toLowerCase().includes(_oakCurrentSearch);
+      var matchTags = (r.tags || []).some(function(t) { return t.toLowerCase().includes(_oakCurrentSearch); });
+      if (!matchName && !matchFull && !matchTopic && !matchDesc && !matchTags) return false;
+    }
+    return true;
+  });
+
+  if (_oakSortActive) {
+    filtered.sort(function(a, b) {
+      var da = new Date(a.date || '2026-01-01').getTime();
+      var db = new Date(b.date || '2026-01-01').getTime();
+      return _oakSortDesc ? db - da : da - db;
+    });
+  }
+
+  var countEl = document.getElementById('oakResCount');
+  if (countEl) countEl.textContent = filtered.length;
+
+  var gridEl = document.getElementById('resourceGrid');
+  var listEl = document.getElementById('resourceList');
+  var emptyEl = document.getElementById('resourceEmpty');
+
+  if (filtered.length === 0) {
+    if (gridEl) gridEl.innerHTML = '';
+    if (listEl) listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  if (gridEl) {
+    var gridHtml = '';
+    filtered.forEach(function(r) {
+      var isQuiz = !!r.isQuiz;
+      var tone = r.tone || 'tone-blue';
+      var formulasText = Array.isArray(r.formulas) ? r.formulas.join('\n') : (r.formulas || '');
+      var topicText = r.topic || 'Resource';
+      var badgeHtml = '';
+      if (r.badge && r.badge !== topicText) {
+        badgeHtml = '<span class="oak-badge-pill ' + (r.badgeClass || 'pill-green') + '">' + escHtml(r.badge) + '</span>';
+      }
+      var isBookmarked = !!_oakBookmarkedIds[r.id];
+      var bookmarkedClass = isBookmarked ? ' active' : '';
+      var bookmarkIcon = isBookmarked ? 'bookmark' : 'bookmark_border';
+
+      var actionBtnHtml = isQuiz
+        ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span class="material-symbols-outlined">play_circle</span> Start Quiz</button>'
+        : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span class="material-symbols-outlined">visibility</span> Preview</button>';
+
+      var iconBadgeHtml = isQuiz
+        ? '<div class="oak-banner-icon-badge type-quiz"><span class="material-symbols-outlined">task_alt</span></div>'
+        : '<div class="oak-banner-icon-badge type-pdf"><span class="material-symbols-outlined">picture_as_pdf</span></div>';
+
+      gridHtml += '<div class="oak-card" data-id="' + r.id + '">'
+        + '  <div class="oak-card-banner ' + tone + '">'
+        + '    <div class="oak-banner-top">'
+        + '      ' + iconBadgeHtml
+        + '      <div class="oak-banner-formulas">' + escHtml(formulasText) + '</div>'
+        + '    </div>'
+        + '    <div class="oak-banner-bottom">'
+        + '      <span class="oak-topic-pill">' + escHtml(topicText) + '</span>'
+        + '      ' + badgeHtml
+        + '    </div>'
+        + '  </div>'
+        + '  <div class="oak-card-body">'
+        + '    <div class="oak-card-metarow">'
+        + '      <span class="oak-card-pages">' + (isQuiz ? 'Worksheet • ' + (r.questions || 10) + ' Qs' : 'PDF • ' + (r.pages || 16) + ' pgs') + '</span>'
+        + '      <span class="oak-card-time">' + escHtml(r.readTime || '15 min read') + '</span>'
+        + '    </div>'
+        + '    <h3 class="oak-card-title" title="' + escHtml(r.fullName || r.name) + '">' + escHtml(r.name) + '</h3>'
+        + '    <p class="oak-card-desc">' + escHtml(r.desc || '') + '</p>'
+        + '    <div class="oak-card-actions">'
+        + '      ' + actionBtnHtml
+        + '      <div class="oak-act-icons">'
+        + '        <button class="oak-icon-action' + bookmarkedClass + '" title="Bookmark" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
+        + '          <span class="material-symbols-outlined">' + bookmarkIcon + '</span>'
+        + '        </button>'
+        + '        <button class="oak-icon-action" title="Download" onclick="oakDownload(\'' + r.id + '\')">'
+        + '          <span class="material-symbols-outlined">download</span>'
+        + '        </button>'
+        + '      </div>'
+        + '    </div>'
+        + '  </div>'
+        + '</div>';
+    });
+    gridEl.innerHTML = gridHtml;
+  }
+
+  if (listEl) {
+    var listHtml = '';
+    filtered.forEach(function(r) {
+      var isQuiz = !!r.isQuiz;
+      var isBookmarked = !!_oakBookmarkedIds[r.id];
+      var bookmarkIcon = isBookmarked ? 'bookmark' : 'bookmark_border';
+      var bookmarkedClass = isBookmarked ? ' active' : '';
+
+      listHtml += '<div class="oak-list-row">'
+        + '  <div class="oak-list-left">'
+        + '    <div class="oak-banner-icon-badge ' + (isQuiz ? 'type-quiz' : 'type-pdf') + '">'
+        + '      <span class="material-symbols-outlined">' + (isQuiz ? 'task_alt' : 'picture_as_pdf') + '</span>'
+        + '    </div>'
+        + '    <div class="oak-list-title-wrap">'
+        + '      <div class="oak-list-title">' + escHtml(r.fullName || r.name) + '</div>'
+        + '      <div class="oak-list-sub">'
+        + '        <span>' + (isQuiz ? 'Worksheet • ' + (r.questions || 10) + ' Qs' : 'PDF • ' + (r.pages || 16) + ' pgs') + '</span>'
+        + '        <span>•</span>'
+        + '        <span>' + escHtml(r.readTime || '15 min read') + '</span>'
+        + '        <span>•</span>'
+        + '        <span class="oak-topic-pill" style="font-size:10.5px; padding:1px 8px;">' + escHtml(r.topic || 'Resource') + '</span>'
+        + '      </div>'
+        + '    </div>'
+        + '  </div>'
+        + '  <div class="oak-list-right">'
+        + (isQuiz ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span class="material-symbols-outlined">play_circle</span> Start Quiz</button>'
+                 : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span class="material-symbols-outlined">visibility</span> Preview</button>')
+        + '    <button class="oak-icon-action' + bookmarkedClass + '" title="Bookmark" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
+        + '      <span class="material-symbols-outlined">' + bookmarkIcon + '</span>'
+        + '    </button>'
+        + '    <button class="oak-icon-action" title="Download" onclick="oakDownload(\'' + r.id + '\')">'
+        + '      <span class="material-symbols-outlined">download</span>'
+        + '    </button>'
+        + '  </div>'
+        + '</div>';
+    });
+    listEl.innerHTML = listHtml;
+  }
+}
+
+/* ── Interactive Document Preview Modal ── */
+var _oakActivePreviewRes = null;
+function oakOpenPreview(resId) {
+  var rawList = RESOURCES[_oakCurrentSubject] || [];
+  var r = rawList.find(function(x) { return x.id === resId; }) || rawList[0];
+  if (!r) return;
+  _oakActivePreviewRes = r;
+
+  var titleEl = document.getElementById('oakModalTitle');
+  var subEl = document.getElementById('oakModalSub');
+  if (titleEl) titleEl.textContent = r.fullName || r.name;
+  if (subEl) subEl.textContent = 'Uploaded ' + fmtDate(r.date) + ' • ' + (r.size || '2.0 MB') + ' • ' + (r.pages || 16) + ' pages';
+
+  var modal = document.getElementById('oakPreviewModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function oakClosePreview() {
+  var modal = document.getElementById('oakPreviewModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+function oakDownloadCurrent() {
+  if (_oakActivePreviewRes) {
+    oakDownload(_oakActivePreviewRes.id);
+  }
+}
+
+function oakDownload(resId) {
+  var rawList = RESOURCES[_oakCurrentSubject] || [];
+  var r = rawList.find(function(x) { return x.id === resId; });
+  var name = (r && (r.fullName || r.name)) || 'Resource Material';
+  if (window.toast) {
+    window.toast('Downloading "' + name + '"...', 'success');
+  } else {
+    alert('Downloading "' + name + '"');
+  }
+  downloadFile((r && r.src) || 'https://www.africau.edu/images/default/sample.pdf', name + '.pdf');
+}
+
+function oakToggleBookmark(btn, resId) {
+  _oakBookmarkedIds[resId] = !_oakBookmarkedIds[resId];
+  var active = _oakBookmarkedIds[resId];
+  var ico = btn.querySelector('.material-symbols-outlined');
+  if (ico) {
+    ico.textContent = active ? 'bookmark' : 'bookmark_border';
+  }
+  btn.classList.toggle('active', active);
+  if (window.toast) {
+    window.toast(active ? 'Saved to Bookmarks' : 'Removed from Bookmarks', 'info');
+  }
+}
+
+/* ── Interactive Practice Quiz Modal ── */
+var QUIZ_DATA = {
+  m7: [
+    {
+      q: '1. What are the roots of the quadratic equation x² - 5x + 6 = 0?',
+      options: ['A) x = 2 and x = 3', 'B) x = -2 and x = -3', 'C) x = 1 and x = 6', 'D) x = -1 and x = 5'],
+      correct: 0,
+      hint: 'Factor as (x - 2)(x - 3) = 0.'
+    },
+    {
+      q: '2. Find the determinant of matrix M = [[2, 1], [4, 3]].',
+      options: ['A) 10', 'B) 2', 'C) -2', 'D) 8'],
+      correct: 1,
+      hint: 'det(M) = (2)(3) - (1)(4) = 6 - 4 = 2.'
+    },
+    {
+      q: '3. Solve the system: 2x + y = 7 and x - y = 2.',
+      options: ['A) x = 3, y = 1', 'B) x = 2, y = 3', 'C) x = 4, y = -1', 'D) x = 1, y = 5'],
+      correct: 0,
+      hint: 'Adding both equations gives 3x = 9 => x = 3, y = 1.'
+    }
+  ]
+};
+
+var _oakQuizSelected = {};
+
+function oakOpenQuiz(resId) {
+  _oakQuizSelected = {};
+  var questions = QUIZ_DATA[resId] || QUIZ_DATA['m7'];
+  var container = document.getElementById('quizQuestionsContainer');
+  if (!container) return;
+
+  var html = '';
+  questions.forEach(function(item, qIdx) {
+    html += '<div class="quiz-q-card">'
+      + '  <div class="quiz-q-title">' + escHtml(item.q) + '</div>'
+      + '  <div class="quiz-options">';
+    item.options.forEach(function(opt, optIdx) {
+      html += '    <button class="quiz-opt-btn" onclick="oakSelectQuizOpt(' + qIdx + ',' + optIdx + ',this)">' + escHtml(opt) + '</button>';
+    });
+    html += '  </div>'
+      + '  <div class="quiz-feedback" id="quizFeedback_' + qIdx + '" style="display:none"></div>'
+      + '</div>';
+  });
+  container.innerHTML = html;
+
+  var scoreText = document.getElementById('quizScoreText');
+  if (scoreText) scoreText.textContent = 'Score: 0 / ' + questions.length + ' answered';
+
+  var modal = document.getElementById('oakQuizModal');
+  if (modal) {
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function oakSelectQuizOpt(qIdx, optIdx, btn) {
+  _oakQuizSelected[qIdx] = optIdx;
+  var card = btn.closest('.quiz-q-card');
+  if (!card) return;
+  card.querySelectorAll('.quiz-opt-btn').forEach(function(b) {
+    b.style.borderColor = '#cbd5e1';
+    b.style.background = '#ffffff';
+  });
+  btn.style.borderColor = '#159a9c';
+  btn.style.background = '#f0fdfa';
+
+  var questions = QUIZ_DATA['m7'];
+  var answered = Object.keys(_oakQuizSelected).length;
+  var scoreText = document.getElementById('quizScoreText');
+  if (scoreText) scoreText.textContent = 'Answered: ' + answered + ' / ' + questions.length;
+}
+
+function oakSubmitQuiz() {
+  var questions = QUIZ_DATA['m7'];
+  var correctCount = 0;
+  questions.forEach(function(item, qIdx) {
+    var chosen = _oakQuizSelected[qIdx];
+    var feedbackEl = document.getElementById('quizFeedback_' + qIdx);
+    var card = feedbackEl ? feedbackEl.closest('.quiz-q-card') : null;
+    var btns = card ? card.querySelectorAll('.quiz-opt-btn') : [];
+
+    if (chosen === undefined) {
+      if (feedbackEl) {
+        feedbackEl.style.display = 'block';
+        feedbackEl.className = 'quiz-feedback bad';
+        feedbackEl.textContent = 'Please choose an answer.';
+      }
+      return;
+    }
+
+    if (chosen === item.correct) {
+      correctCount++;
+      if (btns[chosen]) btns[chosen].className = 'quiz-opt-btn correct';
+      if (feedbackEl) {
+        feedbackEl.style.display = 'block';
+        feedbackEl.className = 'quiz-feedback good';
+        feedbackEl.textContent = '✓ Correct! ' + item.hint;
+      }
+    } else {
+      if (btns[chosen]) btns[chosen].className = 'quiz-opt-btn wrong';
+      if (btns[item.correct]) btns[item.correct].className = 'quiz-opt-btn correct';
+      if (feedbackEl) {
+        feedbackEl.style.display = 'block';
+        feedbackEl.className = 'quiz-feedback bad';
+        feedbackEl.textContent = '✗ Incorrect. ' + item.hint;
+      }
+    }
+  });
+
+  var scoreText = document.getElementById('quizScoreText');
+  if (scoreText) {
+    scoreText.textContent = 'Score: ' + correctCount + ' / ' + questions.length + ' (' + Math.round((correctCount/questions.length)*100) + '%)';
+  }
+  if (window.toast) {
+    window.toast('Quiz graded: ' + correctCount + ' / ' + questions.length + ' correct!', correctCount === questions.length ? 'success' : 'info');
+  }
+}
+
+function oakCloseQuiz() {
+  var modal = document.getElementById('oakQuizModal');
+  if (modal) {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+}
+
+// Auto-initialize when ready
+document.addEventListener('DOMContentLoaded', function() {
+  oakInit();
+});
+if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  oakInit();
 }

@@ -25,7 +25,7 @@
       }
 
       if (!NGISAuth.isAuthenticated()) {
-        window.location.href = "/index.html";
+        window.location.href = "/";
         return false;
       }
 
@@ -39,7 +39,7 @@
           student: "/pages/student/student.html",
           parent: "/pages/parent/parent.html",
         };
-        window.location.href = portals[role] || "/index.html";
+        window.location.href = portals[role] || "/";
         return false;
       }
 

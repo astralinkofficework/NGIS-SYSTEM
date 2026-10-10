@@ -1,0 +1,359 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   NGIS MODERN BOTTOM NAVIGATION DOCK — Flow & Melt Liquid Aesthetics
+   Premium mobile-only floating dock with organic melting physics and animations
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Mobile Only — Strictly hidden on desktop */
+.bottomnav,
+.bottom-dock-nav {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .bottomnav,
+  .bottom-dock-nav {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .bottomnav,
+  .bottom-dock-nav {
+    display: block;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(0) scale(1);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    width: calc(100% - 24px);
+    max-width: 440px;
+    z-index: 80;
+    pointer-events: auto;
+    transform-origin: bottom center;
+    transition: transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity, filter;
+  }
+
+  /* ── Flow & Melt Disappearance on Sidebar Open ── */
+  body.sidebar-open .bottomnav,
+  body.sidebar-open .bottom-dock-nav,
+  body:has(#sidebar.open) .bottomnav,
+  body:has(#sidebar.open) .bottom-dock-nav,
+  body:has(.scrim.show) .bottomnav,
+  body:has(.scrim.show) .bottom-dock-nav,
+  .bottomnav.hidden-by-sidebar,
+  .bottom-dock-nav.hidden-by-sidebar {
+    transform: translateX(-50%) translateY(calc(100% + 48px)) scale(0.88) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    filter: blur(8px) !important;
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease,
+                filter 0.3s ease !important;
+  }
+
+  /* ── Ambient Molten Underglow ── */
+  .bottomnav-glow {
+    position: absolute;
+    inset: 8px 16px -6px 16px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(88, 111, 124, 0.25), rgba(184, 219, 217, 0.38), rgba(47, 69, 80, 0.2));
+    filter: blur(16px);
+    opacity: 0.7;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+  }
+  [data-theme="dark"] .bottomnav-glow {
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.28), rgba(184, 219, 217, 0.22), rgba(47, 69, 80, 0.4));
+    opacity: 0.85;
+    filter: blur(18px);
+  }
+
+  /* ── Floating Liquid Glass Shell ── */
+  .bottomnav-shell {
+    position: relative;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.16),
+                0 6px 16px -4px rgba(15, 23, 42, 0.08),
+                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95),
+                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.04);
+    padding: 6px 8px;
+    overflow: hidden;
+  }
+  [data-theme="dark"] .bottomnav-shell {
+    background: rgba(24, 35, 41, 0.84);
+    border: 1px solid rgba(184, 219, 217, 0.2);
+    box-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.65),
+                0 6px 16px -4px rgba(0, 0, 0, 0.45),
+                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .bottomnav-shell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 3;
+  }
+  [data-theme="dark"] .bottomnav-shell::before {
+    background: linear-gradient(90deg, transparent, rgba(184, 219, 217, 0.5), transparent);
+  }
+
+  /* ── Track & Sliding Melt Slider ── */
+  .bottomnav-track {
+    position: relative;
+    width: 100%;
+  }
+
+  .bottomnav-melt-slider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(184, 219, 217, 0.42), rgba(47, 69, 80, 0.09));
+    border: 1px solid rgba(47, 69, 80, 0.12);
+    box-shadow: 0 4px 14px rgba(47, 69, 80, 0.12),
+                inset 0 1px 1px 0 rgba(255, 255, 255, 0.85);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    will-change: transform, width;
+    transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1),
+                width 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
+                opacity 0.25s ease;
+  }
+  [data-theme="dark"] .bottomnav-melt-slider {
+    background: linear-gradient(135deg, rgba(184, 219, 217, 0.22), rgba(88, 111, 124, 0.28));
+    border: 1px solid rgba(184, 219, 217, 0.32);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1.5px rgba(255, 255, 255, 0.18);
+  }
+
+  .melt-slider-core {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4), transparent 70%);
+  }
+  [data-theme="dark"] .melt-slider-core {
+    background: radial-gradient(circle at 50% 30%, rgba(184, 219, 217, 0.2), transparent 70%);
+  }
+
+  /* ── Nav Inner Container ── */
+  .bottomnav-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 52px;
+    z-index: 2;
+  }
+
+  /* ── Navigation Item ── */
+  .bn-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 100%;
+    padding: 3px 2px;
+    color: var(--blue-slate, #586f7c);
+    text-decoration: none;
+    border-radius: 999px;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    transition: color 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  [data-theme="dark"] .bn-item {
+    color: var(--text-muted, #9eb8b7);
+  }
+
+  .bn-item:hover {
+    color: var(--charcoal-blue, #2f4550);
+  }
+  [data-theme="dark"] .bn-item:hover {
+    color: #ffffff;
+  }
+
+  .bn-item:active {
+    transform: scale(0.92, 0.88);
+    transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bn-item.active {
+    color: var(--charcoal-blue, #2f4550);
+  }
+  [data-theme="dark"] .bn-item.active {
+    color: var(--light-blue, #b8dbd9);
+  }
+
+  /* ── Icon Bubble ── */
+  .bn-icon-bubble {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 26px;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .bn-item.active .bn-icon-bubble {
+    transform: translateY(-2px);
+  }
+
+  .bn-icon {
+    font-size: 23px !important;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                font-variation-settings 0.25s ease,
+                filter 0.25s ease;
+  }
+
+  .bn-item.active .bn-icon {
+    font-variation-settings: 'FILL' 1, 'wght' 600;
+    filter: drop-shadow(0 2px 6px rgba(47, 69, 80, 0.25));
+  }
+  [data-theme="dark"] .bn-item.active .bn-icon {
+    filter: drop-shadow(0 2px 8px rgba(184, 219, 217, 0.45));
+  }
+
+  /* ── Label & Molten Droplet ── */
+  .bn-label {
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    transition: font-weight 0.2s ease, transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .bn-item.active .bn-label {
+    font-weight: 700;
+    transform: translateY(-1px);
+  }
+
+  .bn-droplet {
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--charcoal-blue, #2f4550);
+    opacity: 0;
+    transform: scale(0.3);
+    transition: opacity 0.24s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-top: 1px;
+  }
+  [data-theme="dark"] .bn-droplet {
+    background: var(--light-blue, #b8dbd9);
+  }
+
+  .bn-item.active .bn-droplet {
+    opacity: 1;
+    transform: scale(1);
+    animation: meltDropletPulse 2.4s ease-in-out infinite;
+  }
+
+  @keyframes meltDropletPulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    50% {
+      transform: scale(1.4);
+      opacity: 1;
+      box-shadow: 0 0 6px rgba(184, 219, 217, 0.8);
+    }
+  }
+
+  /* ── Unread Badge ── */
+  .bn-badge {
+    position: absolute;
+    top: -3px;
+    right: -5px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ef4444, #e11d48);
+    color: #ffffff;
+    font-size: 9.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+    animation: bnBadgePulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  [data-theme="dark"] .bn-badge {
+    border-color: #182329;
+  }
+
+  @keyframes bnBadgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  /* ── Bounce / Pop micro animation ── */
+  .bn-pop {
+    animation: bnPopBounce 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes bnPopBounce {
+    0% { transform: scale(0.85); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+
+  /* ── Safe Area & Page Clearance ── */
+  .page {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .sidebar {
+    z-index: 100 !important;
+  }
+  .scrim {
+    z-index: 95 !important;
+  }
+}
+
+/* Compact phones <= 380px */
+@media (max-width: 380px) {
+  .bottomnav,
+  .bottom-dock-nav {
+    width: calc(100% - 16px) !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+  }
+  .bottomnav-shell {
+    padding: 4px 4px !important;
+  }
+  .bottomnav-inner {
+    height: 48px !important;
+  }
+  .bn-icon {
+    font-size: 21px !important;
+  }
+  .bn-label {
+    font-size: 9.5px !important;
+  }
+}

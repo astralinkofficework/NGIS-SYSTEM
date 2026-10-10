@@ -1,0 +1,1833 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport">
+<title>NGIS — My Examinations</title>
+
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<!-- NGIS Framework Styles -->
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        navy: {
+          950: "#060d18",
+          900: "#0a192f",
+          800: "#0f2342",
+          700: "#172554",
+          600: "#1e3a8a",
+          100: "#e0e7ff",
+          50: "#f0f4ff",
+        },
+        sky: {
+          900: "#0c4a6e",
+          700: "#0369a1",
+          600: "#0284c7",
+          500: "#0ea5e9",
+          400: "#38bdf8",
+          100: "#e0f2fe",
+          50: "#f0f9ff",
+        },
+        surface: {
+          card: "#ffffff",
+          page: "#ffffff",
+          subtle: "#f8fafc",
+          border: "#e2e8f0",
+          borderLight: "#f1f5f9"
+        },
+        ink: {
+          main: "#000000",
+          navy: "#0a192f",
+          muted: "#64748b",
+          soft: "#94a3b8"
+        }
+      },
+      fontFamily: {
+        sans: ['"Inter"', 'sans-serif'],
+        display: ['"Inter"', 'sans-serif'],
+        khmer: ['"Kantumruy Pro"', 'sans-serif']
+      }
+    }
+  }
+};
+</script>
+
+<script>
+try {
+  var _t = localStorage.getItem('ngis-theme');
+  if (_t) document.documentElement.setAttribute('data-theme', _t);
+} catch(e) {}
+</script>
+
+<style>
+html, body {
+  background-color: #f8fafb;
+  color: #0f172a;
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 400 !important;
+  -webkit-font-smoothing: antialiased;
+}
+*, h1, h2, h3, h4, h5, h6, b, strong, th {
+  font-weight: 400 !important;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.page {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 12px 64px;
+}
+@media (min-width: 640px) {
+  .page { padding: 24px 20px 64px; }
+}
+@media (min-width: 1024px) {
+  .page { padding: 32px 36px 72px; }
+}
+
+/* Timeline Vertical Line */
+.timeline-track {
+  position: relative;
+}
+.timeline-track::before {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: 24px;
+  left: 15px;
+  width: 2px;
+  background: linear-gradient(to bottom, #2563eb 0px, #2563eb 95px, #e2e8f0 95px, #e2e8f0 100%);
+  z-index: 0;
+}
+@media (min-width: 640px) {
+  .timeline-track::before {
+    top: 20px;
+    left: 17px;
+  }
+}
+
+@media print {
+  #heroBanner, .sidebar, .topbar, button, #roadmapSearch, .no-print {
+    display: none !important;
+  }
+  body, .main, .page {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ═══════════════════════════════════════
+   EXAM RESOURCE PREVIEW (RESPOVIE / RPV)
+   ═══════════════════════════════════════ */
+.exam-rpv-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.exam-rpv-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.exam-rpv-card {
+  background: #ffffff;
+  border-radius: 22px;
+  width: 100%;
+  max-width: 1040px;
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 40px 80px rgba(15, 23, 42, .35), 0 8px 24px rgba(15, 23, 42, .15);
+  border: 1px solid rgba(226, 232, 240, .9);
+  transform: translateY(10px) scale(.98);
+  transition: transform .24s cubic-bezier(.2,.7,.2,1);
+}
+.exam-rpv-overlay.show .exam-rpv-card {
+  transform: translateY(0) scale(1);
+}
+[data-theme="dark"] .exam-rpv-card {
+  background: #0b1220;
+  border-color: #1e293b;
+}
+
+/* Mobile Drag Handle Bar */
+.exam-rpv-drag-bar {
+  display: none;
+  width: 100%;
+  padding: 10px 0 4px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  touch-action: pan-y;
+  background: transparent;
+}
+.exam-rpv-drag-pill {
+  width: 36px;
+  height: 4px;
+  border-radius: 99px;
+  background: #cbd5e1;
+  transition: background .15s;
+}
+[data-theme="dark"] .exam-rpv-drag-pill {
+  background: #334155;
+}
+
+/* Modal Header */
+.exam-rpv-head {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  background: #ffffff;
+}
+[data-theme="dark"] .exam-rpv-head {
+  background: #0b1220;
+  border-color: #1e293b;
+}
+.exam-rpv-head-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+.exam-rpv-icon-badge {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+  flex-shrink: 0;
+}
+.exam-rpv-icon-badge.pdf { background: #f0f9ff; color: #0284c7; border-color: #bae6fd; }
+.exam-rpv-icon-badge.cal { background: #eff6ff; color: #172554; border-color: #bfdbfe; }
+.exam-rpv-icon-badge.res { background: #f0f9ff; color: #0284c7; border-color: #bae6fd; }
+.exam-rpv-icon-badge.talk { background: #f8fafc; color: #0a192f; border-color: #e2e8f0; }
+.exam-rpv-icon-badge .material-symbols-outlined { font-size: 20px; }
+
+.exam-rpv-titles { min-width: 0; flex: 1; }
+.exam-rpv-title {
+  font-size: 15px;
+  font-weight: 400;
+  color: #0f172a;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+[data-theme="dark"] .exam-rpv-title { color: #e2e8f0; }
+.exam-rpv-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+[data-theme="dark"] .exam-rpv-sub { color: #94a3b8; }
+
+.exam-rpv-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.exam-rpv-btn {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 9px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0a192f;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+[data-theme="dark"] .exam-rpv-btn {
+  background: #0b1220;
+  border-color: #1e293b;
+  color: #cbd5e1;
+}
+.exam-rpv-btn.primary {
+  background: #0a192f;
+  border-color: #0a192f;
+  color: #ffffff;
+}
+.exam-rpv-close {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .exam-rpv-close {
+  background: #0b1220;
+  border-color: #1e293b;
+  color: #94a3b8;
+}
+.exam-rpv-close .material-symbols-outlined { font-size: 20px; }
+
+/* Modal Body */
+.exam-rpv-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #f8fafb;
+  padding: 22px 26px 36px;
+}
+[data-theme="dark"] .exam-rpv-body { background: #050a14; }
+
+/* ── RPV: Hero Metadata Row ── */
+.exam-rpv-hero {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+[data-theme="dark"] .exam-rpv-hero { background: #0b1220; border-color: #1e293b; }
+.exam-rpv-hero-main { min-width: 0; flex: 1 1 320px; }
+.exam-rpv-chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.exam-rpv-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.exam-rpv-chip.prm { color: #0284c7; background: #f0f9ff; border: 1px solid #bae6fd; }
+.exam-rpv-chip.blu { color: #0a192f; background: #e0f2fe; border: 1px solid #bae6fd; }
+.exam-rpv-chip.amb { color: #0a192f; background: #f8fafc; border: 1px solid #e2e8f0; }
+.exam-rpv-chip.grn { color: #0284c7; background: #f0f9ff; border: 1px solid #bae6fd; }
+.exam-rpv-chip .material-symbols-outlined { font-size: 13px; }
+.exam-rpv-h1 {
+  font-size: 20px;
+  font-weight: 400;
+  color: #0f172a;
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: -.01em;
+}
+[data-theme="dark"] .exam-rpv-h1 { color: #f1f5f9; }
+.exam-rpv-h1-sub {
+  font-size: 12.5px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.45;
+}
+.exam-rpv-metarow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: #64748b;
+}
+.exam-rpv-metarow span { display: inline-flex; align-items: center; gap: 5px; }
+.exam-rpv-metarow .material-symbols-outlined { font-size: 14px; color: #94a3b8; }
+
+/* ── RPV: Document Paper Viewer ── */
+.exam-rpv-paper {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, .08), 0 1px 3px rgba(15, 23, 42, .05);
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 36px;
+  position: relative;
+  box-sizing: border-box;
+}
+[data-theme="dark"] .exam-rpv-paper {
+  background: #0b1220;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, .3), 0 1px 3px rgba(0, 0, 0, .2);
+  border: 1px solid #1e293b;
+}
+.exam-rpv-paper-head {
+  text-align: center;
+  margin-bottom: 26px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+[data-theme="dark"] .exam-rpv-paper-head {
+  border-color: #334155;
+}
+.exam-rpv-paper-eyebrow {
+  font-size: 10.5px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #64748b;
+}
+.exam-rpv-paper-title {
+  font-size: 22px;
+  font-weight: 400;
+  color: #0f172a;
+  margin-top: 8px;
+  line-height: 1.25;
+}
+[data-theme="dark"] .exam-rpv-paper-title { color: #f1f5f9; }
+.exam-rpv-paper-accent {
+  width: 44px;
+  height: 3px;
+  margin: 12px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0a192f, #0284c7);
+}
+.exam-rpv-paper h3 {
+  font-size: 15px;
+  font-weight: 400;
+  color: #0f172a;
+  margin: 20px 0 8px;
+}
+[data-theme="dark"] .exam-rpv-paper h3 { color: #e2e8f0; }
+.exam-rpv-paper p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #475569;
+  margin: 0 0 12px;
+}
+[data-theme="dark"] .exam-rpv-paper p { color: #cbd5e1; }
+.exam-rpv-paper ul, .exam-rpv-paper ol {
+  padding-left: 20px;
+  margin: 8px 0 14px;
+}
+.exam-rpv-paper li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #475569;
+  margin: 4px 0;
+}
+[data-theme="dark"] .exam-rpv-paper li { color: #cbd5e1; }
+
+.exam-rpv-paper .callout {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 10px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+[data-theme="dark"] .exam-rpv-paper .callout {
+  background: #0a192f;
+  border-color: #1e3a8a;
+}
+.exam-rpv-paper .callout .material-symbols-outlined {
+  font-size: 20px;
+  color: #0284c7;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.exam-rpv-paper .callout.info { background: #e0f2fe; border-color: #bae6fd; }
+.exam-rpv-paper .callout.info .material-symbols-outlined { color: #0284c7; }
+[data-theme="dark"] .exam-rpv-paper .callout.info { background: #172554; border-color: #0284c7; }
+.exam-rpv-paper .callout.info .material-symbols-outlined { color: #38bdf8; }
+.exam-rpv-paper .callout.warn { background: #ffffff; border-color: #bae6fd; }
+.exam-rpv-paper .callout.warn .material-symbols-outlined { color: #0284c7; }
+[data-theme="dark"] .exam-rpv-paper .callout.warn { background: #0a192f; border-color: #0284c7; }
+.exam-rpv-paper .callout.warn .material-symbols-outlined { color: #38bdf8; }
+.exam-rpv-paper .callout div { flex: 1; font-size: 12.5px; line-height: 1.6; color: #0a192f; }
+[data-theme="dark"] .exam-rpv-paper .callout div { color: #f0f9ff; }
+.exam-rpv-paper .callout.info div { color: #0a192f; }
+[data-theme="dark"] .exam-rpv-paper .callout.info div { color: #e0f2fe; }
+.exam-rpv-paper .callout.warn div { color: #0a192f; }
+[data-theme="dark"] .exam-rpv-paper .callout.warn div { color: #ffffff; }
+
+.exam-rpv-paper .eqn-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 15px;
+  color: #12304a;
+  margin: 12px 0 18px;
+  overflow-x: auto;
+}
+[data-theme="dark"] .exam-rpv-paper .eqn-box {
+  background: #0b1220;
+  border-color: #1e293b;
+  color: #93c5fd;
+}
+
+/* Responsive Table Wrapper */
+.exam-rpv-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 10px 0 18px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+[data-theme="dark"] .exam-rpv-table-wrap {
+  border-color: #1e293b;
+}
+.exam-rpv-paper table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  margin: 0;
+}
+.exam-rpv-paper th, .exam-rpv-paper td {
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  text-align: left;
+}
+[data-theme="dark"] .exam-rpv-paper th, [data-theme="dark"] .exam-rpv-paper td { border-color: #1e293b; }
+.exam-rpv-paper th {
+  background: #f8fafc;
+  font-weight: 400;
+  color: #334155;
+  white-space: nowrap;
+}
+[data-theme="dark"] .exam-rpv-paper th { background: #0f172a; color: #cbd5e1; }
+.exam-rpv-paper td { color: #475569; }
+[data-theme="dark"] .exam-rpv-paper td { color: #cbd5e1; }
+
+/* Floating viewer toolbar */
+.exam-rpv-viewer-wrap {
+  position: relative;
+  max-width: 820px;
+  margin: 0 auto;
+}
+.exam-rpv-bottom-bar {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, .92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid #e2e8f0;
+  border-radius: 99px;
+  padding: 6px 14px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .14);
+  z-index: 5;
+}
+[data-theme="dark"] .exam-rpv-bottom-bar {
+  background: rgba(15, 23, 42, .92);
+  border-color: #334155;
+}
+.exam-rpv-page {
+  font-size: 11px;
+  font-weight: 400;
+  color: #334155;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+[data-theme="dark"] .exam-rpv-page { color: #cbd5e1; }
+.exam-rpv-zoom-grp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  padding: 0 10px;
+}
+[data-theme="dark"] .exam-rpv-zoom-grp { border-color: #334155; }
+.exam-rpv-zbtn {
+  width: 26px; height: 26px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.exam-rpv-zbtn .material-symbols-outlined { font-size: 16px; }
+.exam-rpv-zlabel {
+  min-width: 34px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 400;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+[data-theme="dark"] .exam-rpv-zlabel { color: #cbd5e1; }
+.exam-rpv-fs {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.exam-rpv-fs .material-symbols-outlined { font-size: 16px; }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE BREAKPOINTS (MOBILE & TABLET)
+   ═══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .exam-rpv-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .exam-rpv-card {
+    border-radius: 20px 20px 0 0;
+    max-height: 94vh;
+    height: 94vh;
+    border-bottom: none;
+    transform: translateY(100%);
+    box-shadow: 0 -12px 40px rgba(15, 23, 42, .32);
+  }
+  .exam-rpv-overlay.show .exam-rpv-card {
+    transform: translateY(0);
+  }
+  .exam-rpv-drag-bar {
+    display: flex;
+  }
+  .exam-rpv-head {
+    padding: 10px 14px 12px;
+    gap: 8px;
+  }
+  .exam-rpv-icon-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+  .exam-rpv-icon-badge .material-symbols-outlined {
+    font-size: 18px;
+  }
+  .exam-rpv-title {
+    font-size: 13.5px;
+    line-height: 1.25;
+  }
+  .exam-rpv-sub {
+    font-size: 10px;
+    margin-top: 1px;
+  }
+  .exam-rpv-actions {
+    gap: 4px;
+  }
+  .exam-rpv-btn {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+  }
+  .exam-rpv-btn .exam-rpv-btn-text {
+    display: none;
+  }
+  .exam-rpv-btn .material-symbols-outlined {
+    font-size: 18px !important;
+  }
+  .exam-rpv-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+  .exam-rpv-close .material-symbols-outlined {
+    font-size: 18px;
+  }
+  .exam-rpv-body {
+    padding: 12px 10px 76px;
+  }
+  .exam-rpv-hero {
+    padding: 14px 12px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+  .exam-rpv-hero-main {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .exam-rpv-h1 {
+    font-size: 17px;
+  }
+  .exam-rpv-h1-sub {
+    font-size: 11.5px;
+  }
+  .exam-rpv-metarow {
+    gap: 8px 12px;
+    font-size: 11px;
+    margin-top: 8px;
+  }
+  .exam-rpv-paper {
+    padding: 22px 14px;
+    border-radius: 10px;
+  }
+  .exam-rpv-paper-head {
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+  }
+  .exam-rpv-paper-eyebrow {
+    font-size: 9.5px;
+  }
+  .exam-rpv-paper-title {
+    font-size: 17px;
+    margin-top: 6px;
+  }
+  .exam-rpv-paper p, .exam-rpv-paper li {
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  .exam-rpv-paper .callout {
+    padding: 10px 12px;
+    font-size: 11.5px;
+    gap: 8px;
+  }
+  .exam-rpv-paper .eqn-box {
+    font-size: 13px;
+    padding: 12px 10px;
+  }
+  .exam-rpv-bottom-bar {
+    bottom: 10px;
+    padding: 5px 10px;
+    gap: 6px;
+    max-width: calc(100vw - 32px);
+  }
+  .exam-rpv-page {
+    font-size: 10px;
+    padding: 0 2px;
+  }
+  .exam-rpv-zoom-grp {
+    padding: 0 6px;
+    gap: 2px;
+  }
+  .exam-rpv-zbtn {
+    width: 24px;
+    height: 24px;
+  }
+  .exam-rpv-zlabel {
+    min-width: 28px;
+    font-size: 10px;
+  }
+  .exam-rpv-fs {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .exam-rpv-card {
+    max-height: 90vh;
+  }
+  .exam-rpv-head {
+    padding: 12px 18px;
+  }
+  .exam-rpv-paper {
+    padding: 30px 24px;
+  }
+}
+</style>
+</head>
+<body data-page="exams" class="font-sans selection:bg-[#e0f2fe] selection:text-[#0a192f]">
+
+<main class="main">
+  <!-- TOPBAR / HERO HEADER -->
+  <div id="heroBanner"></div>
+
+  <!-- EDITORIAL WORKSPACE -->
+  <div class="page space-y-6">
+
+    <!-- MAIN HERO CARD: EXAM OVERVIEW & HALL TICKET -->
+    <div class="bg-white rounded-2xl sm:rounded-[28px] border border-surface-border p-4 sm:p-6 lg:p-8 shadow-xs">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-7 items-start">
+        
+        <!-- LEFT COLUMN: Exam Details & Quick Actions (7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          
+
+          <!-- Date & Titles -->
+          <div class="pt-0.5">
+            <div class="text-xs sm:text-sm font-medium text-[#64748b]">
+              29 June 2026
+            </div>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-normal font-display text-[#0f172a] tracking-tight mt-1 leading-snug">
+              Physics — Mid-Term Examination
+            </h2>
+            <p class="text-xs sm:text-sm text-[#64748b] mt-1 font-medium">
+              Senior Secondary STEM • Paper 1 &amp; Paper 2 Combo
+            </p>
+          </div>
+
+          <!-- Schedule & Location Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 pt-1">
+            <!-- Schedule -->
+            <div class="flex items-center gap-3.5 p-3.5 rounded-2xl bg-[#f8fafc] border border-[#f1f5f9]">
+              <div class="w-10 h-10 rounded-full bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[20px]">schedule</span>
+              </div>
+              <div>
+                <div class="text-[11px] font-medium text-[#64748b]">Schedule</div>
+                <div class="text-sm sm:text-[15px] font-normal text-[#0f172a] mt-0.5">09:00 AM – 11:30 AM</div>
+              </div>
+            </div>
+            <!-- Location -->
+            <div class="flex items-center gap-3.5 p-3.5 rounded-2xl bg-[#f8fafc] border border-[#f1f5f9]">
+              <div class="w-10 h-10 rounded-full bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[20px]">location_on</span>
+              </div>
+              <div>
+                <div class="text-[11px] font-medium text-[#64748b]">Location</div>
+                <div class="text-sm sm:text-[15px] font-normal text-[#0f172a] mt-0.5">Hall B • Desk #42</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions Bar -->
+          <div class="rounded-2xl bg-[#f0f9ff]/60 border border-[#bae6fd] p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 mt-2">
+            <!-- Label -->
+            <div class="flex items-center gap-3 pr-4 md:border-r md:border-[#bae6fd] shrink-0">
+              <div class="text-[#0284c7]">
+                <span class="material-symbols-outlined text-[24px]">bolt</span>
+              </div>
+              <div>
+                <div class="text-xs sm:text-sm font-normal text-[#0f172a]">Quick Actions</div>
+                <div class="text-[11px] text-[#64748b]">Get ready for your exam</div>
+              </div>
+            </div>
+
+            <!-- Action Buttons Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1">
+              <button onclick="examRpvOpen('syllabus')" class="flex flex-col items-center justify-center p-2 rounded-xl">
+                <div class="w-9 h-9 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center mb-1.5">
+                  <span class="material-symbols-outlined text-[18px]">description</span>
+                </div>
+                <span class="text-[11px] font-medium text-[#334155] text-center">View Syllabus</span>
+              </button>
+
+              <button onclick="examRpvOpen('calendar')" class="flex flex-col items-center justify-center p-2 rounded-xl">
+                <div class="w-9 h-9 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center mb-1.5">
+                  <span class="material-symbols-outlined text-[18px]">event</span>
+                </div>
+                <span class="text-[11px] font-medium text-[#334155] text-center">View Calendar</span>
+              </button>
+
+              <button onclick="examRpvOpen('resources')" class="flex flex-col items-center justify-center p-2 rounded-xl">
+                <div class="w-9 h-9 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center mb-1.5">
+                  <span class="material-symbols-outlined text-[18px]">folder</span>
+                </div>
+                <span class="text-[11px] font-medium text-[#334155] text-center">Access Resources</span>
+              </button>
+
+              <button onclick="examRpvOpen('teacher')" class="flex flex-col items-center justify-center p-2 rounded-xl">
+                <div class="w-9 h-9 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center mb-1.5">
+                  <span class="material-symbols-outlined text-[18px]">chat</span>
+                </div>
+                <span class="text-[11px] font-medium text-[#334155] text-center">Ask Teacher</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Exam Schedule Image & Timetable (5 cols) -->
+        <div class="lg:col-span-5 bg-white rounded-2xl sm:rounded-3xl border border-[#bae6fd] overflow-hidden shadow-2xs flex flex-col relative">
+          <!-- Top Badge & Quick Meta Header -->
+          <div class="flex items-center justify-between p-3.5 sm:p-4 pb-2.5 sm:pb-3 border-b border-[#e0f2fe] bg-white">
+            <div class="flex items-center gap-2 text-xs font-normal uppercase tracking-wider text-[#334155]">
+              <span class="material-symbols-outlined text-[19px] text-[#0284c7]">calendar_month</span>
+              <span>EXAM SCHEDULE TIMETABLE</span>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-normal text-[#0284c7] border border-[#bae6fd] bg-[#f0f9ff]">
+              Term 2 • 2026
+            </span>
+          </div>
+
+          <!-- Schedule Image -->
+          <div class="relative overflow-hidden cursor-pointer flex-1 min-h-[220px] sm:min-h-[250px] bg-[#f8fafc]" onclick="examRpvOpen('calendar')" title="Click to view full calendar specification">
+            <img 
+              src="../../assets/images/exam_schedule.jpg" 
+              alt="Student Academic Exam Schedule & Official Timetable" 
+              class="w-full h-full object-cover object-top"
+              loading="lazy"
+            />
+          </div>
+
+          <!-- Footer Action Row -->
+          <div class="p-3 sm:p-3.5 border-t border-[#e0f2fe] bg-white flex items-center justify-between text-xs">
+            <button onclick="examRpvOpen('calendar')" class="font-normal text-[#0284c7] flex items-center gap-1.5 text-xs">
+              <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+              <span>Open Full Schedule</span>
+              <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            </button>
+            <span class="text-[11px] text-[#64748b] font-medium">Updated: 28 June 2026</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM SECTION: SUBSEQUENT EXAMINATIONS ROADMAP -->
+    <div class="bg-white rounded-2xl sm:rounded-3xl border border-surface-border shadow-xs p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6">
+      
+      <!-- Roadmap Header & Filter -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-surface-borderLight pb-4 sm:pb-5">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#0284c7]"></span>
+            <h2 class="text-base sm:text-xl font-normal font-display text-[#0f172a] tracking-tight">
+              Subsequent Examinations Roadmap
+            </h2>
+          </div>
+          <p class="text-xs text-[#64748b] mt-0.5">
+            Chronological progression through July 2026 evaluations
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <div class="relative flex-1 sm:w-64">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[17px] text-[#94a3b8]">search</span>
+            <input type="text" id="roadmapSearch" placeholder="Filter subjects..." class="w-full bg-[#f8fafc] border border-surface-border rounded-xl pl-9 pr-3 py-1.5 text-xs text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none focus:ring-1 focus:ring-[#0284c7] focus:bg-white transition-all"/>
+          </div>
+          <span id="queuedCountBadge" class="px-2.5 py-1 rounded-full text-xs font-normal bg-[#e0f2fe] text-[#0284c7] border border-[#bae6fd] shrink-0 whitespace-nowrap">
+            5 Queued
+          </span>
+        </div>
+      </div>
+
+      <!-- Roadmap Timeline Stepper Track -->
+      <div class="timeline-track space-y-4" id="roadmapList">
+        
+        <!-- Timeline Item 1: Advanced Mathematics -->
+        <div class="roadmap-item relative flex items-start gap-3 sm:gap-5" data-subject="Advanced Mathematics">
+          <!-- Stepper Circle Node -->
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0a192f] text-white font-normal text-xs sm:text-sm flex items-center justify-center shrink-0 z-10 shadow-xs">
+            02
+          </div>
+          <!-- Card Content -->
+          <div class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl p-3.5 sm:p-4.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-normal bg-[#e0f2fe] text-[#0284c7] border border-[#bae6fd]">
+                  02 JUL • 08:30 AM – 10:30 AM
+                </span>
+                <span class="text-xs text-[#64748b] font-medium">Room 302</span>
+              </div>
+              <span class="text-xs font-medium text-[#94a3b8]">Mr. Heng • Ch. 7–10 Test</span>
+            </div>
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-normal text-[#0f172a] font-display">
+                  Advanced Mathematics
+                </h3>
+                <p class="text-xs text-[#64748b] mt-0.5">
+                  Calculators OK • Integration &amp; Series Theorems
+                </p>
+              </div>
+              <button onclick="examRpvOpen('maths-formulae')" class="text-xs font-normal text-[#0284c7] flex items-center gap-0.5 shrink-0 pt-0.5 sm:pt-0">
+                <span>Formulae</span>
+                <span class="material-symbols-outlined text-[15px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 2: English Literature -->
+        <div class="roadmap-item relative flex items-start gap-3 sm:gap-5" data-subject="English Literature">
+          <!-- Stepper Circle Node -->
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0a192f] text-white font-normal text-xs sm:text-sm flex items-center justify-center shrink-0 z-10 shadow-xs">
+            14
+          </div>
+          <!-- Card Content -->
+          <div class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl p-3.5 sm:p-4.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-normal bg-[#f1f5f9] text-[#64748b] border border-surface-border">
+                  14 JUL • 10:00 AM – 12:00 PM
+                </span>
+                <span class="text-xs text-[#64748b] font-medium">Main Hall • Section A</span>
+              </div>
+              <span class="text-xs font-medium text-[#94a3b8]">Essay Format Evaluation</span>
+            </div>
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-normal text-[#0f172a] font-display">
+                  English Literature — Mid-Term Examination
+                </h3>
+                <p class="text-xs text-[#64748b] mt-0.5">
+                  Victorian Poetry &amp; Modern Drama Analysis
+                </p>
+              </div>
+              <button onclick="examRpvOpen('lit-texts')" class="text-xs font-normal text-[#0284c7] flex items-center gap-0.5 shrink-0 pt-0.5 sm:pt-0">
+                <span>Texts</span>
+                <span class="material-symbols-outlined text-[15px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 3: English Grammar & Writing -->
+        <div class="roadmap-item relative flex items-start gap-3 sm:gap-5" data-subject="English Grammar & Writing">
+          <!-- Stepper Circle Node -->
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0a192f] text-white font-normal text-xs sm:text-sm flex items-center justify-center shrink-0 z-10 shadow-xs">
+            16
+          </div>
+          <!-- Card Content -->
+          <div class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl p-3.5 sm:p-4.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-normal bg-[#f1f5f9] text-[#64748b] border border-surface-border">
+                  16 JUL • 01:30 PM – 03:00 PM
+                </span>
+                <span class="text-xs text-[#64748b] font-medium">Room 204</span>
+              </div>
+              <span class="text-xs font-medium text-[#94a3b8]">Academic Composition</span>
+            </div>
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-normal text-[#0f172a] font-display">
+                  English Grammar &amp; Writing — Assessment
+                </h3>
+                <p class="text-xs text-[#64748b] mt-0.5">
+                  Writing Skills &amp; Rhetorical Devices Rubric
+                </p>
+              </div>
+              <button onclick="examRpvOpen('writing-rubric')" class="text-xs font-normal text-[#0284c7] flex items-center gap-0.5 shrink-0 pt-0.5 sm:pt-0">
+                <span>Rubric</span>
+                <span class="material-symbols-outlined text-[15px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 4: Khmer Literature -->
+        <div class="roadmap-item relative flex items-start gap-3 sm:gap-5" data-subject="Khmer Literature">
+          <!-- Stepper Circle Node -->
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0a192f] text-white font-normal text-xs sm:text-sm flex items-center justify-center shrink-0 z-10 shadow-xs">
+            18
+          </div>
+          <!-- Card Content -->
+          <div class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl p-3.5 sm:p-4.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-normal bg-[#f1f5f9] text-[#64748b] border border-surface-border">
+                  18 JUL • 08:30 AM – 11:00 AM
+                </span>
+                <span class="text-xs text-[#64748b] font-medium">Hall A • Seat 18</span>
+              </div>
+              <span class="text-xs font-medium text-[#94a3b8]">Written Standard Exam</span>
+            </div>
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-normal text-[#0f172a] font-display">
+                  Khmer Literature — Mid-Term Examination
+                </h3>
+                <p class="text-xs text-[#64748b] mt-0.5">
+                  Classical Texts, Structure &amp; Khmer Orthography
+                </p>
+              </div>
+              <button onclick="examRpvOpen('khmer-overview')" class="text-xs font-normal text-[#0284c7] flex items-center gap-0.5 shrink-0 pt-0.5 sm:pt-0">
+                <span>Overview</span>
+                <span class="material-symbols-outlined text-[15px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Item 5: Chinese Language & Writing -->
+        <div class="roadmap-item relative flex items-start gap-3 sm:gap-5" data-subject="Chinese Language & Writing">
+          <!-- Stepper Circle Node -->
+          <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0a192f] text-white font-normal text-xs sm:text-sm flex items-center justify-center shrink-0 z-10 shadow-xs">
+            23
+          </div>
+          <!-- Card Content -->
+          <div class="flex-1 bg-surface-subtle border border-surface-border rounded-2xl p-3.5 sm:p-4.5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2.5 py-0.5 rounded-md text-[11px] font-normal bg-[#f1f5f9] text-[#64748b] border border-surface-border">
+                  23 JUL • 09:00 AM – 10:30 AM
+                </span>
+                <span class="text-xs text-[#64748b] font-medium">Room 105</span>
+              </div>
+              <span class="text-xs font-medium text-[#94a3b8]">HSK Level 3 Benchmark</span>
+            </div>
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="min-w-0">
+                <h3 class="text-sm sm:text-base font-normal text-[#0f172a] font-display">
+                  Chinese Language &amp; Writing — Evaluation
+                </h3>
+                <p class="text-xs text-[#64748b] mt-0.5">
+                  Character Stroke Dynamics &amp; Conversational Grammar
+                </p>
+              </div>
+              <button onclick="examRpvOpen('hsk-guide')" class="text-xs font-normal text-[#0284c7] flex items-center gap-0.5 shrink-0 pt-0.5 sm:pt-0">
+                <span>Guide</span>
+                <span class="material-symbols-outlined text-[15px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div><!-- /page -->
+</main>
+
+<!-- ════════════════════════════════════════
+     EXAM RESOURCE PREVIEW MODAL (RESPOVIE)
+     ════════════════════════════════════════ -->
+<div class="exam-rpv-overlay" id="examRpv" role="dialog" aria-modal="true" aria-labelledby="examRpvTitle" onclick="if(event.target===this)examRpvClose()">
+  <div class="exam-rpv-card">
+    <!-- Drag indicator handle for mobile -->
+    <div class="exam-rpv-drag-bar" onclick="examRpvClose()" title="Close sheet">
+      <span class="exam-rpv-drag-pill"></span>
+    </div>
+    <!-- ── Modal Header ── -->
+    <div class="exam-rpv-head">
+      <div class="exam-rpv-head-left">
+        <div class="exam-rpv-icon-badge" id="rpvIconBadge">
+          <span class="material-symbols-outlined">description</span>
+        </div>
+        <div class="exam-rpv-titles">
+          <div class="exam-rpv-title" id="examRpvTitle">Physics — Mid-Term Syllabus Specification</div>
+          <div class="exam-rpv-sub" id="examRpvSub">Senior Secondary STEM • Issued by the Department of Science</div>
+        </div>
+      </div>
+      <div class="exam-rpv-actions">
+        <button class="exam-rpv-btn" onclick="examRpvPrint()" title="Print document" aria-label="Print document">
+          <span class="material-symbols-outlined" style="font-size:16px;">print</span>
+          <span class="exam-rpv-btn-text">Print</span>
+        </button>
+        <button class="exam-rpv-btn" onclick="examRpvDownload()" title="Download PDF" aria-label="Download PDF">
+          <span class="material-symbols-outlined" style="font-size:16px;">download</span>
+          <span class="exam-rpv-btn-text">Download</span>
+        </button>
+        <button class="exam-rpv-btn primary" onclick="examRpvBookmark()" id="rpvBmBtn" title="Save to library" aria-label="Save to library">
+          <span class="material-symbols-outlined" style="font-size:16px;">bookmark</span>
+          <span class="exam-rpv-btn-text">Save</span>
+        </button>
+        <button class="exam-rpv-close" onclick="examRpvClose()" title="Close" aria-label="Close preview">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </div>
+    <!-- ── Modal Body (injected dynamically) ── -->
+    <div class="exam-rpv-body" id="examRpvBody"></div>
+  </div>
+</div>
+
+<!-- Page Config & NGIS Scripts -->
+<script>
+(function () {
+  try { var _t = localStorage.getItem('ngis-theme'); if (_t) document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
+  var role = (saved && saved.role) || 'student';
+  window.PAGE = { role: role, active: 'exams' };
+  if (saved) window.CURRENT_USER = saved;
+  document.body.classList.add('ready');
+})();
+</script>
+
+<script>
+window.HERO_CONFIG = {
+  name: 'Seila Oudom',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 12',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'student-profile.html',
+  notifLink: 'student-notifications.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 3,
+  title: 'My Examinations',
+  greeting: 'Official semester examinations schedule, seating allocations, and syllabus roadmaps.',
+  breadcrumbs: [{ label: 'My Examinations' }],
+  ddRows: [
+    { icon: 'school', text: 'Grade 12 — Science Stream' },
+    { icon: 'class', text: 'Class 12A · STEM' },
+    { icon: 'email', text: 'seila.oudom@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
+    { icon: 'emoji_events', text: 'GPA: 3.92 / 4.00' }
+  ]
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<script>
+/* ──────────────────────────────────────────────────────────────────
+   EXAM RESOURCE PREVIEW VIEWER (RESPOVIE / RPV)
+   ────────────────────────────────────────────────────────────────── */
+var EXAM_RPV_PRESETS = {
+  'syllabus': {
+    icon: 'description', iconBadgeClass: '',
+    title: 'Physics — Mid-Term Syllabus Specification',
+    sub: 'Senior Secondary STEM • Department of Science • Rev. 2026.03',
+    chips: [
+      { cls: 'prm', icon: 'description', label: 'Syllabus Document' },
+      { cls: 'blu', icon: 'verified', label: 'Officially Approved' },
+    ],
+    h1: 'Physics — Mid-Term Examination Specification',
+    h1sub: 'Covers Units 4–8 · Duration 2h30m · 100 marks (40% of semester weight)',
+    meta: [
+      { icon: 'account_circle', text: 'Coordinator: Prof. Vance' },
+      { icon: 'calendar_month', text: 'Exam Date: 29 June 2026' },
+      { icon: 'schedule', text: 'Time: 09:00 – 11:30' },
+      { icon: 'pin_drop', text: 'Hall B · Desk #42' },
+    ],
+    paperEyebrow: 'Official Examination Specification · Grade 12 STEM',
+    paperTitle: 'Physics — Mid-Term Examination Content Outline',
+    paperBody: [
+      '<h3>1. Examination Structure</h3>' +
+      '<table><thead><tr><th>Section</th><th>Format</th><th>Weight</th><th>Marks</th></tr></thead><tbody>' +
+      '<tr><td>Paper 1 · Multiple Choice</td><td>40 questions · OMR</td><td>40%</td><td>40</td></tr>' +
+      '<tr><td>Paper 2A · Structured</td><td>6 compulsory questions</td><td>35%</td><td>35</td></tr>' +
+      '<tr><td>Paper 2B · Free Response</td><td>2 of 3 options</td><td>25%</td><td>25</td></tr></tbody></table>',
+      '<h3>2. Content Coverage (Units 4–8)</h3>' +
+      '<ul>' +
+      '<li>Unit 4 · Newtonian Gravitation &amp; Satellite Orbits (chap. 7)</li>' +
+      '<li>Unit 5 · Oscillations, SHM &amp; Wave Mechanics (chap. 8–9)</li>' +
+      '<li>Unit 6 · Thermal Physics &amp; Ideal Gas Laws (chap. 10)</li>' +
+      '<li>Unit 7 · DC Circuits, Kirchhoff Laws &amp; Internal Resistance (chap. 11)</li>' +
+      '<li>Unit 8 · Electromagnetic Induction &amp; AC Fundamentals (chap. 12)</li>' +
+      '</ul>',
+      '<h3>3. Permitted Aids &amp; Restrictions</h3>' +
+      '<ul>' +
+      '<li>Approved scientific calculator (Casio fx-570ES PLUS / fx-991ES PLUS C · no programming mode)</li>' +
+      '<li>Compass, protractor, 30cm ruler, pens (blue/black only)</li>' +
+      '<li>Formulae and Constants sheet provided inside the question booklet (do not write on it)</li>' +
+      '<li>Smartwatches, phones, scratch paper, pencil cases with print — strictly forbidden</li>' +
+      '</ul>',
+      '<div class="callout warn"><span class="material-symbols-outlined">warning</span><div><span>Important:</span> Late candidates will <em>not</em> be admitted after the 15-minute reading window closes. ID check required at entry — bring your Hall Ticket PASS 428.</div></div>',
+      '<h3>4. Grading Rubric Summary</h3>' +
+      '<ul>' +
+      '<li><strong>A*</strong> ≥ 90 · Exceptional understanding with insightful application</li>' +
+      '<li><strong>A</strong> ≥ 80 · Comprehensive mastery, occasional minor slips</li>' +
+      '<li><strong>B</strong> ≥ 70 · Good conceptual grasp with some procedural errors</li>' +
+      '<li><strong>C</strong> ≥ 60 · Satisfactory, basic recall mostly present</li>' +
+      '<li><strong>D</strong> ≥ 50 · Below expectations — supplemental review recommended</li>' +
+      '</ul>',
+      '<div class="callout info"><span class="material-symbols-outlined">info</span><div>See Appendix B in the main NGIS Grade 12 Handbook for complete curriculum mapping. This document is subject to final review by the MoEYS accreditation team.</div></div>',
+    ],
+  },
+  'calendar': {
+    icon: 'calendar_month', iconBadgeClass: 'cal',
+    title: 'Grade 12 — Exam Timetable (Semester 1 · 2025–2026)',
+    sub: 'Sync-enabled calendar feed · 18 evaluations · Rev. 2026.04',
+    chips: [
+      { cls: 'blu', icon: 'event_available', label: 'Timetable' },
+      { cls: 'grn', icon: 'sync', label: 'Synced 5 min ago' },
+    ],
+    h1: 'Official Examination Calendar · Semester 1',
+    h1sub: 'All sessions subject to change via the MoEYS Academic Council. Any updates will be broadcast via SMS and the NGIS student portal.',
+    meta: [
+      { icon: 'school', text: 'Institution: New Gateway Intl. School' },
+      { icon: 'calendar_today', text: 'Window: 29 Jun – 30 Jul 2026' },
+      { icon: 'groups', text: 'Cohort: Grade 11 &amp; 12' },
+      { icon: 'download', text: '.ics: ngis.edu.kh/exams/2026-s1.ics' },
+    ],
+    paperEyebrow: 'Academic Affairs Division · Examinations Unit',
+    paperTitle: 'Examination Timetable — Grade 12 STEM Stream',
+    paperBody: [
+      '<h3>Core Science Evaluations</h3>' +
+      '<table><thead><tr><th>Date</th><th>Subject</th><th>Time</th><th>Venue</th><th>Invigilator</th></tr></thead><tbody>' +
+      '<tr><td>29 Jun (Mon)</td><td>Physics Mid-Term</td><td>09:00–11:30</td><td>Hall B</td><td>Prof. Vance</td></tr>' +
+      '<tr><td>02 Jul (Thu)</td><td>Advanced Maths</td><td>08:30–10:30</td><td>Room 302</td><td>Mr. Heng</td></tr>' +
+      '<tr><td>06 Jul (Mon)</td><td>Chemistry Lab</td><td>10:00–12:00</td><td>Lab Wing 2</td><td>Dr. Srey</td></tr>' +
+      '<tr><td>09 Jul (Thu)</td><td>Biology Practicals</td><td>09:00–11:00</td><td>Lab Wing 1</td><td>Ms. Chanthou</td></tr>' +
+      '<tr><td>14 Jul (Tue)</td><td>English Literature</td><td>10:00–12:00</td><td>Main Hall A</td><td>Mrs. Serey</td></tr>' +
+      '<tr><td>16 Jul (Thu)</td><td>English Grammar &amp; Writing</td><td>13:30–15:00</td><td>Room 204</td><td>Mr. David</td></tr>' +
+      '<tr><td>18 Jul (Sat)</td><td>Khmer Literature</td><td>08:30–11:00</td><td>Hall A · Seat 18</td><td>Prof. Sarun</td></tr>' +
+      '<tr><td>23 Jul (Thu)</td><td>Chinese Language</td><td>09:00–10:30</td><td>Room 105</td><td>Ms. Wei</td></tr>' +
+      '<tr><td>28 Jul (Tue)</td><td>ICT Practical</td><td>13:00–15:00</td><td>Computer Lab</td><td>Mr. Kimseng</td></tr>' +
+      '<tr><td>30 Jul (Thu)</td><td>History &amp; Civics</td><td>09:00–11:00</td><td>Main Hall B</td><td>Dr. Pisey</td></tr>' +
+      '</tbody></table>',
+      '<div class="callout info"><span class="material-symbols-outlined">schedule</span><div>Every session includes a 15-minute supervised reading window <em>before</em> writing begins. Please arrive 30 minutes prior for ID and desk verification.</div></div>',
+      '<h3>Holiday &amp; Makeup Windows</h3>' +
+      '<ul>' +
+      '<li>07 Jul (Mon) — Charter Day (no exams, rescheduling of deferred papers only)</li>' +
+      '<li>14–17 Aug — official retake window for students with valid medical certificates</li>' +
+      '<li>All conflict requests must be filed via the NGIS parent portal at least 10 business days before the affected date.</li>' +
+      '</ul>',
+    ],
+  },
+  'resources': {
+    icon: 'folder', iconBadgeClass: 'res',
+    title: 'Physics — Study Resources Library',
+    sub: 'Teacher-curated formulas, past papers, and worked solutions',
+    chips: [
+      { cls: 'grn', icon: 'folder_open', label: 'Resource Library' },
+      { cls: 'prm', icon: 'bolt', label: 'Exam Packs' },
+    ],
+    h1: 'Physics Study &amp; Revision Bundle',
+    h1sub: 'A collection of 18 curated files totalling 214 MB. Organised by unit and difficulty level.',
+    meta: [
+      { icon: 'description', text: '12 Documents · 108 pages' },
+      { icon: 'image', text: '4 Infographics · printable' },
+      { icon: 'attach_file', text: '2 ZIP packs · Past Papers 2022–2025' },
+    ],
+    paperEyebrow: 'Teacher Resource Library · Department of Science',
+    paperTitle: 'Physics Revision Resources — Curated Pack',
+    paperBody: [
+      '<h3>Formulae, Constants &amp; Concept Maps</h3>' +
+      '<ul>' +
+      '<li><strong>All-in-One Formulae Sheet</strong> · <em>3 pages, coloured, A4</em> — Mechanics, Thermal, Waves, EM, Modern</li>' +
+      '<li><strong>Constants &amp; Unit Reference Card</strong> · <em>1 page, A6</em> — includes SI prefixes, ε₀, μ₀, ℎ, 𝑐, 𝑘_B, Avogadro</li>' +
+      '<li><strong>Mind Maps · Units 4–8</strong> · <em>5 posters, A3</em> — one per evaluated unit, colour-coded</li>' +
+      '</ul>',
+      '<h3>Past Papers &amp; Mark Schemes (2022–2025)</h3>' +
+      '<table><thead><tr><th>Year</th><th>Paper 1</th><th>Paper 2</th><th>Mark Scheme</th><th>Examiner Report</th></tr></thead><tbody>' +
+      '<tr><td>2025</td><td>PDF · 1.2 MB</td><td>PDF · 1.8 MB</td><td>PDF · 640 KB</td><td>PDF · 320 KB</td></tr>' +
+      '<tr><td>2024</td><td>PDF · 1.1 MB</td><td>PDF · 1.7 MB</td><td>PDF · 610 KB</td><td>PDF · 290 KB</td></tr>' +
+      '<tr><td>2023</td><td>PDF · 1.0 MB</td><td>PDF · 1.6 MB</td><td>PDF · 580 KB</td><td>PDF · 270 KB</td></tr>' +
+      '<tr><td>2022</td><td>PDF · 980 KB</td><td>PDF · 1.5 MB</td><td>PDF · 560 KB</td><td>PDF · 250 KB</td></tr>' +
+      '</tbody></table>',
+      '<div class="callout"><span class="material-symbols-outlined">lightbulb</span><div><span>Recommended strategy:</span> Attempt the 2024 paper timed (no notes), then grade using the mark scheme, then revise only topics where you lost ≥ 2 marks.</div></div>',
+      '<h3>Worked Video Solutions (QR-linked)</h3>' +
+      '<ul>' +
+      '<li>Paper 2 · 2025 · Full walkthrough (Prof. Vance, 47 min)</li>' +
+      '<li>Paper 1 · 2024 · MCQ rapid review (Mr. Sopheak, 22 min)</li>' +
+      '<li>EM induction long-response · Masterclass (Prof. Vance, 34 min)</li>' +
+      '</ul>',
+    ],
+  },
+  'teacher': {
+    icon: 'forum', iconBadgeClass: 'talk',
+    title: 'Inquiry &amp; Consultation — Prof. Vance',
+    sub: 'Direct teacher assistance · Physics invigilator · Available Mon–Thu 14:00–16:30',
+    chips: [
+      { cls: 'amb', icon: 'support_agent', label: 'Inquiry Form' },
+      { cls: 'prm', icon: 'chat_bubble', label: 'Portal Message' },
+    ],
+    h1: 'Teacher Consultation — Before Your Physics Exam',
+    h1sub: 'Use this structured form to send a direct question. Prof. Vance responds within one school day (48h over weekends).',
+    meta: [
+      { icon: 'person', text: 'Teacher: Prof. Dr. Vance, Ph.D. (Physics)' },
+      { icon: 'schedule', text: 'Drop-ins: Mon–Thu · 14:00–16:30 · Room 208' },
+      { icon: 'mail', text: 'vance@ngis.edu.kh' },
+    ],
+    paperEyebrow: 'Academic Support Division · Teacher Inquiry Form',
+    paperTitle: 'Consultation Request — Physics Mid-Term Examination',
+    paperBody: [
+      '<h3>1. What would you like to ask?</h3>' +
+      '<p>This message will be sent privately to Prof. Vance via the NGIS internal messaging portal and also emailed to your registered parent address.</p>' +
+      '<div class="callout info"><span class="material-symbols-outlined">info</span><div>Average first-response time during examination season: <strong>6.5 hours</strong>.</div></div>',
+      '<h3>2. Common topics students ask about (2 days before Physics)</h3>' +
+      '<ul>' +
+      '<li>Will the <em>derivation</em> of centripetal acceleration (a = v²/r) be tested this mid-term? — <em>No, not for Paper 1</em>.</li>' +
+      '<li>Are we expected to memorise Stefan–Boltzmann σ = 5.67×10⁻⁸ W m⁻² K⁻⁴? — <em>No, it is given on the formula sheet</em>.</li>' +
+      '<li>Do Kirchhoff problems require the loop direction convention to be explicitly shown? — <em>Yes, marks awarded for arrows + signs</em>.</li>' +
+      '<li>Can we bring a Casio fx-CG50? — <em>No, programmable calculators are disallowed</em>.</li>' +
+      '</ul>',
+      '<h3>3. Before submitting your inquiry — check</h3>' +
+      '<ul>' +
+      '<li>✓ Read chapters 7–12 of the textbook (pages 148–312).</li>' +
+      '<li>✓ Reviewed the Syllabus Specification (available via the View Syllabus button).</li>' +
+      '<li>✓ Attempted at least the 2024 past paper once under timed conditions.</li>' +
+      '</ul>',
+    ],
+  },
+  'maths-formulae': {
+    icon: 'functions', iconBadgeClass: 'cal',
+    title: 'Advanced Mathematics — Formulae &amp; Theorems Summary',
+    sub: 'Chapters 7–10 · Integration, Series, Vectors, Complex Numbers',
+    chips: [
+      { cls: 'blu', icon: 'calculate', label: 'Formula Sheet' },
+      { cls: 'grn', icon: 'check_circle', label: 'Approved for desk' },
+    ],
+    h1: 'Advanced Maths · Formulae Summary Card',
+    h1sub: 'Examinable for the 02 July test · Calculators permitted (Casio fx-570/991ES PLUS C only)',
+    meta: [
+      { icon: 'event', text: 'Exam date: 02 Jul 2026 · 08:30' },
+      { icon: 'timer', text: 'Duration: 2 hours · 100 marks' },
+      { icon: 'place', text: 'Room 302 · Invigilator: Mr. Heng' },
+    ],
+    paperEyebrow: 'Mathematics Department · Approved Formulae Reference',
+    paperTitle: 'Summary Sheet · Integration &amp; Infinite Series',
+    paperBody: [
+      '<h3>Integration Techniques (Ch. 7–8)</h3>' +
+      '<ul>' +
+      '<li>Standard: ∫ xⁿ dx = xⁿ⁺¹/(n+1) + C · (n ≠ −1); ∫ 1/x dx = ln|x| + C</li>' +
+      '<li>Trigonometric: ∫ sin x dx = −cos x + C · ∫ cos x dx = sin x + C · ∫ sec² x dx = tan x + C</li>' +
+      '<li>Exponential / logarithmic: ∫ eᵏˣ dx = eᵏˣ/k · ∫ ln x dx = x ln x − x</li>' +
+      '<li>Integration by parts: ∫ u dv = uv − ∫ v du — &quot;LIATE&quot; rule for u</li>' +
+      '<li>Substitution — watch for u(x) whose derivative appears as a factor</li>' +
+      '</ul>',
+      '<div class="eqn-box">∫ₐᵇ f(x) dx = [F(x)]ₐᵇ = F(b) − F(a)</div>',
+      '<h3>Series &amp; Convergence (Ch. 9)</h3>' +
+      '<ul>' +
+      '<li>Geometric: Σ rⁿ = 1/(1−r) when |r| &lt; 1 · partial sum Sₙ = a(1−rⁿ)/(1−r)</li>' +
+      '<li>Maclaurin: eˣ = Σ xⁿ/n! · sin x = Σ (−1)ⁿx²ⁿ⁺¹/(2n+1)! · cos x = Σ (−1)ⁿx²ⁿ/(2n)!</li>' +
+      '<li>Tests: nth-term, comparison, ratio, integral, alternating series estimation</li>' +
+      '</ul>',
+      '<h3>Vectors &amp; 3D Lines (Ch. 10)</h3>' +
+      '<ul>' +
+      '<li>Dot product · a·b = |a||b|cos θ = Σ aᵢbᵢ</li>' +
+      '<li>Cross product · |a × b| = |a||b|sin θ · direction via the right-hand rule</li>' +
+      '<li>Parametric line: r = a + t d · acute angle between lines: cos θ = |d₁·d₂|/(|d₁||d₂|)</li>' +
+      '</ul>',
+      '<div class="callout warn"><span class="material-symbols-outlined">warning</span><div>Show <strong>every step</strong> of each ∫ and Σ derivation — method marks account for approximately 60% of each 10–12 mark part (b).</div></div>',
+    ],
+  },
+  'lit-texts': {
+    icon: 'menu_book', iconBadgeClass: '',
+    title: 'English Literature — Prescribed Texts List',
+    sub: 'Mid-Term Exam · Victorian Poetry + Modern Drama (essays, closed-book)',
+    chips: [
+      { cls: 'prm', icon: 'book_2', label: 'Prescribed List' },
+      { cls: 'amb', icon: 'edit_note', label: 'Closed-book essay' },
+    ],
+    h1: 'Prescribed Texts — English Literature Mid-Term',
+    h1sub: 'Two comparative essays of 800 and 1000 words (Section A · 40 marks + Section B · 60 marks).',
+    meta: [
+      { icon: 'event', text: 'Exam date: 14 Jul 2026 · 10:00' },
+      { icon: 'place', text: 'Main Hall · Section A' },
+      { icon: 'timer', text: 'Duration: 2 hours (15 min reading)' },
+    ],
+    paperEyebrow: 'Language &amp; Literature Faculty · Prescribed Readings',
+    paperTitle: 'Prescribed Works — English Literature 2026 S1',
+    paperBody: [
+      '<h3>Section A · Victorian Poetry (40 marks)</h3>' +
+      '<p>Students must write a comparative essay on <em>any two</em> poems from the Tennyson / Browning set, with at least one reference to context and a sustained thesis about dramatic monologue form.</p>' +
+      '<ul>' +
+      '<li>Alfred, Lord Tennyson — &quot;Ulysses&quot; (1842) &amp; &quot;Tithonus&quot; (1860)</li>' +
+      '<li>Robert Browning — &quot;My Last Duchess&quot; (1842) &amp; &quot;Porphyria&apos;s Lover&quot; (1836)</li>' +
+      '<li>Christina Rossetti — &quot;Goblin Market&quot; (1862) · extract from lines 1–148</li>' +
+      '<li>Matthew Arnold — &quot;Dover Beach&quot; (1867) · the full lyric</li>' +
+      '</ul>',
+      '<h3>Section B · Modern Drama (60 marks)</h3>' +
+      '<p>One long essay (1000 words) comparing character and stagecraft across <em>Waiting for Godot</em> and one play of your choice from the list below.</p>' +
+      '<ul>' +
+      '<li>Samuel Beckett — <em>Waiting for Godot</em> (1953) · full text, annotated edition permitted <strong>for study only</strong> (the exam is closed-book)</li>' +
+      '<li>Harold Pinter — <em>The Birthday Party</em> (1957)</li>' +
+      '<li>Tennessee Williams — <em>A Streetcar Named Desire</em> (1947)</li>' +
+      '</ul>',
+      '<div class="callout info"><span class="material-symbols-outlined">tips_and_updates</span><div>You must memorise and quote approximately <strong>12–18 short lines of poetry</strong> and <strong>8–10 lines of dialogue</strong> in the essay. Paraphrased analysis receives at most a C band.</div></div>',
+      '<h3>Approaches — What markers look for</h3>' +
+      '<ul>' +
+      '<li>A thesis in the first paragraph that answers the question precisely (no generic intro)</li>' +
+      '<li>Close reading of imagery, metre, enjambment, rhyme scheme, caesura</li>' +
+      '<li>Contextual awareness (Victorian values, theatre of the absurd) but only to support a claim</li>' +
+      '</ul>',
+    ],
+  },
+  'writing-rubric': {
+    icon: 'grade', iconBadgeClass: 'amb',
+    title: 'English Grammar &amp; Writing — Composition Rubric',
+    sub: 'Assessment · 1500-word argumentative essay · 60 marks',
+    chips: [
+      { cls: 'amb', icon: 'edit_document', label: 'Writing Rubric' },
+      { cls: 'grn', icon: 'verified', label: 'Publicly available' },
+    ],
+    h1: 'Composition Assessment Scoring Rubric',
+    h1sub: 'Applied uniformly to all Grade 12 Grammar &amp; Writing mid-term essays across the six parallel sections.',
+    meta: [
+      { icon: 'event', text: 'Exam date: 16 Jul 2026 · 13:30' },
+      { icon: 'timer', text: 'Duration: 90 minutes · 60 marks' },
+      { icon: 'place', text: 'Room 204' },
+    ],
+    paperEyebrow: 'Language Faculty · Assessment Rubric v2026.02',
+    paperTitle: 'Argumentative / Discursive Composition — Scoring Guide',
+    paperBody: [
+      '<h3>Weight Summary</h3>' +
+      '<ul>' +
+      '<li><strong>Task Achievement (15 marks)</strong> — depth and relevance of arguments; counter-arguments handled</li>' +
+      '<li><strong>Coherence &amp; Organisation (15 marks)</strong> — thesis, paragraphing, transitions, cohesion</li>' +
+      '<li><strong>Lexical Resource (15 marks)</strong> — range, precision, collocation, register control</li>' +
+      '<li><strong>Grammatical Range &amp; Accuracy (15 marks)</strong> — varied structures, tense consistency, punctuation</li>' +
+      '</ul>',
+      '<h3>Detailed Band Descriptors (per 15-mark dimension)</h3>' +
+      '<table><thead><tr><th>Band</th><th>Marks</th><th>Task Achievement</th><th>Coherence</th><th>Lexis</th><th>Grammar</th></tr></thead><tbody>' +
+      '<tr><td>5 · Excellent</td><td>13–15</td><td>Nuanced, full</td><td>Seamless logical flow</td><td>Sophisticated, precise</td><td>Error-free, varied</td></tr>' +
+      '<tr><td>4 · Good</td><td>10–12</td><td>Mostly addressed, minor gaps</td><td>Clear thesis, good links</td><td>Wide range, few slips</td><td>Accurate, mix of structures</td></tr>' +
+      '<tr><td>3 · Satisfactory</td><td>7–9</td><td>Basic ideas covered</td><td>Organised but mechanical</td><td>Adequate for task</td><td>Some errors, no impediment</td></tr>' +
+      '<tr><td>2 · Limited</td><td>4–6</td><td>Partially addressed</td><td>Weak paragraphing</td><td>Frequent errors</td><td>Simple sentences only</td></tr>' +
+      '<tr><td>1 · Poor</td><td>0–3</td><td>Off-topic</td><td>No clear structure</td><td>Often unintelligible</td><td>Systematic errors</td></tr>' +
+      '</tbody></table>',
+      '<div class="callout"><span class="material-symbols-outlined">flag</span><div>Late submission penalty: 5 marks deducted per 10 minutes after the exam end. Essays under 1200 words cannot score higher than Band 3 in Task Achievement.</div></div>',
+    ],
+  },
+  'khmer-overview': {
+    icon: 'auto_stories', iconBadgeClass: '',
+    title: 'Khmer Literature — Standard Written Exam Overview',
+    sub: 'អ្វីៗដែលត្រូវដឹងសម្រាប់ប្រឡងពាក់កណ្តាលឆមាស',
+    chips: [
+      { cls: 'prm', icon: 'menu_book', label: 'អក្សរសាស្រ្តខ្មែរ' },
+      { cls: 'amb', icon: 'history_edu', label: 'សំណេរតាមស្តង់ដារ' },
+    ],
+    h1: 'Khmer Literature · Mid-Term Written Standard Examination',
+    h1sub: '3 hours · 100 marks · All essay responses must be in Khmer script (អក្សរខ្មែរ) except quoted terms.',
+    meta: [
+      { icon: 'event', text: 'ថ្ងៃប្រឡង: ១៨ ខែកក្កដា ឆ្នាំ២០២៦' },
+      { icon: 'timer', text: 'ម៉ោង: ០៨:៣០ – ១១:០០ (បីម៉ោងពេញ)' },
+      { icon: 'place', text: 'សាលផ្លូវការ A · កៅអីលេខ ១៨' },
+    ],
+    paperEyebrow: 'Department of Khmer Literature · NGIS · Academic Year 2025–2026',
+    paperTitle: 'ប្រធានបទប្រឡង · អក្សរសាស្រ្តខ្មែរ ថ្នាក់ទី១២',
+    paperBody: [
+      '<h3>១. រចនាសម្ព័ន្ធសំណួរប្រឡង</h3>' +
+      '<ul>' +
+      '<li>ផ្នែកទី ១ · ចម្លើយខ្លី ៤ សំណួរ (២០ ពិន្ទុ) — និយមន័យ និងសង្ខេបខ្លីៗ</li>' +
+      '<li>ផ្នែកទី ២ · វភាពការិយាល័យ ៤ សំណួរ (៣០ ពិន្ទុ) — វិភាគទម្រង់កំណាព្យ ក្បាច់គុន មេត្រា</li>' +
+      '<li>ផ្នែកទី ៣ · ខ្សែសរសេរអត្ថបទយ៉ាងខ្លី ឬយ៉ាងវែង (៥០ ពិន្ទុ) — ២ ក្នុងចំណោម ៤ ជម្រើស</li>' +
+      '</ul>',
+      '<h3>២. មាតិកាសិក្សាដែលប្រឡង (គម្រោងសិក្សាឆ្នាំទី៣ — មធ្យមសិក្សាទុតិយភូមិ)</h3>' +
+      '<ul>' +
+      '<li>រឿង &quot;ធ្លក់ខ្លុកទឹកជ្រោះ&quot; — ទំនាក់ទំនងគ្នារវាងតួអង្គ និងបដិសេធនៃសិក្ខាបទ</li>' +
+      '<li>កំណាព្យ &quot;ស្រីក្រុម&quot; នៃពេជ្រ ចិន្តា — សូរិយាបទ ចំណង់ ល្បិចកំសត់</li>' +
+      '<li>អត្ថបទវិនិច្ឆ័យសាស្ត្រា នៃគ្រូឧត្តម &quot;ចក្រភពខ្មែរ&quot; — រចនាបថ អន្តរាគមន៍ ភាសាបច្ចេកទេស</li>' +
+      '<li>ប្រវត្តិអក្សរសាស្រ្តខ្មែរសម័យមុន អាណានិគម និងសម័យបន្ទាប់ ១៩៥៣ — ចំណេះដឹងទូទៅ</li>' +
+      '</ul>',
+      '<h3>៣. លក្ខខណ្ឌធ្វើសម្រាប់សិស្ស</h3>' +
+      '<ul>' +
+      '<li>សរសេរជាអក្សរខ្មែរតែប៉ុណ្ណោះ (លើកលែងតែពាក្យដកស្រង់ភាសាបរទេស ដាក់ក្នុង &quot; &quot;)</li>' +
+      '<li>ប្រើខ្មៅ / ខៀវកង់ (ប៊ិចប៊្លុកច្បាស់) · កំហុសត្រូវគូរមួយបន្ទាត់ (កុំប្រើជ័រកាត់ ឬក្រដាសលុប)</li>' +
+      '<li>ដាក់ឈ្មោះ លេខសម្គាល់ នៅទុយោនៃទំព័រនីមួយៗ — រង្វាស់កាត់ ៥ ពិន្ទុប្រសិនបើបាត់</li>' +
+      '</ul>',
+      '<div class="callout info"><span class="material-symbols-outlined">info</span><div>សៀវភៅប្រើប្រាស់ក្នុងថ្នាក់៖ &quot;អក្សរសាស្រ្តខ្មែរ ថ្នាក់ទី១២&quot; (វិមានអក្សរ វិមានសៀវភៅ) · ជំពូកទី ៥–៩ រួមមានអត្ថបទទាំងអស់។</div></div>',
+    ],
+  },
+  'hsk-guide': {
+    icon: 'translate', iconBadgeClass: 'amb',
+    title: 'Chinese Language — HSK Level 3 Benchmark Study Guide',
+    sub: 'NPCR Grade 12 · Written Evaluation (汉语水平考试三级模拟备考指南)',
+    chips: [
+      { cls: 'amb', icon: 'translate', label: 'HSK 3 · Benchmark' },
+      { cls: 'grn', icon: 'verified', label: 'Aligned with HSKK-Intermediate' },
+    ],
+    h1: 'HSK-3 Benchmark Study Pack',
+    h1sub: 'The 23 Jul Chinese evaluation follows HSK-3 conventions: 听力 / 阅读 / 书写 sub-scores, each weighted equally.',
+    meta: [
+      { icon: 'event', text: 'Date: 23 Jul 2026 · 09:00' },
+      { icon: 'timer', text: 'Duration: 90 minutes · 100 items' },
+      { icon: 'place', text: 'Room 105 · HSK-standard audio equipment' },
+    ],
+    paperEyebrow: 'Department of Foreign Languages · Chinese Division',
+    paperTitle: 'HSK Level 3 — Targeted Study Guide for NGIS Grade 12',
+    paperBody: [
+      '<h3>1. Exam Structure (all sections weighted equally ⅓)</h3>' +
+      '<ul>' +
+      '<li>听力 (Listening Comprehension) · 40 questions · 35 minutes (audio CD once only)</li>' +
+      '<li>阅读 (Reading) · 30 questions · 30 minutes · gap-fill, ordering, passage inference</li>' +
+      '<li>书写 (Writing) · 30 marks · character copy, sentence construction, 80–100 character short essay</li>' +
+      '</ul>',
+      '<h3>2. Target Vocabulary — top 60 HSK-3 words for July 2026</h3>' +
+      '<table><thead><tr><th>Category</th><th>Example Vocabulary</th><th>Count</th></tr></thead><tbody>' +
+      '<tr><td>School / Education</td><td>复习、考试、请假、宿舍、图书馆、年级、作业</td><td>18</td></tr>' +
+      '<tr><td>Daily Life</td><td>冰箱、打扫、迟到、提前、推荐、打折、预订</td><td>16</td></tr>' +
+      '<tr><td>People / Feelings</td><td>性格、理想、同意、担心、适合、决定、同意</td><td>14</td></tr>' +
+      '<tr><td>Travel / Direction</td><td>方向、地图、拐弯、机场、护照、海关、行李</td><td>12</td></tr></tbody></table>',
+      '<h3>3. Writing 书写 — Marking focus</h3>' +
+      '<ul>' +
+      '<li>Stroke order matters — especially 辶 radical, 阝 radical, and 女 radical pairs</li>' +
+      '<li>Pinyin <strong>only</strong> without characters receives zero marks per item</li>' +
+      '<li>Short essay: 80–100 characters, use conjunctions 因为…所以…, 虽然…但是…, 一…就… to earn Band 4+</li>' +
+      '</ul>',
+      '<div class="callout warn"><span class="material-symbols-outlined">volume_up</span><div>Bring your own wired earphones with 3.5mm jack. Wireless/Bluetooth devices and shared-ear headphones are <strong>not</strong> permitted.</div></div>',
+      '<h3>4. Self-grading scale (NGIS → MoEYS HSK mapping)</h3>' +
+      '<ul>' +
+      '<li>A* ≥ 92 → HSK-3 pass + HSKK-Intermediate recommended entry</li>' +
+      '<li>A ≥ 80 → HSK-3 safe pass</li>' +
+      '<li>B ≥ 65 → borderline — please do 3 full practice audio papers this week</li>' +
+      '<li>&lt; 65 → mandatory after-school clinic (Ms. Wei, Mon/Wed 15:30–17:00, Room 105)</li>' +
+      '</ul>',
+    ],
+  },
+};
+
+var _rpv = {
+  currentId: null,
+  zoom: 100,
+  zoomMin: 70,
+  zoomMax: 180,
+  zoomStep: 10,
+  saved: Object.create(null),
+};
+
+try { _rpv.saved = JSON.parse(localStorage.getItem('ngis_exam_rpv_bm') || '{}') || {}; } catch(e) {}
+
+function examRpvOpen(id) {
+  var preset = EXAM_RPV_PRESETS[id];
+  if (!preset) {
+    if (window.toast) window.toast('Unknown resource', 'error');
+    else alert('Unknown resource: ' + id);
+    return;
+  }
+  _rpv.currentId = id;
+  _rpv.zoom = 100;
+
+  // Header icon + title + sub
+  var badge = document.getElementById('rpvIconBadge');
+  badge.className = 'exam-rpv-icon-badge' + (preset.iconBadgeClass ? ' ' + preset.iconBadgeClass : '');
+  var iconSpan = badge.querySelector('.material-symbols-outlined') || badge.appendChild(document.createElement('span'));
+  iconSpan.className = 'material-symbols-outlined';
+  iconSpan.textContent = preset.icon || 'description';
+
+  document.getElementById('examRpvTitle').textContent = preset.title;
+  document.getElementById('examRpvSub').textContent = preset.sub;
+
+  // Save/bookmark state
+  var bmBtn = document.getElementById('rpvBmBtn');
+  var isSaved = !!_rpv.saved[id];
+  if (isSaved) {
+    bmBtn.classList.add('primary');
+    bmBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">bookmark_added</span> <span class="exam-rpv-btn-text">Saved</span>';
+  } else {
+    bmBtn.classList.remove('primary');
+    bmBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:16px;">bookmark</span> <span class="exam-rpv-btn-text">Save</span>';
+  }
+
+  // Build hero
+  var chipHtml = '';
+  (preset.chips || []).forEach(function(c) {
+    chipHtml += '<span class="exam-rpv-chip ' + c.cls + '">' +
+                '<span class="material-symbols-outlined">' + c.icon + '</span>' +
+                c.label + '</span>';
+  });
+  var metaHtml = '';
+  (preset.meta || []).forEach(function(m) {
+    metaHtml += '<span><span class="material-symbols-outlined">' + m.icon + '</span>' + m.text + '</span>';
+  });
+
+  // Build paper content blocks
+  var paperBlocks = '';
+  (preset.paperBody || []).forEach(function(b) {
+    var wrapped = b;
+    if (wrapped.indexOf('<table') !== -1 && wrapped.indexOf('exam-rpv-table-wrap') === -1) {
+      wrapped = wrapped.replace(/<table/g, '<div class="exam-rpv-table-wrap"><table').replace(/<\/table>/g, '</table></div>');
+    }
+    paperBlocks += wrapped;
+  });
+
+  var html = '' +
+    '<div class="exam-rpv-hero">' +
+      '<div class="exam-rpv-hero-main">' +
+        '<div class="exam-rpv-chip-row">' + chipHtml + '</div>' +
+        '<h1 class="exam-rpv-h1">' + preset.h1 + '</h1>' +
+        '<div class="exam-rpv-h1-sub">' + preset.h1sub + '</div>' +
+        '<div class="exam-rpv-metarow">' + metaHtml + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="exam-rpv-viewer-wrap" id="rpvViewerWrap">' +
+      '<div class="exam-rpv-paper" id="rpvPaper">' +
+        '<div class="exam-rpv-paper-head">' +
+          '<div class="exam-rpv-paper-eyebrow">' + preset.paperEyebrow + '</div>' +
+          '<div class="exam-rpv-paper-title">' + preset.paperTitle + '</div>' +
+          '<div class="exam-rpv-paper-accent"></div>' +
+        '</div>' +
+        paperBlocks +
+      '</div>' +
+      '<div class="exam-rpv-bottom-bar" role="toolbar" aria-label="Viewer controls">' +
+        '<div class="exam-rpv-page">Page 1 of 1</div>' +
+        '<div class="exam-rpv-zoom-grp">' +
+          '<button class="exam-rpv-zbtn" onclick="examRpvZoom(-1)" title="Zoom out" aria-label="Zoom out">' +
+            '<span class="material-symbols-outlined">zoom_out</span></button>' +
+          '<div class="exam-rpv-zlabel" onclick="examRpvZoomReset()" title="Reset zoom" id="rpvZoomLabel">100%</div>' +
+          '<button class="exam-rpv-zbtn" onclick="examRpvZoom(1)" title="Zoom in" aria-label="Zoom in">' +
+            '<span class="material-symbols-outlined">zoom_in</span></button>' +
+        '</div>' +
+        '<button class="exam-rpv-fs" onclick="examRpvFullscreen()" title="Fullscreen" aria-label="Fullscreen">' +
+          '<span class="material-symbols-outlined">fullscreen</span></button>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('examRpvBody').innerHTML = html;
+
+  // Show modal
+  document.body.style.overflow = 'hidden';
+  document.getElementById('examRpv').classList.add('show');
+  // Apply saved zoom level immediately (in case future persist)
+  examRpvApplyZoom();
+
+  if (window.toast) window.toast(preset.title, 'info');
+}
+
+function examRpvClose() {
+  document.getElementById('examRpv').classList.remove('show');
+  document.body.style.overflow = '';
+  _rpv.currentId = null;
+}
+
+function examRpvApplyZoom() {
+  var p = document.getElementById('rpvPaper');
+  if (!p) return;
+  p.style.transformOrigin = 'top center';
+  p.style.transform = 'scale(' + (_rpv.zoom / 100) + ')';
+  var lbl = document.getElementById('rpvZoomLabel');
+  if (lbl) lbl.textContent = _rpv.zoom + '%';
+}
+
+function examRpvZoom(dir) {
+  var next = _rpv.zoom + dir * _rpv.zoomStep;
+  if (next < _rpv.zoomMin) next = _rpv.zoomMin;
+  if (next > _rpv.zoomMax) next = _rpv.zoomMax;
+  _rpv.zoom = next;
+  examRpvApplyZoom();
+}
+
+function examRpvZoomReset() {
+  _rpv.zoom = 100;
+  examRpvApplyZoom();
+}
+
+function examRpvFullscreen() {
+  var wrap = document.getElementById('rpvViewerWrap');
+  if (!wrap) return;
+  var el = wrap;
+  var req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+  if (!document.fullscreenElement && req) { try { req.call(el); } catch(e) {} }
+  else if (document.exitFullscreen) { try { document.exitFullscreen(); } catch(e) {} }
+}
+
+function examRpvPrint() {
+  var paper = document.getElementById('rpvPaper');
+  if (!paper) return;
+  var title = (document.getElementById('examRpvTitle') || {}).textContent || 'Exam Resource';
+  var w = window.open('', '_blank', 'width=900,height=1100');
+  if (!w) { if (window.toast) window.toast('Allow popups to print', 'error'); return; }
+  var bodyInner = paper.outerHTML.replace(/transform[^\n;]*/g, '').replace(/scale\([^)]*\)/g, '');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + title +
+    '</title><style>' +
+    'body{font-family:"Inter",Arial,sans-serif; margin:24px; color:#0f172a;} ' +
+    '.exam-rpv-paper{box-shadow:none !important; border:1px solid #e2e8f0 !important;} ' +
+    '@media print{body{margin:0;} .exam-rpv-bottom-bar{display:none;}}' +
+    '</style></head><body>' + bodyInner +
+    '<script>window.onload = function(){ setTimeout(function(){window.focus(); window.print();}, 200); }<\/script>' +
+    '</body></html>');
+  w.document.close();
+}
+
+function examRpvDownload() {
+  var title = (document.getElementById('examRpvTitle') || {}).textContent || 'Exam Resource';
+  var paper = document.getElementById('rpvPaper');
+  if (!paper) return;
+  var htmlContent = '<!doctype html><html><head><meta charset="utf-8"><title>' + title +
+    '</title><link rel="preconnect" href="https://fonts.googleapis.com">' +
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+    '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">' +
+    '<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">' +
+    '<style>' +
+    'body{font-family:"Inter",Arial,sans-serif; background:#f8fafb; margin:0; padding:32px; color:#0f172a;}' +
+    '.exam-rpv-paper{background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:40px 36px; max-width:760px; margin:0 auto;}' +
+    'table{width:100%; border-collapse:collapse; margin:10px 0 18px; font-size:12.5px;}' +
+    'th, td{padding:9px 12px; border:1px solid #e2e8f0; text-align:left;}' +
+    'th{background:#f8fafc;}' +
+    '.callout{border-radius:10px; padding:13px 16px; display:flex; align-items:flex-start; gap:10px; margin-top:20px;}' +
+    '.callout.info{background:#f0f9ff; border:1px solid #bae6fd;} .callout.warn{background:#ffffff; border:1px solid #bae6fd;}' +
+    '.eqn-box{background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; text-align:center; font-family:ui-monospace,monospace; font-size:16px; margin:12px 0 18px;}' +
+    '</style></head><body>' + paper.outerHTML.replace(/transform[^\n;]*/g, '').replace(/scale\([^)]*\)/g, '') + '</body></html>';
+  var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  var fname = (title.replace(/[^\w\u00A0-\uFFFF -]+/g, '_').replace(/\s+/g, '_') || 'exam_resource') + '.html';
+  var a = document.createElement('a');
+  var url = URL.createObjectURL(blob);
+  a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  if (window.toast) window.toast('Saved ' + fname, 'success');
+}
+
+function examRpvBookmark() {
+  var id = _rpv.currentId;
+  if (!id) return;
+  var preset = EXAM_RPV_PRESETS[id];
+  if (!preset) return;
+  if (_rpv.saved[id]) {
+    delete _rpv.saved[id];
+    if (window.toast) window.toast('Removed from Saved', 'info');
+  } else {
+    _rpv.saved[id] = { savedAt: Date.now() };
+    if (window.toast) window.toast('Saved to library', 'success');
+  }
+  try { localStorage.setItem('ngis_exam_rpv_bm', JSON.stringify(_rpv.saved)); } catch(e) {}
+  examRpvOpen(id);
+}
+
+/* ESC closes modal */
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') examRpvClose();
+  if (!document.getElementById('examRpv').classList.contains('show')) return;
+  if (e.key === '+' || e.key === '=') { e.preventDefault(); examRpvZoom(1); }
+  else if (e.key === '-') { e.preventDefault(); examRpvZoom(-1); }
+  else if (e.key === '0') { e.preventDefault(); examRpvZoomReset(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') { e.preventDefault(); examRpvPrint(); }
+  else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); examRpvBookmark(); }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var searchInp = document.getElementById('roadmapSearch');
+  var items = document.querySelectorAll('.roadmap-item');
+  var badge = document.getElementById('queuedCountBadge');
+
+  if (searchInp) {
+    searchInp.addEventListener('input', function() {
+      var q = searchInp.value.trim().toLowerCase();
+      var count = 0;
+      items.forEach(function(item) {
+        var subject = (item.dataset.subject || '').toLowerCase();
+        var text = item.textContent.toLowerCase();
+        var match = (!q || text.indexOf(q) !== -1 || subject.indexOf(q) !== -1);
+        item.style.display = match ? 'flex' : 'none';
+        if (match) count++;
+      });
+      if (badge) badge.textContent = count + ' Queued';
+    });
+  }
+});
+</script>
+</body>
+</html>

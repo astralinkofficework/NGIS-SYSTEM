@@ -22,6 +22,12 @@
 
   /* ── inject dynamic CSS once ── */
   function injectCSS() {
+    if (!document.querySelector('link[href*="family=Inter"]')) {
+      const fLink = document.createElement("link");
+      fLink.rel = "stylesheet";
+      fLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap";
+      document.head.appendChild(fLink);
+    }
     if (document.getElementById("ngis-app-css")) return;
     const s = document.createElement("style");
     s.id = "ngis-app-css";

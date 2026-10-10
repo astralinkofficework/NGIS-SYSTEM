@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    NGIS Chat Client — assets/js/chat.js
    Connects to the Socket.io chat server.
    Falls back to DEMO MODE if no server is reachable.
@@ -120,7 +120,7 @@
     if (user.avatar) {
       return `<img src="${escHtml(user.avatar)}" alt="${escHtml(user.name)}" class="${cls}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;">`;
     }
-    return `<div class="${cls}" style="width:${size}px;height:${size}px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:${Math.round(size * 0.34)}px;font-weight:700;flex-shrink:0;">${escHtml(initials(user.name))}</div>`;
+    return `<div class="${cls}" style="width:${size}px;height:${size}px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:${Math.round(size * 0.34)}px;font-weight: 400;flex-shrink:0;">${escHtml(initials(user.name))}</div>`;
   }
 
   function roleBadge(role) {
@@ -574,7 +574,7 @@
     const t = document.createElement("div");
     t.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
       background:var(--surface);border:1px solid var(--border);border-radius:10px;
-      padding:10px 18px;font-size:13px;font-weight:600;box-shadow:var(--sh-3);
+      padding:10px 18px;font-size:13px;font-weight: 400;box-shadow:var(--sh-3);
       z-index:999;color:var(--text);animation:ep-in .2s ease;`;
     t.textContent = msg;
     document.body.appendChild(t);

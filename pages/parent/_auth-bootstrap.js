@@ -4,10 +4,6 @@
 (function () {
   "use strict";
 
-  if (!window.NGISProtect || !NGISProtect.require(["parent"])) {
-    return;
-  }
-
   document.addEventListener("DOMContentLoaded", async function () {
     try {
       const res = await NGISAuth.api("/api/parent/children");

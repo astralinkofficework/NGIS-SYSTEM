@@ -42,6 +42,7 @@
           { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/admin/admin-assignments.html" },
           { id:"exams",       label:"Exams",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
           { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
+          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
         { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
           { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
@@ -77,6 +78,7 @@
         { label:"Teaching", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
           { id:"classes",     label:"My Classes",  icon:"school",    href:"pages/teacher/teacher-classes.html" },
+          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
         { label:"Communication", icon:"forum", links:[
           { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"0" },
@@ -98,6 +100,7 @@
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
           { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
+          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
         { label:"Communication", icon:"forum", links:[
           { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"3" },
@@ -120,6 +123,7 @@
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
           { id:"services",    label:"Student Services", icon:"assignment", href:"pages/parent/parent-services.html" },
+          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
         { label:"Communication", icon:"forum", links:[
           { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html", badge:"1" },
@@ -206,16 +210,20 @@
   }
 
   function buildSidebar(cfg, active) {
+    const role = (window.PAGE && window.PAGE.role) || "admin";
+    const homeHref = PORTAL_HOME[role] ? `${_P}${PORTAL_HOME[role]}` : `${_P}index.html`;
     const groups = cfg.groups.map((g, gi) => {
       const links = g.links.map(l =>
         `<a class="nav-link ${l.id === active ? "active" : ""}" href="${_P}${l.href}"${l.id===active?' aria-current="page"':''}>
-           <span class="nav-link-icon"><span class="material-symbols-outlined">${l.icon}</span></span>
+           <div class="nav-link-icon-bubble">
+             <span class="material-symbols-outlined">${l.icon}</span>
+           </div>
            <span class="nav-link-label">${esc(l.label)}</span>
            ${l.badge ? `<span class="pill">${l.badge}</span>` : ""}
          </a>`
       ).join("");
       const groupActive = g.id === active || g.links.some(l => l.id === active);
-      const labelInner = `${g.icon ? `<span class="material-symbols-outlined">${g.icon}</span>` : ""}<span>${esc(g.label)}</span>${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
+      const labelInner = `${g.icon ? `<span class="material-symbols-outlined nav-group-icon">${g.icon}</span>` : ""}<span>${esc(g.label)}</span>${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
 
       let label, linksHtml;
       if (g.collapsible) {
@@ -237,17 +245,38 @@
     }).join("");
 
     return el(`
-      <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
-        <div class="side-brand">
-          <img src="${_P}pages/student/LOGO NGIS (2).png" alt="New Gateway International School" class="side-brand-img">
-        </div>
-        <nav class="side-nav">
+      <aside class="sidebar custom-scrollbar" id="sidebar" role="navigation" aria-label="Main navigation" data-purpose="primary-sidebar">
+        <header class="side-brand">
+          <a class="side-brand-info" href="${homeHref}" aria-label="New Gateway International School">
+            <img class="side-brand-logo-img" src="${_P}assets/images/logo.png" alt="New Gateway International School" onerror="this.onerror=null;this.src='${_P}pages/student/LOGO%20NGIS%20(2).png'">
+          </a>
+          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Toggle sidebar" aria-label="Toggle sidebar" type="button" data-purpose="sidebar-collapse-button">
+            <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect height="16" rx="2" stroke-linecap="round" stroke-linejoin="round" width="18" x="3" y="4"></rect>
+              <path d="M9 4v16" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M15 10l-2 2 2 2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </header>
+        <nav class="side-nav custom-scrollbar" aria-label="Main Navigation">
           ${groups}
         </nav>
-        <div class="side-foot">
-          <a class="nav-link" href="${_P}index.html"><span class="nav-link-icon"><span class="material-symbols-outlined">help_outline</span></span><span class="nav-link-label">Help &amp; Support</span></a>
-          <a class="nav-link nav-link-danger" href="${_P}index.html"><span class="nav-link-icon"><span class="material-symbols-outlined">logout</span></span><span class="nav-link-label">Sign Out</span></a>
-        </div>
+        <footer class="side-foot">
+          <a class="nav-link side-foot-help" href="${_P}index.html">
+            <div class="nav-link-icon-bubble">
+              <span class="material-symbols-outlined">help_outline</span>
+            </div>
+            <span class="nav-link-label">Help &amp; Support</span>
+          </a>
+          <a class="nav-link nav-link-danger side-foot-signout" href="${_P}index.html" data-purpose="sign-out-button">
+            <div class="nav-link-icon-bubble">
+              <svg class="side-foot-svg" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <span class="nav-link-label">Sign Out</span>
+          </a>
+        </footer>
       </aside>`);
   }
 
@@ -285,26 +314,97 @@
   }
 
   function buildBottomNav(role, active) {
-    const items = (BOTTOM[role] || BOTTOM.admin).map(it =>
-      `<a class="bn-item ${it.id===active?"active":""}" href="${_P}${it.href}"${it.id===active?' aria-current="page"':''}>
-         <span class="material-symbols-outlined">${it.icon}</span>
-         <span>${it.label}</span>
-         ${it.badge?`<span class="bn-badge">${it.badge}</span>`:""}
-       </a>`
-    ).join("");
-    return el(`<nav class="bottomnav" role="navigation" aria-label="Primary"><div class="bottomnav-inner">${items}</div></nav>`);
+    const list = BOTTOM[role] || BOTTOM.admin;
+    const items = list.map(it => {
+      const isActive = it.id === active;
+      return `
+        <a class="bn-item ${isActive ? "active" : ""}" href="${_P}${it.href}" data-tab="${it.id}" aria-label="${esc(it.label)}"${isActive ? ' aria-current="page"' : ''}>
+          <div class="bn-icon-bubble">
+            <span class="material-symbols-outlined bn-icon">${it.icon}</span>
+            ${it.badge ? `<span class="bn-badge">${it.badge}</span>` : ""}
+          </div>
+          <span class="bn-label">${esc(it.label)}</span>
+          <span class="bn-droplet" aria-hidden="true"></span>
+        </a>`;
+    }).join("");
+
+    return el(`
+      <nav class="bottomnav" id="bottomnav" role="navigation" aria-label="Mobile Navigation">
+        <div class="bottomnav-glow" aria-hidden="true"></div>
+        <div class="bottomnav-shell">
+          <div class="bottomnav-track">
+            <div class="bottomnav-melt-slider" id="bnMeltSlider" aria-hidden="true">
+              <span class="melt-slider-core"></span>
+            </div>
+            <div class="bottomnav-inner">
+              ${items}
+            </div>
+          </div>
+        </div>
+      </nav>
+    `);
+  }
+
+  function initBottomNav(navEl) {
+    if (!navEl) return;
+    const slider = navEl.querySelector("#bnMeltSlider");
+    const inner = navEl.querySelector(".bottomnav-inner");
+    const items = Array.from(navEl.querySelectorAll(".bn-item"));
+    if (!slider || !inner || !items.length) return;
+
+    function updateSlider(animate = true) {
+      const activeItem = navEl.querySelector(".bn-item.active");
+      if (!activeItem || window.innerWidth > 768) {
+        slider.style.opacity = "0";
+        return;
+      }
+
+      const innerRect = inner.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
+      const left = itemRect.left - innerRect.left;
+      const width = itemRect.width;
+
+      if (!animate) {
+        slider.style.transition = "none";
+      } else {
+        slider.style.transition = "transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1), width 0.38s cubic-bezier(0.34, 1.45, 0.64, 1), opacity 0.25s ease";
+      }
+      slider.style.width = Math.round(width) + "px";
+      slider.style.transform = "translateX(" + Math.round(left) + "px)";
+      slider.style.opacity = "1";
+    }
+
+    window.__updateBottomNavSlider = updateSlider;
+
+    setTimeout(() => updateSlider(false), 30);
+    setTimeout(() => updateSlider(true), 160);
+    setTimeout(() => updateSlider(true), 400);
+
+    window.addEventListener("resize", () => updateSlider(false), { passive: true });
+    window.addEventListener("orientationchange", () => setTimeout(() => updateSlider(false), 80), { passive: true });
+
+    items.forEach(item => {
+      item.addEventListener("click", function() {
+        items.forEach(it => {
+          it.classList.remove("active");
+          it.removeAttribute("aria-current");
+        });
+        item.classList.add("active");
+        item.setAttribute("aria-current", "page");
+        updateSlider(true);
+
+        const bubble = item.querySelector(".bn-icon-bubble");
+        if (bubble) {
+          bubble.classList.remove("bn-pop");
+          void bubble.offsetWidth;
+          bubble.classList.add("bn-pop");
+        }
+      });
+    });
   }
 
   function buildBreadcrumb(cfg, role, active) {
-    const all = cfg.groups.reduce((acc, g) => acc.concat(g.links), []);
-    const cur = all.find(l => l.id === active);
-    if (!cur || active === "dashboard") return null;   // dashboards don't need a crumb
-    return el(`
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="${_P}${PORTAL_HOME[role]}">${esc(cfg.brand)} Portal</a>
-        <span class="material-symbols-outlined sep">chevron_right</span>
-        <span class="cur" aria-current="page">${esc(cur.label)}</span>
-      </nav>`);
+    return null; // Breadcrumb removed per user request
   }
 
   function mount() {
@@ -360,11 +460,14 @@
     }
 
     /* ── Sidebar collapse / expand (desktop) ── */
-    const collapseBtn = el(`
-      <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar">
-        <span class="material-symbols-outlined">left_panel_close</span>
-      </button>`);
-    sidebar.querySelector('.side-brand').appendChild(collapseBtn);
+    let collapseBtn = sidebar.querySelector('#sidebarCollapseBtn');
+    if (!collapseBtn) {
+      collapseBtn = el(`
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar">
+          <span class="material-symbols-outlined">left_panel_close</span>
+        </button>`);
+      sidebar.querySelector('.side-brand').appendChild(collapseBtn);
+    }
 
     const expandBtn = el(`
       <button class="sidebar-expand-btn" id="sidebarExpandBtn" title="Expand sidebar" aria-label="Expand sidebar">
@@ -392,12 +495,14 @@
     collapseBtn.addEventListener('click', () => setSidebarCollapsed(true));
     expandBtn.addEventListener('click',   () => setSidebarCollapsed(false));
 
-    document.body.appendChild(buildBottomNav(PAGE.role, active));
+    const bNav = buildBottomNav(PAGE.role, active);
+    document.body.appendChild(bNav);
+    initBottomNav(bNav);
 
-    // Auto-breadcrumb at the top of the page body
-    const page = document.querySelector(".page");
-    const crumb = buildBreadcrumb(cfg, PAGE.role, active);
-    if (page && crumb) page.insertBefore(crumb, page.firstChild);
+    // Auto-breadcrumb removed per user request
+    // const page = document.querySelector(".page");
+    // const crumb = buildBreadcrumb(cfg, PAGE.role, active);
+    // if (page && crumb) page.insertBefore(crumb, page.firstChild);
 
     if (!document.querySelector(".toast-wrap")) {
       document.body.appendChild(el(`<div class="toast-wrap" id="toasts" role="region" aria-live="polite"></div>`));
@@ -423,14 +528,82 @@
       });
     }
 
-    /* Mobile drawer */
-    const menuBtn = document.getElementById("menuBtn");
-    const openNav  = () => { sidebar.classList.add("open"); scrim.classList.add("show"); if (menuBtn) menuBtn.setAttribute("aria-expanded","true"); };
-    const closeNav = () => { sidebar.classList.remove("open"); scrim.classList.remove("show"); if (menuBtn) menuBtn.setAttribute("aria-expanded","false"); };
-    if (menuBtn) menuBtn.addEventListener("click", () => sidebar.classList.contains("open") ? closeNav() : openNav());
+    /* Mobile drawer with smooth bottomnav disappearance */
+    const openNav = () => {
+      sidebar.classList.add("open");
+      scrim.classList.add("show");
+      document.body.classList.add("sidebar-open");
+      const bNavEl = document.getElementById("bottomnav");
+      if (bNavEl) bNavEl.classList.add("hidden-by-sidebar");
+      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, [data-action='toggle-sidebar']").forEach(btn => btn.setAttribute("aria-expanded", "true"));
+    };
+
+    const closeNav = () => {
+      sidebar.classList.remove("open");
+      scrim.classList.remove("show");
+      document.body.classList.remove("sidebar-open");
+      const bNavEl = document.getElementById("bottomnav");
+      if (bNavEl) {
+        bNavEl.classList.remove("hidden-by-sidebar");
+        setTimeout(() => {
+          if (typeof window.__updateBottomNavSlider === "function") {
+            window.__updateBottomNavSlider(true);
+          }
+        }, 120);
+      }
+      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, [data-action='toggle-sidebar']").forEach(btn => btn.setAttribute("aria-expanded", "false"));
+    };
+
+    const toggleNav = () => {
+      if (sidebar.classList.contains("open")) closeNav();
+      else openNav();
+    };
+
+    window.openSidebar = openNav;
+    window.closeSidebar = closeNav;
+    window.toggleSidebar = toggleNav;
+
+    const wireButtons = () => {
+      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, [data-action='toggle-sidebar']").forEach(btn => {
+        if (btn.dataset.sidebarBound) return;
+        btn.dataset.sidebarBound = "true";
+        btn.addEventListener("click", (e) => {
+          if (e.__sidebarHandled) return;
+          e.__sidebarHandled = true;
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          toggleNav();
+        });
+      });
+    };
+    wireButtons();
+    setTimeout(wireButtons, 150);
+
+    // Attach to menuBtn and hamburger buttons reliably (delegated fallback)
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, [data-action='toggle-sidebar']");
+      if (!btn) return;
+      if (e.__sidebarHandled) return;
+      e.__sidebarHandled = true;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      toggleNav();
+    });
+
     scrim.addEventListener("click", closeNav);
     sidebar.querySelectorAll(".nav-link").forEach(a => a.addEventListener("click", closeNav));
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeNav(); });
+
+    // Edge swipe gestures
+    let tx = 0;
+    document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+    document.addEventListener("touchend", e => {
+      const dx = e.changedTouches[0].clientX - tx;
+      if (tx < 28 && dx > 60) openNav();
+      else if (dx < -60 && sidebar.classList.contains("open")) closeNav();
+    }, { passive: true });
 
     /* ⌘K / Ctrl+K focuses search */
     document.addEventListener("keydown", (e) => {
@@ -441,14 +614,14 @@
       }
     });
 
-    /* Edge swipe to open / swipe to close (passive, subtle) */
-    let tx = 0;
-    document.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive:true });
-    document.addEventListener("touchend", e => {
-      const dx = e.changedTouches[0].clientX - tx;
-      if (tx < 24 && dx > 60) openNav();
-      else if (dx < -60) closeNav();
-    }, { passive:true });
+    // MutationObserver fallback: if any external code directly alters sidebar classes
+    const sidebarObserver = new MutationObserver(() => {
+      const isOpen = sidebar.classList.contains("open");
+      document.body.classList.toggle("sidebar-open", isOpen);
+      const bNavEl = document.getElementById("bottomnav");
+      if (bNavEl) bNavEl.classList.toggle("hidden-by-sidebar", isOpen);
+    });
+    sidebarObserver.observe(sidebar, { attributes: true, attributeFilter: ["class"] });
 
     if (page) page.classList.add("anim-fade");
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Student Assignments — load from real API
  * Include after auth.js + protect.js on student-assignments.html
  */
@@ -40,8 +40,8 @@
       }
 
       target.innerHTML = `
-        <div style="margin-bottom:12px;font-weight:700;font-size:18px;color:#0f172a">
-          My Assignments <span style="color:#64748b;font-weight:500;font-size:14px">(${items.length})</span>
+        <div style="margin-bottom:12px;font-weight: 400;font-size:18px;color:#0f172a">
+          My Assignments <span style="color:#64748b;font-weight: 400;font-size:14px">(${items.length})</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:10px">
           ${items.map(a => {
@@ -51,17 +51,17 @@
             return `
               <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
                 <div>
-                  <div style="font-weight:700;color:#0f172a;margin-bottom:4px">${escapeHtml(a.title)}</div>
+                  <div style="font-weight: 400;color:#0f172a;margin-bottom:4px">${escapeHtml(a.title)}</div>
                   <div style="font-size:13px;color:#64748b;margin-bottom:6px">
                     ${escapeHtml(a.subject_name || "Subject")} · Due ${a.due_date || "—"}
                   </div>
                   <div style="font-size:13px;color:#475569">${escapeHtml((a.description || "").slice(0, 120))}${(a.description || "").length > 120 ? "…" : ""}</div>
-                  ${a.score != null ? `<div style="margin-top:8px;font-size:13px;font-weight:600;color:#16a34a">Score: ${a.score}</div>` : ""}
+                  ${a.score != null ? `<div style="margin-top:8px;font-size:13px;font-weight: 400;color:#16a34a">Score: ${a.score}</div>` : ""}
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-                  <span style="font-size:12px;font-weight:700;color:${statusColor};background:${statusColor}15;padding:4px 10px;border-radius:999px">${statusLabel}</span>
+                  <span style="font-size:12px;font-weight: 400;color:${statusColor};background:${statusColor}15;padding:4px 10px;border-radius:999px">${statusLabel}</span>
                   ${status === "pending" ? `
-                    <button data-submit="${a.id}" style="border:none;background:#2563eb;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">
+                    <button data-submit="${a.id}" style="border:none;background:#2563eb;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight: 400;cursor:pointer">
                       Submit
                     </button>` : ""}
                 </div>

@@ -73,7 +73,7 @@
     /** Logout and redirect to home */
     logout() {
       this.clearSession();
-      window.location.href = "/index.html";
+      window.location.href = "/";
     },
 
     /**
@@ -99,7 +99,7 @@
       // Auto logout on unauthorized
       if (res.status === 401) {
         this.clearSession();
-        window.location.href = "/index.html";
+        window.location.href = "/";
         throw new Error("Session expired. Please login again.");
       }
 
@@ -118,7 +118,7 @@
      */
     requireAuth(allowedRoles = []) {
       if (!this.isAuthenticated()) {
-        window.location.href = "/index.html";
+        window.location.href = "/";
         return false;
       }
 
@@ -132,7 +132,7 @@
             student: "/pages/student/student.html",
             parent: "/pages/parent/parent.html",
           };
-          window.location.href = portals[role] || "/index.html";
+          window.location.href = portals[role] || "/";
           return false;
         }
       }

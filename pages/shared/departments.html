@@ -1,121 +1,358 @@
-﻿<!doctype html>
-<html lang="en" data-theme="light">
+<!DOCTYPE html>
+<html class="h-full bg-[#f8fafb]" lang="en" data-theme="light">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — My Departments</title>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+<title>NGIS — Academic Departments</title>
+
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<!-- Google Fonts: Inter & Kantumruy Pro for NGIS typography -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<!-- NGIS Framework Styles -->
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
-</head>
-<body data-page="departments">
-<main class="main">
 
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Inter"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+          khmer: ['"Kantumruy Pro"', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            50: '#f0f7f8',
+            100: '#e1eff0',
+            200: '#b8dbd9', // NGIS Light Blue
+            300: '#8ec5c2',
+            400: '#586f7c', // NGIS Blue Slate
+            500: '#3d5663',
+            600: '#2f4550', // NGIS Charcoal Blue
+            700: '#24363f',
+            800: '#1b2930',
+            900: '#121d22',
+          },
+          canvas: '#f8fafb',
+          borderline: '#eaedf0',
+        }
+      }
+    }
+  }
+</script>
+
+<script>
+try {
+  var _t = localStorage.getItem('ngis-theme');
+  if (_t) document.documentElement.setAttribute('data-theme', _t);
+} catch(e) {}
+</script>
+
+<style>
+  body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .dept-card {
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .dept-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -6px rgba(47, 69, 80, 0.08), 0 3px 8px -2px rgba(15, 23, 42, 0.03);
+    border-color: rgba(47, 69, 80, 0.22);
+  }
+  .dept-card:hover .action-btn {
+    background-color: #2f4550;
+    color: #ffffff;
+    border-color: #2f4550;
+  }
+  .dept-card:hover .action-btn span {
+    transform: translateX(2px);
+  }
+
+  /* Dark mode adaptations aligned with NGIS dark tokens */
+  [data-theme="dark"] body {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+  }
+  [data-theme="dark"] .dept-card,
+  [data-theme="dark"] .bg-white {
+    background-color: #182329 !important;
+    border-color: #283942 !important;
+  }
+  [data-theme="dark"] .dept-card:hover {
+    box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.45);
+    border-color: rgba(184, 219, 217, 0.35) !important;
+  }
+  [data-theme="dark"] .text-slate-900,
+  [data-theme="dark"] .text-slate-800 {
+    color: #f8fafc !important;
+  }
+  [data-theme="dark"] .text-slate-700 {
+    color: #e2e8f0 !important;
+  }
+  [data-theme="dark"] .text-slate-600,
+  [data-theme="dark"] .text-slate-500 {
+    color: #94a3b8 !important;
+  }
+  [data-theme="dark"] .bg-slate-100 {
+    background-color: #22323a !important;
+    color: #cbd5e1 !important;
+  }
+  [data-theme="dark"] .bg-slate-50\/50,
+  [data-theme="dark"] .bg-slate-50\/60,
+  [data-theme="dark"] .action-btn {
+    background-color: #1f2d34 !important;
+    border-color: #2e414c !important;
+    color: #cbd5e1 !important;
+  }
+  [data-theme="dark"] .border-borderline,
+  [data-theme="dark"] .border-slate-100,
+  [data-theme="dark"] .border-slate-200 {
+    border-color: #283942 !important;
+  }
+  [data-theme="dark"] #dept-search {
+    background-color: #182329 !important;
+    border-color: #283942 !important;
+    color: #f8fafc !important;
+  }
+  [data-theme="dark"] .filter-pill.bg-white {
+    background-color: #182329 !important;
+    border-color: #283942 !important;
+    color: #cbd5e1 !important;
+  }
+  [data-theme="dark"] .filter-pill.active-pill {
+    background-color: #b8dbd9 !important;
+    color: #2f4550 !important;
+  }
+  [data-theme="dark"] .dept-card:hover .action-btn {
+    background-color: #b8dbd9 !important;
+    color: #2f4550 !important;
+    border-color: #b8dbd9 !important;
+  }
+</style>
+</head>
+<body class="min-h-full flex flex-col bg-[#f8fafb] text-slate-800 antialiased selection:bg-[#b8dbd9]/40 selection:text-[#2f4550]">
+
+<main class="main">
+  <!-- Injected dynamically by hero.js (matching all NGIS student pages) -->
   <div id="heroBanner"></div>
 
-  <div class="page">
-
-    <!-- Search + filter row -->
-    <div class="flex between center gap12 mb20 wrap">
-      <div class="search" style="max-width:320px">
-        <span class="material-symbols-outlined">search</span>
-        <input type="text" placeholder="Search departments…" aria-label="Search departments">
+  <div class="page anim-up">
+    <!-- Clean Minimal Header Section -->
+    <section class="flex flex-col gap-6 mb-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-[26px] font-semibold tracking-tight text-[#2f4550] dark:text-white">Academic Departments</h1>
+          <p class="text-xs sm:text-[13.5px] text-[#586f7c] dark:text-[#94a3b8] mt-1 font-normal">Overview of academic programs, faculty leads, and your semester progress.</p>
+        </div>
+        <!-- Quick Summary Badge -->
+        <div class="inline-flex items-center self-start md:self-auto gap-4 bg-white border border-borderline px-4 py-2 rounded-xl text-xs shadow-xs">
+          <div>
+            <span class="text-slate-400 uppercase text-[10px] font-semibold tracking-wider block">Enrolled</span>
+            <span class="font-semibold text-[#2f4550] dark:text-white text-sm">3 Departments</span>
+          </div>
+          <div class="h-6 w-px bg-slate-200"></div>
+          <div>
+            <span class="text-slate-400 uppercase text-[10px] font-semibold tracking-wider block">Average Progress</span>
+            <span class="font-semibold text-[#13829b] dark:text-[#38bdf8] text-sm">74.8%</span>
+          </div>
+        </div>
       </div>
-      <div class="flex gap8 wrap">
-        <span class="badge blue" style="font-size:12px;padding:5px 12px">All Departments</span>
-        <span class="badge gray" style="font-size:12px;padding:5px 12px;cursor:pointer">Active</span>
-        <span class="badge gray" style="font-size:12px;padding:5px 12px;cursor:pointer">Completed</span>
+      <!-- Decluttered Search & Filter Toolbar -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+        <!-- Minimal Search Box -->
+        <div class="relative flex-1 max-w-md">
+          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+          <input class="w-full bg-white border border-borderline pl-10 pr-4 py-2 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#2f4550] focus:ring-1 focus:ring-[#2f4550] transition-all shadow-xs" id="dept-search" placeholder="Search department or instructor..." type="search">
+        </div>
+        <!-- Clean Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0" id="filter-container">
+          <button class="filter-pill active-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#2f4550] text-white transition-all shadow-xs" data-filter="all" type="button">
+            All (3)
+          </button>
+          <button class="filter-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-600 hover:bg-slate-50 border border-borderline transition-all" data-filter="core" type="button">
+            Core
+          </button>
+          <button class="filter-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-600 hover:bg-slate-50 border border-borderline transition-all" data-filter="electives" type="button">
+            Electives
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clean 3-Card Department Grid -->
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10" id="departments-grid">
+      <!-- Card 1: English Department -->
+      <article class="dept-card group bg-white border border-borderline rounded-2xl p-6 shadow-xs flex flex-col justify-between cursor-pointer" data-category="core" onclick="if(!event.target.closest('a')) window.location.href='department.html?id=english'">
+        <div>
+          <!-- Header: Icon & Category Tag -->
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-[#e8f2f5] text-[#2f4550] dark:bg-[#20313a] dark:text-[#b8dbd9] flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-[21px]">menu_book</span>
+            </div>
+            <span class="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">8 Subjects</span>
+          </div>
+          <!-- Title & Khmer bilingual name -->
+          <div class="mb-5">
+            <p class="font-khmer text-xs font-normal text-[#586f7c] dark:text-[#94a3b8] mb-1">ដេប៉ាតឺម៉ង់ភាសាអង់គ្លេស</p>
+            <h2 class="text-base sm:text-[17px] font-semibold text-[#2f4550] dark:text-white group-hover:text-[#13829b] transition-colors">English Department</h2>
+            <p class="text-xs text-[#586f7c] dark:text-[#94a3b8] mt-1 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px] text-slate-400">person</span>
+              Lead: Dr. Eleanor Vance
+            </p>
+          </div>
+        </div>
+        <!-- Clean Progress and Action Button -->
+        <div class="pt-4 border-t border-slate-100">
+          <a class="action-btn w-full py-2 px-3 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50/60 flex items-center justify-center gap-1.5 transition-all" href="department.html?id=english">
+            View Courses
+            <span class="material-symbols-outlined text-[15px] transition-transform">arrow_forward</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- Card 2: Khmer Department -->
+      <article class="dept-card group bg-white border border-borderline rounded-2xl p-6 shadow-xs flex flex-col justify-between cursor-pointer" data-category="core" onclick="if(!event.target.closest('a')) window.location.href='department.html?id=khmer'">
+        <div>
+          <!-- Header: Icon & Category Tag -->
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-[#fef7ee] text-[#b45309] dark:bg-[#32281e] dark:text-[#fcd34d] flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-[21px]">translate</span>
+            </div>
+            <span class="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">6 Subjects</span>
+          </div>
+          <!-- Title & Khmer bilingual name -->
+          <div class="mb-5">
+            <p class="font-khmer text-xs font-normal text-[#586f7c] dark:text-[#94a3b8] mb-1">ដេប៉ាតឺម៉ង់ភាសាខ្មែរ</p>
+            <h2 class="text-base sm:text-[17px] font-semibold text-[#2f4550] dark:text-white group-hover:text-[#13829b] transition-colors">Khmer Department</h2>
+            <p class="text-xs text-[#586f7c] dark:text-[#94a3b8] mt-1 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px] text-slate-400">person</span>
+              Lead: Lokru Sokha Mean
+            </p>
+          </div>
+        </div>
+        <!-- Clean Progress and Action Button -->
+        <div class="pt-4 border-t border-slate-100">
+          <a class="action-btn w-full py-2 px-3 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50/60 flex items-center justify-center gap-1.5 transition-all" href="department.html?id=khmer">
+            View Courses
+            <span class="material-symbols-outlined text-[15px] transition-transform">arrow_forward</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- Card 3: Chinese Department -->
+      <article class="dept-card group bg-white border border-borderline rounded-2xl p-6 shadow-xs flex flex-col justify-between cursor-pointer" data-category="electives" onclick="if(!event.target.closest('a')) window.location.href='department.html?id=chinese'">
+        <div>
+          <!-- Header: Icon & Category Tag -->
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-[#eef2ff] text-[#4f46e5] dark:bg-[#20273f] dark:text-[#a5b4fc] flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-[21px]">public</span>
+            </div>
+            <span class="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">4 Subjects</span>
+          </div>
+          <!-- Title & Khmer bilingual name -->
+          <div class="mb-5">
+            <p class="font-khmer text-xs font-normal text-[#586f7c] dark:text-[#94a3b8] mb-1">ដេប៉ាតឺម៉ង់ភាសាចិន</p>
+            <h2 class="text-base sm:text-[17px] font-semibold text-[#2f4550] dark:text-white group-hover:text-[#13829b] transition-colors">Chinese Department</h2>
+            <p class="text-xs text-[#586f7c] dark:text-[#94a3b8] mt-1 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px] text-slate-400">person</span>
+              Lead: Prof. Lin Wei
+            </p>
+          </div>
+        </div>
+        <!-- Clean Progress and Action Button -->
+        <div class="pt-4 border-t border-slate-100">
+          <a class="action-btn w-full py-2 px-3 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50/60 flex items-center justify-center gap-1.5 transition-all" href="department.html?id=chinese">
+            View Courses
+            <span class="material-symbols-outlined text-[15px] transition-transform">arrow_forward</span>
+          </a>
+        </div>
+      </article>
+    </section>
+
+    <!-- Clean, Minimalist Quick Advisor Strip -->
+    <div class="bg-white border border-borderline rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-9 h-9 rounded-full bg-[#e8f2f5] text-[#2f4550] dark:bg-[#20313a] dark:text-[#b8dbd9] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">help</span>
+        </div>
+        <div>
+          <h3 class="text-xs font-medium text-[#2f4550] dark:text-white">Need academic advisory or course guidance?</h3>
+          <p class="text-[11px] text-[#586f7c] dark:text-[#94a3b8]">Schedule consultation with your department counselor or view the course catalog.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2.5 shrink-0 w-full sm:w-auto justify-end">
+        <a class="px-3.5 py-1.5 rounded-lg border border-borderline text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#1f2d34] transition-colors" href="chat.html">
+          Advisory FAQ
+        </a>
+        <a class="px-3.5 py-1.5 rounded-lg bg-[#2f4550] hover:bg-[#24363f] text-xs font-medium text-white transition-colors shadow-xs" href="../student/student-services.html">
+          Book Advisor
+        </a>
       </div>
     </div>
 
-    <!-- Department grid -->
-    <div class="dept-grid">
-
-      <!-- English -->
-      <a class="dept-card" href="department.html?id=english" style="text-decoration:none">
-        <div class="dept-card-icon" style="background:var(--primary-soft)">
-          <span class="material-symbols-outlined" style="color:var(--primary)">menu_book</span>
-        </div>
-        <div>
-          <div class="dept-card-name">English Department</div>
-          <div class="dept-card-kh">ដេប៉ាតឺម៉ង់ភាសាអង់គ្លេស</div>
-          <div class="dept-card-meta">
-            <span class="badge green">Grade 11 · SS2</span>
-            <span class="badge gray">8 subjects</span>
-          </div>
-        </div>
-        <div class="dept-card-progress">
-          <div class="dept-card-progress-label">
-            <span>Progress this term</span>
-            <span style="color:var(--primary);font-weight:700">72%</span>
-          </div>
-          <div class="bar" style="height:6px"><span style="width:72%"></span></div>
-        </div>
-        <div class="module-card-arrow">
-          <span>Open department</span>
-          <span class="material-symbols-outlined">arrow_forward</span>
-        </div>
-      </a>
-
-      <!-- Khmer -->
-      <a class="dept-card" href="department.html?id=khmer" style="text-decoration:none">
-        <div class="dept-card-icon" style="background:var(--accent-soft)">
-          <span class="material-symbols-outlined" style="color:#7A5C00">translate</span>
-        </div>
-        <div>
-          <div class="dept-card-name">Khmer Department</div>
-          <div class="dept-card-kh">ដេប៉ាតឺម៉ង់ភាសាខ្មែរ</div>
-          <div class="dept-card-meta">
-            <span class="badge amber">Grade 11 · SS2</span>
-            <span class="badge gray">6 subjects</span>
-          </div>
-        </div>
-        <div class="dept-card-progress">
-          <div class="dept-card-progress-label">
-            <span>Progress this term</span>
-            <span style="color:#7A5C00;font-weight:700">65%</span>
-          </div>
-          <div class="bar" style="height:6px"><span style="width:65%;background:var(--accent)"></span></div>
-        </div>
-        <div class="module-card-arrow">
-          <span>Open department</span>
-          <span class="material-symbols-outlined">arrow_forward</span>
-        </div>
-      </a>
-
-      <!-- Chinese -->
-      <a class="dept-card" href="department.html?id=chinese" style="text-decoration:none">
-        <div class="dept-card-icon" style="background:var(--primary-soft)">
-          <span class="material-symbols-outlined" style="color:var(--primary)">language</span>
-        </div>
-        <div>
-          <div class="dept-card-name">Chinese Department</div>
-          <div class="dept-card-kh">ដេប៉ាតឺម៉ង់ភាសាចិន</div>
-          <div class="dept-card-meta">
-            <span class="badge green">Grade 11 · SS2</span>
-            <span class="badge gray">4 subjects</span>
-          </div>
-        </div>
-        <div class="dept-card-progress">
-          <div class="dept-card-progress-label">
-            <span>Progress this term</span>
-            <span style="color:var(--primary);font-weight:700">58%</span>
-          </div>
-          <div class="bar" style="height:6px"><span style="width:58%"></span></div>
-        </div>
-        <div class="module-card-arrow">
-          <span>Open department</span>
-          <span class="material-symbols-outlined">arrow_forward</span>
-        </div>
-      </a>
-
-      <!-- Add department placeholder (admin only) -->
-
-    </div><!-- /dept-grid -->
-
   </div><!-- /page -->
 </main>
+
+<!-- Client filtering logic -->
+<script>
+(function() {
+  const searchInput = document.getElementById('dept-search');
+  const filterButtons = document.querySelectorAll('.filter-pill');
+  const cards = document.querySelectorAll('.dept-card');
+
+  let currentFilter = 'all';
+  let searchQuery = '';
+
+  function filterCards() {
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      const category = card.getAttribute('data-category');
+      
+      const matchesSearch = !searchQuery || text.includes(searchQuery);
+      const matchesFilter = (currentFilter === 'all') || (category === currentFilter);
+
+      if (matchesSearch && matchesFilter) {
+        card.classList.remove('hidden');
+        card.classList.add('flex');
+      } else {
+        card.classList.remove('flex');
+        card.classList.add('hidden');
+      }
+    });
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      searchQuery = e.target.value.toLowerCase().trim();
+      filterCards();
+    });
+  }
+
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      filterButtons.forEach(b => {
+        b.classList.remove('bg-[#2f4550]', 'text-white', 'shadow-xs', 'active-pill');
+        b.classList.add('bg-white', 'text-slate-600', 'border', 'border-borderline');
+      });
+
+      this.classList.remove('bg-white', 'text-slate-600', 'border', 'border-borderline');
+      this.classList.add('bg-[#2f4550]', 'text-white', 'shadow-xs', 'active-pill');
+
+      currentFilter = this.getAttribute('data-filter');
+      filterCards();
+    });
+  });
+})();
+</script>
 
 <script>
 (function () {
@@ -128,7 +365,9 @@
   document.body.classList.add('ready');
 })();
 </script>
-<script>window.HERO_CONFIG = {
+
+<script>
+window.HERO_CONFIG = {
   name: 'Nrinphouneta Hok',
   id: 'Student ID: 2026-STD-0142',
   grade: 'Grade 10',
@@ -147,10 +386,11 @@
     { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
     { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
   ],
-  title: 'Departments',
-  greeting: 'Explore your enrolled academic departments and subjects.',
-  breadcrumbs: [{ label: 'Departments' }]
-};</script>
+  title: 'Academic Departments',
+  greeting: 'Overview of academic programs, faculty leads, and your semester progress.',
+  breadcrumbs: [{ label: 'Academic Divisions' }]
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 </body>

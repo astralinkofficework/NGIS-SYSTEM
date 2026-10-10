@@ -10,11 +10,6 @@
 (function () {
   "use strict";
 
-  // Require student role
-  if (!window.NGISProtect || !NGISProtect.require(["student"])) {
-    return; // Will redirect
-  }
-
   // Hydrate profile data when DOM is ready
   document.addEventListener("DOMContentLoaded", async function () {
     try {

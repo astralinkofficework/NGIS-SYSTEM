@@ -34,47 +34,59 @@
 
   /* ── Build HTML ── */
   var html =
-    '<div class="hero">' +
+    '<div class="hero hero-main">' +
 
+      '<!-- ── Tier 1: Main Header Bar ── -->' +
       '<div class="hero-topbar">' +
 
-        '<div class="htb-left">' +
-          '<button class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false">' +
-            '<span class="mi">menu</span>' +
-          '</button>' +
-            '<a href="../../index.html" class="htb-home-btn">' +
-              '<span class="mi">home</span>' +
-              '<span>Home</span>' +
-            '</a>' +
-          '</nav>' +
+        '<!-- Left: Brand Logo Image -->' +
+        '<a href="student.html" class="htb-brand-wrap" aria-label="New Gateway International School">' +
+          '<img class="htb-brand-logo-img" src="LOGO NGIS (2).png" alt="New Gateway International School" onerror="this.onerror=null;this.src=\'../../assets/images/logo.png\'">' +
+        '</a>' +
+
+        '<!-- Center: Global Search Capsule -->' +
+        '<div class="htb-search-wrap" role="search">' +
+          '<span class="mi htb-search-icon">search</span>' +
+          '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses, syllabi, tutors, grades…" aria-label="Search courses, syllabi, tutors, grades">' +
+          '<kbd class="htb-search-kbd">⌘ K</kbd>' +
         '</div>' +
 
-        '<div class="htb-right">' +
-          '<a href="#" class="htb-icon htb-icon-search" title="Search" aria-label="Search"><span class="mi">search</span></a>' +
-          '<button id="htbNotifBtn" class="htb-icon htb-notif-btn" title="Notifications" aria-label="Notifications" style="position:relative">' +
+        '<!-- Right: Controls & User Profile -->' +
+        '<div class="htb-right-controls">' +
+          '<a href="student-calendar.html" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">' +
+            '<span class="mi">calendar_today</span>' +
+          '</a>' +
+          '<button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">' +
             '<span class="mi">notifications</span>' +
-            '<span class="htb-badge">3</span>' +
+            '<span class="htb-ctrl-badge">3</span>' +
           '</button>' +
-          '<button id="htbMailBtn" class="htb-icon htb-notif-btn htb-icon-mail" title="Messages" aria-label="Messages" style="position:relative">' +
+          '<button type="button" id="htbMailBtn" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
             '<span class="mi">mail</span>' +
-            '<span class="htb-badge" style="background:#e11d48">11</span>' +
+            '<span class="htb-ctrl-badge">11</span>' +
           '</button>' +
 
-          '<div class="htb-profile" id="htbProfile">' +
-            '<img class="htb-avatar" src="' + STUDENT.avatarSm + '" alt="' + STUDENT.name + '">' +
-            '<div class="htb-pinfo">' +
-              '<div class="htb-pname-row">' +
-                '<span class="htb-pname">' + STUDENT.name + '</span>' +
-                '<span class="mi htb-parr" id="htbParr">keyboard_arrow_down</span>' +
+          '<div class="htb-ctrl-divider" aria-hidden="true"></div>' +
+
+          '<div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu">' +
+            '<div class="htb-chip-avatar-wrap">' +
+              '<img class="htb-chip-avatar" src="' + STUDENT.avatarSm + '" alt="' + STUDENT.name + '">' +
+              '<span class="htb-online-pip" title="Active"></span>' +
+            '</div>' +
+            '<div class="htb-chip-text">' +
+              '<div class="htb-chip-name-row">' +
+                '<span class="htb-chip-name">' + STUDENT.name + '</span>' +
               '</div>' +
-              '<div class="htb-pgrade">' + STUDENT.grade + '</div>' +
+              '<span class="htb-chip-meta">Grade 10</span>' +
             '</div>' +
           '</div>' +
 
+          '<button type="button" class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false">' +
+            '<span class="mi">menu</span>' +
+          '</button>' +
         '</div>' +
+
       '</div>' +
 
-      '<div class="hero-rule"></div>' +
       '<div class="htb-dd-backdrop" id="htbBackdrop"></div>' +
 
       '<div class="hero-body">' +
@@ -112,7 +124,7 @@
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-actions">' +
         '<a href="student-profile.html" class="htb-dd-btn"><span class="mi">manage_accounts</span>My Profile</a>' +
-        '<a href="../../index.html" class="htb-dd-btn htb-dd-btn-danger"><span class="mi">logout</span>Sign Out</a>' +
+        '<a href="/" class="htb-dd-btn htb-dd-btn-danger"><span class="mi">logout</span>Sign Out</a>' +
       '</div>' +
     '</div>';
 
@@ -123,10 +135,15 @@
 
   /* ── Profile dropdown logic ── */
   function positionDropdown() {
-    if (window.innerWidth <= 600) return;
     var profile = document.getElementById('htbProfile');
     if (!profile) return;
     var rect = profile.getBoundingClientRect();
+    if (window.innerWidth <= 600) {
+      dropdown.style.top   = (rect.bottom + 8) + 'px';
+      dropdown.style.right = '12px';
+      dropdown.style.left  = 'auto';
+      return;
+    }
     dropdown.style.top   = (rect.bottom + 10) + 'px';
     dropdown.style.right = (window.innerWidth - rect.right) + 'px';
     dropdown.style.left  = 'auto';
@@ -135,13 +152,18 @@
   function closePanels() {
     if (notifPanel) notifPanel.classList.remove('open');
     if (mailPanel)  mailPanel.classList.remove('open');
+    var nb = document.getElementById('htbNotifBtn');
+    if (nb) nb.classList.remove('active');
+    var mb = document.getElementById('htbMailBtn');
+    if (mb) mb.classList.remove('active');
   }
 
   function openDD() {
     closePanels();
     positionDropdown();
     dropdown.classList.add('open');
-    document.getElementById('htbParr').classList.add('open');
+    var arr = document.getElementById('htbParr');
+    if (arr) arr.classList.add('open');
     var bd = document.getElementById('htbBackdrop');
     if (bd) bd.classList.add('open');
     document.body.style.overflow = window.innerWidth <= 600 ? 'hidden' : '';
@@ -167,17 +189,31 @@
     if ((bd && bd.contains(e.target)) || !dropdown.contains(e.target)) closeDD();
   });
 
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeDD(); closePanels(); } });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeDD(); closePanels(); }
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      var sInp = document.getElementById('htbSearchInput');
+      if (sInp) sInp.focus();
+    }
+  });
   window.addEventListener('resize', function () { if (dropdown.classList.contains('open')) positionDropdown(); });
   window.addEventListener('scroll', function () { if (dropdown.classList.contains('open')) positionDropdown(); }, true);
 
   /* ── Hamburger ── */
   var hamburger = document.getElementById('htbHamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', function () {
+    hamburger.addEventListener('click', function (e) {
+      if (hamburger.dataset.sidebarBound === 'true' || typeof window.toggleSidebar === 'function') {
+        // Handled exclusively by layout.js to avoid double-toggle
+        return;
+      }
       var sidebar = document.getElementById('sidebar');
       var scrim   = document.getElementById('scrim');
       if (!sidebar) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       var isOpen = sidebar.classList.contains('open');
       if (isOpen) {
         sidebar.classList.remove('open');
@@ -195,43 +231,11 @@
      NOTIFICATION & MAIL DROPDOWNS
      ══════════════════════════════════════ */
 
-  /* ── Inject CSS ── */
-  var s = document.createElement('style');
-  s.textContent =
-    '.htb-notif-btn{background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.88);line-height:1;}' +
-    '.hpd{position:fixed;z-index:9100;width:320px;max-width:calc(100vw - 20px);background:var(--surface,#fff);border:1px solid var(--border,#e2e8f0);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.13);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .18s,transform .2s cubic-bezier(.22,1,.36,1);}' +
-    '.hpd.open{opacity:1;pointer-events:all;transform:translateY(0);}' +
-    '.hpd-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--border,#e2e8f0);}' +
-    '.hpd-head-title{font-size:13px;font-weight:700;color:var(--text,#0f172a);}' +
-    '.hpd-head-action{font-size:11px;color:var(--accent,#1995AD);font-weight:600;cursor:pointer;background:none;border:none;padding:0;}' +
-    '.hpd-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;text-decoration:none;color:inherit;border-bottom:1px solid var(--surface-2,#f8fafc);transition:background .12s;}' +
-    '.hpd-item:hover{background:var(--surface-2,#f8fafc);}' +
-    '.hpd-notif-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
-    '.hpd-notif-ico .mi{font-size:17px;}' +
-    '.hpd-notif-body{flex:1;min-width:0;}' +
-    '.hpd-notif-title{font-size:12px;font-weight:600;color:var(--text,#0f172a);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
-    '.hpd-notif-meta{font-size:11px;color:var(--muted,#94a3b8);margin-top:2px;}' +
-    '.hpd-unread-dot{width:7px;height:7px;border-radius:50%;background:var(--accent,#1995AD);flex-shrink:0;margin-top:5px;}' +
-    '.hpd-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted,#94a3b8);padding:7px 14px 5px;background:var(--surface-2,#f8fafc);border-top:1px solid var(--border,#e2e8f0);}' +
-    '.hpd-mail-init{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:#fff;}' +
-    '.hpd-mail-group-ico{width:34px;height:34px;border-radius:50%;background:rgba(25,149,173,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
-    '.hpd-mail-group-ico .mi{font-size:18px;color:#1995AD;}' +
-    '.hpd-mail-body{flex:1;min-width:0;}' +
-    '.hpd-mail-name{font-size:12px;font-weight:700;color:var(--text,#0f172a);}' +
-    '.hpd-mail-msg{font-size:11px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}' +
-    '.hpd-mail-time{font-size:10px;color:#94a3b8;margin-top:2px;}' +
-    '.hpd-mail-badge{min-width:18px;height:18px;border-radius:99px;background:#1995AD;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;}' +
-    '.hpd-footer{padding:10px 14px;border-top:1px solid var(--border,#e2e8f0);display:flex;gap:8px;}' +
-    '.hpd-footer-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 10px;border-radius:7px;font-size:11px;font-weight:700;text-decoration:none;background:#f8fafc;color:#0f172a;border:1px solid #e2e8f0;transition:background .12s;}' +
-    '.hpd-footer-btn:hover{background:#e2e8f0;}' +
-    '.hpd-footer-btn .mi{font-size:14px;}';
-  document.head.appendChild(s);
-
   /* ── Notification dropdown ── */
   var notifData = [
-    { icon: 'assignment', color: '#2563eb', bg: '#eff6ff', title: 'Physics Essay Draft posted',    meta: 'Mr. Sophea \xb7 12m ago',   unread: true  },
-    { icon: 'grade',      color: '#16a34a', bg: '#f0fdf4', title: 'Chemistry graded: 88%',          meta: 'Ms. Kiry \xb7 2h ago',      unread: true  },
-    { icon: 'campaign',   color: '#1995AD', bg: 'rgba(25,149,173,.08)', title: 'Science Fair registration open', meta: 'School \xb7 Yesterday', unread: false }
+    { icon: 'assignment', color: '#2563eb', bg: '#eff6ff', title: 'Physics Essay Draft posted',    meta: 'Mr. Sophea · 12m ago',   unread: true  },
+    { icon: 'grade',      color: '#16a34a', bg: '#f0fdf4', title: 'Chemistry graded: 88%',          meta: 'Ms. Kiry · 2h ago',      unread: true  },
+    { icon: 'campaign',   color: '#2f4550', bg: 'rgba(47,69,80,0.1)', title: 'Science Fair registration open', meta: 'School · Yesterday', unread: false }
   ];
 
   var notifItemsHtml = '';
@@ -255,9 +259,11 @@
     '<div class="hpd" id="htbNotifPanel">' +
       '<div class="hpd-head">' +
         '<span class="hpd-head-title">Notifications</span>' +
-        '<button class="hpd-head-action">Mark all read</button>' +
+        '<button type="button" class="hpd-head-action" id="htbMarkAllRead">Mark all read</button>' +
       '</div>' +
-      notifItemsHtml +
+      '<div class="hpd-list">' +
+        notifItemsHtml +
+      '</div>' +
       '<div class="hpd-footer">' +
         '<a href="' + notifLink + '" class="hpd-footer-btn">' +
           '<span class="mi">notifications</span>View all' +
@@ -266,6 +272,49 @@
     '</div>';
   var notifPanel = notifPanelEl.firstChild;
   document.body.appendChild(notifPanel);
+
+  /* Wire Mark all read */
+  var markAllBtn = notifPanel.querySelector('#htbMarkAllRead');
+  if (markAllBtn) {
+    markAllBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var dots = notifPanel.querySelectorAll('.hpd-unread-dot');
+      dots.forEach(function (dot) { dot.style.display = 'none'; });
+      var nb = document.getElementById('htbNotifBtn');
+      if (nb) {
+        var badge = nb.querySelector('.htb-ctrl-badge');
+        if (badge) badge.style.display = 'none';
+      }
+      markAllBtn.textContent = 'All read ✓';
+      markAllBtn.style.opacity = '0.6';
+      markAllBtn.style.cursor = 'default';
+      markAllBtn.disabled = true;
+    });
+  }
+
+  /* Wire individual item click dismiss dot */
+  var notifItems = notifPanel.querySelectorAll('.hpd-item');
+  notifItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      var dot = item.querySelector('.hpd-unread-dot');
+      if (dot && dot.style.display !== 'none') {
+        dot.style.display = 'none';
+        var nb = document.getElementById('htbNotifBtn');
+        if (nb) {
+          var badge = nb.querySelector('.htb-ctrl-badge');
+          if (badge) {
+            var count = parseInt(badge.textContent, 10) || 0;
+            if (count > 1) {
+              badge.textContent = count - 1;
+            } else {
+              badge.style.display = 'none';
+            }
+          }
+        }
+      }
+    });
+  });
 
   /* ── Mail dropdown ── */
   var directData = [
@@ -312,7 +361,9 @@
       '<div class="hpd-head">' +
         '<span class="hpd-head-title">Messages</span>' +
       '</div>' +
-      mailItemsHtml +
+      '<div class="hpd-list">' +
+        mailItemsHtml +
+      '</div>' +
       '<div class="hpd-footer">' +
         '<a href="' + chatLink + '" class="hpd-footer-btn">' +
           '<span class="mi">chat</span>Direct Chat' +
@@ -327,10 +378,32 @@
 
   /* ── Panel positioning ── */
   function posBelow(btn, panel) {
+    if (!btn || !panel) return;
     var rect = btn.getBoundingClientRect();
-    panel.style.top   = (rect.bottom + 8) + 'px';
-    panel.style.right = (window.innerWidth - rect.right) + 'px';
-    panel.style.left  = 'auto';
+    panel.style.top = (rect.bottom + 8) + 'px';
+
+    if (window.innerWidth <= 600) {
+      panel.style.left = '12px';
+      panel.style.right = '12px';
+      panel.style.width = 'auto';
+      panel.style.maxWidth = 'calc(100vw - 24px)';
+      panel.style.marginLeft = 'auto';
+      panel.style.marginRight = 'auto';
+      return;
+    }
+
+    panel.style.width = '330px';
+    panel.style.maxWidth = 'calc(100vw - 24px)';
+    panel.style.left = 'auto';
+    panel.style.marginLeft = '0';
+    panel.style.marginRight = '0';
+
+    var rightEdge = window.innerWidth - rect.right;
+    if (rightEdge < 12) rightEdge = 12;
+    if (window.innerWidth - rightEdge - 330 < 12) {
+      rightEdge = Math.max(12, window.innerWidth - 330 - 12);
+    }
+    panel.style.right = rightEdge + 'px';
   }
 
   /* ── Notif button ── */
@@ -339,8 +412,13 @@
     notifBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       var wasOpen = notifPanel.classList.contains('open');
-      closePanels(); closeDD();
-      if (!wasOpen) { posBelow(notifBtn, notifPanel); notifPanel.classList.add('open'); }
+      closePanels();
+      closeDD();
+      if (!wasOpen) {
+        posBelow(notifBtn, notifPanel);
+        notifPanel.classList.add('open');
+        notifBtn.classList.add('active');
+      }
     });
   }
 
@@ -350,8 +428,13 @@
     mailBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       var wasOpen = mailPanel.classList.contains('open');
-      closePanels(); closeDD();
-      if (!wasOpen) { posBelow(mailBtn, mailPanel); mailPanel.classList.add('open'); }
+      closePanels();
+      closeDD();
+      if (!wasOpen) {
+        posBelow(mailBtn, mailPanel);
+        mailPanel.classList.add('open');
+        mailBtn.classList.add('active');
+      }
     });
   }
 
@@ -359,11 +442,17 @@
   document.addEventListener('click', function (e) {
     var nb = document.getElementById('htbNotifBtn');
     var mb = document.getElementById('htbMailBtn');
-    if (!notifPanel.contains(e.target) && !(nb && nb.contains(e.target))) {
-      notifPanel.classList.remove('open');
+    if (notifPanel && notifPanel.classList.contains('open')) {
+      if (!notifPanel.contains(e.target) && !(nb && nb.contains(e.target))) {
+        notifPanel.classList.remove('open');
+        if (nb) nb.classList.remove('active');
+      }
     }
-    if (!mailPanel.contains(e.target) && !(mb && mb.contains(e.target))) {
-      mailPanel.classList.remove('open');
+    if (mailPanel && mailPanel.classList.contains('open')) {
+      if (!mailPanel.contains(e.target) && !(mb && mb.contains(e.target))) {
+        mailPanel.classList.remove('open');
+        if (mb) mb.classList.remove('active');
+      }
     }
   });
 
@@ -371,8 +460,8 @@
   function reposOpen() {
     var nb = document.getElementById('htbNotifBtn');
     var mb = document.getElementById('htbMailBtn');
-    if (nb && notifPanel.classList.contains('open')) posBelow(nb, notifPanel);
-    if (mb && mailPanel.classList.contains('open'))  posBelow(mb, mailPanel);
+    if (nb && notifPanel && notifPanel.classList.contains('open')) posBelow(nb, notifPanel);
+    if (mb && mailPanel && mailPanel.classList.contains('open'))   posBelow(mb, mailPanel);
   }
   window.addEventListener('resize', reposOpen);
   window.addEventListener('scroll', reposOpen, true);

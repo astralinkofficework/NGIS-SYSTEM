@@ -8,6 +8,14 @@
 
   var C = window.HERO_CONFIG || {};
 
+  /* Ensure Inter is loaded */
+  if (!document.querySelector('link[href*="family=Inter"]')) {
+    var fLink = document.createElement("link");
+    fLink.rel = "stylesheet";
+    fLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap";
+    document.head.appendChild(fLink);
+  }
+
   /* ── Live date ── */
   var DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var MONTHS = ['January','February','March','April','May','June',
@@ -30,9 +38,9 @@
   }
 
   /* ── Badges ── */
-  var notifBadge = C.notifCount ? '<span class="htb-badge">' + C.notifCount + '</span>' : '';
+  var notifBadge = C.notifCount ? '<span class="htb-ctrl-badge">' + C.notifCount + '</span>' : '';
   var mailCount  = C.mailCount != null ? C.mailCount : 11;
-  var mailBadge  = mailCount ? '<span class="htb-badge" style="background:#e11d48">' + mailCount + '</span>' : '';
+  var mailBadge  = mailCount ? '<span class="htb-ctrl-badge">' + mailCount + '</span>' : '';
 
   /* ── Link targets ── */
   var notifLink     = C.notifLink     || '#';
@@ -40,63 +48,110 @@
   var groupChatLink = C.groupChatLink || '../shared/group-chat.html';
 
   /* ── Build hero HTML ── */
-  var compact = C.showHeroBody === true ? false : true;
-  var html =
-    '<div class="hero' + (compact ? ' hero-compact' : '') + '">' +
+  var brandTitle = C.brandTitle || "New Gateway Int'l School";
+  var brandSub   = C.brandSub   || (C.portalLabel || 'STUDENT PORTAL');
+  var roleMeta   = C.grade || C.role || 'Grade 10 • Term 2';
+  var userAvatar = C.avatarSm || C.avatar || 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80';
+  var userName   = C.name || 'Nrinphouneta Hok';
 
+  var breadcrumbsHtml = '';
+  if (crumbs.length > 0) {
+    breadcrumbsHtml = '<a href="' + (C.homeLink || '/') + '" class="htb-crumb-home"><span class="mi">home</span><span>Home</span></a>';
+    for (var i = 0; i < crumbs.length; i++) {
+      breadcrumbsHtml += '<span class="htb-crumb-sep">/</span>';
+      if (crumbs[i].href) {
+        breadcrumbsHtml += '<a href="' + crumbs[i].href + '" class="htb-crumb-item">' + crumbs[i].label + '</a>';
+      } else {
+        breadcrumbsHtml += '<span class="htb-crumb-cur">' + crumbs[i].label + '</span>';
+      }
+    }
+  } else {
+    breadcrumbsHtml = '<a href="' + (C.homeLink || '/') + '" class="htb-crumb-home"><span class="mi">home</span><span>Home</span></a><span class="htb-crumb-sep">/</span><a href="#" class="htb-crumb-item">Academics</a><span class="htb-crumb-sep">/</span><span class="htb-crumb-cur">' + (C.title || 'Dashboard Overview') + '</span>';
+  }
+
+  /* ── Header Color Rule: Main page vs Subpage ── */
+  var pathname = (window.location.pathname || '').toLowerCase();
+  var filename = (pathname.split('/').pop() || '').toLowerCase();
+  var isMainFilename = (
+    filename === 'student.html' ||
+    filename === 'teacher.html' ||
+    filename === 'admin.html' ||
+    filename === 'parent.html' ||
+    filename === 'index.html' ||
+    filename === ''
+  );
+  var isMainPage = (C.isMainPage === true || C.isMain === true || C.showHeroBody === true) ||
+    (isMainFilename && window.PAGE && (window.PAGE.active === 'dashboard' || window.PAGE.active === 'home'));
+  var heroClass = isMainPage ? 'hero hero-main' : 'hero hero-subpage hero-transparent';
+
+  var rootPrefix = (window.location.pathname || '').indexOf('/pages/') !== -1 ? '../../' : '';
+  var logoSrc = C.logoSrc || (rootPrefix + 'assets/images/logo.png');
+  var homeTarget = C.homeLink || (rootPrefix + 'index.html');
+
+  var html =
+    '<div class="' + heroClass + '">' +
+
+      '<!-- ── Tier 1: Main Header Bar ── -->' +
       '<div class="hero-topbar">' +
 
-        '<div class="htb-left">' +
-          '<button class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false">' +
-            '<span class="mi">menu</span>' +
-          '</button>' +
-          (C.hideBreadcrumb ? '' :
-          '<nav class="hero-breadcrumb" aria-label="Breadcrumb">' +
-            '<a href="' + (C.homeLink || '../../index.html') + '" class="htb-home-btn">' +
-              '<span class="mi">home</span>' +
-              '<span>Home</span>' +
-            '</a>' +
-            crumbHtml +
-          '</nav>') +
+        '<!-- Left: Brand Logo Image -->' +
+        '<a href="' + homeTarget + '" class="htb-brand-wrap" aria-label="New Gateway International School">' +
+          '<img class="htb-brand-logo-img" src="' + logoSrc + '" alt="New Gateway International School" onerror="this.onerror=null;this.src=\'../../assets/images/logo.png\'">' +
+        '</a>' +
+
+        '<!-- Center: Global Search Capsule -->' +
+        '<div class="htb-search-wrap" role="search">' +
+          '<span class="mi htb-search-icon">search</span>' +
+          '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses, syllabi, tutors, grades…" aria-label="Search courses, syllabi, tutors, grades">' +
+          '<kbd class="htb-search-kbd">⌘ K</kbd>' +
         '</div>' +
 
-        '<div class="htb-right">' +
-          '<button type="button" id="htbSearchBtn" class="htb-icon htb-icon-search" title="Search" aria-label="Search">' +
-            '<span class="mi">search</span>' +
-          '</button>' +
-          '<button id="htbNotifBtn" class="htb-icon htb-notif-btn" title="Notifications" aria-label="Notifications" style="position:relative">' +
+        '<!-- Right: Controls & User Profile -->' +
+        '<div class="htb-right-controls">' +
+          '<a href="' + (C.calendarLink || 'student-calendar.html') + '" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">' +
+            '<span class="mi">calendar_today</span>' +
+          '</a>' +
+          '<button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">' +
             '<span class="mi">notifications</span>' +
-            notifBadge +
+            (notifBadge || '<span class="htb-ctrl-badge">3</span>') +
           '</button>' +
-          '<button id="htbMailBtn" class="htb-icon htb-notif-btn htb-icon-mail" title="Messages" aria-label="Messages" style="position:relative">' +
+          '<button type="button" id="htbMailBtn" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
             '<span class="mi">mail</span>' +
-            mailBadge +
+            (mailBadge || '<span class="htb-ctrl-badge">11</span>') +
           '</button>' +
-          '<div class="htb-profile" id="htbProfile">' +
-            '<img class="htb-avatar" src="' + (C.avatarSm || C.avatar || '') + '" alt="' + (C.name || 'User') + '">' +
-            '<div class="htb-pinfo">' +
-              '<div class="htb-pname-row">' +
-                '<span class="htb-pname">' + (C.name || 'User') + '</span>' +
-                '<span class="mi htb-parr" id="htbParr">keyboard_arrow_down</span>' +
+
+          '<div class="htb-ctrl-divider" aria-hidden="true"></div>' +
+
+          '<div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu">' +
+            '<div class="htb-chip-avatar-wrap">' +
+              '<img class="htb-chip-avatar" src="' + userAvatar + '" alt="' + userName + '">' +
+              '<span class="htb-online-pip" title="Active"></span>' +
+            '</div>' +
+            '<div class="htb-chip-text">' +
+              '<div class="htb-chip-name-row">' +
+                '<span class="htb-chip-name">' + userName + '</span>' +
               '</div>' +
-              '<div class="htb-pgrade">' + (C.grade || '') + '</div>' +
+              '<span class="htb-chip-meta">' + (C.grade || roleMeta || 'Grade 10') + '</span>' +
             '</div>' +
           '</div>' +
+
+          '<button type="button" class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false">' +
+            '<span class="mi">menu</span>' +
+          '</button>' +
         '</div>' +
 
       '</div>' +
 
-      (compact ? '' : '<div class="hero-rule"></div>') +
       '<div class="htb-dd-backdrop" id="htbBackdrop"></div>' +
 
-      (compact ? '' :
+      (C.showHeroBody === true ?
       '<div class="hero-body">' +
         '<div class="hero-text">' +
           '<div class="hero-date">' + dateStr + '</div>' +
           '<h1 class="hero-title">' + (C.title || 'Welcome to your dashboard') + '</h1>' +
           '<p class="hero-greeting">' + (C.greeting || 'Hello, ' + firstName + '! Ready for today?') + '</p>' +
         '</div>' +
-      '</div>') +
+      '</div>' : '') +
 
     '</div>';
 
@@ -127,7 +182,7 @@
         '<a href="' + (C.profileLink || '#') + '" class="htb-dd-btn">' +
           '<span class="mi">manage_accounts</span>My Profile' +
         '</a>' +
-        '<a href="' + (C.signOutLink || '../../index.html') + '" class="htb-dd-btn htb-dd-btn-danger">' +
+        '<a href="' + (C.signOutLink || '/') + '" class="htb-dd-btn htb-dd-btn-danger">' +
           '<span class="mi">logout</span>Sign Out' +
         '</a>' +
       '</div>' +
@@ -140,10 +195,15 @@
 
   /* ── Profile dropdown positioning ── */
   function positionDropdown() {
-    if (window.innerWidth <= 600) return;
     var profile = document.getElementById('htbProfile');
     if (!profile) return;
     var rect = profile.getBoundingClientRect();
+    if (window.innerWidth <= 600) {
+      dropdown.style.top   = (rect.bottom + 8) + 'px';
+      dropdown.style.right = '12px';
+      dropdown.style.left  = 'auto';
+      return;
+    }
     dropdown.style.top   = (rect.bottom + 10) + 'px';
     dropdown.style.right = (window.innerWidth - rect.right) + 'px';
     dropdown.style.left  = 'auto';
@@ -153,6 +213,10 @@
     if (notifPanel) notifPanel.classList.remove('open');
     if (mailPanel)  mailPanel.classList.remove('open');
     if (searchPanel) searchPanel.classList.remove('open');
+    var nb = document.getElementById('htbNotifBtn');
+    if (nb) nb.classList.remove('active');
+    var mb = document.getElementById('htbMailBtn');
+    if (mb) mb.classList.remove('active');
   }
 
   function openDD() {
@@ -188,6 +252,11 @@
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') { closeDD(); closePanels(); }
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      var sInp = document.getElementById('htbSearchInput');
+      if (sInp) sInp.focus();
+    }
   });
   window.addEventListener('resize',   function () { if (dropdown.classList.contains('open')) positionDropdown(); });
   window.addEventListener('scroll',   function () { if (dropdown.classList.contains('open')) positionDropdown(); }, true);
@@ -195,10 +264,17 @@
   /* ── Hamburger → layout.js sidebar ── */
   var hamburger = document.getElementById('htbHamburger');
   if (hamburger) {
-    hamburger.addEventListener('click', function () {
+    hamburger.addEventListener('click', function (e) {
+      if (hamburger.dataset.sidebarBound === 'true' || typeof window.toggleSidebar === 'function') {
+        // Handled exclusively by layout.js to avoid double-toggle
+        return;
+      }
       var sidebar = document.getElementById('sidebar');
       var scrim   = document.getElementById('scrim');
       if (!sidebar) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
       var isOpen = sidebar.classList.contains('open');
       if (isOpen) {
         sidebar.classList.remove('open');
@@ -223,27 +299,27 @@
     '.hpd{position:fixed;z-index:9100;width:320px;max-width:calc(100vw - 20px);background:var(--surface,#fff);border:1px solid var(--border,#e2e8f0);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.13);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .18s,transform .2s cubic-bezier(.22,1,.36,1);}' +
     '.hpd.open{opacity:1;pointer-events:all;transform:translateY(0);}' +
     '.hpd-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--border,#e2e8f0);}' +
-    '.hpd-head-title{font-size:13px;font-weight:700;color:var(--text,#0f172a);}' +
-    '.hpd-head-action{font-size:11px;color:var(--accent,#1995AD);font-weight:600;cursor:pointer;background:none;border:none;padding:0;}' +
+    '.hpd-head-title{font-size:13px;font-weight: 400;color:var(--text,#0f172a);}' +
+    '.hpd-head-action{font-size:11px;color:var(--accent,#1995AD);font-weight: 400;cursor:pointer;background:none;border:none;padding:0;}' +
     '.hpd-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;text-decoration:none;color:inherit;border-bottom:1px solid var(--surface-2,#f8fafc);transition:background .12s;}' +
     '.hpd-item:hover{background:var(--surface-2,#f8fafc);}' +
     '.hpd-notif-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
     '.hpd-notif-ico .mi{font-size:17px;}' +
     '.hpd-notif-body{flex:1;min-width:0;}' +
-    '.hpd-notif-title{font-size:12px;font-weight:600;color:var(--text,#0f172a);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+    '.hpd-notif-title{font-size:12px;font-weight: 400;color:var(--text,#0f172a);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
     '.hpd-notif-meta{font-size:11px;color:var(--muted,#94a3b8);margin-top:2px;}' +
     '.hpd-unread-dot{width:7px;height:7px;border-radius:50%;background:var(--accent,#1995AD);flex-shrink:0;margin-top:5px;}' +
-    '.hpd-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted,#94a3b8);padding:7px 14px 5px;background:var(--surface-2,#f8fafc);border-top:1px solid var(--border,#e2e8f0);}' +
-    '.hpd-mail-init{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:#fff;}' +
+    '.hpd-section{font-size:10px;font-weight: 400;text-transform:uppercase;letter-spacing:.6px;color:var(--muted,#94a3b8);padding:7px 14px 5px;background:var(--surface-2,#f8fafc);border-top:1px solid var(--border,#e2e8f0);}' +
+    '.hpd-mail-init{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight: 400;color:#fff;}' +
     '.hpd-mail-group-ico{width:34px;height:34px;border-radius:50%;background:var(--primary-soft,rgba(25,149,173,.1));display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
     '.hpd-mail-group-ico .mi{font-size:18px;color:var(--primary,#1995AD);}' +
     '.hpd-mail-body{flex:1;min-width:0;}' +
-    '.hpd-mail-name{font-size:12px;font-weight:700;color:var(--text,#0f172a);}' +
+    '.hpd-mail-name{font-size:12px;font-weight: 400;color:var(--text,#0f172a);}' +
     '.hpd-mail-msg{font-size:11px;color:var(--muted,#64748b);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}' +
     '.hpd-mail-time{font-size:10px;color:var(--muted,#94a3b8);margin-top:2px;}' +
-    '.hpd-mail-badge{min-width:18px;height:18px;border-radius:99px;background:var(--accent,#1995AD);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;}' +
+    '.hpd-mail-badge{min-width:18px;height:18px;border-radius:99px;background:var(--accent,#1995AD);color:#fff;font-size:10px;font-weight: 400;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;}' +
     '.hpd-footer{padding:10px 14px;border-top:1px solid var(--border,#e2e8f0);display:flex;gap:8px;}' +
-    '.hpd-footer-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 10px;border-radius:7px;font-size:11px;font-weight:700;text-decoration:none;background:var(--surface-2,#f8fafc);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);transition:background .12s;}' +
+    '.hpd-footer-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 10px;border-radius:7px;font-size:11px;font-weight: 400;text-decoration:none;background:var(--surface-2,#f8fafc);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);transition:background .12s;}' +
     '.hpd-footer-btn:hover{background:var(--border,#e2e8f0);}' +
     '.hpd-footer-btn .mi{font-size:14px;}' +
     '.hpd-search{width:360px;max-height:70vh;overflow-y:auto;}' +
@@ -280,9 +356,11 @@
     '<div class="hpd" id="htbNotifPanel">' +
       '<div class="hpd-head">' +
         '<span class="hpd-head-title">Notifications</span>' +
-        '<button class="hpd-head-action">Mark all read</button>' +
+        '<button type="button" class="hpd-head-action" id="htbMarkAllRead">Mark all read</button>' +
       '</div>' +
-      notifItemsHtml +
+      '<div class="hpd-list">' +
+        notifItemsHtml +
+      '</div>' +
       '<div class="hpd-footer">' +
         '<a href="' + notifLink + '" class="hpd-footer-btn">' +
           '<span class="mi">notifications</span>View all' +
@@ -291,6 +369,49 @@
     '</div>';
   var notifPanel = notifPanelEl.firstChild;
   document.body.appendChild(notifPanel);
+
+  /* Wire Mark all read */
+  var markAllBtn = notifPanel.querySelector('#htbMarkAllRead');
+  if (markAllBtn) {
+    markAllBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var dots = notifPanel.querySelectorAll('.hpd-unread-dot');
+      dots.forEach(function (dot) { dot.style.display = 'none'; });
+      var nb = document.getElementById('htbNotifBtn');
+      if (nb) {
+        var badge = nb.querySelector('.htb-ctrl-badge') || nb.querySelector('.htb-badge');
+        if (badge) badge.style.display = 'none';
+      }
+      markAllBtn.textContent = 'All read ✓';
+      markAllBtn.style.opacity = '0.6';
+      markAllBtn.style.cursor = 'default';
+      markAllBtn.disabled = true;
+    });
+  }
+
+  /* Wire individual item click dismiss dot */
+  var notifItems = notifPanel.querySelectorAll('.hpd-item');
+  notifItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      var dot = item.querySelector('.hpd-unread-dot');
+      if (dot && dot.style.display !== 'none') {
+        dot.style.display = 'none';
+        var nb = document.getElementById('htbNotifBtn');
+        if (nb) {
+          var badge = nb.querySelector('.htb-ctrl-badge') || nb.querySelector('.htb-badge');
+          if (badge) {
+            var count = parseInt(badge.textContent, 10) || 0;
+            if (count > 1) {
+              badge.textContent = count - 1;
+            } else {
+              badge.style.display = 'none';
+            }
+          }
+        }
+      }
+    });
+  });
 
   /* ── Mail dropdown ── */
   var directData = [
@@ -456,10 +577,32 @@
 
   /* ── Panel positioning ── */
   function posBelow(btn, panel) {
+    if (!btn || !panel) return;
     var rect = btn.getBoundingClientRect();
-    panel.style.top   = (rect.bottom + 8) + 'px';
-    panel.style.right = (window.innerWidth - rect.right) + 'px';
-    panel.style.left  = 'auto';
+    panel.style.top = (rect.bottom + 8) + 'px';
+
+    if (window.innerWidth <= 600) {
+      panel.style.left = '12px';
+      panel.style.right = '12px';
+      panel.style.width = 'auto';
+      panel.style.maxWidth = 'calc(100vw - 24px)';
+      panel.style.marginLeft = 'auto';
+      panel.style.marginRight = 'auto';
+      return;
+    }
+
+    panel.style.width = '330px';
+    panel.style.maxWidth = 'calc(100vw - 24px)';
+    panel.style.left = 'auto';
+    panel.style.marginLeft = '0';
+    panel.style.marginRight = '0';
+
+    var rightEdge = window.innerWidth - rect.right;
+    if (rightEdge < 12) rightEdge = 12;
+    if (window.innerWidth - rightEdge - 330 < 12) {
+      rightEdge = Math.max(12, window.innerWidth - 330 - 12);
+    }
+    panel.style.right = rightEdge + 'px';
   }
 
   /* ── Notif button ── */
@@ -468,8 +611,13 @@
     notifBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       var wasOpen = notifPanel.classList.contains('open');
-      closePanels(); closeDD();
-      if (!wasOpen) { posBelow(notifBtn, notifPanel); notifPanel.classList.add('open'); }
+      closePanels();
+      closeDD();
+      if (!wasOpen) {
+        posBelow(notifBtn, notifPanel);
+        notifPanel.classList.add('open');
+        notifBtn.classList.add('active');
+      }
     });
   }
 
@@ -479,8 +627,13 @@
     mailBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       var wasOpen = mailPanel.classList.contains('open');
-      closePanels(); closeDD();
-      if (!wasOpen) { posBelow(mailBtn, mailPanel); mailPanel.classList.add('open'); }
+      closePanels();
+      closeDD();
+      if (!wasOpen) {
+        posBelow(mailBtn, mailPanel);
+        mailPanel.classList.add('open');
+        mailBtn.classList.add('active');
+      }
     });
   }
 
@@ -488,11 +641,17 @@
   document.addEventListener('click', function (e) {
     var nb = document.getElementById('htbNotifBtn');
     var mb = document.getElementById('htbMailBtn');
-    if (!notifPanel.contains(e.target) && !(nb && nb.contains(e.target))) {
-      notifPanel.classList.remove('open');
+    if (notifPanel && notifPanel.classList.contains('open')) {
+      if (!notifPanel.contains(e.target) && !(nb && nb.contains(e.target))) {
+        notifPanel.classList.remove('open');
+        if (nb) nb.classList.remove('active');
+      }
     }
-    if (!mailPanel.contains(e.target) && !(mb && mb.contains(e.target))) {
-      mailPanel.classList.remove('open');
+    if (mailPanel && mailPanel.classList.contains('open')) {
+      if (!mailPanel.contains(e.target) && !(mb && mb.contains(e.target))) {
+        mailPanel.classList.remove('open');
+        if (mb) mb.classList.remove('active');
+      }
     }
   });
 

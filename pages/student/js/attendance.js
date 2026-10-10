@@ -1,4 +1,4 @@
-/* ══════════════════════════════════════
+﻿/* ══════════════════════════════════════
    ATTENDANCE — Chart.js Donut Chart
    Requires: chart.js loaded before this file
    ══════════════════════════════════════ */

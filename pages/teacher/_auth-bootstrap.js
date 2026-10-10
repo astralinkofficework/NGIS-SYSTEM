@@ -4,10 +4,6 @@
 (function () {
   "use strict";
 
-  if (!window.NGISProtect || !NGISProtect.require(["teacher"])) {
-    return;
-  }
-
   document.addEventListener("DOMContentLoaded", async function () {
     try {
       const res = await NGISAuth.api("/api/teacher/me");
