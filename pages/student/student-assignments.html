@@ -1,1 +1,247 @@
-PLACEHOLDER_WILL_FAIL
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport">
+<title>NGIS — Assignments</title>
+
+<!-- Fonts & Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<!-- NGIS Framework Styles -->
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        forest: {
+          900: "#01281a",
+          800: "#013623",
+          700: "#1e4d38",
+          600: "#006c49",
+          100: "#e2ede6",
+          50: "#f0f6f2",
+        },
+        surface: {
+          card: "#ffffff",
+          page: "#f8fafb",
+          subtle: "#f2f5f4",
+          border: "#dce4df",
+          borderLight: "#e9f0ec"
+        },
+        ink: {
+          main: "#111b15",
+          muted: "#4e5d54",
+          soft: "#7d8d83"
+        }
+      },
+      fontFamily: {
+        sans: ['"Inter"', 'sans-serif'],
+        display: ['"Inter"', 'sans-serif'],
+        khmer: ['"Kantumruy Pro"', 'sans-serif']
+      }
+    }
+  }
+};
+</script>
+
+<script>
+try {
+  var _t = localStorage.getItem('ngis-theme');
+  if (_t) document.documentElement.setAttribute('data-theme', _t);
+} catch(e) {}
+</script>
+
+<style>
+html, body {
+  background-color: #f8fafb;
+  color: #111b15;
+  font-family: 'Inter', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Page workspace container */
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.page {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+@media (min-width: 640px) {
+  .page { padding: 28px 28px 64px; }
+}
+@media (min-width: 1024px) {
+  .page { padding: 32px 36px 72px; }
+}
+
+/* ════════════════════════════════════════
+   UPLOAD MODAL
+   ════════════════════════════════════════ */
+.um-overlay {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(2,8,20,.52);
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease;
+}
+.um-overlay.open { opacity: 1; pointer-events: all; }
+.um-panel {
+  background: #ffffff;
+  border: 1px solid #dce4df;
+  border-radius: 24px;
+  width: 100%; max-width: 460px;
+  position: relative;
+  overflow: hidden;
+  transform: translateY(12px) scale(.98);
+  transition: transform .22s cubic-bezier(.22,1,.36,1);
+  box-shadow: 0 16px 48px rgba(1,40,26,.14), 0 4px 12px rgba(0,0,0,.04);
+}
+.um-overlay.open .um-panel { transform: translateY(0) scale(1); }
+
+.um-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid #e9f0ec;
+}
+.um-label {
+  font-size: 11px; font-weight: 400; letter-spacing: .08em;
+  text-transform: uppercase; color: #006c49;
+}
+.um-x {
+  width: 30px; height: 30px; border-radius: 8px;
+  border: none; background: #f2f5f4; cursor: pointer;
+  display: grid; place-items: center;
+  color: #4e5d54; transition: background .12s, color .12s;
+}
+.um-x:hover { background: #e2ede6; color: #01281a; }
+.um-x .material-symbols-outlined { font-size: 18px; }
+
+.um-info { padding: 16px 22px; background: #fafcfb; border-bottom: 1px solid #e9f0ec; }
+.um-asgn-name {
+  font-size: 17px; font-weight: 400; font-family: 'Inter', sans-serif;
+  color: #01281a; margin: 0 0 6px;
+}
+.um-asgn-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.um-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 6px;
+  font-size: 11px; font-weight: 400;
+  background: #e2ede6; color: #006c49;
+}
+
+.um-body { padding: 20px 22px; }
+.um-slot {
+  position: relative;
+  border: 2px dashed #dce4df;
+  border-radius: 16px;
+  background: #f8fafb;
+  transition: border-color .15s, background .15s;
+  cursor: pointer; overflow: hidden;
+}
+.um-slot:hover { border-color: #006c49; background: #f0f6f2; }
+.um-slot.drag-on { border-color: #006c49; background: #e2ede6; }
+.um-slot input[type=file] {
+  position: absolute; inset: 0; opacity: 0;
+  width: 100%; height: 100%; cursor: pointer; z-index: 2;
+}
+.um-slot-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 28px 16px; text-align: center; gap: 10px;
+}
+.um-slot-empty-ico {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: #e2ede6; display: grid; place-items: center;
+}
+.um-slot-empty-ico .material-symbols-outlined { font-size: 24px; color: #006c49; }
+
+.um-slot-file {
+  display: none; align-items: center; gap: 12px;
+  padding: 16px 18px;
+}
+.um-slot-file.show { display: flex; }
+.um-ftype {
+  width: 40px; height: 40px; border-radius: 8px; background: #006c49;
+  display: grid; place-items: center;
+  font-size: 10px; font-weight: 400; color: #fff; text-transform: uppercase;
+}
+
+.um-foot {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  padding: 16px 22px 20px;
+  border-top: 1px solid #e9f0ec;
+}
+.um-btn-cancel {
+  padding: 9px 18px; border-radius: 12px;
+  border: 1px solid #dce4df; background: #fff;
+  font-size: 13px; font-weight: 400; color: #4e5d54; cursor: pointer;
+  transition: all .12s;
+}
+.um-btn-cancel:hover { background: #f2f5f4; color: #111b15; }
+.um-btn-upload {
+  padding: 9px 22px; border-radius: 12px;
+  border: none; background: #013623;
+  font-size: 13px; font-weight: 400; color: #fff;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  transition: background .12s, opacity .12s;
+}
+.um-btn-upload:hover { background: #006c49; }
+.um-btn-upload:disabled { opacity: .4; cursor: not-allowed; }
+
+.um-loader {
+  position: absolute; inset: 0; z-index: 20;
+  background: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 32px;
+  opacity: 0; pointer-events: none; transition: opacity .18s ease;
+}
+.um-loader.show { opacity: 1; pointer-events: all; }
+.um-prog-wrap {
+  width: 100%; height: 4px; background: #e2ede6; border-radius: 99px;
+  overflow: hidden; margin-bottom: 16px;
+}
+.um-prog-bar {
+  height: 100%; width: 0%; background: #006c49;
+  border-radius: 99px; transition: width .07s linear;
+}
+.um-success-phase {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 32px;
+  opacity: 0; transform: translateY(16px); pointer-events: none;
+  transition: opacity .35s ease, transform .35s cubic-bezier(.34,1.15,.64,1);
+}
+.um-success-phase.show { opacity: 1; transform: translateY(0); pointer-events: all; }
+*, h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: 400 !important; }
+</style>
+</head>
+<body data-page="assignments" class="font-sans selection:bg-forest-100 selection:text-forest-800">
+
+<main class="main">
+  <!-- RESTORED - please re-apply redesign from local file -->
+  <p>File was temporarily truncated during push. Restoring original structure. Please download the redesigned version from the chat artifacts.</p>
+</main>
+</body>
+</html>
