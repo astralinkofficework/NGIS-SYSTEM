@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- NGIS Framework Styles -->
 <link rel="stylesheet" href="../../assets/css/app.css">
@@ -96,145 +97,23 @@ html, body {
 }
 
 /* ════════════════════════════════════════
-   UPLOAD MODAL
+   UPLOAD MODAL — Mobile-first coursework sheet
    ════════════════════════════════════════ */
-.um-overlay {
-  position: fixed; inset: 0; z-index: 900;
-  background: rgba(2,8,20,.52);
-  backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 16px;
-  opacity: 0; pointer-events: none;
-  transition: opacity .2s ease;
-}
-.um-overlay.open { opacity: 1; pointer-events: all; }
-.um-panel {
-  background: #ffffff;
-  border: 1px solid #dce4df;
-  border-radius: 24px;
-  width: 100%; max-width: 460px;
-  position: relative;
-  overflow: hidden;
-  transform: translateY(12px) scale(.98);
-  transition: transform .22s cubic-bezier(.22,1,.36,1);
-  box-shadow: 0 16px 48px rgba(1,40,26,.14), 0 4px 12px rgba(0,0,0,.04);
-}
-.um-overlay.open .um-panel { transform: translateY(0) scale(1); }
+.um-overlay{position:fixed;inset:0;z-index:900;background:rgba(2,8,20,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .24s ease}
+.um-overlay.open{opacity:1;pointer-events:auto}
+.um-panel{width:100%;max-width:540px;max-height:min(94dvh,780px);display:flex;flex-direction:column;position:relative;overflow:hidden;background:#fff;border:1px solid #e9f0ec;border-bottom:0;border-radius:26px 26px 0 0;box-shadow:0 -16px 56px rgba(1,40,26,.2);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
+.um-overlay.open .um-panel{transform:translateY(0)}
+@media(min-width:640px){.um-overlay{align-items:center;padding:24px}.um-panel{max-height:min(90vh,780px);border:1px solid #e9f0ec;border-radius:24px;transform:translateY(20px) scale(.98);box-shadow:0 24px 64px rgba(1,40,26,.18),0 4px 16px rgba(0,0,0,.06)}.um-overlay.open .um-panel{transform:translateY(0) scale(1)}}
+.um-handle{height:24px;display:flex;justify-content:center;align-items:center;flex-shrink:0}.um-handle-bar{width:40px;height:4px;border-radius:99px;background:#d5dfd9}@media(min-width:640px){.um-handle{display:none}}
+.um-topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 20px 14px;flex-shrink:0}.um-label{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#1e4d38}.um-x{width:36px;height:36px;border:0;border-radius:12px;background:#f2f5f4;display:grid;place-items:center;color:#4e5d54;cursor:pointer;transition:background .15s,transform .15s}.um-x:hover{background:#e2ede6;transform:rotate(4deg)}.um-x .material-symbols-outlined{font-size:19px}
+.um-scroll{overflow-y:auto;flex:1;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}.um-info{padding:2px 20px 16px;border-bottom:1px solid #e9f0ec}.um-asgn-name{font-size:19px;font-weight:700;line-height:1.28;color:#01281a;margin:0 0 10px;letter-spacing:-.025em}.um-asgn-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.um-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:9px;font-size:11px;font-weight:600}.um-chip-course{background:#e2ede6;color:#006c49}.um-chip-due{background:#fff1ef;color:#b42318}.um-chip .material-symbols-outlined{font-size:15px}
+.um-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 20px;background:#fafcfb;border-bottom:1px solid #e9f0ec}.um-metric{text-align:center;min-width:0;padding:10px 5px;background:#fff;border:1px solid #e9f0ec;border-radius:13px}.um-metric-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.075em;color:#7d8d83;margin-bottom:4px}.um-metric-value{font-size:11px;font-weight:600;color:#01281a;line-height:1.3;overflow-wrap:anywhere}
+.um-body{padding:16px 20px 10px}.um-slot{border:1.5px dashed #cbd8d0;border-radius:18px;background:#f8fafb;transition:border-color .15s,background .15s;overflow:hidden}.um-slot:hover,.um-slot.drag-on{border-color:#006c49;background:#f0f6f2}.um-file-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.um-slot-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 14px;text-align:center;gap:9px}.um-slot-empty-ico{width:48px;height:48px;border-radius:50%;background:#e2ede6;display:grid;place-items:center;color:#006c49}.um-slot-empty-ico .material-symbols-outlined{font-size:24px}.um-slot-title{font-size:13px;font-weight:700;color:#01281a}.um-slot-sub{font-size:11px;color:#7d8d83;margin-top:3px}.um-browse-btn{margin-top:2px;padding:8px 14px;border:1px solid #dce4df;border-radius:10px;background:#fff;color:#1e4d38;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s}.um-browse-btn:hover{border-color:#006c49;background:#e2ede6}.um-slot-file{display:none;align-items:center;gap:12px;padding:13px 14px}.um-slot-file.show{display:flex}.um-ftype{width:42px;height:42px;flex-shrink:0;border-radius:11px;background:#1e4d38;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;text-transform:uppercase}.um-fname{flex:1;min-width:0}.um-fname-name{font-size:12px;font-weight:700;color:#01281a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.um-fname-meta{font-size:10px;color:#7d8d83;margin-top:3px}.um-fremove{width:30px;height:30px;flex-shrink:0;border:0;border-radius:9px;background:#f2f5f4;display:grid;place-items:center;color:#4e5d54;cursor:pointer}.um-fremove:hover{background:#fee2e2;color:#b42318}
+.um-extra{padding:2px 20px 18px}.um-comment-label{display:block;margin-bottom:6px;font-size:11px;font-weight:700;color:#4e5d54}.um-comment{width:100%;min-height:66px;resize:vertical;border:1px solid #dce4df;border-radius:12px;padding:10px 12px;font-family:inherit;font-size:12px;line-height:1.45;color:#111b15;background:#fff}.um-comment:focus{outline:none;border-color:#006c49;box-shadow:0 0 0 3px rgba(0,108,73,.11)}.um-comment::placeholder{color:#9aa9a0}.um-integrity{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:11px 12px;background:#f0f6f2;border:1px solid #e2ede6;border-radius:12px;cursor:pointer}.um-integrity input{margin:2px 0 0;width:16px;height:16px;accent-color:#1e4d38;flex-shrink:0;cursor:pointer}.um-integrity-text{font-size:11px;line-height:1.45;color:#4e5d54}.um-integrity-text strong{color:#01281a;font-weight:700}
+.um-foot{display:flex;align-items:center;gap:10px;padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid #e9f0ec;background:rgba(255,255,255,.97);flex-shrink:0}.um-btn-cancel{flex:1;padding:12px 16px;border:1px solid #dce4df;border-radius:13px;background:#fff;font-size:13px;font-weight:600;font-family:inherit;color:#4e5d54;cursor:pointer}.um-btn-cancel:hover{background:#f2f5f4;color:#111b15}.um-btn-upload{flex:1.4;padding:12px 16px;border:0;border-radius:13px;background:#1e4d38;font-size:13px;font-weight:700;font-family:inherit;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(30,77,56,.22);transition:background .12s,opacity .12s,transform .1s}.um-btn-upload:hover:not(:disabled){background:#006c49}.um-btn-upload:active:not(:disabled){transform:scale(.985)}.um-btn-upload:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}.um-btn-upload .material-symbols-outlined{font-size:17px}
+.um-loader{position:absolute;inset:0;z-index:20;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;opacity:0;pointer-events:none;transition:opacity .18s ease}.um-loader.show{opacity:1;pointer-events:all}.um-prog-wrap{width:100%;height:4px;background:#e2ede6;border-radius:99px;overflow:hidden;margin-bottom:16px}.um-prog-bar{height:100%;width:0;background:#1e4d38;border-radius:99px;transition:width .07s linear}.um-success-phase{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.15,.64,1)}.um-success-phase.show{opacity:1;transform:translateY(0);pointer-events:all}
+@media(prefers-reduced-motion:reduce){.um-overlay,.um-panel,.um-x,.um-btn-upload{transition:none!important}}
 
-.um-topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 22px 14px;
-  border-bottom: 1px solid #e9f0ec;
-}
-.um-label {
-  font-size: 11px; font-weight: 400; letter-spacing: .08em;
-  text-transform: uppercase; color: #006c49;
-}
-.um-x {
-  width: 30px; height: 30px; border-radius: 8px;
-  border: none; background: #f2f5f4; cursor: pointer;
-  display: grid; place-items: center;
-  color: #4e5d54; transition: background .12s, color .12s;
-}
-.um-x:hover { background: #e2ede6; color: #01281a; }
-.um-x .material-symbols-outlined { font-size: 18px; }
-
-.um-info { padding: 16px 22px; background: #fafcfb; border-bottom: 1px solid #e9f0ec; }
-.um-asgn-name {
-  font-size: 17px; font-weight: 400; font-family: 'Inter', sans-serif;
-  color: #01281a; margin: 0 0 6px;
-}
-.um-asgn-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.um-chip {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 9px; border-radius: 6px;
-  font-size: 11px; font-weight: 400;
-  background: #e2ede6; color: #006c49;
-}
-
-.um-body { padding: 20px 22px; }
-.um-slot {
-  position: relative;
-  border: 2px dashed #dce4df;
-  border-radius: 16px;
-  background: #f8fafb;
-  transition: border-color .15s, background .15s;
-  cursor: pointer; overflow: hidden;
-}
-.um-slot:hover { border-color: #006c49; background: #f0f6f2; }
-.um-slot.drag-on { border-color: #006c49; background: #e2ede6; }
-.um-slot input[type=file] {
-  position: absolute; inset: 0; opacity: 0;
-  width: 100%; height: 100%; cursor: pointer; z-index: 2;
-}
-.um-slot-empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 28px 16px; text-align: center; gap: 10px;
-}
-.um-slot-empty-ico {
-  width: 48px; height: 48px; border-radius: 12px;
-  background: #e2ede6; display: grid; place-items: center;
-}
-.um-slot-empty-ico .material-symbols-outlined { font-size: 24px; color: #006c49; }
-
-.um-slot-file {
-  display: none; align-items: center; gap: 12px;
-  padding: 16px 18px;
-}
-.um-slot-file.show { display: flex; }
-.um-ftype {
-  width: 40px; height: 40px; border-radius: 8px; background: #006c49;
-  display: grid; place-items: center;
-  font-size: 10px; font-weight: 400; color: #fff; text-transform: uppercase;
-}
-
-.um-foot {
-  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
-  padding: 16px 22px 20px;
-  border-top: 1px solid #e9f0ec;
-}
-.um-btn-cancel {
-  padding: 9px 18px; border-radius: 12px;
-  border: 1px solid #dce4df; background: #fff;
-  font-size: 13px; font-weight: 400; color: #4e5d54; cursor: pointer;
-  transition: all .12s;
-}
-.um-btn-cancel:hover { background: #f2f5f4; color: #111b15; }
-.um-btn-upload {
-  padding: 9px 22px; border-radius: 12px;
-  border: none; background: #013623;
-  font-size: 13px; font-weight: 400; color: #fff;
-  cursor: pointer; display: flex; align-items: center; gap: 6px;
-  transition: background .12s, opacity .12s;
-}
-.um-btn-upload:hover { background: #006c49; }
-.um-btn-upload:disabled { opacity: .4; cursor: not-allowed; }
-
-.um-loader {
-  position: absolute; inset: 0; z-index: 20;
-  background: #fff;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 40px 32px;
-  opacity: 0; pointer-events: none; transition: opacity .18s ease;
-}
-.um-loader.show { opacity: 1; pointer-events: all; }
-.um-prog-wrap {
-  width: 100%; height: 4px; background: #e2ede6; border-radius: 99px;
-  overflow: hidden; margin-bottom: 16px;
-}
-.um-prog-bar {
-  height: 100%; width: 0%; background: #006c49;
-  border-radius: 99px; transition: width .07s linear;
-}
-.um-success-phase {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 40px 32px;
-  opacity: 0; transform: translateY(16px); pointer-events: none;
-  transition: opacity .35s ease, transform .35s cubic-bezier(.34,1.15,.64,1);
-}
-.um-success-phase.show { opacity: 1; transform: translateY(0); pointer-events: all; }
-*, h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: 400 !important; }
 </style>
 </head>
 <body data-page="assignments" class="font-sans selection:bg-forest-100 selection:text-forest-800">
@@ -437,7 +316,7 @@ html, body {
                       <span>Problem Set (.PDF)</span>
                     </button>
                   </div>
-                  <button onclick="openUpload('Calculus — Integration Problems Set 3','Advanced Mathematics','Jan 28 • 8:00 AM')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 hover:bg-forest-700 text-white shadow-xs transition-all flex items-center gap-1.5">
+                  <button onclick="openUpload('Calculus — Integration Problems Set 3','Advanced Mathematics','Jan 28 • 8:00 AM','Instructor TBA','Class 10A · SS2 KH','15% of Term')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 hover:bg-forest-700 text-white shadow-xs transition-all flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
                     <span>Upload Submission</span>
                   </button>
@@ -485,7 +364,7 @@ html, body {
                     <span class="material-symbols-outlined text-[17px] text-rose-700 shrink-0">info</span>
                     <span>Portal remains open for late uploads with faculty approval</span>
                   </div>
-                  <button onclick="openUpload('History Essay — French Revolution Outline','World History','Jan 20 • 11:59 PM (Late)')" class="px-3.5 py-1.5 text-xs font-normal rounded-xl bg-red-700 hover:bg-red-800 text-white shadow-xs transition-all flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                  <button onclick="openUpload('History Essay — French Revolution Outline','World History','Jan 20 • 11:59 PM (Late)','Instructor TBA','Class 10A · SS2 KH','Not specified')" class="px-3.5 py-1.5 text-xs font-normal rounded-xl bg-red-700 hover:bg-red-800 text-white shadow-xs transition-all flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
                     <span class="material-symbols-outlined text-[15px]">cloud_upload</span>
                     <span>Late Submission</span>
                   </button>
@@ -538,7 +417,7 @@ html, body {
                       <span>Rubric</span>
                     </button>
                   </div>
-                  <button onclick="openUpload('Physics Lab Report — Wave Optics','Physics — Mechanics & Optics','Jan 30 • 11:59 PM')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 hover:bg-forest-700 text-white shadow-xs transition-all flex items-center gap-1.5">
+                  <button onclick="openUpload('Physics Lab Report — Wave Optics','Physics — Mechanics & Optics','Jan 30 • 11:59 PM','Dr. Pov','STEM 1 (Gr. 10)','20% of Term')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 hover:bg-forest-700 text-white shadow-xs transition-all flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
                     <span>Upload</span>
                   </button>
@@ -585,7 +464,7 @@ html, body {
                     <span class="material-symbols-outlined text-[16px]">link</span>
                     <span>Citation Guidelines</span>
                   </button>
-                  <button onclick="openUpload('English Essay — Comparative Literature','English Literature','Feb 3 • 11:59 PM')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 hover:bg-forest-700 text-white shadow-xs transition-all flex items-center gap-1.5">
+                  <button onclick="openUpload('English Essay — Comparative Literature','English Literature','Feb 3 • 11:59 PM','Instructor TBA','Class 10A · SS2 KH','25% of Term')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 hover:bg-forest-700 text-white shadow-xs transition-all flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px]">cloud_upload</span>
                     <span>Upload</span>
                   </button>
@@ -811,90 +690,70 @@ html, body {
 <!-- ════════════════════════════════════════
      UPLOAD MODAL
      ════════════════════════════════════════ -->
-<div class="um-overlay" id="umOverlay" role="dialog" aria-modal="true" aria-labelledby="umAsgnName">
-  <div class="um-panel">
-
-    <div class="um-topbar">
+<div class="um-overlay" id="umOverlay" role="dialog" aria-modal="true" aria-labelledby="umAsgnName" aria-hidden="true">
+  <section class="um-panel" aria-describedby="umIntegrityText" style="font-family:'Plus Jakarta Sans',sans-serif">
+    <div class="um-handle" aria-hidden="true"><span class="um-handle-bar"></span></div>
+    <header class="um-topbar">
       <div class="um-label">Submit Coursework</div>
-      <button class="um-x" id="umCloseBtn" aria-label="Close dialog">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-    </div>
-
-    <div class="um-info">
-      <div class="um-asgn-name" id="umAsgnName">Assignment Name</div>
-      <div class="um-asgn-meta">
-        <span class="um-chip" id="umSubject">
-          <span class="material-symbols-outlined">menu_book</span>
-          <span id="umSubjectText">Subject</span>
-        </span>
-        <span class="um-chip" style="background:#fee2e2;color:#b91c1c" id="umDue">
-          <span class="material-symbols-outlined">schedule</span>
-          <span id="umDueText">Due Date</span>
-        </span>
-      </div>
-    </div>
-
-    <div class="um-body">
-      <div class="um-slot" id="umSlot">
-        <input type="file" id="umFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip">
-        
-        <div class="um-slot-empty" id="umSlotEmpty">
-          <div class="um-slot-empty-ico">
-            <span class="material-symbols-outlined">cloud_upload</span>
-          </div>
-          <div>
-            <h5 class="text-xs font-normal text-forest-800">Drag &amp; drop file here, or browse</h5>
-            <p class="text-[11px] text-ink-muted mt-0.5">Supports PDF, DOCX, XLSX, ZIP up to 25 MB</p>
-          </div>
-        </div>
-
-        <div class="um-slot-file" id="umSlotFile">
-          <div class="um-ftype" id="umFType">PDF</div>
-          <div class="um-fname">
-            <span id="umFName" class="text-xs font-normal text-forest-800">filename.pdf</span>
-            <span id="umFSize" class="text-[11px] text-ink-soft">0 KB</span>
-          </div>
-          <button class="um-fremove" id="umFRemove" title="Remove file">
-            <span class="material-symbols-outlined">close</span>
-          </button>
+      <button class="um-x" id="umCloseBtn" type="button" aria-label="Close submission dialog"><span class="material-symbols-outlined">close</span></button>
+    </header>
+    <div class="um-scroll">
+      <div class="um-info">
+        <h2 class="um-asgn-name" id="umAsgnName">Assignment Name</h2>
+        <div class="um-asgn-meta">
+          <span class="um-chip um-chip-course"><span class="material-symbols-outlined">menu_book</span><span id="umSubjectText">Subject</span></span>
+          <span class="um-chip um-chip-due"><span class="material-symbols-outlined">schedule</span><span id="umDueText">Due Date</span></span>
         </div>
       </div>
+      <div class="um-metrics" aria-label="Assignment details">
+        <div class="um-metric"><div class="um-metric-label">Instructor</div><div class="um-metric-value" id="umInstructor">Instructor TBA</div></div>
+        <div class="um-metric"><div class="um-metric-label">Class</div><div class="um-metric-value" id="umClass">Class 10A · SS2 KH</div></div>
+        <div class="um-metric"><div class="um-metric-label">Weight</div><div class="um-metric-value" id="umWeight">Not specified</div></div>
+      </div>
+      <div class="um-body">
+        <div class="um-slot" id="umSlot">
+          <input class="um-file-input" type="file" id="umFileInput" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip" aria-label="Choose coursework file">
+          <div class="um-slot-empty" id="umSlotEmpty">
+            <div class="um-slot-empty-ico"><span class="material-symbols-outlined">cloud_upload</span></div>
+            <div><div class="um-slot-title">Tap to upload or drag &amp; drop</div><div class="um-slot-sub">PDF, DOCX, XLSX, ZIP · Max 25 MB</div></div>
+            <button class="um-browse-btn" id="umBrowseBtn" type="button">Browse device storage</button>
+          </div>
+          <div class="um-slot-file" id="umSlotFile">
+            <div class="um-ftype" id="umFType">PDF</div>
+            <div class="um-fname"><div class="um-fname-name" id="umFName">filename.pdf</div><div class="um-fname-meta" id="umFSize">0 KB · Ready for submission</div></div>
+            <button class="um-fremove" id="umFRemove" type="button" title="Remove file" aria-label="Remove selected file"><span class="material-symbols-outlined">close</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="um-extra">
+        <label class="um-comment-label" for="umComment">Note for your instructor <span style="font-weight:400;color:#7d8d83">(optional)</span></label>
+        <textarea class="um-comment" id="umComment" maxlength="600" placeholder="Add a note about your submission or lab apparatus…"></textarea>
+        <label class="um-integrity" for="umIntegrity">
+          <input type="checkbox" id="umIntegrity">
+          <span class="um-integrity-text" id="umIntegrityText"><strong>Academic integrity declaration.</strong> I confirm this work is my own and that all sources have been acknowledged in accordance with the academy honor code.</span>
+        </label>
+      </div>
     </div>
-
-    <div class="um-foot">
-      <button class="um-btn-cancel" id="umCancelBtn">Cancel</button>
-      <button class="um-btn-upload" id="umSubmitBtn" disabled>
-        <span class="material-symbols-outlined text-[16px]">send</span>
-        <span>Submit Work</span>
-      </button>
-    </div>
-
-    <!-- Progress / Success Modal State -->
-    <div class="um-loader" id="umLoader">
+    <footer class="um-foot">
+      <button class="um-btn-cancel" id="umCancelBtn" type="button">Cancel</button>
+      <button class="um-btn-upload" id="umSubmitBtn" type="button" disabled><span class="material-symbols-outlined">send</span><span>Submit Work</span></button>
+    </footer>
+    <div class="um-loader" id="umLoader" aria-live="polite">
       <div class="w-full flex flex-col items-center text-center" id="umProgPhase">
-        <div class="w-12 h-12 rounded-2xl bg-forest-50 text-forest-700 flex items-center justify-center mb-4">
-          <span class="material-symbols-outlined text-[24px]">cloud_sync</span>
-        </div>
+        <div class="w-12 h-12 rounded-2xl bg-forest-50 text-forest-700 flex items-center justify-center mb-4"><span class="material-symbols-outlined text-[24px]">cloud_sync</span></div>
         <div class="text-sm font-normal text-forest-800 mb-1" id="umLoaderStatus">Encrypting &amp; uploading…</div>
         <div class="text-xs text-ink-muted mb-4" id="umLoaderPct">0%</div>
-        <div class="um-prog-wrap">
-          <div class="um-prog-bar" id="umProgBar"></div>
-        </div>
+        <div class="um-prog-wrap"><div class="um-prog-bar" id="umProgBar"></div></div>
       </div>
       <div class="um-success-phase" id="umSuccessPhase">
-        <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
-          <span class="material-symbols-outlined text-[30px]">check_circle</span>
-        </div>
+        <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3"><span class="material-symbols-outlined text-[30px]">check_circle</span></div>
         <div class="text-base font-normal text-forest-800 mb-1">Assignment Submitted!</div>
-        <div class="text-xs text-ink-muted text-center max-w-xs mb-5">Your verified submission token has been archived and sent to your instructor for grading.</div>
-        <button class="px-5 py-2 rounded-xl bg-forest-800 text-white font-normal text-xs shadow-xs hover:bg-forest-700 transition-colors" id="umDoneBtn">Done</button>
+        <div class="text-xs text-ink-muted text-center max-w-xs mb-5">Your submission has been recorded and sent to your instructor for grading.</div>
+        <button class="px-5 py-2 rounded-xl bg-forest-800 text-white font-normal text-xs shadow-xs hover:bg-forest-700 transition-colors" id="umDoneBtn" type="button">Done</button>
       </div>
     </div>
-
-  </div>
+  </section>
 </div>
-
 <!-- ════════════════════════════════════════
      FEEDBACK DIALOG
      ════════════════════════════════════════ -->
@@ -977,107 +836,93 @@ window.showFeedback = function(title, feedback, teacher, grade) {
   document.getElementById('fbOverlay').classList.add('open');
 };
 
-// Upload Modal Handler
+// Upload Modal Handler — accessible, validated mobile-first submission flow
 (function () {
-  var overlay   = document.getElementById('umOverlay');
-  var closeBtn  = document.getElementById('umCloseBtn');
+  var overlay = document.getElementById('umOverlay');
+  var panel = overlay.querySelector('.um-panel');
+  var closeBtn = document.getElementById('umCloseBtn');
   var cancelBtn = document.getElementById('umCancelBtn');
   var submitBtn = document.getElementById('umSubmitBtn');
   var fileInput = document.getElementById('umFileInput');
-  var slot      = document.getElementById('umSlot');
-  var emptyState= document.getElementById('umSlotEmpty');
+  var browseBtn = document.getElementById('umBrowseBtn');
+  var slot = document.getElementById('umSlot');
+  var emptyState = document.getElementById('umSlotEmpty');
   var fileState = document.getElementById('umSlotFile');
-  var fName     = document.getElementById('umFName');
-  var fSize     = document.getElementById('umFSize');
-  var fType     = document.getElementById('umFType');
-  var fRemove   = document.getElementById('umFRemove');
-  var loader    = document.getElementById('umLoader');
-  var progBar   = document.getElementById('umProgBar');
+  var fName = document.getElementById('umFName');
+  var fSize = document.getElementById('umFSize');
+  var fType = document.getElementById('umFType');
+  var fRemove = document.getElementById('umFRemove');
+  var integrity = document.getElementById('umIntegrity');
+  var comment = document.getElementById('umComment');
+  var loader = document.getElementById('umLoader');
+  var progBar = document.getElementById('umProgBar');
   var loaderPct = document.getElementById('umLoaderPct');
-  var success   = document.getElementById('umSuccessPhase');
-  var doneBtn   = document.getElementById('umDoneBtn');
-
+  var success = document.getElementById('umSuccessPhase');
+  var doneBtn = document.getElementById('umDoneBtn');
   var currentFile = null;
-
-  window.openUpload = function(name, subject, due) {
-    document.getElementById('umAsgnName').textContent = name;
-    document.getElementById('umSubjectText').textContent = subject;
-    document.getElementById('umDueText').textContent = due;
-    resetUpload();
-    overlay.classList.add('open');
+  var previousFocus = null;
+  var maxBytes = 25 * 1024 * 1024;
+  var allowed = ['pdf','doc','docx','xls','xlsx','zip'];
+  function notify(message, type) {
+    if (window.toast) window.toast(message, type || 'info');
+    else window.alert(message);
+  }
+  function updateSubmitState() { submitBtn.disabled = !(currentFile && integrity.checked); }
+  window.openUpload = function(name, subject, due, instructor, className, weight) {
+    document.getElementById('umAsgnName').textContent = name || 'Assignment';
+    document.getElementById('umSubjectText').textContent = subject || 'Coursework';
+    document.getElementById('umDueText').textContent = due || 'Due date not set';
+    document.getElementById('umInstructor').textContent = instructor || 'Instructor TBA';
+    document.getElementById('umClass').textContent = className || 'Class 10A · SS2 KH';
+    document.getElementById('umWeight').textContent = weight || 'Not specified';
+    resetUpload(); previousFocus = document.activeElement;
+    overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    window.setTimeout(function(){ closeBtn.focus(); }, 80);
   };
-
   function closeUpload() {
-    overlay.classList.remove('open');
+    overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    if (previousFocus && previousFocus.focus) previousFocus.focus();
   }
-
   function resetUpload() {
-    currentFile = null;
-    fileInput.value = '';
-    emptyState.style.display = 'flex';
-    fileState.classList.remove('show');
-    submitBtn.disabled = true;
-    loader.classList.remove('show');
-    success.classList.remove('show');
-    progBar.style.width = '0%';
-    loaderPct.textContent = '0%';
+    currentFile = null; fileInput.value = ''; comment.value = ''; integrity.checked = false;
+    emptyState.style.display = 'flex'; fileState.classList.remove('show');
+    loader.classList.remove('show'); success.classList.remove('show');
+    document.getElementById('umProgPhase').style.opacity = '';
+    progBar.style.width = '0%'; loaderPct.textContent = '0%'; updateSubmitState();
   }
-
   function handleFile(file) {
     if (!file) return;
-    currentFile = file;
-    var ext = file.name.split('.').pop().toUpperCase();
-    fType.textContent = ext || 'DOC';
-    fName.textContent = file.name;
-    fSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
-    emptyState.style.display = 'none';
-    fileState.classList.add('show');
-    submitBtn.disabled = false;
+    var ext = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+    if (!allowed.includes(ext)) { currentFile=null; emptyState.style.display='flex'; fileState.classList.remove('show'); updateSubmitState(); notify('Choose a PDF, DOC, DOCX, XLS, XLSX, or ZIP file.','error'); fileInput.value=''; return; }
+    if (file.size > maxBytes) { currentFile=null; emptyState.style.display='flex'; fileState.classList.remove('show'); updateSubmitState(); notify('This file is larger than the 25 MB limit.','error'); fileInput.value=''; return; }
+    currentFile = file; fType.textContent = ext.toUpperCase(); fName.textContent = file.name;
+    var size = file.size >= 1024*1024 ? (file.size/(1024*1024)).toFixed(1)+' MB' : Math.max(1,Math.round(file.size/1024))+' KB';
+    fSize.textContent = size + ' · Ready for submission';
+    emptyState.style.display='none'; fileState.classList.add('show'); updateSubmitState();
   }
-
-  fileInput.addEventListener('change', function(e) {
-    if (e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
+  browseBtn.addEventListener('click', function(){ fileInput.click(); });
+  slot.addEventListener('click', function(e){ if (!e.target.closest('#umFRemove') && !e.target.closest('#umBrowseBtn') && !currentFile) fileInput.click(); });
+  fileInput.addEventListener('change', function(e){ if (e.target.files && e.target.files[0]) handleFile(e.target.files[0]); });
+  ['dragenter','dragover'].forEach(function(type){slot.addEventListener(type,function(e){e.preventDefault();slot.classList.add('drag-on');});});
+  ['dragleave','drop'].forEach(function(type){slot.addEventListener(type,function(e){e.preventDefault();slot.classList.remove('drag-on');});});
+  slot.addEventListener('drop',function(e){if(e.dataTransfer.files&&e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
+  integrity.addEventListener('change',updateSubmitState);
+  fRemove.addEventListener('click',function(e){e.stopPropagation();resetUpload();});
+  closeBtn.addEventListener('click',closeUpload); cancelBtn.addEventListener('click',closeUpload); doneBtn.addEventListener('click',closeUpload);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)closeUpload();});
+  document.addEventListener('keydown',function(e){
+    if(!overlay.classList.contains('open'))return;
+    if(e.key==='Escape'){closeUpload();return;}
+    if(e.key==='Tab'){var nodes=panel.querySelectorAll('button:not([disabled]),input:not([disabled]),textarea:not([disabled])');var first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
   });
-
-  fRemove.addEventListener('click', function(e) {
-    e.stopPropagation();
-    resetUpload();
-  });
-
-  closeBtn.addEventListener('click', closeUpload);
-  cancelBtn.addEventListener('click', closeUpload);
-  doneBtn.addEventListener('click', closeUpload);
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) closeUpload();
-  });
-
-  // Upload simulation
-  submitBtn.addEventListener('click', function() {
-    if (!currentFile) return;
-    loader.classList.add('show');
-    var p = 0;
-    var interval = setInterval(function() {
-      p += Math.floor(Math.random() * 15) + 8;
-      if (p >= 100) {
-        p = 100;
-        clearInterval(interval);
-        progBar.style.width = '100%';
-        loaderPct.textContent = '100%';
-        setTimeout(function() {
-          document.getElementById('umProgPhase').style.opacity = '0';
-          setTimeout(function() {
-            success.classList.add('show');
-            if (window.toast) window.toast('Assignment successfully uploaded!', 'success');
-          }, 200);
-        }, 300);
-      } else {
-        progBar.style.width = p + '%';
-        loaderPct.textContent = p + '%';
-      }
-    }, 60);
+  submitBtn.addEventListener('click',function(){
+    if(!currentFile||!integrity.checked)return;
+    loader.classList.add('show'); var p=0;
+    var interval=setInterval(function(){p+=Math.floor(Math.random()*15)+8;if(p>=100){p=100;clearInterval(interval);progBar.style.width='100%';loaderPct.textContent='100%';setTimeout(function(){document.getElementById('umProgPhase').style.opacity='0';setTimeout(function(){success.classList.add('show');notify('Assignment successfully uploaded!','success');},200);},300);}else{progBar.style.width=p+'%';loaderPct.textContent=p+'%';}},60);
   });
 })();
-
 // Filter Tabs & Search
 document.addEventListener('DOMContentLoaded', function () {
   var filterTabs = document.querySelectorAll('.filter-tab');
