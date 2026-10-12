@@ -42,8 +42,7 @@
           { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/admin/admin-assignments.html" },
           { id:"exams",       label:"Exams",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
           { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
-        ]},
+                  ]},
         { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
           { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
           { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
@@ -72,7 +71,6 @@
         { id:"administration", label:"Administration", icon:"admin_panel_settings", collapsible:true, links:[
           { id:"logs",        label:"Audit Logs",         icon:"history",     href:"pages/admin/admin-logs.html" },
           { id:"messaging-admin", label:"Messaging Administration", icon:"forum", href:"pages/messaging/messaging-admin.html" },
-          { id:"telegram-config", label:"Telegram Configuration", icon:"smart_toy", href:"pages/messaging/telegram-config.html" },
           { id:"messaging-audit", label:"Messaging Audit Logs", icon:"receipt_long", href:"pages/messaging/audit-logs.html" },
           { id:"roles",       label:"Roles & Permissions", icon:"shield_person", href:"pages/admin/admin-settings.html?tab=roles" },
           { id:"settings",    label:"System Settings",    icon:"settings",    href:"pages/admin/admin-settings.html" },
@@ -94,8 +92,7 @@
         { label:"Teaching", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
           { id:"classes",     label:"My Classes",  icon:"school",    href:"pages/teacher/teacher-classes.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
-        ]},
+                  ]},
         { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
           { id:"messaging-dashboard", label:"Dashboard", icon:"dashboard", href:"pages/messaging/messaging-dashboard.html" },
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
@@ -126,8 +123,7 @@
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
           { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
-        ]},
+                  ]},
         { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
           { id:"messaging-dashboard", label:"Dashboard", icon:"dashboard", href:"pages/messaging/messaging-dashboard.html" },
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"3" },
@@ -157,8 +153,7 @@
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
           { id:"services",    label:"Student Services", icon:"assignment", href:"pages/parent/parent-services.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
-        ]},
+                  ]},
         { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
           { id:"messaging-dashboard", label:"Dashboard", icon:"dashboard", href:"pages/messaging/messaging-dashboard.html" },
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"1" },
@@ -225,6 +220,42 @@
   };
 
   const PORTAL_HOME = { admin:"pages/admin/admin.html", teacher:"pages/teacher/teacher.html", student:"pages/student/student.html", parent:"pages/parent/parent.html" };
+
+  /* Resolve the portal from the trusted session first, then from the URL.
+     Shared pages used to fall back to Student (or a stale chat-only key),
+     which caused Admin/Teacher/Parent pages to render the wrong sidebar. */
+  function readStoredUser(key) {
+    try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
+  }
+
+  function normalizeRole(role) {
+    return role === "super_admin" ? "admin" : role;
+  }
+
+  function getSessionRole() {
+    const authRole = window.NGISAuth && typeof window.NGISAuth.getRole === "function"
+      ? window.NGISAuth.getRole() : null;
+    const user = readStoredUser("ngis_user") || readStoredUser("ngis_chat_user");
+    return normalizeRole(authRole || (user && user.role));
+  }
+
+  function resolvePortalRole(pageRole) {
+    const path = window.location.pathname || "";
+    const pathMatch = path.match(/\/pages\/(admin|teacher|student|parent)\//);
+    const pathRole = pathMatch ? pathMatch[1] : null;
+    const sessionRole = getSessionRole();
+
+    /* A role-scoped URL is authoritative, but an authenticated user cannot
+       use it to render another portal. Redirect instead of silently swapping
+       the sidebar or loading a Student page. */
+    if (pathRole && sessionRole && pathRole !== sessionRole) {
+      const target = PORTAL_HOME[sessionRole] || "index.html";
+      window.location.replace(`${_P}${target}`);
+      return sessionRole;
+    }
+
+    return pathRole || sessionRole || normalizeRole(pageRole) || "student";
+  }
 
   /* Path prefix — resolves root-relative hrefs from any depth.
      Pages under pages/<role>/ are 2 levels deep → prefix = ../../
@@ -464,10 +495,13 @@
   }
 
   function mount() {
-    const PAGE = window.PAGE || { role:"admin", active:"dashboard" };
-    const cfg  = NAV[PAGE.role] || NAV.admin;
-    const user = PAGE.user || DEFAULT_USER[PAGE.role] || DEFAULT_USER.admin;
+    const PAGE = window.PAGE || { role:"student", active:"dashboard" };
     _P = (window.location.pathname || '').indexOf('/pages/') !== -1 ? '../../' : '';
+    const portalRole = resolvePortalRole(PAGE.role);
+    PAGE.role = portalRole;
+    window.PAGE = PAGE;
+    const cfg  = NAV[portalRole] || NAV.student;
+    const user = PAGE.user || DEFAULT_USER[portalRole] || DEFAULT_USER.student;
 
     // Department-centric portals: keep "Departments" lit on its sub-pages.
     let active = PAGE.active;
@@ -475,7 +509,8 @@
       active = "departments";
     }
 
-    document.body.setAttribute("data-role", PAGE.role);
+    document.body.setAttribute("data-role", portalRole);
+    document.body.setAttribute("data-portal", portalRole);
 
     const main = document.querySelector(".main");
     if (!main) return;   // standalone pages (landing) have no app shell
