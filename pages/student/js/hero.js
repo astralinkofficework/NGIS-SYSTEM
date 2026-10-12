@@ -16,8 +16,8 @@
     email:     'nrinphouneta@ngis.edu.kh',
     enrolled:  'Sep 2024',
     gpa:       '3.87 / 4.00',
-    avatar:    'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-    avatarSm:  'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+    avatar:    '../../assets/images/dashboard-student-portrait.jpg',
+    avatarSm:  '../../assets/images/dashboard-student-portrait.jpg',
   };
 
   var notifLink     = 'student-notifications.html';
@@ -67,7 +67,7 @@
 
           '<div class="htb-ctrl-divider" aria-hidden="true"></div>' +
 
-          '<div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu">' +
+          '<div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu" aria-haspopup="true" aria-expanded="false">' +
             '<div class="htb-chip-avatar-wrap">' +
               '<img class="htb-chip-avatar" src="' + STUDENT.avatarSm + '" alt="' + STUDENT.name + '">' +
               '<span class="htb-online-pip" title="Active"></span>' +
@@ -162,6 +162,8 @@
     closePanels();
     positionDropdown();
     dropdown.classList.add('open');
+    var profileTrigger = document.getElementById('htbProfile');
+    if (profileTrigger) profileTrigger.setAttribute('aria-expanded', 'true');
     var arr = document.getElementById('htbParr');
     if (arr) arr.classList.add('open');
     var bd = document.getElementById('htbBackdrop');
@@ -171,11 +173,23 @@
 
   function closeDD() {
     dropdown.classList.remove('open');
+    var profileTrigger = document.getElementById('htbProfile');
+    if (profileTrigger) profileTrigger.setAttribute('aria-expanded', 'false');
     var arr = document.getElementById('htbParr');
     if (arr) arr.classList.remove('open');
     var bd = document.getElementById('htbBackdrop');
     if (bd) bd.classList.remove('open');
     document.body.style.overflow = '';
+  }
+
+  var profileTrigger = document.getElementById('htbProfile');
+  if (profileTrigger) {
+    profileTrigger.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        dropdown.classList.contains('open') ? closeDD() : openDD();
+      }
+    });
   }
 
   document.addEventListener('click', function (e) {
