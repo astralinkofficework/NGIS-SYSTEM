@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Telegram Bot Configuration — NGIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/messaging.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+</head>
+<body data-page="messaging">
+<main class="main">
+  <div id="heroBanner"></div>
+  <div class="msg-page" id="tgPage">
+
+    <div class="msg-page-head">
+      <div>
+        <div class="msg-eyebrow">Integration</div>
+        <h1 class="msg-title">Telegram Bot Configuration</h1>
+        <p class="msg-subtitle">Optional delivery channel for school-approved notifications. The bot never reads personal conversations, imports chat histories, or messages users before they start it.</p>
+      </div>
+      <div class="msg-head-actions">
+        <span class="msg-health" id="tgHealth"></span>
+      </div>
+    </div>
+
+    <div class="msg-notice warn">
+      <span class="material-symbols-outlined">security</span>
+      <span>The bot token is stored server-side only. It is never exposed in frontend code, browser storage, or API responses. A submitted Telegram username is never treated as proof of identity — linking requires a short-lived, single-use token verified by the official bot.</span>
+    </div>
+
+    <div class="msg-tabs" id="tgTabs">
+      <button class="msg-tab active" data-tab="status"><span class="material-symbols-outlined">smart_toy</span>Bot status</button>
+      <button class="msg-tab" data-tab="linking"><span class="material-symbols-outlined">link</span>Account linking</button>
+      <button class="msg-tab" data-tab="destinations"><span class="material-symbols-outlined">destination</span>Destinations</button>
+      <button class="msg-tab" data-tab="categories"><span class="material-symbols-outlined">tune</span>Categories</button>
+      <button class="msg-tab" data-tab="deliveries"><span class="material-symbols-outlined">receipt_long</span>Delivery log</button>
+    </div>
+
+    <!-- ── TAB: status ── -->
+    <div class="tg-tab-panel" data-panel="status">
+      <div class="msg-split">
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="msg-section">
+            <div class="msg-section-head">
+              <span class="msg-section-title"><span class="material-symbols-outlined">smart_toy</span>Bot configuration</span>
+              <button class="btn btn-ghost btn-sm" onclick="window.toast('Connection test sent (demo)','success')"><span class="material-symbols-outlined">wifi</span>Test connection</button>
+            </div>
+            <div class="msg-section-body">
+              <div class="msg-kv">
+                <div class="msg-kv-row"><span class="msg-kv-key">Bot name</span><span class="msg-kv-val">NGIS Notify Bot</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Bot user</span><span class="msg-kv-val">@NGIS_NotifyBot</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Status</span><span class="msg-kv-val"><span class="msg-health"><span class="dot"></span>Operational</span></span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">API latency</span><span class="msg-kv-val num">24 ms</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Rate limit</span><span class="msg-kv-val num">7 / 30 messages per second (burst-aware)</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Duplicate prevention</span><span class="msg-kv-val" style="color:var(--success)">Enabled — content-hash dedupe</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Bot token</span><span class="msg-kv-val"><span class="msg-tag gray">•••••••••••••••• (server-side only)</span></span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="msg-section">
+            <div class="msg-section-head">
+              <span class="msg-section-title"><span class="material-symbols-outlined">block</span>What this bot does NOT do</span>
+            </div>
+            <div class="msg-section-body" style="display:flex;flex-direction:column;gap:10px">
+              <div class="msg-notice danger" style="margin:0"><span class="material-symbols-outlined">close</span><span>Read personal Telegram conversations or import private chat histories</span></div>
+              <div class="msg-notice danger" style="margin:0"><span class="material-symbols-outlined">close</span><span>Message a user before they have started and authorized the bot</span></div>
+              <div class="msg-notice danger" style="margin:0"><span class="material-symbols-outlined">close</span><span>Access private groups or channels without membership and permissions</span></div>
+              <div class="msg-notice danger" style="margin:0"><span class="material-symbols-outlined">close</span><span>Impersonate a student, teacher or parent</span></div>
+              <div class="msg-notice info" style="margin:0"><span class="material-symbols-outlined">info</span><span>One-to-one ERP messaging uses the school's own backend — Telegram is an optional notification channel only.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="msg-section">
+            <div class="msg-section-head">
+              <span class="msg-section-title"><span class="material-symbols-outlined">notifications_active</span>Notification categories</span>
+            </div>
+            <div class="msg-section-body" id="tgCatSummary"></div>
+          </div>
+          <div class="msg-section">
+            <div class="msg-section-head">
+              <span class="msg-section-title"><span class="material-symbols-outlined">queue</span>Delivery health (7d)</span>
+            </div>
+            <div class="msg-section-body">
+              <div class="msg-kv">
+                <div class="msg-kv-row"><span class="msg-kv-key">Delivered</span><span class="msg-kv-val num" style="color:var(--success)">1,247</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Failed</span><span class="msg-kv-val num" style="color:var(--danger)">9</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Retried</span><span class="msg-kv-val num" style="color:var(--warning)">14</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Success rate</span><span class="msg-kv-val num">99.3%</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: linking ── -->
+    <div class="tg-tab-panel" data-panel="linking" style="display:none">
+      <div class="msg-split">
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="msg-section">
+            <div class="msg-section-head">
+              <span class="msg-section-title"><span class="material-symbols-outlined">link</span>Link your Telegram account</span>
+              <span class="msg-tag green" id="linkState">Linked</span>
+            </div>
+            <div class="msg-section-body">
+              <div class="msg-steps" id="linkSteps"></div>
+              <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+                <button class="btn btn-primary btn-sm" id="linkBtn"><span class="material-symbols-outlined">link</span>Connect Telegram</button>
+                <button class="btn btn-danger btn-sm" id="unlinkBtn"><span class="material-symbols-outlined">link_off</span>Disconnect</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="msg-section">
+            <div class="msg-section-head">
+              <span class="msg-section-title"><span class="material-symbols-outlined">security</span>Linking security</span>
+            </div>
+            <div class="msg-section-body" style="display:flex;flex-direction:column;gap:10px">
+              <div class="msg-kv">
+                <div class="msg-kv-row"><span class="msg-kv-key">Token lifetime</span><span class="msg-kv-val">120 seconds, single-use</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Verification</span><span class="msg-kv-val">Bot confirms token with backend over TLS</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Identity proof</span><span class="msg-kv-val">Telegram chat ID — never a username</span></div>
+                <div class="msg-kv-row"><span class="msg-kv-key">Session secrets</span><span class="msg-kv-val" style="color:var(--danger)">Never requested</span></div>
+              </div>
+              <div class="msg-notice info" style="margin:0"><span class="material-symbols-outlined">info</span><span>Currently linked: <strong>Nrinphouneta Hok</strong> · Chat ID <span class="num">583920144</span> · since 2026-06-18 10:42</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: destinations ── -->
+    <div class="tg-tab-panel" data-panel="destinations" style="display:none">
+      <div class="msg-section">
+        <div class="msg-section-head">
+          <span class="msg-section-title"><span class="material-symbols-outlined">destination</span>Approved Telegram destinations</span>
+          <button class="btn btn-ghost btn-sm" onclick="window.toast('Add destination (demo)','info')"><span class="material-symbols-outlined">add</span>Add destination</button>
+        </div>
+        <div class="msg-section-body flush">
+          <div class="msg-table-wrap">
+            <table class="msg-table">
+              <thead><tr><th>Name</th><th>Type</th><th>Target</th><th>Scope</th><th>Status</th><th></th></tr></thead>
+              <tbody id="destBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="msg-notice info" style="margin-top:14px">
+        <span class="material-symbols-outlined">info</span>
+        <span>Only school-approved groups and channels can receive broadcasts. The bot must be a member of a channel with posting rights before it can deliver there.</span>
+      </div>
+    </div>
+
+    <!-- ── TAB: categories ── -->
+    <div class="tg-tab-panel" data-panel="categories" style="display:none">
+      <div class="msg-section">
+        <div class="msg-section-head">
+          <span class="msg-section-title"><span class="material-symbols-outlined">tune</span>Telegram delivery categories</span>
+          <span class="msg-tag gray" id="tgCatCount"></span>
+        </div>
+        <div id="tgCatList"></div>
+      </div>
+    </div>
+
+    <!-- ── TAB: deliveries ── -->
+    <div class="tg-tab-panel" data-panel="deliveries" style="display:none">
+      <div class="msg-toolbar">
+        <div class="msg-search">
+          <span class="material-symbols-outlined">search</span>
+          <input type="search" id="dlSearch" placeholder="Search delivery log…" autocomplete="off" aria-label="Search delivery log">
+        </div>
+        <select class="msg-select" id="dlStatus" aria-label="Filter by status">
+          <option value="">All statuses</option>
+          <option value="delivered">Delivered</option>
+          <option value="failed">Failed</option>
+          <option value="retrying">Retrying</option>
+        </select>
+      </div>
+      <div class="msg-section">
+        <div class="msg-section-head">
+          <span class="msg-section-title"><span class="material-symbols-outlined">receipt_long</span>Delivery attempts</span>
+          <span class="msg-tag gray" id="dlCount"></span>
+        </div>
+        <div class="msg-section-body flush">
+          <div class="msg-table-wrap">
+            <table class="msg-table">
+              <thead><tr><th>Timestamp</th><th>Category</th><th>Target</th><th>Detail</th><th>Attempts</th><th>Status</th><th></th></tr></thead>
+              <tbody id="dlBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Link token modal -->
+<div class="modal-overlay" id="tokenModal" style="display:none">
+  <div class="modal-card" style="max-width:460px;width:92vw">
+    <div class="modal-head">
+      <h3>Connect Telegram</h3>
+      <button class="icon-btn" id="tokenClose" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="msg-notice info" style="margin-bottom:14px">
+        <span class="material-symbols-outlined">security</span>
+        <span>A short-lived, single-use token has been generated. Open <strong>@NGIS_NotifyBot</strong> in Telegram and send it this token.</span>
+      </div>
+      <div style="text-align:center;padding:18px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--r-md);margin-bottom:14px">
+        <div style="font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Linking token · expires in 120s</div>
+        <div style="font-family:var(--mono);font-size:20px;letter-spacing:.12em;font-weight:600" id="tokenValue">NGIS-7Q2K-9X4P</div>
+      </div>
+      <div class="msg-steps" style="margin-bottom:14px">
+        <div class="msg-step done"><div class="msg-step-num">1</div><div><div class="msg-step-title">Token generated</div><div class="msg-step-desc">Backend created a single-use token for this session.</div></div></div>
+        <div class="msg-step active"><div class="msg-step-num">2</div><div><div class="msg-step-title">Send token to the bot</div><div class="msg-step-desc">Open @NGIS_NotifyBot → Start → send the token above.</div></div></div>
+        <div class="msg-step"><div class="msg-step-num">3</div><div><div class="msg-step-title">Bot verifies</div><div class="msg-step-desc">The bot confirms the token and returns your Telegram chat ID.</div></div></div>
+        <div class="msg-step"><div class="msg-step-num">4</div><div><div class="msg-step-title">Confirm connection</div><div class="msg-step-desc">The chat ID is securely associated with your school account.</div></div></div>
+      </div>
+      <button class="btn btn-primary btn-sm" style="width:100%;justify-content:center" id="tokenVerifyBtn"><span class="material-symbols-outlined">verified</span>I have sent the token</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.PAGE = { role: 'admin', active: 'telegram-config' };
+</script>
+<script>window.HERO_CONFIG = {
+  name: 'Heng Samnang',
+  id: 'Staff ID: ADM-2026-0001',
+  grade: 'Administration',
+  avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: '../admin/admin-settings.html',
+  notifLink: '../admin/admin-logs.html',
+  chatLink: 'department-channels.html',
+  notifCount: 3,
+  ddRows: [
+    { icon: 'admin_panel_settings', text: 'Super Administrator' },
+    { icon: 'location_city', text: 'Sen Sok Campus' },
+    { icon: 'email', text: 'h.samnang@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Since 2018' }
+  ],
+  title: 'Telegram Bot Configuration',
+  greeting: 'Secure Telegram delivery channel configuration.',
+  breadcrumbs: [{ label: 'Messaging', href: 'messaging-dashboard.html' }, { label: 'Telegram Configuration' }]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script src="../../assets/js/messaging-data.js"></script>
+<script>
+(function () {
+  var M = window.MSG;
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  if (!M.can('telegram')) {
+    document.getElementById('tgPage').innerHTML =
+      '<div class="msg-page-head"><div><div class="msg-eyebrow">Integration</div><h1 class="msg-title">Telegram Bot Configuration</h1></div></div>' +
+      '<div class="msg-section"><div class="msg-empty"><span class="material-symbols-outlined">admin_panel_settings</span>' +
+      '<h4>Administrators only</h4><p>Telegram integration configuration is restricted to authorized administrators.</p></div></div>';
+    return;
+  }
+
+  var tg = M.telegram;
+
+  /* Health badge */
+  var h = document.getElementById('tgHealth');
+  h.className = 'msg-health';
+  h.innerHTML = '<span class="dot"></span>' + tg.health + ' · ' + tg.latency;
+
+  /* Tabs */
+  document.getElementById('tgTabs').addEventListener('click', function (e) {
+    var tab = e.target.closest('.msg-tab');
+    if (!tab) return;
+    document.querySelectorAll('#tgTabs .msg-tab').forEach(function (t) { t.classList.remove('active'); });
+    tab.classList.add('active');
+    document.querySelectorAll('.tg-tab-panel').forEach(function (p) { p.style.display = 'none'; });
+    document.querySelector('.tg-tab-panel[data-panel="' + tab.dataset.tab + '"]').style.display = '';
+  });
+
+  /* Category summary (status tab) */
+  var onCount = tg.deliveries.length ? M.notifCategories.filter(function (c) { return c.telegram; }).length : 0;
+  document.getElementById('tgCatSummary').innerHTML =
+    '<div class="msg-kv"><div class="msg-kv-row"><span class="msg-kv-key">Categories enabled</span><span class="msg-kv-val num">' + onCount + ' of ' + M.notifCategories.length + '</span></div>' +
+    '<div class="msg-kv-row"><span class="msg-kv-key">Linked accounts</span><span class="msg-kv-val num">3 users</span></div>' +
+    '<div class="msg-kv-row"><span class="msg-kv-key">Active destinations</span><span class="msg-kv-val num">' + tg.destinations.filter(function (d) { return d.active; }).length + ' of ' + tg.destinations.length + '</span></div></div>';
+
+  /* Linking steps */
+  var steps = [
+    { t: 'Select Connect Telegram', d: 'Choose the Connect Telegram action on this page.' },
+    { t: 'Backend generates token', d: 'A short-lived, single-use linking token is created server-side.' },
+    { t: 'Open the official school bot', d: 'Start @NGIS_NotifyBot in Telegram — never share your token with anyone else.' },
+    { t: 'Bot verifies the token', d: 'The bot validates the token and returns your Telegram chat ID to the backend.' },
+    { t: 'Backend associates the account', d: 'The chat ID is securely linked to your authenticated school account.' },
+    { t: 'Confirm connection', d: 'You confirm the link and choose which categories to receive.' }
+  ];
+  document.getElementById('linkSteps').innerHTML = '<div class="msg-steps">' + steps.map(function (s, i) {
+    var cls = tg.linked && i < 6 ? 'done' : '';
+    return '<div class="msg-step ' + cls + '"><div class="msg-step-num">' + (i + 1) + '</div><div><div class="msg-step-title">' + esc(s.t) + '</div><div class="msg-step-desc">' + esc(s.d) + '</div></div></div>';
+  }).join('') + '</div>';
+
+  var linkState = document.getElementById('linkState');
+  function refreshLinkState() {
+    if (tg.linked) {
+      linkState.className = 'msg-tag green';
+      linkState.textContent = 'Linked · ' + tg.chatId;
+    } else {
+      linkState.className = 'msg-tag gray';
+      linkState.textContent = 'Not linked';
+    }
+  }
+  refreshLinkState();
+
+  /* Link / unlink */
+  var tokenModal = document.getElementById('tokenModal');
+  document.getElementById('linkBtn').addEventListener('click', function () {
+    if (tg.linked) { window.toast('Account already linked', 'info'); return; }
+    document.getElementById('tokenValue').textContent = 'NGIS-' + Math.random().toString(36).slice(2, 6).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    tokenModal.style.display = 'flex';
+  });
+  document.getElementById('tokenClose').addEventListener('click', function () { tokenModal.style.display = 'none'; });
+  tokenModal.addEventListener('click', function (e) { if (e.target === tokenModal) tokenModal.style.display = 'none'; });
+  document.getElementById('tokenVerifyBtn').addEventListener('click', function () {
+    tokenModal.style.display = 'none';
+    tg.linked = true;
+    refreshLinkState();
+    window.toast('Telegram account linked — chat ID 583920144 (demo)', 'success');
+  });
+  document.getElementById('unlinkBtn').addEventListener('click', function () {
+    tg.linked = false;
+    refreshLinkState();
+    window.toast('Telegram account disconnected', 'info');
+  });
+
+  /* Destinations */
+  function renderDest() {
+    document.getElementById('destBody').innerHTML = tg.destinations.map(function (d) {
+      return '<tr><td style="font-weight:500">' + esc(d.name) + '</td><td><span class="msg-tag ' + (d.type === 'channel' ? 'blue' : '') + '">' + esc(d.type) + '</span></td>' +
+        '<td class="num" style="font-family:var(--mono);font-size:11.5px">' + esc(d.target) + '</td><td>' + esc(d.scope) + '</td>' +
+        '<td>' + (d.active ? '<span class="msg-tag green">Active</span>' : '<span class="msg-tag gray">Paused</span>') + '</td>' +
+        '<td><button class="msg-ic-btn" title="' + (d.active ? 'Pause' : 'Activate') + '" onclick="window.toast(\'Destination ' + (d.active ? 'paused' : 'activated') + ' (demo)\',\'info\')"><span class="material-symbols-outlined">' + (d.active ? 'pause' : 'play_arrow') + '</span></button></td></tr>';
+    }).join('');
+  }
+  renderDest();
+
+  /* Category matrix */
+  function renderTgCats() {
+    var cats = M.notifCategories.filter(function (c) { return c.telegram || c.key === 'dm' || c.key === 'important'; });
+    document.getElementById('tgCatCount').textContent = cats.filter(function (c) { return c.telegram; }).length + ' of ' + cats.length + ' enabled';
+    document.getElementById('tgCatList').innerHTML = cats.map(function (c) {
+      return '<div class="msg-setting"><div class="msg-setting-main"><div class="msg-setting-label">' + esc(c.label) + '</div><div class="msg-setting-desc">' + esc(c.desc) + '</div></div>' +
+        '<div class="msg-setting-ctrl"><label class="switch"><input type="checkbox" data-tgcat="' + c.key + '"' + (c.telegram ? ' checked' : '') + '><span></span></label></div></div>';
+    }).join('');
+  }
+  renderTgCats();
+  document.getElementById('tgCatList').addEventListener('change', function (e) {
+    if (e.target.dataset && e.target.dataset.tgcat) {
+      window.toast('Telegram category ' + (e.target.checked ? 'enabled' : 'disabled') + ' (demo)', 'success');
+    }
+  });
+
+  /* Delivery log */
+  var dlQ = '', dlStatus = '';
+  function renderDl() {
+    var list = tg.deliveries.filter(function (d) {
+      if (dlStatus && d.status !== dlStatus) return false;
+      if (dlQ && (d.category + ' ' + d.target + ' ' + d.detail).toLowerCase().indexOf(dlQ) === -1) return false;
+      return true;
+    });
+    document.getElementById('dlCount').textContent = list.length + ' records';
+    document.getElementById('dlBody').innerHTML = list.length ? list.map(function (d) {
+      var st = d.status === 'delivered' ? '<span class="msg-tag green">Delivered</span>' :
+        d.status === 'failed' ? '<span class="msg-tag red">Failed</span>' : '<span class="msg-tag amber">Retrying</span>';
+      return '<tr><td class="num" style="white-space:nowrap">' + esc(d.ts) + '</td><td>' + esc(d.category) + '</td>' +
+        '<td class="num" style="font-family:var(--mono);font-size:11.5px">' + esc(d.target) + '</td><td>' + esc(d.detail) + '</td>' +
+        '<td class="num">' + d.attempts + '</td><td>' + st + '</td>' +
+        '<td><button class="msg-ic-btn" title="Retry" onclick="window.toast(\'Retry queued (demo)\',\'success\')"><span class="material-symbols-outlined">restart_alt</span></button></td></tr>';
+    }).join('') : '<tr><td colspan="7"><div class="msg-empty"><h4>No records</h4><p>Adjust your filters.</p></div></td></tr>';
+  }
+  renderDl();
+  document.getElementById('dlSearch').addEventListener('input', function () { dlQ = this.value.trim().toLowerCase(); renderDl(); });
+  document.getElementById('dlStatus').addEventListener('change', function () { dlStatus = this.value; renderDl(); });
+})();
+</script>
+</body>
+</html>

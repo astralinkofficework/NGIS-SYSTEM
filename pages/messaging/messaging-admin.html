@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Messaging Administration — NGIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/messaging.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+</head>
+<body data-page="messaging">
+<main class="main">
+  <div id="heroBanner"></div>
+  <div class="msg-page" id="adminPage">
+
+    <div class="msg-page-head">
+      <div>
+        <div class="msg-eyebrow">Administration</div>
+        <h1 class="msg-title">Messaging Administration</h1>
+        <p class="msg-subtitle">Health, moderation and policy controls for the school messaging system. Access to message content follows school policy and is audit-logged.</p>
+      </div>
+      <div class="msg-head-actions">
+        <a class="btn btn-ghost btn-sm" href="audit-logs.html"><span class="material-symbols-outlined">history</span>Audit logs</a>
+        <a class="btn btn-primary btn-sm" href="telegram-config.html"><span class="material-symbols-outlined">smart_toy</span>Telegram configuration</a>
+      </div>
+    </div>
+
+    <!-- Health stats -->
+    <div class="msg-stats">
+      <div class="msg-stat"><div class="msg-stat-ico"><span class="material-symbols-outlined">monitor_heart</span></div><div><div class="msg-stat-val">99.8%</div><div class="msg-stat-label">Service uptime (30d)</div></div></div>
+      <div class="msg-stat"><div class="msg-stat-ico" style="background:var(--accent-soft);color:#7A5C00"><span class="material-symbols-outlined">smart_toy</span></div><div><div class="msg-stat-val">24 ms</div><div class="msg-stat-label">Telegram API latency</div></div></div>
+      <div class="msg-stat"><div class="msg-stat-ico" style="background:var(--danger-soft);color:var(--danger)"><span class="material-symbols-outlined">error</span></div><div><div class="msg-stat-val">2</div><div class="msg-stat-label">Failed deliveries (24h)</div></div></div>
+      <div class="msg-stat"><div class="msg-stat-ico" style="background:var(--warning-soft);color:var(--warning)"><span class="material-symbols-outlined">flag</span></div><div><div class="msg-stat-val">2</div><div class="msg-stat-label">Pending reports</div></div></div>
+    </div>
+
+    <div class="msg-split">
+      <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+
+        <!-- Moderation queue -->
+        <div class="msg-section">
+          <div class="msg-section-head">
+            <span class="msg-section-title"><span class="material-symbols-outlined">flag</span>Moderation queue</span>
+            <span class="msg-tag amber" id="reportCount"></span>
+          </div>
+          <div class="msg-section-body" id="reportList"></div>
+        </div>
+
+        <!-- Delivery failures -->
+        <div class="msg-section">
+          <div class="msg-section-head">
+            <span class="msg-section-title"><span class="material-symbols-outlined">error</span>Delivery failures</span>
+            <a class="msg-section-link" href="telegram-config.html">All deliveries<span class="material-symbols-outlined">arrow_forward</span></a>
+          </div>
+          <div class="msg-section-body flush">
+            <div class="msg-table-wrap">
+              <table class="msg-table">
+                <thead><tr><th>Time</th><th>Category</th><th>Target</th><th>Detail</th><th>Attempts</th><th>Status</th><th></th></tr></thead>
+                <tbody id="failureBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+
+        <!-- Policy configuration -->
+        <div class="msg-section">
+          <div class="msg-section-head">
+            <span class="msg-section-title"><span class="material-symbols-outlined">policy</span>Group creation rules</span>
+          </div>
+          <div class="msg-section-body">
+            <label class="msg-checkbox-row" style="margin-bottom:10px">
+              <input type="checkbox" checked>
+              <span>Students may create groups with eligible school users only</span>
+            </label>
+            <label class="msg-checkbox-row" style="margin-bottom:10px">
+              <input type="checkbox" checked>
+              <span>Require school directory membership (no arbitrary Telegram accounts)</span>
+            </label>
+            <label class="msg-checkbox-row">
+              <input type="checkbox">
+              <span>Staff approval required for new student groups</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="msg-section">
+          <div class="msg-section-head">
+            <span class="msg-section-title"><span class="material-symbols-outlined">attach_file</span>Attachment restrictions</span>
+          </div>
+          <div class="msg-section-body">
+            <div class="msg-kv">
+              <div class="msg-kv-row"><span class="msg-kv-key">Allowed types</span><span class="msg-kv-val">PDF, DOCX, JPG, PNG, ZIP</span></div>
+              <div class="msg-kv-row"><span class="msg-kv-key">Max file size</span><span class="msg-kv-val">25 MB</span></div>
+              <div class="msg-kv-row"><span class="msg-kv-key">Blocked</span><span class="msg-kv-val" style="color:var(--danger)">Executables, scripts, archives with binaries</span></div>
+              <div class="msg-kv-row"><span class="msg-kv-key">Malware scan</span><span class="msg-kv-val" style="color:var(--success)">Enabled</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg-section">
+          <div class="msg-section-head">
+            <span class="msg-section-title"><span class="material-symbols-outlined">history</span>Retention policy</span>
+          </div>
+          <div class="msg-section-body">
+            <div class="msg-kv">
+              <div class="msg-kv-row"><span class="msg-kv-key">Direct messages</span><span class="msg-kv-val">365 days, then auto-archive</span></div>
+              <div class="msg-kv-row"><span class="msg-kv-key">Announcements</span><span class="msg-kv-val">Permanent</span></div>
+              <div class="msg-kv-row"><span class="msg-kv-key">Audit logs</span><span class="msg-kv-val">7 years</span></div>
+              <div class="msg-kv-row"><span class="msg-kv-key">Deletion requests</span><span class="msg-kv-val">Processed in 30 days</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telegram linking status -->
+        <div class="msg-section">
+          <div class="msg-section-head">
+            <span class="msg-section-title"><span class="material-symbols-outlined">smart_toy</span>Telegram linking</span>
+          </div>
+          <div class="msg-section-body" id="linkingList"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+window.PAGE = { role: 'admin', active: 'messaging-admin' };
+</script>
+<script>window.HERO_CONFIG = {
+  name: 'Heng Samnang',
+  id: 'Staff ID: ADM-2026-0001',
+  grade: 'Administration',
+  avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: '../admin/admin-settings.html',
+  notifLink: '../admin/admin-logs.html',
+  chatLink: 'department-channels.html',
+  notifCount: 3,
+  ddRows: [
+    { icon: 'admin_panel_settings', text: 'Super Administrator' },
+    { icon: 'location_city', text: 'Sen Sok Campus' },
+    { icon: 'email', text: 'h.samnang@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Since 2018' }
+  ],
+  title: 'Messaging Administration',
+  greeting: 'Health, moderation and policy controls.',
+  breadcrumbs: [{ label: 'Messaging', href: 'messaging-dashboard.html' }, { label: 'Administration' }]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script src="../../assets/js/messaging-data.js"></script>
+<script>
+(function () {
+  var M = window.MSG;
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  /* Gate: admin only */
+  if (!M.can('admin')) {
+    document.getElementById('adminPage').innerHTML =
+      '<div class="msg-page-head"><div><div class="msg-eyebrow">Administration</div><h1 class="msg-title">Messaging Administration</h1></div></div>' +
+      '<div class="msg-section"><div class="msg-empty"><span class="material-symbols-outlined">admin_panel_settings</span>' +
+      '<h4>Administrators only</h4><p>Messaging administration is restricted to authorized administrators. Contact your Super Admin for access.</p></div></div>';
+    return;
+  }
+
+  /* Reports */
+  var reports = M.reports.filter(function (r) { return r.status === 'pending'; });
+  document.getElementById('reportCount').textContent = reports.length + ' pending';
+  document.getElementById('reportList').innerHTML = reports.length ? reports.map(function (r) {
+    var sev = r.severity === 'high' ? '<span class="msg-tag red">High severity</span>' : '<span class="msg-tag amber">Medium</span>';
+    return '<div class="msg-row" style="align-items:flex-start">' +
+      '<div class="msg-ava sm" style="background:var(--danger)"><span class="material-symbols-outlined" style="font-size:16px">flag</span></div>' +
+      '<div class="msg-row-main" style="min-width:0">' +
+      '<div class="msg-row-top"><span class="msg-row-name">' + esc(r.reason) + ' · ' + esc(r.target) + '</span><span class="msg-row-time">' + esc(r.time) + '</span></div>' +
+      '<div class="msg-row-sub">Reported by ' + esc(r.reporter) + ' (' + esc(r.reporterRole) + ') · ' + esc(r.conv) + '</div>' +
+      '<div class="msg-row-preview">' + esc(r.preview) + '</div>' +
+      '<div style="display:flex;gap:6px;margin-top:6px">' + sev + '</div></div>' +
+      '<div class="msg-row-side"><div style="display:flex;gap:8px">' +
+      '<button class="btn btn-ghost btn-sm" onclick="window.toast(\'Report reviewed — content hidden (demo)\',\'info\')">Review</button>' +
+      '<button class="btn btn-danger btn-sm" onclick="window.toast(\'Target suspended from messaging (demo)\',\'warning\')">Suspend</button>' +
+      '</div></div></div>';
+  }).join('') : '<div class="msg-empty"><h4>Queue clear</h4><p>No pending reports.</p></div>';
+
+  /* Delivery failures */
+  var failures = M.telegram.deliveries.filter(function (d) { return d.status === 'failed' || d.status === 'retrying'; });
+  document.getElementById('failureBody').innerHTML = failures.length ? failures.map(function (d) {
+    var st = d.status === 'failed' ? '<span class="msg-tag red">Failed</span>' : '<span class="msg-tag amber">Retrying</span>';
+    return '<tr><td class="num" style="white-space:nowrap">' + esc(d.ts) + '</td><td>' + esc(d.category) + '</td><td class="num">' + esc(d.target) + '</td>' +
+      '<td>' + esc(d.detail) + '</td><td class="num">' + d.attempts + '</td><td>' + st + '</td>' +
+      '<td><button class="msg-ic-btn" title="Retry now" onclick="window.toast(\'Delivery retry queued (demo)\',\'success\')"><span class="material-symbols-outlined">restart_alt</span></button></td></tr>';
+  }).join('') : '<tr><td colspan="7"><div class="msg-empty"><h4>No failures</h4><p>All deliveries succeeded in the last 24 hours.</p></div></td></tr>';
+
+  /* Telegram linking status */
+  var linked = [
+    { name: 'Nrinphouneta Hok', role: 'Student', chatId: '583920144', at: '2026-06-18' },
+    { name: 'Dr. Sarah Jenkins', role: 'Teacher', chatId: '612044837', at: '2026-06-10' },
+    { name: 'Heng Samnang', role: 'Super Admin', chatId: '778102394', at: '2026-05-22' }
+  ];
+  document.getElementById('linkingList').innerHTML = '<div class="msg-list">' + linked.map(function (u) {
+    return '<div class="msg-row"><div class="msg-ava sm" style="background:var(--success)"><span class="material-symbols-outlined" style="font-size:15px">check</span></div>' +
+      '<div class="msg-row-main"><span class="msg-row-name">' + esc(u.name) + '</span><div class="msg-row-sub">' + esc(u.role) + ' · Linked ' + esc(u.at) + '</div></div>' +
+      '<span class="msg-tag gray num">ID ' + esc(u.chatId) + '</span></div>';
+  }).join('') + '</div>';
+})();
+</script>
+</body>
+</html>

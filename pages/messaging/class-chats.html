@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Class Chats — NGIS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/chat.css">
+<link rel="stylesheet" href="../../assets/css/messaging.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+</head>
+<body data-page="chat">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <div class="chat-shell">
+    <!-- LEFT: Campus → Grade → Class tree -->
+    <aside class="conv-panel" id="classPanel" aria-label="Class chats">
+      <div class="cp-head">
+        <h2>Class Chats</h2>
+        <button class="chat-icon-btn" aria-label="Search classes" title="Search classes" onclick="document.getElementById('classSearch').focus()">
+          <span class="material-symbols-outlined">search</span>
+        </button>
+      </div>
+      <div class="cp-search">
+        <div class="chat-search-wrap">
+          <span class="material-symbols-outlined" aria-hidden="true">search</span>
+          <input type="search" id="classSearch" placeholder="Search classes…" autocomplete="off" aria-label="Search classes">
+        </div>
+      </div>
+      <div class="conv-list" id="classTree" role="tree" aria-label="Classes by campus" style="padding:8px"></div>
+      <div class="msg-notice info" style="margin:8px;border-radius:10px">
+        <span class="material-symbols-outlined">info</span>
+        <span>Class chats are generated automatically from enrollment. Membership syncs when students or teachers change class — you cannot join a class you are not assigned to.</span>
+      </div>
+    </aside>
+
+    <!-- RIGHT: Chat window -->
+    <section class="chat-win" id="chatWin" aria-label="Class chat window">
+      <!-- Empty state -->
+      <div class="chat-select-state" id="chatSelectState">
+        <div class="ico-wrap"><span class="material-symbols-outlined">school</span></div>
+        <h3>Select a class chat</h3>
+        <p>Choose your class from the campus list to open the class conversation.</p>
+      </div>
+
+      <!-- Active chat -->
+      <div class="chat-active" id="chatActive" style="display:none" aria-live="polite">
+        <header class="chat-header">
+          <button class="chat-icon-btn back-btn" id="backBtn" aria-label="Back to class list">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <div class="class-header-ava" id="chatHAva" style="background:#0e7490">10A</div>
+          <div class="chat-hinfo">
+            <span class="chat-hname" id="chatHName">Class 10A</span>
+            <span class="chat-hstatus" id="chatHMeta">28 members · Homeroom: Dr. Sarah Jenkins</span>
+          </div>
+          <div class="chat-hactions">
+            <button class="chat-icon-btn" id="pinBtn" aria-label="View pinned messages" title="Pinned messages">
+              <span class="material-symbols-outlined">push_pin</span>
+            </button>
+            <button class="chat-icon-btn" id="searchMsgBtn" aria-label="Search in class" title="Search in class">
+              <span class="material-symbols-outlined">search</span>
+            </button>
+            <button class="chat-icon-btn" aria-label="More options" title="More options">
+              <span class="material-symbols-outlined">more_vert</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="msg-area" id="msgArea" role="log" aria-label="Class messages">
+          <div class="msg-date-sep">Yesterday</div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble sender-row"><span class="sender-name" style="color:#0e7490">Dr. Sarah Jenkins</span> · Teacher<br>Reminder: Semester 2 quiz on Monday. Review Chapter 5 exercises 1–8.</div>
+              <div class="msg-meta"><span>02:30 PM</span></div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble sender-row grp-mid"><span class="sender-name" style="color:#16a34a">Ratha Sok</span> · Student<br>Is the quiz open-book?</div>
+              <div class="msg-meta"><span>02:41 PM</span></div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble sender-row grp-mid"><span class="sender-name" style="color:#0e7490">Dr. Sarah Jenkins</span> · Teacher<br>Closed-book. Focus on formulas from pages 142–158.</div>
+              <div class="msg-meta"><span>02:44 PM</span></div>
+            </div>
+          </div>
+          <div class="msg-date-sep">Today</div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble sender-row grp-mid"><span class="sender-name" style="color:#16a34a">Ly Channary</span> · Student<br>Good morning! Has anyone started the Chapter 6 problems?</div>
+              <div class="msg-meta"><span>07:45 AM</span></div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble sender-row grp-mid"><span class="sender-name" style="color:#7c3aed">Vuth Dara</span> · Student<br>I finished exercises 5.1–5.4. Problem 5.3b was tricky!</div>
+              <div class="msg-meta"><span>07:52 AM</span></div>
+            </div>
+          </div>
+          <div class="msg-row">
+            <div class="msg-ava-spacer"></div>
+            <div class="msg-group">
+              <div class="msg-bubble sender-row"><span class="sender-name" style="color:#0e7490">Dr. Sarah Jenkins</span> · Teacher<br>Good morning class! Today's session starts at 10:00 AM in Room 12B. 🌟</div>
+              <div class="msg-meta"><span>08:00 AM</span></div>
+            </div>
+          </div>
+          <div class="msg-row out">
+            <div class="msg-group">
+              <div class="msg-bubble sender-row">Will we cover integration by parts today?</div>
+              <div class="msg-meta"><span>08:15 AM</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="typing-row" id="typingRow" style="display:none">
+          <div class="msg-ava-spacer"></div>
+          <div class="typing-bubble"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>
+          <span class="typing-name" id="typingName"></span>
+        </div>
+
+        <!-- Input -->
+        <div class="msg-input-area">
+          <form class="msg-form" id="msgForm" aria-label="Send a class message">
+            <button type="button" class="chat-icon-btn" aria-label="Attach file" title="Attach file" onclick="window.toast('File upload opens in the Attachments module (demo)','info')">
+              <span class="material-symbols-outlined">attach_file</span>
+            </button>
+            <div class="msg-input-wrap">
+              <textarea id="msgInput" placeholder="Message your class… (teacher posting policy applies)" rows="1" maxlength="2000" aria-label="Message text" autocomplete="off"></textarea>
+            </div>
+            <button type="submit" class="chat-icon-btn send-btn" id="sendBtn" aria-label="Send" disabled>
+              <span class="material-symbols-outlined">send</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Pinned drawer -->
+<div class="modal-overlay" id="pinModal" style="display:none">
+  <div class="modal-card" style="max-width:520px;width:92vw">
+    <div class="modal-head">
+      <h3>Pinned messages</h3>
+      <button class="icon-btn" id="pinClose" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body" id="pinList" style="padding:12px"></div>
+  </div>
+</div>
+
+<script>
+window.PAGE = { role: 'student', active: 'class-chat' };
+</script>
+<script>window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: '../student/student-profile.html',
+  notifLink: '../student/student-notifications.html',
+  chatLink: 'class-chats.html',
+  notifCount: 3,
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A · Sen Sok' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
+    { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
+  ],
+  title: 'Class Chats',
+  greeting: 'Automatic class conversations — Campus → Grade → Class.',
+  breadcrumbs: [{ label: 'Messaging', href: 'messaging-dashboard.html' }, { label: 'Class Chats' }]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script src="../../assets/js/messaging-data.js"></script>
+<script>
+(function () {
+  var M = window.MSG;
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  var tree = document.getElementById('classTree');
+  var chatActive = document.getElementById('chatActive');
+  var chatSelectState = document.getElementById('chatSelectState');
+  var convPanel = document.getElementById('classPanel');
+  var chatWin = document.getElementById('chatWin');
+  var backBtn = document.getElementById('backBtn');
+  var msgArea = document.getElementById('msgArea');
+  var msgInput = document.getElementById('msgInput');
+  var sendBtn = document.getElementById('sendBtn');
+
+  /* ── Render campus → grade → class tree ── */
+  var CLASS_COLORS = ['#0e7490', '#16a34a', '#7c3aed', '#b45309', '#2563eb', '#db2777', '#0f766e', '#ea580c'];
+  function renderTree(filter) {
+    filter = (filter || '').toLowerCase();
+    var html = '';
+    M.campusTree.forEach(function (campus) {
+      var campusHtml = '';
+      campus.grades.forEach(function (g) {
+        var gradeHtml = '';
+        g.classes.forEach(function (c) {
+          if (filter && (c.name + ' ' + campus.campus + ' ' + g.grade + ' ' + c.homeroom).toLowerCase().indexOf(filter) === -1) return;
+          gradeHtml += '<div class="msg-class-row" role="treeitem" tabindex="0" data-class="' + c.id + '">' +
+            '<div class="msg-class-ava" style="background:' + CLASS_COLORS[c.id.charCodeAt(c.id.length-1) % CLASS_COLORS.length] + '">' + esc(c.name.replace('Class ','')) + '</div>' +
+            '<div style="flex:1;min-width:0"><div class="msg-class-name">' + esc(c.name) + '</div>' +
+            '<div class="msg-class-meta">' + esc(g.grade) + ' · ' + c.members + ' members · ' + esc(c.homeroom) + '</div></div>' +
+            (c.unread ? '<span class="msg-badge">' + c.unread + '</span>' : '') +
+            '</div>';
+        });
+        if (gradeHtml) {
+          campusHtml += '<div class="msg-grade"><div class="msg-grade-label"><span class="material-symbols-outlined">grade</span>' + esc(g.grade) + '</div>' + gradeHtml + '</div>';
+        }
+      });
+      if (campusHtml) {
+        var nClasses = campus.grades.reduce(function (a, g) { return a + g.classes.length; }, 0);
+        var nMembers = campus.grades.reduce(function (a, g) { return a + g.classes.reduce(function (b, c) { return b + c.members; }, 0); }, 0);
+        html += '<div class="msg-campus"><div class="msg-campus-head"><span class="material-symbols-outlined">location_city</span>' +
+          '<span class="msg-campus-name">' + esc(campus.campus) + '</span>' +
+          '<span class="msg-campus-meta">' + nClasses + ' classes · ' + nMembers + ' students</span></div>' + campusHtml + '</div>';
+      }
+    });
+    tree.innerHTML = html || '<div class="msg-empty"><span class="material-symbols-outlined">search_off</span><h4>No classes found</h4><p>Try a different class, grade, or campus name.</p></div>';
+  }
+  renderTree();
+
+  /* ── Open a class chat ── */
+  function openClass(classId) {
+    var found = null;
+    M.campusTree.forEach(function (campus) {
+      campus.grades.forEach(function (g) {
+        g.classes.forEach(function (c) { if (c.id === classId) { found = { c: c, grade: g.grade, campus: campus.campus }; } });
+      });
+    });
+    if (!found) return;
+    var c = found.c;
+    tree.querySelectorAll('.msg-class-row').forEach(function (el) { el.classList.toggle('active', el.dataset.class === classId); });
+    document.getElementById('chatHAva').textContent = c.name.replace('Class ', '');
+    document.getElementById('chatHName').textContent = c.name + ' · ' + found.grade;
+    document.getElementById('chatHMeta').textContent = c.members + ' members · Homeroom: ' + c.homeroom + ' · ' + found.campus;
+    document.getElementById('msgInput').placeholder = 'Message ' + c.name + '…';
+
+    var firstOpen = chatActive.style.display !== 'flex';
+    if (firstOpen) {
+      chatSelectState.style.display = 'none';
+      chatActive.style.display = 'flex';
+      void chatActive.offsetWidth;
+      chatActive.classList.add('anim-in');
+      msgArea.scrollTop = msgArea.scrollHeight;
+    }
+    if (window.innerWidth <= 1024) {
+      convPanel.classList.add('hidden-mobile');
+      chatWin.classList.add('show-mobile');
+      document.body.classList.add('chat-open');
+    }
+  }
+
+  tree.addEventListener('click', function (e) {
+    var row = e.target.closest('.msg-class-row');
+    if (row) openClass(row.dataset.class);
+  });
+  tree.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { var row = e.target.closest('.msg-class-row'); if (row) openClass(row.dataset.class); }
+  });
+
+  /* ── Search filter ── */
+  document.getElementById('classSearch').addEventListener('input', function () { renderTree(this.value); });
+
+  /* ── Back (mobile) ── */
+  backBtn.addEventListener('click', function () {
+    convPanel.classList.remove('hidden-mobile');
+    chatWin.classList.remove('show-mobile');
+    document.body.classList.remove('chat-open');
+  });
+
+  /* ── Message input ── */
+  msgInput.addEventListener('input', function () {
+    sendBtn.disabled = !this.value.trim();
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 130) + 'px';
+  });
+  msgInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('msgForm').dispatchEvent(new Event('submit')); }
+  });
+
+  /* ── Send (demo: appends locally, simulates teacher reply in class) ── */
+  document.getElementById('msgForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var text = msgInput.value.trim();
+    if (!text) return;
+    var row = document.createElement('div');
+    row.className = 'msg-row out';
+    row.innerHTML = '<div class="msg-group"><div class="msg-bubble sender-row">' + esc(text) + '</div>' +
+      '<div class="msg-meta"><span>' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span></div></div>';
+    msgArea.appendChild(row);
+    msgInput.value = '';
+    msgInput.style.height = '';
+    sendBtn.disabled = true;
+    msgArea.scrollTop = msgArea.scrollHeight;
+    window.toast('Message sent to class chat (demo — no backend yet)', 'success');
+
+    /* Simulated homeroom reply */
+    var typing = document.getElementById('typingRow');
+    var typingName = document.getElementById('typingName');
+    typingName.textContent = 'Dr. Sarah Jenkins is typing';
+    typing.style.display = 'flex';
+    msgArea.scrollTop = msgArea.scrollHeight;
+    setTimeout(function () {
+      typing.style.display = 'none';
+      var reply = document.createElement('div');
+      reply.className = 'msg-row';
+      reply.innerHTML = '<div class="msg-ava-spacer"></div><div class="msg-group"><div class="msg-bubble sender-row"><span class="sender-name" style="color:#0e7490">Dr. Sarah Jenkins</span> · Teacher<br>Thanks for your question — I will cover this in tomorrow\u2019s session. 📚</div>' +
+        '<div class="msg-meta"><span>' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span></div></div>';
+      msgArea.appendChild(reply);
+      msgArea.scrollTop = msgArea.scrollHeight;
+    }, 2600);
+  });
+
+  /* ── Pinned messages drawer ── */
+  var pinModal = document.getElementById('pinModal');
+  document.getElementById('pinBtn').addEventListener('click', function () {
+    var pins = M.pinned.filter(function (p) { return p.convType === 'class'; });
+    document.getElementById('pinList').innerHTML = pins.length ? pins.map(function (p) {
+      return '<div style="padding:10px 6px;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-bottom:5px"><span style="font-weight:600;color:var(--heading)">' + esc(p.sender) + '</span><span>' + esc(p.date) + '</span></div>' +
+        '<div class="msg-bubble-card">' + esc(p.text) +
+        (p.attachment ? '<div class="attachment-line"><span class="material-symbols-outlined">description</span>' + esc(p.attachment.name) + ' · ' + esc(p.attachment.size) + '</div>' : '') +
+        '</div><div style="font-size:10.5px;color:var(--faint);margin-top:5px">Pinned by ' + esc(p.pinnedBy) + '</div></div>';
+    }).join('') : '<div class="msg-empty"><h4>No pinned messages</h4><p>Teachers can pin important class announcements here.</p></div>';
+    pinModal.style.display = 'flex';
+  });
+  document.getElementById('pinClose').addEventListener('click', function () { pinModal.style.display = 'none'; });
+  pinModal.addEventListener('click', function (e) { if (e.target === pinModal) pinModal.style.display = 'none'; });
+
+  /* ── Search in class (delegates to unified search) ── */
+  document.getElementById('searchMsgBtn').addEventListener('click', function () {
+    window.location.href = 'search.html?q=' + encodeURIComponent(document.getElementById('chatHName').textContent);
+  });
+})();
+</script>
+</body>
+</html>

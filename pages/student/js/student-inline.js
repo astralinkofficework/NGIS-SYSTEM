@@ -1,3 +1,7 @@
+// Mark this page so the shared layout engine suppresses its injected mobile dock —
+// the dashboard ships its own compact bottom nav (Home · Classes · Chat · Alerts · Profile).
+document.body.classList.add('student-dashboard');
+
 // Promo Slideshow
 (function () {
   var track  = document.getElementById('promoTrack');

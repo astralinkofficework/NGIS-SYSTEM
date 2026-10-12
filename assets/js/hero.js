@@ -265,16 +265,16 @@
   var hamburger = document.getElementById('htbHamburger');
   if (hamburger) {
     hamburger.addEventListener('click', function (e) {
-      if (hamburger.dataset.sidebarBound === 'true' || typeof window.toggleSidebar === 'function') {
-        // Handled exclusively by layout.js to avoid double-toggle
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      if (typeof window.toggleSidebar === 'function') {
+        window.toggleSidebar();
         return;
       }
       var sidebar = document.getElementById('sidebar');
       var scrim   = document.getElementById('scrim');
       if (!sidebar) return;
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
       var isOpen = sidebar.classList.contains('open');
       if (isOpen) {
         sidebar.classList.remove('open');

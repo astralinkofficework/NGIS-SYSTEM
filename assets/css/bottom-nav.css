@@ -38,6 +38,258 @@
     will-change: transform, opacity, filter;
   }
 
+  /* Suppress the legacy bottomnav across all student views in favor of .mob-bottomnav */
+  body.student-dashboard .bottomnav,
+  body[data-role="student"] .bottomnav,
+  body[data-page^="student"] .bottomnav,
+  body:has(.mob-bottomnav) .bottomnav {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════
+     NGIS STUDENT PORTAL — UNIFIED FLOATING BOTTOM NAVIGATION DOCK
+     (Single Design Reference: student.html)
+     ═════════════════════════════════════════════════════════════════════ */
+  .mob-bottomnav {
+    position: fixed;
+    left: 50%;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+    transform: translateX(-50%);
+    width: calc(100% - 24px);
+    max-width: 440px;
+    z-index: 80;
+    pointer-events: auto;
+    transform-origin: bottom center;
+    transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity, filter;
+  }
+  @media (min-width: 769px) {
+    .mob-bottomnav {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+    }
+  }
+  body.sidebar-open .mob-bottomnav,
+  body:has(#sidebar.open) .mob-bottomnav,
+  body:has(.scrim.show) .mob-bottomnav,
+  .mob-bottomnav.hidden-by-sidebar {
+    transform: translateX(-50%) translateY(calc(100% + 48px)) scale(0.88) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    filter: blur(8px) !important;
+    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease,
+                filter 0.3s ease !important;
+  }
+  .mob-bn-glow {
+    position: absolute;
+    inset: 6px 14px -8px 14px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(19,130,155,0.18), rgba(184,219,217,0.28), rgba(19,130,155,0.18));
+    filter: blur(18px);
+    opacity: 0.7;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .mob-bn-shell {
+    position: relative;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.16),
+                0 6px 16px -4px rgba(15, 23, 42, 0.08),
+                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95),
+                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.04);
+    padding: 6px 8px;
+    overflow: hidden;
+  }
+  .mob-bn-shell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .mob-bn-track {
+    position: relative;
+    width: 100%;
+  }
+  .mob-bn-slider {
+    position: absolute;
+    top: 4px;
+    height: 44px;
+    left: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(19,130,155,0.12), rgba(184,219,217,0.22));
+    border: 1px solid rgba(19,130,155,0.14);
+    box-shadow: inset 0 1px 1px 0 rgba(255,255,255,0.85);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    will-change: transform, width;
+    transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1),
+                width 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
+                opacity 0.25s ease;
+  }
+  .mob-bn-inner {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    width: 100%;
+    height: 60px;
+    z-index: 2;
+  }
+  .mob-bn-item {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    height: 100%;
+    padding: 4px 2px;
+    color: #5b6677;
+    text-decoration: none;
+    border-radius: 999px;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    transition: color 0.24s ease;
+  }
+  .mob-bn-icon-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width: 100%;
+  }
+  .mob-bn-item i {
+    font-size: 22px;
+    line-height: 1;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .mob-bn-item.is-active {
+    color: #13829b;
+  }
+  .mob-bn-item.is-active i {
+    transform: translateY(-1px);
+  }
+  .mob-bn-icon-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mob-bn-dot {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #e11d48;
+    border: 1.5px solid #ffffff;
+    box-shadow: 0 1px 4px rgba(225, 29, 72, 0.4);
+  }
+  .mob-bn-chat {
+    flex: 0 0 auto !important;
+    width: auto;
+  }
+  .mob-bn-chat-core {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #13829b, #0e6d82);
+    color: #ffffff;
+    box-shadow: 0 6px 16px rgba(19, 130, 155, 0.32),
+                inset 0 1px 1px 0 rgba(255,255,255,0.25);
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .mob-bn-chat:active .mob-bn-chat-core {
+    transform: scale(0.94);
+  }
+  .mob-bn-chat i {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .mob-bn-chat.is-active .mob-bn-chat-core {
+    box-shadow: 0 6px 20px rgba(19, 130, 155, 0.45),
+                inset 0 1px 1px 0 rgba(255,255,255,0.3);
+  }
+  /* Dark theme */
+  [data-theme="dark"] .mob-bn-glow,
+  html[data-theme="dark"] .mob-bn-glow {
+    background: linear-gradient(90deg, rgba(19,130,155,0.22), rgba(184,219,217,0.18), rgba(19,130,155,0.22));
+    opacity: 0.85;
+    filter: blur(20px);
+  }
+  [data-theme="dark"] .mob-bn-shell,
+  html[data-theme="dark"] .mob-bn-shell {
+    background: rgba(24, 35, 41, 0.84);
+    border: 1px solid rgba(184, 219, 217, 0.2);
+    box-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.65),
+                0 6px 16px -4px rgba(0, 0, 0, 0.45),
+                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.12),
+                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+  }
+  [data-theme="dark"] .mob-bn-shell::before,
+  html[data-theme="dark"] .mob-bn-shell::before {
+    background: linear-gradient(90deg, transparent, rgba(184,219,217,0.4), transparent);
+  }
+  [data-theme="dark"] .mob-bn-slider,
+  html[data-theme="dark"] .mob-bn-slider {
+    background: linear-gradient(135deg, rgba(184,219,217,0.18), rgba(19,130,155,0.22));
+    border: 1px solid rgba(184, 219, 217, 0.28);
+    box-shadow: inset 0 1px 1.5px rgba(255,255,255,0.14);
+  }
+  [data-theme="dark"] .mob-bn-item,
+  html[data-theme="dark"] .mob-bn-item {
+    color: #9eb8b7;
+  }
+  [data-theme="dark"] .mob-bn-item.is-active,
+  html[data-theme="dark"] .mob-bn-item.is-active {
+    color: #b8dbd9;
+  }
+  [data-theme="dark"] .mob-bn-dot,
+  html[data-theme="dark"] .mob-bn-dot {
+    border-color: #182329;
+  }
+  /* Compact phones <= 380px */
+  @media (max-width: 380px) {
+    .mob-bottomnav {
+      width: calc(100% - 16px);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+    }
+    .mob-bn-shell { padding: 4px 4px; }
+    .mob-bn-inner { height: 56px; }
+    .mob-bn-item i { font-size: 20px; }
+    .mob-bn-icon-row { height: auto; }
+    .mob-bn-chat-core { width: 40px; height: 40px; min-width: 40px; }
+    .mob-bn-slider { top: 4px; height: 40px; }
+  }
+
   /* ── Flow & Melt Disappearance on Sidebar Open ── */
   body.sidebar-open .bottomnav,
   body.sidebar-open .bottom-dock-nav,
@@ -242,7 +494,7 @@
   }
 
   .bn-item.active .bn-label {
-    font-weight: 700;
+    font-weight: 600;
     transform: translateY(-1px);
   }
 
@@ -290,7 +542,7 @@
     background: linear-gradient(135deg, #ef4444, #e11d48);
     color: #ffffff;
     font-size: 9.5px;
-    font-weight: 700;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;

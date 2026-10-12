@@ -3,63 +3,19 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Teacher Messaging Hub</title>
+<title>NGIS — Student Chat & Messages</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/chat.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <style>
-/* Chat Workspace Container */
-.chat-page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 16px 24px 40px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  height: calc(100vh - 120px);
-  min-height: 500px;
-  box-sizing: border-box;
-}
-
-.chat-breadcrumbs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13.5px;
-  font-weight: 400;
-  color: var(--txt2);
-}
-.chat-breadcrumbs a {
-  color: var(--muted);
-  text-decoration: none;
-}
-.chat-breadcrumbs a:hover {
-}
-
-/* Chat Main Layout */
-.chat-container {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-  border: 1px solid var(--bdr);
-  flex: 1;
-  overflow: hidden;
-  height: 100%;
-}
-
-/* Left Sidebar: Teacher List */
-.chat-sidebar {
-  border-right: 1px solid var(--bdr);
-  display: flex;
-  flex-direction: column;
-  background: #f8fafc;
-}
+/* Full-screen chat layout: .chat-shell / .conv-panel / .chat-win
+   come from assets/css/chat.css — same structure as the shared chat page. */
 .chat-sidebar-header {
   padding: 16px 20px;
   border-bottom: 1px solid var(--bdr);
@@ -167,13 +123,7 @@
   box-sizing: border-box;
 }
 
-/* Right Chat Workspace */
-.chat-workspace {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  height: 100%;
-}
+/* Right Chat Window (uses .chat-win from chat.css) */
 
 /* Safeguarding Alert Banner */
 .safeguarding-banner {
@@ -526,124 +476,100 @@
 }
 
 @media (max-width: 768px) {
-  .chat-container {
-    grid-template-columns: 1fr;
-  }
-  .chat-sidebar {
-    display: none; /* In simple responsive layout, we show active chat only */
-  }
-  .chat-sidebar.show-mobile {
-    display: flex;
-    position: absolute;
-    inset: 0;
-    z-index: 100;
+  .chat-workspace-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 14px;
   }
 }
 </style>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 </head>
-<body>
+<body data-page="chat" data-role="student">
 <main class="main">
-  <!-- Hero Banner Header -->
-  <header class="hero" style="padding-bottom: 40px;">
-    <div class="hero-topbar">
-      <div class="htb-left">
-        <button class="htb-hamburger" id="htbHamburger" aria-label="Open menu">
-          <span class="mi">menu</span>
+  <!-- Hero Banner Header (injected by assets/js/hero.js) -->
+  <div id="heroBanner"></div>
+
+  <!-- Chat Workspace — full-screen layout like the shared chat page -->
+  <div class="chat-shell">
+
+    <!-- LEFT: Assigned Instructors -->
+    <aside class="conv-panel" id="convPanel" aria-label="Conversations">
+      <div class="cp-head">
+        <h2>Teacher Messaging</h2>
+        <button class="chat-icon-btn" aria-label="New message" title="New message" onclick="document.getElementById('chatInput').focus()">
+          <span class="material-symbols-outlined">edit_square</span>
         </button>
-        <a href="student.html" class="htb-home-btn">
-          <span class="mi">arrow_back</span>
-          <span>Back to Dashboard</span>
-        </a>
       </div>
-      <div class="htb-center">
-        <img class="htb-logo" src="LOGO NGIS (2).png" alt="NGIS logo" />
+      <div class="chat-sidebar-header">Assigned Instructors</div>
+      <div class="teacher-list" id="teacherList">
+        <!-- Populated by JS -->
       </div>
-      <div class="htb-right" style="opacity: 0; pointer-events: none;">
-        <!-- Placeholder to center logo -->
+    </aside>
+
+    <!-- RIGHT: Chat Window -->
+    <section class="chat-win" id="chatWin" aria-label="Chat window">
+
+      <!-- Safeguarding Banner -->
+      <div class="safeguarding-banner">
+        <div style="display:flex;align-items:center">
+          <span class="mi">gavel</span>
+          <span>All messaging logs are permanently audited by Administration for safeguarding compliance.</span>
+        </div>
+        <button class="safeguarding-audit-btn" id="viewAuditBtn">Transparency Logs</button>
       </div>
-    </div>
-  </header>
 
-  <!-- Chat Page Workspace -->
-  <div class="chat-page">
-    
-    <div class="chat-breadcrumbs">
-      <a href="student.html">Home</a>
-      <span class="sep">/</span>
-      <span class="active">Teacher Messaging</span>
-    </div>
-
-    <div class="chat-container">
-      <!-- Sidebar List -->
-      <aside class="chat-sidebar">
-        <div class="chat-sidebar-header">Assigned Instructors</div>
-        <div class="teacher-list" id="teacherList">
-          <!-- Populated by JS -->
-        </div>
-      </aside>
-
-      <!-- Chat Area -->
-      <section class="chat-workspace">
-        <!-- Safeguarding Banner -->
-        <div class="safeguarding-banner">
-          <div style="display:flex;align-items:center">
-            <span class="mi">gavel</span>
-            <span>All messaging logs are permanently audited by Administration for safeguarding compliance.</span>
+      <!-- Chat Header -->
+      <div class="chat-workspace-header">
+        <button class="chat-icon-btn back-btn" id="backBtn" aria-label="Back to conversations">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="chat-active-teacher">
+          <img class="teacher-avatar" id="activeAvatar" src="" alt="Teacher avatar">
+          <div class="chat-active-details">
+            <span class="chat-active-name" id="activeName">Teacher Name</span>
+            <span class="chat-active-status" id="activeStatus">
+              <span class="status-dot online"></span>
+              <span>Active</span>
+            </span>
           </div>
-          <button class="safeguarding-audit-btn" id="viewAuditBtn">Transparency Logs</button>
         </div>
+      </div>
 
-        <!-- Chat Header -->
-        <div class="chat-workspace-header">
-          <div class="chat-active-teacher">
-            <img class="teacher-avatar" id="activeAvatar" src="" alt="Teacher avatar">
-            <div class="chat-active-details">
-              <span class="chat-active-name" id="activeName">Teacher Name</span>
-              <span class="chat-active-status" id="activeStatus">
-                <span class="status-dot online"></span>
-                <span>Active</span>
-              </span>
-            </div>
+      <!-- Scrollable Messages -->
+      <div class="chat-messages-area" id="chatMessagesArea">
+        <!-- Message history populates here -->
+      </div>
+
+      <!-- Selected Attachment Pill -->
+      <div class="chat-workspace-input-area">
+        <div class="selected-file-pill" id="filePill">
+          <span class="mi" style="font-size:14px;color:#16a34a">attachment</span>
+          <span id="fileName">file.pdf</span>
+          <span class="mi" id="removeFileBtn" style="font-size:14px;margin-left:4px">close</span>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+          <span id="typingText">Teacher is typing</span>
+          <div class="typing-dots">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
           </div>
         </div>
 
-        <!-- Scrollable Messages -->
-        <div class="chat-messages-area" id="chatMessagesArea">
-          <!-- Message history populates here -->
+        <div class="chat-input-controls">
+          <input type="file" id="hiddenFileInput">
+          <button class="chat-btn-attach" id="attachBtn" title="Attach homework file">
+            <span class="mi">add_circle</span>
+          </button>
+          <input type="text" class="chat-input-text" id="chatInput" placeholder="Ask a homework question or type a message..." autocomplete="off">
+          <button class="chat-btn-send" id="sendBtn" title="Send message">
+            <span class="mi">send</span>
+          </button>
         </div>
-
-        <!-- Selected Attachment Pill -->
-        <div class="chat-workspace-input-area">
-          <div class="selected-file-pill" id="filePill">
-            <span class="mi" style="font-size:14px;color:#16a34a">attachment</span>
-            <span id="fileName">file.pdf</span>
-            <span class="mi" id="removeFileBtn" style="font-size:14px;margin-left:4px">close</span>
-          </div>
-          
-          <div class="typing-indicator" id="typingIndicator">
-            <span id="typingText">Teacher is typing</span>
-            <div class="typing-dots">
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-            </div>
-          </div>
-
-          <div class="chat-input-controls">
-            <input type="file" id="hiddenFileInput">
-            <button class="chat-btn-attach" id="attachBtn" title="Attach homework file">
-              <span class="mi">add_circle</span>
-            </button>
-            <input type="text" class="chat-input-text" id="chatInput" placeholder="Ask a homework question or type a message..." autocomplete="off">
-            <button class="chat-btn-send" id="sendBtn" title="Send message">
-              <span class="mi">send</span>
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-
+      </div>
+    </section>
   </div>
 </main>
 
@@ -675,6 +601,37 @@
     </div>
   </div>
 </div>
+
+<script>
+window.PAGE = { role: 'student', active: 'teacher-chat' };
+</script>
+<script>
+window.HERO_CONFIG = {
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'student-profile.html',
+  notifLink: 'student-notifications.html',
+  chatLink: 'student-chat.html',
+  notifCount: 3,
+  title: 'Teacher Messaging',
+  greeting: 'Send and receive messages with your assigned instructors.',
+  breadcrumbs: [{ label: 'Teacher Messaging' }],
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A · SS2 KH' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
+    { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
+  ]
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
 
 <script>
 (function() {
@@ -771,6 +728,17 @@
   const typingIndicator = document.getElementById('typingIndicator');
   const typingText = document.getElementById('typingText');
 
+  const convPanel = document.getElementById('convPanel');
+  const chatWin = document.getElementById('chatWin');
+  const backBtn = document.getElementById('backBtn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      convPanel.classList.remove('hidden-mobile');
+      chatWin.classList.remove('show-mobile');
+      document.body.classList.remove('chat-open');
+    });
+  }
+
   // Render Sidebar
   function renderSidebar() {
     listContainer.innerHTML = '';
@@ -805,6 +773,11 @@
         saveState();
         renderSidebar();
         loadConversation();
+        if (window.innerWidth <= 1024) {
+          convPanel.classList.add('hidden-mobile');
+          chatWin.classList.add('show-mobile');
+          document.body.classList.add('chat-open');
+        }
       });
 
       listContainer.appendChild(item);
