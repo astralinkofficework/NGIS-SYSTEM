@@ -35,9 +35,133 @@
 <link rel="stylesheet" href="css/responsive.css">
 <link rel="stylesheet" href="css/student-inline.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<!-- Phosphor Icons for mobile UI glyphs -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS (for mobile app experience) -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"Inter"', '"Kantumruy Pro"', 'system-ui', 'sans-serif'],
+      },
+      colors: {
+        charcoal: {
+          900: '#111b1f',
+          800: '#182329',
+          700: '#20313a',
+          600: '#2f4550',
+          500: '#3e5b68',
+        },
+        brandTeal: {
+          500: '#13829b',
+          600: '#0e7490',
+        },
+        brandLight: '#b8dbd9',
+        forest: {
+          700: '#006c49',
+          600: '#059669',
+          50: '#f0fdf4',
+        },
+      },
+      boxShadow: {
+        'soft': '0 10px 30px -5px rgba(24, 35, 41, 0.08)',
+        'float': '0 20px 35px -10px rgba(19, 130, 155, 0.35)',
+        'nav': '0 -8px 30px rgba(0, 0, 0, 0.08)',
+      }
+    }
+  }
+};
+</script>
+
+<style data-purpose="mobile-dashboard-styles">
+  .student-mobile-view {
+    display: none;
+    font-family: 'Inter', 'Kantumruy Pro', system-ui, -apple-system, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
+  .pt-safe { padding-top: env(safe-area-inset-top, 14px); }
+
+  .clay-card {
+    background: #ffffff;
+    border-radius: 26px;
+    box-shadow: 0 10px 30px rgba(24, 35, 41, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(226, 232, 240, 0.85);
+  }
+  .doughnut-circle {
+    transition: stroke-dashoffset 1s ease-in-out;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+  }
+
+  @media (max-width: 768px) {
+    html, body {
+      height: 100% !important;
+      overflow: hidden !important;
+      background: #f2f6f9 !important;
+    }
+    .student-desktop-view {
+      display: none !important;
+    }
+    .student-mobile-view {
+      display: flex !important;
+      flex-direction: column !important;
+      width: 100% !important;
+      height: 100% !important;
+      height: 100dvh !important;
+      max-height: 100dvh !important;
+      overflow: hidden !important;
+      background: #f2f6f9 !important;
+    }
+    #heroBanner,
+    .bottom-nav,
+    .bottomnav,
+    #bottomnav,
+    .sidebar,
+    #sidebarExpandBtn,
+    .sidebar-expand-btn,
+    .scrim {
+      display: none !important;
+    }
+    .main {
+      margin-left: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      height: 100dvh !important;
+      overflow: hidden !important;
+      background: #f2f6f9 !important;
+    }
+    .shell {
+      display: block !important;
+      height: 100% !important;
+      height: 100dvh !important;
+      overflow: hidden !important;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .student-mobile-view {
+      display: none !important;
+    }
+    .student-desktop-view {
+      display: block !important;
+    }
+  }
+</style>
 </head>
 <body>
 <div class="main">
+
+<!-- ═══════════════ DESKTOP VIEW CONTAINER ═══════════════ -->
+<div class="student-desktop-view">
 
 <!-- ═══════════════ HERO BANNER ═══════════════ -->
 <!-- Built and injected by js/hero.js -->
@@ -542,6 +666,478 @@
 
   </div>
 </div>
+</div><!-- /.student-desktop-view -->
+
+<!-- ═════════════════════════════════════════════════════════════
+     BEGIN: MOBILE APPLICATION VIEW (Active on screens <= 768px)
+     Colors: Deep Slate #182329, Charcoal Blue #2F4550, Light Blue #B8DBD9,
+             Teal #13829B, Forest Green #006C49, Amber #D97706
+     Font: Inter / Kantumruy Pro
+     ═════════════════════════════════════════════════════════════ -->
+<div class="student-mobile-view">
+  <div class="mobile-app-frame w-full max-w-[430px] mx-auto h-full flex flex-col relative overflow-hidden bg-[#f2f6f9] sm:shadow-2xl sm:rounded-[44px] sm:border sm:border-slate-200/80">
+    
+    <!-- iOS / Mobile Status Bar -->
+    <header class="pt-safe px-7 pt-3 pb-1 flex justify-between items-center z-30 select-none bg-gradient-to-b from-[#0a5c70] to-[#0e7490] text-white">
+      <span class="text-sm font-semibold tracking-tight" id="mobileClock">10:45</span>
+      <div class="w-24 h-4 bg-black/25 rounded-full mx-auto hidden sm:block backdrop-blur-md"></div>
+      <div class="flex items-center space-x-2 text-xs text-white/90">
+        <i class="ph-bold ph-chart-bar text-sm"></i>
+        <i class="ph-bold ph-wifi-high text-sm"></i>
+        <i class="ph-bold ph-battery-full text-base"></i>
+      </div>
+    </header>
+
+    <!-- Top Wave Header (Signature NGIS Ocean Teal Gradient matching Desktop Hero) -->
+    <section class="bg-gradient-to-b from-[#0e7490] via-[#13829b] to-[#1baec7] text-white pt-4 pb-14 px-6 relative rounded-b-[40px] shadow-lg shrink-0" data-purpose="top-profile-header">
+      <!-- Top Utility Icons -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/25 text-[#b8dbd9] shadow-sm">
+            <i class="ph-bold ph-graduation-cap text-lg text-white"></i>
+          </div>
+          <div>
+            <h1 class="text-[10px] uppercase font-extrabold tracking-wider text-cyan-100">New Gateway International School</h1>
+            <p class="text-[11px] text-white/85 font-medium">Semester 2 • 2026</p>
+          </div>
+        </div>
+        <!-- Notification Bell with Counter -->
+        <div class="flex items-center space-x-2.5">
+          <button type="button" aria-label="Notifications" onclick="window.location.href='student-notifications.html'" class="relative w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center text-white active:scale-95 transition-transform">
+            <i class="ph-bold ph-bell-simple text-xl"></i>
+            <span class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white font-bold text-[10px] rounded-full flex items-center justify-center border-2 border-white shadow-sm">3</span>
+          </button>
+          <button type="button" aria-label="Settings Menu" onclick="window.location.href='student-profile.html'" class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center text-white active:scale-95 transition-transform">
+            <i class="ph-bold ph-faders-horizontal text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Greeting & Identity Pill Banner -->
+      <div class="mt-2 flex items-center justify-between">
+        <div class="max-w-[65%]">
+          <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/25 mb-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+            <span class="text-[11px] font-semibold tracking-wide text-white">Active Student</span>
+          </div>
+          <h2 class="text-2xl font-black text-white leading-tight drop-shadow-sm">Hi, Nrinphouneta!</h2>
+          <p class="text-cyan-100 text-xs font-medium mt-0.5">Grade 10-A • 2026-STD-0142</p>
+        </div>
+        <!-- 3D Avatar Profile Orb -->
+        <div class="relative group cursor-pointer" onclick="window.location.href='student-profile.html'">
+          <div class="w-20 h-20 rounded-full p-1.5 bg-gradient-to-tr from-amber-300 via-white to-cyan-200 shadow-xl shadow-cyan-950/30">
+            <img alt="Nrinphouneta Hok" class="w-full h-full rounded-full object-cover border-2 border-white shadow-inner" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160"/>
+          </div>
+          <div class="absolute bottom-0 right-1 w-6 h-6 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center text-slate-900 text-xs shadow-md">
+            <i class="ph-fill ph-star text-[11px]"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Search & Campus Digital ID Shortcut -->
+      <div class="mt-4 flex items-center gap-2">
+        <div class="flex-1 bg-white/20 backdrop-blur-md rounded-2xl py-2 px-3.5 border border-white/25 flex items-center text-white/90 text-xs font-medium">
+          <i class="ph-bold ph-magnifying-glass text-sm mr-2 text-white"></i>
+          <input type="text" placeholder="Search courses, exams, mentors..." class="bg-transparent border-0 outline-none text-xs text-white placeholder-white/75 w-full p-0 focus:ring-0">
+        </div>
+        <button type="button" onclick="window.openDigitalIdModal()" class="px-3.5 py-2 bg-white text-[#13829b] font-bold text-xs rounded-2xl shadow-md hover:bg-cyan-50 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
+          <i class="ph-bold ph-identification-card text-base text-[#13829b]"></i>
+          <span>Digital ID</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Main Content Scrollable (Native mobile app touch scrolling) -->
+    <main class="mobile-scroll-body flex-1 overflow-y-auto no-scrollbar px-5 -mt-6 pb-28 space-y-5 z-20">
+      
+      <!-- Primary Quick Actions (2x2 Pill Action Cards) -->
+      <section class="grid grid-cols-2 gap-3" data-purpose="primary-quick-actions">
+        <!-- Card 1: Academic Performance (Ocean Teal) -->
+        <div onclick="window.location.href='student-grades.html'" class="bg-gradient-to-br from-[#13829b] to-[#0891b2] p-4 rounded-3xl text-white shadow-lg shadow-[#13829b]/25 relative overflow-hidden flex items-center space-x-3.5 active:scale-[0.98] transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-inner shrink-0 text-white">
+            <i class="ph-fill ph-chart-line-up text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold leading-tight">Academic</h3>
+            <p class="text-[11px] text-cyan-100 font-medium">Performance</p>
+          </div>
+          <div class="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-white/10 blur-[2px] pointer-events-none"></div>
+        </div>
+
+        <!-- Card 2: Student Assignments (Warm Amber) -->
+        <div onclick="window.location.href='student-assignments.html'" class="bg-gradient-to-br from-[#f59e0b] to-[#ea580c] p-4 rounded-3xl text-white shadow-lg shadow-orange-500/25 relative overflow-hidden flex items-center space-x-3.5 active:scale-[0.98] transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-inner shrink-0 text-white">
+            <i class="ph-fill ph-notebook text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold leading-tight">Pending</h3>
+            <p class="text-[11px] text-amber-100 font-medium">Assignments</p>
+          </div>
+          <div class="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-white/10 blur-[2px] pointer-events-none"></div>
+        </div>
+
+        <!-- Card 3: Timetable / Calendar (Forest Green) -->
+        <div onclick="window.location.href='student-timetable.html'" class="bg-gradient-to-br from-[#006c49] to-[#059669] p-4 rounded-3xl text-white shadow-lg shadow-emerald-700/25 relative overflow-hidden flex items-center space-x-3.5 active:scale-[0.98] transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-inner shrink-0 text-white">
+            <i class="ph-fill ph-calendar-check text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold leading-tight">Timetable</h3>
+            <p class="text-[11px] text-emerald-100 font-medium">4 Classes today</p>
+          </div>
+          <div class="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-white/10 blur-[2px] pointer-events-none"></div>
+        </div>
+
+        <!-- Card 4: Reports / Semester Cards (Signature Charcoal Blue) -->
+        <div onclick="window.location.href='student-exams.html'" class="bg-gradient-to-br from-[#2f4550] to-[#182329] p-4 rounded-3xl text-white shadow-lg shadow-[#182329]/25 relative overflow-hidden flex items-center space-x-3.5 active:scale-[0.98] transition-all cursor-pointer">
+          <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-inner shrink-0 text-cyan-200">
+            <i class="ph-fill ph-identification-badge text-2xl"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold leading-tight">Reports</h3>
+            <p class="text-[11px] text-[#b8dbd9] font-medium">Semester Cards</p>
+          </div>
+          <div class="absolute -bottom-3 -right-3 w-16 h-16 rounded-full bg-white/10 blur-[2px] pointer-events-none"></div>
+        </div>
+      </section>
+
+      <!-- Attendance Overview Card -->
+      <section class="clay-card p-5" data-purpose="attendance-summary">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-[#e8f2f5] text-[#13829b] flex items-center justify-center font-bold text-sm">
+              <i class="ph-bold ph-chart-donut"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">Attendance Overview</h3>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 flex items-center gap-1 cursor-pointer">
+            This Month <i class="ph-bold ph-caret-down text-[10px]"></i>
+          </span>
+        </div>
+        <div class="flex items-center justify-around py-4">
+          <!-- High-fidelity Donut Gauge (CSS Conic Gradient) -->
+          <div class="relative flex items-center justify-center shrink-0 rounded-full shadow-sm" style="width: 124px; height: 124px; background: radial-gradient(closest-side, #ffffff 73%, transparent 74% 100%), conic-gradient(#006c49 0% 92%, #f43f5e 92% 100%);">
+            <div class="flex flex-col items-center justify-center text-center">
+              <span class="text-2xl font-black text-slate-800 tracking-tight leading-none">92%</span>
+              <span class="text-[11px] font-bold text-[#006c49] uppercase tracking-wider mt-1">Present</span>
+            </div>
+          </div>
+          <!-- Breakdown Legend -->
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center space-x-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#006c49]"></span>
+              <span class="text-slate-500 font-medium w-14">Present</span>
+              <span class="font-bold text-slate-800">22 days</span>
+            </div>
+            <div class="flex items-center space-x-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <span class="text-slate-500 font-medium w-14">Absent</span>
+              <span class="font-bold text-slate-800">2 days</span>
+            </div>
+            <div class="flex items-center space-x-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <span class="text-slate-500 font-medium w-14">Late</span>
+              <span class="font-bold text-slate-800">1 day</span>
+            </div>
+            <div class="pt-1.5 border-t border-slate-100 flex justify-between items-center text-[11px] text-slate-400">
+              <span>Total Classes:</span>
+              <span class="font-bold text-slate-600">25</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Horizontal Calendar Strip -->
+      <section class="clay-card p-4" data-purpose="date-selector">
+        <div class="flex items-center justify-between mb-3 px-1">
+          <div class="flex items-center space-x-2">
+            <i class="ph-bold ph-calendar-blank text-[#13829b] text-lg"></i>
+            <h3 class="text-xs font-bold text-slate-700">Schedule: <span class="text-slate-900 font-black">Today, Oct 12</span></h3>
+          </div>
+          <a class="text-[11px] font-bold text-[#13829b] hover:text-[#0e7490]" href="student-calendar.html">October 2026 →</a>
+        </div>
+        <!-- Scrollable Day Pills -->
+        <div class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar py-1">
+          <div class="flex flex-col items-center py-2 px-3 rounded-2xl bg-slate-50 border border-slate-100 min-w-[46px] text-slate-500">
+            <span class="text-[10px] font-bold uppercase">Fr</span>
+            <span class="text-sm font-extrabold mt-0.5">09</span>
+          </div>
+          <div class="flex flex-col items-center py-2 px-3 rounded-2xl bg-slate-50 border border-slate-100 min-w-[46px] text-slate-500">
+            <span class="text-[10px] font-bold uppercase">Sa</span>
+            <span class="text-sm font-extrabold mt-0.5">10</span>
+          </div>
+          <div class="flex flex-col items-center py-2 px-3 rounded-2xl bg-slate-50 border border-slate-100 min-w-[46px] text-slate-500">
+            <span class="text-[10px] font-bold uppercase">Su</span>
+            <span class="text-sm font-extrabold mt-0.5">11</span>
+          </div>
+          <!-- Active Highlighted Day (Teal Signature Pill) -->
+          <div class="flex flex-col items-center py-2.5 px-3 rounded-2xl bg-gradient-to-b from-[#13829b] to-[#0e7490] text-white min-w-[50px] shadow-md shadow-[#13829b]/30 scale-105">
+            <span class="text-[10px] font-extrabold uppercase text-cyan-100">Mo</span>
+            <span class="text-base font-black mt-0.5 leading-none">12</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-white mt-1"></span>
+          </div>
+          <div class="flex flex-col items-center py-2 px-3 rounded-2xl bg-slate-50 border border-slate-100 min-w-[46px] text-slate-500">
+            <span class="text-[10px] font-bold uppercase">Tu</span>
+            <span class="text-sm font-extrabold mt-0.5">13</span>
+          </div>
+          <div class="flex flex-col items-center py-2 px-3 rounded-2xl bg-slate-50 border border-slate-100 min-w-[46px] text-slate-500">
+            <span class="text-[10px] font-bold uppercase">We</span>
+            <span class="text-sm font-extrabold mt-0.5">14</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Deadlines & Tasks -->
+      <section class="space-y-3" data-purpose="task-deadlines-section">
+        <div class="flex items-center justify-between px-1">
+          <div class="flex items-center space-x-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></div>
+            <h3 class="text-sm font-extrabold text-slate-900 tracking-tight">Deadlines &amp; Tasks</h3>
+          </div>
+          <a href="student-assignments.html" class="text-xs font-bold text-[#13829b] cursor-pointer">View All (4)</a>
+        </div>
+        <!-- Task Item 1: History Essay -->
+        <article class="clay-card p-4 flex flex-col space-y-3 relative overflow-hidden border-l-4 border-l-rose-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-rose-100 text-rose-700 uppercase">Urgent</span>
+                <span class="text-[11px] font-semibold text-slate-400">History • Grade 10</span>
+              </div>
+              <h4 class="text-sm font-extrabold text-slate-800 mt-1">History Essay Draft</h4>
+              <p class="text-xs text-slate-500 font-medium">Topic: Southeast Asian trade routes &amp; treaties</p>
+            </div>
+            <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+              <i class="ph-bold ph-hourglass-high text-lg"></i>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100/80">
+            <div class="flex items-center text-[11px] font-semibold text-slate-500">
+              <i class="ph-bold ph-clock mr-1 text-rose-500"></i>
+              Due Oct 15, 11:59 PM
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="window.location.href='student-assignments.html'" class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-colors">
+                To Do
+              </button>
+              <button onclick="window.location.href='student-assignments.html'" class="px-3.5 py-1 rounded-xl bg-gradient-to-r from-[#006c49] to-[#059669] text-white text-xs font-bold shadow-sm shadow-[#006c49]/20 active:scale-95 transition-all">
+                Submit
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Task Item 2: Physics Lab Report -->
+        <article class="clay-card p-4 flex flex-col space-y-3 relative overflow-hidden border-l-4 border-l-[#13829b]">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md bg-cyan-100 text-[#0e7490] uppercase">In Progress</span>
+                <span class="text-[11px] font-semibold text-slate-400">Physics • Mr. Sophea</span>
+              </div>
+              <h4 class="text-sm font-extrabold text-slate-800 mt-1">Refraction &amp; Optics Experiment</h4>
+              <p class="text-xs text-slate-500 font-medium">Verify Snell's law using cylindrical prisms</p>
+            </div>
+            <div class="w-9 h-9 rounded-2xl bg-[#e8f2f5] text-[#13829b] flex items-center justify-center shrink-0">
+              <i class="ph-bold ph-atom text-lg"></i>
+            </div>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-100/80">
+            <div class="flex items-center text-[11px] font-semibold text-slate-500">
+              <i class="ph-bold ph-calendar mr-1 text-[#13829b]"></i>
+              Due Tomorrow, 09:00 AM
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="window.location.href='student-assignments.html'" class="px-3.5 py-1 rounded-xl bg-gradient-to-r from-[#13829b] to-[#0e7490] text-white text-xs font-bold shadow-sm shadow-[#13829b]/20 active:scale-95 transition-all">
+                Submit
+              </button>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Enrolled Subjects Progress -->
+      <section class="clay-card p-5 space-y-4" data-purpose="enrolled-subjects">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-900">Enrolled Subjects</h3>
+            <p class="text-[11px] text-slate-400 font-medium">6 active academic courses</p>
+          </div>
+          <a href="student-assignments.html" class="text-xs font-bold text-[#13829b] cursor-pointer">View All</a>
+        </div>
+        <!-- Subject 1: Mathematics -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-xl bg-[#e8f2f5] text-[#13829b] flex items-center justify-center text-sm font-bold">
+                <i class="ph-bold ph-function"></i>
+              </div>
+              <div>
+                <p class="text-xs font-extrabold text-slate-800">Advanced Mathematics</p>
+                <p class="text-[10px] text-slate-400 font-medium">Mr. John Smith</p>
+              </div>
+            </div>
+            <span class="text-xs font-extrabold text-[#13829b]">88%</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-[#13829b] to-[#0891b2] h-full rounded-full" style="width: 88%"></div>
+          </div>
+        </div>
+        <!-- Subject 2: General Science -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-xl bg-emerald-100 text-[#006c49] flex items-center justify-center text-sm font-bold">
+                <i class="ph-bold ph-flask"></i>
+              </div>
+              <div>
+                <p class="text-xs font-extrabold text-slate-800">General Science</p>
+                <p class="text-[10px] text-slate-400 font-medium">Ms. Emily Johnson</p>
+              </div>
+            </div>
+            <span class="text-xs font-extrabold text-[#006c49]">82%</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-[#006c49] to-[#059669] h-full rounded-full" style="width: 82%"></div>
+          </div>
+        </div>
+        <!-- Subject 3: Computer Science -->
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-xl bg-slate-100 text-[#2f4550] flex items-center justify-center text-sm font-bold">
+                <i class="ph-bold ph-laptop"></i>
+              </div>
+              <div>
+                <p class="text-xs font-extrabold text-slate-800">Computer Science</p>
+                <p class="text-[10px] text-slate-400 font-medium">Mr. Michael Lee</p>
+              </div>
+            </div>
+            <span class="text-xs font-extrabold text-[#2f4550]">95%</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-[#2f4550] to-[#182329] h-full rounded-full" style="width: 95%"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Study Resources -->
+      <section class="space-y-3" data-purpose="quick-link-study-cards">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-sm font-extrabold text-slate-900 tracking-tight">Quick Study Resources</h3>
+          <span class="text-xs font-semibold text-slate-400">Swipe →</span>
+        </div>
+        <div class="flex items-center space-x-3 overflow-x-auto no-scrollbar pb-1">
+          <!-- Card A: Class Notes (Ocean Teal) -->
+          <div onclick="window.location.href='student-documents.html'" class="min-w-[145px] p-3.5 rounded-3xl bg-gradient-to-b from-[#13829b] to-[#0e7490] text-white flex flex-col justify-between shadow-lg shadow-[#13829b]/25 cursor-pointer active:scale-95 transition-transform">
+            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-3 text-white">
+              <i class="ph-fill ph-book-open-text text-xl"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold text-cyan-100 uppercase tracking-wider">Vault</p>
+              <h4 class="text-xs font-extrabold">Class Notes</h4>
+            </div>
+          </div>
+          <!-- Card B: Digital Library (Charcoal Blue) -->
+          <div onclick="window.location.href='student-services.html'" class="min-w-[145px] p-3.5 rounded-3xl bg-gradient-to-b from-[#2f4550] to-[#182329] text-white flex flex-col justify-between shadow-lg shadow-[#182329]/25 cursor-pointer active:scale-95 transition-transform">
+            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-3 text-cyan-200">
+              <i class="ph-fill ph-books text-xl"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold text-cyan-100 uppercase tracking-wider">eBook Hub</p>
+              <h4 class="text-xs font-extrabold">Library Update</h4>
+            </div>
+          </div>
+          <!-- Card C: Events & Clubs (Warm Amber) -->
+          <div onclick="window.location.href='student-clubs.html'" class="min-w-[145px] p-3.5 rounded-3xl bg-gradient-to-b from-[#f59e0b] to-[#d97706] text-white flex flex-col justify-between shadow-lg shadow-orange-500/25 cursor-pointer active:scale-95 transition-transform">
+            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-3 text-white">
+              <i class="ph-fill ph-ticket text-xl"></i>
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold text-amber-100 uppercase tracking-wider">Campus</p>
+              <h4 class="text-xs font-extrabold">Clubs &amp; Events</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Campus Notice Board -->
+      <section class="clay-card p-4 space-y-3" data-purpose="school-updates">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-600">Campus Notice Board</h3>
+          </div>
+          <a href="student-announcements.html" class="text-[11px] font-bold text-[#13829b]">View All</a>
+        </div>
+        <div class="space-y-3">
+          <!-- Announcement 1 -->
+          <div onclick="window.location.href='student-announcements.html'" class="flex items-start space-x-3 p-2.5 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer">
+            <div class="w-12 h-12 rounded-xl bg-[#e8f2f5] text-[#13829b] flex items-center justify-center shrink-0">
+              <i class="ph-bold ph-book-bookmark text-xl"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-xs font-bold text-slate-800 truncate">Library Digital Expansion</h4>
+              <p class="text-[11px] text-slate-500 font-medium line-clamp-1">Over 200 new science publications now accessible online.</p>
+              <span class="text-[10px] text-slate-400 font-medium">2 hours ago</span>
+            </div>
+          </div>
+          <!-- Announcement 2 -->
+          <div onclick="window.location.href='student-announcements.html'" class="flex items-start space-x-3 p-2.5 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer">
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <i class="ph-bold ph-trophy text-xl"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-xs font-bold text-slate-800 truncate">Annual Sports Carnival 2026</h4>
+              <p class="text-[11px] text-slate-500 font-medium line-clamp-1">Register for track and football tournaments before July 10.</p>
+              <span class="text-[10px] text-slate-400 font-medium">1 day ago</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Floating Curved Bottom Navigation Bar (Persistent at bottom of mobile frame) -->
+    <nav class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-xl border border-white/80 rounded-[32px] px-3 py-2 shadow-nav z-40 flex items-center justify-around" data-purpose="bottom-navigation-bar">
+      <!-- Home (Active Pill with signature teal) -->
+      <a href="student.html" class="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl bg-[#e8f2f5] text-[#13829b] transition-all">
+        <i class="ph-fill ph-house-simple text-xl"></i>
+        <span class="text-[10px] font-bold mt-0.5">Home</span>
+      </a>
+      <!-- Classes / Timetable -->
+      <a href="student-timetable.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400 hover:text-[#13829b] transition-all">
+        <i class="ph-bold ph-squares-four text-xl"></i>
+        <span class="text-[10px] font-medium mt-0.5">Classes</span>
+      </a>
+      <!-- Central Floating Action (Quick Chat Orb with Ocean Teal gradient) -->
+      <div class="-mt-7">
+        <a href="student-chat.html" aria-label="Quick Chat" class="w-14 h-14 rounded-full bg-gradient-to-tr from-[#0e7490] via-[#13829b] to-[#22a6c3] text-white flex items-center justify-center shadow-float border-4 border-[#f2f6f9] active:scale-95 transition-transform">
+          <i class="ph-fill ph-chat-circle-dots text-2xl"></i>
+        </a>
+      </div>
+      <!-- Alerts / Notifications -->
+      <a href="student-notifications.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400 hover:text-[#13829b] relative transition-all">
+        <div class="relative">
+          <i class="ph-bold ph-bell text-xl"></i>
+          <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500"></span>
+        </div>
+        <span class="text-[10px] font-medium mt-0.5">Alerts</span>
+      </a>
+      <!-- Profile -->
+      <a href="student-profile.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400 hover:text-[#13829b] transition-all">
+        <i class="ph-bold ph-user text-xl"></i>
+        <span class="text-[10px] font-medium mt-0.5">Profile</span>
+      </a>
+    </nav>
+
+    <!-- iOS Home Indicator -->
+    <div class="absolute bottom-1 inset-x-0 flex justify-center z-50 pointer-events-none">
+      <div class="w-32 h-1 bg-slate-900/30 rounded-full"></div>
+    </div>
+
+  </div>
+</div>
 
 </div><!-- /.main -->
 
@@ -688,5 +1284,30 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Mobile Clock Updater
+  (function updateClock() {
+    function refresh() {
+      const el = document.getElementById('mobileClock');
+      if (!el) return;
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      el.textContent = h + ':' + m;
+    }
+    refresh();
+    setInterval(refresh, 30000);
+  })();
+
+  // Global Digital ID Modal Trigger
+  window.openDigitalIdModal = function() {
+    const modal = document.getElementById('idModal');
+    if (modal) {
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+  };
+</script>
 </body>
 </html>

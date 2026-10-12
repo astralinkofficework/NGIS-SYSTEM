@@ -623,7 +623,8 @@
     });
     sidebarObserver.observe(sidebar, { attributes: true, attributeFilter: ["class"] });
 
-    if (page) page.classList.add("anim-fade");
+    const pageEl = document.querySelector(".page");
+    if (pageEl) pageEl.classList.add("anim-fade");
 
     /* Interactive layer */
     const s = document.createElement("script");

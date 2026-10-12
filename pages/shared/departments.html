@@ -114,15 +114,7 @@ try {
     border-color: #283942 !important;
     color: #f8fafc !important;
   }
-  [data-theme="dark"] .filter-pill.bg-white {
-    background-color: #182329 !important;
-    border-color: #283942 !important;
-    color: #cbd5e1 !important;
-  }
-  [data-theme="dark"] .filter-pill.active-pill {
-    background-color: #b8dbd9 !important;
-    color: #2f4550 !important;
-  }
+
   [data-theme="dark"] .dept-card:hover .action-btn {
   }
 
@@ -144,24 +136,12 @@ try {
           <p class="text-xs sm:text-[13.5px] text-[#586f7c] dark:text-[#94a3b8] mt-1 font-normal">Overview of academic programs, faculty leads, and your semester progress.</p>
         </div>
       </div>
-      <!-- Decluttered Search & Filter Toolbar -->
+      <!-- Decluttered Search Toolbar -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
         <!-- Minimal Search Box -->
         <div class="relative flex-1 max-w-md">
           <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
           <input class="w-full bg-white border border-borderline pl-10 pr-4 py-2 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#2f4550] focus:ring-1 focus:ring-[#2f4550] transition-all shadow-xs" id="dept-search" placeholder="Search department or instructor..." type="search">
-        </div>
-        <!-- Clean Filter Pills -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0" id="filter-container">
-          <button class="filter-pill active-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-[#2f4550] text-white transition-all shadow-xs" data-filter="all" type="button">
-            All (3)
-          </button>
-          <button class="filter-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-600  border border-borderline transition-all" data-filter="core" type="button">
-            Core
-          </button>
-          <button class="filter-pill px-3.5 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-600  border border-borderline transition-all" data-filter="electives" type="button">
-            Electives
-          </button>
         </div>
       </div>
     </section>
@@ -284,21 +264,16 @@ try {
 <script>
 (function() {
   const searchInput = document.getElementById('dept-search');
-  const filterButtons = document.querySelectorAll('.filter-pill');
   const cards = document.querySelectorAll('.dept-card');
 
-  let currentFilter = 'all';
   let searchQuery = '';
 
   function filterCards() {
     cards.forEach(card => {
       const text = card.textContent.toLowerCase();
-      const category = card.getAttribute('data-category');
-      
       const matchesSearch = !searchQuery || text.includes(searchQuery);
-      const matchesFilter = (currentFilter === 'all') || (category === currentFilter);
 
-      if (matchesSearch && matchesFilter) {
+      if (matchesSearch) {
         card.classList.remove('hidden');
         card.classList.add('flex');
       } else {
@@ -314,21 +289,6 @@ try {
       filterCards();
     });
   }
-
-  filterButtons.forEach(btn => {
-    btn.addEventListener('click', function() {
-      filterButtons.forEach(b => {
-        b.classList.remove('bg-[#2f4550]', 'text-white', 'shadow-xs', 'active-pill');
-        b.classList.add('bg-white', 'text-slate-600', 'border', 'border-borderline');
-      });
-
-      this.classList.remove('bg-white', 'text-slate-600', 'border', 'border-borderline');
-      this.classList.add('bg-[#2f4550]', 'text-white', 'shadow-xs', 'active-pill');
-
-      currentFilter = this.getAttribute('data-filter');
-      filterCards();
-    });
-  });
 })();
 </script>
 

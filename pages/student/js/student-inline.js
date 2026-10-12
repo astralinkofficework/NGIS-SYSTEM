@@ -25,33 +25,66 @@
 
 // Digital ID Modal
 (function() {
-  const modal = document.getElementById('idModal');
-  const openBtn = document.getElementById('viewIdBtn');
-  const openBtnTop = document.getElementById('viewIdBtnTop');
-  const closeBtn = document.getElementById('idCloseBtn');
-  const cardWrap = document.getElementById('idCardWrap');
+  function getModal() { return document.getElementById('idModal'); }
+  function getCardWrap() { return document.getElementById('idCardWrap'); }
 
   function openModal() {
-    modal.classList.add('show');
-    document.body.style.overflow = 'hidden';
+    const modal = getModal();
+    if (modal) {
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   function closeModal() {
-    modal.classList.remove('show');
-    document.body.style.overflow = '';
-    cardWrap.classList.remove('flipped');
+    const modal = getModal();
+    if (modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    const cardWrap = getCardWrap();
+    if (cardWrap) {
+      cardWrap.classList.remove('flipped');
+    }
   }
 
-  if (openBtn) openBtn.addEventListener('click', openModal);
-  if (openBtnTop) openBtnTop.addEventListener('click', openModal);
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  if (cardWrap) cardWrap.addEventListener('click', () => cardWrap.classList.toggle('flipped'));
+  window.openDigitalIdModal = openModal;
+  window.closeDigitalIdModal = closeModal;
 
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+  function initListeners() {
+    const openBtn = document.getElementById('viewIdBtn');
+    const openBtnTop = document.getElementById('viewIdBtnTop');
+    const closeBtn = document.getElementById('idCloseBtn');
+    const cardWrap = getCardWrap();
+    const modal = getModal();
+
+    if (openBtn) openBtn.addEventListener('click', openModal);
+    if (openBtnTop) openBtnTop.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cardWrap) cardWrap.addEventListener('click', () => cardWrap.classList.toggle('flipped'));
+
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
   }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initListeners);
+  } else {
+    initListeners();
+  }
+
+  // Delegated fallback for close button & backdrop
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#idCloseBtn')) {
+      closeModal();
+    } else if (e.target.id === 'idModal') {
+      closeModal();
+    }
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
   });
