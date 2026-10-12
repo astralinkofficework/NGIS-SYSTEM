@@ -102,8 +102,10 @@ tailwind.config = {
 
   @media (max-width: 768px) {
     html, body {
-      height: 100% !important;
-      overflow: hidden !important;
+      height: auto !important;
+      min-height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
       background: #f2f6f9 !important;
     }
     .student-desktop-view {
@@ -113,10 +115,10 @@ tailwind.config = {
       display: flex !important;
       flex-direction: column !important;
       width: 100% !important;
-      height: 100% !important;
-      height: 100dvh !important;
-      max-height: 100dvh !important;
-      overflow: hidden !important;
+      min-height: 100dvh !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
       background: #f2f6f9 !important;
     }
     #heroBanner,
@@ -134,16 +136,16 @@ tailwind.config = {
       padding: 0 !important;
       width: 100% !important;
       max-width: 100% !important;
-      height: 100% !important;
-      height: 100dvh !important;
-      overflow: hidden !important;
+      min-height: 100dvh !important;
+      height: auto !important;
+      overflow: visible !important;
       background: #f2f6f9 !important;
     }
     .shell {
       display: block !important;
-      height: 100% !important;
-      height: 100dvh !important;
-      overflow: hidden !important;
+      min-height: 100dvh !important;
+      height: auto !important;
+      overflow: visible !important;
     }
   }
 
@@ -153,6 +155,67 @@ tailwind.config = {
     }
     .student-desktop-view {
       display: block !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .student-mobile-view .mobile-app-frame {
+      width: 100% !important; max-width: min(100%, 640px) !important;
+      display: flex !important; flex-direction: column !important;
+      min-height: 100dvh !important; height: auto !important; overflow: visible !important;
+      border-radius: 0 !important; box-shadow: none !important;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .student-mobile-view .mobile-scroll-body {
+      flex: 1 0 auto !important; height: auto !important; min-height: 0 !important;
+      overflow: visible !important; margin-top: 0 !important;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+    .student-mobile-view [data-purpose="top-profile-header"] {
+      background: #13829b !important; padding-bottom: 20px !important;
+      border-radius: 0 0 18px 18px !important; box-shadow: none !important;
+    }
+    .student-mobile-view [data-purpose="primary-quick-actions"] > div {
+      background: #fff !important; color: #2f4550 !important;
+      border: 1px solid #e0e6ed !important; border-radius: 16px !important;
+      box-shadow: 0 3px 12px rgba(47,69,80,.07) !important; padding: 12px !important;
+    }
+    .student-mobile-view [data-purpose="primary-quick-actions"] > div > div:first-child {
+      background: #e8f5f6 !important; color: #087f8c !important; border: 0 !important;
+    }
+    .student-mobile-view [data-purpose="primary-quick-actions"] h3 { color: #2f4550 !important; }
+    .student-mobile-view [data-purpose="primary-quick-actions"] p { color: #5b6677 !important; }
+    .student-mobile-view [data-purpose="primary-quick-actions"] > div > div:last-child { display: none !important; }
+    .student-mobile-view .clay-card {
+      border-radius: 16px !important; border-color: #e0e6ed !important;
+      box-shadow: 0 3px 12px rgba(47,69,80,.06) !important;
+    }
+    .student-mobile-view [data-purpose="quick-link-study-cards"] .overflow-x-auto > div {
+      background: #fff !important; color: #2f4550 !important;
+      border: 1px solid #e0e6ed !important; border-radius: 16px !important;
+      box-shadow: 0 3px 12px rgba(47,69,80,.06) !important;
+    }
+    .student-mobile-view [data-purpose="quick-link-study-cards"] .overflow-x-auto > div p { color: #5b6677 !important; }
+    .student-mobile-view [data-purpose="bottom-navigation-bar"] {
+      position: static !important; left: auto !important; right: auto !important; bottom: auto !important;
+      width: min(calc(100% - 24px), 624px) !important; transform: none !important;
+      margin: auto auto calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+      border: 1px solid #e0e6ed !important; border-radius: 20px !important;
+      padding: 4px 8px !important; box-shadow: 0 4px 18px rgba(47,69,80,.14) !important;
+    }
+    .student-mobile-view [data-purpose="bottom-navigation-bar"] > div { margin-top: 0 !important; }
+    .student-mobile-view [data-purpose="bottom-navigation-bar"] a[href="student-chat.html"] {
+      width: 46px !important; height: 46px !important; border-width: 2px !important;
+      box-shadow: 0 2px 8px rgba(47,69,80,.14) !important;
+    }
+  }
+  @media (max-width: 360px) {
+    .student-mobile-view [data-purpose="primary-quick-actions"] { grid-template-columns: 1fr !important; }
+    .student-mobile-view [data-purpose="attendance-summary"] > div:nth-of-type(2) {
+      flex-direction: column !important; gap: 14px !important;
+    }
+    .student-mobile-view [data-purpose="attendance-summary"] [style*="width: 124px"] {
+      width: 112px !important; height: 112px !important;
     }
   }
 </style>
@@ -677,25 +740,12 @@ tailwind.config = {
 <div class="student-mobile-view">
   <div class="mobile-app-frame w-full max-w-[430px] mx-auto h-full flex flex-col relative overflow-hidden bg-[#f2f6f9] sm:shadow-2xl sm:rounded-[44px] sm:border sm:border-slate-200/80">
     
-    <!-- iOS / Mobile Status Bar -->
-    <header class="pt-safe px-7 pt-3 pb-1 flex justify-between items-center z-30 select-none bg-gradient-to-b from-[#0a5c70] to-[#0e7490] text-white">
-      <span class="text-sm font-semibold tracking-tight" id="mobileClock">10:45</span>
-      <div class="w-24 h-4 bg-black/25 rounded-full mx-auto hidden sm:block backdrop-blur-md"></div>
-      <div class="flex items-center space-x-2 text-xs text-white/90">
-        <i class="ph-bold ph-chart-bar text-sm"></i>
-        <i class="ph-bold ph-wifi-high text-sm"></i>
-        <i class="ph-bold ph-battery-full text-base"></i>
-      </div>
-    </header>
-
     <!-- Top Wave Header (Signature NGIS Ocean Teal Gradient matching Desktop Hero) -->
     <section class="bg-gradient-to-b from-[#0e7490] via-[#13829b] to-[#1baec7] text-white pt-4 pb-14 px-6 relative rounded-b-[40px] shadow-lg shrink-0" data-purpose="top-profile-header">
       <!-- Top Utility Icons -->
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center space-x-3">
-          <div class="w-9 h-9 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/25 text-[#b8dbd9] shadow-sm">
-            <i class="ph-bold ph-graduation-cap text-lg text-white"></i>
-          </div>
+          <img src="LOGO NGIS (2).png" alt="New Gateway International School" class="w-9 h-9 object-contain bg-white rounded-full p-1">
           <div>
             <h1 class="text-[10px] uppercase font-extrabold tracking-wider text-cyan-100">New Gateway International School</h1>
             <p class="text-[11px] text-white/85 font-medium">Semester 2 • 2026</p>
@@ -726,7 +776,7 @@ tailwind.config = {
         <!-- 3D Avatar Profile Orb -->
         <div class="relative group cursor-pointer" onclick="window.location.href='student-profile.html'">
           <div class="w-20 h-20 rounded-full p-1.5 bg-gradient-to-tr from-amber-300 via-white to-cyan-200 shadow-xl shadow-cyan-950/30">
-            <img alt="Nrinphouneta Hok" class="w-full h-full rounded-full object-cover border-2 border-white shadow-inner" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160"/>
+          <img alt="Nrinphouneta Hok" class="w-full h-full rounded-full object-cover border-2 border-white shadow-inner" src="../../assets/images/dashboard-student-portrait.jpg"/>
           </div>
           <div class="absolute bottom-0 right-1 w-6 h-6 rounded-full bg-amber-400 border-2 border-white flex items-center justify-center text-slate-900 text-xs shadow-md">
             <i class="ph-fill ph-star text-[11px]"></i>
@@ -740,14 +790,14 @@ tailwind.config = {
           <i class="ph-bold ph-magnifying-glass text-sm mr-2 text-white"></i>
           <input type="text" placeholder="Search courses, exams, mentors..." class="bg-transparent border-0 outline-none text-xs text-white placeholder-white/75 w-full p-0 focus:ring-0">
         </div>
-        <button type="button" onclick="window.openDigitalIdModal()" class="px-3.5 py-2 bg-white text-[#13829b] font-bold text-xs rounded-2xl shadow-md hover:bg-cyan-50 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
+        <button type="button" onclick="window.openDigitalIdModal()" class="px-3.5 py-2 bg-white text-[#13829b] font-bold text-xs rounded-2xl shadow-md  active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer">
           <i class="ph-bold ph-identification-card text-base text-[#13829b]"></i>
           <span>Digital ID</span>
         </button>
       </div>
     </section>
 
-    <!-- Main Content Scrollable (Native mobile app touch scrolling) -->
+    <!-- Main content uses natural document scrolling -->
     <main class="mobile-scroll-body flex-1 overflow-y-auto no-scrollbar px-5 -mt-6 pb-28 space-y-5 z-20">
       
       <!-- Primary Quick Actions (2x2 Pill Action Cards) -->
@@ -854,7 +904,7 @@ tailwind.config = {
             <i class="ph-bold ph-calendar-blank text-[#13829b] text-lg"></i>
             <h3 class="text-xs font-bold text-slate-700">Schedule: <span class="text-slate-900 font-black">Today, Oct 12</span></h3>
           </div>
-          <a class="text-[11px] font-bold text-[#13829b] hover:text-[#0e7490]" href="student-calendar.html">October 2026 →</a>
+          <a class="text-[11px] font-bold text-[#13829b] " href="student-calendar.html">October 2026 →</a>
         </div>
         <!-- Scrollable Day Pills -->
         <div class="flex items-center justify-between gap-1.5 overflow-x-auto no-scrollbar py-1">
@@ -917,7 +967,7 @@ tailwind.config = {
               Due Oct 15, 11:59 PM
             </div>
             <div class="flex items-center space-x-2">
-              <button onclick="window.location.href='student-assignments.html'" class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-colors">
+              <button onclick="window.location.href='student-assignments.html'" class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold  transition-colors">
                 To Do
               </button>
               <button onclick="window.location.href='student-assignments.html'" class="px-3.5 py-1 rounded-xl bg-gradient-to-r from-[#006c49] to-[#059669] text-white text-xs font-bold shadow-sm shadow-[#006c49]/20 active:scale-95 transition-all">
@@ -1072,7 +1122,7 @@ tailwind.config = {
         </div>
         <div class="space-y-3">
           <!-- Announcement 1 -->
-          <div onclick="window.location.href='student-announcements.html'" class="flex items-start space-x-3 p-2.5 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer">
+          <div onclick="window.location.href='student-announcements.html'" class="flex items-start space-x-3 p-2.5 rounded-2xl  transition-colors cursor-pointer">
             <div class="w-12 h-12 rounded-xl bg-[#e8f2f5] text-[#13829b] flex items-center justify-center shrink-0">
               <i class="ph-bold ph-book-bookmark text-xl"></i>
             </div>
@@ -1083,7 +1133,7 @@ tailwind.config = {
             </div>
           </div>
           <!-- Announcement 2 -->
-          <div onclick="window.location.href='student-announcements.html'" class="flex items-start space-x-3 p-2.5 rounded-2xl hover:bg-slate-50 transition-colors cursor-pointer">
+          <div onclick="window.location.href='student-announcements.html'" class="flex items-start space-x-3 p-2.5 rounded-2xl  transition-colors cursor-pointer">
             <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
               <i class="ph-bold ph-trophy text-xl"></i>
             </div>
@@ -1098,7 +1148,7 @@ tailwind.config = {
 
     </main>
 
-    <!-- Floating Curved Bottom Navigation Bar (Persistent at bottom of mobile frame) -->
+    <!-- Bottom navigation stays in document flow so it never covers content -->
     <nav class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-xl border border-white/80 rounded-[32px] px-3 py-2 shadow-nav z-40 flex items-center justify-around" data-purpose="bottom-navigation-bar">
       <!-- Home (Active Pill with signature teal) -->
       <a href="student.html" class="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl bg-[#e8f2f5] text-[#13829b] transition-all">
@@ -1106,7 +1156,7 @@ tailwind.config = {
         <span class="text-[10px] font-bold mt-0.5">Home</span>
       </a>
       <!-- Classes / Timetable -->
-      <a href="student-timetable.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400 hover:text-[#13829b] transition-all">
+      <a href="student-timetable.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400  transition-all">
         <i class="ph-bold ph-squares-four text-xl"></i>
         <span class="text-[10px] font-medium mt-0.5">Classes</span>
       </a>
@@ -1117,7 +1167,7 @@ tailwind.config = {
         </a>
       </div>
       <!-- Alerts / Notifications -->
-      <a href="student-notifications.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400 hover:text-[#13829b] relative transition-all">
+      <a href="student-notifications.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400  relative transition-all">
         <div class="relative">
           <i class="ph-bold ph-bell text-xl"></i>
           <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-rose-500"></span>
@@ -1125,16 +1175,11 @@ tailwind.config = {
         <span class="text-[10px] font-medium mt-0.5">Alerts</span>
       </a>
       <!-- Profile -->
-      <a href="student-profile.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400 hover:text-[#13829b] transition-all">
+      <a href="student-profile.html" class="flex flex-col items-center justify-center py-1.5 px-3 text-slate-400  transition-all">
         <i class="ph-bold ph-user text-xl"></i>
         <span class="text-[10px] font-medium mt-0.5">Profile</span>
       </a>
     </nav>
-
-    <!-- iOS Home Indicator -->
-    <div class="absolute bottom-1 inset-x-0 flex justify-center z-50 pointer-events-none">
-      <div class="w-32 h-1 bg-slate-900/30 rounded-full"></div>
-    </div>
 
   </div>
 </div>
@@ -1286,20 +1331,6 @@ tailwind.config = {
 </div>
 
 <script>
-  // Mobile Clock Updater
-  (function updateClock() {
-    function refresh() {
-      const el = document.getElementById('mobileClock');
-      if (!el) return;
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      el.textContent = h + ':' + m;
-    }
-    refresh();
-    setInterval(refresh, 30000);
-  })();
-
   // Global Digital ID Modal Trigger
   window.openDigitalIdModal = function() {
     const modal = document.getElementById('idModal');
