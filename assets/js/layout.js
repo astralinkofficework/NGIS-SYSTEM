@@ -59,7 +59,6 @@
           { id:"message-requests",    label:"Message Requests", icon:"mail", href:"pages/messaging/message-requests.html", badge:"3" },
           { id:"archived",            label:"Archived", icon:"archive", href:"pages/messaging/archived.html" },
           { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
-          { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
         ]},
         { id:"comms", label:"Communication Tools", icon:"campaign", collapsible:true, links:[
           { id:"news",           label:"News CMS",       icon:"newspaper", href:"pages/admin/admin-news.html" },
@@ -101,7 +100,6 @@
           { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
           { id:"message-requests",    label:"Message Requests", icon:"mail", href:"pages/messaging/message-requests.html", badge:"2" },
           { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
-          { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
         ]},
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/teacher/teacher-notifications.html", badge:"3" },
@@ -127,7 +125,6 @@
           { id:"department-channels", label:"Department Channels", icon:"apartment", href:"pages/messaging/department-channels.html" },
           { id:"teacher-chat",        label:"Teacher Chat", icon:"chat", href:"pages/student/student-chat.html", badge:"3" },
           { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
-          { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
         ]},
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/student/student-notifications.html", badge:"5" },
@@ -151,7 +148,6 @@
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"1" },
           { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"1" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"1" },
-          { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
         ]},
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/parent/parent-notifications.html", badge:"2" },

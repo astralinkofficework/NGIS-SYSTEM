@@ -10,20 +10,28 @@ for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
     assert "ngis_user" in layout, layout_path
     assert "pathRole" in layout, layout_path
     assert "window.location.replace" in layout, layout_path
-    for retired in ("messaging-dashboard", "saved", "attachments", "notification-preferences"):
+    for retired in ("messaging-dashboard", "saved", "attachments", "notification-preferences", "message-search"):
         assert f'id:"{retired}"' not in layout, (layout_path, retired)
-    assert "pages/messaging/messaging-dashboard.html" not in layout, layout_path
+    for retired_route in (
+        "pages/messaging/messaging-dashboard.html",
+        "pages/messaging/search.html",
+    ):
+        assert retired_route not in layout, (layout_path, retired_route)
 
 for retired_file in (
     "pages/messaging/messaging-dashboard.html",
     "pages/messaging/saved.html",
     "pages/messaging/attachments.html",
     "pages/messaging/notification-preferences.html",
+    "pages/messaging/search.html",
 ):
     assert not (ROOT / retired_file).exists(), retired_file
 
 messaging_data = (ROOT / "assets/js/messaging-data.js").read_text()
-for retired_symbol in ("SAVED", "ATTACHMENTS", "NOTIF_CATEGORIES", "saved:", "attachments:", "notifCategories:"):
+for retired_symbol in (
+    "SAVED", "ATTACHMENTS", "NOTIF_CATEGORIES", "SEARCH_INDEX",
+    "saved:", "attachments:", "notifCategories:", "searchIndex:",
+):
     assert retired_symbol not in messaging_data, retired_symbol
 
 print("portal-routing.test.py: PASS")

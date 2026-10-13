@@ -139,20 +139,6 @@
     { id: "PN-4", conv: "Science Department", convType: "channel", sender: "Dr. Kosal Vann", senderInit: "KV", senderColor: "#0f766e", text: "Lab safety refresher is mandatory for all science students on Monday 7 July.", date: "2026-06-24", pinnedBy: "Dr. Kosal Vann", type: "text" }
   ];
 
-  /* ── Message search index (unified discovery) ── */
-  var SEARCH_INDEX = [
-    { id: "SR-1", type: "message", sender: "Dr. Sarah Jenkins", conv: "Direct message", convType: "direct", text: "Semester 2 final exam: Monday 14 July, 8:00 AM, Hall 2.", date: "2026-06-28", campus: "Sen Sok", dept: "Mathematics", classId: "10A", hasAttachment: false },
-    { id: "SR-2", type: "message", sender: "Mr. Sophea", conv: "Class 10A", convType: "class", text: "Physics practical moves to Lab 2 (Room 204) this week.", date: "2026-06-27", campus: "Sen Sok", dept: "Science", classId: "10A", hasAttachment: true },
-    { id: "SR-3", type: "announcement", sender: "Administration Office", conv: "School Announcements", convType: "announcement", text: "Semester 2 Final Examination Timetable — exams run 14–25 July 2026.", date: "2026-06-20", campus: "All campuses", dept: "—", classId: "—", hasAttachment: true },
-    { id: "SR-4", type: "message", sender: "Ly Channary", conv: "Grade 10A Study Group", convType: "group", text: "Who has the chemistry formula sheet? Shared the updated one here.", date: "2026-06-25", campus: "Sen Sok", dept: "Science", classId: "10A", hasAttachment: true },
-    { id: "SR-5", type: "message", sender: "Dr. Kosal Vann", conv: "Science Department", convType: "channel", text: "Science Fair registration closes 5 July — submit proposals to homeroom teachers.", date: "2026-06-21", campus: "All campuses", dept: "Science", classId: "—", hasAttachment: false },
-    { id: "SR-6", type: "file", sender: "Mr. Sophea", conv: "Direct message", convType: "direct", text: "Physics Ch6 Slides.pdf (1.2 MB) — electromagnetism diagrams.", date: "2026-06-27", campus: "Sen Sok", dept: "Science", classId: "10A", hasAttachment: true },
-    { id: "SR-7", type: "message", sender: "Mr. Oudom", conv: "Class 11A", convType: "class", text: "Study group at lunch tomorrow — bring your calculus questions.", date: "2026-06-26", campus: "Sen Sok", dept: "Mathematics", classId: "11A", hasAttachment: false },
-    { id: "SR-8", type: "announcement", sender: "Keo Pich", conv: "Campus Announcements", convType: "announcement", text: "Sen Sok Campus — Fire drill for all students and staff at 9:00 AM on 9 July.", date: "2026-06-24", campus: "Sen Sok", dept: "—", classId: "—", hasAttachment: false },
-    { id: "SR-9", type: "message", sender: "Mrs. Neary", conv: "English Department", convType: "channel", text: "Oral exam rubric updated for Semester 2 — closed-book format.", date: "2026-06-28", campus: "All campuses", dept: "English", classId: "—", hasAttachment: true },
-    { id: "SR-10", type: "message", sender: "Ratha Sok", conv: "Grade 10A Study Group", convType: "group", text: "Can someone explain question 3b from exercise 5.3?", date: "2026-06-26", campus: "Sen Sok", dept: "Science", classId: "10A", hasAttachment: false }
-  ];
-
   /* ── Telegram integration state (demo — not operational until configured) ── */
   var TELEGRAM = {
     botName: "NGIS Notify Bot",
@@ -219,7 +205,6 @@
     conversations: CONVERSATIONS,
     requests: REQUESTS,
     pinned: PINNED,
-    searchIndex: SEARCH_INDEX,
     telegram: TELEGRAM,
     audit: AUDIT_EVENTS,
     reports: REPORTS
