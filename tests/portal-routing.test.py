@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Static regression checks for NGIS portal routing and retired messaging cleanup."""
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -10,6 +11,7 @@ for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
     assert "ngis_user" in layout, layout_path
     assert "pathRole" in layout, layout_path
     assert "window.location.replace" in layout, layout_path
+    assert not re.search(r'id:"messaging", label:"Messaging", icon:"forum", collapsible:true', layout), layout_path
     for retired in ("messaging-dashboard", "saved", "attachments", "notification-preferences", "message-search"):
         assert f'id:"{retired}"' not in layout, (layout_path, retired)
     for retired_route in (

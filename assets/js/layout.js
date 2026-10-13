@@ -49,7 +49,7 @@
           { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
           { id:"reports",     label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
+        { id:"messaging", label:"Messaging", icon:"forum", links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"4" },
@@ -91,7 +91,7 @@
           { id:"classes",     label:"My Classes",  icon:"school",    href:"pages/teacher/teacher-classes.html" },
           { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
+        { id:"messaging", label:"Messaging", icon:"forum", links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"3" },
@@ -118,7 +118,7 @@
           { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
           { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
+        { id:"messaging", label:"Messaging", icon:"forum", links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"3" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html", badge:"3" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"2" },
@@ -144,7 +144,7 @@
           { id:"services",    label:"Student Services", icon:"assignment", href:"pages/parent/parent-services.html" },
           { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
+        { id:"messaging", label:"Messaging", icon:"forum", links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"1" },
           { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"1" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"1" },
