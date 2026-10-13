@@ -39,7 +39,6 @@
       <button class="msg-tab active" data-tab="status"><span class="material-symbols-outlined">smart_toy</span>Bot status</button>
       <button class="msg-tab" data-tab="linking"><span class="material-symbols-outlined">link</span>Account linking</button>
       <button class="msg-tab" data-tab="destinations"><span class="material-symbols-outlined">destination</span>Destinations</button>
-      <button class="msg-tab" data-tab="categories"><span class="material-symbols-outlined">tune</span>Categories</button>
       <button class="msg-tab" data-tab="deliveries"><span class="material-symbols-outlined">receipt_long</span>Delivery log</button>
     </div>
 
@@ -80,12 +79,6 @@
         </div>
 
         <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-          <div class="msg-section">
-            <div class="msg-section-head">
-              <span class="msg-section-title"><span class="material-symbols-outlined">notifications_active</span>Notification categories</span>
-            </div>
-            <div class="msg-section-body" id="tgCatSummary"></div>
-          </div>
           <div class="msg-section">
             <div class="msg-section-head">
               <span class="msg-section-title"><span class="material-symbols-outlined">queue</span>Delivery health (7d)</span>
@@ -159,17 +152,6 @@
       <div class="msg-notice info" style="margin-top:14px">
         <span class="material-symbols-outlined">info</span>
         <span>Only school-approved groups and channels can receive broadcasts. The bot must be a member of a channel with posting rights before it can deliver there.</span>
-      </div>
-    </div>
-
-    <!-- ── TAB: categories ── -->
-    <div class="tg-tab-panel" data-panel="categories" style="display:none">
-      <div class="msg-section">
-        <div class="msg-section-head">
-          <span class="msg-section-title"><span class="material-symbols-outlined">tune</span>Telegram delivery categories</span>
-          <span class="msg-tag gray" id="tgCatCount"></span>
-        </div>
-        <div id="tgCatList"></div>
       </div>
     </div>
 
@@ -256,7 +238,7 @@ window.PAGE = { role: 'admin', active: 'telegram-config' };
   ],
   title: 'Telegram Bot Configuration',
   greeting: 'Secure Telegram delivery channel configuration.',
-  breadcrumbs: [{ label: 'Messaging', href: 'messaging-dashboard.html' }, { label: 'Telegram Configuration' }]
+  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html' }, { label: 'Telegram Configuration' }]
 };</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
@@ -291,13 +273,6 @@ window.PAGE = { role: 'admin', active: 'telegram-config' };
     document.querySelector('.tg-tab-panel[data-panel="' + tab.dataset.tab + '"]').style.display = '';
   });
 
-  /* Category summary (status tab) */
-  var onCount = tg.deliveries.length ? M.notifCategories.filter(function (c) { return c.telegram; }).length : 0;
-  document.getElementById('tgCatSummary').innerHTML =
-    '<div class="msg-kv"><div class="msg-kv-row"><span class="msg-kv-key">Categories enabled</span><span class="msg-kv-val num">' + onCount + ' of ' + M.notifCategories.length + '</span></div>' +
-    '<div class="msg-kv-row"><span class="msg-kv-key">Linked accounts</span><span class="msg-kv-val num">3 users</span></div>' +
-    '<div class="msg-kv-row"><span class="msg-kv-key">Active destinations</span><span class="msg-kv-val num">' + tg.destinations.filter(function (d) { return d.active; }).length + ' of ' + tg.destinations.length + '</span></div></div>';
-
   /* Linking steps */
   var steps = [
     { t: 'Select Connect Telegram', d: 'Choose the Connect Telegram action on this page.' },
@@ -305,7 +280,7 @@ window.PAGE = { role: 'admin', active: 'telegram-config' };
     { t: 'Open the official school bot', d: 'Start @NGIS_NotifyBot in Telegram — never share your token with anyone else.' },
     { t: 'Bot verifies the token', d: 'The bot validates the token and returns your Telegram chat ID to the backend.' },
     { t: 'Backend associates the account', d: 'The chat ID is securely linked to your authenticated school account.' },
-    { t: 'Confirm connection', d: 'You confirm the link and choose which categories to receive.' }
+    { t: 'Confirm connection', d: 'You confirm the link and the school-approved delivery channel.' }
   ];
   document.getElementById('linkSteps').innerHTML = '<div class="msg-steps">' + steps.map(function (s, i) {
     var cls = tg.linked && i < 6 ? 'done' : '';
@@ -355,22 +330,6 @@ window.PAGE = { role: 'admin', active: 'telegram-config' };
     }).join('');
   }
   renderDest();
-
-  /* Category matrix */
-  function renderTgCats() {
-    var cats = M.notifCategories.filter(function (c) { return c.telegram || c.key === 'dm' || c.key === 'important'; });
-    document.getElementById('tgCatCount').textContent = cats.filter(function (c) { return c.telegram; }).length + ' of ' + cats.length + ' enabled';
-    document.getElementById('tgCatList').innerHTML = cats.map(function (c) {
-      return '<div class="msg-setting"><div class="msg-setting-main"><div class="msg-setting-label">' + esc(c.label) + '</div><div class="msg-setting-desc">' + esc(c.desc) + '</div></div>' +
-        '<div class="msg-setting-ctrl"><label class="switch"><input type="checkbox" data-tgcat="' + c.key + '"' + (c.telegram ? ' checked' : '') + '><span></span></label></div></div>';
-    }).join('');
-  }
-  renderTgCats();
-  document.getElementById('tgCatList').addEventListener('change', function (e) {
-    if (e.target.dataset && e.target.dataset.tgcat) {
-      window.toast('Telegram category ' + (e.target.checked ? 'enabled' : 'disabled') + ' (demo)', 'success');
-    }
-  });
 
   /* Delivery log */
   var dlQ = '', dlStatus = '';

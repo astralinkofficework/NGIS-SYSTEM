@@ -95,7 +95,7 @@ const DB = {
 
   /* ── Messages ── */
   messages: [
-    { id: 1, senderId: "2026-TCH-0001", senderName: "Mr. Sophea", senderRole: "teacher", recipientId: "2026-STD-0142", recipientName: "Nrinphouneta Hok", recipientRole: "student", subject: "Mathematics Assignment", message: "Please submit your assignment by Friday.", attachments: [], timestamp: "2026-07-06T10:30:00Z", read: false },
+    { id: 1, senderId: "2026-TCH-0001", senderName: "Mr. Sophea", senderRole: "teacher", recipientId: "2026-STD-0142", recipientName: "Nrinphouneta Hok", recipientRole: "student", subject: "Mathematics Assignment", message: "Please submit your assignment by Friday.", timestamp: "2026-07-06T10:30:00Z", read: false },
   ],
 
   /* ── Submissions ── */
@@ -240,11 +240,11 @@ app.get("/api/student/messages/:studentId", (req, res) => {
 });
 
 app.post("/api/student/messages", (req, res) => {
-  const { senderId, recipientId, subject, message, attachments } = req.body;
+  const { senderId, recipientId, subject, message } = req.body;
   if (!senderId || !recipientId || !subject || !message) {
     return res.status(400).json({ error: { code: "VALIDATION_ERROR", message: "Required fields missing" } });
   }
-  const msg = { id: newId(), senderId, recipientId, subject, message, attachments: attachments || [], timestamp: new Date().toISOString(), read: false };
+  const msg = { id: newId(), senderId, recipientId, subject, message, timestamp: new Date().toISOString(), read: false };
   DB.messages.push(msg);
   res.status(201).json({ data: msg });
 });

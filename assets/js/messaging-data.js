@@ -139,31 +139,6 @@
     { id: "PN-4", conv: "Science Department", convType: "channel", sender: "Dr. Kosal Vann", senderInit: "KV", senderColor: "#0f766e", text: "Lab safety refresher is mandatory for all science students on Monday 7 July.", date: "2026-06-24", pinnedBy: "Dr. Kosal Vann", type: "text" }
   ];
 
-  /* ── Saved messages ── */
-  var SAVED = [
-    { id: "SV-1", type: "text", from: "Dr. Sarah Jenkins", text: "Integration by parts — remember the LIATE rule when choosing u and dv.", date: "2026-06-28", conv: "Direct message" },
-    { id: "SV-2", type: "file", from: "Mr. Sophea", text: "Chapter 6 slides — electromagnetism diagrams", date: "2026-06-27", conv: "Direct message", attachment: { name: "Physics Ch6 Slides.pdf", size: "1.2 MB" } },
-    { id: "SV-3", type: "text", from: "Class 10A", text: "Room change: Physics practical moves to Lab 2 (Room 204) this week.", date: "2026-06-27", conv: "Class 10A" },
-    { id: "SV-4", type: "file", from: "Science Club", text: "Olympiad past papers 2022–2025", date: "2026-06-22", conv: "Science Club", attachment: { name: "Olympiad Past Papers.zip", size: "4.8 MB" } },
-    { id: "SV-5", type: "link", from: "Heng Samnang", text: "Student handbook 2025-26 — https://ngis.edu.kh/handbook", date: "2026-06-20", conv: "Direct message" }
-  ];
-
-  /* ── Attachments & shared files ── */
-  var ATTACHMENTS = [
-    { id: "AT-1", name: "Semester 2 Exam Timetable 2025-26.pdf", type: "pdf", size: "248 KB", from: "Dr. Sarah Jenkins", conv: "Direct message", date: "2026-06-28" },
-    { id: "AT-2", name: "Physics Ch6 Slides.pdf", type: "pdf", size: "1.2 MB", from: "Mr. Sophea", conv: "Direct message", date: "2026-06-27" },
-    { id: "AT-3", name: "Lab Safety Checklist.pdf", type: "pdf", size: "84 KB", from: "Mr. Sophea", conv: "Class 10A", date: "2026-06-27" },
-    { id: "AT-4", name: "Chemistry Formula Sheet.pdf", type: "pdf", size: "212 KB", from: "Ly Channary", conv: "Grade 10A Study Group", date: "2026-06-25" },
-    { id: "AT-5", name: "Science Fair Guidelines.pdf", type: "pdf", size: "185 KB", from: "Dr. Kosal Vann", conv: "Science Department", date: "2026-06-21" },
-    { id: "AT-6", name: "Sports Day Event List.pdf", type: "pdf", size: "156 KB", from: "Mr. Phearith Kong", conv: "School Announcements", date: "2026-06-25" },
-    { id: "AT-7", name: "Olympiad Past Papers.zip", type: "archive", size: "4.8 MB", from: "Dr. Kosal Vann", conv: "Science Club", date: "2026-06-22" },
-    { id: "AT-8", name: "Field Trip Permission Form.docx", type: "doc", size: "64 KB", from: "Ms. Kiry Sokha", conv: "Class 10B", date: "2026-06-24" },
-    { id: "AT-9", name: "Group Photo — Science Club.jpg", type: "image", size: "2.1 MB", from: "Ratha Sok", conv: "Science Club", date: "2026-06-18" },
-    { id: "AT-10", name: "Oral Exam Rubric S2 2026.pdf", type: "pdf", size: "120 KB", from: "Mrs. Neary", conv: "English Department", date: "2026-06-28" },
-    { id: "AT-11", name: "Math Practice Set 4.pdf", type: "pdf", size: "98 KB", from: "Mr. Oudom", conv: "Direct message", date: "2026-06-26" },
-    { id: "AT-12", name: "Chinese Writing Assignment 4.pdf", type: "pdf", size: "98 KB", from: "Mr. Heng Samnang", conv: "Chinese Department", date: "2026-06-27" }
-  ];
-
   /* ── Message search index (unified discovery) ── */
   var SEARCH_INDEX = [
     { id: "SR-1", type: "message", sender: "Dr. Sarah Jenkins", conv: "Direct message", convType: "direct", text: "Semester 2 final exam: Monday 14 July, 8:00 AM, Hall 2.", date: "2026-06-28", campus: "Sen Sok", dept: "Mathematics", classId: "10A", hasAttachment: false },
@@ -176,24 +151,6 @@
     { id: "SR-8", type: "announcement", sender: "Keo Pich", conv: "Campus Announcements", convType: "announcement", text: "Sen Sok Campus — Fire drill for all students and staff at 9:00 AM on 9 July.", date: "2026-06-24", campus: "Sen Sok", dept: "—", classId: "—", hasAttachment: false },
     { id: "SR-9", type: "message", sender: "Mrs. Neary", conv: "English Department", convType: "channel", text: "Oral exam rubric updated for Semester 2 — closed-book format.", date: "2026-06-28", campus: "All campuses", dept: "English", classId: "—", hasAttachment: true },
     { id: "SR-10", type: "message", sender: "Ratha Sok", conv: "Grade 10A Study Group", convType: "group", text: "Can someone explain question 3b from exercise 5.3?", date: "2026-06-26", campus: "Sen Sok", dept: "Science", classId: "10A", hasAttachment: false }
-  ];
-
-  /* ── Notification preferences categories ── */
-  var NOTIF_CATEGORIES = [
-    { key: "dm", label: "Direct messages", desc: "New one-to-one messages from eligible users", inApp: true, telegram: true, push: true },
-    { key: "group", label: "Group chat messages", desc: "Messages in groups you created or joined", inApp: true, telegram: false, push: true },
-    { key: "class_ann", label: "Class announcements", desc: "Teacher announcements in your class chats", inApp: true, telegram: true, push: true },
-    { key: "school_ann", label: "School announcements", desc: "Whole-school and campus-wide notices", inApp: true, telegram: true, push: true },
-    { key: "invite", label: "Group invitations", desc: "When someone invites you to a group", inApp: true, telegram: false, push: true },
-    { key: "mention", label: "Mentions & replies", desc: "When someone mentions or replies to you", inApp: true, telegram: true, push: true },
-    { key: "request", label: "Message requests", desc: "New requests from restricted contacts", inApp: true, telegram: false, push: false },
-    { key: "file", label: "File shared", desc: "When a file is shared with you", inApp: true, telegram: false, push: false },
-    { key: "important", label: "Important announcements", desc: "Urgent school notices marked important", inApp: true, telegram: true, push: true },
-    { key: "deadline", label: "Assignment deadlines", desc: "Reminders before assignment due dates", inApp: true, telegram: true, push: true },
-    { key: "exam", label: "Examination schedules", desc: "Exam timetable changes and reminders", inApp: true, telegram: true, push: true },
-    { key: "timetable", label: "Timetable changes", desc: "Class or room schedule changes", inApp: true, telegram: true, push: true },
-    { key: "services", label: "Student Services updates", desc: "Status changes on your service requests", inApp: true, telegram: false, push: true },
-    { key: "tasks", label: "Assigned tasks", desc: "Staff-only: tasks assigned to you", inApp: true, telegram: false, push: true }
   ];
 
   /* ── Telegram integration state (demo — not operational until configured) ── */
@@ -262,10 +219,7 @@
     conversations: CONVERSATIONS,
     requests: REQUESTS,
     pinned: PINNED,
-    saved: SAVED,
-    attachments: ATTACHMENTS,
     searchIndex: SEARCH_INDEX,
-    notifCategories: NOTIF_CATEGORIES,
     telegram: TELEGRAM,
     audit: AUDIT_EVENTS,
     reports: REPORTS

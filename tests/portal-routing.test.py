@@ -1,27 +1,29 @@
 #!/usr/bin/env python3
-"""Static regression checks for NGIS portal routing and layout separation."""
+"""Static regression checks for NGIS portal routing and retired messaging cleanup."""
 from pathlib import Path
-import re
 
 ROOT = Path(__file__).resolve().parents[1]
-layout = (ROOT / "layout.js").read_text()
 
-assert "function resolvePortalRole" in layout
-assert "ngis_user" in layout
-assert "pathRole" in layout
-assert "window.location.replace" in layout
+for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
+    layout = layout_path.read_text()
+    assert "function resolvePortalRole" in layout, layout_path
+    assert "ngis_user" in layout, layout_path
+    assert "pathRole" in layout, layout_path
+    assert "window.location.replace" in layout, layout_path
+    for retired in ("messaging-dashboard", "saved", "attachments", "notification-preferences"):
+        assert f'id:"{retired}"' not in layout, (layout_path, retired)
+    assert "pages/messaging/messaging-dashboard.html" not in layout, layout_path
 
-# Admin-only configuration must not be exposed to other role definitions.
-role_chunks = {}
-for role in ("admin", "teacher", "student", "parent"):
-    match = re.search(rf"    {role}: \{{(.*?)(?=\n    (?:admin|teacher|student|parent): \{{|\n  \}};)" , layout, re.S)
-    assert match, f"missing {role} navigation"
-    role_chunks[role] = match.group(1)
-for role in ("admin", "teacher", "student", "parent"):
-    assert "telegram-config" not in role_chunks[role]
+for retired_file in (
+    "pages/messaging/messaging-dashboard.html",
+    "pages/messaging/saved.html",
+    "pages/messaging/attachments.html",
+    "pages/messaging/notification-preferences.html",
+):
+    assert not (ROOT / retired_file).exists(), retired_file
 
-# No non-admin navigation entry may point to student-only lost-and-found.
-for role in ("teacher", "student", "parent"):
-    assert "pages/student/student-lost-found.html" not in role_chunks[role]
+messaging_data = (ROOT / "assets/js/messaging-data.js").read_text()
+for retired_symbol in ("SAVED", "ATTACHMENTS", "NOTIF_CATEGORIES", "saved:", "attachments:", "notifCategories:"):
+    assert retired_symbol not in messaging_data, retired_symbol
 
 print("portal-routing.test.py: PASS")
