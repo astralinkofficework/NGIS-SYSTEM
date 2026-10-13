@@ -11,10 +11,10 @@
   /* ── Permission matrix (frontend demo of server-side policy) ──
      In production every check must be re-validated server-side. */
   var PERMS = {
-    student: ["dm", "class_chat", "group_chat", "dept_channel", "school_ann", "saved", "attachments", "search", "prefs", "report"],
-    parent:  ["dm", "school_ann", "campus_ann", "saved", "attachments", "search", "prefs", "report"],
-    teacher: ["dm", "class_chat", "group_chat", "dept_channel", "school_ann", "campus_ann", "class_ann", "requests", "pinned", "saved", "attachments", "search", "prefs", "moderation", "report"],
-    admin:   ["dm", "class_chat", "group_chat", "dept_channel", "school_ann", "campus_ann", "class_ann", "requests", "pinned", "saved", "attachments", "search", "prefs", "moderation", "report", "admin", "telegram", "audit", "suspend"]
+    student: ["dm", "class_chat", "group_chat", "dept_channel", "school_ann", "search", "report"],
+    parent:  ["dm", "school_ann", "campus_ann", "search", "report"],
+    teacher: ["dm", "class_chat", "group_chat", "dept_channel", "school_ann", "campus_ann", "class_ann", "requests", "pinned", "search", "moderation", "report"],
+    admin:   ["dm", "class_chat", "group_chat", "dept_channel", "school_ann", "campus_ann", "class_ann", "requests", "pinned", "search", "moderation", "report", "admin", "telegram", "audit", "suspend"]
   };
 
   function can(action) {

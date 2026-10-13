@@ -49,7 +49,6 @@
           { id:"reports",     label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
         ]},
         { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
-          { id:"messaging-dashboard", label:"Dashboard", icon:"dashboard", href:"pages/messaging/messaging-dashboard.html" },
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"4" },
@@ -59,10 +58,7 @@
           { id:"message-requests",    label:"Message Requests", icon:"mail", href:"pages/messaging/message-requests.html", badge:"3" },
           { id:"archived",            label:"Archived", icon:"archive", href:"pages/messaging/archived.html" },
           { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
-          { id:"saved",               label:"Saved Messages", icon:"bookmark", href:"pages/messaging/saved.html" },
-          { id:"attachments",         label:"Attachments", icon:"folder_open", href:"pages/messaging/attachments.html" },
           { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
-          { id:"notification-preferences", label:"Notification Preferences", icon:"tune", href:"pages/messaging/notification-preferences.html" },
         ]},
         { id:"comms", label:"Communication Tools", icon:"campaign", collapsible:true, links:[
           { id:"news",           label:"News CMS",       icon:"newspaper", href:"pages/admin/admin-news.html" },
@@ -94,7 +90,6 @@
           { id:"classes",     label:"My Classes",  icon:"school",    href:"pages/teacher/teacher-classes.html" },
                   ]},
         { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
-          { id:"messaging-dashboard", label:"Dashboard", icon:"dashboard", href:"pages/messaging/messaging-dashboard.html" },
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"3" },
@@ -103,10 +98,7 @@
           { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
           { id:"message-requests",    label:"Message Requests", icon:"mail", href:"pages/messaging/message-requests.html", badge:"2" },
           { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
-          { id:"saved",               label:"Saved Messages", icon:"bookmark", href:"pages/messaging/saved.html" },
-          { id:"attachments",         label:"Attachments", icon:"folder_open", href:"pages/messaging/attachments.html" },
           { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
-          { id:"notification-preferences", label:"Notification Preferences", icon:"tune", href:"pages/messaging/notification-preferences.html" },
         ]},
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/teacher/teacher-notifications.html", badge:"3" },
@@ -125,17 +117,13 @@
           { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
                   ]},
         { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
-          { id:"messaging-dashboard", label:"Dashboard", icon:"dashboard", href:"pages/messaging/messaging-dashboard.html" },
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"3" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html", badge:"3" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"2" },
           { id:"department-channels", label:"Department Channels", icon:"apartment", href:"pages/messaging/department-channels.html" },
           { id:"teacher-chat",        label:"Teacher Chat", icon:"chat", href:"pages/student/student-chat.html", badge:"3" },
           { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
-          { id:"saved",               label:"Saved Messages", icon:"bookmark", href:"pages/messaging/saved.html" },
-          { id:"attachments",         label:"Attachments", icon:"folder_open", href:"pages/messaging/attachments.html" },
           { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
-          { id:"notification-preferences", label:"Notification Preferences", icon:"tune", href:"pages/messaging/notification-preferences.html" },
         ]},
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/student/student-notifications.html", badge:"5" },
@@ -155,14 +143,10 @@
           { id:"services",    label:"Student Services", icon:"assignment", href:"pages/parent/parent-services.html" },
                   ]},
         { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
-          { id:"messaging-dashboard", label:"Dashboard", icon:"dashboard", href:"pages/messaging/messaging-dashboard.html" },
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"1" },
           { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"1" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"1" },
-          { id:"saved",               label:"Saved Messages", icon:"bookmark", href:"pages/messaging/saved.html" },
-          { id:"attachments",         label:"Attachments", icon:"folder_open", href:"pages/messaging/attachments.html" },
           { id:"message-search",      label:"Message Search", icon:"search", href:"pages/messaging/search.html" },
-          { id:"notification-preferences", label:"Notification Preferences", icon:"tune", href:"pages/messaging/notification-preferences.html" },
         ]},
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/parent/parent-notifications.html", badge:"2" },
@@ -207,8 +191,8 @@
   /* Central quick-chat action shown between the left and right dock items */
   const CHAT = {
     admin:   { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"4" },
-    teacher: { label:"Chat",       href:"pages/messaging/messaging-dashboard.html", badge:"3" },
-    student: { label:"Chat",       href:"pages/messaging/messaging-dashboard.html", badge:"3" },
+    teacher: { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
+    student: { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
     parent:  { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"1" },
   };
 
