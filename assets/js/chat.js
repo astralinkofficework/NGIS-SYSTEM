@@ -169,6 +169,9 @@
   const $ = (id) => document.getElementById(id);
   const convList      = $("convList");
   const convSearch    = $("peopleSearch");
+  const searchClearBtn= $("searchClearBtn");
+  const filterTabs    = $("chatFilterTabs");
+  const unreadPill    = $("unreadPill");
   const peopleResults = $("peopleResults");
   const recentLabel   = $("recentLabel");
   const chatWin       = $("chatWin");
@@ -193,6 +196,18 @@
   const backBtn       = $("backBtn");
   const typingRow     = $("typingRow");
   const demoBanner    = $("demoBanner");
+  const callAudioBtn  = $("callAudioBtn");
+  const callVideoBtn  = $("callVideoBtn");
+  const callModal     = $("callModal");
+  const callModalName = $("callModalName");
+  const callModalStatus = $("callModalStatus");
+  const callModalAva  = $("callModalAva");
+  const callMuteBtn   = $("callMuteBtn");
+  const callEndBtn    = $("callEndBtn");
+  const voiceNoteBtn  = $("voiceNoteBtn");
+  const sidebarToggleBtn = $("sidebarToggleBtn");
+
+  let activeFilter = "all";
 
   /* ── Build emoji grid ─────────────────────────────────────── */
   function buildEmojiGrid() {
@@ -215,17 +230,46 @@
   }
 
   /* ── Conversations list ───────────────────────────────────── */
-  function renderConvList(filter = "") {
-    const f = filter.toLowerCase().trim();
-    const filtered = f
-      ? conversations.filter((c) => c.otherUser?.name.toLowerCase().includes(f))
-      : conversations;
+  function renderConvList(filterText = "") {
+    const f = filterText.toLowerCase().trim();
+
+    // Total unread count calculation for pill
+    const totalUnread = conversations.reduce((acc, c) => acc + (c.unread || 0), 0);
+    if (unreadPill) {
+      unreadPill.textContent = totalUnread > 99 ? "99+" : totalUnread;
+      unreadPill.style.display = totalUnread > 0 ? "inline-block" : "none";
+    }
+
+    let filtered = conversations.slice();
+
+    // Apply category tab filter
+    if (activeFilter === "unread") {
+      filtered = filtered.filter((c) => (c.unread || 0) > 0);
+    } else if (activeFilter === "teachers") {
+      filtered = filtered.filter((c) => {
+        const role = (c.otherUser?.role || "").toLowerCase();
+        return role.includes("teacher") || c.otherUser?.roleType === "teacher";
+      });
+    } else if (activeFilter === "staff") {
+      filtered = filtered.filter((c) => {
+        const role = (c.otherUser?.role || "").toLowerCase();
+        return role.includes("admin") || role.includes("counselor") || role.includes("it") || role.includes("lib");
+      });
+    }
+
+    // Apply text search
+    if (f) {
+      filtered = filtered.filter((c) =>
+        c.otherUser?.name.toLowerCase().includes(f) ||
+        (c.otherUser?.role && c.otherUser.role.toLowerCase().includes(f))
+      );
+    }
 
     if (!filtered.length) {
       convList.innerHTML = `
         <div class="conv-empty-state">
           <span class="material-symbols-outlined">chat_bubble_outline</span>
-          <p>${f ? 'No results for "' + escHtml(f) + '"' : "No conversations yet.<br>Start one below."}</p>
+          <p>${f ? 'No matches found for "' + escHtml(f) + '"' : "No conversations found in this view."}</p>
         </div>`;
       return;
     }
@@ -291,22 +335,9 @@
       chatHStatus.className = "chat-hstatus" + (u?.status === "online" ? " is-online" : "");
     }
 
-    // Show chat window with transition
-    if (chatEmpty && chatEmpty.style.display !== 'none') {
-      chatEmpty.classList.add('anim-out');
-      setTimeout(() => {
-        chatEmpty.style.display = 'none';
-        chatEmpty.classList.remove('anim-out');
-        chatActive.style.display = 'flex';
-        void chatActive.offsetWidth;
-        chatActive.classList.remove('anim-in');
-        chatActive.classList.add('anim-in');
-        scrollToBottom();
-      }, 140);
-    } else {
-      if (chatEmpty) chatEmpty.style.display = 'none';
-      chatActive.style.display = 'flex';
-    }
+    // Show active chat window instantly and smoothly (no double animation flash)
+    if (chatEmpty) chatEmpty.style.display = 'none';
+    if (chatActive) chatActive.style.display = 'flex';
 
     // Mobile transition (≤ 768px: single pane slide)
     if (window.innerWidth <= 768) {
@@ -395,11 +426,13 @@
 
       html += `
         <div class="msg-row ${isOut ? "out" : ""}" data-msg-id="${msg.id}">
-          ${isOut ? "" : avaHtml}
           <div class="msg-group">
-            <div class="msg-bubble ${bubbleCls}">${escHtml(msg.message)}</div>
+            <div class="msg-bubble-wrap">
+              ${isOut ? "" : avaHtml}
+              <div class="msg-bubble ${bubbleCls}">${escHtml(msg.message)}</div>
+            </div>
             ${isLastInGroup ? `
-              <div class="msg-meta">
+              <div class="msg-meta" style="${isOut ? '' : 'padding-left:38px'}">
                 <span class="msg-time">${fmtMsgTime(msg.created_at)}</span>
                 ${isOut ? `<span class="msg-tick" id="tick-${msg.id}"><span class="material-symbols-outlined">done_all</span></span>` : ""}
               </div>` : ""}
@@ -413,7 +446,8 @@
   }
 
   function scrollToBottom(smooth = false) {
-    msgArea.scrollTo({ top: msgArea.scrollHeight, behavior: smooth ? "smooth" : "instant" });
+    if (!msgArea) return;
+    msgArea.scrollTo({ top: msgArea.scrollHeight, behavior: smooth ? "smooth" : "auto" });
   }
 
   /* ── Append a single new message ─────────────────────────── */
@@ -428,10 +462,12 @@
     const ava = isOut ? "" : avatarHtml(sender, 28, "msg-sender-init");
 
     row.innerHTML = `
-      ${isOut ? "" : ava}
       <div class="msg-group">
-        <div class="msg-bubble">${escHtml(msg.message)}</div>
-        <div class="msg-meta">
+        <div class="msg-bubble-wrap">
+          ${isOut ? "" : ava}
+          <div class="msg-bubble">${escHtml(msg.message)}</div>
+        </div>
+        <div class="msg-meta" style="${isOut ? '' : 'padding-left:38px'}">
           <span class="msg-time">${fmtMsgTime(msg.created_at)}</span>
           ${isOut ? `<span class="msg-tick" id="tick-${msg.id}"><span class="material-symbols-outlined">done_all</span></span>` : ""}
         </div>
@@ -874,16 +910,54 @@
       });
     }
 
+    // Filter tabs click
+    if (filterTabs) {
+      filterTabs.addEventListener("click", (ev) => {
+        const chip = ev.target.closest(".cft-chip");
+        if (!chip) return;
+        filterTabs.querySelectorAll(".cft-chip").forEach((c) => {
+          c.classList.remove("active");
+          c.setAttribute("aria-selected", "false");
+        });
+        chip.classList.add("active");
+        chip.setAttribute("aria-selected", "true");
+        activeFilter = chip.dataset.filter || "all";
+        renderConvList(convSearch ? convSearch.value : "");
+      });
+    }
+
+    // Search clear button
+    if (searchClearBtn) {
+      searchClearBtn.addEventListener("click", () => {
+        if (convSearch) {
+          convSearch.value = "";
+          searchClearBtn.style.display = "none";
+          if (peopleResults) {
+            peopleResults.innerHTML = "";
+            peopleResults.classList.remove("visible");
+          }
+          if (recentLabel) recentLabel.hidden = false;
+          if (convList) convList.hidden = false;
+          renderConvList("");
+          convSearch.focus();
+        }
+      });
+    }
+
     // People search (inline search or list filter)
     if (convSearch) {
       convSearch.addEventListener("input", () => {
         const q = convSearch.value.trim().toLowerCase();
+        if (searchClearBtn) {
+          searchClearBtn.style.display = q ? "flex" : "none";
+        }
         if (peopleResults) {
           if (!q) {
             peopleResults.innerHTML = "";
             peopleResults.classList.remove("visible");
             if (recentLabel) recentLabel.hidden = false;
             if (convList) convList.hidden = false;
+            renderConvList("");
             return;
           }
           const matched = PEOPLE.filter((p) =>
@@ -916,12 +990,14 @@
       convSearch.addEventListener("keydown", (ev) => {
         if (ev.key === "Escape") {
           convSearch.value = "";
+          if (searchClearBtn) searchClearBtn.style.display = "none";
           if (peopleResults) {
             peopleResults.innerHTML = "";
             peopleResults.classList.remove("visible");
             if (recentLabel) recentLabel.hidden = false;
             if (convList) convList.hidden = false;
           }
+          renderConvList("");
         }
       });
     }
@@ -931,6 +1007,7 @@
         const item = ev.target.closest(".people-result-item");
         if (!item) return;
         convSearch.value = "";
+        if (searchClearBtn) searchClearBtn.style.display = "none";
         peopleResults.innerHTML = "";
         peopleResults.classList.remove("visible");
         if (recentLabel) recentLabel.hidden = false;
@@ -950,6 +1027,11 @@
       autoResize();
       updateSendBtn();
       startTyping();
+    });
+
+    msgInput.addEventListener("focus", () => {
+      // Smoothly ensure message area is at bottom when mobile keyboard pops
+      setTimeout(() => scrollToBottom(false), 80);
     });
 
     msgInput.addEventListener("keydown", (ev) => {
@@ -1011,14 +1093,16 @@
       }
     });
 
-    // Back button (mobile)
+    // Back button (mobile) — smooth slide back
     if (backBtn) backBtn.addEventListener("click", () => {
       chatWin.classList.remove("show-mobile");
       document.querySelector(".conv-panel")?.classList.remove("hidden-mobile");
       document.body.classList.remove("chat-open");
       activeConvId = null;
-      chatActive.style.display = 'none';
-      if (chatEmpty) chatEmpty.style.display = '';
+      if (window.innerWidth > 768) {
+        chatActive.style.display = "none";
+        if (chatEmpty) chatEmpty.style.display = "";
+      }
     });
 
     // Window resize handler to restore dual-pane layout when widened
@@ -1027,8 +1111,103 @@
         chatWin.classList.remove("show-mobile");
         document.querySelector(".conv-panel")?.classList.remove("hidden-mobile");
         document.body.classList.remove("chat-open");
+        if (!activeConvId) {
+          chatActive.style.display = "none";
+          if (chatEmpty) chatEmpty.style.display = "";
+        }
       }
     });
+
+    // Sidebar toggle (left hamburger button)
+    document.querySelectorAll("#sidebarToggleBtn, [data-action='toggle-sidebar']").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const sidebar = document.querySelector(".sidebar");
+        const overlay = document.querySelector(".sidebar-overlay") || document.getElementById("sidebarOverlay");
+        if (sidebar) {
+          sidebar.classList.toggle("open");
+          if (overlay) overlay.classList.toggle("active", sidebar.classList.contains("open"));
+        }
+      });
+    });
+
+    // Call simulator
+    let callTimer = null;
+    let callSecs = 0;
+
+    function startCall(isVideo = false) {
+      if (!activeConvId) return;
+      const conv = conversations.find((c) => c.id === activeConvId);
+      const u = conv?.otherUser || { name: "User", initials: "U", color: "#13829b" };
+
+      if (callModal) {
+        callModal.style.display = "flex";
+        if (callModalName) callModalName.textContent = u.name;
+        if (callModalStatus) callModalStatus.textContent = isVideo ? "Connecting video call…" : "Calling…";
+        if (callModalAva) {
+          callModalAva.innerHTML = `
+            <div class="call-avatar-pulse"></div>
+            ${avatarHtml(u, 76, "conv-ava-init")}
+          `;
+        }
+
+        clearInterval(callTimer);
+        callSecs = 0;
+        setTimeout(() => {
+          if (callModal && callModal.style.display === "flex") {
+            callTimer = setInterval(() => {
+              callSecs++;
+              const m = String(Math.floor(callSecs / 60)).padStart(2, "0");
+              const s = String(callSecs % 60).padStart(2, "0");
+              if (callModalStatus) callModalStatus.textContent = `${m}:${s} · Active`;
+            }, 1000);
+          }
+        }, 1800);
+      }
+    }
+
+    function endCall() {
+      clearInterval(callTimer);
+      if (callModal) callModal.style.display = "none";
+      showToast("Call ended", "info");
+    }
+
+    if (callAudioBtn) callAudioBtn.addEventListener("click", () => startCall(false));
+    if (callVideoBtn) callVideoBtn.addEventListener("click", () => startCall(true));
+    if (callEndBtn)   callEndBtn.addEventListener("click", endCall);
+    if (callMuteBtn) {
+      callMuteBtn.addEventListener("click", () => {
+        const isMuted = callMuteBtn.classList.toggle("active");
+        callMuteBtn.style.background = isMuted ? "#ef4444" : "rgba(255,255,255,0.15)";
+        showToast(isMuted ? "Microphone muted" : "Microphone unmuted", "info");
+      });
+    }
+
+    // Voice note simulator
+    if (voiceNoteBtn) {
+      voiceNoteBtn.addEventListener("click", () => {
+        if (!activeConvId) return;
+        voiceNoteBtn.disabled = true;
+        voiceNoteBtn.style.color = "#ef4444";
+        showToast("🎙️ Recording audio message…", "info");
+
+        setTimeout(() => {
+          voiceNoteBtn.disabled = false;
+          voiceNoteBtn.style.color = "";
+
+          const audioMsg = {
+            id: `voice-${++msgIdCounter}`,
+            conversation_id: activeConvId,
+            sender_id: currentUser.id,
+            sender: { id: currentUser.id, name: currentUser.name },
+            message: "🎙️ Voice message (0:14) ▶ ılılılllılı",
+            created_at: new Date().toISOString(),
+          };
+          appendMessage(audioMsg);
+          showToast("Voice message sent", "success");
+        }, 1400);
+      });
+    }
 
     // Initial send button state
     updateSendBtn();

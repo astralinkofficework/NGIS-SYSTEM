@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content">
   <title>Messages — NGIS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,27 +27,43 @@
     <aside class="conv-panel" id="convPanel" aria-label="Conversations">
 
       <div class="cp-head">
-        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu">
+        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" id="sidebarToggleBtn" aria-label="Open menu" title="Open navigation">
           <span class="material-symbols-outlined">menu</span>
         </button>
-        <h2>Messages</h2>
-        <button class="chat-icon-btn" id="newChatBtn" aria-label="New message" title="New message">
-          <span class="material-symbols-outlined">edit_square</span>
-        </button>
+        <div class="cp-title-wrap">
+          <h2>Messages</h2>
+          <span class="cp-conn-status" title="Connected"></span>
+        </div>
+        <div class="cp-actions">
+          <button class="chat-icon-btn" id="newChatBtn" aria-label="New message" title="New message">
+            <span class="material-symbols-outlined">edit_square</span>
+          </button>
+        </div>
       </div>
 
-      <!-- People search (replaces modal) -->
+      <!-- People search -->
       <div class="cp-search">
         <div class="chat-search-wrap">
-          <span class="material-symbols-outlined" aria-hidden="true">search</span>
+          <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
           <input
             type="search"
             id="peopleSearch"
-            placeholder="Search people…"
+            placeholder="Search conversations…"
             autocomplete="off"
-            aria-label="Search people"
+            aria-label="Search conversations"
           >
+          <button type="button" class="chat-search-clear" id="searchClearBtn" aria-label="Clear search" style="display:none">
+            <span class="material-symbols-outlined">close</span>
+          </button>
         </div>
+      </div>
+
+      <!-- Quick category filter chips -->
+      <div class="chat-filter-tabs" id="chatFilterTabs" role="tablist" aria-label="Message filters">
+        <button type="button" class="cft-chip active" data-filter="all" role="tab" aria-selected="true">All</button>
+        <button type="button" class="cft-chip" data-filter="unread" role="tab" aria-selected="false">Unread <span class="cft-badge" id="unreadPill">1</span></button>
+        <button type="button" class="cft-chip" data-filter="teachers" role="tab" aria-selected="false">Teachers</button>
+        <button type="button" class="cft-chip" data-filter="staff" role="tab" aria-selected="false">Staff</button>
       </div>
 
       <!-- Inline people search results (shown while typing) -->
@@ -183,7 +199,13 @@
             <span class="chat-hstatus is-online" id="chatHStatus">Online · Administrator</span>
           </div>
           <div class="chat-hactions">
-            <button class="chat-icon-btn" aria-label="More options">
+            <button class="chat-icon-btn" id="callAudioBtn" aria-label="Start voice call" title="Voice call">
+              <span class="material-symbols-outlined">call</span>
+            </button>
+            <button class="chat-icon-btn" id="callVideoBtn" aria-label="Start video call" title="Video call">
+              <span class="material-symbols-outlined">videocam</span>
+            </button>
+            <button class="chat-icon-btn" id="chatMoreBtn" aria-label="More options" title="More options">
               <span class="material-symbols-outlined">more_vert</span>
             </button>
           </div>
@@ -304,6 +326,9 @@
                 spellcheck="true"
               ></textarea>
             </div>
+            <button type="button" class="chat-icon-btn" id="voiceNoteBtn" aria-label="Voice message" title="Voice note">
+              <span class="material-symbols-outlined">mic</span>
+            </button>
             <button type="submit" class="chat-icon-btn send-btn" id="sendBtn" aria-label="Send" disabled>
               <span class="material-symbols-outlined">send</span>
             </button>
@@ -314,6 +339,52 @@
     </section><!-- /chat-win -->
 
   </div><!-- /chat-shell -->
+
+  <!-- ═══════════════════════════════════════════
+       Call Simulation Modal (Audio/Video)
+       ═══════════════════════════════════════════ -->
+  <div class="call-modal-overlay" id="callModal" style="display:none" role="dialog" aria-modal="true" aria-label="Call dialog">
+    <div class="call-card">
+      <div class="call-avatar-wrap" id="callModalAva">
+        <div class="call-avatar-pulse"></div>
+        <div class="conv-ava-init" style="background:#d97706;width:80px;height:80px;font-size:26px">HS</div>
+      </div>
+      <h3 class="call-name" id="callModalName">Mr. Heng Samnang</h3>
+      <p class="call-status" id="callModalStatus">Calling…</p>
+      <div class="call-controls">
+        <button type="button" class="call-btn mute" id="callMuteBtn" aria-label="Mute microphone" title="Mute">
+          <span class="material-symbols-outlined">mic_off</span>
+        </button>
+        <button type="button" class="call-btn end" id="callEndBtn" aria-label="End call" title="End call">
+          <span class="material-symbols-outlined">call_end</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       New Chat User Search Modal
+       ═══════════════════════════════════════════ -->
+  <div class="modal-overlay" id="newChatModal" hidden role="dialog" aria-modal="true" aria-label="New Conversation">
+    <div class="chat-modal">
+      <div class="cm-head">
+        <h3>New Conversation</h3>
+        <button type="button" class="chat-icon-btn" id="closeModal" aria-label="Close modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="cm-search">
+        <div class="chat-search-wrap">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input type="search" id="userSearch" placeholder="Type a name or role to start…" autocomplete="off" aria-label="Search users">
+        </div>
+      </div>
+      <div class="user-results" id="userResults">
+        <p class="search-placeholder">Search for a teacher, admin, or support to start a conversation.</p>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- ═══════════════════════════════════════════

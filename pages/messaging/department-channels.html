@@ -2,110 +2,231 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content"/>
 <title>Department Channels — NGIS</title>
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+<!-- NGIS CSS Architecture -->
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/chat.css">
-<link rel="stylesheet" href="../../assets/css/messaging.css">
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/css/department-channels.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<script>
+try {
+  var _t = localStorage.getItem('ngis-theme');
+  if (_t) document.documentElement.setAttribute('data-theme', _t);
+} catch(e) {}
+</script>
 </head>
 <body data-page="chat">
-<main class="main">
+<main class="main" id="deptMain">
   <div id="heroBanner"></div>
 
-  <div class="chat-shell">
-    <!-- LEFT: channel list -->
-    <aside class="conv-panel" id="channelPanel" aria-label="Department channels">
-      <div class="cp-head">
-        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu" title="Open menu">
+  <div class="dept-shell" id="deptShell">
+    <!-- ══════════════════════════════════════════
+         LEFT PANE: Channels List Drawer
+         ══════════════════════════════════════════ -->
+    <aside class="dept-panel" id="deptPanel" aria-label="Department channels list">
+      <!-- Panel Header -->
+      <div class="dept-p-head">
+        <button class="dept-hamburger-btn" id="sidebarToggleBtn" data-action="toggle-sidebar" aria-label="Open Navigation" title="Open Menu">
           <span class="material-symbols-outlined">menu</span>
         </button>
-        <h2>Channels</h2>
-        <button class="chat-icon-btn" aria-label="Search channels" title="Search channels" onclick="document.getElementById('channelSearch').focus()">
-          <span class="material-symbols-outlined">search</span>
+        <div class="dept-p-title-wrap">
+          <h2 class="dept-p-title">Channels</h2>
+          <span class="dept-p-badge" id="deptTotalBadge">7 active</span>
+        </div>
+        <button class="dept-tool-btn icon-only" id="filterToggleBtn" aria-label="Quick Switch Role" title="Switch View Role" onclick="openRoleModal()">
+          <span class="material-symbols-outlined">tune</span>
         </button>
       </div>
-      <div class="cp-search">
-        <div class="chat-search-wrap">
-          <span class="material-symbols-outlined" aria-hidden="true">search</span>
-          <input type="search" id="channelSearch" placeholder="Search departments…" autocomplete="off" aria-label="Search departments">
+
+      <!-- Search Box -->
+      <div class="dept-search-box">
+        <div class="dept-search-wrap">
+          <span class="material-symbols-outlined search-icon" aria-hidden="true">search</span>
+          <input type="search" id="channelSearchInput" class="dept-search-input" placeholder="Search departments, resources…" autocomplete="off" aria-label="Search departments">
+          <button type="button" class="dept-search-clear" id="channelSearchClear" aria-label="Clear search" style="display:none">
+            <span class="material-symbols-outlined" style="font-size:16px">close</span>
+          </button>
         </div>
       </div>
-      <div class="conv-list" id="channelList" role="listbox" aria-label="Department channels" style="padding:8px"></div>
-      <div class="msg-notice info" style="margin:8px;border-radius:10px">
-        <span class="material-symbols-outlined">info</span>
-        <span>Membership is synced from your role and organizational scope. You only see departments you are permitted to access.</span>
+
+      <!-- Quick Category Filter Chips -->
+      <div class="dept-filter-tabs" id="categoryFilterTabs" role="tablist" aria-label="Filter department categories">
+        <button type="button" class="dft-chip active" data-filter="all" role="tab" aria-selected="true">All <span class="dft-badge" id="pillAll">7</span></button>
+        <button type="button" class="dft-chip" data-filter="unread" role="tab" aria-selected="false">Unread <span class="dft-badge" id="pillUnread">2</span></button>
+        <button type="button" class="dft-chip" data-filter="academic" role="tab" aria-selected="false">Academic <span class="dft-badge">5</span></button>
+        <button type="button" class="dft-chip" data-filter="sports" role="tab" aria-selected="false">Sports &amp; PE <span class="dft-badge">1</span></button>
+        <button type="button" class="dft-chip" data-filter="admin" role="tab" aria-selected="false">Admin <span class="dft-badge">1</span></button>
+      </div>
+
+      <!-- Channels List -->
+      <div class="dept-list" id="channelsListContainer" role="listbox" aria-label="Academic Department Channels">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Panel Footer: Role Switcher & Sync Notice -->
+      <div class="dept-panel-footer">
+        <div class="dept-user-card">
+          <div class="dept-user-meta">
+            <span class="dept-user-dot"></span>
+            <div>
+              <span class="dept-user-role-label" id="footerRoleLabel">Student · Grade 10A</span>
+              <span class="dept-user-name-label" id="footerUserName">Nrinphouneta Hok</span>
+            </div>
+          </div>
+          <button type="button" class="dept-role-switch-btn" onclick="openRoleModal()" title="Switch active portal preview">
+            Switch Role
+          </button>
+        </div>
+        <div class="dept-sync-notice">
+          <span class="material-symbols-outlined">sync</span>
+          <span>Synced with your semester enrollment. You automatically see departments you are registered in.</span>
+        </div>
       </div>
     </aside>
 
-    <!-- RIGHT: channel view -->
-    <section class="chat-win" id="channelWin" aria-label="Channel view">
-      <div class="chat-select-state" id="channelSelectState">
-        <div class="ico-wrap"><span class="material-symbols-outlined">apartment</span></div>
-        <h3>Select a department channel</h3>
-        <p>Department channels carry announcements, discussions and shared resources for each academic department.</p>
+    <!-- ══════════════════════════════════════════
+         RIGHT PANE: Department Channel Conversation
+         ══════════════════════════════════════════ -->
+    <section class="dept-main-win" id="deptMainWin" aria-label="Department Channel Conversation">
+      <!-- Empty State -->
+      <div class="dept-empty-state" id="deptEmptyState">
+        <div class="dept-empty-icon-wrap">
+          <span class="material-symbols-outlined">apartment</span>
+        </div>
+        <h3 class="dept-empty-title">Select a Department Channel</h3>
+        <p class="dept-empty-desc">
+          Official department channels carry curriculum notices, lecture slides, lab guidelines, and academic schedules curated by faculty heads.
+        </p>
+        <div class="dept-empty-chips">
+          <button type="button" class="dept-quick-open-btn" onclick="selectChannelById('CH-KHM')">
+            <span>📕</span> Khmer Department
+          </button>
+          <button type="button" class="dept-quick-open-btn" onclick="selectChannelById('CH-SCI')">
+            <span>🔬</span> Science Department
+          </button>
+          <button type="button" class="dept-quick-open-btn" onclick="selectChannelById('CH-ENG')">
+            <span>📘</span> English Department
+          </button>
+        </div>
       </div>
 
-      <div class="chat-active" id="channelActive" style="display:none" aria-live="polite">
-        <header class="chat-header">
-          <button class="chat-icon-btn back-btn" id="backBtn" aria-label="Back to channels">
-            <span class="material-symbols-outlined">arrow_back</span>
-          </button>
-          <div class="class-header-ava" id="chHAva" style="background:#0e7490">SC</div>
-          <div class="chat-hinfo">
-            <span class="chat-hname" id="chHName">Science Department</span>
-            <span class="chat-hstatus" id="chHMeta">41 members · Teachers may post</span>
+      <!-- Active Channel View -->
+      <div class="dept-active-view" id="deptActiveView" style="display:none" aria-live="polite">
+        <!-- Top Channel Header -->
+        <header class="dept-header">
+          <div class="dept-h-left">
+            <button class="dept-back-btn" id="channelBackBtn" aria-label="Back to channels list">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <div class="dept-h-avatar" id="activeChannelAvatar">
+              <span class="material-symbols-outlined" id="activeChannelIcon">science</span>
+            </div>
+            <div class="dept-h-info">
+              <div class="dept-h-title-row">
+                <span class="dept-h-name" id="activeChannelTitle">Science Department</span>
+                <span class="dept-verified-badge">
+                  <span class="material-symbols-outlined">verified</span> Verified
+                </span>
+              </div>
+              <div class="dept-h-meta" id="activeChannelMeta">
+                41 members · Sen Sok Campus · Teachers may post
+              </div>
+            </div>
           </div>
-          <div class="chat-hactions">
-            <button class="chat-icon-btn" id="chPinBtn" aria-label="Pinned messages" title="Pinned messages"><span class="material-symbols-outlined">push_pin</span></button>
-            <button class="chat-icon-btn" aria-label="More options" title="More options"><span class="material-symbols-outlined">more_vert</span></button>
+
+          <!-- Header Action Toolbar -->
+          <div class="dept-h-actions">
+            <button type="button" class="dept-tool-btn" id="btnOpenPinned" onclick="openPinnedDrawer()" title="View pinned notices">
+              <span class="material-symbols-outlined">push_pin</span>
+              <span class="dept-tool-btn text-label" id="btnPinnedCountText">Pinned</span>
+            </button>
+            <button type="button" class="dept-tool-btn" id="btnOpenResources" onclick="openResourcesDrawer()" title="View shared slides &amp; files">
+              <span class="material-symbols-outlined">folder_open</span>
+              <span class="dept-tool-btn text-label">Files</span>
+            </button>
+            <button type="button" class="dept-tool-btn icon-only" onclick="openFacultyModal()" title="Department Faculty &amp; Staff">
+              <span class="material-symbols-outlined">group</span>
+            </button>
+            <button type="button" class="dept-tool-btn icon-only" onclick="openRoleModal()" title="Switch User Role">
+              <span class="material-symbols-outlined">shield_person</span>
+            </button>
           </div>
         </header>
 
-        <div class="msg-area" id="chMsgArea" role="log" aria-label="Channel messages">
-          <div class="msg-date-sep">Yesterday</div>
-          <div class="msg-row">
-            <div class="msg-ava-spacer"></div>
-            <div class="msg-group">
-              <div class="msg-bubble sender-row"><span class="sender-name" style="color:#0e7490">Dr. Kosal Vann</span> · Science Dept<br>Lab safety refresher is mandatory for all science students on Monday 7 July. Attendance will be recorded.</div>
-              <div class="msg-meta"><span>09:12 AM</span><span class="msg-tag blue" style="margin-left:6px">Announcement</span></div>
+        <!-- Pinned Announcement Callout Bar -->
+        <div class="dept-pinned-banner" id="activePinnedBanner" style="display:none">
+          <div class="dept-pinned-content">
+            <span class="material-symbols-outlined pin-icon">push_pin</span>
+            <div class="dept-pinned-text" id="activePinnedText">
+              <span class="dept-pinned-strong">Announcement:</span>
+              <span id="activePinnedTitle">Lab safety refresher mandatory for all science students.</span>
             </div>
           </div>
-          <div class="msg-row">
-            <div class="msg-ava-spacer"></div>
-            <div class="msg-group">
-              <div class="msg-bubble sender-row grp-mid"><span class="sender-name" style="color:#16a34a">Mr. Sophea</span> · Teacher<br>Shared: Physics Ch6 Slides.pdf — electromagnetism diagrams for this week's practical.</div>
-              <div class="msg-meta"><span>10:05 AM</span></div>
-            </div>
-          </div>
-          <div class="msg-date-sep">Today</div>
-          <div class="msg-row">
-            <div class="msg-ava-spacer"></div>
-            <div class="msg-group">
-              <div class="msg-bubble sender-row grp-mid"><span class="sender-name" style="color:#7c3aed">Ms. Kiry Sokha</span> · Teacher<br>Biology lab groups for Term 2 are posted on the notice board outside Lab 2.</div>
-              <div class="msg-meta"><span>08:20 AM</span></div>
-            </div>
-          </div>
+          <button type="button" class="dept-pinned-action" onclick="openPinnedDrawer()">
+            View Details &rarr;
+          </button>
         </div>
 
-        <div class="msg-input-area">
-          <div class="msg-notice info" style="margin:0 0 10px;border-radius:10px" id="chPostNotice">
-            <span class="material-symbols-outlined">info</span>
-            <span>Posting policy: teachers in this department may post. Students can read and reply in class chats.</span>
-          </div>
-          <form class="msg-form" id="chForm" aria-label="Post to channel">
-            <div class="msg-input-wrap">
-              <textarea id="chInput" placeholder="Post to this channel…" rows="1" maxlength="2000" aria-label="Channel message text" autocomplete="off"></textarea>
+        <!-- Messages Feed Stream -->
+        <div class="dept-messages-scroll" id="deptMessagesStream" role="log" aria-label="Channel message stream">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <!-- Bottom Composer & Policy Area -->
+        <div class="dept-bottom-wrap" id="deptBottomArea">
+          <!-- Student Read-Only Notice -->
+          <div class="dept-student-notice" id="studentNoticeBar">
+            <div class="dept-sn-left">
+              <div class="dept-sn-icon-wrap">
+                <span class="material-symbols-outlined">campaign</span>
+              </div>
+              <div class="dept-sn-text">
+                <span class="dept-sn-title">Official Department Broadcast</span>
+                <span class="dept-sn-sub">Curated announcements &amp; academic resources from verified teachers.</span>
+              </div>
             </div>
-            <button type="submit" class="chat-icon-btn send-btn" id="chSendBtn" aria-label="Post" disabled>
-              <span class="material-symbols-outlined">send</span>
+            <button type="button" class="dept-inquire-btn" onclick="openInquiryModal()">
+              <span class="material-symbols-outlined">chat</span> Ask Department Staff
             </button>
+          </div>
+
+          <!-- Teacher / Admin Interactive Composer -->
+          <form class="dept-composer-form" id="teacherComposerForm" style="display:none">
+            <textarea
+              class="dept-composer-textarea"
+              id="composerTextarea"
+              placeholder="Post an official departmental announcement or share resources…"
+              rows="2"
+              aria-label="Write a message"
+            ></textarea>
+            <div class="dept-composer-toolbar">
+              <div class="dept-toolbar-actions">
+                <button type="button" class="dept-act-btn" title="Simulate File Attachment" onclick="simulateAttachment()">
+                  <span class="material-symbols-outlined">attach_file</span>
+                </button>
+                <button type="button" class="dept-act-btn" title="Insert Emoji" onclick="insertEmoji('💡')">
+                  <span class="material-symbols-outlined">mood</span>
+                </button>
+                <label class="dept-announcement-toggle" title="Highlight this message as a high-priority announcement">
+                  <input type="checkbox" id="chkIsAnnouncement" checked>
+                  <span>Priority Announcement</span>
+                </label>
+              </div>
+              <button type="submit" class="dept-send-btn" id="composerSendBtn">
+                <span>Broadcast</span>
+                <span class="material-symbols-outlined" style="font-size:16px">send</span>
+              </button>
+            </div>
           </form>
         </div>
       </div>
@@ -113,160 +234,1146 @@
   </div>
 </main>
 
-<!-- Pinned drawer -->
-<div class="modal-overlay" id="pinModal" style="display:none">
-  <div class="modal-card" style="max-width:520px;width:92vw">
-    <div class="modal-head">
-      <h3>Pinned information</h3>
-      <button class="icon-btn" id="pinClose" aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+<!-- ══════════════════════════════════════════
+     MODAL 1: Pinned Information Drawer
+     ══════════════════════════════════════════ -->
+<div class="dept-modal-overlay" id="pinnedDrawerModal" onclick="if(event.target===this)closePinnedDrawer()">
+  <div class="dept-modal-box">
+    <div class="dept-modal-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="material-symbols-outlined" style="color:#d97706">push_pin</span>
+        <h3 class="dept-modal-title">Pinned Department Notices</h3>
+      </div>
+      <button type="button" class="dept-modal-close" onclick="closePinnedDrawer()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
-    <div class="modal-body" id="pinList" style="padding:12px"></div>
+    <div class="dept-modal-body" id="pinnedDrawerList">
+      <!-- Injected via JavaScript -->
+    </div>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     MODAL 2: Shared Files & Resources Drawer
+     ══════════════════════════════════════════ -->
+<div class="dept-modal-overlay" id="resourcesDrawerModal" onclick="if(event.target===this)closeResourcesDrawer()">
+  <div class="dept-modal-box">
+    <div class="dept-modal-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="material-symbols-outlined" style="color:var(--dept-primary)">folder_open</span>
+        <h3 class="dept-modal-title">Shared Department Files</h3>
+      </div>
+      <button type="button" class="dept-modal-close" onclick="closeResourcesDrawer()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="dept-modal-body" id="resourcesDrawerList">
+      <!-- Injected via JavaScript -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL 3: Faculty & Staff Directory Modal
+     ══════════════════════════════════════════ -->
+<div class="dept-modal-overlay" id="facultyModal" onclick="if(event.target===this)closeFacultyModal()">
+  <div class="dept-modal-box">
+    <div class="dept-modal-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="material-symbols-outlined" style="color:var(--dept-primary)">group</span>
+        <h3 class="dept-modal-title">Department Faculty &amp; Staff</h3>
+      </div>
+      <button type="button" class="dept-modal-close" onclick="closeFacultyModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="dept-modal-body" id="facultyModalList">
+      <!-- Injected via JavaScript -->
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL 4: Role Switcher Modal
+     ══════════════════════════════════════════ -->
+<div class="dept-modal-overlay" id="roleModal" onclick="if(event.target===this)closeRoleModal()">
+  <div class="dept-modal-box" style="max-width:440px">
+    <div class="dept-modal-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="material-symbols-outlined" style="color:var(--dept-primary)">shield_person</span>
+        <h3 class="dept-modal-title">Switch Active Role</h3>
+      </div>
+      <button type="button" class="dept-modal-close" onclick="closeRoleModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="dept-modal-body" style="gap:10px">
+      <p style="font-size:12.5px;color:var(--dept-muted);margin:0 0 4px">
+        Preview the interface under different portal permissions:
+      </p>
+
+      <button type="button" class="dept-item" style="border:1px solid var(--dept-border);background:var(--dept-surface-2)" onclick="setUserRole('student')">
+        <div class="dept-avatar" style="background:#0e7490">ST</div>
+        <div class="dept-info">
+          <span class="dept-name">Nrinphouneta Hok</span>
+          <span class="dept-meta-row">Student · Grade 10A (Read-only + Question)</span>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--dept-primary)">arrow_forward</span>
+      </button>
+
+      <button type="button" class="dept-item" style="border:1px solid var(--dept-border);background:var(--dept-surface-2)" onclick="setUserRole('teacher')">
+        <div class="dept-avatar" style="background:#16a34a">TC</div>
+        <div class="dept-info">
+          <span class="dept-name">Dr. Sarah Jenkins</span>
+          <span class="dept-meta-row">Faculty Teacher · Full Broadcast Access</span>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--dept-primary)">arrow_forward</span>
+      </button>
+
+      <button type="button" class="dept-item" style="border:1px solid var(--dept-border);background:var(--dept-surface-2)" onclick="setUserRole('admin')">
+        <div class="dept-avatar" style="background:#d97706">AD</div>
+        <div class="dept-info">
+          <span class="dept-name">Mr. Heng Samnang</span>
+          <span class="dept-meta-row">Super Administrator · All Channels &amp; Pin Control</span>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--dept-primary)">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL 5: Ask Department Staff Inquiry
+     ══════════════════════════════════════════ -->
+<div class="dept-modal-overlay" id="inquiryModal" onclick="if(event.target===this)closeInquiryModal()">
+  <div class="dept-modal-box">
+    <div class="dept-modal-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="material-symbols-outlined" style="color:var(--dept-primary)">help</span>
+        <h3 class="dept-modal-title">Ask Department Faculty</h3>
+      </div>
+      <button type="button" class="dept-modal-close" onclick="closeInquiryModal()" aria-label="Close">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <form class="dept-modal-body" onsubmit="submitStudentInquiry(event)">
+      <p style="font-size:12.5px;color:var(--dept-muted);margin:0">
+        Your question will be routed to the <strong id="inquiryDeptName">Department</strong> head and assigned faculty.
+      </p>
+      <div>
+        <label style="font-size:11.5px;font-weight:700;color:var(--dept-text);display:block;margin-bottom:5px">Topic / Course Unit</label>
+        <input type="text" id="inquiryTopic" class="dept-search-input" style="border:1px solid var(--dept-border);border-radius:10px;padding:9px 12px;background:var(--dept-surface-2);width:100%" placeholder="e.g. Physics Chapter 6 practical inquiry" required>
+      </div>
+      <div>
+        <label style="font-size:11.5px;font-weight:700;color:var(--dept-text);display:block;margin-bottom:5px">Your Question</label>
+        <textarea id="inquiryQuestion" rows="4" class="dept-search-input" style="border:1px solid var(--dept-border);border-radius:10px;padding:9px 12px;background:var(--dept-surface-2);width:100%;resize:vertical" placeholder="Describe what you need clarification on..." required></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+        <button type="button" class="dept-tool-btn" onclick="closeInquiryModal()">Cancel</button>
+        <button type="submit" class="dept-send-btn" style="height:38px">Submit Question</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- NGIS Core Scripts -->
 <script>
-var _portalRole = (new URLSearchParams(window.location.search).get('portal') || new URLSearchParams(window.location.search).get('role') || localStorage.getItem('ngis_active_portal') || 'admin').toLowerCase();
+var _portalRole = (new URLSearchParams(window.location.search).get('portal') || new URLSearchParams(window.location.search).get('role') || localStorage.getItem('ngis_active_portal') || 'student').toLowerCase();
 window.PAGE = { role: _portalRole, active: 'department-channels' };
 window.HERO_CONFIG = {
   title: 'Department Channels',
-  greeting: 'Department-specific announcements, discussions and resources.',
-  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html?portal=' + _portalRole }, { label: 'Department Channels' }]
+  greeting: 'Official academic broadcasts, shared courseware, and department coordination.',
+  breadcrumbs: [
+    { label: 'Messaging', href: '../shared/chat.html?portal=' + _portalRole },
+    { label: 'Department Channels' }
+  ]
 };
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
-<script src="../../assets/js/messaging-data.js"></script>
+
+<!-- Department Channels Master Engine -->
 <script>
 (function () {
-  var M = window.MSG;
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  'use strict';
 
-  var list = document.getElementById('channelList');
-  var channelActive = document.getElementById('channelActive');
-  var channelSelectState = document.getElementById('channelSelectState');
-  var channelPanel = document.getElementById('channelPanel');
-  var channelWin = document.getElementById('channelWin');
-  var backBtn = document.getElementById('backBtn');
-  var area = document.getElementById('chMsgArea');
-  var input = document.getElementById('chInput');
-  var sendBtn = document.getElementById('chSendBtn');
-  var postNotice = document.getElementById('chPostNotice');
-
-  var CH_COLORS = { 'Khmer': '#b91c1c', 'English': '#1d4ed8', 'Science': '#0e7490', 'Mathematics': '#16a34a', 'Chinese': '#7c3aed', 'Physical Education': '#b45309', 'Administration': '#475569' };
-
-  /* Students see teacher-accessible channels; Administration is staff-only */
-  function visibleChannels() {
-    if (M.role === 'student' || M.role === 'parent') {
-      return M.channels.filter(function (ch) { return ch.posting === 'teachers'; });
+  /* ── Department Master Dataset ────────────────────────────── */
+  const DEPARTMENTS = [
+    {
+      id: 'CH-KHM',
+      code: 'KH',
+      dept: 'Khmer',
+      name: 'Khmer Department',
+      desc: 'National Khmer curriculum, literature analysis, and linguistic events.',
+      category: 'academic',
+      campus: 'Sen Sok Campus',
+      members: 48,
+      unread: 2,
+      time: '12m',
+      icon: 'menu_book',
+      color: '#b91c1c',
+      gradient: 'linear-gradient(135deg, #b91c1c 0%, #dc2626 50%, #f59e0b 100%)',
+      head: 'Mrs. Tep Vanny',
+      pinned: {
+        title: 'Khmer Literature Week scheduled for July 10–14.',
+        author: 'Mrs. Tep Vanny · Department Head',
+        date: 'July 5, 2026',
+        file: 'Khmer_Literature_Week_Schedule.pdf',
+        size: '1.4 MB'
+      },
+      faculty: [
+        { name: 'Mrs. Tep Vanny', role: 'Head of Khmer Department', office: 'Faculty Room 201 · Office Hours: Mon & Wed 2–4 PM' },
+        { name: 'Dr. Lay Kimchhean', role: 'Principal & Senior Advisor', office: 'Admin Block · Room 102' },
+        { name: 'Mr. Chantha', role: 'Grade 10 Literature Faculty', office: 'Language Center · Room 204' }
+      ],
+      messages: [
+        {
+          id: 'km-1',
+          sender: 'Mrs. Tep Vanny',
+          role: 'Head of Khmer Dept',
+          roleType: 'head',
+          avatarBg: '#b91c1c',
+          avatarText: 'TV',
+          time: '09:15 AM',
+          date: 'Yesterday',
+          isAnnouncement: true,
+          priorityTag: 'High Priority',
+          content: 'Warm greetings students and colleagues! Khmer Literature Week is officially scheduled for July 10–14. All Grade 10 & 11 classes will participate in poetry recitation and traditional prose analysis.',
+          attachment: {
+            name: 'Khmer_Literature_Week_Schedule.pdf',
+            size: '1.4 MB',
+            type: 'pdf'
+          },
+          reactions: { '👍': 18, '❤️': 12, '📖': 9 }
+        },
+        {
+          id: 'km-2',
+          sender: 'Dr. Lay Kimchhean',
+          role: 'Principal · Sen Sok',
+          roleType: 'principal',
+          avatarBg: '#0f766e',
+          avatarText: 'LK',
+          time: '11:30 AM',
+          date: 'Yesterday',
+          isAnnouncement: false,
+          content: 'Please remember that submissions for the Khmer Essay Competition close this Friday at 5:00 PM. High-performing entries will be exhibited in the library.',
+          attachment: null,
+          reactions: { '👍': 14, '✍️': 8 }
+        },
+        {
+          id: 'km-3',
+          sender: 'Mr. Chantha',
+          role: 'Khmer Faculty',
+          roleType: 'faculty',
+          avatarBg: '#b45309',
+          avatarText: 'CH',
+          time: '08:45 AM',
+          date: 'Today',
+          isAnnouncement: false,
+          content: 'The Grade 10 Khmer grammar review booklets for Term 2 are now ready. Please review Section 3 on compound sentence structures before Tuesday\'s workshop.',
+          attachment: {
+            name: 'Grade10_Grammar_Review_Booklet.pdf',
+            size: '2.6 MB',
+            type: 'pdf'
+          },
+          reactions: { '👍': 12, '💡': 6 }
+        }
+      ]
+    },
+    {
+      id: 'CH-ENG',
+      code: 'EN',
+      dept: 'English',
+      name: 'English Department',
+      desc: 'International English curriculum, IELTS prep, debate club, and writing rubrics.',
+      category: 'academic',
+      campus: 'Sen Sok Campus',
+      members: 52,
+      unread: 1,
+      time: '44m',
+      icon: 'translate',
+      color: '#1d4ed8',
+      gradient: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #38bdf8 100%)',
+      head: 'Dr. Lay Kimchhean',
+      pinned: {
+        title: 'Term 2 Oral Exam Rubrics & IELTS Prompts published.',
+        author: 'Dr. Lay Kimchhean · English Chair',
+        date: 'July 6, 2026',
+        file: 'IELTS_Oral_Exam_Rubric_2026.pdf',
+        size: '890 KB'
+      },
+      faculty: [
+        { name: 'Dr. Lay Kimchhean', role: 'English Department Chair', office: 'Room 102 · Mon 3–5 PM' },
+        { name: 'Mrs. Neary', role: 'Grade 10 English Faculty', office: 'Language Center · Room 205' },
+        { name: 'Dr. Sarah Jenkins', role: 'Academic Writing Advisor', office: 'Library Suite B' }
+      ],
+      messages: [
+        {
+          id: 'en-1',
+          sender: 'Dr. Lay Kimchhean',
+          role: 'English Dept Chair',
+          roleType: 'head',
+          avatarBg: '#1d4ed8',
+          avatarText: 'LK',
+          time: '09:00 AM',
+          date: 'Yesterday',
+          isAnnouncement: true,
+          priorityTag: 'Academic Update',
+          content: 'The updated Term 2 Oral Examination Rubrics are now live. Assessment will specifically measure lexical range, grammatical precision, and impromptu fluency.',
+          attachment: {
+            name: 'IELTS_Oral_Exam_Rubric_2026.pdf',
+            size: '890 KB',
+            type: 'pdf'
+          },
+          reactions: { '👍': 25, '🗣️': 16, '⭐': 8 }
+        },
+        {
+          id: 'en-2',
+          sender: 'Mrs. Neary',
+          role: 'English Faculty',
+          roleType: 'faculty',
+          avatarBg: '#db2777',
+          avatarText: 'NE',
+          time: '02:15 PM',
+          date: 'Yesterday',
+          isAnnouncement: false,
+          content: 'Debate Club practice moves to the Auditorium this Wednesday at 3:45 PM. The motion will be: "This House believes AI tools enrich classroom inquiry."',
+          attachment: null,
+          reactions: { '👍': 19, '💡': 14 }
+        },
+        {
+          id: 'en-3',
+          sender: 'Dr. Lay Kimchhean',
+          role: 'English Dept Chair',
+          roleType: 'head',
+          avatarBg: '#1d4ed8',
+          avatarText: 'LK',
+          time: '08:30 AM',
+          date: 'Today',
+          isAnnouncement: false,
+          content: 'Reading logs for Grade 10 must be logged on the portal by Sunday midnight. Please consult Mrs. Neary if you need recommended book lists.',
+          attachment: null,
+          reactions: { '👍': 11, '📚': 9 }
+        }
+      ]
+    },
+    {
+      id: 'CH-SCI',
+      code: 'SC',
+      dept: 'Science',
+      name: 'Science Department',
+      desc: 'Physics, chemistry, biology laboratory research, and Science Fair coordination.',
+      category: 'academic',
+      campus: 'Sen Sok Campus',
+      members: 41,
+      unread: 0,
+      time: '2h',
+      icon: 'science',
+      color: '#0e7490',
+      gradient: 'linear-gradient(135deg, #0e7490 0%, #0891b2 50%, #2dd4bf 100%)',
+      head: 'Dr. Kosal Vann',
+      pinned: {
+        title: 'Mandatory Lab Safety Refresher on Monday 7 July.',
+        author: 'Dr. Kosal Vann · Science Dept Head',
+        date: 'July 5, 2026',
+        file: 'Physics_Ch6_Electromagnetism_Slides.pdf',
+        size: '4.2 MB'
+      },
+      faculty: [
+        { name: 'Dr. Kosal Vann', role: 'Head of Science Department', office: 'Science Lab 1 · Room 301' },
+        { name: 'Mr. Sophea', role: 'Physics Faculty', office: 'Physics Lab · Room 304' },
+        { name: 'Ms. Kiry Sokha', role: 'Biology Faculty', office: 'Bio Lab · Room 305' }
+      ],
+      messages: [
+        {
+          id: 'sc-1',
+          sender: 'Dr. Kosal Vann',
+          role: 'Science Dept Head',
+          roleType: 'head',
+          avatarBg: '#0e7490',
+          avatarText: 'KV',
+          time: '09:12 AM',
+          date: 'Yesterday',
+          isAnnouncement: true,
+          priorityTag: 'Mandatory',
+          content: 'Lab safety refresher is mandatory for all science students on Monday 7 July. Attendance will be recorded via student ID badge scanners at the lab door.',
+          attachment: null,
+          reactions: { '👍': 22, '🔬': 15, '⚠️': 7 }
+        },
+        {
+          id: 'sc-2',
+          sender: 'Mr. Sophea',
+          role: 'Physics Faculty',
+          roleType: 'faculty',
+          avatarBg: '#0891b2',
+          avatarText: 'SP',
+          time: '10:05 AM',
+          date: 'Yesterday',
+          isAnnouncement: false,
+          content: 'Shared: Physics Ch6 Slides.pdf — electromagnetism diagrams and mathematical derivations for this week\'s practical session in Lab 2.',
+          attachment: {
+            name: 'Physics_Ch6_Electromagnetism_Slides.pdf',
+            size: '4.2 MB',
+            type: 'slides'
+          },
+          reactions: { '👍': 20, '⚡': 12 }
+        },
+        {
+          id: 'sc-3',
+          sender: 'Ms. Kiry Sokha',
+          role: 'Biology Faculty',
+          roleType: 'faculty',
+          avatarBg: '#7c3aed',
+          avatarText: 'KS',
+          time: '08:20 AM',
+          date: 'Today',
+          isAnnouncement: false,
+          content: 'Biology lab groups for Term 2 are posted on the notice board outside Lab 2. Please meet your assigned partner before Wednesday\'s practical.',
+          attachment: null,
+          reactions: { '👍': 15, '🧬': 10 }
+        }
+      ]
+    },
+    {
+      id: 'CH-MATH',
+      code: 'MA',
+      dept: 'Mathematics',
+      name: 'Mathematics Department',
+      desc: 'Calculus, algebra, statistics, and International Math Olympiad coaching.',
+      category: 'academic',
+      campus: 'Sen Sok Campus',
+      members: 36,
+      unread: 0,
+      time: '5h',
+      icon: 'calculate',
+      color: '#16a34a',
+      gradient: 'linear-gradient(135deg, #16a34a 0%, #059669 50%, #34d399 100%)',
+      head: 'Dr. Sarah Jenkins',
+      pinned: {
+        title: 'Semester 2 Pacing Guide and Calculus Formula Sheet.',
+        author: 'Dr. Sarah Jenkins · Math Chair',
+        date: 'July 4, 2026',
+        file: 'Calculus_Formula_Sheet_2026.pdf',
+        size: '1.2 MB'
+      },
+      faculty: [
+        { name: 'Dr. Sarah Jenkins', role: 'Mathematics Department Chair', office: 'Math Wing · Room 308' },
+        { name: 'Mr. Oudom', role: 'Senior Math Faculty', office: 'Math Wing · Room 310' }
+      ],
+      messages: [
+        {
+          id: 'ma-1',
+          sender: 'Dr. Sarah Jenkins',
+          role: 'Math Dept Chair',
+          roleType: 'head',
+          avatarBg: '#16a34a',
+          avatarText: 'SJ',
+          time: '11:20 AM',
+          date: 'Yesterday',
+          isAnnouncement: true,
+          priorityTag: 'Curriculum',
+          content: 'Semester 2 Pacing Guide and the Calculus Formula Sheet have been finalized. Homework 4 step-by-step solutions are available in the department files drawer.',
+          attachment: {
+            name: 'Calculus_Formula_Sheet_2026.pdf',
+            size: '1.2 MB',
+            type: 'pdf'
+          },
+          reactions: { '👍': 30, '📐': 22, '💯': 15 }
+        },
+        {
+          id: 'ma-2',
+          sender: 'Mr. Oudom',
+          role: 'Senior Math Faculty',
+          roleType: 'faculty',
+          avatarBg: '#2563eb',
+          avatarText: 'OU',
+          time: '01:45 PM',
+          date: 'Yesterday',
+          isAnnouncement: false,
+          content: 'Math Olympiad training session tomorrow at 4:00 PM in Room 302. Problem Set 3 (Combinatorics & Modular Arithmetic) will be solved together.',
+          attachment: null,
+          reactions: { '👍': 18, '💡': 14 }
+        }
+      ]
+    },
+    {
+      id: 'CH-CHN',
+      code: 'CN',
+      dept: 'Chinese',
+      name: 'Chinese Department',
+      desc: 'Chinese language acquisition, HSK preparation, and traditional cultural festivals.',
+      category: 'academic',
+      campus: 'Bak Touk Campus',
+      members: 19,
+      unread: 0,
+      time: 'Yesterday',
+      icon: 'temple_buddhist',
+      color: '#7c3aed',
+      gradient: 'linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #c084fc 100%)',
+      head: 'Mr. Heng Samnang',
+      pinned: {
+        title: 'Chinese New Year Cultural Festival draft schedule.',
+        author: 'Mr. Heng Samnang · Coordinator',
+        date: 'July 3, 2026',
+        file: 'CNY_Festival_Draft_Schedule.pdf',
+        size: '2.1 MB'
+      },
+      faculty: [
+        { name: 'Mr. Heng Samnang', role: 'Chinese Department Coordinator', office: 'Bak Touk · Room 212' },
+        { name: 'Ms. Mei Ling', role: 'HSK Lead Instructor', office: 'Language Wing · Room 214' }
+      ],
+      messages: [
+        {
+          id: 'cn-1',
+          sender: 'Mr. Heng Samnang',
+          role: 'Chinese Coordinator',
+          roleType: 'coordinator',
+          avatarBg: '#7c3aed',
+          avatarText: 'HS',
+          time: '04:10 PM',
+          date: 'Yesterday',
+          isAnnouncement: true,
+          priorityTag: 'Cultural',
+          content: 'The Chinese New Year Cultural Festival program draft is ready. Grade 10 & 11 students interested in joining the Lion Dance or Calligraphy workshop should sign up.',
+          attachment: {
+            name: 'CNY_Festival_Draft_Schedule.pdf',
+            size: '2.1 MB',
+            type: 'pdf'
+          },
+          reactions: { '👍': 24, '🏮': 32, '🧧': 18 }
+        }
+      ]
+    },
+    {
+      id: 'CH-PE',
+      code: 'PE',
+      dept: 'Physical Education',
+      name: 'Physical Education',
+      desc: 'Athletics, competitive sports fixtures, and fitness development.',
+      category: 'sports',
+      campus: 'All Campuses',
+      members: 14,
+      unread: 0,
+      time: '2d',
+      icon: 'sports_soccer',
+      color: '#b45309',
+      gradient: 'linear-gradient(135deg, #b45309 0%, #d97706 50%, #fbbf24 100%)',
+      head: 'Mr. Phearith Kong',
+      pinned: {
+        title: 'Sports Day 2026 Final Rosters & Track Schedule.',
+        author: 'Mr. Phearith Kong · Athletics Director',
+        date: 'July 2, 2026',
+        file: 'Sports_Day_Roster_2026.pdf',
+        size: '980 KB'
+      },
+      faculty: [
+        { name: 'Mr. Phearith Kong', role: 'Athletics Director', office: 'Gymnasium Complex' }
+      ],
+      messages: [
+        {
+          id: 'pe-1',
+          sender: 'Mr. Phearith Kong',
+          role: 'Athletics Director',
+          roleType: 'head',
+          avatarBg: '#b45309',
+          avatarText: 'PK',
+          time: '03:30 PM',
+          date: '2 days ago',
+          isAnnouncement: true,
+          priorityTag: 'Tournament',
+          content: 'Sports Day team rosters are finalized! House captains (Red Phoenix, Blue Dragon, Gold Tiger) please collect your team bibs from the Gym office before Friday.',
+          attachment: {
+            name: 'Sports_Day_Roster_2026.pdf',
+            size: '980 KB',
+            type: 'pdf'
+          },
+          reactions: { '🏆': 38, '⚽': 25, '🔥': 22 }
+        }
+      ]
+    },
+    {
+      id: 'CH-ADM',
+      code: 'AD',
+      dept: 'Administration',
+      name: 'School Administration',
+      desc: 'Central school operations, faculty briefings, and compliance policies.',
+      category: 'admin',
+      campus: 'Central Office',
+      members: 12,
+      unread: 1,
+      time: '3d',
+      icon: 'account_balance',
+      color: '#334155',
+      gradient: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #64748b 100%)',
+      head: 'Heng Samnang',
+      pinned: {
+        title: 'Whole-school staff briefing Friday 7:45 AM in the Main Auditorium.',
+        author: 'Heng Samnang · Super Admin',
+        date: 'July 1, 2026',
+        file: null,
+        size: null
+      },
+      faculty: [
+        { name: 'Heng Samnang', role: 'Super Administrator', office: 'Executive Boardroom' },
+        { name: 'Keo Pich', role: 'Campus Operations Manager', office: 'Depo Admin Wing' }
+      ],
+      messages: [
+        {
+          id: 'ad-1',
+          sender: 'Heng Samnang',
+          role: 'Super Administrator',
+          roleType: 'coordinator',
+          avatarBg: '#334155',
+          avatarText: 'HS',
+          time: '08:00 AM',
+          date: '3 days ago',
+          isAnnouncement: true,
+          priorityTag: 'Official',
+          content: 'Whole-school staff briefing this Friday at 7:45 AM in the Main Auditorium regarding End-of-Term procedures, grade moderation, and parent portal synchronization.',
+          attachment: null,
+          reactions: { '👍': 18, '📋': 10, '☕': 12 }
+        }
+      ]
     }
-    return M.channels;
+  ];
+
+  /* ── Current User Profile & Role ──────────────────────────── */
+  let currentRole = _portalRole || 'student';
+  let currentUser = {
+    student: { name: 'Nrinphouneta Hok', id: '2026-STD-0142', roleLabel: 'Student · Grade 10A' },
+    teacher: { name: 'Dr. Sarah Jenkins', id: '2026-TCH-0001', roleLabel: 'Faculty Teacher · Mathematics' },
+    admin:   { name: 'Mr. Heng Samnang', id: '2026-ADM-0001', roleLabel: 'Super Administrator · Central' }
+  };
+
+  let activeChannelId = null;
+  let activeFilter = 'all';
+  let searchQuery = '';
+
+  /* ── DOM Elements ─────────────────────────────────────────── */
+  const deptShell = document.getElementById('deptShell');
+  const channelListEl = document.getElementById('channelsListContainer');
+  const emptyStateEl = document.getElementById('deptEmptyState');
+  const activeViewEl = document.getElementById('deptActiveView');
+  const backBtn = document.getElementById('channelBackBtn');
+  const messagesStreamEl = document.getElementById('deptMessagesStream');
+  const searchInput = document.getElementById('channelSearchInput');
+  const searchClearBtn = document.getElementById('channelSearchClear');
+
+  /* ── Role Update Helper ──────────────────────────────────── */
+  function applyRoleUI() {
+    const user = currentUser[currentRole] || currentUser.student;
+    document.getElementById('footerRoleLabel').textContent = user.roleLabel;
+    document.getElementById('footerUserName').textContent = user.name;
+
+    const studentBar = document.getElementById('studentNoticeBar');
+    const teacherForm = document.getElementById('teacherComposerForm');
+
+    if (currentRole === 'student') {
+      studentBar.style.display = 'flex';
+      teacherForm.style.display = 'none';
+    } else {
+      studentBar.style.display = 'none';
+      teacherForm.style.display = 'flex';
+      document.getElementById('composerTextarea').placeholder = `Post an official broadcast to this channel as ${user.name}…`;
+    }
   }
 
-  function renderList(filter) {
-    filter = (filter || '').toLowerCase();
-    var chans = visibleChannels().filter(function (ch) {
-      return !filter || (ch.name + ' ' + ch.dept + ' ' + ch.desc).toLowerCase().indexOf(filter) !== -1;
+  /* ── Render Channels List ────────────────────────────────── */
+  function renderChannelList() {
+    let filtered = DEPARTMENTS.filter(ch => {
+      // Category filter
+      if (activeFilter === 'academic' && ch.category !== 'academic') return false;
+      if (activeFilter === 'sports' && ch.category !== 'sports') return false;
+      if (activeFilter === 'admin' && ch.category !== 'admin') return false;
+      if (activeFilter === 'unread' && ch.unread <= 0) return false;
+
+      // Text search
+      if (searchQuery) {
+        const text = `${ch.name} ${ch.dept} ${ch.desc} ${ch.campus} ${ch.head}`.toLowerCase();
+        if (!text.includes(searchQuery)) return false;
+      }
+      return true;
     });
-    list.innerHTML = chans.length ? chans.map(function (ch) {
-      return '<div class="msg-row" role="option" tabindex="0" data-channel="' + ch.id + '" aria-selected="false">' +
-        '<div class="msg-channel-ava" style="background:' + (CH_COLORS[ch.dept] || '#0e7490') + '">' + esc(ch.icon) + '</div>' +
-        '<div class="msg-row-main"><div class="msg-row-top"><span class="msg-row-name">' + esc(ch.name) + '</span><span class="msg-row-time">' + esc(ch.time) + '</span></div>' +
-        '<div class="msg-row-sub">' + ch.members + ' members · ' + (ch.posting === 'admins' ? 'Admins only post' : 'Teachers may post') + '</div>' +
-        '<div class="msg-row-preview' + (ch.unread ? ' unread' : '') + '">' + esc(ch.lastMsg) + '</div></div>' +
-        (ch.unread ? '<span class="msg-badge">' + ch.unread + '</span>' : '') + '</div>';
-    }).join('') : '<div class="msg-empty"><span class="material-symbols-outlined">search_off</span><h4>No channels found</h4><p>Try a different department name.</p></div>';
-  }
-  renderList();
 
-  function openChannel(chId) {
-    var ch = M.channels.find(function (x) { return x.id === chId; });
+    if (filtered.length === 0) {
+      channelListEl.innerHTML = `
+        <div style="text-align:center;padding:36px 16px;color:var(--dept-muted)">
+          <span class="material-symbols-outlined" style="font-size:36px;color:var(--dept-faint)">search_off</span>
+          <div style="font-size:13.5px;font-weight:700;color:var(--dept-text);margin-top:8px">No channels found</div>
+          <div style="font-size:12px;margin-top:2px">Try searching for a different keyword or clear your filter.</div>
+        </div>
+      `;
+      return;
+    }
+
+    channelListEl.innerHTML = filtered.map(ch => {
+      const isActive = ch.id === activeChannelId;
+      const latestMsg = ch.messages[ch.messages.length - 1];
+      const previewAuthor = latestMsg ? latestMsg.sender.split(' ')[0] + ': ' : '';
+      const previewContent = latestMsg ? latestMsg.content : ch.desc;
+
+      return `
+        <div class="dept-item ${isActive ? 'active' : ''} ${ch.unread > 0 ? 'unread' : ''}" data-id="${ch.id}" role="option" aria-selected="${isActive}" onclick="selectChannelById('${ch.id}')">
+          <div class="dept-avatar-wrap">
+            <div class="dept-avatar" style="background:${ch.gradient}">
+              <span class="material-symbols-outlined">${ch.icon}</span>
+            </div>
+          </div>
+          <div class="dept-info">
+            <div class="dept-top-row">
+              <span class="dept-name">${escapeHtml(ch.name)}</span>
+              <span class="dept-time">${escapeHtml(ch.time)}</span>
+            </div>
+            <div class="dept-meta-row">
+              <span>${ch.members} members</span>
+              <span>·</span>
+              <span>${escapeHtml(ch.campus.split(' ')[0])}</span>
+            </div>
+            <div class="dept-preview-row">
+              <span class="dept-preview-text">
+                <span class="dept-preview-author">${escapeHtml(previewAuthor)}</span>${escapeHtml(previewContent)}
+              </span>
+              ${ch.unread > 0 ? `<span class="dept-unread-badge">${ch.unread}</span>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  /* ── Open / Select Channel ───────────────────────────────── */
+  window.selectChannelById = function (chId) {
+    const ch = DEPARTMENTS.find(c => c.id === chId);
     if (!ch) return;
-    list.querySelectorAll('.msg-row').forEach(function (el) {
-      var on = el.dataset.channel === chId;
+
+    activeChannelId = chId;
+    ch.unread = 0; // mark as read
+
+    // Update active highlight in list
+    document.querySelectorAll('.dept-item').forEach(el => {
+      const on = el.dataset.id === chId;
       el.classList.toggle('active', on);
       el.setAttribute('aria-selected', String(on));
     });
-    document.getElementById('chHAva').textContent = ch.icon;
-    document.getElementById('chHAva').style.background = CH_COLORS[ch.dept] || '#0e7490';
-    document.getElementById('chHName').textContent = ch.name;
-    document.getElementById('chHMeta').textContent = ch.members + ' members · ' + (ch.posting === 'admins' ? 'Admins may post' : 'Teachers may post');
-    postNotice.querySelector('span:last-child').textContent = ch.posting === 'admins'
-      ? 'Posting policy: only authorized administrators may post to this channel.'
-      : 'Posting policy: teachers in this department may post. Students can read and reply in class chats.';
 
-    var canPost = M.can('moderation') || (ch.posting === 'teachers' && (M.role === 'teacher' || M.role === 'admin'));
-    input.disabled = !canPost;
-    sendBtn.disabled = !canPost;
-    input.placeholder = canPost ? 'Post to ' + ch.name + '…' : 'Read-only for your role';
+    // Populate Channel Header
+    document.getElementById('activeChannelTitle').textContent = ch.name;
+    document.getElementById('activeChannelMeta').textContent = `${ch.members} members · ${ch.campus} · Teachers post updates`;
+    document.getElementById('activeChannelAvatar').style.background = ch.gradient;
+    document.getElementById('activeChannelIcon').textContent = ch.icon;
 
-    var firstOpen = channelActive.style.display !== 'flex';
-    if (firstOpen) {
-      channelSelectState.style.display = 'none';
-      channelActive.style.display = 'flex';
-      void channelActive.offsetWidth;
-      channelActive.classList.add('anim-in');
-      area.scrollTop = area.scrollHeight;
+    // Pinned Banner
+    const pinBanner = document.getElementById('activePinnedBanner');
+    if (ch.pinned && ch.pinned.title) {
+      pinBanner.style.display = 'flex';
+      document.getElementById('activePinnedTitle').textContent = ch.pinned.title;
+    } else {
+      pinBanner.style.display = 'none';
     }
+
+    // Render Messages Stream
+    renderMessages(ch);
+
+    // Swap empty state to active view
+    emptyStateEl.style.display = 'none';
+    activeViewEl.style.display = 'flex';
+
+    // Mobile slide
     if (window.innerWidth <= 1024) {
-      channelPanel.classList.add('hidden-mobile');
-      channelWin.classList.add('show-mobile');
+      deptShell.classList.add('chat-open');
       document.body.classList.add('chat-open');
     }
+
+    renderChannelList();
+  };
+
+  /* ── Render Messages Stream ──────────────────────────────── */
+  function renderMessages(ch) {
+    let lastDate = '';
+    let html = '';
+
+    ch.messages.forEach(msg => {
+      if (msg.date !== lastDate) {
+        html += `
+          <div class="dept-date-sep">
+            <span class="dept-date-badge">${escapeHtml(msg.date)}</span>
+          </div>
+        `;
+        lastDate = msg.date;
+      }
+
+      const roleBadgeClass = msg.roleType || 'faculty';
+      const roleText = msg.role || 'Faculty';
+
+      let attachmentHtml = '';
+      if (msg.attachment) {
+        const att = msg.attachment;
+        const iconClass = att.type === 'slides' ? 'slides' : (att.type === 'pdf' ? 'pdf' : 'doc');
+        const iconText = att.type === 'slides' ? 'PPT' : (att.type === 'pdf' ? 'PDF' : 'DOC');
+
+        attachmentHtml = `
+          <div class="dept-attachment-card">
+            <div class="dept-att-left">
+              <div class="dept-att-icon ${iconClass}">${iconText}</div>
+              <div class="dept-att-info">
+                <span class="dept-att-name">${escapeHtml(att.name)}</span>
+                <span class="dept-att-meta">${escapeHtml(att.size)} · Downloadable Document</span>
+              </div>
+            </div>
+            <div class="dept-att-actions">
+              <button type="button" class="dept-att-btn" onclick="simulateDownload('${escapeHtml(att.name)}')">
+                <span class="material-symbols-outlined" style="font-size:15px">download</span> Download
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      // Reactions bar
+      let reactionsHtml = '';
+      if (msg.reactions) {
+        reactionsHtml = Object.entries(msg.reactions).map(([emoji, count]) => {
+          return `
+            <button type="button" class="dept-reaction-chip" onclick="toggleReaction(this, '${msg.id}', '${emoji}')">
+              <span>${emoji}</span>
+              <span class="react-count">${count}</span>
+            </button>
+          `;
+        }).join('');
+      }
+
+      reactionsHtml += `
+        <button type="button" class="dept-add-reaction-btn" title="Add reaction" onclick="addQuickReaction('${msg.id}')">
+          <span class="material-symbols-outlined" style="font-size:16px">add_reaction</span>
+        </button>
+      `;
+
+      html += `
+        <div class="dept-msg-row" id="msgRow-${msg.id}">
+          <div class="dept-msg-ava-wrap">
+            <div class="dept-msg-avatar" style="background:${msg.avatarBg || '#0e7490'}">
+              ${escapeHtml(msg.avatarText || 'TC')}
+            </div>
+          </div>
+          <div class="dept-msg-content-wrap">
+            <div class="dept-msg-meta-top">
+              <span class="dept-msg-sender">${escapeHtml(msg.sender)}</span>
+              <span class="dept-msg-role-tag ${roleBadgeClass}">${escapeHtml(roleText)}</span>
+              <span class="dept-msg-time">${escapeHtml(msg.time)}</span>
+              ${msg.isAnnouncement ? `<span class="dept-msg-priority-badge ${msg.priorityTag === 'Mandatory' ? 'urgent' : 'academic'}"><span class="material-symbols-outlined" style="font-size:13px">campaign</span> ${escapeHtml(msg.priorityTag || 'Announcement')}</span>` : ''}
+            </div>
+            <div class="dept-msg-bubble ${msg.isAnnouncement ? 'is-announcement' : ''}">
+              ${escapeHtml(msg.content)}
+              ${attachmentHtml}
+            </div>
+            <div class="dept-reactions-bar">
+              ${reactionsHtml}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    messagesStreamEl.innerHTML = html;
+    messagesStreamEl.scrollTop = messagesStreamEl.scrollHeight;
   }
 
-  list.addEventListener('click', function (e) {
-    var row = e.target.closest('.msg-row');
-    if (row && row.dataset.channel) openChannel(row.dataset.channel);
-  });
-  list.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { var row = e.target.closest('.msg-row'); if (row && row.dataset.channel) openChannel(row.dataset.channel); }
-  });
-  document.getElementById('channelSearch').addEventListener('input', function () { renderList(this.value); });
+  /* ── Interactive Reactions ───────────────────────────────── */
+  window.toggleReaction = function (btn, msgId, emoji) {
+    btn.classList.toggle('reacted');
+    const countSpan = btn.querySelector('.react-count');
+    let count = parseInt(countSpan.textContent, 10) || 0;
+    if (btn.classList.contains('reacted')) {
+      count++;
+    } else {
+      count = Math.max(0, count - 1);
+    }
+    countSpan.textContent = count;
+  };
 
+  window.addQuickReaction = function (msgId) {
+    const emojis = ['👍', '❤️', '🔥', '💡', '👏', '✅'];
+    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+    const ch = DEPARTMENTS.find(c => c.id === activeChannelId);
+    if (!ch) return;
+    const msg = ch.messages.find(m => m.id === msgId);
+    if (msg) {
+      if (!msg.reactions) msg.reactions = {};
+      msg.reactions[randomEmoji] = (msg.reactions[randomEmoji] || 0) + 1;
+      renderMessages(ch);
+      if (window.toast) window.toast(`Added ${randomEmoji} reaction`, 'info');
+    }
+  };
+
+  /* ── Teacher / Admin Broadcast Posting ───────────────────── */
+  document.getElementById('teacherComposerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const textarea = document.getElementById('composerTextarea');
+    const text = textarea.value.trim();
+    if (!text || !activeChannelId) return;
+
+    const ch = DEPARTMENTS.find(c => c.id === activeChannelId);
+    if (!ch) return;
+
+    const user = currentUser[currentRole] || currentUser.teacher;
+    const isAnnouncement = document.getElementById('chkIsAnnouncement').checked;
+
+    const newMsg = {
+      id: `post-${Date.now()}`,
+      sender: user.name,
+      role: user.roleLabel.split('·')[0].trim(),
+      roleType: currentRole === 'admin' ? 'coordinator' : 'head',
+      avatarBg: currentRole === 'admin' ? '#d97706' : '#16a34a',
+      avatarText: user.name.split(' ').map(w => w[0]).join('').slice(0, 2),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: 'Today',
+      isAnnouncement: isAnnouncement,
+      priorityTag: isAnnouncement ? 'Broadcast' : '',
+      content: text,
+      attachment: null,
+      reactions: { '👍': 1 }
+    };
+
+    ch.messages.push(newMsg);
+    ch.time = 'Just now';
+
+    textarea.value = '';
+    renderMessages(ch);
+    renderChannelList();
+
+    if (window.toast) {
+      window.toast(`Broadcast sent to ${ch.name}`, 'success');
+    }
+  });
+
+  /* ── Mobile Back Navigation ──────────────────────────────── */
   backBtn.addEventListener('click', function () {
-    channelPanel.classList.remove('hidden-mobile');
-    channelWin.classList.remove('show-mobile');
+    deptShell.classList.remove('chat-open');
     document.body.classList.remove('chat-open');
   });
 
-  input.addEventListener('input', function () {
-    sendBtn.disabled = !this.value.trim() || this.disabled;
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 130) + 'px';
-  });
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('chForm').dispatchEvent(new Event('submit')); }
+  /* ── Category Filters ────────────────────────────────────── */
+  document.querySelectorAll('.dft-chip').forEach(chip => {
+    chip.addEventListener('click', function () {
+      document.querySelectorAll('.dft-chip').forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-selected', 'false');
+      });
+      this.classList.add('active');
+      this.setAttribute('aria-selected', 'true');
+      activeFilter = this.dataset.filter || 'all';
+      renderChannelList();
+    });
   });
 
-  document.getElementById('chForm').addEventListener('submit', function (e) {
+  /* ── Channel Search ──────────────────────────────────────── */
+  searchInput.addEventListener('input', function () {
+    searchQuery = this.value.trim().toLowerCase();
+    searchClearBtn.style.display = searchQuery ? 'flex' : 'none';
+    renderChannelList();
+  });
+
+  searchClearBtn.addEventListener('click', function () {
+    searchInput.value = '';
+    searchQuery = '';
+    searchClearBtn.style.display = 'none';
+    renderChannelList();
+    searchInput.focus();
+  });
+
+  /* ── Drawers & Modals ────────────────────────────────────── */
+  window.openPinnedDrawer = function () {
+    const ch = DEPARTMENTS.find(c => c.id === activeChannelId);
+    if (!ch) return;
+    const listEl = document.getElementById('pinnedDrawerList');
+
+    if (ch.pinned && ch.pinned.title) {
+      listEl.innerHTML = `
+        <div style="background:var(--dept-surface-2);border:1px solid var(--dept-border);border-left:4px solid #f59e0b;border-radius:12px;padding:14px 16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--dept-muted);margin-bottom:6px">
+            <span style="font-weight:700;color:var(--dept-text)">📌 Pinned Announcement</span>
+            <span>${escapeHtml(ch.pinned.date)}</span>
+          </div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--dept-text);margin-bottom:4px">
+            ${escapeHtml(ch.pinned.title)}
+          </div>
+          <div style="font-size:12px;color:var(--dept-muted);margin-bottom:10px">
+            Pinned by ${escapeHtml(ch.pinned.author)}
+          </div>
+          ${ch.pinned.file ? `
+            <div class="dept-attachment-card" style="margin-top:8px">
+              <div class="dept-att-left">
+                <div class="dept-att-icon pdf">PDF</div>
+                <div class="dept-att-info">
+                  <span class="dept-att-name">${escapeHtml(ch.pinned.file)}</span>
+                  <span class="dept-att-meta">${escapeHtml(ch.pinned.size)} · Official Document</span>
+                </div>
+              </div>
+              <button type="button" class="dept-att-btn" onclick="simulateDownload('${escapeHtml(ch.pinned.file)}')">Download</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    } else {
+      listEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--dept-muted)">No pinned announcements in this channel yet.</div>';
+    }
+
+    document.getElementById('pinnedDrawerModal').classList.add('open');
+  };
+  window.closePinnedDrawer = function () {
+    document.getElementById('pinnedDrawerModal').classList.remove('open');
+  };
+
+  window.openResourcesDrawer = function () {
+    const ch = DEPARTMENTS.find(c => c.id === activeChannelId);
+    if (!ch) return;
+    const listEl = document.getElementById('resourcesDrawerList');
+
+    const files = [];
+    ch.messages.forEach(m => {
+      if (m.attachment) files.push(m.attachment);
+    });
+
+    if (files.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--dept-muted)">No shared documents or slides in this department yet.</div>';
+    } else {
+      listEl.innerHTML = files.map(f => {
+        const iconClass = f.type === 'slides' ? 'slides' : 'pdf';
+        return `
+          <div class="dept-attachment-card">
+            <div class="dept-att-left">
+              <div class="dept-att-icon ${iconClass}">${f.type.toUpperCase()}</div>
+              <div class="dept-att-info">
+                <span class="dept-att-name">${escapeHtml(f.name)}</span>
+                <span class="dept-att-meta">${escapeHtml(f.size)} · Department Curriculum File</span>
+              </div>
+            </div>
+            <button type="button" class="dept-att-btn" onclick="simulateDownload('${escapeHtml(f.name)}')">
+              <span class="material-symbols-outlined" style="font-size:15px">download</span> Download
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('resourcesDrawerModal').classList.add('open');
+  };
+  window.closeResourcesDrawer = function () {
+    document.getElementById('resourcesDrawerModal').classList.remove('open');
+  };
+
+  window.openFacultyModal = function () {
+    const ch = DEPARTMENTS.find(c => c.id === activeChannelId);
+    if (!ch) return;
+    const listEl = document.getElementById('facultyModalList');
+
+    listEl.innerHTML = ch.faculty.map(fac => {
+      return `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;background:var(--dept-surface-2);border:1px solid var(--dept-border)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:38px;height:38px;border-radius:10px;background:var(--dept-primary-light);color:var(--dept-primary);display:grid;place-items:center;font-weight:700">
+              ${fac.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            </div>
+            <div>
+              <div style="font-size:13.5px;font-weight:700;color:var(--dept-text)">${escapeHtml(fac.name)}</div>
+              <div style="font-size:11.5px;color:var(--dept-muted)">${escapeHtml(fac.role)}</div>
+              <div style="font-size:11px;color:var(--dept-faint);margin-top:2px">${escapeHtml(fac.office)}</div>
+            </div>
+          </div>
+          <button type="button" class="dept-tool-btn" onclick="directMessageFaculty('${escapeHtml(fac.name)}')">
+            <span class="material-symbols-outlined" style="font-size:16px">chat</span> Chat
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('facultyModal').classList.add('open');
+  };
+  window.closeFacultyModal = function () {
+    document.getElementById('facultyModal').classList.remove('open');
+  };
+
+  window.openRoleModal = function () {
+    document.getElementById('roleModal').classList.add('open');
+  };
+  window.closeRoleModal = function () {
+    document.getElementById('roleModal').classList.remove('open');
+  };
+
+  window.setUserRole = function (role) {
+    currentRole = role;
+    applyRoleUI();
+    closeRoleModal();
+    if (window.toast) {
+      window.toast(`Viewing as: ${role.toUpperCase()}`, 'info');
+    }
+  };
+
+  window.openInquiryModal = function () {
+    const ch = DEPARTMENTS.find(c => c.id === activeChannelId);
+    document.getElementById('inquiryDeptName').textContent = ch ? ch.name : 'Department';
+    document.getElementById('inquiryModal').classList.add('open');
+  };
+  window.closeInquiryModal = function () {
+    document.getElementById('inquiryModal').classList.remove('open');
+  };
+
+  window.submitStudentInquiry = function (e) {
     e.preventDefault();
-    var text = input.value.trim();
-    if (!text) return;
-    var row = document.createElement('div');
-    row.className = 'msg-row out';
-    row.innerHTML = '<div class="msg-group"><div class="msg-bubble sender-row"><span class="sender-name" style="color:#0e7490">' + esc(M.me.name) + '</span> · ' + esc(M.me.roleLabel) + '<br>' + esc(text) + '</div>' +
-      '<div class="msg-meta"><span>' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span></div></div>';
-    area.appendChild(row);
-    input.value = '';
-    input.style.height = '';
-    sendBtn.disabled = true;
-    area.scrollTop = area.scrollHeight;
-    window.toast('Posted to channel (demo — no backend yet)', 'success');
-  });
+    closeInquiryModal();
+    if (window.toast) {
+      window.toast('Your inquiry has been submitted to the Department Faculty.', 'success');
+    }
+  };
 
-  /* Pinned info */
-  var pinModal = document.getElementById('pinModal');
-  document.getElementById('chPinBtn').addEventListener('click', function () {
-    var pins = M.pinned.filter(function (p) { return p.convType === 'channel'; });
-    document.getElementById('pinList').innerHTML = pins.length ? pins.map(function (p) {
-      return '<div style="padding:10px 6px;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-bottom:5px"><span style="font-weight:600;color:var(--heading)">' + esc(p.sender) + '</span><span>' + esc(p.date) + '</span></div>' +
-        '<div class="msg-bubble-card">' + esc(p.text) + '</div>' +
-        '<div style="font-size:10.5px;color:var(--faint);margin-top:5px">Pinned by ' + esc(p.pinnedBy) + '</div></div>';
-    }).join('') : '<div class="msg-empty"><h4>No pinned information</h4><p>Department administrators can pin important information here.</p></div>';
-    pinModal.style.display = 'flex';
+  window.simulateDownload = function (filename) {
+    if (window.toast) {
+      window.toast(`Downloading: ${filename}`, 'info');
+    }
+  };
+
+  window.directMessageFaculty = function (teacherName) {
+    window.location.href = `../shared/chat.html?contact=${encodeURIComponent(teacherName)}`;
+  };
+
+  window.simulateAttachment = function () {
+    const files = ['Chapter_Summary_Notes.pdf', 'Lab_Report_Template.docx', 'Syllabus_Update.pdf'];
+    const chosen = files[Math.floor(Math.random() * files.length)];
+    const textarea = document.getElementById('composerTextarea');
+    textarea.value += ` [Attached: ${chosen}] `;
+    textarea.focus();
+    if (window.toast) window.toast(`Attached: ${chosen}`, 'info');
+  };
+
+  window.insertEmoji = function (emoji) {
+    const textarea = document.getElementById('composerTextarea');
+    textarea.value += emoji;
+    textarea.focus();
+  };
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /* ── Initialize ───────────────────────────────────────────── */
+  document.addEventListener('DOMContentLoaded', () => {
+    applyRoleUI();
+    renderChannelList();
+
+    // Auto-open on desktop, or if channel param provided on mobile
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCh = urlParams.get('channel');
+    if (initialCh || window.innerWidth > 1024) {
+      selectChannelById(initialCh || 'CH-KHM');
+    }
   });
-  document.getElementById('pinClose').addEventListener('click', function () { pinModal.style.display = 'none'; });
-  pinModal.addEventListener('click', function (e) { if (e.target === pinModal) pinModal.style.display = 'none'; });
 })();
 </script>
 </body>

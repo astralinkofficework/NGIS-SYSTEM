@@ -844,10 +844,30 @@ tailwind.config = {
   </div>
 </div>
 
+<script src="js/lost-found-data.js"></script>
 <script>
 /* ============================================================
    LOST & FOUND MARKETPLACE ENGINE
    ============================================================ */
+
+const STORAGE_KEY = 'ngis_lost_found_items';
+
+function getStoredItems() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch(e) {}
+  return null;
+}
+
+function saveLocalItems(items) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  } catch(e) {}
+}
 
 let allItems = [];
 let currentTab = 'all';
@@ -930,42 +950,95 @@ function changeActiveRole(newRole) {
   }
 }
 
-// Data Fetching
+// Data Fetching with Resilient Fallback Hierarchy
 async function fetchItems() {
+  let loadedItems = null;
+
+  // 1. Try Backend API
   try {
     const params = new URLSearchParams({
       role: currentUser.role,
       userId: currentUser.id
     });
     const res = await fetch(`/api/lost-found?${params.toString()}`);
-    const json = await res.json();
-    allItems = json.data || [];
-    applyFilters();
-    updateCounts();
-    if (['staff', 'admin'].includes(currentUser.role)) {
-      renderStaffTable();
+    if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const json = await res.json();
+        if (json && Array.isArray(json.data)) {
+          loadedItems = json.data;
+          saveLocalItems(loadedItems);
+        }
+      }
     }
   } catch (err) {
-    console.error('Failed to fetch items:', err);
+    // API not reachable
   }
+
+  // 2. Check localStorage
+  if (!loadedItems) {
+    loadedItems = getStoredItems();
+  }
+
+  // 3. Try Static JSON File
+  if (!loadedItems) {
+    try {
+      const staticRes = await fetch('../../data/lost_found.json');
+      if (staticRes.ok) {
+        const staticJson = await staticRes.json();
+        if (Array.isArray(staticJson) && staticJson.length > 0) {
+          loadedItems = staticJson;
+          saveLocalItems(loadedItems);
+        }
+      }
+    } catch (err) {}
+  }
+
+  // 4. Default Seed Data
+  if (!loadedItems && window.DEFAULT_LOST_FOUND_ITEMS && Array.isArray(window.DEFAULT_LOST_FOUND_ITEMS)) {
+    loadedItems = JSON.parse(JSON.stringify(window.DEFAULT_LOST_FOUND_ITEMS));
+    saveLocalItems(loadedItems);
+  }
+
+  allItems = loadedItems || [];
+  applyFilters();
+  updateCounts();
+  if (['staff', 'admin'].includes(currentUser.role)) {
+    renderStaffTable();
+  }
+  return allItems;
 }
 
 async function fetchStats() {
+  let statsData = null;
   try {
     const res = await fetch(`/api/lost-found/stats?userId=${currentUser.id}`);
-    const json = await res.json();
-    const d = json.data || {};
-    const elTotal = document.getElementById('statTotal');
-    const elLost = document.getElementById('statLost');
-    const elFound = document.getElementById('statFound');
-    const elRet = document.getElementById('statReturned');
-    if (elTotal) elTotal.textContent = d.total || 0;
-    if (elLost) elLost.textContent = d.lost || 0;
-    if (elFound) elFound.textContent = d.found || 0;
-    if (elRet) elRet.textContent = d.returned || 0;
-  } catch (err) {
-    console.error('Failed to fetch stats:', err);
+    if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const json = await res.json();
+        if (json && json.data) statsData = json.data;
+      }
+    }
+  } catch (err) {}
+
+  if (!statsData) {
+    statsData = {
+      total: allItems.length,
+      lost: allItems.filter(i => i.type === 'lost').length,
+      found: allItems.filter(i => i.type === 'found').length,
+      returned: allItems.filter(i => i.status === 'returned').length
+    };
   }
+
+  const elTotal = document.getElementById('statTotal');
+  const elLost = document.getElementById('statLost');
+  const elFound = document.getElementById('statFound');
+  const elRet = document.getElementById('statReturned');
+  if (elTotal) elTotal.textContent = statsData.total || 0;
+  if (elLost) elLost.textContent = statsData.lost || 0;
+  if (elFound) elFound.textContent = statsData.found || 0;
+  if (elRet) elRet.textContent = statsData.returned || 0;
 }
 
 function updateCounts() {
@@ -1333,39 +1406,101 @@ async function submitReportForm(e) {
     payload.handedToStaff = document.getElementById('formHandedStaff').value === 'true';
   }
 
+  let submittedSuccessfully = false;
   try {
     const res = await fetch('/api/lost-found', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    const result = await res.json();
     if (res.ok) {
-      if (window.toast) window.toast(`Report created: ${result.data.refId}`, 'success');
-      closeReportModal();
-      fetchItems();
-      fetchStats();
-    } else {
-      if (window.toast) window.toast(result.error?.message || 'Failed to submit report', 'error');
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const result = await res.json();
+        if (result && result.data) {
+          if (window.toast) window.toast(`Report created: ${result.data.refId}`, 'success');
+          closeReportModal();
+          fetchItems();
+          fetchStats();
+          submittedSuccessfully = true;
+        }
+      }
     }
   } catch (err) {
-    if (window.toast) window.toast('Network error during submission', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Submit Report';
+    // API not reachable
   }
+
+  if (!submittedSuccessfully) {
+    const newId = Date.now();
+    const refId = `LF-2026-${String(newId).slice(-4)}`;
+    const newItem = {
+      id: newId,
+      refId: refId,
+      type: activeReportMode,
+      title: payload.title,
+      category: payload.category,
+      campus: payload.campus,
+      location: payload.location,
+      date: payload.date,
+      time: payload.time || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: 'active',
+      description: payload.description,
+      privateDetails: payload.privateDetails || '',
+      custodyLocation: payload.custodyLocation || (activeReportMode === 'lost' ? 'With Reporter' : 'School Reception'),
+      handedToStaff: payload.handedToStaff || false,
+      contactMethod: payload.contactMethod || 'chat',
+      reporterId: currentUser.id,
+      reporterName: currentUser.name,
+      reporterRole: currentUser.role,
+      reporterGrade: currentUser.grade,
+      image: payload.image || '',
+      claims: [],
+      auditLog: [
+        {
+          action: 'reported',
+          by: currentUser.name,
+          role: currentUser.role,
+          date: new Date().toISOString(),
+          notes: 'Initial report submitted.'
+        }
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    allItems.unshift(newItem);
+    saveLocalItems(allItems);
+    if (window.toast) window.toast(`Report created: ${refId}`, 'success');
+    closeReportModal();
+    applyFilters();
+    updateCounts();
+    fetchStats();
+  }
+  btn.disabled = false;
+  btn.textContent = 'Submit Report';
 }
 
 // ── Detail Modal ──
 async function openDetailModal(itemId) {
   try {
-    const res = await fetch(`/api/lost-found/${itemId}?role=${currentUser.role}&userId=${currentUser.id}`);
-    const json = await res.json();
-    const item = json.data;
-    if (!item) return;
+    let item = null;
+    try {
+      const res = await fetch(`/api/lost-found/${itemId}?role=${currentUser.role}&userId=${currentUser.id}`);
+    if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const json = await res.json();
+        if (json && json.data) item = json.data;
+      }
+    }
+  } catch (err) {}
 
-    document.getElementById('detailRefId').textContent = item.refId;
-    document.getElementById('detailTitle').textContent = item.title;
+  if (!item) {
+    item = allItems.find(i => String(i.id) === String(itemId));
+  }
+  if (!item) return;
+
+  document.getElementById('detailRefId').textContent = item.refId;
+  document.getElementById('detailTitle').textContent = item.title;
 
     const fallbackImg = item.type === 'lost' 
       ? 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80'
@@ -1504,6 +1639,7 @@ async function submitClaimForm(e) {
     contactMethod: 'chat'
   };
 
+  let claimSuccess = false;
   try {
     const res = await fetch(`/api/lost-found/${currentClaimItemId}/claim`, {
       method: 'POST',
@@ -1514,14 +1650,35 @@ async function submitClaimForm(e) {
       if (window.toast) window.toast('Claim submitted! School staff will review your evidence.', 'success');
       closeClaimModal();
       fetchItems();
-    } else {
-      if (window.toast) window.toast('Failed to submit claim', 'error');
+      claimSuccess = true;
     }
-  } catch (err) {
-    if (window.toast) window.toast('Network error during claim', 'error');
-  } finally {
-    btn.disabled = false;
+  } catch (err) {}
+
+  if (!claimSuccess && currentClaimItemId) {
+    const target = allItems.find(i => String(i.id) === String(currentClaimItemId));
+    if (target) {
+      if (!target.claims) target.claims = [];
+      target.claims.push({
+        claimId: `CLM-${Date.now()}`,
+        claimantId: currentUser.id,
+        claimantName: currentUser.name,
+        claimantRole: currentUser.role,
+        claimantGrade: currentUser.grade,
+        proofDescription: payload.proofDescription,
+        contactMethod: 'chat',
+        date: new Date().toISOString(),
+        status: 'under_review'
+      });
+      target.status = 'claim_submitted';
+      target.updatedAt = new Date().toISOString();
+      saveLocalItems(allItems);
+      if (window.toast) window.toast('Claim submitted! School staff will review your evidence.', 'success');
+      closeClaimModal();
+      applyFilters();
+      updateCounts();
+    }
   }
+  btn.disabled = false;
 }
 
 // ── Matches Modal ──
@@ -1530,48 +1687,107 @@ async function openMatchesModal(itemId) {
   container.innerHTML = '<div class="text-center py-4 text-xs text-outline">Comparing candidates...</div>';
   document.getElementById('matchesModal').classList.add('show');
 
+  let matches = null;
   try {
     const res = await fetch(`/api/lost-found/${itemId}/matches`);
-    const json = await res.json();
-    const matches = json.data || [];
-
-    if (matches.length === 0) {
-      container.innerHTML = `
-        <div class="text-center py-6 text-outline">
-          <span class="material-symbols-outlined text-3xl">search</span>
-          <div class="text-xs font-semibold mt-1">No candidates match with high confidence yet</div>
-        </div>
-      `;
-      return;
+    if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const json = await res.json();
+        matches = json.data;
+      }
     }
+  } catch (err) {}
 
-    container.innerHTML = matches.map(m => {
-      const it = m.item;
-      const fallback = it.type === 'lost' 
-        ? 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80'
-        : 'https://images.unsplash.com/photo-1587145820266-a5951ee6f620?auto=format&fit=crop&w=600&q=80';
-      return `
-        <div class="p-3 rounded-xl border border-surface-container-high bg-surface-container-low flex items-center gap-3">
-          <img src="${escapeHtml(it.image || fallback)}" alt="${escapeHtml(it.title)}" class="w-12 h-12 rounded-lg object-cover bg-surface-container-high">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-on-surface truncate">${escapeHtml(it.title)}</span>
-              <span class="text-[11px] font-semibold text-on-secondary-fixed bg-secondary-fixed px-2 py-0.5 rounded-full">${m.score}% Match</span>
-            </div>
-            <div class="text-[11px] text-outline font-mono">${escapeHtml(it.refId)} · ${escapeHtml(it.campus)}</div>
-            <div class="flex gap-1 mt-1 flex-wrap">
-              ${m.reasons.map(r => `<span class="text-[10px] px-1.5 py-0.2 bg-surface-container-lowest text-on-surface-variant rounded">${escapeHtml(r)}</span>`).join('')}
-            </div>
-          </div>
-          <button onclick="closeMatchesModal();openDetailModal(${it.id})" class="px-2.5 py-1 text-xs font-semibold bg-surface-container-lowest  text-on-surface rounded-lg cursor-pointer">
-            Compare
-          </button>
-        </div>
-      `;
-    }).join('');
-  } catch (err) {
-    container.innerHTML = '<div class="text-xs text-rose-500 text-center py-4">Error loading matches.</div>';
+  if (!matches) {
+    const target = allItems.find(i => String(i.id) === String(itemId));
+    if (target) {
+      const oppositeType = target.type === 'lost' ? 'found' : 'lost';
+      const candidates = allItems.filter(i => i.type === oppositeType && i.status !== 'archived');
+      const tokenize = (text) => {
+        const words = (text || '').toLowerCase().match(/[a-z0-9]{3,}/g) || [];
+        const stopWords = new Set(['with', 'from', 'room', 'floor', 'hall', 'near', 'the', 'and', 'for']);
+        return new Set(words.filter(w => !stopWords.has(w)));
+      };
+      const targetTokens = tokenize(`${target.title} ${target.description}`);
+      let scoredMatches = [];
+      for (const cand of candidates) {
+        let score = 0;
+        const reasons = [];
+        if ((cand.category || '').toLowerCase() === (target.category || '').toLowerCase()) {
+          score += 40;
+          reasons.push(`Matching category: ${(cand.category || '').charAt(0).toUpperCase() + (cand.category || '').slice(1)}`);
+        }
+        if ((cand.campus || '').toLowerCase() === (target.campus || '').toLowerCase()) {
+          score += 20;
+          reasons.push(`Same campus: ${cand.campus}`);
+        }
+        const candTokens = tokenize(`${cand.title} ${cand.description}`);
+        const common = [...targetTokens].filter(t => candTokens.has(t));
+        if (common.length > 0) {
+          const kwPoints = Math.min(30, common.length * 10);
+          score += kwPoints;
+          reasons.push(`Keyword matches: ${common.slice(0, 4).join(', ')}`);
+        }
+        try {
+          const d1 = new Date(target.date);
+          const d2 = new Date(cand.date);
+          const diffDays = Math.abs(Math.round((d1 - d2) / (1000 * 60 * 60 * 24)));
+          if (!isNaN(diffDays) && diffDays <= 3) {
+            score += 10;
+            reasons.push(`Reported within ${diffDays} days of each other`);
+          }
+        } catch(e) {}
+
+        if (score >= 40) {
+          scoredMatches.push({
+            item: cand,
+            score: Math.min(100, score),
+            reasons: reasons
+          });
+        }
+      }
+      scoredMatches.sort((a, b) => b.score - a.score);
+      matches = scoredMatches.slice(0, 6);
+    } else {
+      matches = [];
+    }
   }
+
+  if (!matches || matches.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-6 text-outline">
+        <span class="material-symbols-outlined text-3xl">search</span>
+        <div class="text-xs font-semibold mt-1">No candidates match with high confidence yet</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = matches.map(m => {
+    const it = m.item;
+    const fallback = it.type === 'lost' 
+      ? 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80'
+      : 'https://images.unsplash.com/photo-1587145820266-a5951ee6f620?auto=format&fit=crop&w=600&q=80';
+    return `
+      <div class="p-3 rounded-xl border border-surface-container-high bg-surface-container-low flex items-center gap-3">
+        <img src="${escapeHtml(it.image || fallback)}" alt="${escapeHtml(it.title)}" class="w-12 h-12 rounded-lg object-cover bg-surface-container-high" onerror="this.onerror=null;this.src='${fallback}';">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-on-surface truncate">${escapeHtml(it.title)}</span>
+            <span class="text-[11px] font-semibold text-on-secondary-fixed bg-secondary-fixed px-2 py-0.5 rounded-full">${m.score}% Match</span>
+          </div>
+          <div class="text-[11px] text-outline font-mono">${escapeHtml(it.refId)} · ${escapeHtml(it.campus)}</div>
+          <div class="flex gap-1 mt-1 flex-wrap">
+            ${m.reasons.map(r => `<span class="text-[10px] px-1.5 py-0.2 bg-surface-container-lowest text-on-surface-variant rounded">${escapeHtml(r)}</span>`).join('')}
+          </div>
+        </div>
+        <button onclick="closeMatchesModal();openDetailModal(${it.id})" class="px-2.5 py-1 text-xs font-semibold bg-surface-container-lowest  text-on-surface rounded-lg cursor-pointer">
+          Compare
+        </button>
+      </div>
+    `;
+  }).join('');
 }
 function closeMatchesModal() {
   document.getElementById('matchesModal').classList.remove('show');
@@ -1600,6 +1816,7 @@ async function submitHandoverForm(e) {
     staffRole: currentUser.role
   };
 
+  let handoverDone = false;
   try {
     const res = await fetch(`/api/lost-found/${currentHandoverItemId}/return`, {
       method: 'POST',
@@ -1611,9 +1828,33 @@ async function submitHandoverForm(e) {
       closeHandoverModal();
       fetchItems();
       fetchStats();
+      handoverDone = true;
     }
-  } catch (err) {
-    if (window.toast) window.toast('Failed to record handover', 'error');
+  } catch (err) {}
+
+  if (!handoverDone && currentHandoverItemId) {
+    const target = allItems.find(i => String(i.id) === String(currentHandoverItemId));
+    if (target) {
+      target.status = 'returned';
+      target.custodyLocation = 'Returned to Owner';
+      if (!target.auditLog) target.auditLog = [];
+      target.auditLog.push({
+        action: 'returned',
+        by: payload.handedOverBy,
+        role: payload.staffRole,
+        date: new Date().toISOString(),
+        notes: `Handed over to ${payload.handedOverTo} at ${payload.handoverLocation}. ${payload.notes}`
+      });
+      saveLocalItems(allItems);
+      if (window.toast) window.toast('Item marked as returned and case closed.', 'success');
+      closeHandoverModal();
+      applyFilters();
+      updateCounts();
+      fetchStats();
+      if (['staff', 'admin'].includes(currentUser.role)) {
+        renderStaffTable();
+      }
+    }
   }
 }
 

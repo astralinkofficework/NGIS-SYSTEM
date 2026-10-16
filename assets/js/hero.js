@@ -194,6 +194,10 @@
       '<!-- ── Tier 1: Main Header Bar ── -->' +
       '<div class="hero-topbar">' +
 
+        '<button type="button" class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
+          '<span class="mi">menu</span>' +
+        '</button>' +
+
         '<!-- Left: Brand Logo Image -->' +
         '<a href="' + homeTarget + '" class="htb-brand-wrap" aria-label="New Gateway International School">' +
           '<img class="htb-brand-logo-img" src="' + logoSrc + '" alt="New Gateway International School" onerror="this.onerror=null;this.src=\'../../assets/images/logo.png\'">' +
@@ -234,10 +238,6 @@
               '<span class="htb-chip-meta">' + roleMeta + '</span>' +
             '</div>' +
           '</div>' +
-
-          '<button type="button" class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false">' +
-            '<span class="mi">menu</span>' +
-          '</button>' +
         '</div>' +
 
       '</div>' +
