@@ -116,6 +116,7 @@
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
           { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
+          { id:"clubs",       label:"Clubs & Activities", icon:"diversity_3", href:"pages/student/student-clubs.html" },
           { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
         { id:"messaging", label:"Messaging", icon:"forum", links:[
@@ -220,12 +221,21 @@
     const path = window.location.pathname || "";
     const match = path.match(/\/pages\/(admin|teacher|student|parent)\//);
     const pathRole = match ? match[1] : null;
-    const sessionRole = getSessionRole();
-    if (pathRole && sessionRole && pathRole !== sessionRole) {
-      window.location.replace(`${_P}${PORTAL_HOME[sessionRole] || "index.html"}`);
-      return sessionRole;
+    if (pathRole) {
+      try { localStorage.setItem("ngis_active_portal", pathRole); } catch (e) {}
+      return pathRole;
     }
-    return pathRole || sessionRole || normalizeRole(pageRole) || "student";
+    const params = new URLSearchParams(window.location.search || "");
+    const queryRole = (params.get("portal") || params.get("role") || "").toLowerCase();
+    if (["admin", "teacher", "student", "parent"].includes(queryRole)) {
+      try { localStorage.setItem("ngis_active_portal", queryRole); } catch (e) {}
+      return queryRole;
+    }
+    const storedPortal = localStorage.getItem("ngis_active_portal");
+    if (storedPortal && ["admin", "teacher", "student", "parent"].includes(storedPortal)) {
+      return storedPortal;
+    }
+    return normalizeRole(pageRole) || getSessionRole() || "student";
   }
 
   /* Path prefix — resolves root-relative hrefs from any depth.
@@ -257,9 +267,26 @@
   function buildSidebar(cfg, active) {
     const role = (window.PAGE && window.PAGE.role) || "admin";
     const homeHref = PORTAL_HOME[role] ? `${_P}${PORTAL_HOME[role]}` : `${_P}index.html`;
+
+    // Auto-detect active link if not set or doesn't match any link in this portal
+    let effectiveActive = active;
+    if (!effectiveActive || !cfg.groups.some(g => g.links.some(l => l.id === effectiveActive))) {
+      const curFile = (window.location.pathname || '').replace(/\\/g, '/').split('/').pop().toLowerCase();
+      for (const g of cfg.groups) {
+        for (const l of g.links) {
+          const linkFile = (l.href || '').split('?')[0].split('/').pop().toLowerCase();
+          if (linkFile && linkFile === curFile) {
+            effectiveActive = l.id;
+            break;
+          }
+        }
+        if (effectiveActive && cfg.groups.some(g => g.links.some(l => l.id === effectiveActive))) break;
+      }
+    }
+
     const groups = cfg.groups.map((g, gi) => {
       const links = g.links.map(l =>
-        `<a class="nav-link ${l.id === active ? "active" : ""}" href="${_P}${l.href}"${l.id===active?' aria-current="page"':''}>
+        `<a class="nav-link ${l.id === effectiveActive ? "active" : ""}" href="${_P}${l.href}"${l.id===effectiveActive?' aria-current="page"':''} data-id="${l.id}">
            <div class="nav-link-icon-bubble">
              <span class="material-symbols-outlined">${l.icon}</span>
            </div>
@@ -267,7 +294,7 @@
            ${l.badge ? `<span class="pill">${l.badge}</span>` : ""}
          </a>`
       ).join("");
-      const groupActive = g.id === active || g.links.some(l => l.id === active);
+      const groupActive = g.id === effectiveActive || g.links.some(l => l.id === effectiveActive);
       const labelInner = `${g.icon ? `<span class="material-symbols-outlined nav-group-icon">${g.icon}</span>` : ""}<span>${esc(g.label)}</span>${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
 
       let label, linksHtml;
@@ -599,6 +626,14 @@
 
     // Department-centric portals: keep "Departments" lit on its sub-pages.
     let active = PAGE.active;
+    const ALIAS_MAP = {
+      'class-chat': 'class-chats',
+      'archived-conversations': 'archived',
+      'pinned-messages': 'pinned',
+      'audit-logs': 'messaging-audit',
+      'audit': 'messaging-audit'
+    };
+    if (ALIAS_MAP[active]) active = ALIAS_MAP[active];
     if ((PAGE.role === "student" || PAGE.role === "parent") && DEPT_CHILD.includes(active)) {
       active = "departments";
     }
@@ -642,9 +677,138 @@
           const willOpen = !g.classList.contains('expanded');
           collapsibleGroups.forEach(other => setGroupExpanded(other, other === g && willOpen));
           store.set(OPEN_GROUP_KEY, willOpen ? g.dataset.groupId : '');
+          if (willOpen) {
+            setTimeout(() => {
+              const activeElInGroup = g.querySelector('.nav-link.active');
+              if (activeElInGroup) {
+                scrollActiveItemIntoView(true);
+              } else if (sideNav) {
+                const groupRect = g.getBoundingClientRect();
+                const navRect = sideNav.getBoundingClientRect();
+                if (groupRect.bottom > navRect.bottom - 20) {
+                  const needed = (groupRect.bottom - navRect.bottom) + 30;
+                  const maxScroll = Math.max(0, sideNav.scrollHeight - sideNav.clientHeight);
+                  const target = Math.min(maxScroll, sideNav.scrollTop + needed);
+                  sideNav.scrollTo({ top: target, behavior: 'smooth' });
+                }
+              }
+            }, 220);
+          }
         });
       });
     }
+
+    /* ── Sidebar Scroll Position Preservation & Targeted Auto-Scroll ── */
+    const sideNav = sidebar.querySelector('.side-nav') || sidebar;
+    const SCROLL_KEY = `ngis-${portalRole}-sidebar-scroll`;
+    const GLOBAL_SCROLL_KEY = 'ngis-sidebar-scroll';
+    const NAV_FLAG_KEY = 'ngis-sidebar-clicked-nav';
+
+    const scrollActiveItemIntoView = (forceEnsure = false) => {
+      if (!sideNav) return;
+      const activeEl = sidebar.querySelector('.nav-link.active') || sidebar.querySelector('.nav-group-label-link.active');
+      if (!activeEl) return;
+
+      const sideNavRect = sideNav.getBoundingClientRect();
+      const activeRect = activeEl.getBoundingClientRect();
+      if (sideNavRect.height === 0 || activeRect.height === 0) return;
+
+      const activeTop = (activeRect.top - sideNavRect.top) + sideNav.scrollTop;
+      const activeBottom = activeTop + activeRect.height;
+      const clientH = sideNav.clientHeight;
+      const scrollH = sideNav.scrollHeight;
+      const maxScroll = Math.max(0, scrollH - clientH);
+      if (maxScroll <= 0) return;
+
+      const pad = 28;
+      const isTopCut = activeTop < sideNav.scrollTop + pad;
+      const isBottomCut = activeBottom > sideNav.scrollTop + clientH - pad;
+
+      if (forceEnsure || isTopCut || isBottomCut) {
+        const group = activeEl.closest('.nav-group');
+        const groupLabel = group ? group.querySelector('.nav-group-label') : null;
+        let groupTop = activeTop;
+        if (groupLabel) {
+          const glRect = groupLabel.getBoundingClientRect();
+          groupTop = (glRect.top - sideNavRect.top) + sideNav.scrollTop;
+        }
+
+        const spanFromGroup = activeBottom - groupTop;
+        let target;
+        if (spanFromGroup + pad * 2 <= clientH) {
+          // Both group header and active item fit comfortably in view
+          target = groupTop - 12;
+        } else {
+          // Center the active element in the sidebar viewport
+          target = activeTop - (clientH / 2) + (activeRect.height / 2);
+        }
+
+        target = Math.min(Math.max(0, Math.round(target)), maxScroll);
+        sideNav.scrollTop = target;
+        try {
+          sessionStorage.setItem(SCROLL_KEY, String(target));
+          sessionStorage.setItem(GLOBAL_SCROLL_KEY, String(target));
+        } catch (e) {}
+      }
+    };
+
+    const restoreSidebarScroll = () => {
+      if (!sideNav) return;
+      let wasNavigating = false;
+      try {
+        wasNavigating = sessionStorage.getItem(NAV_FLAG_KEY) === '1';
+        if (wasNavigating) sessionStorage.removeItem(NAV_FLAG_KEY);
+      } catch (e) {}
+
+      const saved = sessionStorage.getItem(SCROLL_KEY) || sessionStorage.getItem(GLOBAL_SCROLL_KEY);
+      if (saved !== null && !isNaN(Number(saved))) {
+        const parsed = Number(saved);
+        const maxScroll = Math.max(0, sideNav.scrollHeight - sideNav.clientHeight);
+        sideNav.scrollTop = Math.min(Math.max(0, parsed), maxScroll);
+      }
+
+      scrollActiveItemIntoView(wasNavigating);
+    };
+
+    // Restore immediately and queue on subsequent animation frames / timer ticks
+    restoreSidebarScroll();
+    requestAnimationFrame(() => restoreSidebarScroll());
+    setTimeout(restoreSidebarScroll, 50);
+    setTimeout(restoreSidebarScroll, 160);
+    setTimeout(restoreSidebarScroll, 260);
+
+    window.addEventListener("load", () => setTimeout(restoreSidebarScroll, 80), { passive: true });
+    window.addEventListener("pageshow", () => setTimeout(restoreSidebarScroll, 50), { passive: true });
+
+    // Track scroll events on sideNav
+    let sideNavScrollRaf = null;
+    sideNav.addEventListener("scroll", () => {
+      if (sideNavScrollRaf) cancelAnimationFrame(sideNavScrollRaf);
+      sideNavScrollRaf = requestAnimationFrame(() => {
+        try {
+          sessionStorage.setItem(SCROLL_KEY, String(sideNav.scrollTop));
+          sessionStorage.setItem(GLOBAL_SCROLL_KEY, String(sideNav.scrollTop));
+        } catch (e) {}
+      });
+    }, { passive: true });
+
+    // Click handler on sidebar links to capture scroll position and mark navigation
+    sidebar.addEventListener("click", (e) => {
+      const link = e.target.closest("a");
+      if (!link) return;
+      try {
+        sessionStorage.setItem(SCROLL_KEY, String(sideNav.scrollTop));
+        sessionStorage.setItem(GLOBAL_SCROLL_KEY, String(sideNav.scrollTop));
+        sessionStorage.setItem(NAV_FLAG_KEY, "1");
+      } catch (e) {}
+    }, { capture: true });
+
+    window.addEventListener("beforeunload", () => {
+      try {
+        sessionStorage.setItem(SCROLL_KEY, String(sideNav.scrollTop));
+        sessionStorage.setItem(GLOBAL_SCROLL_KEY, String(sideNav.scrollTop));
+      } catch (e) {}
+    });
 
     /* ── Sidebar collapse / expand (desktop) ── */
     let collapseBtn = sidebar.querySelector('#sidebarCollapseBtn');
@@ -678,7 +842,12 @@
         main.classList.remove('sidebar-collapsed');
         expandBtn.classList.remove('visible');
         store.set(COLLAPSED_KEY, '0');
+        setTimeout(() => scrollActiveItemIntoView(false), 160);
       }
+      const isExpanded = !collapsed;
+      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => {
+        btn.setAttribute("aria-expanded", String(isExpanded));
+      });
     }
     // Restore persisted state
     if (store.get(COLLAPSED_KEY) === '1') setSidebarCollapsed(true);
@@ -741,7 +910,8 @@
       document.body.classList.add("sidebar-open");
       const bNavEl = document.getElementById("mobBottomNav") || document.getElementById("bottomnav");
       if (bNavEl) bNavEl.classList.add("hidden-by-sidebar");
-      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, [data-action='toggle-sidebar']").forEach(btn => btn.setAttribute("aria-expanded", "true"));
+      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => btn.setAttribute("aria-expanded", "true"));
+      setTimeout(() => scrollActiveItemIntoView(true), 160);
     };
 
     const closeNav = () => {
@@ -757,12 +927,17 @@
           }
         }, 120);
       }
-      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, [data-action='toggle-sidebar']").forEach(btn => btn.setAttribute("aria-expanded", "false"));
+      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => btn.setAttribute("aria-expanded", "false"));
     };
 
     const toggleNav = () => {
-      if (sidebar.classList.contains("open")) closeNav();
-      else openNav();
+      if (window.innerWidth > 1024) {
+        const isCollapsed = sidebar.classList.contains("collapsed");
+        setSidebarCollapsed(!isCollapsed);
+      } else {
+        if (sidebar.classList.contains("open")) closeNav();
+        else openNav();
+      }
     };
 
     window.openSidebar = openNav;
@@ -770,7 +945,7 @@
     window.toggleSidebar = toggleNav;
 
     const wireButtons = () => {
-      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, [data-action='toggle-sidebar']").forEach(btn => {
+      document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => {
         if (btn.dataset.sidebarBound) return;
         btn.dataset.sidebarBound = "true";
         btn.addEventListener("click", (e) => {
@@ -788,7 +963,7 @@
 
     // Attach to menuBtn and hamburger buttons reliably (delegated fallback)
     document.addEventListener("click", (e) => {
-      const btn = e.target.closest("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, [data-action='toggle-sidebar']");
+      const btn = e.target.closest("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']");
       if (!btn) return;
       if (e.__sidebarHandled) return;
       e.__sidebarHandled = true;

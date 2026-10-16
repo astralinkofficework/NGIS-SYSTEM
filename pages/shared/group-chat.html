@@ -27,7 +27,7 @@
     <aside class="class-panel" id="classPanel" aria-label="Class list">
 
       <div class="cp-head">
-        <button class="chat-icon-btn hamburger-btn" id="menuBtn" aria-label="Open menu">
+        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu">
           <span class="material-symbols-outlined">menu</span>
         </button>
         <h2>Group Chats</h2>
@@ -655,39 +655,22 @@
 (function () {
   var t = localStorage.getItem('ngis-theme') || 'light';
   document.documentElement.setAttribute('data-theme', t);
+  var p = new URLSearchParams(window.location.search);
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
-  var role = (saved && saved.role) || 'student';
+  var role = (p.get('portal') || p.get('role') || localStorage.getItem('ngis_active_portal') || (saved && saved.role) || 'admin').toLowerCase();
   window.PAGE = { role: role, active: 'group-chat' };
   window.GROUP_CHAT_SERVER = 'http://localhost:3001';
-  if (saved) window.CURRENT_USER = saved;
+  if (saved && saved.role === role) window.CURRENT_USER = saved;
   document.body.classList.add('ready');
+
+  window.HERO_CONFIG = {
+    title: 'Group Chat',
+    greeting: 'Collaborate with your class group.',
+    breadcrumbs: [{ label: 'Messages', href: 'chat.html?portal=' + role }, { label: 'Group Chat' }]
+  };
 })();
 </script>
-
-<script>window.HERO_CONFIG = {
-  name: 'Nrinphouneta Hok',
-  id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../student/student-profile.html',
-  notifLink: '../student/student-notifications.html',
-  chatLink: 'chat.html',
-  notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A' },
-    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
-    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
-  ],
-  title: 'Group Chat',
-  greeting: 'Collaborate with your class group.',
-  breadcrumbs: [{ label: 'Messages', href: 'chat.html' }, { label: 'Group Chat' }]
-};</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>

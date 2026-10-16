@@ -27,11 +27,11 @@
     <aside class="conv-panel" id="convPanel" aria-label="Conversations">
 
       <div class="cp-head">
-        <button class="chat-icon-btn hamburger-btn" id="menuBtn" aria-label="Open menu">
+        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu">
           <span class="material-symbols-outlined">menu</span>
         </button>
         <h2>Messages</h2>
-        <button class="chat-icon-btn" aria-label="New message" title="New message">
+        <button class="chat-icon-btn" id="newChatBtn" aria-label="New message" title="New message">
           <span class="material-symbols-outlined">edit_square</span>
         </button>
       </div>
@@ -70,9 +70,11 @@
               <span class="conv-name">Mr. Heng Samnang</span>
               <span class="conv-time">2m</span>
             </div>
-            <div class="conv-preview">Your schedule change has been confirmed.</div>
+            <div class="conv-bottom">
+              <span class="conv-preview unread">Your schedule change has been confirmed.</span>
+              <span class="conv-badge">1</span>
+            </div>
           </div>
-          <span class="conv-badge">1</span>
         </div>
 
         <!-- Teacher -->
@@ -86,7 +88,9 @@
               <span class="conv-name">Dr. Sarah Jenkins</span>
               <span class="conv-time">1h</span>
             </div>
-            <div class="conv-preview">Don't forget the assignment is due tonight!</div>
+            <div class="conv-bottom">
+              <span class="conv-preview">Don't forget the assignment is due tonight!</span>
+            </div>
           </div>
         </div>
 
@@ -101,7 +105,9 @@
               <span class="conv-name">Mrs. Channary Sot</span>
               <span class="conv-time">3h</span>
             </div>
-            <div class="conv-preview">Please come by the office tomorrow morning.</div>
+            <div class="conv-bottom">
+              <span class="conv-preview">Please come by the office tomorrow morning.</span>
+            </div>
           </div>
         </div>
 
@@ -116,7 +122,9 @@
               <span class="conv-name">IT Support</span>
               <span class="conv-time">Yesterday</span>
             </div>
-            <div class="conv-preview">Your account issue has been resolved.</div>
+            <div class="conv-bottom">
+              <span class="conv-preview">Your account issue has been resolved.</span>
+            </div>
           </div>
         </div>
 
@@ -131,7 +139,9 @@
               <span class="conv-name">Ms. Maly Lon</span>
               <span class="conv-time">Mon</span>
             </div>
-            <div class="conv-preview">The book you requested is now available.</div>
+            <div class="conv-bottom">
+              <span class="conv-preview">The book you requested is now available.</span>
+            </div>
           </div>
         </div>
 
@@ -146,10 +156,15 @@
       <!-- Empty state: shown until a conversation is selected -->
       <div class="chat-select-state" id="chatSelectState">
         <div class="ico-wrap">
-          <span class="material-symbols-outlined">chat</span>
+          <span class="material-symbols-outlined">forum</span>
         </div>
         <h3>Select a conversation to start messaging</h3>
-        <p>Choose someone from the list on the left to open the chat.</p>
+        <p>Choose someone from the list on the left to open the chat or start a new conversation.</p>
+        <div class="chat-select-features">
+          <span class="cs-feat-pill"><span class="material-symbols-outlined">bolt</span> Real-time updates</span>
+          <span class="cs-feat-pill"><span class="material-symbols-outlined">lock</span> End-to-end secure</span>
+          <span class="cs-feat-pill"><span class="material-symbols-outlined">school</span> School network</span>
+        </div>
       </div>
 
       <div class="chat-active" id="chatActive" aria-live="polite" style="display:none">
@@ -308,223 +323,26 @@
 (function () {
   var t = localStorage.getItem('ngis-theme') || 'light';
   document.documentElement.setAttribute('data-theme', t);
+  var p = new URLSearchParams(window.location.search);
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
-  var role = (saved && saved.role) || 'student';
+  var role = (p.get('portal') || p.get('role') || localStorage.getItem('ngis_active_portal') || (saved && saved.role) || 'admin').toLowerCase();
   window.PAGE = { role: role, active: 'chat' };
   window.CHAT_SERVER = 'http://localhost:3001';
-  if (saved) window.CURRENT_USER = saved;
+  if (saved && saved.role === role) window.CURRENT_USER = saved;
   document.body.classList.add('ready');
+
+  window.HERO_CONFIG = {
+    title: 'Messages',
+    greeting: 'Chat with teachers, classmates, and school staff.',
+    breadcrumbs: [{ label: 'Messages' }]
+  };
 })();
 </script>
-
-<script>window.HERO_CONFIG = {
-  name: 'Nrinphouneta Hok',
-  id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../student/student-profile.html',
-  notifLink: '../student/student-notifications.html',
-  chatLink: 'chat.html',
-  notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A' },
-    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
-    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
-  ],
-  title: 'Messages',
-  greeting: 'Chat with teachers, classmates, and school staff.',
-  breadcrumbs: [{ label: 'Messages' }]
-};</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script src="../../assets/js/chat.js"></script>
-
-<!-- People search + chat UI interactions -->
-<script>
-(function () {
-  /* ── People directory ─────────────────── */
-  var PEOPLE = [
-    { id: 'admin-1',      name: 'Mr. Heng Samnang',  role: 'Administrator',       initials: 'HS', color: '#d97706', status: 'online'  },
-    { id: 'teacher-1',   name: 'Dr. Sarah Jenkins',  role: 'Mathematics Teacher', initials: 'SJ', color: '#16a34a', status: 'online'  },
-    { id: 'counselor-1', name: 'Mrs. Channary Sot',  role: 'School Counselor',    initials: 'CS', color: '#7c3aed', status: 'away'    },
-    { id: 'it-1',         name: 'IT Support',          role: 'IT Department',       initials: 'IT', color: '#0891b2', status: 'offline' },
-    { id: 'lib-1',        name: 'Ms. Maly Lon',        role: 'Librarian',            initials: 'ML', color: '#16a34a', status: 'offline' },
-    { id: 'teacher-2',   name: 'Mr. Dara Prum',       role: 'English Teacher',      initials: 'DP', color: '#2563eb', status: 'offline' },
-    { id: 'teacher-3',   name: 'Ms. Sopheap Keo',     role: 'Science Teacher',      initials: 'SK', color: '#ea580c', status: 'online'  },
-    { id: 'admin-2',      name: 'Ms. Bopha Rith',      role: 'Finance Office',       initials: 'BR', color: '#db2777', status: 'offline' },
-    { id: 'student-1',   name: 'Ratha Sok',            role: 'Student · Grade 10A',  initials: 'RS', color: '#2563eb', status: 'online'  },
-    { id: 'student-2',   name: 'Ly Channary',          role: 'Student · Grade 10A',  initials: 'LC', color: '#16a34a', status: 'online'  },
-  ];
-
-  var searchInput  = document.getElementById('peopleSearch');
-  var resultsEl    = document.getElementById('peopleResults');
-  var recentLabel  = document.getElementById('recentLabel');
-  var convList     = document.getElementById('convList');
-  var convPanel    = document.getElementById('convPanel');
-  var chatWin      = document.getElementById('chatWin');
-  var chatActive   = document.getElementById('chatActive');
-  var chatSelectSt = document.getElementById('chatSelectState');
-  var msgArea      = document.getElementById('msgArea');
-  var msgInput     = document.getElementById('msgInput');
-  var sendBtn      = document.getElementById('sendBtn');
-
-  /* ── Open a conversation ────────────────────────────────────── */
-  function openConversation(convId) {
-    convList.querySelectorAll('.conv-item').forEach(function (el) {
-      el.classList.remove('active');
-      el.setAttribute('aria-selected', 'false');
-      var badge = el.querySelector('.conv-badge');
-      if (badge) badge.remove();
-    });
-    var item = convList.querySelector('[data-conv="' + convId + '"]');
-    if (item) {
-      item.classList.add('active');
-      item.setAttribute('aria-selected', 'true');
-    }
-
-    var firstOpen = chatActive.style.display !== 'flex';
-
-    if (firstOpen) {
-      /* Animate empty state out, then reveal active chat */
-      chatSelectSt.classList.add('anim-out');
-      setTimeout(function () {
-        chatSelectSt.style.display = 'none';
-        chatSelectSt.classList.remove('anim-out');
-        chatActive.style.display = 'flex';
-        /* Force reflow so animation triggers fresh */
-        void chatActive.offsetWidth;
-        chatActive.classList.remove('anim-in');
-        chatActive.classList.add('anim-in');
-        if (msgArea) msgArea.scrollTop = msgArea.scrollHeight;
-      }, 140);
-    } else {
-      /* Already open — just scroll to latest */
-      if (msgArea) msgArea.scrollTop = msgArea.scrollHeight;
-    }
-
-    /* Mobile full-screen: slide panel away */
-    if (window.innerWidth <= 1024) {
-      convPanel.classList.add('hidden-mobile');
-      chatWin.classList.add('show-mobile');
-      document.body.classList.add('chat-open');
-    }
-  }
-
-  /* ── People search ──────────────────────────────────────────── */
-  function renderResults(people) {
-    if (!people.length) {
-      resultsEl.innerHTML = '<p class="no-results">No people found</p>';
-    } else {
-      resultsEl.innerHTML = people.map(function (p) {
-        return '<div class="people-result-item" data-id="' + p.id + '">' +
-          '<div class="pr-ava-wrap">' +
-            '<div class="pr-ava-init" style="background:' + p.color + '">' + p.initials + '</div>' +
-            '<span class="m-dot ' + p.status + '"></span>' +
-          '</div>' +
-          '<div class="pr-info">' +
-            '<div class="pr-name">' + p.name + '</div>' +
-            '<div class="pr-role">' + p.role + '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-    }
-    resultsEl.classList.add('visible');
-    recentLabel.hidden = true;
-    convList.hidden    = true;
-  }
-
-  function clearSearch() {
-    searchInput.value = '';
-    resultsEl.innerHTML = '';
-    resultsEl.classList.remove('visible');
-    recentLabel.hidden = false;
-    convList.hidden    = false;
-  }
-
-  if (searchInput) {
-    searchInput.addEventListener('input', function () {
-      var q = this.value.trim().toLowerCase();
-      if (!q) { clearSearch(); return; }
-      renderResults(PEOPLE.filter(function (p) {
-        return p.name.toLowerCase().includes(q) || p.role.toLowerCase().includes(q);
-      }));
-    });
-    searchInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') clearSearch();
-    });
-  }
-
-  if (resultsEl) {
-    resultsEl.addEventListener('click', function (e) {
-      var item = e.target.closest('.people-result-item');
-      if (!item) return;
-      clearSearch();
-      openConversation(item.dataset.id);
-    });
-  }
-
-  /* ── Conversation list ──────────────────────────────────────── */
-  if (convList) {
-    convList.addEventListener('click', function (e) {
-      var item = e.target.closest('.conv-item');
-      if (item) openConversation(item.dataset.conv);
-    });
-  }
-
-  /* ── Back button (mobile) ───────────────────────────────────── */
-  var backBtn = document.getElementById('backBtn');
-  if (backBtn) {
-    backBtn.addEventListener('click', function () {
-      convPanel.classList.remove('hidden-mobile');
-      chatWin.classList.remove('show-mobile');
-      document.body.classList.remove('chat-open');
-    });
-  }
-
-  /* ── Message input ──────────────────────────────────────────── */
-  if (msgInput && sendBtn) {
-    msgInput.addEventListener('input', function () {
-      sendBtn.disabled = !this.value.trim();
-      this.style.height = 'auto';
-      this.style.height = Math.min(this.scrollHeight, 130) + 'px';
-    });
-    msgInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        document.getElementById('msgForm').dispatchEvent(new Event('submit'));
-      }
-    });
-  }
-
-  /* ── Form submit — demo append ──────────────────────────────── */
-  var msgForm = document.getElementById('msgForm');
-  if (msgForm && msgInput && msgArea) {
-    msgForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var text = msgInput.value.trim();
-      if (!text) return;
-      var row = document.createElement('div');
-      row.className = 'msg-row out';
-      row.innerHTML = '<div class="msg-group">' +
-        '<div class="msg-bubble">' + text.replace(/</g, '&lt;') + '</div>' +
-        '<div class="msg-meta"><span>' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + '</span></div>' +
-        '</div>';
-      msgArea.appendChild(row);
-      msgInput.value = '';
-      msgInput.style.height = '';
-      sendBtn.disabled = true;
-      msgArea.scrollTop = msgArea.scrollHeight;
-    });
-  }
-})();
-</script>
 
 </body>
 </html>

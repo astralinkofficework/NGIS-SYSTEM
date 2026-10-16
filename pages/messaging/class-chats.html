@@ -23,7 +23,7 @@
     <!-- LEFT: Campus → Grade → Class tree -->
     <aside class="conv-panel" id="classPanel" aria-label="Class chats">
       <div class="cp-head">
-        <button class="chat-icon-btn hamburger-btn" id="menuBtn" aria-label="Open menu" title="Open menu">
+        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu" title="Open menu">
           <span class="material-symbols-outlined">menu</span>
         </button>
         <h2>Class Chats</h2>
@@ -162,31 +162,14 @@
 </div>
 
 <script>
-window.PAGE = { role: 'student', active: 'class-chat' };
-</script>
-<script>window.HERO_CONFIG = {
-  name: 'Nrinphouneta Hok',
-  id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../student/student-profile.html',
-  notifLink: '../student/student-notifications.html',
-  chatLink: 'class-chats.html',
-  notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A · Sen Sok' },
-    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
-    { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
-  ],
+var _portalRole = (new URLSearchParams(window.location.search).get('portal') || new URLSearchParams(window.location.search).get('role') || localStorage.getItem('ngis_active_portal') || 'admin').toLowerCase();
+window.PAGE = { role: _portalRole, active: 'class-chats' };
+window.HERO_CONFIG = {
   title: 'Class Chats',
   greeting: 'Automatic class conversations — Campus → Grade → Class.',
-  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html' }, { label: 'Class Chats' }]
-};</script>
+  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html?portal=' + _portalRole }, { label: 'Class Chats' }]
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script src="../../assets/js/messaging-data.js"></script>

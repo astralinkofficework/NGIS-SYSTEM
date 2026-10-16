@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    NGIS Chat Client — assets/js/chat.js
    Connects to the Socket.io chat server.
    Falls back to DEMO MODE if no server is reachable.
@@ -13,55 +13,90 @@
 
   /* ── Demo data ────────────────────────────────────────────── */
   const DEMO_USER = {
-    id: "demo-me",
+    id: "student-me",
     name: "Kosal Rith Mony",
     role: "student",
     avatar: null,
     status: "online",
   };
 
+  const PEOPLE = [
+    { id: "admin-1",      name: "Mr. Heng Samnang",  role: "Administrator",       roleType: "admin",   initials: "HS", color: "#d97706", status: "online"  },
+    { id: "teacher-1",   name: "Dr. Sarah Jenkins",  role: "Mathematics Teacher", roleType: "teacher", initials: "SJ", color: "#16a34a", status: "online"  },
+    { id: "counselor-1", name: "Mrs. Channary Sot",  role: "School Counselor",    roleType: "counselor",initials: "CS", color: "#7c3aed", status: "away"    },
+    { id: "it-1",         name: "IT Support",          role: "IT Department",       roleType: "admin",   initials: "IT", color: "#0891b2", status: "offline" },
+    { id: "lib-1",        name: "Ms. Maly Lon",        role: "Librarian",            roleType: "staff",   initials: "ML", color: "#16a34a", status: "offline" },
+    { id: "teacher-2",   name: "Mr. Dara Prum",       role: "English Teacher",      roleType: "teacher", initials: "DP", color: "#2563eb", status: "offline" },
+    { id: "teacher-3",   name: "Ms. Sopheap Keo",     role: "Science Teacher",      roleType: "teacher", initials: "SK", color: "#ea580c", status: "online"  },
+    { id: "admin-2",      name: "Ms. Bopha Rith",      role: "Finance Office",       roleType: "admin",   initials: "BR", color: "#db2777", status: "offline" },
+    { id: "student-1",   name: "Ratha Sok",            role: "Student · Grade 10A",  roleType: "student", initials: "RS", color: "#2563eb", status: "online"  },
+    { id: "student-2",   name: "Ly Channary",          role: "Student · Grade 10A",  roleType: "student", initials: "LC", color: "#16a34a", status: "online"  },
+  ];
+
   const DEMO_CONVS = [
     {
-      id: "conv-1",
-      otherUser: { id: "u-2", name: "Dr. Sarah Jenkins", role: "teacher", avatar: null, status: "online" },
-      lastMessage: { message: "Please submit your assignment by Friday.", created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(), sender_id: "u-2" },
-      unread: 2,
+      id: "admin-1",
+      otherUser: PEOPLE[0],
+      lastMessage: { message: "Your schedule change has been confirmed.", created_at: new Date(Date.now() - 1000 * 120).toISOString(), sender_id: "admin-1" },
+      unread: 1,
     },
     {
-      id: "conv-2",
-      otherUser: { id: "u-3", name: "Mr. David Chen", role: "teacher", avatar: null, status: "away" },
-      lastMessage: { message: "Great work on the midterm!", created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), sender_id: "u-3" },
+      id: "teacher-1",
+      otherUser: PEOPLE[1],
+      lastMessage: { message: "Don't forget the assignment is due tonight!", created_at: new Date(Date.now() - 1000 * 3600).toISOString(), sender_id: "teacher-1" },
       unread: 0,
     },
     {
-      id: "conv-3",
-      otherUser: { id: "u-4", name: "School Support", role: "admin", avatar: null, status: "offline" },
-      lastMessage: { message: "Your request has been processed.", created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), sender_id: "u-4" },
+      id: "counselor-1",
+      otherUser: PEOPLE[2],
+      lastMessage: { message: "Please come by the office tomorrow morning.", created_at: new Date(Date.now() - 1000 * 3600 * 3).toISOString(), sender_id: "counselor-1" },
+      unread: 0,
+    },
+    {
+      id: "it-1",
+      otherUser: PEOPLE[3],
+      lastMessage: { message: "Your account issue has been resolved.", created_at: new Date(Date.now() - 1000 * 3600 * 24).toISOString(), sender_id: "it-1" },
+      unread: 0,
+    },
+    {
+      id: "lib-1",
+      otherUser: PEOPLE[4],
+      lastMessage: { message: "The book you requested is now available.", created_at: new Date(Date.now() - 1000 * 3600 * 48).toISOString(), sender_id: "lib-1" },
       unread: 0,
     },
   ];
 
   const DEMO_MESSAGES = {
-    "conv-1": [
-      { id: "m-1", conversation_id: "conv-1", sender_id: "u-2", message: "Good morning! How are you doing?", created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), sender: { id: "u-2", name: "Dr. Sarah Jenkins" } },
-      { id: "m-2", conversation_id: "conv-1", sender_id: "demo-me", message: "Good morning! I am doing well, thank you.", created_at: new Date(Date.now() - 1000 * 60 * 25).toISOString(), sender: { id: "demo-me", name: "Kosal Rith Mony" } },
-      { id: "m-3", conversation_id: "conv-1", sender_id: "u-2", message: "Please submit your assignment by Friday.", created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(), sender: { id: "u-2", name: "Dr. Sarah Jenkins" } },
+    "admin-1": [
+      { id: "m-101", conversation_id: "admin-1", sender_id: "student-me", message: "Good morning! I wanted to ask about changing my elective from Chinese to French. Is that possible?", created_at: new Date(Date.now() - 1000 * 3600 * 24).toISOString(), sender: { id: "student-me", name: "Kosal Rith Mony" } },
+      { id: "m-102", conversation_id: "admin-1", sender_id: "admin-1", message: "Good morning! Of course — let me check the availability for the French class in your grade level.", created_at: new Date(Date.now() - 1000 * 3600 * 23.5).toISOString(), sender: PEOPLE[0] },
+      { id: "m-103", conversation_id: "admin-1", sender_id: "admin-1", message: "French 10A currently has 3 open seats. I will submit the transfer request now.", created_at: new Date(Date.now() - 1000 * 3600 * 23.4).toISOString(), sender: PEOPLE[0] },
+      { id: "m-104", conversation_id: "admin-1", sender_id: "student-me", message: "That's great! Thank you so much, Mr. Samnang. When will the change take effect?", created_at: new Date(Date.now() - 1000 * 3600 * 23).toISOString(), sender: { id: "student-me", name: "Kosal Rith Mony" } },
+      { id: "m-105", conversation_id: "admin-1", sender_id: "admin-1", message: "The change will take effect from next Monday. You will receive a confirmation email as well. 😊", created_at: new Date(Date.now() - 1000 * 3600 * 22.8).toISOString(), sender: PEOPLE[0] },
+      { id: "m-106", conversation_id: "admin-1", sender_id: "admin-1", message: "Good morning! Your schedule change request has been confirmed. French 10A starts Monday at 2:00 PM in Room 8A. ✅", created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), sender: PEOPLE[0] },
+      { id: "m-107", conversation_id: "admin-1", sender_id: "admin-1", message: "Please check your updated timetable on the portal. Let me know if you need anything else!", created_at: new Date(Date.now() - 1000 * 60 * 28).toISOString(), sender: PEOPLE[0] },
+      { id: "m-108", conversation_id: "admin-1", sender_id: "student-me", message: "Wonderful! Thank you so much for your help! I really appreciate it 🙏", created_at: new Date(Date.now() - 1000 * 120).toISOString(), sender: { id: "student-me", name: "Kosal Rith Mony" } },
     ],
-    "conv-2": [
-      { id: "m-4", conversation_id: "conv-2", sender_id: "demo-me", message: "Sir, can I get feedback on my essay?", created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), sender: { id: "demo-me", name: "Kosal Rith Mony" } },
-      { id: "m-5", conversation_id: "conv-2", sender_id: "u-3", message: "Great work on the midterm!", created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), sender: { id: "u-3", name: "Mr. David Chen" } },
+    "teacher-1": [
+      { id: "m-201", conversation_id: "teacher-1", sender_id: "teacher-1", message: "Good morning class! Don't forget the calculus assignment is due tonight at 11:59 PM.", created_at: new Date(Date.now() - 1000 * 3600 * 4).toISOString(), sender: PEOPLE[1] },
+      { id: "m-202", conversation_id: "teacher-1", sender_id: "student-me", message: "Hello Dr. Jenkins! I had a quick question regarding question 4 on page 78.", created_at: new Date(Date.now() - 1000 * 3600 * 2).toISOString(), sender: { id: "student-me", name: "Kosal Rith Mony" } },
+      { id: "m-203", conversation_id: "teacher-1", sender_id: "teacher-1", message: "Remember to apply the chain rule first before taking the natural logarithm!", created_at: new Date(Date.now() - 1000 * 3600).toISOString(), sender: PEOPLE[1] },
+      { id: "m-204", conversation_id: "teacher-1", sender_id: "student-me", message: "Ah, that makes so much sense now. Thank you Dr. Jenkins!", created_at: new Date(Date.now() - 1000 * 1800).toISOString(), sender: { id: "student-me", name: "Kosal Rith Mony" } },
     ],
-    "conv-3": [
-      { id: "m-6", conversation_id: "conv-3", sender_id: "u-4", message: "Your request has been processed.", created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), sender: { id: "u-4", name: "School Support" } },
+    "counselor-1": [
+      { id: "m-301", conversation_id: "counselor-1", sender_id: "counselor-1", message: "Please come by the counseling office tomorrow morning regarding your university prep profile.", created_at: new Date(Date.now() - 1000 * 3600 * 3).toISOString(), sender: PEOPLE[2] },
+      { id: "m-302", conversation_id: "counselor-1", sender_id: "student-me", message: "I will be there at 9:00 AM Mrs. Sot. Should I bring my portfolio?", created_at: new Date(Date.now() - 1000 * 3600 * 2).toISOString(), sender: { id: "student-me", name: "Kosal Rith Mony" } },
+    ],
+    "it-1": [
+      { id: "m-401", conversation_id: "it-1", sender_id: "student-me", message: "Hello IT team, I had an issue connecting to the campus Wi-Fi network in Block C.", created_at: new Date(Date.now() - 1000 * 3600 * 26).toISOString(), sender: { id: "student-me", name: "Kosal Rith Mony" } },
+      { id: "m-402", conversation_id: "it-1", sender_id: "it-1", message: "Your account credentials and 802.1x security certificate have been refreshed. Try logging in now.", created_at: new Date(Date.now() - 1000 * 3600 * 24).toISOString(), sender: PEOPLE[3] },
+    ],
+    "lib-1": [
+      { id: "m-501", conversation_id: "lib-1", sender_id: "lib-1", message: "The book you requested ('Advanced Principles of Chemistry') is now available at the front counter.", created_at: new Date(Date.now() - 1000 * 3600 * 48).toISOString(), sender: PEOPLE[4] },
     ],
   };
 
-  const DEMO_SEARCH = [
-    { id: "u-2", name: "Dr. Sarah Jenkins", role: "teacher", avatar: null, status: "online" },
-    { id: "u-3", name: "Mr. David Chen",    role: "teacher", avatar: null, status: "away" },
-    { id: "u-4", name: "School Support",    role: "admin",   avatar: null, status: "offline" },
-    { id: "u-5", name: "Ms. Linda Ouk",     role: "teacher", avatar: null, status: "online" },
-  ];
+  const DEMO_SEARCH = PEOPLE;
 
   /* ── Emoji set ────────────────────────────────────────────── */
   const EMOJIS = [
@@ -91,8 +126,8 @@
     const d = new Date(iso);
     const now = new Date();
     const diff = (now - d) / 1000;
-    if (diff < 60)           return "just now";
-    if (diff < 3600)         return Math.floor(diff / 60) + "m ago";
+    if (diff < 60)           return "now";
+    if (diff < 3600)         return Math.floor(diff / 60) + "m";
     if (diff < 86400)        return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     if (diff < 86400 * 7)   return d.toLocaleDateString([], { weekday: "short" });
     return d.toLocaleDateString([], { month: "short", day: "numeric" });
@@ -117,10 +152,12 @@
   }
 
   function avatarHtml(user, size = 46, cls = "") {
-    if (user.avatar) {
+    if (user?.avatar) {
       return `<img src="${escHtml(user.avatar)}" alt="${escHtml(user.name)}" class="${cls}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;">`;
     }
-    return `<div class="${cls}" style="width:${size}px;height:${size}px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:${Math.round(size * 0.34)}px;font-weight: 400;flex-shrink:0;">${escHtml(initials(user.name))}</div>`;
+    const bg = user?.color || "var(--primary)";
+    const init = escHtml(user?.initials || initials(user?.name || "?"));
+    return `<div class="${cls}" style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};color:#fff;display:grid;place-items:center;font-size:${Math.round(size * 0.34)}px;font-weight:600;flex-shrink:0;">${init}</div>`;
   }
 
   function roleBadge(role) {
@@ -130,30 +167,32 @@
 
   /* ── DOM refs ─────────────────────────────────────────────── */
   const $ = (id) => document.getElementById(id);
-  const convList    = $("convList");
-  const convSearch  = $("peopleSearch");
-  const chatWin     = $("chatWin");
-  const chatEmpty   = $("chatSelectState");
-  const chatActive  = $("chatActive");
-  const chatHName   = $("chatHName");
-  const chatHStatus = $("chatHStatus");
-  const chatHAvaCont= $("chatHAvaCont");
-  const msgArea     = $("msgArea");
-  const msgInput    = $("msgInput");
-  const msgForm     = $("msgForm");
-  const sendBtn     = $("sendBtn");
-  const emojiBtn    = $("emojiBtn");
-  const emojiPicker = $("emojiPicker");
-  const emojiGrid   = $("emojiGrid");
-  const newChatBtn  = $("newChatBtn");
-  const startChatBtn= $("startChatBtn");
-  const newChatModal= $("newChatModal");
-  const closeModal  = $("closeModal");
-  const userSearch  = $("userSearch");
-  const userResults = $("userResults");
-  const backBtn     = $("backBtn");
-  const typingRow   = $("typingRow");
-  const demoBanner  = $("demoBanner");
+  const convList      = $("convList");
+  const convSearch    = $("peopleSearch");
+  const peopleResults = $("peopleResults");
+  const recentLabel   = $("recentLabel");
+  const chatWin       = $("chatWin");
+  const chatEmpty     = $("chatSelectState");
+  const chatActive    = $("chatActive");
+  const chatHName     = $("chatHName");
+  const chatHStatus   = $("chatHStatus");
+  const chatHAvaCont  = $("chatHAvaCont");
+  const msgArea       = $("msgArea");
+  const msgInput      = $("msgInput");
+  const msgForm       = $("msgForm");
+  const sendBtn       = $("sendBtn");
+  const emojiBtn      = $("emojiBtn");
+  const emojiPicker   = $("emojiPicker");
+  const emojiGrid     = $("emojiGrid");
+  const newChatBtn    = $("newChatBtn");
+  const startChatBtn  = $("startChatBtn");
+  const newChatModal  = $("newChatModal");
+  const closeModal    = $("closeModal");
+  const userSearch    = $("userSearch");
+  const userResults   = $("userResults");
+  const backBtn       = $("backBtn");
+  const typingRow     = $("typingRow");
+  const demoBanner    = $("demoBanner");
 
   /* ── Build emoji grid ─────────────────────────────────────── */
   function buildEmojiGrid() {
@@ -186,7 +225,7 @@
       convList.innerHTML = `
         <div class="conv-empty-state">
           <span class="material-symbols-outlined">chat_bubble_outline</span>
-          <p>${f ? "No results for "" + escHtml(f) + """ : "No conversations yet.<br>Start one below."}</p>
+          <p>${f ? 'No results for "' + escHtml(f) + '"' : "No conversations yet.<br>Start one below."}</p>
         </div>`;
       return;
     }
@@ -198,9 +237,9 @@
       const hasUnread = c.unread > 0;
 
       return `
-        <div class="conv-item ${isActive ? "active" : ""}" data-id="${c.id}" role="button" tabindex="0" aria-label="Chat with ${escHtml(u?.name || "")}">
+        <div class="conv-item ${isActive ? "active" : ""}" data-id="${c.id}" data-conv="${c.id}" role="button" tabindex="0" aria-label="Chat with ${escHtml(u?.name || "")}">
           <div class="ava-wrap">
-            ${avatarHtml(u || { name: "?" }, 46, "conv-ava-init")}
+            ${avatarHtml(u || { name: "?" }, 44, "conv-ava-init")}
             <span class="s-dot ${u?.status || "offline"}"></span>
           </div>
           <div class="conv-info">
@@ -208,45 +247,80 @@
               <span class="conv-name">${escHtml(u?.name || "Unknown")}</span>
               <span class="conv-time">${c.lastMessage ? fmtTime(c.lastMessage.created_at) : ""}</span>
             </div>
-            <span class="conv-preview ${hasUnread ? "unread" : ""}">${escHtml(preview.slice(0, 60))}</span>
+            <div class="conv-bottom">
+              <span class="conv-preview ${hasUnread ? "unread" : ""}">${escHtml(preview.slice(0, 60))}</span>
+              ${hasUnread ? `<span class="conv-badge">${c.unread > 99 ? "99+" : c.unread}</span>` : ""}
+            </div>
           </div>
-          ${hasUnread ? `<span class="conv-badge">${c.unread > 99 ? "99+" : c.unread}</span>` : ""}
         </div>`;
     }).join("");
   }
 
   /* ── Open a conversation ──────────────────────────────────── */
   function openConversation(convId) {
-    activeConvId = convId;
-    const conv = conversations.find((c) => c.id === convId);
+    let conv = conversations.find((c) => c.id === convId);
+    if (!conv) {
+      const person = PEOPLE.find((p) => p.id === convId);
+      if (person) {
+        conv = {
+          id: person.id,
+          otherUser: person,
+          lastMessage: null,
+          unread: 0,
+        };
+        conversations.unshift(conv);
+        if (!DEMO_MESSAGES[conv.id]) DEMO_MESSAGES[conv.id] = [];
+      }
+    }
     if (!conv) return;
 
+    activeConvId = convId;
     const u = conv.otherUser;
 
     // Update header
-    chatHAvaCont.innerHTML = `
-      <div class="ava-wrap">
-        ${avatarHtml(u, 40, "hava-init")}
-        <span class="s-dot ${u?.status || "offline"}"></span>
-      </div>`;
-    chatHName.textContent = u?.name || "Unknown";
-    chatHStatus.textContent = capitalize(u?.status || "offline");
-    chatHStatus.className = "chat-hstatus" + (u?.status === "online" ? " is-online" : "");
+    if (chatHAvaCont) {
+      chatHAvaCont.innerHTML = `
+        <div class="ava-wrap">
+          ${avatarHtml(u, 40, "hava-init")}
+          <span class="s-dot ${u?.status || "offline"}"></span>
+        </div>`;
+    }
+    if (chatHName) chatHName.textContent = u?.name || "Unknown";
+    if (chatHStatus) {
+      chatHStatus.textContent = (u?.status === "online" ? "Online" : (u?.status === "away" ? "Away" : "Offline")) + (u?.role ? " · " + u.role : "");
+      chatHStatus.className = "chat-hstatus" + (u?.status === "online" ? " is-online" : "");
+    }
 
-    // Show chat window
-    if (chatEmpty) chatEmpty.style.display = 'none';
-    chatActive.style.display = 'flex';
+    // Show chat window with transition
+    if (chatEmpty && chatEmpty.style.display !== 'none') {
+      chatEmpty.classList.add('anim-out');
+      setTimeout(() => {
+        chatEmpty.style.display = 'none';
+        chatEmpty.classList.remove('anim-out');
+        chatActive.style.display = 'flex';
+        void chatActive.offsetWidth;
+        chatActive.classList.remove('anim-in');
+        chatActive.classList.add('anim-in');
+        scrollToBottom();
+      }, 140);
+    } else {
+      if (chatEmpty) chatEmpty.style.display = 'none';
+      chatActive.style.display = 'flex';
+    }
 
-    // Mobile transition
-    chatWin.classList.add("show-mobile");
-    document.querySelector(".conv-panel")?.classList.add("hidden-mobile");
+    // Mobile transition (≤ 768px: single pane slide)
+    if (window.innerWidth <= 768) {
+      chatWin.classList.add("show-mobile");
+      document.querySelector(".conv-panel")?.classList.add("hidden-mobile");
+      document.body.classList.add("chat-open");
+    }
 
     // Load messages
     loadMessages(convId);
 
     // Mark as read
     conv.unread = 0;
-    renderConvList(convSearch.value);
+    renderConvList(convSearch ? convSearch.value : "");
     markRead(convId);
   }
 
@@ -376,6 +450,17 @@
     scrollToBottom(true);
   }
 
+  function getDemoReply(name) {
+    const replies = [
+      "Thank you for reaching out! I will look into this right away.",
+      "Got your message. Let's discuss this during office hours.",
+      "Thank you for the update! Everything looks good on our end.",
+      "Understood! Please check back tomorrow for confirmation.",
+      "Great question. I have forwarded this to the academic coordinator."
+    ];
+    return replies[Math.floor(Math.random() * replies.length)];
+  }
+
   /* ── Send a message ───────────────────────────────────────── */
   function sendMessage() {
     const text = msgInput.value.trim();
@@ -398,7 +483,39 @@
 
       // Update conv preview
       const conv = conversations.find((c) => c.id === activeConvId);
-      if (conv) { conv.lastMessage = msg; renderConvList(convSearch.value); }
+      if (conv) {
+        conv.lastMessage = msg;
+        renderConvList(convSearch ? convSearch.value : "");
+      }
+
+      // Realistic automated reply after brief typing simulation
+      const currentActive = activeConvId;
+      setTimeout(() => {
+        if (activeConvId === currentActive && typingRow) {
+          typingRow.classList.add("show");
+          scrollToBottom(true);
+        }
+      }, 500);
+
+      setTimeout(() => {
+        if (activeConvId === currentActive) {
+          if (typingRow) typingRow.classList.remove("show");
+          const replyText = getDemoReply(conv?.otherUser?.name || "");
+          const replyMsg = {
+            id: `demo-${++msgIdCounter}`,
+            conversation_id: currentActive,
+            sender_id: conv?.otherUser?.id || "other",
+            sender: conv?.otherUser || { id: "other", name: "Staff" },
+            message: replyText,
+            created_at: new Date().toISOString(),
+          };
+          appendMessage(replyMsg);
+          if (conv) {
+            conv.lastMessage = replyMsg;
+            renderConvList(convSearch ? convSearch.value : "");
+          }
+        }
+      }, 1700);
       return;
     }
 
@@ -591,16 +708,42 @@
     sendBtn.disabled = !msgInput.value.trim();
   }
 
-  /* ── Modal helpers ────────────────────────────────────────── */
   function openModalFn() {
-    newChatModal.hidden = false;
-    userSearch.value = "";
-    userResults.innerHTML = `<p class="search-placeholder">Search for a teacher, admin, or support to start a conversation.</p>`;
-    userSearch.focus();
+    if (newChatModal) {
+      newChatModal.hidden = false;
+      if (userSearch) {
+        userSearch.value = "";
+        userResults.innerHTML = `<p class="search-placeholder">Search for a teacher, admin, or support to start a conversation.</p>`;
+        userSearch.focus();
+      }
+      return;
+    }
+    // Inline search mode:
+    if (convSearch) {
+      convSearch.focus();
+      convSearch.select();
+      if (!convSearch.value && peopleResults) {
+        peopleResults.innerHTML = PEOPLE.map((p) => `
+          <div class="people-result-item" data-id="${p.id}">
+            <div class="pr-ava-wrap">
+              <div class="pr-ava-init" style="background:${p.color}">${p.initials}</div>
+              <span class="s-dot ${p.status}"></span>
+            </div>
+            <div class="pr-info">
+              <div class="pr-name">${escHtml(p.name)}</div>
+              <div class="pr-role">${escHtml(p.role)}</div>
+            </div>
+          </div>
+        `).join("");
+        peopleResults.classList.add("visible");
+        if (recentLabel) recentLabel.hidden = true;
+        if (convList) convList.hidden = true;
+      }
+    }
   }
 
   function closeModalFn() {
-    newChatModal.hidden = true;
+    if (newChatModal) newChatModal.hidden = true;
   }
 
   /* ── Connect to Socket.io ─────────────────────────────────── */
@@ -716,21 +859,85 @@
     /* ── Event listeners ──────────────────────────────────── */
 
     // Conversation list click
-    convList.addEventListener("click", (ev) => {
-      const item = ev.target.closest(".conv-item");
-      if (!item) return;
-      openConversation(item.dataset.id);
-    });
-
-    convList.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") {
+    if (convList) {
+      convList.addEventListener("click", (ev) => {
         const item = ev.target.closest(".conv-item");
-        if (item) openConversation(item.dataset.id);
-      }
-    });
+        if (!item) return;
+        openConversation(item.dataset.id || item.dataset.conv);
+      });
 
-    // Conversation search
-    if (convSearch) convSearch.addEventListener("input", () => renderConvList(convSearch.value));
+      convList.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter") {
+          const item = ev.target.closest(".conv-item");
+          if (item) openConversation(item.dataset.id || item.dataset.conv);
+        }
+      });
+    }
+
+    // People search (inline search or list filter)
+    if (convSearch) {
+      convSearch.addEventListener("input", () => {
+        const q = convSearch.value.trim().toLowerCase();
+        if (peopleResults) {
+          if (!q) {
+            peopleResults.innerHTML = "";
+            peopleResults.classList.remove("visible");
+            if (recentLabel) recentLabel.hidden = false;
+            if (convList) convList.hidden = false;
+            return;
+          }
+          const matched = PEOPLE.filter((p) =>
+            p.name.toLowerCase().includes(q) || p.role.toLowerCase().includes(q)
+          );
+          if (!matched.length) {
+            peopleResults.innerHTML = `<p class="no-results">No people found</p>`;
+          } else {
+            peopleResults.innerHTML = matched.map((p) => `
+              <div class="people-result-item" data-id="${p.id}">
+                <div class="pr-ava-wrap">
+                  <div class="pr-ava-init" style="background:${p.color}">${p.initials}</div>
+                  <span class="s-dot ${p.status}"></span>
+                </div>
+                <div class="pr-info">
+                  <div class="pr-name">${escHtml(p.name)}</div>
+                  <div class="pr-role">${escHtml(p.role)}</div>
+                </div>
+              </div>
+            `).join("");
+          }
+          peopleResults.classList.add("visible");
+          if (recentLabel) recentLabel.hidden = true;
+          if (convList) convList.hidden = true;
+        } else {
+          renderConvList(convSearch.value);
+        }
+      });
+
+      convSearch.addEventListener("keydown", (ev) => {
+        if (ev.key === "Escape") {
+          convSearch.value = "";
+          if (peopleResults) {
+            peopleResults.innerHTML = "";
+            peopleResults.classList.remove("visible");
+            if (recentLabel) recentLabel.hidden = false;
+            if (convList) convList.hidden = false;
+          }
+        }
+      });
+    }
+
+    if (peopleResults) {
+      peopleResults.addEventListener("click", (ev) => {
+        const item = ev.target.closest(".people-result-item");
+        if (!item) return;
+        convSearch.value = "";
+        peopleResults.innerHTML = "";
+        peopleResults.classList.remove("visible");
+        if (recentLabel) recentLabel.hidden = false;
+        if (convList) convList.hidden = false;
+        openConversation(item.dataset.id);
+      });
+    }
 
     // Send form
     msgForm.addEventListener("submit", (ev) => {
@@ -812,6 +1019,15 @@
       activeConvId = null;
       chatActive.style.display = 'none';
       if (chatEmpty) chatEmpty.style.display = '';
+    });
+
+    // Window resize handler to restore dual-pane layout when widened
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 768) {
+        chatWin.classList.remove("show-mobile");
+        document.querySelector(".conv-panel")?.classList.remove("hidden-mobile");
+        document.body.classList.remove("chat-open");
+      }
     });
 
     // Initial send button state

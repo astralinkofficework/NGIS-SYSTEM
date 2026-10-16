@@ -22,7 +22,12 @@
     <div class="msg-page-head">
       <div>
         <div class="msg-eyebrow">Targeted Communication</div>
-        <h1 class="msg-title">Campus Announcements</h1>
+        <div class="msg-title-wrap">
+          <button class="hamburger-btn" data-action="toggle-sidebar" aria-label="Toggle navigation" title="Toggle navigation">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <h1 class="msg-title">Campus Announcements</h1>
+        </div>
         <p class="msg-subtitle">Publish to all campuses, a specific campus, departments, grades, classes or roles. The target audience is validated server-side against your permissions.</p>
       </div>
       <div class="msg-head-actions">
@@ -130,30 +135,14 @@
 </div>
 
 <script>
-window.PAGE = { role: 'teacher', active: 'campus-announcements' };
-</script>
-<script>window.HERO_CONFIG = {
-  name: 'Dr. Sarah Jenkins',
-  id: 'Staff ID: TCH-2026-0001',
-  grade: 'Mathematics Dept',
-  avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../teacher/teacher-profile.html',
-  notifLink: '../teacher/teacher-notifications.html',
-  chatLink: 'department-channels.html',
-  notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Mathematics Department' },
-    { icon: 'class', text: 'Class 10A · Sen Sok' },
-    { icon: 'email', text: 's.jenkins@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' }
-  ],
+var _portalRole = (new URLSearchParams(window.location.search).get('portal') || new URLSearchParams(window.location.search).get('role') || localStorage.getItem('ngis_active_portal') || 'admin').toLowerCase();
+window.PAGE = { role: _portalRole, active: 'campus-announcements' };
+window.HERO_CONFIG = {
   title: 'Campus Announcements',
   greeting: 'Publish targeted announcements to campuses, grades and classes.',
-  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html' }, { label: 'Campus Announcements' }]
-};</script>
+  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html?portal=' + _portalRole }, { label: 'Campus Announcements' }]
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script src="../../assets/js/messaging-data.js"></script>

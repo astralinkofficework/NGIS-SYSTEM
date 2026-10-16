@@ -221,30 +221,20 @@
 <script>
 (function () {
   try { var _t = localStorage.getItem('ngis-theme'); if (_t) document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  var p = new URLSearchParams(window.location.search);
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
-  var role = (saved && saved.role) || 'student';
+  var role = (p.get('portal') || p.get('role') || localStorage.getItem('ngis_active_portal') || (saved && saved.role) || 'admin').toLowerCase();
   window.PAGE = { role: role, active: 'announcements' };
-  if (saved) window.CURRENT_USER = saved;
+  if (saved && saved.role === role) window.CURRENT_USER = saved;
+
+  window.HERO_CONFIG = {
+    title: 'Announcements',
+    greeting: 'Your school newsroom — stay informed.',
+    breadcrumbs: [{ label: 'Announcements' }]
+  };
 })();
 </script>
-<script>window.HERO_CONFIG = {
-  name: 'Nrinphouneta Hok', id: 'Student ID: 2026-STD-0142', grade: 'Grade 10',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  profileLink: '../student/student-profile.html', notifLink: '../student/student-notifications.html',
-  chatLink: 'chat.html', notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A' },
-    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
-    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
-  ],
-  title: 'Announcements', greeting: 'Your school newsroom — stay informed.',
-  breadcrumbs: [{ label: 'Announcements' }]
-};</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 

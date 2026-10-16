@@ -23,7 +23,7 @@
     <!-- LEFT: channel list -->
     <aside class="conv-panel" id="channelPanel" aria-label="Department channels">
       <div class="cp-head">
-        <button class="chat-icon-btn hamburger-btn" id="menuBtn" aria-label="Open menu" title="Open menu">
+        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu" title="Open menu">
           <span class="material-symbols-outlined">menu</span>
         </button>
         <h2>Channels</h2>
@@ -125,31 +125,14 @@
 </div>
 
 <script>
-window.PAGE = { role: 'student', active: 'department-channels' };
-</script>
-<script>window.HERO_CONFIG = {
-  name: 'Nrinphouneta Hok',
-  id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../student/student-profile.html',
-  notifLink: '../student/student-notifications.html',
-  chatLink: 'department-channels.html',
-  notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A · Sen Sok' },
-    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
-    { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
-  ],
+var _portalRole = (new URLSearchParams(window.location.search).get('portal') || new URLSearchParams(window.location.search).get('role') || localStorage.getItem('ngis_active_portal') || 'admin').toLowerCase();
+window.PAGE = { role: _portalRole, active: 'department-channels' };
+window.HERO_CONFIG = {
   title: 'Department Channels',
   greeting: 'Department-specific announcements, discussions and resources.',
-  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html' }, { label: 'Department Channels' }]
-};</script>
+  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html?portal=' + _portalRole }, { label: 'Department Channels' }]
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script src="../../assets/js/messaging-data.js"></script>

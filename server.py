@@ -76,7 +76,7 @@ DB = {
         {'id': 1, 'userId': '2026-STD-0142', 'type': 'assignment', 'title': 'New Assignment: Mathematics Ch.8', 'message': 'Mr. Sophea posted a new assignment due July 10.', 'read': False, 'date': '2026-07-06'},
         {'id': 2, 'userId': '2026-STD-0142', 'type': 'exam',       'title': 'Exam Tomorrow: Physics Mid-Term', 'message': 'Your Physics mid-term exam is scheduled for tomorrow at 8:00 AM.', 'read': False, 'date': '2026-07-05'},
         {'id': 3, 'userId': '2026-STD-0142', 'type': 'grade',      'title': 'Grade Released: Chemistry Practical', 'message': 'Your Chemistry practical assessment result is now available. Score: 88%.', 'read': False, 'date': '2026-07-04'},
-        {'id': 4, 'userId': '2026-STD-0142', 'type': 'general',    'title': 'Certificate Awarded: Perfect Attendance', 'message': 'Congratulations! You have earned the Perfect Attendance certificate for May 2026.', 'read': True,  'date': '2026-07-03'},
+        {'id': 4, 'userId': '2026-STD-0142', 'type': 'general',    'title': 'Academic Achievement: Top 5% GPA', 'message': 'Congratulations! You have achieved top 5% GPA in Grade 10 for Semester 1.', 'read': True,  'date': '2026-07-03'},
         {'id': 5, 'userId': '2026-STD-0142', 'type': 'club',       'title': 'Robotics Club: Meeting Tomorrow 3PM', 'message': 'Reminder: Robotics Club weekly session is tomorrow after school.', 'read': True,  'date': '2026-07-02'},
     ],
 
@@ -114,26 +114,6 @@ DB = {
         {'id': 5, 'name': 'National Science Fair',             'type': 'stem',     'deadline': '2026-08-01', 'date': '2026-08-30', 'eligibility': 'Grade 9-12',  'teamSize': 4, 'status': 'open',   'registered': False},
     ],
 
-    # ── Certificates ──
-    'certificates': [
-        {'id': 1, 'title': 'Perfect Attendance',       'category': 'attendance', 'date': '2026-06-30', 'semester': 'Sem 1 2025-26', 'description': 'Awarded for 100% attendance in Semester 1.', 'verifyCode': 'NGIS-ATT-2026-0142-01'},
-        {'id': 2, 'title': 'Academic Excellence',      'category': 'academic',   'date': '2026-03-15', 'semester': 'Sem 1 2025-26', 'description': 'Top 5% GPA in Grade 10 Science Stream.',    'verifyCode': 'NGIS-ACE-2026-0142-01'},
-        {'id': 3, 'title': 'ASEAN Robotics — 2nd Place', 'category': 'competition', 'date': '2026-02-20', 'semester': 'AY 2025-26', 'description': '2nd place finish at the ASEAN Robotics Championship 2026.', 'verifyCode': 'NGIS-ROB-2026-0142-01'},
-        {'id': 4, 'title': 'Community Service Award',  'category': 'behavior',   'date': '2025-12-10', 'semester': 'Sem 1 2025-26', 'description': 'Recognized for 40+ hours of community service.', 'verifyCode': 'NGIS-CSA-2025-0142-01'},
-    ],
-
-    # ── Elections ──
-    'elections': [
-        {
-            'id': 1, 'title': 'Student Council President 2026-27',
-            'status': 'open', 'deadline': '2026-07-10', 'votesTotal': 87,
-            'candidates': [
-                {'id': 'c1', 'name': 'Kosal Rith Mony',  'grade': 'Grade 11', 'manifesto': 'I will work to improve the school canteen menu and organize more cultural events.', 'votes': 34, 'photo': None},
-                {'id': 'c2', 'name': 'Sreyleak Chhun',   'grade': 'Grade 11', 'manifesto': 'My focus is on digital learning resources and creating more study spaces.', 'votes': 31, 'photo': None},
-                {'id': 'c3', 'name': 'Panha Vuth',       'grade': 'Grade 10', 'manifesto': 'I want to launch a peer tutoring program and improve sports facilities.', 'votes': 22, 'photo': None},
-            ]
-        }
-    ],
 
     # ── Feedback ──
     'feedback': [],
@@ -268,7 +248,7 @@ def get_notifications():
         'meta': {'total': len(items), 'unread': len([n for n in items if not n['read']])}
     })
 
-@app.route('/api/notifications/<int:id>/read', methods=['PUT'])
+@app.route('/api/notifications/<int:id>/read', methods=['POST', 'PUT'])
 def mark_notification_read(id):
     n = next((n for n in DB['notifications'] if n['id'] == id), None)
     if not n:
@@ -276,9 +256,9 @@ def mark_notification_read(id):
     n['read'] = True
     return jsonify({'data': n})
 
-@app.route('/api/notifications/read-all', methods=['PUT'])
+@app.route('/api/notifications/read-all', methods=['POST', 'PUT'])
 def mark_all_notifications_read():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     user_id = data.get('userId')
     for n in DB['notifications']:
         if not user_id or n['userId'] == user_id:
@@ -740,38 +720,6 @@ def register_competition(id):
     comp['registered'] = True
     return jsonify({'data': comp, 'message': 'Registered successfully'})
 
-# ── CERTIFICATES ──
-@app.route('/api/certificates', methods=['GET'])
-def get_certificates():
-    return jsonify({'data': DB['certificates'], 'meta': {'total': len(DB['certificates'])}})
-
-@app.route('/api/certificates/verify/<code>', methods=['GET'])
-def verify_certificate(code):
-    cert = next((c for c in DB['certificates'] if c['verifyCode'] == code), None)
-    if not cert:
-        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Certificate not found or invalid'}}), 404
-    return jsonify({'data': cert, 'valid': True})
-
-# ── ELECTIONS ──
-@app.route('/api/elections', methods=['GET'])
-def get_elections():
-    return jsonify({'data': DB['elections'], 'meta': {'total': len(DB['elections'])}})
-
-@app.route('/api/elections/<int:id>/vote', methods=['POST'])
-def vote_election(id):
-    data = request.get_json()
-    election = next((e for e in DB['elections'] if e['id'] == id), None)
-    if not election:
-        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Election not found'}}), 404
-    if election['status'] != 'open':
-        return jsonify({'error': {'code': 'CLOSED', 'message': 'Voting is closed'}}), 409
-    candidate = next((c for c in election['candidates'] if c['id'] == data.get('candidateId')), None)
-    if not candidate:
-        return jsonify({'error': {'code': 'VALIDATION_ERROR', 'message': 'Invalid candidate'}}), 400
-    candidate['votes'] += 1
-    election['votesTotal'] += 1
-    election['voted'] = True
-    return jsonify({'data': election, 'message': 'Vote recorded successfully'})
 
 # ── FEEDBACK ──
 @app.route('/api/feedback', methods=['POST'])
@@ -931,7 +879,6 @@ def get_dashboard(role):
             'attendanceRate': 96,
             'gpa': 3.87,
             'clubs': DB['clubs'][:2],
-            'certificates': len(DB['certificates']),
             'serviceRequests': len([r for r in DB['serviceRequests'] if r['studentId'] == '2026-STD-0142']),
         })
     elif role == 'admin':
@@ -939,24 +886,246 @@ def get_dashboard(role):
             'totalStudents': len(DB['students']),
             'totalClubs': len(DB['clubs']),
             'openLostFound': len([i for i in DB['lostFound'] if i['status'] == 'open']),
-            'openElections': len([e for e in DB['elections'] if e['status'] == 'open']),
             'openServiceRequests': len([r for r in DB['serviceRequests'] if r['status'] in ['open', 'pending']]),
             'totalServiceRequests': len(DB['serviceRequests']),
         })
     
     return jsonify({'data': base})
 
-# ── Catch-all: serve index.html for any unmatched route ──
+# ── AUTH & USER SESSION ENDPOINTS ──
+AUTH_USERS = {
+    'admin@ngis.edu.kh': {
+        'id': 'ADM-2024-001',
+        'firstName': 'Sok Panha',
+        'lastName': 'Heng',
+        'email': 'admin@ngis.edu.kh',
+        'role': 'admin',
+        'portal': 'admin',
+        'avatar': 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face'
+    },
+    'teacher@ngis.edu.kh': {
+        'id': 'TCH-2024-042',
+        'firstName': 'Dr. Sarah',
+        'lastName': 'Jenkins',
+        'email': 'teacher@ngis.edu.kh',
+        'role': 'teacher',
+        'portal': 'teacher',
+        'avatar': 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80'
+    },
+    'student@ngis.edu.kh': {
+        'id': 'STU-2024-089',
+        'firstName': 'Nrinphouneta',
+        'lastName': 'Hok',
+        'email': 'student@ngis.edu.kh',
+        'role': 'student',
+        'portal': 'student',
+        'avatar': 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80'
+    },
+    'parent@ngis.edu.kh': {
+        'id': 'PAR-2024-118',
+        'firstName': 'Chan Dara',
+        'lastName': 'Vuth',
+        'email': 'parent@ngis.edu.kh',
+        'role': 'parent',
+        'portal': 'parent',
+        'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&crop=face'
+    }
+}
+
+@app.route('/api/auth/login', methods=['POST'])
+def auth_login():
+    data = request.get_json(silent=True) or {}
+    email = data.get('email', '').strip().lower()
+    user = AUTH_USERS.get(email)
+    if not user:
+        if 'teacher' in email:
+            user = AUTH_USERS['teacher@ngis.edu.kh']
+        elif 'student' in email:
+            user = AUTH_USERS['student@ngis.edu.kh']
+        elif 'parent' in email:
+            user = AUTH_USERS['parent@ngis.edu.kh']
+        else:
+            user = AUTH_USERS['admin@ngis.edu.kh']
+            
+    token = f"mock-jwt-token-{user['role']}"
+    return jsonify({
+        'data': {
+            'token': token,
+            'user': user
+        }
+    })
+
+@app.route('/api/auth/me', methods=['GET'])
+def auth_me():
+    auth_header = request.headers.get('Authorization', '')
+    role = 'admin'
+    for r in ['admin', 'teacher', 'student', 'parent']:
+        if f'mock-jwt-token-{r}' in auth_header or f'role-{r}' in auth_header:
+            role = r
+            break
+            
+    email_map = {
+        'admin': 'admin@ngis.edu.kh',
+        'teacher': 'teacher@ngis.edu.kh',
+        'student': 'student@ngis.edu.kh',
+        'parent': 'parent@ngis.edu.kh'
+    }
+    user = AUTH_USERS.get(email_map.get(role, 'admin@ngis.edu.kh'))
+    return jsonify({'data': user})
+
+# ── ADMIN MANAGEMENT API ENDPOINTS ──
+@app.route('/api/admin/stats', methods=['GET'])
+def admin_stats():
+    return jsonify({
+        'data': {
+            'totalStudents': 1250,
+            'totalTeachers': 86,
+            'totalParents': 980,
+            'activeClasses': 48,
+            'attendanceToday': 95.4,
+            'pendingRequests': 14
+        }
+    })
+
+@app.route('/api/admin/students', methods=['GET'])
+def admin_students():
+    return jsonify({'data': DB['students'], 'meta': {'total': len(DB['students'])}})
+
+@app.route('/api/admin/teachers', methods=['GET'])
+def admin_teachers():
+    teachers = [
+        {'id': 'TCH-001', 'name': 'Dr. Sarah Jenkins', 'department': 'Mathematics', 'email': 's.jenkins@ngis.edu.kh', 'classes': ['10A', '11B'], 'status': 'active'},
+        {'id': 'TCH-002', 'name': 'Dr. Pov Sophea', 'department': 'Science', 'email': 'p.sophea@ngis.edu.kh', 'classes': ['10A', '10B'], 'status': 'active'},
+        {'id': 'TCH-003', 'name': 'Ms. Rin Lina', 'department': 'English', 'email': 'r.lina@ngis.edu.kh', 'classes': ['9A', '10A'], 'status': 'active'},
+        {'id': 'TCH-004', 'name': 'Mr. Heng Samnang', 'department': 'Computer Science', 'email': 'h.samnang@ngis.edu.kh', 'classes': ['11A', '12A'], 'status': 'active'}
+    ]
+    return jsonify({'data': teachers, 'meta': {'total': len(teachers)}})
+
+@app.route('/api/admin/parents', methods=['GET'])
+def admin_parents():
+    parents = [
+        {'id': 'PAR-001', 'name': 'Chan Dara Vuth', 'email': 'parent@ngis.edu.kh', 'phone': '+855 12 345 678', 'children': ['Nrinphouneta Hok'], 'status': 'active'},
+        {'id': 'PAR-002', 'name': 'Sok Chenda', 'email': 'sok.chenda@ngis.edu.kh', 'phone': '+855 12 987 654', 'children': ['Kosal Rith Mony'], 'status': 'active'},
+        {'id': 'PAR-003', 'name': 'Vuth Mony', 'email': 'vuth.mony@ngis.edu.kh', 'phone': '+855 11 222 333', 'children': ['Sophea Chan'], 'status': 'active'}
+    ]
+    return jsonify({'data': parents, 'meta': {'total': len(parents)}})
+
+@app.route('/api/admin/audit', methods=['GET'])
+def admin_audit():
+    limit = int(request.args.get('limit', 50))
+    logs = [
+        {'id': 1, 'action': 'USER_LOGIN', 'actor': 'admin@ngis.edu.kh', 'target': 'Portal Auth', 'timestamp': datetime.now().isoformat(), 'status': 'SUCCESS'},
+        {'id': 2, 'action': 'UPDATE_ROLE', 'actor': 'admin@ngis.edu.kh', 'target': 'TCH-001 Dr. Sarah Jenkins', 'timestamp': datetime.now().isoformat(), 'status': 'SUCCESS'},
+        {'id': 3, 'action': 'PUBLISH_NEWS', 'actor': 'admin@ngis.edu.kh', 'target': 'School Sports Day 2026', 'timestamp': datetime.now().isoformat(), 'status': 'SUCCESS'},
+    ]
+    return jsonify({'data': logs[:limit], 'meta': {'total': len(logs)}})
+
+@app.route('/api/announcements', methods=['GET', 'POST'])
+def handle_announcements():
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        item = {
+            'id': len(DB['news']) + 1,
+            'title': data.get('title', 'Untitled'),
+            'message': data.get('message', ''),
+            'audience': data.get('audience', 'all'),
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'category': data.get('category', 'general'),
+            'pinned': bool(data.get('pinned', False)),
+            'published': True
+        }
+        DB['news'].insert(0, item)
+        return jsonify({'data': item}), 201
+    return jsonify({'data': DB['news'], 'meta': {'total': len(DB['news'])}})
+
+@app.route('/api/announcements/<int:id>', methods=['DELETE'])
+def delete_announcement(id):
+    idx = next((i for i, n in enumerate(DB['news']) if n['id'] == id), None)
+    if idx is not None:
+        DB['news'].pop(idx)
+        return jsonify({'data': None, 'message': 'Deleted'})
+    return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Announcement not found'}}), 404
+
+@app.route('/api/attendance', methods=['GET'])
+def get_attendance():
+    return jsonify({
+        'data': {
+            'rate': 96.2,
+            'presentDays': 142,
+            'absentDays': 3,
+            'lateDays': 2,
+            'history': [
+                {'date': '2026-07-06', 'status': 'present', 'course': 'Mathematics'},
+                {'date': '2026-07-05', 'status': 'present', 'course': 'Physics'},
+                {'date': '2026-07-04', 'status': 'present', 'course': 'English'},
+                {'date': '2026-07-03', 'status': 'late', 'course': 'Chemistry'},
+            ]
+        }
+    })
+
+@app.route('/api/grades', methods=['GET'])
+def get_grades():
+    return jsonify({
+        'data': [
+            {'subject': 'Advanced Mathematics', 'grade': 'A', 'score': 94, 'term': 'Term 2', 'teacher': 'Dr. Sarah Jenkins'},
+            {'subject': 'Physics & Lab', 'grade': 'A-', 'score': 88, 'term': 'Term 2', 'teacher': 'Dr. Pov Sophea'},
+            {'subject': 'English Literature', 'grade': 'B+', 'score': 86, 'term': 'Term 2', 'teacher': 'Ms. Rin Lina'},
+            {'subject': 'Chemistry Practicum', 'grade': 'A', 'score': 91, 'term': 'Term 2', 'teacher': 'Ms. Sopheap Keo'},
+        ]
+    })
+
+# ── CLEAN ROUTE SHORTCUTS ──
+@app.route('/admin')
+@app.route('/admin/')
+def route_admin():
+    return send_from_directory(ROOT, 'pages/admin/admin.html')
+
+@app.route('/teacher')
+@app.route('/teacher/')
+def route_teacher():
+    return send_from_directory(ROOT, 'pages/teacher/teacher.html')
+
+@app.route('/student')
+@app.route('/student/')
+def route_student():
+    return send_from_directory(ROOT, 'pages/student/student.html')
+
+@app.route('/parent')
+@app.route('/parent/')
+def route_parent():
+    return send_from_directory(ROOT, 'pages/parent/parent.html')
+
+@app.route('/access-denied')
+def route_access_denied():
+    return send_from_directory(ROOT, 'pages/shared/access-denied.html')
+
+# ── CATCH-ALL & STATIC SERVING ──
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
-    # If it looks like a static file request that doesn't exist, 404
-    if path and '.' in path and path.rsplit('.', 1)[1] in ['css', 'js', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'woff2', 'woff', 'ttf', 'eot', 'map']:
-        try:
-            return send_from_directory(ROOT, path)
-        except:
-            abort(404)
+    if not path:
+        return send_from_directory(ROOT, 'index.html')
+    
+    # API endpoints that were not matched must return 404 JSON, NOT index.html!
+    if path.startswith('api/') or path == 'api':
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': f'API route /{path} not found'}}), 404
+
+    # Check if exact file exists on disk
+    file_path = os.path.join(ROOT, path)
+    if os.path.isfile(file_path):
+        return send_from_directory(ROOT, path)
+
+    # Static file extensions that do not exist -> 404
+    if '.' in path:
+        abort(404)
+
     return send_from_directory(ROOT, 'index.html')
+
+@app.errorhandler(404)
+def handle_404(e):
+    if request.path.startswith('/api/') or request.path == '/api':
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': f'API route {request.path} not found'}}), 404
+    return send_from_directory(ROOT, 'pages/shared/access-denied.html'), 404
 
 # ── Start ─────────────────────────────────────────────────────
 if __name__ == '__main__':

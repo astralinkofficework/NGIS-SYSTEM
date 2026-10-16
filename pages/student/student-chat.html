@@ -22,6 +22,7 @@
   font-weight: 400;
   font-size: 15px;
   color: #0f172a;
+  background: transparent !important;
 }
 .teacher-list {
   flex: 1;
@@ -162,6 +163,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: transparent !important;
 }
 .chat-active-teacher {
   display: flex;
@@ -496,13 +498,26 @@
     <!-- LEFT: Assigned Instructors -->
     <aside class="conv-panel" id="convPanel" aria-label="Conversations">
       <div class="cp-head">
-        <button class="chat-icon-btn hamburger-btn" id="menuBtn" aria-label="Open menu" title="Open menu">
+        <button class="chat-icon-btn hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu" title="Open menu">
           <span class="material-symbols-outlined">menu</span>
         </button>
         <h2>Teacher Messaging</h2>
-        <button class="chat-icon-btn" aria-label="New message" title="New message" onclick="document.getElementById('chatInput').focus()">
+        <button class="chat-icon-btn" id="newChatBtn" aria-label="New message" title="New message">
           <span class="material-symbols-outlined">edit_square</span>
         </button>
+      </div>
+      <!-- Teacher search -->
+      <div class="cp-search">
+        <div class="chat-search-wrap">
+          <span class="material-symbols-outlined" aria-hidden="true">search</span>
+          <input
+            type="search"
+            id="teacherSearch"
+            placeholder="Search teacher or subject…"
+            autocomplete="off"
+            aria-label="Search teachers"
+          >
+        </div>
       </div>
       <div class="chat-sidebar-header">Assigned Instructors</div>
       <div class="teacher-list" id="teacherList">
@@ -734,6 +749,9 @@ window.HERO_CONFIG = {
   const convPanel = document.getElementById('convPanel');
   const chatWin = document.getElementById('chatWin');
   const backBtn = document.getElementById('backBtn');
+  const teacherSearch = document.getElementById('teacherSearch');
+  const newChatBtn = document.getElementById('newChatBtn');
+
   if (backBtn) {
     backBtn.addEventListener('click', () => {
       convPanel.classList.remove('hidden-mobile');
@@ -742,10 +760,35 @@ window.HERO_CONFIG = {
     });
   }
 
+  function escapeHtml(str) {
+    return (str || '').replace(/[&<>'"]/g, tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag));
+  }
+
   // Render Sidebar
-  function renderSidebar() {
+  function renderSidebar(filter = '') {
     listContainer.innerHTML = '';
-    chatData.forEach((t, index) => {
+    const q = (filter || '').toLowerCase().trim();
+    const visibleTeachers = q
+      ? chatData.map((t, idx) => ({ ...t, originalIndex: idx })).filter(t => t.name.toLowerCase().includes(q) || t.subject.toLowerCase().includes(q))
+      : chatData.map((t, idx) => ({ ...t, originalIndex: idx }));
+
+    if (visibleTeachers.length === 0) {
+      listContainer.innerHTML = `
+        <div style="padding:32px 16px;text-align:center;color:#94a3b8;font-size:13px">
+          <span class="mi" style="font-size:32px;display:block;margin-bottom:8px;color:#cbd5e1">search_off</span>
+          No instructors found for "${escapeHtml(q)}"
+        </div>`;
+      return;
+    }
+
+    visibleTeachers.forEach((t) => {
+      const index = t.originalIndex;
       const isOnline = t.online ? 'online' : '';
       const isActiveClass = index === activeIndex ? 'active' : '';
       const unreadHtml = t.unread > 0 ? `<span class="chat-unread-badge">${t.unread}</span>` : '';
@@ -756,34 +799,65 @@ window.HERO_CONFIG = {
       item.className = `teacher-item ${isActiveClass}`;
       item.innerHTML = `
         <div class="teacher-avatar-wrap">
-          <img class="teacher-avatar" src="${t.avatar}" alt="${t.name}">
+          <img class="teacher-avatar" src="${t.avatar}" alt="${escapeHtml(t.name)}">
           <span class="status-dot ${isOnline}"></span>
         </div>
         <div class="teacher-info">
           <div class="teacher-name-row">
-            <span class="teacher-name">${t.name}</span>
-            <span class="teacher-time">${lastTime}</span>
+            <span class="teacher-name">${escapeHtml(t.name)}</span>
+            <span class="teacher-time">${escapeHtml(lastTime)}</span>
           </div>
-          <div class="teacher-subject">${t.subject}</div>
-          <div class="teacher-preview">${lastMsg}</div>
+          <div class="teacher-subject">${escapeHtml(t.subject)}</div>
+          <div class="teacher-preview">${escapeHtml(lastMsg)}</div>
         </div>
         ${unreadHtml}
       `;
 
       item.addEventListener('click', () => {
         activeIndex = index;
-        t.unread = 0; // mark read
+        chatData[index].unread = 0; // mark read
         saveState();
-        renderSidebar();
+        renderSidebar(teacherSearch ? teacherSearch.value : '');
         loadConversation();
         if (window.innerWidth <= 1024) {
           convPanel.classList.add('hidden-mobile');
           chatWin.classList.add('show-mobile');
           document.body.classList.add('chat-open');
         }
+        if (chatInput) chatInput.focus();
       });
 
       listContainer.appendChild(item);
+    });
+  }
+
+  // Teacher search handling
+  if (teacherSearch) {
+    teacherSearch.addEventListener('input', () => {
+      renderSidebar(teacherSearch.value);
+    });
+    teacherSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        teacherSearch.value = '';
+        renderSidebar('');
+      }
+    });
+  }
+
+  // New Chat Button handling
+  if (newChatBtn) {
+    newChatBtn.addEventListener('click', () => {
+      if (teacherSearch) {
+        teacherSearch.focus();
+        teacherSearch.select();
+      } else {
+        if (window.innerWidth <= 1024) {
+          convPanel.classList.add('hidden-mobile');
+          chatWin.classList.add('show-mobile');
+          document.body.classList.add('chat-open');
+        }
+        if (chatInput) chatInput.focus();
+      }
     });
   }
 

@@ -32,14 +32,7 @@
       const role = NGISAuth.getRole();
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-        // Redirect to the correct portal for this user's role
-        const portals = {
-          admin: "/pages/admin/admin.html",
-          teacher: "/pages/teacher/teacher.html",
-          student: "/pages/student/student.html",
-          parent: "/pages/parent/parent.html",
-        };
-        window.location.href = portals[role] || "/";
+        window.location.href = "/pages/shared/access-denied.html?role=" + encodeURIComponent(role || "") + "&attempted=" + encodeURIComponent(window.location.pathname);
         return false;
       }
 

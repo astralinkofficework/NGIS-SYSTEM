@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NGIS — Access Restricted</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2, #f8fafb);
+    padding: 24px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .denied-card {
+    max-width: 480px;
+    width: 100%;
+    background: var(--surface, #ffffff);
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: var(--r-xl, 16px);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    padding: 36px 32px;
+    text-align: center;
+  }
+  .denied-icon-wrap {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .denied-icon-wrap .material-symbols-outlined {
+    font-size: 36px;
+  }
+  .denied-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .denied-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--heading, #0f172a);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .denied-desc {
+    font-size: 14px;
+    color: var(--muted, #64748b);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  .denied-meta {
+    background: var(--surface-2, #f8fafb);
+    border: 1px dashed var(--border, #e2e8f0);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12.5px;
+    color: var(--muted, #64748b);
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .denied-meta div {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+  }
+  .denied-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+<main class="denied-card anim-up">
+  <div class="denied-icon-wrap">
+    <span class="material-symbols-outlined">gpp_maybe</span>
+  </div>
+  <div>
+    <span class="denied-badge">403 · Access Forbidden</span>
+  </div>
+  <h1 class="denied-title">Access Restricted</h1>
+  <p class="denied-desc">You do not have administrative authorization to access this page. Please return to your designated portal.</p>
+
+  <div class="denied-meta" id="deniedMeta">
+    <div><span>Attempted page:</span><strong id="metaAttempted">—</strong></div>
+    <div><span>Current session:</span><strong id="metaRole">—</strong></div>
+  </div>
+
+  <div class="denied-actions">
+    <a href="../../index.html" class="btn btn-primary btn-full" id="btnMyPortal">
+      <span class="material-symbols-outlined">arrow_back</span>
+      <span>Return to My Portal</span>
+    </a>
+    <a href="../../index.html" class="btn btn-ghost btn-full">
+      <span>Switch User / Portal</span>
+    </a>
+  </div>
+</main>
+
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var attempted = params.get('attempted') || window.location.pathname;
+  var role = params.get('role') || localStorage.getItem('ngis_active_portal') || 'student';
+  
+  var attemptedEl = document.getElementById('metaAttempted');
+  if (attemptedEl) attemptedEl.textContent = attempted.split('/').pop() || attempted;
+  
+  var roleEl = document.getElementById('metaRole');
+  if (roleEl) roleEl.textContent = (role.charAt(0).toUpperCase() + role.slice(1)) + ' Portal';
+
+  var myPortalBtn = document.getElementById('btnMyPortal');
+  if (myPortalBtn) {
+    var homeMap = {
+      admin: '../admin/admin.html',
+      teacher: '../teacher/teacher.html',
+      parent: '../parent/parent.html',
+      student: '../student/student.html'
+    };
+    myPortalBtn.href = homeMap[role] || '../../index.html';
+  }
+})();
+</script>
+</body>
+</html>

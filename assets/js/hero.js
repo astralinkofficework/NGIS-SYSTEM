@@ -17,13 +17,110 @@
   }
 
   /* ── Live date ── */
+  /* ── Live date ── */
   var DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var MONTHS = ['January','February','March','April','May','June',
                 'July','August','September','October','November','December'];
   var now    = new Date();
   var dateStr = DAYS[now.getDay()] + ', ' + MONTHS[now.getMonth()] + ' ' +
                 now.getDate() + ', ' + now.getFullYear();
-  var firstName = (C.name || 'User').split(' ')[0];
+
+  /* ── Role & Path Resolution ── */
+  var VALID_ROLES = ['admin', 'teacher', 'parent', 'student'];
+  var pathname = (window.location.pathname || '').toLowerCase();
+  var params = new URLSearchParams(window.location.search || '');
+  var queryRole = (params.get('portal') || params.get('role') || '').toLowerCase();
+  var pathRole = '';
+  if (pathname.indexOf('/pages/admin/') !== -1 || pathname.indexOf('/admin') !== -1) pathRole = 'admin';
+  else if (pathname.indexOf('/pages/teacher/') !== -1 || pathname.indexOf('/teacher') !== -1) pathRole = 'teacher';
+  else if (pathname.indexOf('/pages/parent/') !== -1 || pathname.indexOf('/parent') !== -1) pathRole = 'parent';
+  else if (pathname.indexOf('/pages/student/') !== -1 || pathname.indexOf('/student') !== -1) pathRole = 'student';
+
+  var storedRole = '';
+  try { storedRole = (localStorage.getItem('ngis_active_portal') || '').toLowerCase(); } catch (e) {}
+
+  var activeRole = (pathRole && VALID_ROLES.indexOf(pathRole) !== -1) ? pathRole :
+                   (queryRole && VALID_ROLES.indexOf(queryRole) !== -1) ? queryRole :
+                   (storedRole && VALID_ROLES.indexOf(storedRole) !== -1) ? storedRole :
+                   (window.PAGE && window.PAGE.role && VALID_ROLES.indexOf(String(window.PAGE.role).toLowerCase()) !== -1) ? String(window.PAGE.role).toLowerCase() :
+                   'student';
+
+  var rootPrefix = pathname.indexOf('/pages/') !== -1 ? '../../' : '';
+
+  function resolveRoleUrl(targetRole, filename) {
+    if (!filename) return '#';
+    if (filename.indexOf('/') !== -1 || filename.indexOf('http') === 0 || filename.indexOf('#') === 0) return filename;
+    if (pathname.indexOf('/pages/' + targetRole + '/') !== -1) return filename;
+    if (pathname.indexOf('/pages/shared/') !== -1 || pathname.indexOf('/pages/messaging/') !== -1) return '../' + targetRole + '/' + filename;
+    if (pathname.indexOf('/pages/') !== -1) return '../' + targetRole + '/' + filename;
+    return 'pages/' + targetRole + '/' + filename;
+  }
+
+  var ROLE_DEFAULTS = {
+    admin: {
+      brandSub: 'ADMINISTRATION PORTAL',
+      name: 'Sok Panha Heng',
+      roleMeta: 'Super Administrator',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face',
+      id: 'Admin ID: ADM-2024-001',
+      calendar: 'admin-calendar.html',
+      profile: 'admin-profile.html',
+      home: 'admin.html',
+      ddRows: [
+        { icon: 'badge', text: 'Admin ID: ADM-2024-001' },
+        { icon: 'verified_user', text: 'Role: Super Administrator' },
+        { icon: 'business', text: 'Central Administration' }
+      ]
+    },
+    teacher: {
+      brandSub: 'TEACHER PORTAL',
+      name: 'Dr. Sarah Jenkins',
+      roleMeta: 'Mathematics Lead',
+      avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80',
+      id: 'Teacher ID: TCH-2024-042',
+      calendar: 'teacher-timetable.html',
+      profile: 'teacher-profile.html',
+      home: 'teacher.html',
+      ddRows: [
+        { icon: 'school', text: 'Faculty of Mathematics' },
+        { icon: 'schedule', text: 'Term 2 • AY 2025–26' },
+        { icon: 'class', text: 'Assigned: 5 Classes' }
+      ]
+    },
+    parent: {
+      brandSub: 'PARENT PORTAL',
+      name: 'Chan Dara Vuth',
+      roleMeta: 'Parent / Guardian',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&crop=face',
+      id: 'Parent ID: PAR-2024-118',
+      calendar: 'parent-calendar.html',
+      profile: 'parent-profile.html',
+      home: 'parent.html',
+      ddRows: [
+        { icon: 'family_restroom', text: 'Child: Chan Sokha (Grade 10-A)' },
+        { icon: 'verified', text: 'Primary Guardian' },
+        { icon: 'payments', text: 'Tuition: Current' }
+      ]
+    },
+    student: {
+      brandSub: 'STUDENT PORTAL',
+      name: 'Nrinphouneta Hok',
+      roleMeta: 'Grade 10 • Term 2',
+      avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+      id: 'Student ID: 2026-STD-0142',
+      calendar: 'student-calendar.html',
+      profile: 'student-profile.html',
+      home: 'student.html',
+      ddRows: [
+        { icon: 'school', text: 'Grade 10 - Section A' },
+        { icon: 'star', text: 'GPA 3.85' },
+        { icon: 'badge', text: 'ID: 2026-STD-0142' }
+      ]
+    }
+  };
+
+  var rDef = ROLE_DEFAULTS[activeRole] || ROLE_DEFAULTS.student;
+  var firstName = (C.name || rDef.name).split(' ')[0];
 
   /* ── Breadcrumb HTML ── */
   var crumbs = C.breadcrumbs || [];
@@ -43,20 +140,26 @@
   var mailBadge  = mailCount ? '<span class="htb-ctrl-badge">' + mailCount + '</span>' : '';
 
   /* ── Link targets ── */
-  var notifLink     = C.notifLink     || '#';
-  var chatLink      = C.chatLink      || '../shared/chat.html';
-  var groupChatLink = C.groupChatLink || '../shared/group-chat.html';
+  var notifLink     = C.notifLink     || resolveRoleUrl(activeRole, activeRole + '-notifications.html');
+  var chatLink      = C.chatLink      || (resolveRoleUrl('shared', 'chat.html') + '?portal=' + activeRole);
+  var groupChatLink = C.groupChatLink || (resolveRoleUrl('shared', 'group-chat.html') + '?portal=' + activeRole);
+  var calendarLink  = C.calendarLink  || resolveRoleUrl(activeRole, rDef.calendar);
+  var profileLink   = C.profileLink   || resolveRoleUrl(activeRole, rDef.profile);
 
   /* ── Build hero HTML ── */
   var brandTitle = C.brandTitle || "New Gateway Int'l School";
-  var brandSub   = C.brandSub   || (C.portalLabel || 'STUDENT PORTAL');
-  var roleMeta   = C.grade || C.role || 'Grade 10 • Term 2';
-  var userAvatar = C.avatarSm || C.avatar || 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80';
-  var userName   = C.name || 'Nrinphouneta Hok';
+  var brandSub   = C.brandSub   || C.portalLabel || rDef.brandSub;
+  var roleMeta   = C.grade || C.roleMeta || C.role || rDef.roleMeta;
+  var userAvatar = C.avatarSm || C.avatar || rDef.avatar;
+  var userName   = C.name || rDef.name;
+  var userId     = C.id || rDef.id;
+
+  var portalHomeUrl = resolveRoleUrl(activeRole, rDef.home);
+  var homeTarget = C.homeLink || portalHomeUrl;
 
   var breadcrumbsHtml = '';
   if (crumbs.length > 0) {
-    breadcrumbsHtml = '<a href="' + (C.homeLink || '/') + '" class="htb-crumb-home"><span class="mi">home</span><span>Home</span></a>';
+    breadcrumbsHtml = '<a href="' + homeTarget + '" class="htb-crumb-home"><span class="mi">home</span><span>Home</span></a>';
     for (var i = 0; i < crumbs.length; i++) {
       breadcrumbsHtml += '<span class="htb-crumb-sep">/</span>';
       if (crumbs[i].href) {
@@ -66,11 +169,10 @@
       }
     }
   } else {
-    breadcrumbsHtml = '<a href="' + (C.homeLink || '/') + '" class="htb-crumb-home"><span class="mi">home</span><span>Home</span></a><span class="htb-crumb-sep">/</span><a href="#" class="htb-crumb-item">Academics</a><span class="htb-crumb-sep">/</span><span class="htb-crumb-cur">' + (C.title || 'Dashboard Overview') + '</span>';
+    breadcrumbsHtml = '<a href="' + homeTarget + '" class="htb-crumb-home"><span class="mi">home</span><span>Home</span></a><span class="htb-crumb-sep">/</span><a href="#" class="htb-crumb-item">Academics</a><span class="htb-crumb-sep">/</span><span class="htb-crumb-cur">' + (C.title || 'Dashboard Overview') + '</span>';
   }
 
   /* ── Header Color Rule: Main page vs Subpage ── */
-  var pathname = (window.location.pathname || '').toLowerCase();
   var filename = (pathname.split('/').pop() || '').toLowerCase();
   var isMainFilename = (
     filename === 'student.html' ||
@@ -84,9 +186,7 @@
     (isMainFilename && window.PAGE && (window.PAGE.active === 'dashboard' || window.PAGE.active === 'home'));
   var heroClass = isMainPage ? 'hero hero-main' : 'hero hero-subpage hero-transparent';
 
-  var rootPrefix = (window.location.pathname || '').indexOf('/pages/') !== -1 ? '../../' : '';
   var logoSrc = C.logoSrc || (rootPrefix + 'assets/images/logo.png');
-  var homeTarget = C.homeLink || (rootPrefix + 'index.html');
 
   var html =
     '<div class="' + heroClass + '">' +
@@ -108,7 +208,7 @@
 
         '<!-- Right: Controls & User Profile -->' +
         '<div class="htb-right-controls">' +
-          '<a href="' + (C.calendarLink || 'student-calendar.html') + '" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">' +
+          '<a href="' + calendarLink + '" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">' +
             '<span class="mi">calendar_today</span>' +
           '</a>' +
           '<button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">' +
@@ -131,7 +231,7 @@
               '<div class="htb-chip-name-row">' +
                 '<span class="htb-chip-name">' + userName + '</span>' +
               '</div>' +
-              '<span class="htb-chip-meta">' + (C.grade || roleMeta || 'Grade 10') + '</span>' +
+              '<span class="htb-chip-meta">' + roleMeta + '</span>' +
             '</div>' +
           '</div>' +
 
@@ -160,7 +260,7 @@
   if (placeholder) placeholder.outerHTML = html;
 
   /* ── Profile dropdown HTML ── */
-  var ddRows = C.ddRows || [];
+  var ddRows = C.ddRows || rDef.ddRows || [];
   var rowsHtml = '';
   for (var j = 0; j < ddRows.length; j++) {
     rowsHtml += '<div class="htb-dd-row"><span class="mi">' + ddRows[j].icon + '</span><span>' + ddRows[j].text + '</span></div>';
@@ -169,20 +269,20 @@
   var ddHtml =
     '<div class="htb-dropdown" id="htbDropdown">' +
       '<div class="htb-dd-header">' +
-        '<img class="htb-dd-avatar" src="' + (C.avatar || C.avatarSm || '') + '" alt="' + (C.name || 'User') + '">' +
+        '<img class="htb-dd-avatar" src="' + userAvatar + '" alt="' + userName + '">' +
         '<div>' +
-          '<div class="htb-dd-name">' + (C.name || 'User') + '</div>' +
-          '<div class="htb-dd-id">' + (C.id || '') + '</div>' +
+          '<div class="htb-dd-name">' + userName + '</div>' +
+          '<div class="htb-dd-id">' + userId + '</div>' +
         '</div>' +
       '</div>' +
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-info">' + rowsHtml + '</div>' +
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-actions">' +
-        '<a href="' + (C.profileLink || '#') + '" class="htb-dd-btn">' +
+        '<a href="' + profileLink + '" class="htb-dd-btn">' +
           '<span class="mi">manage_accounts</span>My Profile' +
         '</a>' +
-        '<a href="' + (C.signOutLink || '/') + '" class="htb-dd-btn htb-dd-btn-danger">' +
+        '<a href="' + (C.signOutLink || (rootPrefix + 'index.html')) + '" class="htb-dd-btn htb-dd-btn-danger" id="htbSignOutBtn">' +
           '<span class="mi">logout</span>Sign Out' +
         '</a>' +
       '</div>' +
@@ -473,7 +573,7 @@
 
   /* ── Global search (admin only) ── */
   var searchPanel = null;
-  var ROLE = (window.PAGE && window.PAGE.role) || '';
+  var ROLE = (window.PAGE && window.PAGE.role) || activeRole;
   if (ROLE === 'admin') {
     var SEARCH_INDEX = [
       { type: 'Student',    name: 'Kosal Rith Mony',        sub: 'STU-2241 \xb7 11-A',       icon: 'school',              href: 'admin-students.html' },

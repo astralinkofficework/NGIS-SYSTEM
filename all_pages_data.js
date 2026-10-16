@@ -1,0 +1,1316 @@
+window.NGIS_PAGES = [
+  {
+    "path": "pages/admin/admin-departments.html",
+    "name": "admin-departments.html",
+    "title": "Academic Department Management",
+    "category": "Academic Oversight",
+    "roles": [
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "Subject department administration. Configure Khmer, English, Mathematics, Science, and Language departments, assigning Heads of Department and syllabi.",
+    "tags": [
+      "Subject Depts",
+      "Department Heads",
+      "Curricula"
+    ]
+  },
+  {
+    "path": "pages/shared/departments.html",
+    "name": "departments.html",
+    "title": "Academic Departments Directory",
+    "category": "Academic Oversight",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "Overview directory of all academic departments (Khmer, English, Math, Science, Humanities). Lists faculty members, subject offerings, and syllabi.",
+    "tags": [
+      "Departments Catalog",
+      "Faculty List",
+      "Curriculum Overview"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-assignments.html",
+    "name": "parent-assignments.html",
+    "title": "Child Homework & Upcoming Deadlines",
+    "category": "Academic Oversight",
+    "roles": [
+      "parent"
+    ],
+    "description": "Homework tracking portal for parents. Check active assignments across all subjects, monitor submission status, and stay ahead of deadlines.",
+    "tags": [
+      "Homework Tracker",
+      "Due Dates",
+      "Completion Status"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-classes.html",
+    "name": "admin-classes.html",
+    "title": "Class & Cohort Management",
+    "category": "Academic Oversight",
+    "roles": [
+      "admin",
+      "staff"
+    ],
+    "description": "Class creation and allocation portal. Configures grade cohorts (Grades 10–12), section letters, homeroom teachers, and classroom room assignments.",
+    "tags": [
+      "Sections",
+      "Cohorts",
+      "Homeroom Allocation"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-lessons.html",
+    "name": "admin-lessons.html",
+    "title": "Curriculum & Lesson Plan Management",
+    "category": "Academic Oversight",
+    "roles": [
+      "admin",
+      "staff"
+    ],
+    "description": "Administrative repository of digital courseware and lesson plans. Ensures instructional alignment with national curriculum and Cambridge standards.",
+    "tags": [
+      "Lesson Plans",
+      "Courseware",
+      "Curriculum Standards"
+    ]
+  },
+  {
+    "path": "pages/shared/department.html",
+    "name": "department.html",
+    "title": "Department Subject Hub",
+    "category": "Academic Oversight",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "staff"
+    ],
+    "description": "Department portal for a specific subject area. Access digital textbooks, syllabus outlines, teacher contacts, exam prep, and department announcements.",
+    "tags": [
+      "Subject Hub",
+      "Digital Textbooks",
+      "Syllabus"
+    ]
+  },
+  {
+    "path": "pages/shared/lessons.html",
+    "name": "lessons.html",
+    "title": "Digital Lesson Library",
+    "category": "Academic Oversight",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "staff"
+    ],
+    "description": "Subject digital library offering structured curriculum units, interactive lesson slides, reference formulas, and practice worksheets.",
+    "tags": [
+      "Digital Library",
+      "Interactive Lessons",
+      "Worksheets"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-calendar.html",
+    "name": "parent-calendar.html",
+    "title": "Family School Calendar & Events",
+    "category": "Academic Oversight",
+    "roles": [
+      "parent"
+    ],
+    "description": "School calendar for families. View parent-teacher conference dates, term breaks, public holidays, examination periods, and school exhibitions.",
+    "tags": [
+      "Parent Conferences",
+      "Term Breaks",
+      "School Holidays"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-timetables.html",
+    "name": "admin-timetables.html",
+    "title": "Master Schedule & Timetable Engine",
+    "category": "Academic Oversight",
+    "roles": [
+      "admin",
+      "staff"
+    ],
+    "description": "Institutional timetable schedule engine. Build and resolve scheduling conflicts across classroom periods, teacher allocations, and lab availability.",
+    "tags": [
+      "Master Timetable",
+      "Conflict Detection",
+      "Period Scheduling"
+    ]
+  },
+  {
+    "path": "pages/student/student-department.html",
+    "name": "student-department.html",
+    "title": "My Academic Department Portal",
+    "category": "Academic Oversight",
+    "roles": [
+      "student"
+    ],
+    "description": "Student subject center. Access digital syllabus chapters, departmental bulletin boards, instructor office hours, and recommended reading.",
+    "tags": [
+      "Department Portal",
+      "Office Hours",
+      "Syllabus Notes"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-assignments.html",
+    "name": "admin-assignments.html",
+    "title": "School-wide Coursework Oversight",
+    "category": "Academic Oversight",
+    "roles": [
+      "admin"
+    ],
+    "description": "Supervisory portal for tracking all assignments across all departments. Monitors submission rates, teacher grading timelines, and homework workloads.",
+    "tags": [
+      "Assignment Oversight",
+      "Submission Metrics",
+      "Workload"
+    ]
+  },
+  {
+    "path": "pages/student/student-calendar.html",
+    "name": "student-calendar.html",
+    "title": "Student Academic Calendar",
+    "category": "Academic Oversight",
+    "roles": [
+      "student"
+    ],
+    "description": "School term calendar highlighting academic milestones, public holidays, examination weeks, sports meets, and club registration dates.",
+    "tags": [
+      "School Calendar",
+      "Term Milestones",
+      "Holidays"
+    ]
+  },
+  {
+    "path": "pages/student/student-assignments.html",
+    "name": "student-assignments.html",
+    "title": "Student Homework & Assignment Portal",
+    "category": "Academic Oversight",
+    "roles": [
+      "student"
+    ],
+    "description": "Interactive coursework submission portal. View upcoming assignments, download project briefs, upload file submissions, and check teacher feedback.",
+    "tags": [
+      "Homework Submission",
+      "Due Dates",
+      "Teacher Feedback"
+    ]
+  },
+  {
+    "path": "pages/student/student-timetable.html",
+    "name": "student-timetable.html",
+    "title": "Student Weekly Class Timetable",
+    "category": "Academic Oversight",
+    "roles": [
+      "student"
+    ],
+    "description": "Interactive weekly schedule matrix. Displays daily class periods, classroom numbers, teacher names, and laboratory locations.",
+    "tags": [
+      "Weekly Schedule",
+      "Class Periods",
+      "Room Numbers"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-assignments.html",
+    "name": "teacher-assignments.html",
+    "title": "Teacher Assignment Builder & Grading",
+    "category": "Academic Oversight",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Coursework creation and grading suite. Publish assignments, set rubrics, review submitted student work, provide feedback, and record marks.",
+    "tags": [
+      "Assignment Creator",
+      "Rubrics",
+      "Grading Suite"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-classes.html",
+    "name": "teacher-classes.html",
+    "title": "Teacher Class Roster & Section Management",
+    "category": "Academic Oversight",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Interactive class roster console. View student profiles for each class, take student notes, inspect individual performance, and message homeroom groups.",
+    "tags": [
+      "Class Roster",
+      "Student Profiles",
+      "Homeroom Notes"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-documents.html",
+    "name": "teacher-documents.html",
+    "title": "Teacher Curriculum Docs & Lesson Materials",
+    "category": "Academic Oversight",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Teacher digital resource drive. Store lesson slides, curriculum guides, worksheets, marking keys, and department shared instructional materials.",
+    "tags": [
+      "Curriculum Docs",
+      "Marking Keys",
+      "Shared Drive"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-calendar.html",
+    "name": "teacher-calendar.html",
+    "title": "Teacher Schedule & Faculty Calendar",
+    "category": "Academic Oversight",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Faculty weekly timetable and calendar. Displays teaching periods, department staff briefings, parent-teacher conference slots, and school events.",
+    "tags": [
+      "Teaching Timetable",
+      "Department Briefings",
+      "Conferences"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-attendance.html",
+    "name": "parent-attendance.html",
+    "title": "Child Attendance & Absence Excuse Submission",
+    "category": "Attendance & Monitoring",
+    "roles": [
+      "parent"
+    ],
+    "description": "Real-time attendance monitor. Track child arrival times, check attendance rates, review past absences, and submit official excuse letters with doctor slips.",
+    "tags": [
+      "Live Attendance",
+      "Absence Slips",
+      "Doctor Notes"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-attendance.html",
+    "name": "teacher-attendance.html",
+    "title": "Classroom Attendance Roll-Call",
+    "category": "Attendance & Monitoring",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Fast roll-call tool. Take daily attendance with Present, Absent, Tardy, and Excused status tags, add absence notes, and submit directly to admin records.",
+    "tags": [
+      "Roll Call",
+      "Mark Absent",
+      "Batch Submission"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-attendance.html",
+    "name": "admin-attendance.html",
+    "title": "Enterprise Attendance Analytics",
+    "category": "Attendance & Monitoring",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Campus-wide student and staff attendance monitoring. Identifies chronic absenteeism, generates compliance reports, and tracks automated parent notifications.",
+    "tags": [
+      "Attendance Trends",
+      "Truancy Alerts",
+      "Campus Analytics"
+    ]
+  },
+  {
+    "path": "pages/student/student-attendance.html",
+    "name": "student-attendance.html",
+    "title": "Student Attendance Record",
+    "category": "Attendance & Monitoring",
+    "roles": [
+      "student"
+    ],
+    "description": "Personal attendance ledger. Track present days, excused absences, arrival timestamps, semester percentage, and attendance badge requirements.",
+    "tags": [
+      "Attendance %",
+      "Daily Logs",
+      "Absence Records"
+    ]
+  },
+  {
+    "path": "index.html",
+    "name": "index.html",
+    "title": "Portal Gateway & Authentication Hub",
+    "category": "Authentication & Gateway",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "The central school landing page and role-based portal selector. Directs administrators, teachers, students, and parents to their respective authenticated spaces.",
+    "tags": [
+      "Portal Selector",
+      "Authentication",
+      "Gateway"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-campus.html",
+    "name": "admin-campus.html",
+    "title": "Campus Facility & Infrastructure Detail",
+    "category": "Campus & Facilities",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Deep profile of a specific school campus, detailing building zones, classroom inventories, lab facilities, and campus administrative staff.",
+    "tags": [
+      "Building Floorplans",
+      "Classrooms",
+      "Inventories"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-campuses.html",
+    "name": "admin-campuses.html",
+    "title": "Multi-Campus Network Management",
+    "category": "Campus & Facilities",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Multi-campus enterprise view. Oversee facilities, enrollment distributions, and operational performance across Sen Sok, Toul Kork, and Chbar Ampov campuses.",
+    "tags": [
+      "Multi-Campus",
+      "Facility Oversight",
+      "Capacity"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-announcements.html",
+    "name": "parent-announcements.html",
+    "title": "Announcements & Circulars for Parents",
+    "category": "Communications",
+    "roles": [
+      "parent"
+    ],
+    "description": "Official announcements tailored for parents and guardians: PTA meetings, school policy updates, campus events, and principal letters.",
+    "tags": [
+      "PTA Circulars",
+      "Parent Letters",
+      "School Policies"
+    ]
+  },
+  {
+    "path": "pages/messaging/archived.html",
+    "name": "archived.html",
+    "title": "Archived Conversations Index",
+    "category": "Communications",
+    "roles": [
+      "admin",
+      "teacher",
+      "staff"
+    ],
+    "description": "Organized repository of past conversations. Keeps historical threads indexed and searchable without cluttering the active messaging inbox.",
+    "tags": [
+      "Archive Index",
+      "Historical Search",
+      "Clean Inbox"
+    ]
+  },
+  {
+    "path": "pages/messaging/campus-announcements.html",
+    "name": "campus-announcements.html",
+    "title": "Campus Announcements Broadcast",
+    "category": "Communications",
+    "roles": [
+      "admin",
+      "principal",
+      "staff",
+      "teacher"
+    ],
+    "description": "Targeted communication engine. Broadcast announcements targeted to specific campuses, grades, departments, or roles with automated Telegram delivery.",
+    "tags": [
+      "Targeted Broadcast",
+      "Telegram Delivery",
+      "Audience Filters"
+    ]
+  },
+  {
+    "path": "pages/shared/news.html",
+    "name": "news.html",
+    "title": "Campus News & Stories",
+    "category": "Communications",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "Curated school magazine and news stories covering academic competitions, sports victories, cultural galas, and student spotlights.",
+    "tags": [
+      "School Stories",
+      "Achievements",
+      "Magazine"
+    ]
+  },
+  {
+    "path": "pages/shared/group-chat.html",
+    "name": "group-chat.html",
+    "title": "Collaborative Group Chats",
+    "category": "Communications",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "staff"
+    ],
+    "description": "Multi-member collaborative chat environment. Supports study groups, department teams, club discussions, member drawers, and search.",
+    "tags": [
+      "Group Messaging",
+      "Member Directory",
+      "Discussions"
+    ]
+  },
+  {
+    "path": "pages/messaging/department-channels.html",
+    "name": "department-channels.html",
+    "title": "Department Communication Channels",
+    "category": "Communications",
+    "roles": [
+      "teacher",
+      "admin",
+      "staff"
+    ],
+    "description": "Dedicated subject department channels (Science, Math, Khmer, English). Faculty coordinate lesson plans, share resources, and hold staff discussions.",
+    "tags": [
+      "Subject Channels",
+      "Staff Collaboration",
+      "Resource Sharing"
+    ]
+  },
+  {
+    "path": "pages/shared/chat.html",
+    "name": "chat.html",
+    "title": "Direct Messaging Center",
+    "category": "Communications",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "staff"
+    ],
+    "description": "Real-time encrypted 1-on-1 messaging platform. Connects staff, students, and parents with search, attachment sharing, unread badges, and status indicators.",
+    "tags": [
+      "Direct Messaging",
+      "Real-time",
+      "Attachments"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-announcements.html",
+    "name": "teacher-announcements.html",
+    "title": "Faculty & Staff Announcements",
+    "category": "Communications",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Staff room bulletins and academic notices: exam moderation guidelines, term submission deadlines, professional development workshops, and campus circulars.",
+    "tags": [
+      "Staff Bulletins",
+      "Moderation Deadlines",
+      "Workshops"
+    ]
+  },
+  {
+    "path": "pages/messaging/message-requests.html",
+    "name": "message-requests.html",
+    "title": "Message Requests & Access Control",
+    "category": "Communications",
+    "roles": [
+      "teacher",
+      "admin",
+      "staff"
+    ],
+    "description": "Inbound contact authorization queue. Review, approve, or decline communication requests from external contacts while safeguarding private user data.",
+    "tags": [
+      "Access Control",
+      "Contact Approvals",
+      "Privacy"
+    ]
+  },
+  {
+    "path": "pages/messaging/messaging-admin.html",
+    "name": "messaging-admin.html",
+    "title": "Messaging Administration & Moderation",
+    "category": "Communications",
+    "roles": [
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "Operational messaging control center. Monitors messaging service health, reviews flagged message reports, tracks delivery queues, and enforces safety rules.",
+    "tags": [
+      "Moderation Queue",
+      "Service Health",
+      "Delivery Queues"
+    ]
+  },
+  {
+    "path": "pages/messaging/audit-logs.html",
+    "name": "audit-logs.html",
+    "title": "Messaging Audit & Safeguarding Logs",
+    "category": "Communications",
+    "roles": [
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "Comprehensive safeguarding audit trail. Logs privileged communication actions, message delivery receipts, attachment inspections, and moderation events.",
+    "tags": [
+      "Safeguarding",
+      "Message Audits",
+      "Compliance Log"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-news.html",
+    "name": "admin-news.html",
+    "title": "Newsroom CMS & Media Publisher",
+    "category": "Communications",
+    "roles": [
+      "admin",
+      "staff"
+    ],
+    "description": "School publishing console. Draft, review, schedule, and publish rich multimedia articles, achievements, and notices to the public portal and newsroom.",
+    "tags": [
+      "CMS Publisher",
+      "Articles",
+      "Photo Galleries"
+    ]
+  },
+  {
+    "path": "pages/shared/announcements.html",
+    "name": "announcements.html",
+    "title": "Official School Announcements & Newsroom",
+    "category": "Communications",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "All-school public newsroom. Features breaking banners, category filters, important alerts, downloadable circulars, and bookmarking.",
+    "tags": [
+      "School Newsroom",
+      "Public Bulletins",
+      "Circulars"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-notifications.html",
+    "name": "parent-notifications.html",
+    "title": "Parent Notification & Alert Center",
+    "category": "Communications",
+    "roles": [
+      "parent"
+    ],
+    "description": "Important school alerts for parents: emergency closures, bus route updates, fee payment reminders, and teacher message notifications.",
+    "tags": [
+      "Urgent Alerts",
+      "Fee Reminders",
+      "Bus Updates"
+    ]
+  },
+  {
+    "path": "pages/messaging/pinned.html",
+    "name": "pinned.html",
+    "title": "Pinned Messages & Bulletins",
+    "category": "Communications",
+    "roles": [
+      "admin",
+      "teacher",
+      "staff"
+    ],
+    "description": "Consolidated board of all high-priority pinned notices, homework reminders, and policy memos bookmarked across class chats and direct messages.",
+    "tags": [
+      "Pinned Notices",
+      "Bookmarked Directives",
+      "High Priority"
+    ]
+  },
+  {
+    "path": "pages/student/student-announcements.html",
+    "name": "student-announcements.html",
+    "title": "Student Body Announcements Feed",
+    "category": "Communications",
+    "roles": [
+      "student"
+    ],
+    "description": "Targeted announcements for enrolled students, including assembly agendas, extracurricular announcements, dress code policies, and holiday schedules.",
+    "tags": [
+      "Student Bulletins",
+      "Assembly Notices",
+      "Dress Code"
+    ]
+  },
+  {
+    "path": "pages/student/student-notifications.html",
+    "name": "student-notifications.html",
+    "title": "Student Notification Center",
+    "category": "Communications",
+    "roles": [
+      "student"
+    ],
+    "description": "Unified notifications feed for class alerts, teacher remarks, homework deadlines, grade publications, and urgent campus safety notices.",
+    "tags": [
+      "Alerts Feed",
+      "Deadline Reminders",
+      "System Notices"
+    ]
+  },
+  {
+    "path": "pages/messaging/class-chats.html",
+    "name": "class-chats.html",
+    "title": "Supervised Class Messaging Hub",
+    "category": "Communications",
+    "roles": [
+      "teacher",
+      "student",
+      "staff",
+      "admin"
+    ],
+    "description": "Automated homeroom and course class chats synced with student enrollment. Provides safe, audited communication between students and their teachers.",
+    "tags": [
+      "Class Chats",
+      "Enrollment Sync",
+      "Safeguarded"
+    ]
+  },
+  {
+    "path": "pages/student/student-chat.html",
+    "name": "student-chat.html",
+    "title": "Teacher Consultation & Student Chat",
+    "category": "Communications",
+    "roles": [
+      "student"
+    ],
+    "description": "Safeguarded student-teacher messaging workspace. Ask homework questions, request academic guidance, and receive audited instructor support.",
+    "tags": [
+      "Teacher Consult",
+      "Homework Help",
+      "Safeguarded Chat"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-notifications.html",
+    "name": "teacher-notifications.html",
+    "title": "Teacher Notification & Communication Alerts",
+    "category": "Communications",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Alerts center for teachers: parent inquiry alerts, administration circulars, student assignment submission pings, and schedule adjustments.",
+    "tags": [
+      "Teacher Alerts",
+      "Parent Inquiries",
+      "Submission Alerts"
+    ]
+  },
+  {
+    "path": "pages/messaging/telegram-config.html",
+    "name": "telegram-config.html",
+    "title": "Telegram Bot Integration Gateway",
+    "category": "Communications",
+    "roles": [
+      "admin",
+      "staff"
+    ],
+    "description": "Secure Telegram notification gateway. Configures bot webhooks, manages encrypted linking tokens, monitors delivery latency, and maps broadcast groups.",
+    "tags": [
+      "Telegram Bot",
+      "API Webhooks",
+      "Linking Tokens"
+    ]
+  },
+  {
+    "path": "pages/admin/admin.html",
+    "name": "admin.html",
+    "title": "Executive Administration Dashboard",
+    "category": "Core Dashboards",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "High-level administrative mission control. Displays overall campus enrollment, academic KPIs, attendance percentages, revenue health, and real-time operational feeds.",
+    "tags": [
+      "Executive KPIs",
+      "Analytics",
+      "Live Activity"
+    ]
+  },
+  {
+    "path": "pages/parent/parent.html",
+    "name": "parent.html",
+    "title": "Parent Guardian Dashboard",
+    "category": "Core Dashboards",
+    "roles": [
+      "parent"
+    ],
+    "description": "Unified family dashboard. Switch between multiple children, view today's attendance status, recent grades, upcoming assignments, and fee balances.",
+    "tags": [
+      "Family Home",
+      "Multi-child Switcher",
+      "Quick Overviews"
+    ]
+  },
+  {
+    "path": "pages/student/student.html",
+    "name": "student.html",
+    "title": "Student Home Dashboard",
+    "category": "Core Dashboards",
+    "roles": [
+      "student"
+    ],
+    "description": "Personalized student mission control. Features current period timetable, active course cards, GPA overview, pending homework, and urgent campus alerts.",
+    "tags": [
+      "Student Home",
+      "Upcoming Classes",
+      "GPA Widget"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher.html",
+    "name": "teacher.html",
+    "title": "Teacher Classroom Dashboard",
+    "category": "Core Dashboards",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Faculty daily mission control. Overview of today's teaching schedule, quick attendance shortcuts, pending assignment submissions, and faculty announcements.",
+    "tags": [
+      "Teacher Home",
+      "Class Schedule",
+      "Pending Grading"
+    ]
+  },
+  {
+    "path": "pages/student/student-grades.html",
+    "name": "student-grades.html",
+    "title": "Academic Performance & Grade Reports",
+    "category": "Examinations & Grading",
+    "roles": [
+      "student"
+    ],
+    "description": "Comprehensive academic report card. View subject grades, cumulative GPA trends, weighted assessment breakdowns, and teacher report card comments.",
+    "tags": [
+      "Report Card",
+      "GPA Trends",
+      "Assessment Breakdown"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-grades.html",
+    "name": "admin-grades.html",
+    "title": "Central Gradebook & Transcript Authority",
+    "category": "Examinations & Grading",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Official school gradebook ledger. Calculates weighted GPAs, reviews teacher grade submissions, locks semester marks, and issues official transcripts.",
+    "tags": [
+      "GPA Calculation",
+      "Transcript Generation",
+      "Grade Locking"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-grades.html",
+    "name": "parent-grades.html",
+    "title": "Child Academic Progress & Report Cards",
+    "category": "Examinations & Grading",
+    "roles": [
+      "parent"
+    ],
+    "description": "Official family grade portal. Review term report cards, subject scores, GPA trends, teacher remarks, and areas for academic improvement.",
+    "tags": [
+      "Child Report Card",
+      "Teacher Remarks",
+      "Academic Growth"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-exams.html",
+    "name": "admin-exams.html",
+    "title": "Examination Control & Proctoring Center",
+    "category": "Examinations & Grading",
+    "roles": [
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "Central examination authority. Schedules semester finals, coordinates exam hall seating, manages proctor rosters, and enforces exam security.",
+    "tags": [
+      "Exam Sessions",
+      "Seating Plans",
+      "Proctor Roster"
+    ]
+  },
+  {
+    "path": "pages/student/student-exams.html",
+    "name": "student-exams.html",
+    "title": "Student Examination Schedule",
+    "category": "Examinations & Grading",
+    "roles": [
+      "student"
+    ],
+    "description": "Personal exam schedule portal showing midterm and final exam dates, exam hall allocations, seat assignments, and permitted exam equipment.",
+    "tags": [
+      "Exam Dates",
+      "Seat Number",
+      "Hall Guidelines"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-grades.html",
+    "name": "teacher-grades.html",
+    "title": "Teacher Gradebook & Term Assessment",
+    "category": "Examinations & Grading",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Term gradebook manager. Input quiz and exam scores, calculate weighted subject percentages, write report card remarks, and submit for admin approval.",
+    "tags": [
+      "Gradebook",
+      "Term Remarks",
+      "Score Entry"
+    ]
+  },
+  {
+    "path": "pages/shared/exams.html",
+    "name": "exams.html",
+    "title": "Unified Examination Portal",
+    "category": "Examinations & Grading",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "staff"
+    ],
+    "description": "Comprehensive exam schedule view showing dates, venue halls, seat numbers, subject codes, rules, and downloadable hall seating diagrams.",
+    "tags": [
+      "Exam Timetable",
+      "Hall Seating",
+      "Regulations"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-principals.html",
+    "name": "admin-principals.html",
+    "title": "Campus Principals & Executive Board",
+    "category": "Executive Leadership",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Campus leadership roster. Lists campus principals, academic directors, and vice-principals across all NGIS campuses with executive authority scopes.",
+    "tags": [
+      "Principals",
+      "Campus Directors",
+      "Leadership Scope"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-reports.html",
+    "name": "admin-reports.html",
+    "title": "Executive Reports & Academic Analytics",
+    "category": "Executive Leadership",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Comprehensive institutional reporting. Generates board reports on student academic growth, campus pass rates, demographic distributions, and financial metrics.",
+    "tags": [
+      "Executive Reports",
+      "Pass Rates",
+      "Board Analytics"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-teachers.html",
+    "name": "admin-teachers.html",
+    "title": "Faculty & Instructor Management",
+    "category": "Faculty & Staff",
+    "roles": [
+      "admin"
+    ],
+    "description": "Faculty administration console. Manage teacher credentials, department affiliations, teaching workloads, assigned classes, and staff directory listings.",
+    "tags": [
+      "Staffing",
+      "Departments",
+      "Class Assignments"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-profile.html",
+    "name": "teacher-profile.html",
+    "title": "Teacher Faculty Profile & Credentials",
+    "category": "Faculty & Staff",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Faculty profile page. Manage teacher credentials, department affiliations, assigned subjects, office hours, and personal bio.",
+    "tags": [
+      "Faculty Credentials",
+      "Office Hours",
+      "Assigned Classes"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-accounts.html",
+    "name": "admin-accounts.html",
+    "title": "Financial Accounts & Fee Billing Ledger",
+    "category": "Finance & Billing",
+    "roles": [
+      "admin"
+    ],
+    "description": "Financial administration module. Tracks school tuition billing, term fee structures, invoice generation, payment reconciliations, and outstanding balances.",
+    "tags": [
+      "Invoicing",
+      "Tuition",
+      "Payment Reconciliations"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-fees.html",
+    "name": "parent-fees.html",
+    "title": "Tuition Fees, Invoicing & Digital Payments",
+    "category": "Finance & Billing",
+    "roles": [
+      "parent"
+    ],
+    "description": "Family financial portal. View tuition invoices, term fee breakdowns, ABA Pay / bank payment details, and instant downloadable official receipts.",
+    "tags": [
+      "Tuition Invoices",
+      "ABA Pay",
+      "Official Receipts"
+    ]
+  },
+  {
+    "path": "pages/shared/access-denied.html",
+    "name": "access-denied.html",
+    "title": "Access Restricted & Security Guard",
+    "category": "Security & Governance",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "admin",
+      "principal",
+      "staff"
+    ],
+    "description": "Security intercept page displayed when a user attempts to access an unauthorized route. Explains role restrictions with recovery options.",
+    "tags": [
+      "Security Intercept",
+      "RBAC Guard",
+      "Safe Recovery"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-audit.html",
+    "name": "admin-audit.html",
+    "title": "Regulatory & Security Compliance Audit",
+    "category": "Security & Governance",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Immutable compliance inspection ledger. Allows school directors and external auditors to inspect security incidents, role overrides, and system changes.",
+    "tags": [
+      "Compliance",
+      "Immutable Log",
+      "Security Audits"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-logs.html",
+    "name": "admin-logs.html",
+    "title": "System Activity & Audit Telemetry",
+    "category": "Security & Governance",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Central event log tracking administrator actions, authentication events, data modifications, and permission escalations for regulatory compliance.",
+    "tags": [
+      "Audit Logs",
+      "Security Events",
+      "Access Tracking"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-admins.html",
+    "name": "admin-admins.html",
+    "title": "System Administrator Accounts",
+    "category": "Security & Governance",
+    "roles": [
+      "admin"
+    ],
+    "description": "Security directory for school IT administrators and supervisors. Configures security clearances, access levels, and privileged account credentials.",
+    "tags": [
+      "Security",
+      "Privileged Access",
+      "Credentials"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-settings.html",
+    "name": "admin-settings.html",
+    "title": "System Configuration & Security Policy",
+    "category": "Security & Governance",
+    "roles": [
+      "admin"
+    ],
+    "description": "Platform settings console. Configures security controls, password policies, RBAC permission roles, academic terms, database backups, and data retention.",
+    "tags": [
+      "RBAC Permissions",
+      "Database Backups",
+      "Term Settings"
+    ]
+  },
+  {
+    "path": "pages/student/student-lost-found.html",
+    "name": "student-lost-found.html",
+    "title": "Campus Lost & Found Hub",
+    "category": "Student Life",
+    "roles": [
+      "student",
+      "teacher",
+      "parent",
+      "staff"
+    ],
+    "description": "Interactive lost property registry. Browse photographs of found items (calculators, water bottles, keys), file lost item reports, and claim items.",
+    "tags": [
+      "Lost Property",
+      "Item Claims",
+      "Photo Registry"
+    ]
+  },
+  {
+    "path": "pages/student/student-clubs.html",
+    "name": "student-clubs.html",
+    "title": "Student Clubs & Extracurriculars",
+    "category": "Student Life",
+    "roles": [
+      "student"
+    ],
+    "description": "Extracurricular club directory. Browse Robotics, Model UN, Debate, Drama, and Sports clubs, sign up for memberships, and track club events.",
+    "tags": [
+      "Club Signups",
+      "Robotics & Debate",
+      "Student Life"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-children.html",
+    "name": "parent-children.html",
+    "title": "Children Profiles & Class Info",
+    "category": "Student Records",
+    "roles": [
+      "parent"
+    ],
+    "description": "Detailed child overview portal. Inspect each child's grade level, homeroom teacher, campus location, weekly schedule, and academic records.",
+    "tags": [
+      "Child Profiles",
+      "Homeroom Teachers",
+      "Schedules"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-documents.html",
+    "name": "parent-documents.html",
+    "title": "Parent Letters, Permissions & Contracts",
+    "category": "Student Records",
+    "roles": [
+      "parent"
+    ],
+    "description": "Digital document vault for families. Download official school letters, sign excursion permission slips, and access enrollment agreements.",
+    "tags": [
+      "Permission Slips",
+      "Enrollment Contracts",
+      "Circulars"
+    ]
+  },
+  {
+    "path": "pages/student/student-services.html",
+    "name": "student-services.html",
+    "title": "Student Services Hub",
+    "category": "Student Services",
+    "roles": [
+      "student"
+    ],
+    "description": "One-stop campus service desk. Request locker allocations, order replacement school uniforms, submit health passes, and book counseling appointments.",
+    "tags": [
+      "Locker Request",
+      "Uniform Order",
+      "Counseling Desk"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-services.html",
+    "name": "admin-services.html",
+    "title": "Student Services Operations Admin",
+    "category": "Student Services",
+    "roles": [
+      "admin",
+      "staff"
+    ],
+    "description": "Back-office management for auxiliary student services: locker rentals, school uniform inventory, cafeteria smartcard balances, and transport routes.",
+    "tags": [
+      "Lockers",
+      "Uniforms",
+      "Cafeteria Smartcards"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-services.html",
+    "name": "parent-services.html",
+    "title": "Student Services Requests for Parents",
+    "category": "Student Services",
+    "roles": [
+      "parent"
+    ],
+    "description": "Parent services portal. Request school bus transportation routes, sign up for cafeteria lunch programs, and submit health clinic authorizations.",
+    "tags": [
+      "Bus Routes",
+      "Meal Plans",
+      "Health Authorizations"
+    ]
+  },
+  {
+    "path": "pages/student/student-id.html",
+    "name": "student-id.html",
+    "title": "Digital Student Identity Card",
+    "category": "User & Identity Management",
+    "roles": [
+      "student"
+    ],
+    "description": "Official digital student ID badge with QR security code, campus entry verification, library barcode, and active enrollment credentials.",
+    "tags": [
+      "Digital ID",
+      "QR Credential",
+      "Campus Entry"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-users.html",
+    "name": "admin-users.html",
+    "title": "Enterprise User Management Console",
+    "category": "User & Identity Management",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Unified identity directory for managing all students, teachers, parents, staff, and system administrators with role-based filtering, status toggles, and bulk operations.",
+    "tags": [
+      "RBAC",
+      "Directory",
+      "Bulk Actions"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-parents.html",
+    "name": "admin-parents.html",
+    "title": "Parent & Guardian Registry",
+    "category": "User & Identity Management",
+    "roles": [
+      "admin"
+    ],
+    "description": "Database of verified parents and guardians. Manages family relationships, child linkages, contact channels, and pickup authorizations.",
+    "tags": [
+      "Guardians",
+      "Family Relations",
+      "Contact Verification"
+    ]
+  },
+  {
+    "path": "pages/parent/parent-profile.html",
+    "name": "parent-profile.html",
+    "title": "Parent Profile & Emergency Contacts",
+    "category": "User & Identity Management",
+    "roles": [
+      "parent"
+    ],
+    "description": "Family account profile. Manage guardian phone numbers, home address, authorized pickup contacts, and communication preferences.",
+    "tags": [
+      "Guardian Contacts",
+      "Pickup Authorization",
+      "Address Info"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-students.html",
+    "name": "admin-students.html",
+    "title": "Student Admissions & Directory",
+    "category": "User & Identity Management",
+    "roles": [
+      "admin"
+    ],
+    "description": "Central student registration directory. Manage student enrollment files, campus transfers, grade assignments, guardian linkages, and emergency records.",
+    "tags": [
+      "Admissions",
+      "Student Records",
+      "Enrollment"
+    ]
+  },
+  {
+    "path": "pages/admin/admin-student-profile.html",
+    "name": "admin-student-profile.html",
+    "title": "Student Dossier & Administrative Record",
+    "category": "User & Identity Management",
+    "roles": [
+      "admin",
+      "principal"
+    ],
+    "description": "Deep-dive administrative record for an individual student, detailing complete academic transcript, attendance ledger, health records, fees, and disciplinary notes.",
+    "tags": [
+      "Full Dossier",
+      "Transcript",
+      "Guardian Info"
+    ]
+  },
+  {
+    "path": "pages/student/student-profile.html",
+    "name": "student-profile.html",
+    "title": "Student Profile & Account Settings",
+    "category": "User & Identity Management",
+    "roles": [
+      "student"
+    ],
+    "description": "Personal account manager. View enrolled student details, verify emergency contacts, review guardian linkages, and manage app preferences.",
+    "tags": [
+      "Profile Info",
+      "Emergency Contact",
+      "Account Preferences"
+    ]
+  }
+];

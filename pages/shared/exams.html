@@ -1171,39 +1171,20 @@ html, body {
 <script>
 (function () {
   try { var _t = localStorage.getItem('ngis-theme'); if (_t) document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  var p = new URLSearchParams(window.location.search);
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
-  var role = (saved && saved.role) || 'student';
+  var role = (p.get('portal') || p.get('role') || localStorage.getItem('ngis_active_portal') || (saved && saved.role) || 'student').toLowerCase();
   window.PAGE = { role: role, active: 'exams' };
-  if (saved) window.CURRENT_USER = saved;
+  if (saved && saved.role === role) window.CURRENT_USER = saved;
   document.body.classList.add('ready');
-})();
-</script>
 
-<script>
-window.HERO_CONFIG = {
-  name: 'Seila Oudom',
-  id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 12',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../student/student-profile.html',
-  notifLink: '../student/student-notifications.html',
-  chatLink: 'chat.html',
-  notifCount: 3,
-  title: 'My Examinations',
-  greeting: 'Official semester examinations schedule, seating allocations, and syllabus roadmaps.',
-  breadcrumbs: [{ label: 'My Examinations' }],
-  ddRows: [
-    { icon: 'school', text: 'Grade 12 — Science Stream' },
-    { icon: 'class', text: 'Class 12A · STEM' },
-    { icon: 'email', text: 'seila.oudom@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
-    { icon: 'emoji_events', text: 'GPA: 3.92 / 4.00' }
-  ]
-};
+  window.HERO_CONFIG = {
+    title: (role === 'admin') ? 'Exams & Assessment Management' : (role === 'teacher') ? 'Exams & Grading' : 'My Examinations',
+    greeting: 'Official semester examinations schedule, seating allocations, and syllabus roadmaps.',
+    breadcrumbs: [{ label: 'Examinations' }]
+  };
+})();
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>

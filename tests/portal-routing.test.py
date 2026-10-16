@@ -6,11 +6,11 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 
 for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
-    layout = layout_path.read_text()
+    layout = layout_path.read_text(encoding="utf-8")
     assert "function resolvePortalRole" in layout, layout_path
     assert "ngis_user" in layout, layout_path
     assert "pathRole" in layout, layout_path
-    assert "window.location.replace" in layout, layout_path
+    assert "window.location.replace" not in layout, layout_path
     assert not re.search(r'id:"messaging", label:"Messaging", icon:"forum", collapsible:true', layout), layout_path
     for retired in ("messaging-dashboard", "saved", "attachments", "notification-preferences", "message-search"):
         assert f'id:"{retired}"' not in layout, (layout_path, retired)
@@ -29,7 +29,7 @@ for retired_file in (
 ):
     assert not (ROOT / retired_file).exists(), retired_file
 
-messaging_data = (ROOT / "assets/js/messaging-data.js").read_text()
+messaging_data = (ROOT / "assets/js/messaging-data.js").read_text(encoding="utf-8")
 for retired_symbol in (
     "SAVED", "ATTACHMENTS", "NOTIF_CATEGORIES", "SEARCH_INDEX",
     "saved:", "attachments:", "notifCategories:", "searchIndex:",

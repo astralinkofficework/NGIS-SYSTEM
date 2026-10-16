@@ -22,7 +22,12 @@
     <div class="msg-page-head">
       <div>
         <div class="msg-eyebrow">Access Control</div>
-        <h1 class="msg-title">Message Requests</h1>
+        <div class="msg-title-wrap">
+          <button class="hamburger-btn" data-action="toggle-sidebar" aria-label="Toggle navigation" title="Toggle navigation">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <h1 class="msg-title">Message Requests</h1>
+        </div>
         <p class="msg-subtitle">Requests from contacts outside your direct scope. Approve or decline — private phone numbers, emails and Telegram usernames are never exposed.</p>
       </div>
     </div>
@@ -56,30 +61,14 @@
 </main>
 
 <script>
-window.PAGE = { role: 'teacher', active: 'message-requests' };
-</script>
-<script>window.HERO_CONFIG = {
-  name: 'Dr. Sarah Jenkins',
-  id: 'Staff ID: TCH-2026-0001',
-  grade: 'Mathematics Dept',
-  avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../teacher/teacher-profile.html',
-  notifLink: '../teacher/teacher-notifications.html',
-  chatLink: 'department-channels.html',
-  notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Mathematics Department' },
-    { icon: 'class', text: 'Class 10A · Sen Sok' },
-    { icon: 'email', text: 's.jenkins@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' }
-  ],
+var _portalRole = (new URLSearchParams(window.location.search).get('portal') || new URLSearchParams(window.location.search).get('role') || localStorage.getItem('ngis_active_portal') || 'admin').toLowerCase();
+window.PAGE = { role: _portalRole, active: 'message-requests' };
+window.HERO_CONFIG = {
   title: 'Message Requests',
   greeting: 'Review and manage restricted contact requests.',
-  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html' }, { label: 'Message Requests' }]
-};</script>
+  breadcrumbs: [{ label: 'Messaging', href: '../shared/chat.html?portal=' + _portalRole }, { label: 'Message Requests' }]
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script src="../../assets/js/messaging-data.js"></script>
