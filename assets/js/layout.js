@@ -48,7 +48,7 @@
           { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
           { id:"reports",     label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
+        { id:"messaging", label:"Messaging", icon:"forum", collapsible:true, links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"4" },
@@ -402,7 +402,8 @@
          </a>`
       ).join("");
       const groupActive = g.id === effectiveActive || g.links.some(l => l.id === effectiveActive);
-      const labelInner = `${g.icon ? `<span class="material-symbols-outlined nav-group-icon">${g.icon}</span>` : ""}<span>${esc(g.label)}</span>${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
+      const groupBadge = g.links.reduce((sum, l) => sum + (parseInt(l.badge, 10) || 0), 0);
+      const labelInner = `${g.icon ? `<span class="material-symbols-outlined nav-group-icon">${g.icon}</span>` : ""}<span class="nav-group-title">${esc(g.label)}</span>${groupBadge ? `<span class="nav-group-badge pill">${groupBadge}</span>` : ""}${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
 
       let label, linksHtml;
       if (g.collapsible) {
@@ -780,7 +781,9 @@
       collapsibleGroups.forEach(g => {
         const btn = g.querySelector('.nav-group-label');
         if (!btn || btn.tagName !== 'BUTTON') return;
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
           const willOpen = !g.classList.contains('expanded');
           collapsibleGroups.forEach(other => setGroupExpanded(other, other === g && willOpen));
           store.set(OPEN_GROUP_KEY, willOpen ? g.dataset.groupId : '');

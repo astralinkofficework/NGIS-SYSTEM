@@ -1,198 +1,785 @@
-<!doctype html>
-<html lang="en" data-theme="light">
+<!DOCTYPE html>
+<html class="h-full bg-slate-50" lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Students</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/app.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
-<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>NGIS - Enterprise User Management | Students</title>
+<!-- Google Font: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<!-- Phosphor Icons for Mobile/Sidebar -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Configuration -->
+<script data-purpose="tailwind-config">
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            50: '#f0fdf7',
+            100: '#dcfce9',
+            200: '#bbf7d2',
+            500: '#10b981',
+            600: '#059669',
+            700: '#047857',
+            800: '#1b4d3e',
+            900: '#13392e',
+            dark: '#1e4d38'
+          }
+        }
+      }
+    }
+  };
+</script>
+<link rel="stylesheet" href="../../assets/css/app.css"/>
+<link rel="stylesheet" href="../../assets/css/hero.css"/>
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
-<script src="../../assets/js/auth.js"></script>
-<script src="../../assets/js/protect.js"></script>
-<script src="_auth-bootstrap.js"></script>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-</head>
-<body>
-<main class="main">
+<!-- Custom Typography & Micro-Interactions -->
+<style data-purpose="custom-layout">
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
-  <header class="hero">
-    <div class="hero-topbar">
-      <div class="htb-left">
-        <a href="/" class="htb-home-btn"><span class="mi">home</span><span>Home</span></a>
-      </div>
-      <div class="htb-right">
-        <div class="htb-profile">
-          <div class="htb-pinfo">
-            <span class="htb-pname" data-user="name">Admin</span>
-            <div class="htb-pgrade">Students Directory</div>
+  /* Strict Rule: NO BOLD FONTS across all page elements */
+  *, *::before, *::after {
+    font-weight: 400;
+  }
+  .font-medium, font-medium,
+  h1, h2, h3, h4, h5, h6,
+  th, label, .badge, strong, b {
+    font-weight: 500 !important;
+  }
+
+  /* Defined straight horizontal AND vertical grid line borders */
+  #studentGridTable {
+    border-collapse: collapse !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+  #studentGridTable th,
+  #studentGridTable td {
+    border-right: 1px solid #e2e8f0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+  #studentGridTable th:last-child,
+  #studentGridTable td:last-child {
+    border-right: none !important;
+  }
+  #studentGridTable thead tr {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  /* Dark Theme Support */
+  [data-theme="dark"] body {
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
+  }
+  [data-theme="dark"] .bg-white {
+    background-color: #1e293b !important;
+  }
+  [data-theme="dark"] .bg-slate-50,
+  [data-theme="dark"] .bg-slate-50\/90 {
+    background-color: #0f172a !important;
+  }
+  [data-theme="dark"] .text-slate-900 {
+    color: #f8fafc !important;
+  }
+  [data-theme="dark"] .text-slate-700,
+  [data-theme="dark"] .text-slate-800 {
+    color: #cbd5e1 !important;
+  }
+  [data-theme="dark"] .border-slate-200,
+  [data-theme="dark"] .border-slate-200\/90 {
+    border-color: #334155 !important;
+  }
+  [data-theme="dark"] #studentGridTable {
+    border-color: #334155 !important;
+  }
+  [data-theme="dark"] #studentGridTable th,
+  [data-theme="dark"] #studentGridTable td {
+    border-color: #334155 !important;
+  }
+
+  /* Restore stroke on all SVG icons */
+  svg, svg path {
+    stroke: currentColor !important;
+  }
+
+  /* Subtle custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+</style>
+<link rel="stylesheet" href="../../assets/css/interactions.css"/>
+<!-- Override interactions.css transparent borders & strokes with ID specificity -->
+<style>
+  #studentGridTable {
+    border-collapse: collapse !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+  #studentGridTable th,
+  #studentGridTable td {
+    border-right: 1px solid #e2e8f0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+  #studentGridTable th:last-child,
+  #studentGridTable td:last-child {
+    border-right: none !important;
+  }
+  #studentGridTable svg,
+  #studentGridTable svg path,
+  #studentGridTable svg *,
+  [data-purpose="main-layout"] svg,
+  [data-purpose="main-layout"] svg path,
+  [data-purpose="main-layout"] svg * {
+    stroke: currentColor !important;
+  }
+</style>
+</head>
+<body class="h-full flex text-slate-800 bg-[#f8fafc]" data-role="admin" data-portal="admin">
+<main class="main w-full flex flex-col min-w-0">
+  <div id="heroBanner"></div>
+
+  <!-- Scrollable Page Container -->
+  <div class="flex-1 overflow-y-auto px-6 py-6 lg:px-8 space-y-6 max-w-[1400px] w-full mx-auto" data-purpose="main-layout">
+    
+    <!-- BEGIN: BreadcrumbAndActions -->
+    <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-4" data-purpose="page-title-row">
+      <div class="flex items-center gap-3">
+        <!-- Accessible Mobile Hamburger Menu Button -->
+        <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 lg:hidden flex items-center justify-center transition-all active:scale-95" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+          <i class="ph ph-list text-xl"></i>
+        </button>
+        <div>
+          <!-- Clean Breadcrumb -->
+          <div class="flex items-center gap-2 text-xs font-medium text-brand-700 uppercase tracking-wider mb-0.5">
+            <span>Enterprise User Management</span>
+            <span>•</span>
+            <span class="text-slate-500 font-normal">Student Directory</span>
           </div>
+          <h2 class="text-2xl font-medium text-slate-900 tracking-tight">Student Directory</h2>
         </div>
       </div>
-    </div>
-    <div class="hero-body">
-      <div class="hero-text">
-        <h1 class="hero-title">Students</h1>
-        <p class="hero-greeting">Live directory from the connected database.</p>
-      </div>
-    </div>
-  </header>
 
-  <div class="page anim-up">
-
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-head">
-        <div><h3>Add Student</h3><div class="sub">Creates user login + student profile</div></div>
-        <button class="btn btn-primary btn-sm" id="btnToggleForm">Show form</button>
+      <!-- Top Right Action Buttons -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </span>
+          <input id="studentSearchInput" class="w-56 pl-9 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-brand-dark placeholder:text-slate-400" placeholder="Search ID, name, class..." type="text"/>
+        </div>
+        <!-- Add Student Primary Button -->
+        <button id="btnAddStudent" type="button" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-dark hover:bg-brand-900 text-white text-xs font-medium shadow-sm transition-all hover:shadow active:scale-[0.99]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          Add Student
+        </button>
+        <!-- Import -->
+        <button type="button" onclick="window.toast ? window.toast('Import modal launched', 'info') : alert('Import')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          Import
+        </button>
+        <!-- Export -->
+        <button type="button" onclick="window.toast ? window.toast('Export compilation complete', 'success') : alert('Exported')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          Export
+        </button>
+        <!-- Filter Toggle -->
+        <button id="btnFilterToggle" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+          </svg>
+          Filter
+        </button>
+        <!-- Settings -->
+        <button type="button" onclick="window.toast ? window.toast('Table settings opened', 'info') : null" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors" title="Table Settings">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </button>
       </div>
-      <div class="card-pad" id="createWrap" style="display:none">
-        <form id="createForm" style="display:grid;gap:12px;grid-template-columns:1fr 1fr">
-          <label style="font-size:13px;font-weight: 400">First name
-            <input class="input" name="firstName" required style="width:100%;margin-top:4px">
-          </label>
-          <label style="font-size:13px;font-weight: 400">Last name
-            <input class="input" name="lastName" required style="width:100%;margin-top:4px">
-          </label>
-          <label style="font-size:13px;font-weight: 400">Email
-            <input class="input" type="email" name="email" required style="width:100%;margin-top:4px">
-          </label>
-          <label style="font-size:13px;font-weight: 400">Phone
-            <input class="input" name="phone" style="width:100%;margin-top:4px">
-          </label>
-          <label style="font-size:13px;font-weight: 400">Student number
-            <input class="input" name="studentNumber" required placeholder="2026-STD-0150" style="width:100%;margin-top:4px">
-          </label>
-          <label style="font-size:13px;font-weight: 400">Grade
-            <input class="input" name="grade" required placeholder="Grade 10" style="width:100%;margin-top:4px">
-          </label>
-          <label style="font-size:13px;font-weight: 400">Class
-            <select class="select" name="classId" style="width:100%;margin-top:4px">
-              <option value="cls-10a">10A</option>
-              <option value="cls-11b">11B</option>
-              <option value="">Unassigned</option>
+    </section>
+    <!-- END: BreadcrumbAndActions -->
+
+    <!-- BEGIN: MetricCardsGrid -->
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5" data-purpose="metrics-summary">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Students</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-medium text-slate-900" id="statTotalStudents">5,820</span>
+          <span class="text-xs text-slate-400 font-normal">Enrolled</span>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Active</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-medium text-slate-900" id="statActiveStudents">5,742</span>
+          <span class="text-xs text-emerald-600 font-normal">98.6%</span>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Male</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-medium text-slate-900" id="statMaleStudents">3,120</span>
+          <span class="text-xs text-slate-500 font-normal">53.6%</span>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Female</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-medium text-slate-900" id="statFemaleStudents">2,700</span>
+          <span class="text-xs text-slate-500 font-normal">46.4%</span>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Suspended</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-medium text-slate-900" id="statSuspendedStudents">18</span>
+          <span class="text-xs text-slate-500 font-normal">0.3%</span>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-xs">
+        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Online Now</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="text-2xl font-medium text-slate-900" id="statOnlineStudents">412</span>
+          <span class="text-xs text-slate-400 font-normal">LMS</span>
+        </div>
+      </div>
+    </section>
+    <!-- END: MetricCardsGrid -->
+
+    <!-- BEGIN: FiltersToolbar -->
+    <section id="filtersToolbarSection" class="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3" data-purpose="table-filters-row">
+      <div class="flex flex-wrap items-center gap-2">
+        <select id="filterCampus" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
+          <option value="">All Campuses</option>
+          <option value="Sen Sok">Sen Sok</option>
+          <option value="Depo">Depo</option>
+          <option value="Bak Touk">Bak Touk</option>
+        </select>
+        <select id="filterDept" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
+          <option value="">All Departments</option>
+          <option value="Science">Science</option>
+          <option value="Khmer">Khmer</option>
+          <option value="Chinese">Chinese</option>
+          <option value="English">English</option>
+        </select>
+        <select id="filterStatus" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Suspended">Suspended</option>
+          <option value="Pending">Pending</option>
+        </select>
+        <select id="filterGender" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
+          <option value="">All Genders</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+        <select id="filterYear" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
+          <option value="">Academic Year: 2025 - 2026</option>
+          <option value="2025 - 2026">Academic Year: 2025 - 2026</option>
+          <option value="2024 - 2025">Academic Year: 2024 - 2025</option>
+        </select>
+      </div>
+      <button id="btnClearFilters" type="button" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors px-2.5 py-1.5 rounded-md hover:bg-slate-100">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+        </svg>
+        Clear Filters
+      </button>
+    </section>
+    <!-- END: FiltersToolbar -->
+
+    <!-- BEGIN: StudentRosterTableSection -->
+    <!-- CRITICAL REQUIREMENT IMPLEMENTED: Defined straight horizontal AND vertical grid line borders -->
+    <section class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden" data-purpose="student-grid-table">
+      <div class="overflow-x-auto">
+        <table id="studentGridTable" class="w-full text-left text-xs border-collapse">
+          <!-- Table Header with Crisp Straight Column Separators -->
+          <thead>
+            <tr class="bg-slate-50/90 border-b border-slate-200 text-slate-600 uppercase font-medium text-[11px] tracking-wider">
+              <th class="w-12 px-4 py-3 text-center border-r border-slate-200" scope="col">
+                <input id="selectAllCheckbox" class="rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" type="checkbox"/>
+              </th>
+              <th class="px-5 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Student
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Campus
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Role
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Department
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Class
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Status
+              </th>
+              <th class="px-5 py-3 text-center font-medium text-slate-700 text-xs" scope="col">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <!-- Table Body with Straight Grid Lines (Vertical border-r & Horizontal border-b) -->
+          <tbody id="studentTableBody" class="divide-y divide-slate-200 bg-white">
+            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">
+              <td class="w-12 px-4 py-3 text-center border-r border-slate-200">
+                <input class="row-checkbox rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" type="checkbox"/>
+              </td>
+              <td class="px-5 py-3 border-r border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-medium flex items-center justify-center text-xs border border-slate-200">
+                    KR
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900 text-xs">Kosal Rith Mony</div>
+                    <div class="text-[11px] text-slate-400 font-normal">STU-2026-001</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Sen Sok
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-600 text-xs">
+                Student
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Science
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+                11-A
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-xs whitespace-nowrap">
+                <div class="flex items-center gap-2 text-slate-700">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  <span class="font-normal">Active</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-center">
+                <div class="flex items-center justify-center gap-1 text-slate-400">
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="View Profile" onclick="window.location.href='admin-users.html?role=students&profile=STU-2026-001'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Edit Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Delete Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="More Options">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">
+              <td class="w-12 px-4 py-3 text-center border-r border-slate-200">
+                <input class="row-checkbox rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" type="checkbox"/>
+              </td>
+              <td class="px-5 py-3 border-r border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-medium flex items-center justify-center text-xs border border-slate-200">
+                    SV
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900 text-xs">Sreylin Vuth</div>
+                    <div class="text-[11px] text-slate-400 font-normal">STU-2026-002</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Depo
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-600 text-xs">
+                Student
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Khmer
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+                6-B
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-xs whitespace-nowrap">
+                <div class="flex items-center gap-2 text-slate-700">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  <span class="font-normal">Active</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-center">
+                <div class="flex items-center justify-center gap-1 text-slate-400">
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="View Profile" onclick="window.location.href='admin-users.html?role=students&profile=STU-2026-002'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Edit Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Delete Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="More Options">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">
+              <td class="w-12 px-4 py-3 text-center border-r border-slate-200">
+                <input class="row-checkbox rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" type="checkbox"/>
+              </td>
+              <td class="px-5 py-3 border-r border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-medium flex items-center justify-center text-xs border border-slate-200">
+                    HP
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900 text-xs">Heng Piseth</div>
+                    <div class="text-[11px] text-slate-400 font-normal">STU-2026-003</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Bak Touk
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-600 text-xs">
+                Student
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Chinese
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+                12-A
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-xs whitespace-nowrap">
+                <div class="flex items-center gap-2 text-slate-500">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                  <span class="font-normal">Suspended</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-center">
+                <div class="flex items-center justify-center gap-1 text-slate-400">
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="View Profile" onclick="window.location.href='admin-users.html?role=students&profile=STU-2026-003'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Edit Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Delete Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="More Options">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">
+              <td class="w-12 px-4 py-3 text-center border-r border-slate-200">
+                <input class="row-checkbox rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" type="checkbox"/>
+              </td>
+              <td class="px-5 py-3 border-r border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-medium flex items-center justify-center text-xs border border-slate-200">
+                    EJ
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900 text-xs">Emily Jenkins</div>
+                    <div class="text-[11px] text-slate-400 font-normal">STU-2026-004</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Sen Sok
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-600 text-xs">
+                Student
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                English
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+                10-B
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-xs whitespace-nowrap">
+                <div class="flex items-center gap-2 text-slate-700">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  <span class="font-normal">Active</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-center">
+                <div class="flex items-center justify-center gap-1 text-slate-400">
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="View Profile" onclick="window.location.href='admin-users.html?role=students&profile=STU-2026-004'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Edit Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Delete Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="More Options">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">
+              <td class="w-12 px-4 py-3 text-center border-r border-slate-200">
+                <input class="row-checkbox rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" type="checkbox"/>
+              </td>
+              <td class="px-5 py-3 border-r border-slate-200">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-medium flex items-center justify-center text-xs border border-slate-200">
+                    KJ
+                  </div>
+                  <div>
+                    <div class="font-medium text-slate-900 text-xs">Kevin Jenkins</div>
+                    <div class="text-[11px] text-slate-400 font-normal">STU-2026-005</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                Sen Sok
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-600 text-xs">
+                Student
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+                English
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+                8-A
+              </td>
+              <td class="px-4 py-3 border-r border-slate-200 text-xs whitespace-nowrap">
+                <div class="flex items-center gap-2 text-slate-700">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  <span class="font-normal">Active</span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-center">
+                <div class="flex items-center justify-center gap-1 text-slate-400">
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="View Profile" onclick="window.location.href='admin-users.html?role=students&profile=STU-2026-005'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="Edit Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Delete Student">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                  <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors" title="More Options">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BEGIN: TablePaginationFooter -->
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500" data-purpose="table-pagination">
+        <div class="flex items-center gap-2">
+          <span>Showing <strong class="text-slate-900 font-medium">1–5</strong> of <strong class="text-slate-900 font-medium">5,820</strong> students</span>
+          <span class="text-slate-300">•</span>
+          <label class="flex items-center gap-1.5">
+            <span>Per page</span>
+            <select class="py-1 pl-2 pr-6 text-xs bg-white border border-slate-200 rounded focus:outline-none cursor-pointer">
+              <option>10</option>
+              <option>25</option>
+              <option>50</option>
+              <option>100</option>
             </select>
           </label>
-          <label style="font-size:13px;font-weight: 400">Temp password (optional)
-            <input class="input" name="password" placeholder="defaults to password123" style="width:100%;margin-top:4px">
-          </label>
-          <div style="grid-column:1/-1;display:flex;gap:8px;align-items:center">
-            <button type="submit" class="btn btn-primary">Create student</button>
-            <span id="createMsg" class="muted" style="font-size:13px"></span>
-          </div>
-        </form>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-400 disabled:opacity-50 text-xs font-normal" disabled="">
+            Previous
+          </button>
+          <button class="w-7 h-7 rounded bg-brand-dark text-white font-medium text-xs">
+            1
+          </button>
+          <button class="w-7 h-7 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-normal text-xs">
+            2
+          </button>
+          <button class="w-7 h-7 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-normal text-xs">
+            3
+          </button>
+          <span class="px-1 text-slate-400 text-xs">…</span>
+          <button class="w-7 h-7 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-normal text-xs">
+            116
+          </button>
+          <button class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-normal">
+            Next
+          </button>
+        </div>
       </div>
-    </div>
+      <!-- END: TablePaginationFooter -->
+    </section>
+    <!-- END: StudentRosterTableSection -->
 
-    <div class="card">
-      <div class="card-head">
-        <div><h3>All Students</h3><div class="sub" id="totalLabel">Loading…</div></div>
-        <a class="btn btn-ghost btn-sm" href="admin-users.html?role=students">Full user manager</a>
-      </div>
-      <div class="card-pad" id="list"><p class="muted">Loading…</p></div>
-    </div>
   </div>
-
 </main>
-<script>window.PAGE={"role":"admin","active":"students"};</script>
-<script src="../../assets/js/layout.js"></script>
+
+<!-- Add Student Drawer Modal -->
+<div id="addStudentModal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-lg w-full overflow-hidden p-6 space-y-4">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <h3 class="text-base font-medium text-slate-900">Add New Student</h3>
+      <button id="btnCloseModal" type="button" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+    </div>
+    <form id="addStudentForm" class="space-y-3.5">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">First Name</label>
+          <input required name="firstName" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:border-brand-dark focus:ring-1 focus:ring-brand-dark" placeholder="e.g. Kosal"/>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Last Name</label>
+          <input required name="lastName" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:border-brand-dark focus:ring-1 focus:ring-brand-dark" placeholder="e.g. Rith Mony"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Campus</label>
+          <select name="campus" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:border-brand-dark">
+            <option>Sen Sok</option>
+            <option>Depo</option>
+            <option>Bak Touk</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Department</label>
+          <select name="department" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:border-brand-dark">
+            <option>Science</option>
+            <option>Khmer</option>
+            <option>Chinese</option>
+            <option>English</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Class</label>
+          <input required name="class" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:border-brand-dark" placeholder="e.g. 11-A"/>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1">Gender</label>
+          <select name="gender" class="w-full text-xs px-3 py-2 border border-slate-200 rounded-xl focus:border-brand-dark">
+            <option>Male</option>
+            <option>Female</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+        <button id="btnCancelModal" type="button" class="px-4 py-2 rounded-xl text-xs font-normal border border-slate-200 text-slate-600 hover:bg-slate-50">Cancel</button>
+        <button type="submit" class="px-4 py-2 rounded-xl text-xs font-medium bg-brand-dark text-white hover:bg-brand-900 shadow-sm">Save Student</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
-(function () {
-  function esc(s) {
-    return String(s || '').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>');
-  }
+  window.PAGE = {"role":"admin","active":"students"};
+</script>
+<script src="../../assets/js/layout.js"></script>
+<!-- Interactive Client Script -->
+<script data-purpose="table-interactions">
+  document.addEventListener('DOMContentLoaded', () => {
+    // Select all checkboxes
+    const selectAll = document.getElementById('selectAllCheckbox');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
 
-  const wrap = document.getElementById('createWrap');
-  document.getElementById('btnToggleForm').addEventListener('click', () => {
-    const open = wrap.style.display !== 'none';
-    wrap.style.display = open ? 'none' : 'block';
-    document.getElementById('btnToggleForm').textContent = open ? 'Show form' : 'Hide form';
-  });
-
-  async function load() {
-    const el = document.getElementById('list');
-    try {
-      const res = await NGISAuth.api('/api/admin/students');
-      const rows = res.data || [];
-      document.getElementById('totalLabel').textContent = (res.meta?.total ?? rows.length) + ' students';
-
-      if (!rows.length) {
-        el.innerHTML = '<p class="muted">No students in database yet.</p>';
-        return;
-      }
-
-      el.innerHTML = `
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Student #</th>
-                <th>Grade / Class</th>
-                <th>Email</th>
-                <th>GPA</th>
-                <th>Attendance</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rows.map(s => `
-                <tr>
-                  <td><span>${esc(s.first_name)} ${esc(s.last_name)}</span></td>
-                  <td class="mono" style="font-size:12px">${esc(s.student_number)}</td>
-                  <td>${esc(s.grade)} · ${esc(s.class_id || '—')}</td>
-                  <td class="faint" style="font-size:12px">${esc(s.email)}</td>
-                  <td>${s.gpa != null ? Number(s.gpa).toFixed(2) : '—'}</td>
-                  <td>${s.attendance_rate != null ? Math.round(s.attendance_rate) + '%' : '—'}</td>
-                  <td><span class="badge green">${esc(s.status || 'active')}</span></td>
-                </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>`;
-    } catch (err) {
-      el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
-    }
-  }
-
-  document.getElementById('createForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const msg = document.getElementById('createMsg');
-    msg.textContent = 'Creating…';
-
-    const body = {
-      firstName: fd.get('firstName'),
-      lastName: fd.get('lastName'),
-      email: fd.get('email'),
-      phone: fd.get('phone') || undefined,
-      studentNumber: fd.get('studentNumber'),
-      grade: fd.get('grade'),
-      classId: fd.get('classId') || undefined,
-      password: fd.get('password') || undefined,
-    };
-
-    try {
-      const res = await NGISAuth.api('/api/students', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+    if (selectAll) {
+      selectAll.addEventListener('change', (e) => {
+        rowCheckboxes.forEach(cb => {
+          cb.checked = e.target.checked;
+        });
       });
-      const temp = res.meta?.temporaryPassword;
-      msg.textContent = temp
-        ? `Created. Temporary password: ${temp}`
-        : 'Student created successfully.';
-      e.target.reset();
-      load();
-    } catch (err) {
-      msg.textContent = err.message || 'Failed';
+    }
+
+    // Modal Add Student toggles
+    const modal = document.getElementById('addStudentModal');
+    const btnAdd = document.getElementById('btnAddStudent');
+    const btnClose = document.getElementById('btnCloseModal');
+    const btnCancel = document.getElementById('btnCancelModal');
+    const form = document.getElementById('addStudentForm');
+
+    function openModal() {
+      if (modal) modal.classList.remove('hidden');
+    }
+    function closeModal() {
+      if (modal) modal.classList.add('hidden');
+      if (form) form.reset();
+    }
+
+    if (btnAdd) btnAdd.addEventListener('click', openModal);
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (btnCancel) btnCancel.addEventListener('click', closeModal);
+
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const name = `${fd.get('firstName')} ${fd.get('lastName')}`;
+        alert(`Student "${name}" added successfully.`);
+        closeModal();
+      });
+    }
+
+    // Filter toggle
+    const filterToggle = document.getElementById('btnFilterToggle');
+    const filtersToolbar = document.getElementById('filtersToolbarSection');
+    if (filterToggle && filtersToolbar) {
+      filterToggle.addEventListener('click', () => {
+        const isHidden = window.getComputedStyle(filtersToolbar).display === 'none';
+        filtersToolbar.style.display = isHidden ? 'flex' : 'none';
+      });
+    }
+
+    // Clear filters
+    const btnClear = document.getElementById('btnClearFilters');
+    if (btnClear) {
+      btnClear.addEventListener('click', () => {
+        document.querySelectorAll('#filtersToolbarSection select').forEach(s => s.selectedIndex = 0);
+        const search = document.getElementById('studentSearchInput');
+        if (search) search.value = '';
+      });
     }
   });
-
-  setTimeout(load, 200);
-})();
 </script>
 </body>
 </html>

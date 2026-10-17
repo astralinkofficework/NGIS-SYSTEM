@@ -8,7 +8,38 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<!-- Phosphor Icons for Mobile/Sidebar -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Configuration -->
+<script data-purpose="tailwind-config">
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            50: '#f0fdf7',
+            100: '#dcfce9',
+            200: '#bbf7d2',
+            500: '#10b981',
+            600: '#059669',
+            700: '#047857',
+            800: '#1b4d3e',
+            900: '#13392e',
+            dark: '#1e4d38'
+          }
+        }
+      }
+    }
+  }
+</script>
 <link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <style>
   /* --- CUSTOM ENTERPRISE USER MANAGEMENT STYLES --- */
@@ -479,159 +510,361 @@
   .user-table-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--r-lg);
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
     display: flex;
     flex-direction: column;
+    margin-bottom: 24px;
+    transition: box-shadow var(--t-fast);
+  }
+
+  /* Table Mobile Scroll Hint */
+  .table-mobile-hint {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(59, 130, 246, 0.08);
+    border-bottom: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .table-mobile-hint .material-symbols-outlined {
+    font-size: 18px;
+    color: var(--primary);
   }
 
   .tbl-container {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
   }
 
-  /* Table styling matches Entra & Stripe */
+  .tbl-container::-webkit-scrollbar {
+    height: 6px;
+  }
+  .tbl-container::-webkit-scrollbar-track {
+    background: var(--surface-2);
+  }
+  .tbl-container::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+  }
+
+  /* Main Table Style - Modern, Crisp, Clean */
   .tbl-custom {
     width: 100%;
-    border-collapse: collapse;
+    min-width: 1060px;
+    border-collapse: separate;
+    border-spacing: 0;
     font-size: 13.5px;
     text-align: left;
+  }
+
+  .tbl-custom thead {
+    background: var(--surface-2);
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   .tbl-custom th {
     background: var(--surface-2);
     color: var(--muted);
-    font-weight: 400;
-    font-size: 11.5px;
+    font-weight: 500;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 12px 16px;
+    letter-spacing: 0.06em;
+    padding: 14px 18px;
     border-bottom: 1px solid var(--border);
     user-select: none;
+    white-space: nowrap;
   }
 
   .tbl-custom td {
-    padding: 14px 16px;
+    padding: 14px 18px;
     border-bottom: 1px solid var(--border);
     color: var(--text);
     vertical-align: middle;
-    transition: background var(--t-fast);
+    transition: background 0.15s ease, color 0.15s ease;
   }
 
-  .tbl-custom tbody tr:hover td {
+  /* Row Hover & Selection */
+  .tbl-custom tbody tr.user-data-row {
+    transition: background 0.15s ease;
+    background: var(--surface);
   }
 
-  /* Custom Checkbox centering */
+  .tbl-custom tbody tr.user-data-row:hover td {
+    background: rgba(59, 130, 246, 0.035);
+  }
+
+  .tbl-custom tbody tr.user-data-row.is-selected td {
+    background: rgba(59, 130, 246, 0.075);
+  }
+
+  .tbl-custom tbody tr.user-data-row.is-selected td:first-child {
+    border-left: 3px solid var(--primary);
+  }
+
+  /* Column-specific alignments & widths */
+  .tbl-custom th.th-check,
+  .tbl-custom td.td-check,
   .tbl-custom th:first-child,
   .tbl-custom td:first-child {
     width: 48px;
+    min-width: 48px;
     text-align: center;
+    padding-left: 14px;
+    padding-right: 14px;
   }
 
+  .tbl-custom th.th-user,
+  .tbl-custom td.td-user {
+    min-width: 250px;
+  }
+
+  .tbl-custom th.th-campus,
+  .tbl-custom td.td-campus {
+    min-width: 120px;
+  }
+
+  .tbl-custom th.th-role,
+  .tbl-custom td.td-role {
+    min-width: 130px;
+  }
+
+  .tbl-custom th.th-dept,
+  .tbl-custom td.td-dept {
+    min-width: 130px;
+  }
+
+  .tbl-custom th.th-class,
+  .tbl-custom td.td-class,
+  .tbl-custom th.th-children,
+  .tbl-custom td.td-children,
+  .tbl-custom th.th-phone,
+  .tbl-custom td.td-phone,
+  .tbl-custom th.th-role-type,
+  .tbl-custom td.td-role-type,
+  .tbl-custom th.th-active,
+  .tbl-custom td.td-active,
+  .tbl-custom th.th-office,
+  .tbl-custom td.td-office {
+    min-width: 140px;
+  }
+
+  .tbl-custom th.th-status,
+  .tbl-custom td.td-status {
+    min-width: 110px;
+  }
+
+  .tbl-custom th.th-actions,
+  .tbl-custom td.td-actions,
+  .tbl-custom th:last-child,
+  .tbl-custom td:last-child {
+    min-width: 170px;
+    text-align: right;
+  }
+
+  /* Custom Checkbox */
   .checkbox-wrapper {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    vertical-align: middle;
   }
 
   .checkbox-wrapper input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
+    width: 17px;
+    height: 17px;
     border-radius: 4px;
-    border: 1.5px solid var(--faint);
+    border: 1.5px solid var(--border-strong);
+    background: var(--surface);
     outline: none;
     cursor: pointer;
     accent-color: var(--primary);
+    transition: transform 0.12s ease;
   }
 
-  /* Avatar Fallback */
+  .checkbox-wrapper input[type="checkbox"]:active {
+    transform: scale(0.92);
+  }
+
+  /* User Cell Wrap */
+  .user-cell-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-meta-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .user-primary-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--heading);
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+
+  .user-id-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono, 'SF Mono', Consolas, monospace);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 1px 7px;
+    border-radius: 4px;
+    width: fit-content;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  /* Modern Gradient Avatars */
   .avatar-circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 400;
-    font-size: 12.5px;
-    color: var(--inverse);
+    font-weight: 500;
+    font-size: 13px;
+    color: #ffffff;
     flex-shrink: 0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   }
 
-  .avatar-img {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  .avatar-circle.ava-stu, .avatar-circle.t-blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
   }
 
-  /* Role Badge Styles - Large & Highly Recognizable */
+  .avatar-circle.ava-tch, .avatar-circle.t-green {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+  }
+
+  .avatar-circle.ava-par, .avatar-circle.t-purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.35);
+  }
+
+  .avatar-circle.ava-adm, .avatar-circle.t-amber {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+  }
+
+  .avatar-circle.ava-pri, .avatar-circle.t-red {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+  }
+
+  /* Role Badges */
   .identity-role-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.5px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     padding: 4px 10px;
-    border-radius: var(--r-pill);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  }
-
-  .identity-role-badge.role-stu {
-    background: var(--color-student-soft);
-    color: var(--color-student);
-    border: 1px solid var(--color-student-border);
-  }
-
-  .identity-role-badge.role-tch {
-    background: var(--color-teacher-soft);
-    color: var(--color-teacher);
-    border: 1px solid var(--color-teacher-border);
-  }
-
-  .identity-role-badge.role-par {
-    background: var(--color-parent-soft);
-    color: var(--color-parent);
-    border: 1px solid var(--color-parent-border);
-  }
-
-  .identity-role-badge.role-adm {
-    background: var(--color-admin-soft);
-    color: var(--color-admin);
-    border: 1px solid var(--color-admin-border);
-  }
-
-  .identity-role-badge.role-pri {
-    background: var(--color-principal-soft);
-    color: var(--color-principal);
-    border: 1px solid var(--color-principal-border);
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
   .identity-role-badge .badge-icon {
     font-size: 14px;
   }
 
+  .identity-role-badge.role-stu {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+  }
+
+  .identity-role-badge.role-tch {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .identity-role-badge.role-par {
+    background: rgba(139, 92, 246, 0.1);
+    color: #7c3aed;
+    border: 1px solid rgba(139, 92, 246, 0.25);
+  }
+
+  .identity-role-badge.role-adm {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .identity-role-badge.role-pri {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
   /* Status Badges */
   .status-pill {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     font-size: 12px;
-    font-weight: 400;
-    padding: 3px 8px;
-    border-radius: var(--r-pill);
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
   }
 
-  .status-pill.active { background: var(--success-soft); color: var(--success); }
-  .status-pill.pending { background: var(--warning-soft); color: var(--warning); }
-  .status-pill.suspended { background: var(--danger-soft); color: var(--danger); }
-  .status-pill.archived { background: var(--surface-3); color: var(--muted); }
+  .status-pill.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .status-pill.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+  }
+
+  .status-pill.suspended {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+  }
+
+  .status-pill.archived {
+    background: var(--surface-3);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
 
   .status-pill::before {
     content: '';
@@ -641,33 +874,56 @@
     display: inline-block;
   }
 
-  .status-pill.active::before { background: var(--success); }
-  .status-pill.pending::before { background: var(--warning); }
-  .status-pill.suspended::before { background: var(--danger); }
-  .status-pill.archived::before { background: var(--muted); }
+  .status-pill.active::before {
+    background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+  }
 
-  /* Small Tag Badges */
+  .status-pill.pending::before {
+    background: #f59e0b;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+  }
+
+  .status-pill.suspended::before {
+    background: #ef4444;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+  }
+
+  .status-pill.archived::before {
+    background: var(--muted);
+  }
+
+  /* Tags & Labels */
   .campus-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 7px;
+    white-space: nowrap;
+  }
+
+  .campus-pin-ic {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .department-tag {
     display: inline-flex;
     align-items: center;
     background: var(--surface-2);
     border: 1px solid var(--border);
     color: var(--text);
     font-size: 11.5px;
-    font-weight: 400;
+    font-weight: 500;
     padding: 3px 8px;
     border-radius: 6px;
-  }
-
-  .department-tag {
-    display: inline-flex;
-    align-items: center;
-    background: var(--surface-3);
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 400;
-    padding: 2px 6px;
-    border-radius: 4px;
+    white-space: nowrap;
   }
 
   .classes-tag-list {
@@ -677,42 +933,77 @@
   }
 
   .class-tag {
-    background: var(--primary-soft);
+    background: rgba(99, 102, 241, 0.08);
     color: var(--primary);
-    font-size: 11px;
-    font-weight: 400;
-    padding: 2px 5px;
-    border-radius: 4px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 5px;
+    white-space: nowrap;
   }
 
-  /* Actions column button list */
+  /* Action Buttons Column */
   .action-buttons-wrap {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
+    justify-content: flex-end;
   }
 
   .action-icon-btn {
-    width: 28px;
-    height: 28px;
-    border-radius: var(--r-xs);
-    display: flex;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    border: none;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
     cursor: pointer;
     color: var(--muted);
-    transition: all var(--t-fast);
+    transition: all 0.16s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   }
 
   .action-icon-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
   }
 
-  .action-icon-btn.btn-view:hover { }
-  .action-icon-btn.btn-edit:hover { }
-  .action-icon-btn.btn-suspend:hover { }
-  .action-icon-btn.btn-delete:hover { }
+  .action-icon-btn:active {
+    transform: scale(0.93);
+  }
+
+  .action-icon-btn.btn-view:hover {
+    background: rgba(59, 130, 246, 0.12);
+    color: #2563eb;
+    border-color: rgba(59, 130, 246, 0.35);
+  }
+
+  .action-icon-btn.btn-edit:hover {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+
+  .action-icon-btn.btn-suspend:hover {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+
+  .action-icon-btn.btn-delete:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.35);
+  }
+
+  .action-icon-btn.btn-more:hover {
+    background: var(--surface-3);
+    color: var(--heading);
+    border-color: var(--border-strong);
+  }
 
   .action-icon-btn span {
     font-size: 16px;
@@ -727,16 +1018,22 @@
   .dropdown-menu-list {
     position: absolute;
     right: 0;
-    top: 100%;
+    top: calc(100% + 4px);
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--r-sm);
-    box-shadow: var(--shadow-md);
-    min-width: 140px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+    min-width: 170px;
     z-index: 100;
     display: none;
     flex-direction: column;
-    padding: 4px 0;
+    padding: 6px;
+    animation: menuFadeIn 0.16s ease-out;
+  }
+
+  @keyframes menuFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .dropdown-menu-list.open {
@@ -749,21 +1046,29 @@
     padding: 8px 12px;
     text-align: left;
     font-size: 12.5px;
-    font-weight: 400;
+    font-weight: 500;
     color: var(--text);
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
     width: 100%;
+    transition: background 0.12s ease;
   }
 
   .dropdown-menu-item:hover {
+    background: var(--surface-2);
+    color: var(--primary);
   }
 
   .dropdown-menu-item span {
     font-size: 16px;
-    color: var(--faint);
+    color: var(--muted);
+  }
+
+  .dropdown-menu-item:hover span {
+    color: var(--primary);
   }
 
   /* Expandable Child Row */
@@ -1258,22 +1563,43 @@
   /* Academic Records Table */
   .academic-table {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 12.5px;
+    min-width: 580px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
     text-align: left;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-top: 8px;
+    margin-bottom: 12px;
   }
 
   .academic-table th {
     background: var(--surface-2);
     color: var(--muted);
-    font-weight: 400;
-    padding: 8px 12px;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 10px 14px;
     border-bottom: 1px solid var(--border);
+    white-space: nowrap;
   }
 
   .academic-table td {
-    padding: 10px 12px;
+    padding: 12px 14px;
     border-bottom: 1px solid var(--border);
+    color: var(--text);
+    transition: background 0.15s ease;
+  }
+
+  .academic-table tbody tr:hover td {
+    background: rgba(59, 130, 246, 0.04);
+  }
+
+  .academic-table tbody tr:last-child td {
+    border-bottom: none;
   }
 
   /* Drawer Dropdown styling */
@@ -1307,15 +1633,17 @@
     text-align: left;
     padding: 10px 16px;
     font-size: 13px;
-    font-weight: 400;
+    font-weight: 500;
     color: var(--text);
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
+    transition: background 0.12s ease;
   }
 
   .add-user-drop-item:hover {
+    background: var(--surface-2);
   }
 
   .add-user-drop-item.drop-stu { color: var(--color-student); }
@@ -1323,46 +1651,173 @@
   .add-user-drop-item.drop-par { color: var(--color-parent); }
   .add-user-drop-item.drop-adm { color: var(--color-admin); }
   .add-user-drop-item.drop-pri { color: var(--color-principal); }
+
+  /* --- PAGINATION FOOTER & MOBILE RESPONSIVE --- */
+  .pagination-footer {
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 860px) {
+    .table-mobile-hint {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .pagination-footer {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      padding: 12px 14px;
+    }
+
+    .user-table-card {
+      border-radius: 12px;
+    }
+  }
+
+  /* --- DARK THEME ADJUSTMENTS --- */
+  [data-theme="dark"] .user-table-card {
+    background: #111a24;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  }
+
+  [data-theme="dark"] .tbl-custom thead,
+  [data-theme="dark"] .tbl-custom th {
+    background: #0d151e;
+    color: #94a3b8;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .tbl-custom td {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+    color: #cbd5e1;
+  }
+
+  [data-theme="dark"] .tbl-custom tbody tr.user-data-row {
+    background: #111a24;
+  }
+
+  [data-theme="dark"] .tbl-custom tbody tr.user-data-row:hover td {
+    background: rgba(56, 189, 248, 0.06);
+  }
+
+  [data-theme="dark"] .tbl-custom tbody tr.user-data-row.is-selected td {
+    background: rgba(56, 189, 248, 0.12);
+  }
+
+  [data-theme="dark"] .action-icon-btn {
+    background: #172330;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .action-icon-btn:hover {
+    background: #1e2f42;
+    color: #f1f5f9;
+  }
+
+  [data-theme="dark"] .dropdown-menu-list {
+    background: #152230;
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme="dark"] .dropdown-menu-item:hover {
+    background: #1c2c3e;
+  }
+
+  [data-theme="dark"] .user-id-badge,
+  [data-theme="dark"] .campus-tag,
+  [data-theme="dark"] .department-tag {
+    background: #152230;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+  }
+
+  [data-theme="dark"] .pagination-footer {
+    background: #111a24;
+    border-top-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .academic-table {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .academic-table th {
+    background: #0d151e;
+    color: #94a3b8;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .academic-table td {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+    color: #cbd5e1;
+  }
+
+  [data-theme="dark"] .academic-table tbody tr:hover td {
+    background: rgba(56, 189, 248, 0.05);
+  }
 </style>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
+<!-- CRITICAL OVERRIDES: Restore defined straight horizontal and vertical grid lines and visible SVG strokes -->
+<style>
+  #masterUserTable {
+    border-collapse: collapse !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+  #masterUserTable th,
+  #masterUserTable td {
+    border-right: 1px solid #e2e8f0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+  #masterUserTable th:last-child,
+  #masterUserTable td:last-child {
+    border-right: none !important;
+  }
+  #masterUserTable thead tr {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+  #masterUserTable tbody tr {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  [data-theme="dark"] #masterUserTable {
+    border-color: #334155 !important;
+  }
+  [data-theme="dark"] #masterUserTable th,
+  [data-theme="dark"] #masterUserTable td {
+    border-right: 1px solid #334155 !important;
+    border-bottom: 1px solid #334155 !important;
+  }
+  [data-theme="dark"] #masterUserTable thead tr,
+  [data-theme="dark"] #masterUserTable tbody tr {
+    border-bottom: 1px solid #334155 !important;
+  }
+
+  /* Restore stroke on all SVG icons in users console and tables */
+  #usersConsoleSection svg,
+  #usersConsoleSection svg path,
+  #masterUserTable svg,
+  #masterUserTable svg path {
+    stroke: currentColor !important;
+  }
+</style>
 </head>
-<body>
+<body data-role="admin" data-portal="admin">
 <main class="main">
+<div id="heroBanner"></div>
 <div class="page">
 
-  <!-- --- 1. TOP HEADER SECTION --- -->
-  <div class="user-header-bar">
-    <div class="breadcrumb-custom">
-      <a href="admin.html">Dashboard</a>
-      <span class="material-symbols-outlined sep">chevron_right</span>
-      <span class="active">User Management</span>
-    </div>
-    
-    <div class="search-center-wrapper">
-      <span class="material-symbols-outlined search-ico">search</span>
-      <input type="search" id="globalSearch" placeholder="Search ID, name, class, department..." aria-label="Search users">
-      <kbd class="kbd-shortcut">⌘K</kbd>
-    </div>
-
-    <div class="header-actions-right">
-      <div class="add-user-btn-container">
-        <button class="btn btn-primary btn-sm flex center gap6" id="addBtnDropdownToggle">
-          <span class="material-symbols-outlined" style="font-size:16px">person_add</span>Add User <span class="material-symbols-outlined" style="font-size:14px">expand_more</span>
-        </button>
-        <div class="add-user-dropdown" id="addUserDropdownMenu">
-          <button class="add-user-drop-item drop-stu" data-drawer-open="student"><span class="material-symbols-outlined">school</span>Add Student</button>
-          <button class="add-user-drop-item drop-tch" data-drawer-open="teacher"><span class="material-symbols-outlined">co_present</span>Add Teacher</button>
-          <button class="add-user-drop-item drop-par" data-drawer-open="parent"><span class="material-symbols-outlined">family_restroom</span>Add Parent</button>
-          <button class="add-user-drop-item drop-adm" data-drawer-open="admin"><span class="material-symbols-outlined">admin_panel_settings</span>Add Admin</button>
-          <button class="add-user-drop-item drop-pri" data-drawer-open="principal"><span class="material-symbols-outlined">military_tech</span>Add Principal</button>
-        </div>
-      </div>
-      <button class="btn-icon-label" onclick="window.toast('Import functionality active','success')"><span class="material-symbols-outlined">upload</span>Import</button>
-      <button class="btn-icon-label" id="exportBtn"><span class="material-symbols-outlined">download</span>Export</button>
-      <button class="btn-icon-label" id="filterToggle"><span class="material-symbols-outlined">filter_list</span>Filter</button>
-      <button class="btn-icon-label" onclick="window.toast('Open management settings','info')"><span class="material-symbols-outlined">settings</span>Settings</button>
-    </div>
-  </div>
+  <!-- --- TOP SECTION IS MANAGED DYNAMICALLY IN USERS CONSOLE --- -->
 
   <!-- --- PROFILE CONTAINER (HIDDEN BY DEFAULT) --- -->
   <div class="profile-section-wrapper" id="profileViewSection">
@@ -1637,126 +2092,265 @@
   </div>
 
   <!-- --- CONSOLE GRID LIST SECTION --- -->
-  <div id="usersConsoleSection" style="display:flex; flex-direction:column; gap:20px">
-    
+  <div id="usersConsoleSection" class="flex flex-col gap-6">
 
+    <!-- BEGIN: BreadcrumbAndActions -->
+    <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-4" data-purpose="page-title-row">
+      <div class="flex items-center gap-3">
+        <!-- Accessible Mobile Hamburger Menu Button -->
+        <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 lg:hidden flex items-center justify-center transition-all active:scale-95" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+          <i class="ph ph-list text-xl"></i>
+        </button>
+        <div>
+          <!-- Clean Breadcrumb -->
+          <div class="flex items-center gap-2 text-xs font-medium text-brand-700 uppercase tracking-wider mb-0.5">
+            <span>Enterprise User Management</span>
+            <span>•</span>
+            <span class="text-slate-500 font-normal" id="subRoleHeader">Student Directory</span>
+          </div>
+          <h2 class="text-2xl font-medium text-slate-900 tracking-tight" id="directoryTitle">Student Directory</h2>
+        </div>
+      </div>
 
-    <!-- --- 3. DYNAMIC STATISTICS GRID --- -->
-    <div class="stats-summary-grid" id="statsGrid">
-      <div class="stat-summary-card">
-        <span class="stat-summary-label">Total Users</span>
-        <span class="stat-summary-value" id="statVal1">4,771</span>
+      <!-- Clean Role Switcher Tabs (Students, Teachers, Parents, Staff/Admins, Principals) -->
+      <div class="flex items-center p-1 bg-slate-100/90 rounded-xl border border-slate-200/80 gap-1 overflow-x-auto text-xs" id="rolePillTabs">
+        <button type="button" class="role-pill-btn px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 bg-white text-slate-900 shadow-xs" data-tab-role="students">
+          <svg class="w-3.5 h-3.5 text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+          <span>Students</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-100 text-slate-600 font-normal" id="countStudents">5,820</span>
+        </button>
+        <button type="button" class="role-pill-btn px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900" data-tab-role="teachers">
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          <span>Teachers</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200/60 text-slate-600 font-normal" id="countTeachers">340</span>
+        </button>
+        <button type="button" class="role-pill-btn px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900" data-tab-role="parents">
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          <span>Parents</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200/60 text-slate-600 font-normal" id="countParents">4,210</span>
+        </button>
+        <button type="button" class="role-pill-btn px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900" data-tab-role="admins">
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          <span>Admins</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200/60 text-slate-600 font-normal" id="countAdmins">42</span>
+        </button>
+        <button type="button" class="role-pill-btn px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900" data-tab-role="principals">
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+          <span>Principals</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-200/60 text-slate-600 font-normal" id="countPrincipals">8</span>
+        </button>
       </div>
-      <div class="stat-summary-card">
-        <span class="stat-summary-label">Active Users</span>
-        <span class="stat-summary-value" id="statVal2">4,690</span>
-      </div>
-      <div class="stat-summary-card">
-        <span class="stat-summary-label">Inactive Users</span>
-        <span class="stat-summary-value" id="statVal3">54</span>
-      </div>
-      <div class="stat-summary-card">
-        <span class="stat-summary-label">New This Month</span>
-        <span class="stat-summary-value" id="statVal4">24</span>
-      </div>
-      <div class="stat-summary-card">
-        <span class="stat-summary-label">Pending Approval</span>
-        <span class="stat-summary-value" id="statVal5">12</span>
-      </div>
-      <div class="stat-summary-card">
-        <span class="stat-summary-label">Online Now</span>
-        <span class="stat-summary-value" id="statVal6">189</span>
-      </div>
-    </div>
 
-    <!-- --- 4. ADVANCED FILTER BAR --- -->
-    <div class="filter-panel" id="filterPanel">
-      <div class="filter-row">
-        <select class="filter-select" id="filterCampus">
+      <!-- Top Right Action Buttons -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </span>
+          <input id="globalSearch" class="w-56 pl-9 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-brand-dark placeholder:text-slate-400" placeholder="Search ID, name, class..." type="text"/>
+        </div>
+        <!-- Add Student Primary Button -->
+        <button id="addBtnDropdownToggle" type="button" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-dark hover:bg-brand-900 text-white text-xs font-medium shadow-sm transition-all hover:shadow active:scale-[0.99]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          <span id="addBtnLabel">Add Student</span>
+        </button>
+        <!-- Import -->
+        <button id="importBtn" type="button" onclick="window.toast('Import modal launched','success')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          Import
+        </button>
+        <!-- Export -->
+        <button id="exportBtn" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          Export
+        </button>
+        <!-- Filter -->
+        <button id="filterToggle" type="button" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+          </svg>
+          Filter
+        </button>
+        <!-- Settings -->
+        <button type="button" onclick="window.toast('Opening directory settings','info')" class="p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors" title="Table Settings">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </button>
+      </div>
+    </section>
+    <!-- END: BreadcrumbAndActions -->
+
+    <!-- BEGIN: MetricCardsGrid -->
+    <section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5" data-purpose="metrics-summary" id="statsGrid">
+      <div class="stat-summary-card bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-2xs">
+        <span class="stat-summary-label text-xs font-medium text-slate-500 uppercase tracking-wider">Total Students</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="stat-summary-value text-2xl font-medium text-slate-900" id="statVal1">5,820</span>
+          <span class="stat-summary-sub text-xs text-slate-400 font-normal">Enrolled</span>
+        </div>
+      </div>
+      <div class="stat-summary-card bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-2xs">
+        <span class="stat-summary-label text-xs font-medium text-slate-500 uppercase tracking-wider">Active</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="stat-summary-value text-2xl font-medium text-slate-900" id="statVal2">5,742</span>
+          <span class="stat-summary-sub text-xs text-emerald-600 font-normal">98.6%</span>
+        </div>
+      </div>
+      <div class="stat-summary-card bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-2xs">
+        <span class="stat-summary-label text-xs font-medium text-slate-500 uppercase tracking-wider">Male</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="stat-summary-value text-2xl font-medium text-slate-900" id="statVal3">3,120</span>
+          <span class="stat-summary-sub text-xs text-slate-500 font-normal">53.6%</span>
+        </div>
+      </div>
+      <div class="stat-summary-card bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-2xs">
+        <span class="stat-summary-label text-xs font-medium text-slate-500 uppercase tracking-wider">Female</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="stat-summary-value text-2xl font-medium text-slate-900" id="statVal4">2,700</span>
+          <span class="stat-summary-sub text-xs text-slate-500 font-normal">46.4%</span>
+        </div>
+      </div>
+      <div class="stat-summary-card bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-2xs">
+        <span class="stat-summary-label text-xs font-medium text-slate-500 uppercase tracking-wider">Suspended</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="stat-summary-value text-2xl font-medium text-slate-900" id="statVal5">18</span>
+          <span class="stat-summary-sub text-xs text-slate-500 font-normal">0.3%</span>
+        </div>
+      </div>
+      <div class="stat-summary-card bg-white p-4 rounded-xl border border-slate-200 flex flex-col justify-between shadow-2xs">
+        <span class="stat-summary-label text-xs font-medium text-slate-500 uppercase tracking-wider">Online Now</span>
+        <div class="mt-2 flex items-baseline justify-between">
+          <span class="stat-summary-value text-2xl font-medium text-slate-900" id="statVal6">412</span>
+          <span class="stat-summary-sub text-xs text-slate-400 font-normal">LMS</span>
+        </div>
+      </div>
+    </section>
+    <!-- END: MetricCardsGrid -->
+
+    <!-- BEGIN: FiltersToolbar -->
+    <section class="bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-xs flex flex-wrap items-center justify-between gap-3" data-purpose="table-filters-row" id="filterPanel">
+      <div class="flex flex-wrap items-center gap-2">
+        <select id="filterCampus" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
           <option value="">All Campuses</option>
-          <option value="Sen Sok">Sen Sok Campus</option>
-          <option value="Depo">Depo Campus</option>
-          <option value="Bak Touk">Bak Touk Campus</option>
+          <option value="Sen Sok">Sen Sok</option>
+          <option value="Depo">Depo</option>
+          <option value="Bak Touk">Bak Touk</option>
         </select>
-        
-        <select class="filter-select" id="filterDept">
+        <select id="filterDept" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
           <option value="">All Departments</option>
           <option value="Science">Science</option>
+          <option value="Khmer">Khmer</option>
+          <option value="Chinese">Chinese</option>
           <option value="English">English</option>
           <option value="Computer">Computer</option>
-          <option value="Chinese">Chinese</option>
-          <option value="Khmer">Khmer</option>
         </select>
-
-        <select class="filter-select" id="filterStatus">
-          <option value="">All Status</option>
-          <option value="Active">🟢 Active</option>
-          <option value="Pending">🟡 Pending</option>
-          <option value="Suspended">🔴 Suspended</option>
-          <option value="Archived">⚫ Archived</option>
+        <select id="filterStatus" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Suspended">Suspended</option>
+          <option value="Pending">Pending</option>
         </select>
-
-        <select class="filter-select" id="filterGender">
+        <select id="filterGender" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
           <option value="">All Genders</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
-          <option value="Other">Other</option>
         </select>
-
-        <select class="filter-select" id="filterYear">
-          <option value="">Academic Year</option>
-          <option value="2025-26">2025-2026</option>
-          <option value="2024-25">2024-2025</option>
+        <select id="filterYear" class="text-xs font-normal text-slate-700 bg-white border border-slate-200 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:border-slate-400 cursor-pointer">
+          <option value="">Academic Year: 2025 - 2026</option>
+          <option value="2025-2026">Academic Year: 2025 - 2026</option>
+          <option value="2024-2025">Academic Year: 2024 - 2025</option>
         </select>
-
-        <select class="filter-select" id="filterEnrollment">
-          <option value="">Enrollment Year</option>
-          <option value="2026">Enrolled 2026</option>
-          <option value="2025">Enrolled 2025</option>
-          <option value="2022">Enrolled 2022</option>
-        </select>
-
-        <button class="btn-reset-filters" id="btnResetFilters">
-          <span class="material-symbols-outlined">restart_alt</span>Reset Filters
-        </button>
       </div>
-    </div>
+      <button id="btnResetFilters" type="button" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors px-2.5 py-1.5 rounded-md hover:bg-slate-100">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+        </svg>
+        Clear Filters
+      </button>
+    </section>
+    <!-- END: FiltersToolbar -->
 
-    <!-- --- 5. USER LISTING CONSOLE --- -->
-    <div class="user-table-card">
-      <div class="tbl-container">
-        <table class="tbl-custom" id="masterUserTable">
+    <!-- BEGIN: StudentRosterTableSection -->
+    <!-- CRITICAL REQUIREMENT IMPLEMENTED: Defined straight horizontal AND vertical grid line borders -->
+    <section class="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden" data-purpose="student-grid-table">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse" id="masterUserTable">
+          <!-- Table Header with Crisp Straight Column Separators -->
           <thead>
-            <tr id="tableHeadersRow">
-              <th><div class="checkbox-wrapper"><input type="checkbox" id="selectAllCheckbox"></div></th>
-              <th>User Details</th>
-              <th>Campus</th>
-              <th>Identity</th>
-              <th>Department</th>
-              <th>Status</th>
-              <th>Last Active</th>
-              <th>Actions</th>
+            <tr class="bg-slate-50/90 border-b border-slate-200 text-slate-600 uppercase font-medium text-[11px] tracking-wider" id="tableHeadersRow">
+              <th class="w-12 px-4 py-3 text-center border-r border-slate-200" scope="col">
+                <input id="selectAllCheckbox" class="rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" type="checkbox"/>
+              </th>
+              <th class="px-5 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Student
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Campus
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Role
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Department
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Class
+              </th>
+              <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+                Status
+              </th>
+              <th class="px-5 py-3 text-center font-medium text-slate-700 text-xs" scope="col">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody id="userTableBody">
-            <!-- Dynamic Injection -->
+          <!-- Table Body with Straight Grid Lines (Vertical border-r & Horizontal border-b) -->
+          <tbody class="divide-y divide-slate-200 bg-white" id="userTableBody">
+            <!-- Dynamic Injection with straight grid borders -->
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination Footer -->
-      <div class="card-pad flex between center" style="border-top:1px solid var(--border); padding: 14px 20px">
-        <span class="faint" style="font-size:13px" id="paginationDisplay">Showing 1–10 of 4,771 users</span>
-        <div class="flex gap4" id="paginationControls">
-          <button class="btn btn-ghost btn-sm" id="prevPageBtn">Previous</button>
-          <div class="flex gap2" id="pageNumberButtons">
-            <button class="btn btn-sm btn-primary">1</button>
-            <button class="btn btn-ghost btn-sm">2</button>
+      <!-- BEGIN: TablePaginationFooter -->
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500" data-purpose="table-pagination">
+        <div class="flex items-center gap-2">
+          <span id="paginationDisplay">Showing <strong class="text-slate-900 font-medium">1–10</strong> of <strong class="text-slate-900 font-medium">5,820</strong> students</span>
+          <span class="text-slate-300">•</span>
+          <label class="flex items-center gap-1.5">
+            <span>Per page</span>
+            <select id="pageSizeSelect" class="py-1 pl-2 pr-6 text-xs bg-white border border-slate-200 rounded focus:outline-none cursor-pointer">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+        </div>
+        <div class="flex items-center gap-1" id="paginationControls">
+          <button id="prevPageBtn" type="button" class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-400 disabled:opacity-50 text-xs font-normal" disabled>
+            Previous
+          </button>
+          <div id="pageNumberButtons" class="flex items-center gap-1">
+            <button type="button" class="w-7 h-7 rounded bg-brand-dark text-white font-medium text-xs">1</button>
           </div>
-          <button class="btn btn-ghost btn-sm" id="nextPageBtn">Next</button>
+          <button id="nextPageBtn" type="button" class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-normal">
+            Next
+          </button>
         </div>
       </div>
-    </div>
+      <!-- END: TablePaginationFooter -->
+    </section>
+    <!-- END: StudentRosterTableSection -->
   </div>
 
   <!-- --- 6. BULK ACTIONS FLOATING TOOLBAR --- -->
@@ -1888,29 +2482,35 @@
   
   // High fidelity configuration for navigation layout engine
   window.HERO_CONFIG = {
-    name: 'Mr. Heng Samnang',
+    role: 'admin',
+    active: 'users',
+    name: 'Sok Panha Heng',
     id: 'Admin ID: ADM-2026-001',
-    grade: 'School Administrator',
+    grade: 'Super Administrator · Executive Console',
     avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
     avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
-    title: 'Enterprise Management Console',
-    greeting: 'Identify, configure and administer user accounts across campuses.',
-    breadcrumbs: [{ label: 'Users' }],
+    title: 'Enterprise User Management',
+    greeting: 'Identify, configure, and administer user accounts across campuses.',
+    breadcrumbs: [
+      { label: 'Admin', href: 'admin.html' },
+      { label: 'User Management' }
+    ],
     homeLink: '../../index.html',
     signOutLink: '../../index.html',
     profileLink: 'admin-settings.html',
     notifLink: 'admin-logs.html',
-    chatLink: '../shared/chat.html',
+    chatLink: '../shared/group-chat.html',
     notifCount: 4,
     ddRows: [
       { icon: 'admin_panel_settings', text: 'School Administration' },
       { icon: 'groups', text: '5,200 active users' },
-      { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+      { icon: 'email', text: 'admin@ngis.edu.kh' },
       { icon: 'calendar_today', text: 'Since: Jan 2018' },
       { icon: 'verified', text: 'Principal Administrator' }
     ]
   };
 </script>
+<script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 
 <!-- --- MASTER ERP USER DATABASE & ROUTER CONTROL ENGINE --- -->
@@ -2053,11 +2653,11 @@
 
     // Role display configs (Accents, labels, badges)
     const ROLE_CONFIGS = {
-      student: { label: "Student", badgeClass: "role-stu", icon: "school", color: "var(--color-student)", initialsClass: "t-blue" },
-      teacher: { label: "Teacher", badgeClass: "role-tch", icon: "co_present", color: "var(--color-teacher)", initialsClass: "t-green" },
-      parent: { label: "Parent", badgeClass: "role-par", icon: "family_restroom", color: "var(--color-parent)", initialsClass: "t-purple" },
-      admin: { label: "Admin", badgeClass: "role-adm", icon: "admin_panel_settings", color: "var(--color-admin)", initialsClass: "t-amber" },
-      principal: { label: "Principal", badgeClass: "role-pri", icon: "military_tech", color: "var(--color-principal)", initialsClass: "t-red" }
+      student: { label: "Student", badgeClass: "role-stu", icon: "school", color: "var(--color-student)", initialsClass: "ava-stu" },
+      teacher: { label: "Teacher", badgeClass: "role-tch", icon: "co_present", color: "var(--color-teacher)", initialsClass: "ava-tch" },
+      parent: { label: "Parent", badgeClass: "role-par", icon: "family_restroom", color: "var(--color-parent)", initialsClass: "ava-par" },
+      admin: { label: "Admin", badgeClass: "role-adm", icon: "admin_panel_settings", color: "var(--color-admin)", initialsClass: "ava-adm" },
+      principal: { label: "Principal", badgeClass: "role-pri", icon: "military_tech", color: "var(--color-principal)", initialsClass: "ava-pri" }
     };
 
     // --- 4. INITIAL ROUTER SETUP & PARAM LISTENER ---
@@ -2092,6 +2692,7 @@
       renderStats();
       filterAndRenderUsers();
       updateSidebarActive();
+      updateAddButton();
     }
 
     // Inform layout engine of active sub-tab (forces sidebar highlights to stay synced)
@@ -2138,36 +2739,83 @@
 
     // --- 5. UI LAYOUT SWITCHERS (ROLE DIRECTORY AND TABLES) ---
     function updateRoleCardsUI() {
-      if (elements.roleCards) {
-        elements.roleCards.forEach(card => {
+      const roleCards = document.querySelectorAll("[data-tab-role]");
+      if (roleCards) {
+        roleCards.forEach(card => {
           const cardRole = card.dataset.tabRole;
+          const svgIcon = card.querySelector("svg");
           if (cardRole === state.activeRole) {
-            card.classList.add("active");
+            card.className = "role-pill-btn px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 bg-white text-slate-900 shadow-xs";
+            if (svgIcon) {
+              svgIcon.classList.remove("text-slate-400");
+              svgIcon.classList.add("text-brand-dark");
+            }
           } else {
-            card.classList.remove("active");
+            card.className = "role-pill-btn px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900";
+            if (svgIcon) {
+              svgIcon.classList.remove("text-brand-dark");
+              svgIcon.classList.add("text-slate-400");
+            }
           }
         });
       }
 
-      // Count calculations
-      if (elements.countStudents) elements.countStudents.textContent = DB.filter(u => u.role === "student").length.toLocaleString();
-      if (elements.countTeachers) elements.countTeachers.textContent = DB.filter(u => u.role === "teacher").length.toLocaleString();
-      if (elements.countParents) elements.countParents.textContent = DB.filter(u => u.role === "parent").length.toLocaleString();
-      if (elements.countAdmins) elements.countAdmins.textContent = DB.filter(u => u.role === "admin").length.toLocaleString();
-      if (elements.countPrincipals) elements.countPrincipals.textContent = DB.filter(u => u.role === "principal").length.toLocaleString();
+      // Dynamic Title, Subtitle, and Add Button label based on active role
+      const titles = {
+        students: "Student Directory",
+        teachers: "Teacher Directory",
+        parents: "Parent Directory",
+        admins: "Staff & Admin Directory",
+        principals: "Principal Directory"
+      };
+      const subTitles = {
+        students: "Student Directory",
+        teachers: "Teacher Faculty",
+        parents: "Guardians & Families",
+        admins: "Security & Operations",
+        principals: "Campus Leadership"
+      };
+      const singulars = {
+        students: "Student",
+        teachers: "Teacher",
+        parents: "Parent",
+        admins: "Admin",
+        principals: "Principal"
+      };
+
+      const titleEl = document.getElementById("directoryTitle");
+      if (titleEl) titleEl.textContent = titles[state.activeRole] || "User Directory";
+      
+      const subHeaderEl = document.getElementById("subRoleHeader");
+      if (subHeaderEl) subHeaderEl.textContent = subTitles[state.activeRole] || "Directory";
+
+      const addBtnLabel = document.getElementById("addBtnLabel");
+      if (addBtnLabel) addBtnLabel.textContent = `Add ${singulars[state.activeRole] || "User"}`;
+
+      // Count badge calculations
+      const countStu = document.getElementById("countStudents");
+      if (countStu) countStu.textContent = DB.filter(u => u.role === "student").length.toLocaleString();
+      const countTch = document.getElementById("countTeachers");
+      if (countTch) countTch.textContent = DB.filter(u => u.role === "teacher").length.toLocaleString();
+      const countPar = document.getElementById("countParents");
+      if (countPar) countPar.textContent = DB.filter(u => u.role === "parent").length.toLocaleString();
+      const countAdm = document.getElementById("countAdmins");
+      if (countAdm) countAdm.textContent = DB.filter(u => u.role === "admin").length.toLocaleString();
+      const countPri = document.getElementById("countPrincipals");
+      if (countPri) countPri.textContent = DB.filter(u => u.role === "principal").length.toLocaleString();
     }
 
     // Stat summaries depend on selected card
     function renderStats() {
-      // Find count calculations under active tab
       const currentRole = state.activeRole.substring(0, state.activeRole.length - 1); // remove 's'
       const roleUsers = DB.filter(u => u.role === currentRole);
 
       const total = roleUsers.length;
       const active = roleUsers.filter(u => u.status === "Active").length;
-      const inactive = roleUsers.filter(u => u.status === "Inactive").length;
+      const maleCount = roleUsers.filter(u => u.gender === "Male").length;
+      const femaleCount = roleUsers.filter(u => u.gender === "Female").length;
       const suspended = roleUsers.filter(u => u.status === "Suspended").length;
-      const online = roleUsers.filter(u => u.lastActive.includes("Online") || u.lastActive.includes("m ago")).length;
+      const online = roleUsers.filter(u => (u.lastActive && (u.lastActive.includes("Online") || u.lastActive.includes("m ago")))).length || Math.round(total * 0.08);
 
       const card1 = document.querySelector("#statsGrid .stat-summary-card:nth-child(1)");
       const card2 = document.querySelector("#statsGrid .stat-summary-card:nth-child(2)");
@@ -2176,75 +2824,61 @@
       const card5 = document.querySelector("#statsGrid .stat-summary-card:nth-child(5)");
       const card6 = document.querySelector("#statsGrid .stat-summary-card:nth-child(6)");
 
-      // Animate count-up transitions
+      const activePct = total > 0 ? ((active / total) * 100).toFixed(1) + "%" : "0%";
+      const malePct = total > 0 ? ((maleCount / total) * 100).toFixed(1) + "%" : "0%";
+      const femalePct = total > 0 ? ((femaleCount / total) * 100).toFixed(1) + "%" : "0%";
+      const suspPct = total > 0 ? ((suspended / total) * 100).toFixed(1) + "%" : "0%";
+
       if (state.activeRole === "students") {
-        setStat(card1, "Total Students", total);
-        setStat(card2, "Active Enrolled", active);
-        setStat(card3, "Male Students", roleUsers.filter(u => u.gender === "Male").length);
-        setStat(card4, "Female Students", roleUsers.filter(u => u.gender === "Female").length);
-        setStat(card5, "Suspended Logs", suspended);
-        setStat(card6, "Online Students", online);
+        setStat(card1, "Total Students", total, "Enrolled");
+        setStat(card2, "Active", active, activePct);
+        setStat(card3, "Male", maleCount, malePct);
+        setStat(card4, "Female", femaleCount, femalePct);
+        setStat(card5, "Suspended", suspended, suspPct);
+        setStat(card6, "Online Now", online, "LMS");
       } else if (state.activeRole === "teachers") {
-        setStat(card1, "Total Faculty", total);
-        setStat(card2, "Active Advisers", active);
-        setStat(card3, "Science Dept", roleUsers.filter(u => u.department === "Science").length);
-        setStat(card4, "English Dept", roleUsers.filter(u => u.department === "English").length);
-        setStat(card5, "Suspended List", suspended);
-        setStat(card6, "Faculty Online", online);
+        setStat(card1, "Total Faculty", total, "Faculty");
+        setStat(card2, "Active", active, activePct);
+        setStat(card3, "Male", maleCount, malePct);
+        setStat(card4, "Female", femaleCount, femalePct);
+        setStat(card5, "Suspended", suspended, suspPct);
+        setStat(card6, "In Class", online, "Active");
       } else if (state.activeRole === "parents") {
-        setStat(card1, "Total Guardians", total);
-        setStat(card2, "Active Accounts", active);
-        setStat(card3, "Linked to 1 Child", roleUsers.filter(u => u.children && u.children.length === 1).length);
-        setStat(card4, "Linked to Multi-Child", roleUsers.filter(u => u.children && u.children.length > 1).length);
-        setStat(card5, "Online Portals", online);
-        setStat(card6, "Suspended Portals", suspended);
+        setStat(card1, "Total Parents", total, "Guardians");
+        setStat(card2, "Active", active, activePct);
+        setStat(card3, "Male", maleCount, malePct);
+        setStat(card4, "Female", femaleCount, femalePct);
+        setStat(card5, "Suspended", suspended, suspPct);
+        setStat(card6, "Online Now", online, "Portal");
       } else if (state.activeRole === "admins") {
-        setStat(card1, "Security Admin Staff", total);
-        setStat(card2, "Super Administrators", roleUsers.filter(u => u.class === "Super Admin").length);
-        setStat(card3, "Standard Admins", roleUsers.filter(u => u.class === "Admin").length);
-        setStat(card4, "Moderators", roleUsers.filter(u => u.class === "Moderator").length);
-        setStat(card5, "Offline Staff", roleUsers.filter(u => u.status !== "Active").length);
-        setStat(card6, "Admins Active", online);
+        setStat(card1, "Total Admins", total, "Staff");
+        setStat(card2, "Active", active, activePct);
+        setStat(card3, "Super Admins", roleUsers.filter(u => u.class === "Super Admin").length, "Privileged");
+        setStat(card4, "Staff", roleUsers.filter(u => u.class !== "Super Admin").length, "Standard");
+        setStat(card5, "Suspended", suspended, suspPct);
+        setStat(card6, "Online Now", online, "Console");
       } else if (state.activeRole === "principals") {
-        setStat(card1, "Campus Directors", total);
-        setStat(card2, "Sen Sok Campus", roleUsers.filter(u => u.campus === "Sen Sok").length);
-        setStat(card3, "Depo Campus", roleUsers.filter(u => u.campus === "Depo").length);
-        setStat(card4, "Bak Touk Campus", roleUsers.filter(u => u.campus === "Bak Touk").length);
-        setStat(card5, "Join date <2018", roleUsers.filter(u => parseInt(u.enrolledYear) < 2018).length);
-        setStat(card6, "Status Active", active);
+        setStat(card1, "Campus Directors", total, "Directors");
+        setStat(card2, "Active", active, activePct);
+        setStat(card3, "Sen Sok", roleUsers.filter(u => u.campus === "Sen Sok").length, "Campus");
+        setStat(card4, "Other Campuses", roleUsers.filter(u => u.campus !== "Sen Sok").length, "Campuses");
+        setStat(card5, "Suspended", suspended, "0.0%");
+        setStat(card6, "Online Now", active, "Active");
       }
     }
 
-    function setStat(cardEl, label, val) {
+    function setStat(cardEl, label, val, subText = "") {
       if (!cardEl) return;
-      cardEl.querySelector(".stat-summary-label").textContent = label;
+      const lblEl = cardEl.querySelector(".stat-summary-label");
+      if (lblEl) lblEl.textContent = label;
+      
       const valEl = cardEl.querySelector(".stat-summary-value");
-      
-      // Perform a sleek numeric count transition
-      const targetVal = parseInt(val) || 0;
-      const startVal = parseInt(valEl.textContent) || 0;
-      
-      if (startVal === targetVal) {
-        valEl.textContent = val.toLocaleString();
-        return;
+      if (valEl) {
+        valEl.textContent = typeof val === "number" ? val.toLocaleString() : val;
       }
       
-      let current = startVal;
-      const duration = 200; // ms
-      const steps = 10;
-      const increment = (targetVal - startVal) / steps;
-      const stepTime = duration / steps;
-      let stepCount = 0;
-      
-      const timer = setInterval(() => {
-        current += increment;
-        stepCount++;
-        valEl.textContent = Math.round(current).toLocaleString();
-        if (stepCount >= steps) {
-          clearInterval(timer);
-          valEl.textContent = targetVal.toLocaleString();
-        }
-      }, stepTime);
+      const subEl = cardEl.querySelector(".stat-summary-sub");
+      if (subEl && subText) subEl.textContent = subText;
     }
 
     // --- 6. DYNAMIC FILTER AND SEARCH PIPELINE ---
@@ -2352,157 +2986,124 @@
         
         const isChecked = state.selectedIds.has(user.id);
         const isExpanded = role === "parent" && state.expandedParentId === user.id;
-        const config = ROLE_CONFIGS[user.role] || ROLE_CONFIGS.student;
+        tr.className = `hover:bg-slate-50 transition-colors border-b border-slate-200 ${isChecked ? "bg-slate-50/80" : ""}`;
         
-        // Avatar initialsfallback or mock
+        // Avatar initials fallback
         const initials = user.name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
 
         // 1. Selection column
         let cellsHtml = `
-          <td>
-            <div class="checkbox-wrapper">
-              <input type="checkbox" class="user-row-checkbox" data-user-id="${user.id}" ${isChecked ? "checked" : ""}>
+          <td class="w-12 px-4 py-3 text-center border-r border-slate-200">
+            <input type="checkbox" class="user-row-checkbox rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" data-user-id="${user.id}" ${isChecked ? "checked" : ""} title="Select row">
+          </td>
+        `;
+
+        // 2. User info column (Avatar, Name, ID)
+        cellsHtml += `
+          <td class="px-5 py-3 border-r border-slate-200">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-medium flex items-center justify-center text-xs border border-slate-200 flex-shrink-0">
+                ${initials}
+              </div>
+              <div>
+                <div class="font-medium text-slate-900 text-xs">${user.name}</div>
+                <div class="text-[11px] text-slate-400 font-normal">${user.id}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+            ${user.campus}
+          </td>
+          <td class="px-4 py-3 border-r border-slate-200 text-slate-600 text-xs capitalize">
+            ${user.role}
+          </td>
+        `;
+
+        // 3. Role specific column layouts
+        if (role === "student") {
+          cellsHtml += `
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+              ${user.department}
+            </td>
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+              ${user.class}
+            </td>
+          `;
+        } else if (role === "teacher") {
+          cellsHtml += `
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+              ${user.department}
+            </td>
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+              ${user.class}
+            </td>
+          `;
+        } else if (role === "parent") {
+          const childCount = user.children ? user.children.length : 0;
+          cellsHtml += `
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+              <button type="button" class="toggle-children-btn inline-flex items-center gap-1 text-brand-dark hover:underline font-normal text-xs" data-parent-id="${user.id}">
+                <span class="material-symbols-outlined" style="font-size:15px;">${isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}</span>
+                ${childCount} Linked
+              </button>
+            </td>
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+              ${user.class}
+            </td>
+          `;
+        } else if (role === "admin") {
+          cellsHtml += `
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+              ${user.class}
+            </td>
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-500 text-xs font-normal">
+              ${user.lastActive}
+            </td>
+          `;
+        } else if (role === "principal") {
+          cellsHtml += `
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs">
+              ${user.department}
+            </td>
+            <td class="px-4 py-3 border-r border-slate-200 text-slate-700 text-xs font-mono">
+              ${user.class}
+            </td>
+          `;
+        }
+
+        // 4. Status column
+        const dotColor = user.status === "Active" ? "bg-emerald-600" : (user.status === "Suspended" ? "bg-slate-400" : "bg-amber-500");
+        const statusTextColor = user.status === "Active" ? "text-slate-700" : "text-slate-500";
+        cellsHtml += `
+          <td class="px-4 py-3 border-r border-slate-200 text-xs whitespace-nowrap">
+            <div class="flex items-center gap-2 ${statusTextColor}">
+              <span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>
+              <span class="font-normal">${user.status}</span>
             </div>
           </td>
         `;
 
-        // 2. Role specific column layouts
-        if (role === "student") {
-          // Photo, Student ID & Name
-          cellsHtml += `
-            <td>
-              <div class="flex center gap10">
-                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
-                <div>
-                  <span style="font-weight: 400;font-size:13.5px;">${user.name}</span>
-                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="campus-tag">${user.campus}</span></td>
-            <td>
-              <span class="identity-role-badge role-stu">
-                <span class="material-symbols-outlined badge-icon">school</span>Student
-              </span>
-            </td>
-            <td><span class="department-tag">${user.department}</span></td>
-            <td><span class="class-tag">Class ${user.class}</span></td>
-            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
-          `;
-        } else if (role === "teacher") {
-          // Photo, Teacher ID & Name, Dept, Campus, Classes, Date, Status
-          const classes = user.class.split(", ");
-          const classesHtml = classes.map(c => `<span class="class-tag">${c}</span>`).join(" ");
-          
-          cellsHtml += `
-            <td>
-              <div class="flex center gap10">
-                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
-                <div>
-                  <span style="font-weight: 400;font-size:13.5px;">${user.name}</span>
-                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="campus-tag">${user.campus}</span></td>
-            <td>
-              <span class="identity-role-badge role-tch">
-                <span class="material-symbols-outlined badge-icon">co_present</span>Teacher
-              </span>
-            </td>
-            <td><span class="department-tag">${user.department}</span></td>
-            <td><div class="classes-tag-list">${classesHtml}</div></td>
-            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
-          `;
-        } else if (role === "parent") {
-          // Photo, Parent ID & Name, Children Count, Campus, Phone, Status
-          const childCount = user.children ? user.children.length : 0;
-          
-          cellsHtml += `
-            <td>
-              <div class="flex center gap10">
-                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
-                <div>
-                  <span style="font-weight: 400;font-size:13.5px;">${user.name}</span>
-                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="campus-tag">${user.campus}</span></td>
-            <td>
-              <span class="identity-role-badge role-par">
-                <span class="material-symbols-outlined badge-icon">family_restroom</span>Parent
-              </span>
-            </td>
-            <td>
-              <button class="btn btn-ghost btn-xs toggle-children-btn flex center gap4" data-parent-id="${user.id}">
-                <span class="material-symbols-outlined" style="font-size:16px;">${isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}</span>
-                ${childCount} Children
-              </button>
-            </td>
-            <td><span class="muted" style="font-weight: 400; font-size:12.5px;">${user.class}</span></td>
-            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
-          `;
-        } else if (role === "admin") {
-          // Photo, Admin ID & Name, Permission Badge, Campus, Last Active
-          cellsHtml += `
-            <td>
-              <div class="flex center gap10">
-                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
-                <div>
-                  <span style="font-weight: 400;font-size:13.5px;">${user.name}</span>
-                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="campus-tag">${user.campus}</span></td>
-            <td>
-              <span class="identity-role-badge role-adm">
-                <span class="material-symbols-outlined badge-icon">admin_panel_settings</span>Admin
-              </span>
-            </td>
-            <td><span class="department-tag" style="background:var(--primary-soft);color:var(--primary);">${user.class}</span></td>
-            <td><span class="muted" style="font-size:12px;font-weight: 400;">${user.lastActive}</span></td>
-            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
-          `;
-        } else if (role === "principal") {
-          // Photo, Principal ID & Name, Campus, Dept, Office, Join date, Status
-          cellsHtml += `
-            <td>
-              <div class="flex center gap10">
-                <span class="avatar-circle ${config.initialsClass}">${initials}</span>
-                <div>
-                  <span style="font-weight: 400;font-size:13.5px;">${user.name}</span>
-                  <div class="faint" style="font-size:11px;margin-top:1px;">ID: ${user.id}</div>
-                </div>
-              </div>
-            </td>
-            <td><span class="campus-tag">${user.campus}</span></td>
-            <td>
-              <span class="identity-role-badge role-pri">
-                <span class="material-symbols-outlined badge-icon">military_tech</span>Principal
-              </span>
-            </td>
-            <td><span class="department-tag">${user.department}</span></td>
-            <td><span class="muted" style="font-size:12px;font-weight: 400;">Room: ${user.class}</span></td>
-            <td><span class="status-pill ${user.status.toLowerCase()}">${user.status}</span></td>
-          `;
-        }
-
-        // 3. Actions column
+        // 5. Actions column with 4 action buttons
         cellsHtml += `
-          <td>
-            <div class="action-buttons-wrap">
-              <button class="action-icon-btn btn-view" data-action="view" data-user-id="${user.id}" title="View Details"><span class="material-symbols-outlined">visibility</span></button>
-              <button class="action-icon-btn btn-edit" data-action="edit" data-user-id="${user.id}" title="Edit Account"><span class="material-symbols-outlined">edit</span></button>
-              <button class="action-icon-btn btn-suspend" data-action="suspend" data-user-id="${user.id}" title="Suspend"><span class="material-symbols-outlined">block</span></button>
-              <button class="action-icon-btn btn-delete" data-action="delete" data-user-id="${user.id}" title="Delete"><span class="material-symbols-outlined">delete</span></button>
-              <div class="dropdown-action-menu">
-                <button class="action-icon-btn btn-more" data-action="more" title="More Actions"><span class="material-symbols-outlined">more_vert</span></button>
+          <td class="px-5 py-3 text-center whitespace-nowrap">
+            <div class="flex items-center justify-center gap-1 text-slate-400">
+              <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors btn-view" data-action="view" data-user-id="${user.id}" title="View Profile">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+              </button>
+              <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors btn-edit" data-action="edit" data-user-id="${user.id}" title="Edit ${user.role}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+              </button>
+              <button type="button" class="p-1.5 rounded hover:text-rose-600 hover:bg-rose-50 transition-colors btn-delete" data-action="delete" data-user-id="${user.id}" title="Delete ${user.role}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+              </button>
+              <div class="relative inline-block dropdown-action-menu">
+                <button type="button" class="p-1.5 rounded hover:text-slate-800 hover:bg-slate-100 transition-colors btn-more" data-action="more" title="More Options">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path></svg>
+                </button>
                 <div class="dropdown-menu-list">
-                  <button class="dropdown-menu-item" data-action="profile-tab" data-user-id="${user.id}"><span class="material-symbols-outlined">contact_page</span>Go to Profile</button>
-                  <button class="dropdown-menu-item" data-action="reset-pass" data-user-id="${user.id}"><span class="material-symbols-outlined">lock_reset</span>Reset Credentials</button>
-                  <button class="dropdown-menu-item" data-action="transfer-opt" data-user-id="${user.id}"><span class="material-symbols-outlined">sync_alt</span>Transfer Division</button>
+                  <button type="button" class="dropdown-menu-item" data-action="profile-tab" data-user-id="${user.id}"><span class="material-symbols-outlined">contact_page</span>Go to Profile</button>
+                  <button type="button" class="dropdown-menu-item" data-action="reset-pass" data-user-id="${user.id}"><span class="material-symbols-outlined">lock_reset</span>Reset Credentials</button>
+                  <button type="button" class="dropdown-menu-item" data-action="suspend" data-user-id="${user.id}"><span class="material-symbols-outlined">block</span>${user.status === 'Suspended' ? 'Unsuspend' : 'Suspend'}</button>
                 </div>
               </div>
             </div>
@@ -2515,24 +3116,24 @@
         // Render inline expanding row for parents
         if (role === "parent" && isExpanded) {
           const childrenTr = document.createElement("tr");
-          childrenTr.className = "parent-children-expand-row";
+          childrenTr.className = "parent-children-expand-row bg-slate-50/50";
           
           const childCardsHtml = user.children.map(name => {
             const childUser = DB.find(u => u.name === name);
             const cid = childUser ? childUser.id : "STU-NEW";
             return `
-              <div class="child-expand-card" data-child-id="${cid}">
-                <span class="material-symbols-outlined">school</span>
-                <span>${name} <small class="faint" style="font-weight: 400">(${cid})</small></span>
+              <div class="child-expand-card inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-brand-dark/40" data-child-id="${cid}">
+                <span class="material-symbols-outlined text-sm text-brand-dark">school</span>
+                <span class="text-xs font-medium text-slate-800">${name} <small class="text-slate-400 font-normal">(${cid})</small></span>
               </div>
             `;
           }).join("");
 
           childrenTr.innerHTML = `
-            <td colspan="7">
-              <div class="children-expand-box">
-                <div class="children-expand-title">Linked Children Directories</div>
-                <div class="expanded-children-grid">${childCardsHtml}</div>
+            <td colspan="8" class="p-3 border-b border-slate-200">
+              <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-2">
+                <div class="text-xs font-medium text-slate-700">Linked Student Profiles</div>
+                <div class="flex flex-wrap gap-2">${childCardsHtml}</div>
               </div>
             </td>
           `;
@@ -2545,46 +3146,60 @@
     }
 
     function renderTableHeader(role) {
+      let roleLabel = "Student";
+      if (role === "teacher") roleLabel = "Teacher";
+      else if (role === "parent") roleLabel = "Parent";
+      else if (role === "admin") roleLabel = "Staff / Admin";
+      else if (role === "principal") roleLabel = "Principal";
+
       let headers = `
-        <th><div class="checkbox-wrapper"><input type="checkbox" id="selectAllCheckbox"></div></th>
-        <th>User Details</th>
-        <th>Campus</th>
-        <th>Identity</th>
+        <th class="w-12 px-4 py-3 text-center border-r border-slate-200" scope="col">
+          <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-slate-800 focus:ring-0 h-4 w-4 cursor-pointer" title="Select all rows">
+        </th>
+        <th class="px-5 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+          ${roleLabel}
+        </th>
+        <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+          Campus
+        </th>
+        <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">
+          Role
+        </th>
       `;
 
       if (role === "student") {
         headers += `
-          <th>Primary Dept</th>
-          <th>Class Group</th>
-          <th>Status</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Department</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Class</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Status</th>
         `;
       } else if (role === "teacher") {
         headers += `
-          <th>Department</th>
-          <th>Teaching Classes</th>
-          <th>Status</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Department</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Teaching Classes</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Status</th>
         `;
       } else if (role === "parent") {
         headers += `
-          <th>Linked Children</th>
-          <th>Contact Phone</th>
-          <th>Status</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Linked Children</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Contact Phone</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Status</th>
         `;
       } else if (role === "admin") {
         headers += `
-          <th>Staff Role</th>
-          <th>Last Login</th>
-          <th>Status</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Assignment</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Last Active</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Status</th>
         `;
       } else if (role === "principal") {
         headers += `
-          <th>Department</th>
-          <th>Principal Office</th>
-          <th>Status</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Department</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Office / Room</th>
+          <th class="px-4 py-3 text-left font-medium text-slate-700 text-xs border-r border-slate-200" scope="col">Status</th>
         `;
       }
 
-      headers += `<th>Actions</th>`;
+      headers += `<th class="px-5 py-3 text-center font-medium text-slate-700 text-xs" scope="col">Actions</th>`;
       elements.tableHeadersRow.innerHTML = headers;
 
       // Re-bind select all checkbox event listener
@@ -2595,10 +3210,13 @@
           rowCheckboxes.forEach(cb => {
             cb.checked = e.target.checked;
             const uid = cb.dataset.userId;
+            const tr = cb.closest("tr");
             if (e.target.checked) {
               state.selectedIds.add(uid);
+              if (tr) tr.classList.add("bg-slate-50/80");
             } else {
               state.selectedIds.delete(uid);
+              if (tr) tr.classList.remove("bg-slate-50/80");
             }
           });
           updateBulkToolbarUI();
@@ -2612,15 +3230,15 @@
       
       elements.userTableBody.innerHTML = `
         <tr>
-          <td colspan="${colSpan}">
-            <div class="empty-state-container">
-              <div class="empty-state-icon">
-                <span class="material-symbols-outlined">person_search</span>
+          <td colspan="${colSpan}" class="py-12 text-center">
+            <div class="empty-state-container max-w-sm mx-auto text-center space-y-3">
+              <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                <span class="material-symbols-outlined text-2xl">person_search</span>
               </div>
-              <div class="empty-state-title">No ${roleText} accounts found</div>
-              <div class="empty-state-subtitle">We couldn't find matching records. Refine your query or configure a new account catalog.</div>
-              <button class="btn btn-primary btn-sm flex center gap4" data-drawer-open="${roleText}">
-                <span class="material-symbols-outlined" style="font-size:16px">person_add</span>Add first ${roleText}
+              <div class="text-sm font-medium text-slate-800">No ${roleText} accounts found</div>
+              <div class="text-xs text-slate-500 font-normal">We couldn't find matching records. Refine your query or configure a new account catalog.</div>
+              <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-dark hover:bg-brand-900 text-white text-xs font-medium transition-all" data-drawer-open="${roleText}">
+                <span class="material-symbols-outlined text-base">person_add</span>Add first ${roleText}
               </button>
             </div>
           </td>
@@ -2638,34 +3256,46 @@
 
     // --- 7. PAGINATION RENDERER ---
     function renderPaginationControls(totalItems, totalPages) {
-      elements.prevPageBtn.disabled = state.currentPage === 1;
-      elements.nextPageBtn.disabled = state.currentPage === totalPages;
+      const prevBtn = document.getElementById("prevPageBtn");
+      const nextBtn = document.getElementById("nextPageBtn");
+      if (prevBtn) prevBtn.disabled = state.currentPage === 1;
+      if (nextBtn) nextBtn.disabled = state.currentPage === totalPages || totalPages === 0;
 
-      const start = (state.currentPage - 1) * state.pageSize + 1;
+      const start = totalItems === 0 ? 0 : (state.currentPage - 1) * state.pageSize + 1;
       const end = Math.min(state.currentPage * state.pageSize, totalItems);
-      elements.paginationDisplay.textContent = totalItems === 0 
-        ? `Showing 0–0 of 0 users` 
-        : `Showing ${start}–${end} of ${totalItems.toLocaleString()} users`;
-
-      elements.pageNumberButtons.innerHTML = "";
       
-      // Render simple clean pages
+      const displayEl = document.getElementById("paginationDisplay");
+      if (displayEl) {
+        displayEl.innerHTML = totalItems === 0 
+          ? `Showing <strong class="text-slate-900 font-medium">0–0</strong> of <strong class="text-slate-900 font-medium">0</strong> accounts` 
+          : `Showing <strong class="text-slate-900 font-medium">${start}–${end}</strong> of <strong class="text-slate-900 font-medium">${totalItems.toLocaleString()}</strong> accounts`;
+      }
+
+      const buttonsContainer = document.getElementById("pageNumberButtons");
+      if (!buttonsContainer) return;
+      buttonsContainer.innerHTML = "";
+      
+      // Render clean pages
       for (let i = 1; i <= totalPages; i++) {
         if (i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
           const btn = document.createElement("button");
-          btn.className = `btn btn-sm ${i === state.currentPage ? "btn-primary" : "btn-ghost"}`;
+          btn.type = "button";
+          if (i === state.currentPage) {
+            btn.className = "w-7 h-7 rounded bg-brand-dark text-white font-medium text-xs flex items-center justify-center transition-all";
+          } else {
+            btn.className = "w-7 h-7 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 font-normal text-xs flex items-center justify-center transition-all";
+          }
           btn.textContent = i;
           btn.addEventListener("click", () => {
             state.currentPage = i;
             filterAndRenderUsers();
           });
-          elements.pageNumberButtons.appendChild(btn);
+          buttonsContainer.appendChild(btn);
         } else if (i === state.currentPage - 2 || i === state.currentPage + 2) {
           const span = document.createElement("span");
-          span.textContent = "...";
-          span.style.padding = "4px 8px";
-          span.style.color = "var(--faint)";
-          elements.pageNumberButtons.appendChild(span);
+          span.textContent = "…";
+          span.className = "px-1 text-slate-400 text-xs";
+          buttonsContainer.appendChild(span);
         }
       }
     }
@@ -2677,10 +3307,13 @@
       rowCheckboxes.forEach(cb => {
         cb.addEventListener("change", (e) => {
           const uid = e.target.dataset.userId;
+          const tr = e.target.closest("tr");
           if (e.target.checked) {
             state.selectedIds.add(uid);
+            if (tr) tr.classList.add("is-selected");
           } else {
             state.selectedIds.delete(uid);
+            if (tr) tr.classList.remove("is-selected");
           }
           
           // Sync Select All checkbox state
@@ -2754,7 +3387,7 @@
 
     document.addEventListener("click", () => {
       closeAllDropdowns();
-      elements.addUserDropdownMenu.classList.remove("open");
+      if (elements.addUserDropdownMenu) elements.addUserDropdownMenu.classList.remove("open");
     });
 
     // --- 9. ACTIONS LOGIC (SUSPEND, DELETE, SAVE) ---
@@ -2804,48 +3437,66 @@
     }
 
     // Bulk buttons action bindings
-    document.getElementById("bulkTransferBtn").addEventListener("click", () => {
-      window.toast(`Initiated batch transfer for ${state.selectedIds.size} users`, "info");
-      clearBulkSelection();
-    });
-    
-    document.getElementById("bulkSuspendBtn").addEventListener("click", () => {
-      state.selectedIds.forEach(id => {
-        const u = state.users.find(u => u.id === id);
-        if (u) u.status = "Suspended";
+    const bulkTransferBtn = document.getElementById("bulkTransferBtn");
+    if (bulkTransferBtn) {
+      bulkTransferBtn.addEventListener("click", () => {
+        window.toast(`Initiated batch transfer for ${state.selectedIds.size} users`, "info");
+        clearBulkSelection();
       });
-      window.toast(`Suspended ${state.selectedIds.size} selected accounts`, "warning");
-      clearBulkSelection();
-      filterAndRenderUsers();
-      renderStats();
-    });
-
-    document.getElementById("bulkMessageBtn").addEventListener("click", () => {
-      window.toast(`Bulk message gateway open for ${state.selectedIds.size} recipients`, "success");
-      clearBulkSelection();
-    });
-
-    document.getElementById("bulkAssignBtn").addEventListener("click", () => {
-      window.toast(`Batch configuration adjustment for ${state.selectedIds.size} accounts`, "info");
-      clearBulkSelection();
-    });
-
-    document.getElementById("bulkExportBtn").addEventListener("click", () => {
-      window.toast(`Compiled CSV export for ${state.selectedIds.size} rows`, "success");
-      clearBulkSelection();
-    });
-
-    document.getElementById("bulkDeleteBtn").addEventListener("click", () => {
-      const confirmDelete = confirm(`Are you sure you want to permanently delete ${state.selectedIds.size} selected accounts? This is a bulk administrative operation.`);
-      if (confirmDelete) {
-        const selectedArr = Array.from(state.selectedIds);
-        state.users = state.users.filter(u => !selectedArr.includes(u.id));
-        window.toast(`Bulk deleted ${selectedArr.length} user records`, "error");
+    }
+    
+    const bulkSuspendBtn = document.getElementById("bulkSuspendBtn");
+    if (bulkSuspendBtn) {
+      bulkSuspendBtn.addEventListener("click", () => {
+        state.selectedIds.forEach(id => {
+          const u = state.users.find(u => u.id === id);
+          if (u) u.status = "Suspended";
+        });
+        window.toast(`Suspended ${state.selectedIds.size} selected accounts`, "warning");
         clearBulkSelection();
         filterAndRenderUsers();
         renderStats();
-      }
-    });
+      });
+    }
+
+    const bulkMessageBtn = document.getElementById("bulkMessageBtn");
+    if (bulkMessageBtn) {
+      bulkMessageBtn.addEventListener("click", () => {
+        window.toast(`Bulk message gateway open for ${state.selectedIds.size} recipients`, "success");
+        clearBulkSelection();
+      });
+    }
+
+    const bulkAssignBtn = document.getElementById("bulkAssignBtn");
+    if (bulkAssignBtn) {
+      bulkAssignBtn.addEventListener("click", () => {
+        window.toast(`Batch configuration adjustment for ${state.selectedIds.size} accounts`, "info");
+        clearBulkSelection();
+      });
+    }
+
+    const bulkExportBtn = document.getElementById("bulkExportBtn");
+    if (bulkExportBtn) {
+      bulkExportBtn.addEventListener("click", () => {
+        window.toast(`Compiled CSV export for ${state.selectedIds.size} rows`, "success");
+        clearBulkSelection();
+      });
+    }
+
+    const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
+    if (bulkDeleteBtn) {
+      bulkDeleteBtn.addEventListener("click", () => {
+        const confirmDelete = confirm(`Are you sure you want to permanently delete ${state.selectedIds.size} selected accounts? This is a bulk administrative operation.`);
+        if (confirmDelete) {
+          const selectedArr = Array.from(state.selectedIds);
+          state.users = state.users.filter(u => !selectedArr.includes(u.id));
+          window.toast(`Bulk deleted ${selectedArr.length} user records`, "error");
+          clearBulkSelection();
+          filterAndRenderUsers();
+          renderStats();
+        }
+      });
+    }
 
     function clearBulkSelection() {
       state.selectedIds.clear();
@@ -3019,15 +3670,30 @@
     });
 
     // --- 12. ADD & EDIT ACTION DRAWERS ---
-    elements.addBtnDropdownToggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      elements.addUserDropdownMenu.classList.toggle("open");
-    });
+    function updateAddButton() {
+      const currentRole = state.activeRole.substring(0, state.activeRole.length - 1);
+      const cfg = ROLE_CONFIGS[currentRole] || { label: "Student", icon: "school" };
+      const labelEl = document.getElementById("addBtnLabel");
+      const iconEl = document.getElementById("addBtnIcon");
+      if (labelEl) labelEl.textContent = `Add ${cfg.label}`;
+      if (iconEl && cfg.icon) iconEl.textContent = cfg.icon;
+      if (elements.addBtnDropdownToggle) {
+        elements.addBtnDropdownToggle.title = `Add new ${cfg.label} account`;
+      }
+    }
+
+    if (elements.addBtnDropdownToggle) {
+      elements.addBtnDropdownToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const currentRole = state.activeRole.substring(0, state.activeRole.length - 1);
+        openAddDrawer(currentRole);
+      });
+    }
 
     document.querySelectorAll("[data-drawer-open]").forEach(btn => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        elements.addUserDropdownMenu.classList.remove("open");
+        if (elements.addUserDropdownMenu) elements.addUserDropdownMenu.classList.remove("open");
         openAddDrawer(btn.dataset.drawerOpen);
       });
     });
@@ -3182,72 +3848,106 @@
     // --- 13. INTERACTIVE BINDINGS & CORE ENGINE TRIGGER ---
     
     // Global search input
-    elements.globalSearch.addEventListener("input", (e) => {
-      state.filters.search = e.target.value;
-      state.currentPage = 1;
-      filterAndRenderUsers();
-    });
+    if (elements.globalSearch) {
+      elements.globalSearch.addEventListener("input", (e) => {
+        state.filters.search = e.target.value;
+        state.currentPage = 1;
+        filterAndRenderUsers();
+      });
+    }
 
     // Filter switches
-    elements.filterCampus.addEventListener("change", (e) => { state.filters.campus = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
-    elements.filterDept.addEventListener("change", (e) => { state.filters.department = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
-    elements.filterStatus.addEventListener("change", (e) => { state.filters.status = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
-    elements.filterGender.addEventListener("change", (e) => { state.filters.gender = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
-    elements.filterYear.addEventListener("change", (e) => { state.filters.academicYear = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
-    elements.filterEnrollment.addEventListener("change", (e) => { state.filters.enrollmentYear = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    if (elements.filterCampus) elements.filterCampus.addEventListener("change", (e) => { state.filters.campus = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    if (elements.filterDept) elements.filterDept.addEventListener("change", (e) => { state.filters.department = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    if (elements.filterStatus) elements.filterStatus.addEventListener("change", (e) => { state.filters.status = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    if (elements.filterGender) elements.filterGender.addEventListener("change", (e) => { state.filters.gender = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    if (elements.filterYear) elements.filterYear.addEventListener("change", (e) => { state.filters.academicYear = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
+    if (elements.filterEnrollment) elements.filterEnrollment.addEventListener("change", (e) => { state.filters.enrollmentYear = e.target.value; state.currentPage = 1; filterAndRenderUsers(); });
 
-    elements.btnResetFilters.addEventListener("click", () => {
-      elements.filterCampus.value = "";
-      elements.filterDept.value = "";
-      elements.filterStatus.value = "";
-      elements.filterGender.value = "";
-      elements.filterYear.value = "";
-      elements.filterEnrollment.value = "";
-      
-      state.filters = { search: elements.globalSearch.value, campus: "", department: "", status: "", gender: "", academicYear: "", enrollmentYear: "" };
-      state.currentPage = 1;
-      filterAndRenderUsers();
-      window.toast("Filters successfully cleared", "info");
-    });
+    if (elements.btnResetFilters) {
+      elements.btnResetFilters.addEventListener("click", () => {
+        if (elements.filterCampus) elements.filterCampus.value = "";
+        if (elements.filterDept) elements.filterDept.value = "";
+        if (elements.filterStatus) elements.filterStatus.value = "";
+        if (elements.filterGender) elements.filterGender.value = "";
+        if (elements.filterYear) elements.filterYear.value = "";
+        if (elements.filterEnrollment) elements.filterEnrollment.value = "";
+        
+        state.filters = { search: elements.globalSearch ? elements.globalSearch.value : "", campus: "", department: "", status: "", gender: "", academicYear: "", enrollmentYear: "" };
+        state.currentPage = 1;
+        filterAndRenderUsers();
+        window.toast("Filters successfully cleared", "info");
+      });
+    }
 
     // Export Excel/CSV trigger
-    document.getElementById("exportBtn").addEventListener("click", () => {
-      window.toast(`CSV spreadsheet compilation complete for active Directory`, "success");
-    });
+    const exportBtn = document.getElementById("exportBtn");
+    if (exportBtn) {
+      exportBtn.addEventListener("click", () => {
+        window.toast(`CSV spreadsheet compilation complete for active Directory`, "success");
+      });
+    }
 
     // Toggle advanced filter panel view
-    elements.filterToggle.addEventListener("click", () => {
-      const isVisible = window.getComputedStyle(elements.filterPanel).display !== "none";
-      elements.filterPanel.style.display = isVisible ? "none" : "flex";
-    });
-
-    // Page Cards role navigation tabs click routing
-    elements.roleCards.forEach(card => {
-      card.addEventListener("click", (e) => {
-        e.preventDefault();
-        const role = card.dataset.tabRole;
-        navigateTo(role);
+    if (elements.filterToggle && elements.filterPanel) {
+      elements.filterToggle.addEventListener("click", () => {
+        const isVisible = window.getComputedStyle(elements.filterPanel).display !== "none";
+        elements.filterPanel.style.display = isVisible ? "none" : "flex";
       });
-    });
+    }
 
-    // Pagination button clicks
-    elements.prevPageBtn.addEventListener("click", () => {
-      if (state.currentPage > 1) {
-        state.currentPage--;
-        filterAndRenderUsers();
+    // Role pill navigation tabs click routing
+    document.addEventListener("click", (e) => {
+      const pill = e.target.closest("[data-tab-role]");
+      if (pill) {
+        e.preventDefault();
+        const role = pill.dataset.tabRole;
+        navigateTo(role);
       }
     });
 
-    elements.nextPageBtn.addEventListener("click", () => {
-      state.currentPage++;
-      filterAndRenderUsers();
-    });
+    // Page size selector binding
+    const pageSizeSelect = document.getElementById("pageSizeSelect");
+    if (pageSizeSelect) {
+      pageSizeSelect.value = String(state.pageSize);
+      pageSizeSelect.addEventListener("change", (e) => {
+        state.pageSize = parseInt(e.target.value) || 10;
+        state.currentPage = 1;
+        filterAndRenderUsers();
+      });
+    }
+
+    // Direct Add Button click opens drawer modal for active role
+    if (elements.addBtnDropdownToggle) {
+      elements.addBtnDropdownToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        const roleSingular = state.activeRole.substring(0, state.activeRole.length - 1);
+        openAddDrawer(roleSingular);
+      });
+    }
+
+    // Pagination button clicks
+    if (elements.prevPageBtn) {
+      elements.prevPageBtn.addEventListener("click", () => {
+        if (state.currentPage > 1) {
+          state.currentPage--;
+          filterAndRenderUsers();
+        }
+      });
+    }
+
+    if (elements.nextPageBtn) {
+      elements.nextPageBtn.addEventListener("click", () => {
+        state.currentPage++;
+        filterAndRenderUsers();
+      });
+    }
 
     // Global Key Listener for Ctrl+K
     document.addEventListener("keydown", (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
-        elements.globalSearch.focus();
+        if (elements.globalSearch) elements.globalSearch.focus();
       }
     });
 

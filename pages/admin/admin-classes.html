@@ -1,86 +1,525 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" class="h-full">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS � Class Management</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS • Class Management | School Administration</title>
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- Phosphor Icons for Mobile/Sidebar -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            50: '#f0f7f3',
+            100: '#dceee3',
+            200: '#bbddcb',
+            500: '#1e7552',
+            600: '#175e41',
+            700: '#144c35',
+            800: '#103d2b',
+            900: '#0b261b',
+          }
+        }
+      }
+    }
+  }
+</script>
+
+<!-- NGIS Core Stylesheets -->
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<!-- Theme Bootstrap & Auth -->
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+
+<!-- Custom Micro-Styling & Dark Mode System -->
+<style>
+  /* Global typography constraint: No bold font */
+  * {
+    font-weight: 400;
+  }
+  b, strong, th, h1, h2, h3, h4, h5, h6,
+  .font-bold, .font-extrabold, .font-semibold, .font-medium {
+    font-weight: 500 !important;
+  }
+
+  /* Subtle custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .card-shadow {
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  }
+  .badge-ring {
+    box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.2);
+  }
+
+  /* Table styling */
+  .class-table {
+    min-width: 780px;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .class-table th {
+    white-space: nowrap;
+  }
+
+  /* Mobile scroll hint */
+  .table-scroll-hint {
+    display: none;
+  }
+  @media (max-width: 860px) {
+    .table-scroll-hint {
+      display: flex;
+    }
+  }
+
+  /* Dark mode overrides */
+  [data-theme="dark"] body {
+    background-color: #0b1118;
+    color: #e2e8f0;
+  }
+  [data-theme="dark"] .bg-white {
+    background-color: #111a24 !important;
+  }
+  [data-theme="dark"] .bg-slate-50\/50,
+  [data-theme="dark"] .bg-slate-50\/60,
+  [data-theme="dark"] .bg-slate-50 {
+    background-color: #0e151f !important;
+  }
+  [data-theme="dark"] .border-slate-200,
+  [data-theme="dark"] .border-slate-200\/70,
+  [data-theme="dark"] .border-slate-200\/80,
+  [data-theme="dark"] .border-slate-100 {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+  [data-theme="dark"] .text-slate-900 {
+    color: #f8fafc !important;
+  }
+  [data-theme="dark"] .text-slate-800 {
+    color: #e2e8f0 !important;
+  }
+  [data-theme="dark"] .text-slate-700 {
+    color: #cbd5e1 !important;
+  }
+  [data-theme="dark"] .text-slate-600 {
+    color: #94a3b8 !important;
+  }
+  [data-theme="dark"] .text-slate-500,
+  [data-theme="dark"] .text-slate-400 {
+    color: #64748b !important;
+  }
+  [data-theme="dark"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+  }
+  [data-theme="dark"] .hover\:bg-slate-50\/70:hover,
+  [data-theme="dark"] .hover\:bg-slate-50:hover,
+  [data-theme="dark"] .hover\:bg-slate-100:hover {
+    background-color: rgba(56, 189, 248, 0.05) !important;
+  }
+  [data-theme="dark"] .bg-slate-100 {
+    background-color: #1a2634 !important;
+  }
+  [data-theme="dark"] input,
+  [data-theme="dark"] select {
+    background-color: #131d28 !important;
+    color: #f1f5f9 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+</style>
 </head>
-<body>
+<body class="flex flex-col font-sans text-slate-800 antialiased bg-[#f8fafc] selection:bg-brand-500 selection:text-white" data-role="admin" data-portal="admin">
 <main class="main">
-<div id="heroBanner"></div>
-<div class="page">
 
-  <div class="grid g-4 anim-up">
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">class</span></div></div><div class="stat-val">186</div><div class="stat-label">Active Classes</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">groups</span></div></div><div class="stat-val">4,820</div><div class="stat-label">Enrolled Students</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-accent"><span class="material-symbols-outlined fill">co_present</span></div></div><div class="stat-val">148</div><div class="stat-label">Active Teachers</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">meeting_room</span></div></div><div class="stat-val">42</div><div class="stat-label">Classrooms</div></div>
-  </div>
+  <!-- NGIS Top Hero Banner -->
+  <div id="heroBanner"></div>
 
-  <div class="col-main mt16 anim-up-2">
-    <div class="stack" style="flex:2">
-      <div class="card">
-        <div class="card-head">
-          <div><h3>Classes</h3><div class="sub">Academic Year 2025�26</div></div>
-          <div class="flex gap8">
-            <input class="input" placeholder="Search classes�" style="width:180px">
-            <select class="select" style="width:auto"><option>All Grades</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select>
+  <!-- Page Content Container -->
+  <div class="page" style="padding-top: 14px; max-width: 1440px; margin: 0 auto; width: 100%;">
+    <div class="space-y-6">
+
+      <!-- Top Title and Quick Stats Summary -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-medium text-brand-700 uppercase tracking-wider">
+            <span>Academic Management</span>
+            <span>•</span>
+            <span class="text-slate-500">Term 1 (2025–2026)</span>
           </div>
+          <h2 class="text-2xl font-medium text-slate-900 tracking-tight mt-1">Class Directory &amp; Oversight</h2>
         </div>
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Class</th><th>Teacher</th><th>Subject</th><th>Students</th><th>Room</th><th>Status</th><th></th></tr></thead>
-            <tbody>
-              <tr><td><span>11-A</span></td><td>Dr. Sarah Jenkins</td><td>Advanced Mathematics</td><td class="num">32</td><td>302</td><td><span class="badge green">Active</span></td><td><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button></td></tr>
-              <tr><td><span>11-B</span></td><td>Mr. Heng Samnang</td><td>Physics</td><td class="num">29</td><td>Lab 04</td><td><span class="badge green">Active</span></td><td><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button></td></tr>
-              <tr><td><span>12-A</span></td><td>Dr. Pov Chanthy</td><td>Probability & Statistics</td><td class="num">31</td><td>401</td><td><span class="badge green">Active</span></td><td><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button></td></tr>
-              <tr><td><span>10-A</span></td><td>Ms. Rin Sothea</td><td>English Literature</td><td class="num">35</td><td>108</td><td><span class="badge green">Active</span></td><td><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button></td></tr>
-              <tr><td><span>10-B</span></td><td>Mr. Chan Vuth</td><td>Khmer Language</td><td class="num">33</td><td>112</td><td><span class="badge green">Active</span></td><td><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button></td></tr>
-              <tr><td><span>12-B</span></td><td>Dr. Lim Bunna</td><td>Computer Science</td><td class="num">28</td><td>Lab 02</td><td><span class="badge amber">Review</span></td><td><button class="icon-btn"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button></td></tr>
-            </tbody>
-          </table>
+        <div class="flex items-center gap-3">
+          <button id="btnExportCsv" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 shadow-xs transition-colors cursor-pointer" type="button">
+            <span class="material-symbols-outlined text-base" style="color:#64748b">file_download</span>
+            Export CSV
+          </button>
+          <button id="btnAddClass" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#1e4d38] hover:bg-[#13392e] rounded-xl shadow-xs transition-colors cursor-pointer" type="button">
+            <span class="material-symbols-outlined text-base text-white">add</span>
+            Add New Class
+          </button>
         </div>
+      </div>
+
+      <!-- BEGIN: KeyMetricsGrid -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5" data-purpose="kpi-cards">
+        <!-- Active Classes -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between hover:border-slate-300 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Active Classes</span>
+            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600">
+              <span class="material-symbols-outlined text-2xl text-emerald-700">class</span>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between">
+            <div class="text-3xl font-medium text-slate-900 tracking-tight" id="kpiActiveClasses">186</div>
+            <span class="text-xs font-normal text-slate-500">
+              +4 new
+            </span>
+          </div>
+          <div class="mt-2 text-xs text-slate-400">Total active scheduled sections</div>
+        </div>
+
+        <!-- Enrolled Students -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between hover:border-slate-300 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Enrolled Students</span>
+            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600">
+              <span class="material-symbols-outlined text-2xl text-slate-700">groups</span>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between">
+            <div class="text-3xl font-medium text-slate-900 tracking-tight" id="kpiEnrolledStudents">4,820</div>
+            <span class="text-xs font-normal text-slate-500">97.2% cap</span>
+          </div>
+          <div class="mt-2 text-xs text-slate-400">Registered across 3 high school grades</div>
+        </div>
+
+        <!-- Active Teachers -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between hover:border-slate-300 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Active Teachers</span>
+            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600">
+              <span class="material-symbols-outlined text-2xl text-slate-700">co_present</span>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between">
+            <div class="text-3xl font-medium text-slate-900 tracking-tight">148</div>
+            <span class="text-xs font-normal text-slate-500">Full Faculty</span>
+          </div>
+          <div class="mt-2 text-xs text-slate-400">Lead &amp; co-teaching staff active</div>
+        </div>
+
+        <!-- Classrooms -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between hover:border-slate-300 transition-all">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Classrooms</span>
+            <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-700">
+              <span class="material-symbols-outlined text-2xl text-slate-700">meeting_room</span>
+            </div>
+          </div>
+          <div class="mt-4 flex items-baseline justify-between">
+            <div class="text-3xl font-medium text-slate-900 tracking-tight">42</div>
+            <span class="text-xs font-normal text-slate-500">91% in use</span>
+          </div>
+          <div class="mt-2 text-xs text-slate-400">Smart labs, auditoriums &amp; studios</div>
+        </div>
+      </section>
+      <!-- END: KeyMetricsGrid -->
+
+      <!-- Main Layout: Table Area (2/3) + Secondary Right Rails (1/3) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+        
+        <!-- BEGIN: ClassDataTableSection -->
+        <section class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 card-shadow overflow-hidden" data-purpose="class-roster-table">
+          
+          <!-- Filter & Controls Toolbar -->
+          <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50/50">
+            <div>
+              <h3 class="font-medium text-slate-900 text-base">Class Sections</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Showing assigned teachers, quotas, and rooms</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <!-- Search in table -->
+              <div class="relative w-full sm:w-52">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </span>
+                <input id="classSearchInput" class="w-full bg-white border border-slate-200 text-xs rounded-xl pl-8 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-600 focus:border-brand-600 transition-all placeholder:text-slate-400" placeholder="Filter classes..." type="text">
+              </div>
+              <!-- Grade Filter Dropdown -->
+              <select id="gradeFilterSelect" class="text-xs font-medium bg-white border border-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-700">
+                <option value="all">All Grades</option>
+                <option value="10">Grade 10</option>
+                <option value="11">Grade 11</option>
+                <option value="12">Grade 12</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Mobile Swipe Hint -->
+          <div class="table-scroll-hint items-center gap-2 px-5 py-2.5 bg-emerald-50 text-emerald-800 border-b border-emerald-100 text-xs font-medium">
+            <span class="material-symbols-outlined text-base">swipe</span>
+            <span>Swipe horizontally to view full class section details</span>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left class-table border-collapse border border-slate-200">
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50/90 text-[11px] font-medium text-slate-600 uppercase tracking-wider">
+                  <th class="py-3 px-3.5 border-r border-slate-200" scope="col">Class</th>
+                  <th class="py-3 px-3 border-r border-slate-200" scope="col">Lead Teacher</th>
+                  <th class="py-3 px-3 border-r border-slate-200" scope="col">Primary Subject</th>
+                  <th class="py-3 px-3 border-r border-slate-200" scope="col">Enrolled / Cap</th>
+                  <th class="py-3 px-2.5 text-center border-r border-slate-200" scope="col">Room</th>
+                  <th class="py-3 px-2.5 text-center border-r border-slate-200" scope="col">Status</th>
+                  <th class="py-3 px-3 text-right" scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="classesTableBody" class="divide-y divide-slate-200 text-sm">
+                <!-- Dynamically populated or static rows below -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Pagination Footer -->
+          <div class="py-3.5 px-5 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+            <div id="paginationSummary">
+              Showing <span class="font-medium text-slate-800">1</span> to <span class="font-medium text-slate-800">6</span> of <span class="font-medium text-slate-800" id="totalClassesCount">186</span> classes
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap justify-center">
+              <button class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed" type="button" disabled>Previous</button>
+              <button class="px-3 py-1.5 rounded-lg bg-brand-700 text-white font-medium shadow-xs" type="button">1</button>
+              <button class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">2</button>
+              <button class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">3</button>
+              <span class="px-1 text-slate-400">...</span>
+              <button class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">38</button>
+              <button class="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">Next</button>
+            </div>
+          </div>
+        </section>
+        <!-- END: ClassDataTableSection -->
+
+        <!-- BEGIN: RightSideRailPanels -->
+        <div class="lg:col-span-4 space-y-6">
+
+          <!-- Card: Grade Summary Breakdown -->
+          <section class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow" data-purpose="grade-summary">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 class="font-medium text-slate-900 text-sm">Grade Distribution</h3>
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wide">186 Total</span>
+            </div>
+            <div class="mt-5 space-y-4">
+              <!-- Grade 10 -->
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                  <span class="font-medium text-slate-700">Grade 10</span>
+                  <span class="font-medium text-slate-900">62 <span class="font-normal text-slate-400">classes</span></span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div class="bg-brand-600 h-2 rounded-full" style="width: 33%"></div>
+                </div>
+              </div>
+              <!-- Grade 11 -->
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                  <span class="font-medium text-slate-700">Grade 11</span>
+                  <span class="font-medium text-slate-900">68 <span class="font-normal text-slate-400">classes</span></span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div class="bg-brand-600 h-2 rounded-full" style="width: 37%"></div>
+                </div>
+              </div>
+              <!-- Grade 12 -->
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                  <span class="font-medium text-slate-700">Grade 12</span>
+                  <span class="font-medium text-slate-900">56 <span class="font-normal text-slate-400">classes</span></span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                  <div class="bg-brand-600 h-2 rounded-full" style="width: 30%"></div>
+                </div>
+              </div>
+            </div>
+            <!-- Contextual Tip -->
+            <div class="mt-5 p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
+              <svg class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              <p class="text-[11px] text-slate-600 leading-relaxed">
+                Grade 11 sections currently have the highest student density at 96% target enrollment.
+              </p>
+            </div>
+          </section>
+
+          <!-- Card: Capacity & Classroom Utilization Overview -->
+          <section class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow" data-purpose="capacity-utilization">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 class="font-medium text-slate-900 text-sm">Capacity &amp; Seating</h3>
+              <span class="text-xs font-normal text-slate-500">Optimal</span>
+            </div>
+            <dl class="mt-4 divide-y divide-slate-100 text-xs">
+              <div class="py-2.5 flex items-center justify-between">
+                <dt class="text-slate-500">Average class size</dt>
+                <dd class="font-normal text-slate-800 text-sm">29.4 <span class="font-normal text-xs text-slate-400">students</span></dd>
+              </div>
+              <div class="py-2.5 flex items-center justify-between">
+                <dt class="text-slate-500">Max classroom quota</dt>
+                <dd class="font-normal text-slate-700">35 seats / room</dd>
+              </div>
+              <div class="py-2.5 flex items-center justify-between">
+                <dt class="flex items-center gap-1.5 text-slate-500">
+                  <span>Full / Overcrowded</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                </dt>
+                <dd class="font-normal text-slate-700">3 classes</dd>
+              </div>
+              <div class="py-2.5 flex items-center justify-between">
+                <dt class="text-slate-500">Available empty seats</dt>
+                <dd class="font-normal text-slate-700">142 total</dd>
+              </div>
+            </dl>
+            <!-- Quick Action button inside card -->
+            <button id="btnReallocateRooms" class="w-full mt-4 py-2 px-3 text-xs font-medium text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200/80 transition-colors text-center block" type="button">
+              Manage Room Reallocations
+            </button>
+          </section>
+
+          <!-- Card: Administrator Notice banner -->
+          <div class="p-5 rounded-2xl bg-gradient-to-br from-brand-900 via-slate-900 to-slate-950 text-white shadow-md relative overflow-hidden">
+            <div class="relative z-10">
+              <div class="flex items-center gap-2 text-xs font-medium text-emerald-400 uppercase tracking-wider mb-2">
+                <span class="material-symbols-outlined text-sm">schedule</span>
+                <span>Term Schedule Notice</span>
+              </div>
+              <h4 class="font-medium text-sm text-white">Course Quota Finalization</h4>
+              <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                Add-drop period concludes in 5 business days. Please review senior cohort allocations before the registry deadline.
+              </p>
+              <div class="mt-4 flex items-center gap-2">
+                <a href="admin-timetables.html" class="inline-flex items-center gap-1 text-xs font-medium text-emerald-300 hover:text-emerald-200 transition-colors">
+                  <span>View Timetable Master</span>
+                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+              </div>
+            </div>
+            <!-- Decorative circle -->
+            <div class="absolute -right-4 -bottom-6 w-28 h-28 bg-brand-500/20 rounded-full blur-xl pointer-events-none"></div>
+          </div>
+
+        </div>
+        <!-- END: RightSideRailPanels -->
+
       </div>
     </div>
-    <div class="stack" style="flex:1">
-      <div class="card">
-        <div class="card-head"><h3>Grade Summary</h3></div>
-        <div class="card-pad">
-          <div class="prog-row"><div class="prog-top"><span>Grade 10</span><span>62 classes</span></div><div class="bar grad"><span style="width:33%"></span></div></div>
-          <div class="prog-row"><div class="prog-top"><span>Grade 11</span><span>68 classes</span></div><div class="bar grad"><span style="width:37%"></span></div></div>
-          <div class="prog-row"><div class="prog-top"><span>Grade 12</span><span>56 classes</span></div><div class="bar grad"><span style="width:30%"></span></div></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h3>Capacity</h3></div>
-        <div class="card-pad">
-          <div class="flex between mb8"><span class="muted" style="font-size:13px">Average class size</span><span>29.4</span></div>
-          <div class="flex between mb8"><span class="muted" style="font-size:13px">Max capacity</span><span>35 students</span></div>
-          <div class="flex between mb8"><span class="muted" style="font-size:13px">Overcrowded classes</span><span style="color:var(--danger)">3</span></div>
-          <div class="flex between"><span class="muted" style="font-size:13px">Empty seats total</span><span style="color:var(--success)">142</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div><!-- /page -->
+  </div><!-- /page -->
+
 </main>
-<script>window.PAGE={"role":"admin","active":"classes"};</script>
-<script>window.HERO_CONFIG = {
+
+<!-- Add New Class Modal -->
+<div id="modalAddClass" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 transform scale-95 transition-transform duration-200">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-medium">
+          <span class="material-symbols-outlined text-lg">add_box</span>
+        </div>
+        <div>
+          <h3 class="font-medium text-slate-900 text-base">Add New Class Section</h3>
+          <p class="text-xs text-slate-500">Configure grade cohort, adviser, and seating cap</p>
+        </div>
+      </div>
+      <button id="btnCloseModal" type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+    <form id="formAddClass" class="mt-4 space-y-4 text-xs">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Section Code</label>
+          <input required id="inSectionCode" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. 11-C" type="text">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Grade Level</label>
+          <select id="inGradeLevel" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600">
+            <option value="10">Grade 10</option>
+            <option value="11" selected>Grade 11</option>
+            <option value="12">Grade 12</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold text-slate-700 mb-1">Stream / Description</label>
+        <input required id="inStream" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. STEM / Engineering Track" type="text">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Lead Teacher</label>
+          <input required id="inLeadTeacher" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Dr. Kiri Vuth" type="text">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Primary Subject</label>
+          <input required id="inSubject" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Chemistry Honors" type="text">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Room / Lab Allocation</label>
+          <input required id="inRoom" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Lab 03" type="text">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Student Capacity Cap</label>
+          <input required id="inCap" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" value="35" type="number" min="10" max="45">
+        </div>
+      </div>
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+        <button id="btnCancelModal" type="button" class="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+        <button type="submit" class="px-4 py-2 font-semibold text-white bg-brand-700 hover:bg-brand-800 rounded-xl shadow-xs transition-colors">Save Section</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+window.PAGE = { "role": "admin", "active": "classes" };
+window.HERO_CONFIG = {
   name: 'Mr. Heng Samnang',
   id: 'Admin ID: ADM-2026-001',
   grade: 'School Administrator',
   avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
   title: 'Class Management',
-  greeting: 'Manage classes, sections, and student enrollments.',
+  greeting: 'Manage sections, course enrollment quotas, and room schedules.',
   breadcrumbs: [{ label: 'Class Management' }],
   homeLink: '../../index.html',
   signOutLink: '../../index.html',
@@ -95,8 +534,334 @@
     { icon: 'calendar_today', text: 'Since: Jan 2018' },
     { icon: 'verified', text: 'Principal Administrator' }
   ]
-};</script>
+};
+</script>
+
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+
+<!-- Interactive Logic for Class Management -->
+<script>
+(function() {
+  // Mock Data Store
+  const CLASSES_DATA = [
+    {
+      code: '11-A',
+      grade: '11',
+      stream: 'Science Stream',
+      teacher: 'Dr. Sarah Jenkins',
+      initials: 'DJ',
+      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
+      subject: 'Advanced Mathematics',
+      enrolled: 32,
+      cap: 35,
+      room: '302',
+      status: 'Active'
+    },
+    {
+      code: '11-B',
+      grade: '11',
+      stream: 'Natural Science',
+      teacher: 'Mr. Heng Samnang',
+      initials: 'HS',
+      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
+      subject: 'Physics Honors',
+      enrolled: 29,
+      cap: 35,
+      room: 'Lab 04',
+      status: 'Active'
+    },
+    {
+      code: '12-A',
+      grade: '12',
+      stream: 'Senior Cohort',
+      teacher: 'Dr. Pov Chanthy',
+      initials: 'PC',
+      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
+      subject: 'Probability & Statistics',
+      enrolled: 31,
+      cap: 35,
+      room: '401',
+      status: 'Active'
+    },
+    {
+      code: '10-A',
+      grade: '10',
+      stream: 'Humanities Track',
+      teacher: 'Ms. Rin Sothea',
+      initials: 'RS',
+      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
+      subject: 'English Literature',
+      enrolled: 35,
+      cap: 35,
+      room: '108',
+      status: 'Active'
+    },
+    {
+      code: '10-B',
+      grade: '10',
+      stream: 'National Studies',
+      teacher: 'Mr. Chan Vuth',
+      initials: 'CV',
+      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
+      subject: 'Khmer Language',
+      enrolled: 33,
+      cap: 35,
+      room: '112',
+      status: 'Active'
+    },
+    {
+      code: '12-B',
+      grade: '12',
+      stream: 'STEM Division',
+      teacher: 'Dr. Lim Bunna',
+      initials: 'LB',
+      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
+      subject: 'Computer Science & Robotics',
+      enrolled: 28,
+      cap: 35,
+      room: 'Lab 02',
+      status: 'Review'
+    }
+  ];
+
+  const tbody = document.getElementById('classesTableBody');
+  const searchInput = document.getElementById('classSearchInput');
+  const gradeSelect = document.getElementById('gradeFilterSelect');
+  const totalCountEl = document.getElementById('totalClassesCount');
+  const exportBtn = document.getElementById('btnExportCsv');
+  const addBtn = document.getElementById('btnAddClass');
+  const modal = document.getElementById('modalAddClass');
+  const closeModalBtn = document.getElementById('btnCloseModal');
+  const cancelModalBtn = document.getElementById('btnCancelModal');
+  const formAddClass = document.getElementById('formAddClass');
+  const btnReallocateRooms = document.getElementById('btnReallocateRooms');
+
+  function renderRows(items) {
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (items.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="py-8 text-center text-slate-400">
+            <span class="material-symbols-outlined text-3xl mb-1 block">search_off</span>
+            No matching class sections found.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    items.forEach(c => {
+      const pct = Math.round((c.enrolled / c.cap) * 100);
+      const isFull = c.enrolled >= c.cap;
+      const barColor = isFull ? 'bg-amber-500' : 'bg-emerald-600';
+
+      const statusBadge = c.status === 'Active'
+        ? `<div class="inline-flex items-center gap-1.5 text-xs text-slate-700 font-normal">
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+             <span>Active</span>
+           </div>`
+        : `<div class="inline-flex items-center gap-1.5 text-xs text-slate-600 font-normal">
+             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+             <span>Review</span>
+           </div>`;
+
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50 transition-colors';
+      tr.innerHTML = `
+        <td class="py-3 px-3.5 whitespace-nowrap border-r border-b border-slate-200">
+          <div>
+            <span class="font-medium text-slate-900 block text-xs">Section ${c.code}</span>
+            <span class="font-mono text-[11px] text-slate-400">${c.stream}</span>
+          </div>
+        </td>
+        <td class="py-3 px-3 whitespace-nowrap border-r border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-medium flex items-center justify-center shrink-0">${c.initials}</div>
+            <span class="font-normal text-xs text-slate-800">${c.teacher}</span>
+          </div>
+        </td>
+        <td class="py-3 px-3 whitespace-nowrap border-r border-b border-slate-200">
+          <span class="text-xs text-slate-600 font-normal">${c.subject}</span>
+        </td>
+        <td class="py-3 px-3 whitespace-nowrap border-r border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-normal text-slate-700">${c.enrolled}<span class="text-slate-400">/${c.cap}</span></span>
+            <div class="w-14 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full ${barColor} rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        </td>
+        <td class="py-3 px-2.5 whitespace-nowrap text-center text-xs text-slate-600 font-normal border-r border-b border-slate-200">
+          <span>${c.room}</span>
+        </td>
+        <td class="py-3 px-2.5 whitespace-nowrap text-center border-r border-b border-slate-200">
+          ${statusBadge}
+        </td>
+        <td class="py-3 px-3 whitespace-nowrap text-right border-b border-slate-200">
+          <div class="flex items-center justify-end gap-1">
+            <button class="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors btn-edit-class" data-code="${c.code}" title="Edit Class" type="button">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </button>
+            <button class="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors btn-more-class" data-code="${c.code}" title="More options" type="button">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    if (totalCountEl) totalCountEl.textContent = CLASSES_DATA.length;
+  }
+
+  function filterData() {
+    const q = (searchInput?.value || '').trim().toLowerCase();
+    const g = gradeSelect?.value || 'all';
+
+    const filtered = CLASSES_DATA.filter(c => {
+      const matchQuery = !q || c.code.toLowerCase().includes(q) || c.teacher.toLowerCase().includes(q) || c.subject.toLowerCase().includes(q) || c.room.toLowerCase().includes(q);
+      const matchGrade = g === 'all' || c.grade === g;
+      return matchQuery && matchGrade;
+    });
+
+    renderRows(filtered);
+  }
+
+  // Bind Filter Events
+  if (searchInput) searchInput.addEventListener('input', filterData);
+  if (gradeSelect) gradeSelect.addEventListener('change', filterData);
+
+  // CSV Export Action
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const headers = ['Class Code', 'Grade', 'Stream', 'Teacher', 'Primary Subject', 'Enrolled', 'Capacity', 'Room', 'Status'];
+      const rows = CLASSES_DATA.map(c => [
+        `"${c.code}"`,
+        `"${c.grade}"`,
+        `"${c.stream}"`,
+        `"${c.teacher}"`,
+        `"${c.subject}"`,
+        c.enrolled,
+        c.cap,
+        `"${c.room}"`,
+        `"${c.status}"`
+      ]);
+
+      const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'ngis-class-sections.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      if (window.toast) {
+        window.toast('Class directory exported successfully to CSV', 'success');
+      }
+    });
+  }
+
+  // Modal Handlers
+  function openModal() {
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    modal.querySelector('.transform').classList.remove('scale-95');
+    modal.querySelector('.transform').classList.add('scale-100');
+  }
+
+  function closeModal() {
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    modal.querySelector('.transform').classList.add('scale-95');
+    modal.querySelector('.transform').classList.remove('scale-100');
+    formAddClass.reset();
+  }
+
+  if (addBtn) addBtn.addEventListener('click', openModal);
+  if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+  if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  if (formAddClass) {
+    formAddClass.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = document.getElementById('inSectionCode').value.trim();
+      const grade = document.getElementById('inGradeLevel').value;
+      const stream = document.getElementById('inStream').value.trim();
+      const teacher = document.getElementById('inLeadTeacher').value.trim();
+      const subject = document.getElementById('inSubject').value.trim();
+      const room = document.getElementById('inRoom').value.trim();
+      const cap = parseInt(document.getElementById('inCap').value, 10) || 35;
+
+      const initials = teacher.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+      CLASSES_DATA.unshift({
+        code,
+        grade,
+        stream,
+        teacher,
+        initials,
+        teacherBg: 'bg-emerald-100 text-emerald-800',
+        subject,
+        enrolled: 0,
+        cap,
+        room,
+        status: 'Active'
+      });
+
+      filterData();
+      closeModal();
+
+      if (window.toast) {
+        window.toast(`Class Section ${code} created successfully`, 'success');
+      }
+    });
+  }
+
+  if (btnReallocateRooms) {
+    btnReallocateRooms.addEventListener('click', () => {
+      if (window.toast) {
+        window.toast('Opening Interactive Room Schedule & Reallocations Optimizer...', 'info');
+      } else {
+        alert('Room Reallocations Optimizer: All classrooms currently balanced at 91% occupancy.');
+      }
+    });
+  }
+
+  // Table action buttons delegation
+  if (tbody) {
+    tbody.addEventListener('click', (e) => {
+      const editBtn = e.target.closest('.btn-edit-class');
+      if (editBtn) {
+        const code = editBtn.dataset.code;
+        const item = CLASSES_DATA.find(c => c.code === code);
+        if (item) {
+          alert(`Edit Section: ${item.code} (${item.stream})\nTeacher: ${item.teacher}\nSubject: ${item.subject}\nRoom: ${item.room}`);
+        }
+        return;
+      }
+
+      const moreBtn = e.target.closest('.btn-more-class');
+      if (moreBtn) {
+        const code = moreBtn.dataset.code;
+        if (window.toast) {
+          window.toast(`Section ${code} options: Timetable, Attendance, Student List`, 'info');
+        }
+      }
+    });
+  }
+
+  // Initial render
+  renderRows(CLASSES_DATA);
+})();
+</script>
+
 </body>
 </html>
