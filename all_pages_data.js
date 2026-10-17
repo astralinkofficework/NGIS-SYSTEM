@@ -241,6 +241,38 @@ window.NGIS_PAGES = [
     ]
   },
   {
+    "path": "pages/teacher/teacher-lessons.html",
+    "name": "teacher-lessons.html",
+    "title": "Teacher Lessons & Learning Materials",
+    "category": "Academic Oversight",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Upload and distribute digital lesson plans, lecture notes, slide presentations, video recordings, and learning materials to assigned classes.",
+    "tags": [
+      "Lessons & Materials",
+      "Lesson Plans",
+      "Lecture Slides",
+      "Resource Sharing"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-departments.html",
+    "name": "teacher-departments.html",
+    "title": "Teacher Department Hub & Curriculum Oversight",
+    "category": "Academic Oversight",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Faculty departmental portal. View department academic charter, affiliated courses, assigned teaching cohorts, colleagues, and department resources.",
+    "tags": [
+      "Department Hub",
+      "Curriculum Oversight",
+      "Faculty Directory",
+      "Teacher Cohorts"
+    ]
+  },
+  {
     "path": "pages/teacher/teacher-classes.html",
     "name": "teacher-classes.html",
     "title": "Teacher Class Roster & Section Management",
@@ -1311,6 +1343,116 @@ window.NGIS_PAGES = [
       "Profile Info",
       "Emergency Contact",
       "Account Preferences"
+    ]
+  },
+  {
+    "path": "pages/principal/principal.html",
+    "name": "principal.html",
+    "title": "Principal Executive Dashboard",
+    "category": "Executive Oversight",
+    "roles": [
+      "principal",
+      "admin"
+    ],
+    "description": "Executive command center for Campus Principal. School-wide KPIs, academic performance metrics, executive approvals queue, and faculty leadership overview.",
+    "tags": [
+      "Executive Dashboard",
+      "Academic Health",
+      "Campus Oversight"
+    ]
+  },
+  {
+    "path": "pages/principal/principal-reports.html",
+    "name": "principal-reports.html",
+    "title": "Principal Academic & Operational Reports",
+    "category": "Executive Oversight",
+    "roles": [
+      "principal",
+      "admin"
+    ],
+    "description": "Strategic academic reporting across grade cohorts, subject pass rates, faculty loads, and campus-wide attendance trends.",
+    "tags": [
+      "Academic Reports",
+      "Cohort Performance",
+      "Attendance Trends"
+    ]
+  },
+  {
+    "path": "pages/principal/principal-approvals.html",
+    "name": "principal-approvals.html",
+    "title": "Principal Executive Approvals",
+    "category": "Executive Oversight",
+    "roles": [
+      "principal",
+      "admin"
+    ],
+    "description": "Formal governance and authorization center for grade amendments, curriculum revisions, and campus-wide notices.",
+    "tags": [
+      "Approvals",
+      "Grade Adjustments",
+      "Curriculum Governance"
+    ]
+  },
+  {
+    "path": "pages/principal/principal-profile.html",
+    "name": "principal-profile.html",
+    "title": "Principal Executive Profile",
+    "category": "User & Identity Management",
+    "roles": [
+      "principal"
+    ],
+    "description": "Executive leadership dossier, institutional accreditation credentials, and campus jurisdictional scope.",
+    "tags": [
+      "Leadership Profile",
+      "Jurisdiction",
+      "Accreditation"
+    ]
+  },
+  {
+    "path": "pages/staff/staff.html",
+    "name": "staff.html",
+    "title": "Staff Operations Dashboard",
+    "category": "Campus Operations",
+    "roles": [
+      "staff",
+      "admin"
+    ],
+    "description": "Operations and facility coordination hub. Active campus task queues, student service fulfillment, lost & found custody, and daily operational schedules.",
+    "tags": [
+      "Operations Command",
+      "Facility Ready",
+      "Service Queue"
+    ]
+  },
+  {
+    "path": "pages/staff/staff-services.html",
+    "name": "staff-services.html",
+    "title": "Staff Student Services Fulfillment",
+    "category": "Campus Operations",
+    "roles": [
+      "staff",
+      "admin"
+    ],
+    "description": "Service request processing center for official transcripts, enrollment certificates, student ID replacements, and locker allocations.",
+    "tags": [
+      "Services Fulfillment",
+      "Transcripts",
+      "Certificate Issuance"
+    ]
+  },
+  {
+    "path": "pages/staff/staff-profile.html",
+    "name": "staff-profile.html",
+    "title": "Staff Profile & Operational Scope",
+    "category": "User & Identity Management",
+    "roles": [
+      "staff"
+    ],
+    "description": "Campus staff deployment records, assigned operational zones, shift hours, and role-based permissions matrix.",
+    "tags": [
+      "Staff Scope",
+      "Duty Shift",
+      "Permissions"
     ]
   }
 ];

@@ -24,7 +24,14 @@
 
       console.log("[NGIS] Teacher portal hydrated", user?.firstName);
     } catch (err) {
-      console.error("[NGIS] Failed to load teacher data:", err.message);
+      console.warn("[NGIS Demo] Using local demo session for teacher hydration:", err.message);
+      const user = (window.NGISAuth && NGISAuth.getUser()) || { firstName: "Dr. Sarah", lastName: "Jenkins", email: "teacher@ngis.edu.kh" };
+      document.querySelectorAll("[data-user='name']").forEach(el => {
+        el.textContent = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+      });
+      document.querySelectorAll("[data-user='email']").forEach(el => {
+        el.textContent = user.email || "";
+      });
     }
   });
 })();

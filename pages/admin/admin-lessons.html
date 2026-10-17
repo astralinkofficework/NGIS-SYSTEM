@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 </head>
 <body>
@@ -168,11 +171,11 @@
 <script src="../../assets/js/layout.js"></script>
 <script>
 (function () {
-  function rowActionsHtml() {
+  function rowActionsHtml(id) {
     return '<div class="flex gap4 wrap">' +
       '<button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
       '<button class="icon-btn" title="Assign" onclick="window.toast(\'Assign lesson — choose class or department\',\'info\')"><span class="material-symbols-outlined" style="font-size:16px">assignment_ind</span></button>' +
-      '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast(\'Lesson deleted\',\'error\')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
+      '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="deleteAdminLesson(' + (id || 0) + ')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
     '</div>';
   }
 
@@ -199,7 +202,27 @@
     return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
   }
 
-  function saveLesson() {
+  async function loadLessons() {
+    try {
+      const res = await NGISAuth.api('/api/lessons');
+      const items = res.data || [];
+      if (!items.length) return;
+      const tbody = document.querySelector('#lessonsTable tbody');
+      if (tbody) {
+        tbody.innerHTML = items.map(l => {
+          const ft = inferFileType({ type: l.fileType, name: l.fileName });
+          return `
+            <tr>
+              <td><div class="flex center gap8"><span class="row-ico ${ft.cls}" style="width:34px;height:34px"><span class="material-symbols-outlined">${ft.icon}</span></span><div><span style="font-size:13px">${l.title}</span><div class="faint" style="font-size:11px">${l.department || 'Academic'} Department</div></div></div></td>
+              <td>${l.department || 'General'}</td><td>${l.class_name || l.classId || 'All'}</td><td>Sen Sok</td><td>${l.date || todayLabel()}</td>
+              <td>${rowActionsHtml(l.id)}</td>
+            </tr>`;
+        }).join('');
+      }
+    } catch(e) {}
+  }
+
+  async function saveLesson() {
     var title = (document.getElementById('lesTitle').value || '').trim() || 'Untitled Lesson';
     var dept = document.getElementById('lesDept').value;
     var cls = (document.getElementById('lesClass').value || '').trim() || '—';
@@ -208,24 +231,48 @@
     var file = fileInput && fileInput.files && fileInput.files[0];
     var ft = inferFileType(file);
 
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><div class="flex center gap8"><span class="row-ico ' + ft.cls + '" style="width:34px;height:34px"><span class="material-symbols-outlined">' + ft.icon + '</span></span><div><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + ' Department</div></div></div></td>' +
-      '<td>' + dept + '</td><td>' + cls + '</td><td>' + campus + '</td><td>' + todayLabel() + '</td>' +
-      '<td>' + rowActionsHtml() + '</td>';
-    document.querySelector('#lessonsTable tbody').prepend(tr);
-    window.toast('Lesson uploaded', 'success');
+    try {
+      await NGISAuth.api('/api/lessons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: title,
+          department: dept,
+          classId: cls.toLowerCase().replace(/\s+/g, '-'),
+          class_name: cls,
+          fileType: file ? file.type : 'pdf',
+          fileName: file ? file.name : (title.toLowerCase().replace(/\s+/g, '_') + '.pdf')
+        })
+      });
+      window.toast('Lesson uploaded to repository', 'success');
+      loadLessons();
+    } catch(err) {
+      window.toast(err.message || 'Upload failed', 'error');
+    }
 
     var ov = document.querySelector('.drawer-overlay[data-drawer="addLessonDrawer"]');
     if (ov) ov.classList.remove('show');
     document.getElementById('addLessonForm').reset();
   }
 
+  window.deleteAdminLesson = async function(id) {
+    if (!id) { window.toast('Lesson deleted', 'error'); return; }
+    try {
+      await NGISAuth.api('/api/lessons/' + id, { method: 'DELETE' });
+      window.toast('Lesson deleted successfully', 'success');
+      loadLessons();
+    } catch(err) {
+      window.toast('Delete failed: ' + err.message, 'error');
+    }
+  };
+
   document.getElementById('lesSaveBtn').addEventListener('click', saveLesson);
 
   if (new URLSearchParams(location.search).get('add') === '1') {
     document.querySelector('.drawer-overlay[data-drawer="addLessonDrawer"]').classList.add('show');
   }
+
+  setTimeout(loadLessons, 100);
 })();
 </script>
 </body>

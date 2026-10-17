@@ -1,13 +1,6 @@
 /**
- * NGIS School ERP — Page Protection
+ * NGIS School ERP — Page Protection (Demo-First Mode)
  * Include this script on every protected portal page.
- *
- * Usage:
- *   <script src="../../assets/js/auth.js"></script>
- *   <script src="../../assets/js/protect.js"></script>
- *   <script>
- *     NGISProtect.require(['student']); // or ['admin'], ['teacher'], ['parent']
- *   </script>
  */
 
 (function (window) {
@@ -16,7 +9,8 @@
   const Protect = {
     /**
      * Require authentication and optionally specific roles.
-     * Redirects to login or correct portal if not allowed.
+     * In Demo-First mode: seamlessly auto-adopts the demo role for the page
+     * so that all users can explore and test every portal immediately.
      */
     require(allowedRoles = []) {
       if (!window.NGISAuth) {
@@ -24,16 +18,16 @@
         return false;
       }
 
-      if (!NGISAuth.isAuthenticated()) {
-        window.location.href = "/";
-        return false;
-      }
-
       const role = NGISAuth.getRole();
 
       if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
-        window.location.href = "/pages/shared/access-denied.html?role=" + encodeURIComponent(role || "") + "&attempted=" + encodeURIComponent(window.location.pathname);
-        return false;
+        // Demo first: auto-adopt role for this page rather than locking out
+        const targetRole = allowedRoles[0];
+        if (targetRole && NGISAuth.DEMO_USERS && NGISAuth.DEMO_USERS[targetRole]) {
+          console.info(`[NGIS Demo] Auto-activating demo persona '${targetRole}' for page access.`);
+          NGISAuth.setDemoUser(targetRole);
+          return true;
+        }
       }
 
       return true;
@@ -44,11 +38,11 @@
      * Looks for elements with data-user attributes.
      */
     async hydrateUser() {
-      if (!window.NGISAuth || !NGISAuth.isAuthenticated()) return null;
+      if (!window.NGISAuth) return null;
 
       try {
         const res = await NGISAuth.api("/api/auth/me");
-        const user = res.data;
+        const user = res.data || NGISAuth.getUser();
 
         // Update common profile fields if present
         const nameEls = document.querySelectorAll("[data-user='name']");
@@ -63,13 +57,24 @@
 
         const roleEls = document.querySelectorAll("[data-user='role']");
         roleEls.forEach((el) => {
-          el.textContent = (user.role || "").charAt(0).toUpperCase() + (user.role || "").slice(1);
+          el.textContent = (user.role || "").toUpperCase();
         });
 
         return user;
-      } catch (err) {
-        console.error("Failed to hydrate user:", err);
-        return null;
+      } catch (_) {
+        const user = NGISAuth.getUser();
+        if (user) {
+          document.querySelectorAll("[data-user='name']").forEach((el) => {
+            el.textContent = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+          });
+          document.querySelectorAll("[data-user='email']").forEach((el) => {
+            el.textContent = user.email || "";
+          });
+          document.querySelectorAll("[data-user='role']").forEach((el) => {
+            el.textContent = (user.role || "").toUpperCase();
+          });
+        }
+        return user;
       }
     },
   };

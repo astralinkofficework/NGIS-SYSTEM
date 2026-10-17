@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NGIS — Lesson Materials & Syllabi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+</head>
+<body data-role="teacher" data-page="lessons">
+<main class="main">
+<div id="heroBanner"></div>
+<div class="page">
+
+  <!-- Metric Badges Row -->
+  <div class="grid g-4 anim-up" style="margin-bottom:16px">
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">menu_book</span></div></div>
+      <div class="stat-val" id="statTotal">—</div>
+      <div class="stat-label">Total Lessons Published</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">school</span></div></div>
+      <div class="stat-val" id="statClasses">2</div>
+      <div class="stat-label">Active Class Cohorts</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-purple"><span class="material-symbols-outlined fill">visibility</span></div></div>
+      <div class="stat-val" id="statViews">182</div>
+      <div class="stat-label">Student Views This Term</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">cloud_done</span></div></div>
+      <div class="stat-val">100%</div>
+      <div class="stat-label">Cloud Sync Active</div>
+    </div>
+  </div>
+
+  <div class="col-main anim-up-2">
+    <!-- Left Column: Lesson Repository Table -->
+    <div class="stack" style="flex:2">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h3>Course Materials &amp; Uploaded Lessons</h3>
+            <div class="sub">Materials available to enrolled students in your classes</div>
+          </div>
+          <div class="flex gap8">
+            <button class="btn btn-primary btn-sm" id="btnShowUpload">
+              <span class="material-symbols-outlined">upload_file</span> Upload Lesson
+            </button>
+          </div>
+        </div>
+        <div class="card-pad" style="border-bottom:1px solid var(--border)">
+          <div class="flex between center gap8 wrap">
+            <input class="input" id="searchLessons" placeholder="Search lessons by title or topic…" style="max-width:280px;flex:1">
+            <div class="flex gap8">
+              <select class="select" id="filterClass" style="width:auto">
+                <option value="">All My Classes</option>
+                <option value="cls-10a">Grade 10A</option>
+                <option value="cls-11b">Grade 11B</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card-pad" id="lessonsContainer">
+          <p class="muted">Loading lessons…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Upload Card & Quick Guide -->
+    <div class="stack" style="flex:1">
+      <div class="card" id="uploadCard" style="display:none">
+        <div class="card-head">
+          <h3>Upload Lesson for Class</h3>
+        </div>
+        <div class="card-pad">
+          <form id="uploadLessonForm" style="display:flex;flex-direction:column;gap:12px">
+            <label style="font-size:13px;font-weight:600">Lesson Title *
+              <input required name="title" class="input" style="width:100%;margin-top:4px" placeholder="e.g. Calculus: Chain Rule &amp; Implicit Differentiation">
+            </label>
+
+            <label style="font-size:13px;font-weight:600">Target Class *
+              <select name="classId" class="select" style="width:100%;margin-top:4px">
+                <option value="cls-10a">Grade 10A (Advanced Math)</option>
+                <option value="cls-11b">Grade 11B (Pure Math &amp; Stats)</option>
+              </select>
+            </label>
+
+            <label style="font-size:13px;font-weight:600">Subject
+              <select name="subjectId" class="select" style="width:100%;margin-top:4px">
+                <option value="subj-math">Advanced Mathematics</option>
+                <option value="subj-phys">Physics &amp; Lab</option>
+                <option value="subj-chem">Chemistry</option>
+              </select>
+            </label>
+
+            <label style="font-size:13px;font-weight:600">Resource Format
+              <select name="fileType" class="select" style="width:100%;margin-top:4px">
+                <option value="pdf">PDF Document / Handout</option>
+                <option value="slides">Presentation Slides (.PPTX / PDF)</option>
+                <option value="video">Recorded Video Lecture (.MP4)</option>
+                <option value="worksheet">Problem Set / Worksheet</option>
+              </select>
+            </label>
+
+            <label style="font-size:13px;font-weight:600">File Name / Attachment
+              <input name="fileName" class="input" style="width:100%;margin-top:4px" placeholder="e.g. calculus_chain_rule.pdf">
+            </label>
+
+            <label style="font-size:13px;font-weight:600">Description / Learning Objectives
+              <textarea name="description" class="input" rows="3" style="width:100%;margin-top:4px" placeholder="Summary of theorems covered, prerequisite reading, and homework problems."></textarea>
+            </label>
+
+            <div class="flex gap8 mt8">
+              <button type="submit" class="btn btn-primary" id="btnSubmitLesson">Publish Lesson</button>
+              <button type="button" class="btn btn-ghost" id="btnCancelUpload">Cancel</button>
+            </div>
+            <p id="uploadMsg" class="muted" style="font-size:13px;margin:0"></p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Teaching Syllabus Compliance Guide -->
+      <div class="card">
+        <div class="card-head">
+          <h3>Faculty Publishing Guidelines</h3>
+        </div>
+        <div class="card-pad" style="font-size:13px;line-height:1.6;display:flex;flex-direction:column;gap:10px">
+          <div class="flex gap8 items-start">
+            <span class="material-symbols-outlined" style="color:#10b981;font-size:18px">check_circle</span>
+            <div><strong>Synchronized Curriculum:</strong> Lessons published here immediately reflect in your students' Learning Library and Department portals.</div>
+          </div>
+          <div class="flex gap8 items-start">
+            <span class="material-symbols-outlined" style="color:#2563eb;font-size:18px">info</span>
+            <div><strong>Supported File Types:</strong> Upload PDFs, presentation slide decks, laboratory rubrics, or video links up to 100MB.</div>
+          </div>
+          <div class="flex gap8 items-start">
+            <span class="material-symbols-outlined" style="color:#d97706;font-size:18px">verified_user</span>
+            <div><strong>Cambridge &amp; MoEYS:</strong> Align syllabus topics with term benchmark learning outcomes.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.PAGE = { role: "teacher", active: "lessons" };
+window.HERO_CONFIG = {
+  role: 'teacher',
+  active: 'lessons',
+  name: 'Dr. Sarah Jenkins',
+  id: 'Teacher ID: TCH-2024-042',
+  grade: 'Mathematics Department',
+  avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'teacher-profile.html',
+  notifLink: 'teacher-notifications.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 2,
+  title: 'Lesson Management',
+  greeting: 'Upload lesson notes, problem sets, and syllabi for your classes.',
+  breadcrumbs: [{ label: 'Teaching & Classes' }, { label: 'Lessons' }],
+  ddRows: [
+    { icon: 'school', text: 'Senior Faculty of Mathematics' },
+    { icon: 'class', text: 'Grade 10A &middot; Grade 11B' },
+    { icon: 'schedule', text: 'Term 2 &bull; AY 2025&ndash;26' }
+  ]
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<script>
+(function () {
+  const container = document.getElementById('lessonsContainer');
+  const uploadCard = document.getElementById('uploadCard');
+  const btnShowUpload = document.getElementById('btnShowUpload');
+  const btnCancelUpload = document.getElementById('btnCancelUpload');
+  const uploadForm = document.getElementById('uploadLessonForm');
+  const uploadMsg = document.getElementById('uploadMsg');
+  const searchInput = document.getElementById('searchLessons');
+  const classFilter = document.getElementById('filterClass');
+
+  btnShowUpload.addEventListener('click', () => {
+    uploadCard.style.display = uploadCard.style.display === 'none' ? 'block' : 'none';
+    if (uploadCard.style.display === 'block') {
+      uploadCard.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  btnCancelUpload.addEventListener('click', () => {
+    uploadCard.style.display = 'none';
+  });
+
+  let allLessons = [];
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function getFormatBadge(ft) {
+    ft = (ft || 'pdf').toLowerCase();
+    if (ft.includes('video') || ft.includes('mp4')) return '<span class="badge purple">Video</span>';
+    if (ft.includes('slides') || ft.includes('ppt')) return '<span class="badge amber">Slides</span>';
+    if (ft.includes('worksheet')) return '<span class="badge blue">Worksheet</span>';
+    return '<span class="badge green">PDF</span>';
+  }
+
+  function renderTable(items) {
+    if (!items.length) {
+      container.innerHTML = '<p class="muted">No lesson files match the selected filter. Click "Upload Lesson" to add one.</p>';
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Lesson Title &amp; Topic</th>
+              <th>Class</th>
+              <th>Format</th>
+              <th>Date</th>
+              <th>Views</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(l => `
+              <tr>
+                <td>
+                  <div class="flex center gap8">
+                    <span class="row-ico t-blue" style="width:34px;height:34px;border-radius:8px">
+                      <span class="material-symbols-outlined" style="font-size:18px">menu_book</span>
+                    </span>
+                    <div>
+                      <span style="font-weight:600;font-size:13.5px">${esc(l.title)}</span>
+                      <div class="faint" style="font-size:11.5px">${esc(l.subject_name || 'Mathematics')} &middot; ${esc(l.fileName || 'document.pdf')}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge blue">${esc(l.class_name || l.classId)}</span></td>
+                <td>${getFormatBadge(l.fileType)}</td>
+                <td class="faint mono" style="font-size:12px">${esc(l.date || '2026-07-01')}</td>
+                <td style="font-weight:600;font-size:13px">${l.views || 0}</td>
+                <td>
+                  <div class="flex gap4">
+                    <button class="btn btn-sm btn-ghost" title="Download" onclick="window.open('${l.fileUrl || '#'}', '_blank')">
+                      <span class="material-symbols-outlined" style="font-size:16px">download</span>
+                    </button>
+                    <button class="btn btn-sm btn-ghost" style="color:var(--danger)" title="Delete" onclick="deleteLesson(${l.id})">
+                      <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  async function loadLessons() {
+    container.innerHTML = '<p class="muted">Loading lessons…</p>';
+    try {
+      const res = await NGISAuth.api('/api/lessons');
+      allLessons = res.data || [];
+
+      document.getElementById('statTotal').textContent = allLessons.length;
+      let totalViews = allLessons.reduce((acc, curr) => acc + (curr.views || 0), 0);
+      document.getElementById('statViews').textContent = totalViews || 182;
+
+      applyFilter();
+    } catch (err) {
+      container.innerHTML = `<p style="color:#b91c1c">Failed to load lessons: ${esc(err.message)}</p>`;
+    }
+  }
+
+  function applyFilter() {
+    const q = (searchInput.value || '').toLowerCase().trim();
+    const cls = classFilter.value;
+
+    let filtered = allLessons;
+    if (cls) {
+      filtered = filtered.filter(l => l.classId === cls);
+    }
+    if (q) {
+      filtered = filtered.filter(l =>
+        (l.title && l.title.toLowerCase().includes(q)) ||
+        (l.description && l.description.toLowerCase().includes(q)) ||
+        (l.subject_name && l.subject_name.toLowerCase().includes(q))
+      );
+    }
+    renderTable(filtered);
+  }
+
+  searchInput.addEventListener('input', applyFilter);
+  classFilter.addEventListener('change', applyFilter);
+
+  uploadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(uploadForm);
+    const body = {
+      title: fd.get('title'),
+      classId: fd.get('classId'),
+      subjectId: fd.get('subjectId'),
+      fileType: fd.get('fileType'),
+      fileName: fd.get('fileName') || (fd.get('title').toLowerCase().replace(/\s+/g, '_') + '.pdf'),
+      description: fd.get('description') || '',
+      department: 'Mathematics',
+      teacher_id: 'TCH-2024-042',
+      teacher_name: 'Dr. Sarah Jenkins'
+    };
+
+    uploadMsg.textContent = 'Publishing lesson to class…';
+    try {
+      await NGISAuth.api('/api/lessons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      uploadMsg.textContent = 'Lesson published successfully!';
+      uploadForm.reset();
+      setTimeout(() => {
+        uploadCard.style.display = 'none';
+        uploadMsg.textContent = '';
+      }, 1200);
+      loadLessons();
+    } catch (err) {
+      uploadMsg.textContent = 'Error: ' + err.message;
+    }
+  });
+
+  window.deleteLesson = async function (id) {
+    if (!confirm('Are you sure you want to remove this lesson from the class?')) return;
+    try {
+      await NGISAuth.api(`/api/lessons/${id}`, { method: 'DELETE' });
+      loadLessons();
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
+  };
+
+  setTimeout(loadLessons, 150);
+})();
+</script>
+</body>
+</html>

@@ -141,6 +141,282 @@ DB = {
             ]
         }
     ],
+
+    # ── Teachers ──
+    'teachers': [
+        {
+            'id': 'TCH-2024-042',
+            'name': 'Dr. Sarah Jenkins',
+            'email': 'teacher@ngis.edu.kh',
+            'phone': '+855 12 888 999',
+            'department': 'Mathematics',
+            'subjects': ['Advanced Mathematics', 'Calculus I'],
+            'classes': ['10A', '11B'],
+            'homeroom': '10A',
+            'status': 'active',
+            'avatar': 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80'
+        },
+        {
+            'id': 'TCH-2024-015',
+            'name': 'Dr. Pov Sophea',
+            'email': 'p.sophea@ngis.edu.kh',
+            'phone': '+855 12 777 666',
+            'department': 'Science',
+            'subjects': ['Physics & Lab'],
+            'classes': ['10A', '10B'],
+            'homeroom': '10B',
+            'status': 'active',
+            'avatar': 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80'
+        },
+        {
+            'id': 'TCH-2024-023',
+            'name': 'Ms. Rin Lina',
+            'email': 'r.lina@ngis.edu.kh',
+            'phone': '+855 11 555 444',
+            'department': 'English',
+            'subjects': ['English Literature'],
+            'classes': ['9A', '10A'],
+            'homeroom': '9A',
+            'status': 'active',
+            'avatar': 'https://images.pexels.com/photos/1181685/pexels-photo-1181685.jpeg?auto=compress&cs=tinysrgb&w=80'
+        }
+    ],
+
+    # ── Parents ──
+    'parents': [
+        {
+            'id': 'PAR-2024-118',
+            'name': 'Chan Dara Vuth',
+            'email': 'parent@ngis.edu.kh',
+            'phone': '+855 12 345 678',
+            'address': 'Sensok, Phnom Penh',
+            'children': ['2026-STD-0142', '2026-STD-0143'],
+            'status': 'active'
+        }
+    ],
+
+    # ── Staff ──
+    'staff': [
+        {
+            'id': 'STF-2024-019',
+            'name': 'Ms. Sreymom Lim',
+            'email': 'staff@ngis.edu.kh',
+            'phone': '+855 12 444 333',
+            'department': 'Campus Operations',
+            'role': 'Operations Coordinator',
+            'campus': 'Sensok',
+            'status': 'active',
+            'avatar': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&fit=crop&crop=face'
+        }
+    ],
+
+    # ── Principals ──
+    'principals': [
+        {
+            'id': 'PRN-2024-002',
+            'name': 'Dr. Ly Bunheng',
+            'email': 'principal@ngis.edu.kh',
+            'phone': '+855 12 999 111',
+            'role': 'Campus Principal',
+            'campus': 'Sensok & TK',
+            'status': 'active',
+            'avatar': 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&fit=crop&crop=face'
+        }
+    ],
+
+    # ── Classes ──
+    'classes': [
+        {'id': 'cls-10a', 'name': 'Grade 10A', 'grade': '10', 'section': 'A', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room 302', 'studentCount': 32, 'campus': 'Sensok'},
+        {'id': 'cls-10b', 'name': 'Grade 10B', 'grade': '10', 'section': 'B', 'homeroomTeacher': 'Dr. Pov Sophea', 'room': 'Room 304', 'studentCount': 30, 'campus': 'Sensok'},
+        {'id': 'cls-11a', 'name': 'Grade 11A', 'grade': '11', 'section': 'A', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room 201', 'studentCount': 28, 'campus': 'TK'},
+        {'id': 'cls-11b', 'name': 'Grade 11B', 'grade': '11', 'section': 'B', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room 203', 'studentCount': 31, 'campus': 'Sensok'},
+    ],
+
+    # ── Assignments ──
+    'assignments': [
+        {
+            'id': 'asgn-001',
+            'title': 'Mathematics Ch.8: Differential Equations Problem Set',
+            'description': 'Solve problems 1 through 15 on pages 142–145. Show all working clearly.',
+            'subjectId': 'subj-math',
+            'subject_name': 'Advanced Mathematics',
+            'classId': 'cls-10a',
+            'class_name': 'Grade 10A',
+            'teacher_id': 'TCH-2024-042',
+            'teacher_name': 'Dr. Sarah Jenkins',
+            'dueDate': '2026-07-20',
+            'due_date': '2026-07-20',
+            'maxScore': 100,
+            'max_score': 100,
+            'status': 'published',
+            'submissions': [
+                {
+                    'studentId': '2026-STD-0142',
+                    'studentName': 'Nrinphouneta Hok',
+                    'submittedAt': '2026-07-06T14:30:00Z',
+                    'fileName': 'Math_Ch8_Nrinphouneta.pdf',
+                    'score': 95,
+                    'feedback': 'Excellent method and step-by-step clarity. Full marks on question 12.',
+                    'status': 'graded'
+                },
+                {
+                    'studentId': '2026-STD-0143',
+                    'studentName': 'Kosal Rith Mony',
+                    'submittedAt': '2026-07-06T16:00:00Z',
+                    'fileName': 'Kosal_Math_Set.pdf',
+                    'score': 88,
+                    'feedback': 'Good overall work. Recheck boundary conditions in problem 7.',
+                    'status': 'graded'
+                }
+            ]
+        },
+        {
+            'id': 'asgn-002',
+            'title': 'Physics Lab Report: Wave Interference & Optics',
+            'description': 'Write up the full lab report following the IGCSE standard practical writeup structure.',
+            'subjectId': 'subj-phys',
+            'subject_name': 'Physics & Lab',
+            'classId': 'cls-10a',
+            'class_name': 'Grade 10A',
+            'teacher_id': 'TCH-2024-015',
+            'teacher_name': 'Dr. Pov Sophea',
+            'dueDate': '2026-07-22',
+            'due_date': '2026-07-22',
+            'maxScore': 100,
+            'max_score': 100,
+            'status': 'published',
+            'submissions': [
+                {
+                    'studentId': '2026-STD-0142',
+                    'studentName': 'Nrinphouneta Hok',
+                    'submittedAt': '2026-07-07T10:15:00Z',
+                    'fileName': 'Physics_Optics_Lab_NH.docx',
+                    'score': 92,
+                    'feedback': 'Thorough error analysis in the conclusion section.',
+                    'status': 'graded'
+                }
+            ]
+        },
+        {
+            'id': 'asgn-003',
+            'title': 'English Essay: Comparative Modern Literature',
+            'description': 'Write a 1,200-word essay comparing the cultural themes of two contemporary short stories.',
+            'subjectId': 'subj-eng',
+            'subject_name': 'English Literature',
+            'classId': 'cls-10a',
+            'class_name': 'Grade 10A',
+            'teacher_id': 'TCH-2024-023',
+            'teacher_name': 'Ms. Rin Lina',
+            'dueDate': '2026-07-25',
+            'due_date': '2026-07-25',
+            'maxScore': 100,
+            'max_score': 100,
+            'status': 'published',
+            'submissions': []
+        }
+    ],
+
+    # ── Grades ──
+    'grades': [
+        {'studentId': '2026-STD-0142', 'studentName': 'Nrinphouneta Hok', 'class': '10A', 'subject': 'Advanced Mathematics', 'grade': 'A', 'score': 95, 'term': 'Term 2', 'teacher': 'Dr. Sarah Jenkins', 'credits': 4.0},
+        {'studentId': '2026-STD-0142', 'studentName': 'Nrinphouneta Hok', 'class': '10A', 'subject': 'Physics & Lab', 'grade': 'A', 'score': 92, 'term': 'Term 2', 'teacher': 'Dr. Pov Sophea', 'credits': 4.0},
+        {'studentId': '2026-STD-0142', 'studentName': 'Nrinphouneta Hok', 'class': '10A', 'subject': 'English Literature', 'grade': 'A-', 'score': 88, 'term': 'Term 2', 'teacher': 'Ms. Rin Lina', 'credits': 3.0},
+        {'studentId': '2026-STD-0142', 'studentName': 'Nrinphouneta Hok', 'class': '10A', 'subject': 'Chemistry Practicum', 'grade': 'A', 'score': 94, 'term': 'Term 2', 'teacher': 'Ms. Sopheap Keo', 'credits': 3.5},
+        {'studentId': '2026-STD-0143', 'studentName': 'Kosal Rith Mony', 'class': '11B', 'subject': 'Advanced Mathematics', 'grade': 'B+', 'score': 88, 'term': 'Term 2', 'teacher': 'Dr. Sarah Jenkins', 'credits': 4.0},
+        {'studentId': '2026-STD-0143', 'studentName': 'Kosal Rith Mony', 'class': '11B', 'subject': 'Physics & Lab', 'grade': 'A-', 'score': 89, 'term': 'Term 2', 'teacher': 'Dr. Pov Sophea', 'credits': 4.0},
+        {'studentId': '2026-STD-0143', 'studentName': 'Kosal Rith Mony', 'class': '11B', 'subject': 'English Literature', 'grade': 'B', 'score': 83, 'term': 'Term 2', 'teacher': 'Ms. Rin Lina', 'credits': 3.0},
+        {'studentId': '2026-STD-0144', 'studentName': 'Sophea Chan', 'class': '10A', 'subject': 'Advanced Mathematics', 'grade': 'B+', 'score': 86, 'term': 'Term 2', 'teacher': 'Dr. Sarah Jenkins', 'credits': 4.0},
+    ],
+
+    # ── Attendance Records ──
+    'attendanceRecords': [
+        {'studentId': '2026-STD-0142', 'studentName': 'Nrinphouneta Hok', 'classId': 'cls-10a', 'date': '2026-07-06', 'status': 'present', 'course': 'Advanced Mathematics'},
+        {'studentId': '2026-STD-0143', 'studentName': 'Kosal Rith Mony', 'classId': 'cls-11b', 'date': '2026-07-06', 'status': 'present', 'course': 'Advanced Mathematics'},
+        {'studentId': '2026-STD-0144', 'studentName': 'Sophea Chan', 'classId': 'cls-10a', 'date': '2026-07-06', 'status': 'late', 'course': 'Advanced Mathematics'},
+    ],
+
+    # ── Operational Tasks ──
+    'operationalTasks': [
+        {'id': 'TSK-001', 'title': 'Inspect cafeteria water filtration system', 'area': 'Sensok Facilities', 'priority': 'high', 'status': 'in_progress', 'assignedTo': 'Ms. Sreymom Lim', 'date': '2026-07-07'},
+        {'id': 'TSK-002', 'title': 'Distribute new student ID badges to reception', 'area': 'Administration', 'priority': 'normal', 'status': 'pending', 'assignedTo': 'Front Desk Staff', 'date': '2026-07-07'},
+        {'id': 'TSK-003', 'title': 'Science Lab 2 chemical inventory check', 'area': 'Sensok Science Dept', 'priority': 'normal', 'status': 'completed', 'assignedTo': 'Lab Technician', 'date': '2026-07-05'},
+    ],
+
+    # ── Lessons & Course Materials ──
+    'lessons': [
+        {
+            'id': 1,
+            'title': 'Differential Calculus: Limits & Derivatives',
+            'description': 'Foundational rules of differential calculus, continuity criteria, rate of change, and limit theorems.',
+            'subjectId': 'subj-math',
+            'subject_name': 'Advanced Mathematics',
+            'classId': 'cls-10a',
+            'class_name': 'Grade 10A',
+            'department': 'Mathematics',
+            'teacher_id': 'TCH-2024-042',
+            'teacher_name': 'Dr. Sarah Jenkins',
+            'fileUrl': 'https://www.africau.edu/images/default/sample.pdf',
+            'fileName': 'calculus_limits_derivatives.pdf',
+            'fileType': 'pdf',
+            'date': '2026-07-01',
+            'views': 45,
+            'status': 'published'
+        },
+        {
+            'id': 2,
+            'title': 'Quadratic Functions & Parabolic Curves',
+            'description': 'Discriminant analysis, optimization problems, and graph transformations.',
+            'subjectId': 'subj-math',
+            'subject_name': 'Advanced Mathematics',
+            'classId': 'cls-10a',
+            'class_name': 'Grade 10A',
+            'department': 'Mathematics',
+            'teacher_id': 'TCH-2024-042',
+            'teacher_name': 'Dr. Sarah Jenkins',
+            'fileUrl': 'https://www.africau.edu/images/default/sample.pdf',
+            'fileName': 'quadratic_curves.pdf',
+            'fileType': 'pdf',
+            'date': '2026-07-03',
+            'views': 68,
+            'status': 'published'
+        },
+        {
+            'id': 3,
+            'title': 'Wave Optics & Interference Phenomena',
+            'description': 'Wave superposition, diffraction gratings, Young double slit experiment, and photon mechanics.',
+            'subjectId': 'subj-phys',
+            'subject_name': 'Physics & Lab',
+            'classId': 'cls-10a',
+            'class_name': 'Grade 10A',
+            'department': 'Science',
+            'teacher_id': 'TCH-2024-015',
+            'teacher_name': 'Dr. Pov Sophea',
+            'fileUrl': 'https://www.africau.edu/images/default/sample.pdf',
+            'fileName': 'wave_optics_lab.pdf',
+            'fileType': 'pdf',
+            'date': '2026-07-04',
+            'views': 52,
+            'status': 'published'
+        },
+        {
+            'id': 4,
+            'title': 'Comparative Modern Literature & Rhetoric',
+            'description': 'In-depth analysis of prose style, themes of identity, and essay construction.',
+            'subjectId': 'subj-eng',
+            'subject_name': 'English Literature',
+            'classId': 'cls-10a',
+            'class_name': 'Grade 10A',
+            'department': 'English',
+            'teacher_id': 'TCH-2024-023',
+            'teacher_name': 'Ms. Rin Lina',
+            'fileUrl': 'https://www.africau.edu/images/default/sample.pdf',
+            'fileName': 'comparative_lit_guide.pdf',
+            'fileType': 'pdf',
+            'date': '2026-07-05',
+            'views': 37,
+            'status': 'published'
+        }
+    ]
 }
 
 _next_id = 100
@@ -875,11 +1151,49 @@ def get_dashboard(role):
         base.update({
             'student': DB['students'][0],
             'upcomingExams': 6,
-            'pendingAssignments': 3,
-            'attendanceRate': 96,
+            'pendingAssignments': len([a for a in DB['assignments'] if a.get('classId') == 'cls-10a' and not any(s.get('studentId') == '2026-STD-0142' for s in a.get('submissions', []))]),
+            'attendanceRate': 96.2,
             'gpa': 3.87,
             'clubs': DB['clubs'][:2],
             'serviceRequests': len([r for r in DB['serviceRequests'] if r['studentId'] == '2026-STD-0142']),
+        })
+    elif role == 'teacher':
+        base.update({
+            'teacher': DB['teachers'][0],
+            'assignedClasses': ['10A', '11B'],
+            'totalStudents': 63,
+            'pendingGrading': len([a for a in DB['assignments'] if any(s.get('status') == 'submitted' for s in a.get('submissions', []))]),
+            'averageClassScore': 87.4,
+            'attendanceRate': 93.8,
+            'classes': DB['classes'][:2]
+        })
+    elif role == 'parent':
+        base.update({
+            'parent': DB['parents'][0],
+            'children': [s for s in DB['students'] if s['id'] in DB['parents'][0]['children']],
+            'activeChild': DB['students'][0],
+            'attendanceRate': 96.2,
+            'pendingHomework': 1,
+            'totalFeesDue': 0,
+            'reportCards': 2
+        })
+    elif role == 'staff':
+        base.update({
+            'staff': DB['staff'][0],
+            'openServiceRequests': len([r for r in DB['serviceRequests'] if r['status'] in ['open', 'pending']]),
+            'lostFoundPending': len([i for i in DB['lostFound'] if i.get('status') in ['active', 'matching']]),
+            'operationalTasks': len([t for t in DB['operationalTasks'] if t['status'] != 'completed']),
+            'campusFacilitiesReady': '100%'
+        })
+    elif role == 'principal':
+        base.update({
+            'principal': DB['principals'][0],
+            'totalStudents': 1250,
+            'totalTeachers': len(DB['teachers']),
+            'campusAttendance': 95.4,
+            'overallGpa': 3.62,
+            'pendingApprovals': 4,
+            'academicHonorsRate': '24.2%'
         })
     elif role == 'admin':
         base.update({
@@ -929,6 +1243,24 @@ AUTH_USERS = {
         'role': 'parent',
         'portal': 'parent',
         'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&crop=face'
+    },
+    'staff@ngis.edu.kh': {
+        'id': 'STF-2024-019',
+        'firstName': 'Sreymom',
+        'lastName': 'Lim',
+        'email': 'staff@ngis.edu.kh',
+        'role': 'staff',
+        'portal': 'staff',
+        'avatar': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&fit=crop&crop=face'
+    },
+    'principal@ngis.edu.kh': {
+        'id': 'PRN-2024-002',
+        'firstName': 'Dr. Ly',
+        'lastName': 'Bunheng',
+        'email': 'principal@ngis.edu.kh',
+        'role': 'principal',
+        'portal': 'principal',
+        'avatar': 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=80&fit=crop&crop=face'
     }
 }
 
@@ -944,6 +1276,10 @@ def auth_login():
             user = AUTH_USERS['student@ngis.edu.kh']
         elif 'parent' in email:
             user = AUTH_USERS['parent@ngis.edu.kh']
+        elif 'staff' in email:
+            user = AUTH_USERS['staff@ngis.edu.kh']
+        elif 'principal' in email:
+            user = AUTH_USERS['principal@ngis.edu.kh']
         else:
             user = AUTH_USERS['admin@ngis.edu.kh']
             
@@ -959,7 +1295,7 @@ def auth_login():
 def auth_me():
     auth_header = request.headers.get('Authorization', '')
     role = 'admin'
-    for r in ['admin', 'teacher', 'student', 'parent']:
+    for r in ['admin', 'teacher', 'student', 'parent', 'staff', 'principal']:
         if f'mock-jwt-token-{r}' in auth_header or f'role-{r}' in auth_header:
             role = r
             break
@@ -968,22 +1304,473 @@ def auth_me():
         'admin': 'admin@ngis.edu.kh',
         'teacher': 'teacher@ngis.edu.kh',
         'student': 'student@ngis.edu.kh',
-        'parent': 'parent@ngis.edu.kh'
+        'parent': 'parent@ngis.edu.kh',
+        'staff': 'staff@ngis.edu.kh',
+        'principal': 'principal@ngis.edu.kh'
     }
     user = AUTH_USERS.get(email_map.get(role, 'admin@ngis.edu.kh'))
     return jsonify({'data': user})
+
+# ── CONNECTED ROLE-SPECIFIC APIS ──
+@app.route('/api/teacher/me', methods=['GET'])
+def get_teacher_me():
+    return jsonify({
+        'data': {
+            'teacher': DB['teachers'][0],
+            'user': AUTH_USERS['teacher@ngis.edu.kh'],
+            'classes': DB['classes'][:2],
+            'subjects': DB['teachers'][0]['subjects']
+        }
+    })
+
+@app.route('/api/teacher/classes', methods=['GET'])
+def get_teacher_classes():
+    return jsonify({'data': DB['classes'][:2], 'meta': {'total': 2}})
+
+@app.route('/api/student/dashboard', methods=['GET'])
+def get_student_dashboard():
+    return jsonify({
+        'data': {
+            'student': {
+                'id': '2026-STD-0142',
+                'name': 'Nrinphouneta Hok',
+                'grade': 'Grade 10',
+                'class': '10A',
+                'class_id': 'cls-10a',
+                'student_number': '2026-STD-0142',
+                'attendance_rate': 96.2,
+                'gpa': 3.87,
+                'status': 'active'
+            },
+            'user': AUTH_USERS['student@ngis.edu.kh'],
+            'unreadNotifications': 2,
+            'gpa': 3.87,
+            'attendanceRate': 96.2
+        }
+    })
+
+@app.route('/api/parent/children', methods=['GET'])
+def get_parent_children():
+    linked_ids = DB['parents'][0].get('children', [])
+    children = []
+    for s in DB['students']:
+        if s['id'] in linked_ids:
+            parts = s['name'].split()
+            children.append({
+                'id': s['id'],
+                'student_id': s['id'],
+                'student_number': s['id'],
+                'first_name': parts[0],
+                'last_name': ' '.join(parts[1:]),
+                'name': s['name'],
+                'grade': s['grade'],
+                'class': s['class'],
+                'class_name': f"Grade {s['class']}",
+                'gpa': s['gpa'],
+                'attendance_rate': s['attendance'],
+                'status': s['status']
+            })
+    return jsonify({'data': children, 'meta': {'total': len(children)}})
+
+@app.route('/api/parent/children/<student_id>', methods=['GET'])
+def get_parent_child(student_id):
+    s = next((s for s in DB['students'] if s['id'] == student_id), None)
+    if not s:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Child not found'}}), 404
+    parts = s['name'].split()
+    child = {
+        'id': s['id'],
+        'student_id': s['id'],
+        'student_number': s['id'],
+        'first_name': parts[0],
+        'last_name': ' '.join(parts[1:]),
+        'name': s['name'],
+        'grade': s['grade'],
+        'class': s['class'],
+        'class_name': f"Grade {s['class']}",
+        'gpa': s['gpa'],
+        'attendance_rate': s['attendance'],
+        'status': s['status']
+    }
+    return jsonify({'data': child})
+
+@app.route('/api/parent/children/<student_id>/grades', methods=['GET'])
+def get_parent_child_grades(student_id):
+    grades = [g for g in DB['grades'] if g.get('studentId') == student_id]
+    return jsonify({'data': grades, 'meta': {'total': len(grades)}})
+
+@app.route('/api/parent/children/<student_id>/attendance', methods=['GET'])
+def get_parent_child_attendance(student_id):
+    records = [a for a in DB['attendanceRecords'] if a.get('studentId') == student_id]
+    return jsonify({
+        'data': {
+            'rate': 96.2,
+            'history': records or [
+                {'date': '2026-07-06', 'status': 'present', 'course': 'Advanced Mathematics'},
+                {'date': '2026-07-05', 'status': 'present', 'course': 'Physics & Lab'},
+                {'date': '2026-07-04', 'status': 'present', 'course': 'English Literature'},
+                {'date': '2026-07-03', 'status': 'late', 'course': 'Chemistry Practicum'},
+            ]
+        }
+    })
+
+@app.route('/api/parent/children/<student_id>/assignments', methods=['GET'])
+def get_parent_child_assignments(student_id):
+    s = next((s for s in DB['students'] if s['id'] == student_id), None)
+    class_name = s.get('class', '') if s else ''
+    matched = []
+    for a in DB['assignments']:
+        sub = next((sb for sb in a.get('submissions', []) if sb.get('studentId') == student_id), None)
+        is_match = (
+            sub is not None or
+            (a.get('classId') == 'cls-11b' and '11' in class_name) or
+            (a.get('classId') == 'cls-10a' and '10' in class_name) or
+            (bool(class_name) and class_name.lower() in (a.get('class_name') or '').lower())
+        )
+        if is_match:
+            matched.append({
+                'id': a['id'],
+                'title': a['title'],
+                'subject_name': a.get('subject_name', ''),
+                'dueDate': a.get('dueDate', ''),
+                'due_date': a.get('due_date', ''),
+                'status': 'graded' if (sub and sub.get('status') == 'graded') else ('submitted' if sub else 'pending'),
+                'score': sub.get('score') if sub else None,
+                'maxScore': a.get('maxScore', 100),
+                'feedback': sub.get('feedback') if sub else None
+            })
+    return jsonify({'data': matched, 'meta': {'total': len(matched)}})
+
+# ── LESSONS MANAGEMENT API ──
+@app.route('/api/lessons', methods=['GET', 'POST'])
+def handle_lessons():
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        title = data.get('title')
+        if not title:
+            return jsonify({'error': {'code': 'VALIDATION_ERROR', 'message': 'Lesson title is required'}}), 400
+
+        class_id = data.get('classId', 'cls-10a')
+        class_obj = next((c for c in DB['classes'] if c['id'] == class_id), None)
+        class_name = class_obj['name'] if class_obj else data.get('class_name', 'Grade 10A')
+
+        new_lesson = {
+            'id': new_id(),
+            'title': title.strip(),
+            'description': data.get('description', ''),
+            'subjectId': data.get('subjectId', 'subj-math'),
+            'subject_name': data.get('subject_name') or 'Advanced Mathematics',
+            'classId': class_id,
+            'class_name': class_name,
+            'department': data.get('department', 'Mathematics'),
+            'teacher_id': data.get('teacher_id', 'TCH-2024-042'),
+            'teacher_name': data.get('teacher_name', 'Dr. Sarah Jenkins'),
+            'fileUrl': data.get('fileUrl', 'https://www.africau.edu/images/default/sample.pdf'),
+            'fileName': data.get('fileName', 'lesson_material.pdf'),
+            'fileType': data.get('fileType', 'pdf'),
+            'date': data.get('date', datetime.now().strftime('%Y-%m-%d')),
+            'views': 0,
+            'status': data.get('status', 'published')
+        }
+        DB['lessons'].insert(0, new_lesson)
+        return jsonify({'data': new_lesson, 'message': 'Lesson created successfully'}), 201
+
+    class_id = request.args.get('classId')
+    teacher_id = request.args.get('teacherId')
+    dept = request.args.get('department')
+    q = request.args.get('q')
+
+    items = list(DB['lessons'])
+    if class_id:
+        items = [l for l in items if l.get('classId') == class_id]
+    if teacher_id:
+        items = [l for l in items if l.get('teacher_id') == teacher_id]
+    if dept and dept != 'all':
+        items = [l for l in items if l.get('department', '').lower() == dept.lower()]
+    if q:
+        lq = q.lower()
+        items = [l for l in items if lq in l.get('title', '').lower() or lq in l.get('description', '').lower()]
+
+    return jsonify({'data': items, 'meta': {'total': len(items)}})
+
+@app.route('/api/lessons/<int:lesson_id>', methods=['GET', 'PUT', 'DELETE'])
+def handle_lesson_item(lesson_id):
+    idx = next((i for i, l in enumerate(DB['lessons']) if l['id'] == lesson_id), None)
+    if idx is None:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Lesson not found'}}), 404
+
+    if request.method == 'GET':
+        item = DB['lessons'][idx]
+        item['views'] = item.get('views', 0) + 1
+        return jsonify({'data': item})
+
+    if request.method == 'PUT':
+        data = request.get_json(silent=True) or {}
+        DB['lessons'][idx].update(data)
+        return jsonify({'data': DB['lessons'][idx], 'message': 'Lesson updated successfully'})
+
+    if request.method == 'DELETE':
+        deleted = DB['lessons'].pop(idx)
+        return jsonify({'data': deleted, 'message': 'Lesson deleted successfully'})
+
+# ── ASSIGNMENTS MANAGEMENT API ──
+@app.route('/api/assignments', methods=['GET', 'POST'])
+def handle_assignments():
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        title = data.get('title')
+        if not title:
+            return jsonify({'error': {'code': 'VALIDATION_ERROR', 'message': 'Title is required'}}), 400
+
+        class_id = data.get('classId', 'cls-10a')
+        class_obj = next((c for c in DB['classes'] if c['id'] == class_id), None)
+        class_name = class_obj['name'] if class_obj else 'Grade 10A'
+
+        new_item = {
+            'id': f"asgn-{len(DB['assignments']) + 1:03d}",
+            'title': title.strip(),
+            'description': data.get('description', ''),
+            'subjectId': data.get('subjectId', 'subj-math'),
+            'subject_name': data.get('subject_name') or 'Advanced Mathematics',
+            'classId': class_id,
+            'class_name': class_name,
+            'teacher_id': data.get('teacher_id', 'TCH-2024-042'),
+            'teacher_name': data.get('teacher_name', 'Dr. Sarah Jenkins'),
+            'dueDate': data.get('dueDate', '2026-07-28'),
+            'due_date': data.get('dueDate', '2026-07-28'),
+            'maxScore': int(data.get('maxScore', 100)),
+            'max_score': int(data.get('maxScore', 100)),
+            'status': data.get('status', 'published'),
+            'submissions': []
+        }
+        DB['assignments'].insert(0, new_item)
+        return jsonify({'data': new_item, 'message': 'Assignment created successfully'}), 201
+
+    class_id = request.args.get('classId')
+    teacher_id = request.args.get('teacherId')
+    
+    items = list(DB['assignments'])
+    if class_id:
+        items = [a for a in items if a.get('classId') == class_id]
+    if teacher_id:
+        items = [a for a in items if a.get('teacher_id') == teacher_id]
+        
+    return jsonify({'data': items, 'meta': {'total': len(items)}})
+
+@app.route('/api/assignments/<asgn_id>/grade', methods=['POST'])
+def grade_assignment(asgn_id):
+    data = request.get_json(silent=True) or {}
+    student_id = data.get('studentId', '')
+    score = data.get('score', 0)
+    feedback = data.get('feedback', '')
+    
+    asgn = next((a for a in DB['assignments'] if str(a['id']) == str(asgn_id)), None)
+    if not asgn:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Assignment not found'}}), 404
+    
+    sub = next((s for s in asgn.setdefault('submissions', []) if s.get('studentId') == student_id), None)
+    if not sub:
+        st_obj = next((s for s in DB['students'] if s['id'] == student_id), None)
+        sub = {
+            'studentId': student_id,
+            'studentName': st_obj['name'] if st_obj else 'Student',
+            'submittedAt': datetime.now().isoformat(),
+            'fileName': 'submission.pdf'
+        }
+        asgn['submissions'].append(sub)
+        
+    sub['score'] = score
+    sub['feedback'] = feedback
+    sub['status'] = 'graded'
+    sub['gradedAt'] = datetime.now().isoformat()
+    
+    return jsonify({'data': sub, 'message': 'Grade and feedback saved successfully'})
+
+@app.route('/api/assignments/<asgn_id>/submit', methods=['POST'])
+def submit_assignment(asgn_id):
+    data = request.get_json(silent=True) or {}
+    student_id = data.get('studentId', '2026-STD-0142')
+    student_name = data.get('studentName', 'Nrinphouneta Hok')
+    file_name = data.get('fileName', 'coursework.pdf')
+    
+    asgn = next((a for a in DB['assignments'] if str(a['id']) == str(asgn_id)), None)
+    if not asgn:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Assignment not found'}}), 404
+        
+    sub = next((s for s in asgn.setdefault('submissions', []) if s.get('studentId') == student_id), None)
+    if not sub:
+        sub = {
+            'studentId': student_id,
+            'studentName': student_name,
+            'fileName': file_name,
+            'submittedAt': datetime.now().isoformat(),
+            'status': 'submitted'
+        }
+        asgn['submissions'].append(sub)
+    else:
+        sub['fileName'] = file_name
+        sub['submittedAt'] = datetime.now().isoformat()
+        sub['status'] = 'submitted'
+        
+    return jsonify({'data': sub, 'message': 'Assignment submitted successfully'}), 201
+
+# ── CLASSES API ──
+@app.route('/api/classes', methods=['GET'])
+def get_classes():
+    return jsonify({'data': DB['classes'], 'meta': {'total': len(DB['classes'])}})
+
+# ── ATTENDANCE API ──
+@app.route('/api/attendance', methods=['GET', 'POST'])
+def handle_attendance():
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        class_id = data.get('classId')
+        date_val = data.get('date', datetime.now().strftime('%Y-%m-%d'))
+        records = data.get('records', [])
+        for r in records:
+            existing = next((a for a in DB['attendanceRecords'] if a.get('studentId') == r.get('studentId') and a.get('date') == date_val), None)
+            if existing:
+                existing['status'] = r.get('status', 'present')
+            else:
+                DB['attendanceRecords'].append({
+                    'studentId': r.get('studentId'),
+                    'studentName': r.get('studentName', 'Student'),
+                    'classId': class_id,
+                    'date': date_val,
+                    'status': r.get('status', 'present')
+                })
+        return jsonify({'message': f'Attendance recorded for {len(records)} students', 'data': records})
+
+    class_id = request.args.get('classId')
+    date_val = request.args.get('date')
+
+    if class_id:
+        target_class = '10A' if '10a' in class_id.lower() else '11B'
+        class_students = [s for s in DB['students'] if s.get('class') == target_class]
+        if not class_students:
+            class_students = DB['students']
+        result = []
+        for cs in class_students:
+            rec = next((a for a in DB['attendanceRecords'] if a.get('studentId') == cs['id'] and a.get('date') == date_val), None)
+            status = rec['status'] if rec else 'present'
+            parts = cs['name'].split()
+            result.append({
+                'id': cs['id'],
+                'first_name': parts[0],
+                'last_name': ' '.join(parts[1:]),
+                'student_number': cs['id'],
+                'class': cs['class'],
+                'status': status
+            })
+        return jsonify({'data': result, 'meta': {'total': len(result)}})
+
+    return jsonify({
+        'data': {
+            'rate': 96.2,
+            'presentDays': 142,
+            'absentDays': 3,
+            'lateDays': 2,
+            'history': [
+                {'date': '2026-07-06', 'status': 'present', 'course': 'Advanced Mathematics'},
+                {'date': '2026-07-05', 'status': 'present', 'course': 'Physics'},
+                {'date': '2026-07-04', 'status': 'present', 'course': 'English'},
+                {'date': '2026-07-03', 'status': 'late', 'course': 'Chemistry'},
+            ]
+        }
+    })
+
+# ── GRADES API ──
+@app.route('/api/grades', methods=['GET', 'POST'])
+def handle_grades():
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        student_id = data.get('studentId')
+        subject = data.get('subject', 'Advanced Mathematics')
+        score = int(data.get('score', 85))
+        grade = 'A' if score >= 90 else ('B+' if score >= 85 else ('B' if score >= 80 else ('C+' if score >= 75 else 'C')))
+        
+        entry = {
+            'studentId': student_id,
+            'studentName': data.get('studentName', 'Student'),
+            'subject': subject,
+            'score': score,
+            'grade': grade,
+            'term': data.get('term', 'Term 2'),
+            'teacher': data.get('teacher', 'Dr. Sarah Jenkins')
+        }
+        DB['grades'].append(entry)
+        return jsonify({'data': entry, 'message': 'Grade recorded successfully'}), 201
+
+    student_id = request.args.get('studentId')
+    if student_id:
+        items = [g for g in DB['grades'] if g.get('studentId') == student_id]
+        return jsonify({'data': items, 'meta': {'total': len(items)}})
+
+    return jsonify({'data': DB['grades'], 'meta': {'total': len(DB['grades'])}})
+
+# ── PRINCIPAL & STAFF OVERSIGHT APIS ──
+@app.route('/api/principal/stats', methods=['GET'])
+def principal_stats():
+    return jsonify({
+        'data': {
+            'totalStudents': 1250,
+            'totalTeachers': 86,
+            'totalClasses': 48,
+            'dailyAttendanceRate': 95.4,
+            'overallSchoolGpa': 3.62,
+            'honorsRate': '24.2%',
+            'pendingApprovals': 4,
+            'departments': [
+                {'name': 'Mathematics', 'head': 'Dr. Sarah Jenkins', 'faculty': 14, 'avgScore': 87.2, 'status': 'Optimal'},
+                {'name': 'Science', 'head': 'Dr. Pov Sophea', 'faculty': 18, 'avgScore': 85.8, 'status': 'Optimal'},
+                {'name': 'English', 'head': 'Ms. Rin Lina', 'faculty': 16, 'avgScore': 88.4, 'status': 'Optimal'},
+                {'name': 'Khmer Studies', 'head': 'Mr. Chea Sambath', 'faculty': 12, 'avgScore': 89.1, 'status': 'Optimal'},
+                {'name': 'Computer Science', 'head': 'Mr. Heng Samnang', 'faculty': 10, 'avgScore': 84.6, 'status': 'Optimal'},
+            ]
+        }
+    })
+
+@app.route('/api/staff/stats', methods=['GET'])
+def staff_stats():
+    return jsonify({
+        'data': {
+            'openRequests': len([r for r in DB['serviceRequests'] if r['status'] in ['open', 'pending']]),
+            'activeLostFound': len([i for i in DB['lostFound'] if i.get('status') in ['active', 'matching']]),
+            'completedToday': 8,
+            'pendingClaims': len([c for i in DB['lostFound'] for c in i.get('claims', []) if c.get('status') == 'under_review']),
+            'facilityCheck': 'All Campuses Clear'
+        }
+    })
+
+@app.route('/api/staff/tasks', methods=['GET', 'POST'])
+def staff_tasks():
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        task = {
+            'id': f"TSK-{len(DB['operationalTasks']) + 1:03d}",
+            'title': data.get('title', 'Task'),
+            'area': data.get('area', 'Operations'),
+            'priority': data.get('priority', 'normal'),
+            'status': 'pending',
+            'assignedTo': data.get('assignedTo', 'Staff Team'),
+            'date': datetime.now().strftime('%Y-%m-%d')
+        }
+        DB['operationalTasks'].insert(0, task)
+        return jsonify({'data': task, 'message': 'Operational task created'}), 201
+    return jsonify({'data': DB['operationalTasks'], 'meta': {'total': len(DB['operationalTasks'])}})
 
 # ── ADMIN MANAGEMENT API ENDPOINTS ──
 @app.route('/api/admin/stats', methods=['GET'])
 def admin_stats():
     return jsonify({
         'data': {
-            'totalStudents': 1250,
-            'totalTeachers': 86,
-            'totalParents': 980,
+            'students': 1250,
+            'teachers': 86,
+            'parents': 980,
             'activeClasses': 48,
             'attendanceToday': 95.4,
-            'pendingRequests': 14
+            'pendingRequests': 14,
+            'grades': len(DB['grades'])
         }
     })
 
@@ -993,22 +1780,11 @@ def admin_students():
 
 @app.route('/api/admin/teachers', methods=['GET'])
 def admin_teachers():
-    teachers = [
-        {'id': 'TCH-001', 'name': 'Dr. Sarah Jenkins', 'department': 'Mathematics', 'email': 's.jenkins@ngis.edu.kh', 'classes': ['10A', '11B'], 'status': 'active'},
-        {'id': 'TCH-002', 'name': 'Dr. Pov Sophea', 'department': 'Science', 'email': 'p.sophea@ngis.edu.kh', 'classes': ['10A', '10B'], 'status': 'active'},
-        {'id': 'TCH-003', 'name': 'Ms. Rin Lina', 'department': 'English', 'email': 'r.lina@ngis.edu.kh', 'classes': ['9A', '10A'], 'status': 'active'},
-        {'id': 'TCH-004', 'name': 'Mr. Heng Samnang', 'department': 'Computer Science', 'email': 'h.samnang@ngis.edu.kh', 'classes': ['11A', '12A'], 'status': 'active'}
-    ]
-    return jsonify({'data': teachers, 'meta': {'total': len(teachers)}})
+    return jsonify({'data': DB['teachers'], 'meta': {'total': len(DB['teachers'])}})
 
 @app.route('/api/admin/parents', methods=['GET'])
 def admin_parents():
-    parents = [
-        {'id': 'PAR-001', 'name': 'Chan Dara Vuth', 'email': 'parent@ngis.edu.kh', 'phone': '+855 12 345 678', 'children': ['Nrinphouneta Hok'], 'status': 'active'},
-        {'id': 'PAR-002', 'name': 'Sok Chenda', 'email': 'sok.chenda@ngis.edu.kh', 'phone': '+855 12 987 654', 'children': ['Kosal Rith Mony'], 'status': 'active'},
-        {'id': 'PAR-003', 'name': 'Vuth Mony', 'email': 'vuth.mony@ngis.edu.kh', 'phone': '+855 11 222 333', 'children': ['Sophea Chan'], 'status': 'active'}
-    ]
-    return jsonify({'data': parents, 'meta': {'total': len(parents)}})
+    return jsonify({'data': DB['parents'], 'meta': {'total': len(DB['parents'])}})
 
 @app.route('/api/admin/audit', methods=['GET'])
 def admin_audit():
@@ -1046,34 +1822,6 @@ def delete_announcement(id):
         return jsonify({'data': None, 'message': 'Deleted'})
     return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Announcement not found'}}), 404
 
-@app.route('/api/attendance', methods=['GET'])
-def get_attendance():
-    return jsonify({
-        'data': {
-            'rate': 96.2,
-            'presentDays': 142,
-            'absentDays': 3,
-            'lateDays': 2,
-            'history': [
-                {'date': '2026-07-06', 'status': 'present', 'course': 'Mathematics'},
-                {'date': '2026-07-05', 'status': 'present', 'course': 'Physics'},
-                {'date': '2026-07-04', 'status': 'present', 'course': 'English'},
-                {'date': '2026-07-03', 'status': 'late', 'course': 'Chemistry'},
-            ]
-        }
-    })
-
-@app.route('/api/grades', methods=['GET'])
-def get_grades():
-    return jsonify({
-        'data': [
-            {'subject': 'Advanced Mathematics', 'grade': 'A', 'score': 94, 'term': 'Term 2', 'teacher': 'Dr. Sarah Jenkins'},
-            {'subject': 'Physics & Lab', 'grade': 'A-', 'score': 88, 'term': 'Term 2', 'teacher': 'Dr. Pov Sophea'},
-            {'subject': 'English Literature', 'grade': 'B+', 'score': 86, 'term': 'Term 2', 'teacher': 'Ms. Rin Lina'},
-            {'subject': 'Chemistry Practicum', 'grade': 'A', 'score': 91, 'term': 'Term 2', 'teacher': 'Ms. Sopheap Keo'},
-        ]
-    })
-
 # ── CLEAN ROUTE SHORTCUTS ──
 @app.route('/admin')
 @app.route('/admin/')
@@ -1094,6 +1842,16 @@ def route_student():
 @app.route('/parent/')
 def route_parent():
     return send_from_directory(ROOT, 'pages/parent/parent.html')
+
+@app.route('/staff')
+@app.route('/staff/')
+def route_staff():
+    return send_from_directory(ROOT, 'pages/staff/staff.html')
+
+@app.route('/principal')
+@app.route('/principal/')
+def route_principal():
+    return send_from_directory(ROOT, 'pages/principal/principal.html')
 
 @app.route('/access-denied')
 def route_access_denied():

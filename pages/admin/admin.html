@@ -3,260 +3,1195 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Admin Dashboard</title>
+<title>NGIS — Admin Dashboard &amp; SkyLearn Console</title>
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- NGIS Styles -->
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
-<link rel="stylesheet" href="../../assets/css/hero.css">
-<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
-<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="../../assets/css/hero.css?v=3.2">
+<link rel="stylesheet" href="../../assets/css/portal-dashboard.css?v=3.2">
+<link rel="stylesheet" href="../../assets/css/admin-view.css?v=3.2">
+<link rel="stylesheet" href="../../assets/css/interactions.css?v=3.2">
+
+<!-- Phosphor Icons for Mobile View -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS (for native mobile experience) -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<!-- Theme bootstrap -->
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<style>
+  /* Strict "No Bold Font" & Clean Transparent/White Hero Background Guarantee */
+  body, body *, .hero, .hero-body, .hero-title, .sk-title-text, h1, h2, h3, h4, h5, h6, th, b, strong, .sk-stat-val, .sk-stat-label, #skSectionTitle {
+    font-weight: 400 !important;
+  }
+  .hero-title {
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    color: #0f172a !important;
+    letter-spacing: -0.015em !important;
+  }
+  .sk-title-text, #skSectionTitle {
+    font-weight: 400 !important;
+    font-size: 22px !important;
+  }
+  .hero, .hero.hero-main, .hero:has(.hero-body), .hero-body {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+  }
+  [data-theme="dark"] .hero-title {
+    color: #f8fafc !important;
+  }
+</style>
 </head>
-<body>
+<body data-role="admin" data-page="dashboard">
 <main class="main">
 
-  <header class="hero">
-    <!-- ── Tier 1: Main Header Bar ── -->
-    <div class="hero-topbar">
+  <!-- ════════════════════════════════════════════════════════
+       1. DESKTOP VIEW (Screen >= 769px)
+       ════════════════════════════════════════════════════════ -->
+  <div class="admin-desktop-view">
+    <div id="heroBanner"></div>
 
-      <!-- Left: Brand Crest & Title -->
-      <div class="htb-brand-wrap">
-        <div class="htb-crest-badge">
-          <svg class="htb-crest-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b8dbd9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;max-width:22px;max-height:22px;display:block;">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none"/>
-            <path d="M12 8v7" fill="none"/>
-            <path d="M9.5 11.5h5" fill="none"/>
-          </svg>
-        </div>
-        <div class="htb-brand-text">
-          <div class="htb-brand-title">
-            <span class="htb-brand-primary">VERITAS</span>
-            <span class="htb-brand-secondary">ACADEMY</span>
-          </div>
-          <div class="htb-brand-sub">ADMINISTRATION PORTAL</div>
-        </div>
-      </div>
+    <div class="page" style="padding-top:16px">
 
-      <!-- Center: Global Search Capsule -->
-      <div class="htb-search-wrap" role="search">
-        <span class="mi htb-search-icon">search</span>
-        <input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search students, staff, classes, records…" aria-label="Search students, staff, classes, records">
-        <kbd class="htb-search-kbd">⌘ K</kbd>
-      </div>
-
-      <!-- Right: Controls & User Profile -->
-      <div class="htb-right-controls">
-        <a href="admin-timetables.html" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">
-          <span class="mi">calendar_today</span>
-        </a>
-        <button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">
-          <span class="mi">notifications</span>
-          <span class="htb-ctrl-badge">3</span>
-        </button>
-        <button type="button" id="htbMailBtn" class="htb-ctrl-btn" title="Messages" aria-label="Messages">
-          <span class="mi">mail</span>
-          <span class="htb-ctrl-badge">11</span>
-        </button>
-
-        <div class="htb-ctrl-divider" aria-hidden="true"></div>
-
-        <div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu">
-          <div class="htb-chip-avatar-wrap">
-            <img class="htb-chip-avatar" src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80" alt="Sok Panha Heng">
-            <span class="htb-online-pip" title="Active"></span>
-          </div>
-          <div class="htb-chip-text">
-            <span class="htb-chip-name" data-user="name">Sok Panha Heng</span>
-            <span class="htb-chip-meta">Super Administrator</span>
-          </div>
+      <!-- Section Title & Options Gear Dropdown Row (Image 5 Style) -->
+      <div class="sk-title-row">
+        <div class="sk-title-wrap">
+          <h1 class="sk-title-text highlight" id="skSectionTitle">Dashboard</h1>
         </div>
 
-        <button type="button" class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false">
-          <span class="mi">menu</span>
+        <div class="sk-gear-btn-wrap">
+          <button type="button" class="sk-gear-btn" id="skGearBtn" aria-label="Options and settings">
+            <span class="material-symbols-outlined" style="font-size:18px">settings</span>
+            <span class="material-symbols-outlined" style="font-size:16px">arrow_drop_down</span>
+          </button>
+          <div class="sk-gear-dropdown" id="skGearDropdown">
+            <a href="admin-settings.html"><span class="material-symbols-outlined">tune</span>System Settings</a>
+            <a href="admin-users.html"><span class="material-symbols-outlined">group</span>User Directory</a>
+            <a href="admin-departments.html"><span class="material-symbols-outlined">apartment</span>Academic Hubs</a>
+            <a href="admin-logs.html"><span class="material-symbols-outlined">history</span>Audit Logs</a>
+            <a href="admin-settings.html?tab=backup"><span class="material-symbols-outlined">backup</span>Backup Database</a>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ────────────────────────────────────────────────────────────
+           TAB PANE 1: DASHBOARD (Image 5)
+           8 Stat Cards + Website Traffic Chart + Enrollment per course Chart
+           ──────────────────────────────────────────────────────────── -->
+      <div class="sk-tab-pane" id="paneDashboard">
+        
+        <!-- 8 Stat Cards in 4x2 Grid -->
+        <div class="sk-stat-grid anim-up">
+          <!-- 1. Students -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-teal">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Students</div>
+              <div class="sk-stat-val" id="skValStudents">1</div>
+            </div>
+          </div>
+
+          <!-- 2. Lecturers -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-amber">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Lecturers</div>
+              <div class="sk-stat-val" id="skValLecturers">1</div>
+            </div>
+          </div>
+
+          <!-- 3. Administrators -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-pink">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Administrators</div>
+              <div class="sk-stat-val" id="skValAdmins">1</div>
+            </div>
+          </div>
+
+          <!-- 4. Lab Assistance -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-purple">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Lab Assistance</div>
+              <div class="sk-stat-val">500</div>
+            </div>
+          </div>
+
+          <!-- 5. Librarians -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-pink">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Librarians</div>
+              <div class="sk-stat-val">300</div>
+            </div>
+          </div>
+
+          <!-- 6. Supervisors -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-purple">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Supervisors</div>
+              <div class="sk-stat-val">660</div>
+            </div>
+          </div>
+
+          <!-- 7. Office Assistance -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-amber">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Office Assistance</div>
+              <div class="sk-stat-val">1,700</div>
+            </div>
+          </div>
+
+          <!-- 8. Others -->
+          <div class="sk-stat-card">
+            <div class="sk-stat-icon-wrap sk-ico-teal">
+              <span class="material-symbols-outlined">group</span>
+            </div>
+            <div class="sk-stat-text">
+              <div class="sk-stat-label">Others</div>
+              <div class="sk-stat-val">1,250</div>
+            </div>
+          </div>
+        </div><!-- /.sk-stat-grid -->
+
+        <!-- Side-by-Side Visual Charts Grid -->
+        <div class="sk-charts-grid anim-up-2">
+          
+          <!-- Chart 1: Website Traffic -->
+          <div class="sk-chart-card">
+            <div class="sk-chart-title">Website Traffic</div>
+            <div class="sk-chart-legend">
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#00e5ff"></span>Students</span>
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#ff9800"></span>Teachers</span>
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#9c27b0"></span>Admins</span>
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#e91e63"></span>Stuffs</span>
+            </div>
+            <div class="sk-svg-wrap">
+              <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+                <!-- Horizontal Grid Lines & Ticks -->
+                <line x1="36" y1="20" x2="495" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="24" fill="#94a3b8" font-size="10.5" text-anchor="end">90</text>
+                
+                <line x1="36" y1="37.8" x2="495" y2="37.8" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="41.8" fill="#94a3b8" font-size="10.5" text-anchor="end">80</text>
+                
+                <line x1="36" y1="55.6" x2="495" y2="55.6" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="59.6" fill="#94a3b8" font-size="10.5" text-anchor="end">70</text>
+                
+                <line x1="36" y1="73.3" x2="495" y2="73.3" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="77.3" fill="#94a3b8" font-size="10.5" text-anchor="end">60</text>
+                
+                <line x1="36" y1="91.1" x2="495" y2="91.1" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="95.1" fill="#94a3b8" font-size="10.5" text-anchor="end">50</text>
+                
+                <line x1="36" y1="108.9" x2="495" y2="108.9" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="112.9" fill="#94a3b8" font-size="10.5" text-anchor="end">40</text>
+                
+                <line x1="36" y1="126.7" x2="495" y2="126.7" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="130.7" fill="#94a3b8" font-size="10.5" text-anchor="end">30</text>
+                
+                <line x1="36" y1="144.4" x2="495" y2="144.4" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="148.4" fill="#94a3b8" font-size="10.5" text-anchor="end">20</text>
+                
+                <line x1="36" y1="162.2" x2="495" y2="162.2" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="166.2" fill="#94a3b8" font-size="10.5" text-anchor="end">10</text>
+                
+                <line x1="36" y1="180" x2="495" y2="180" stroke="#cbd5e1" stroke-width="1.2"/>
+                <text x="26" y="184" fill="#94a3b8" font-size="10.5" text-anchor="end">0</text>
+                
+                <!-- Vertical Month Lines -->
+                <line x1="60" y1="20" x2="60" y2="180" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="60" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">January</text>
+                
+                <line x1="145" y1="20" x2="145" y2="180" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="145" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">February</text>
+                
+                <line x1="230" y1="20" x2="230" y2="180" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="230" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">March</text>
+                
+                <line x1="315" y1="20" x2="315" y2="180" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="315" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">April</text>
+                
+                <line x1="400" y1="20" x2="400" y2="180" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="400" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">May</text>
+                
+                <line x1="485" y1="20" x2="485" y2="180" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="485" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">June</text>
+                
+                <!-- Students (Cyan #00e5ff) -->
+                <polyline fill="none" stroke="#00e5ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                  points="60,180 145,162.2 230,171.1 315,174.7 400,144.4 485,126.7"/>
+                <circle cx="60" cy="180" r="3.5" fill="#00e5ff" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="145" cy="162.2" r="3.5" fill="#00e5ff" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="230" cy="171.1" r="3.5" fill="#00e5ff" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="315" cy="174.7" r="3.5" fill="#00e5ff" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="400" cy="144.4" r="3.5" fill="#00e5ff" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="485" cy="126.7" r="3.5" fill="#00e5ff" stroke="#fff" stroke-width="1.5"/>
+                
+                <!-- Teachers (Orange #ff9800) -->
+                <polyline fill="none" stroke="#ff9800" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                  points="60,144.4 145,180 230,153.3 315,174.7 400,169.3 485,172.9"/>
+                <circle cx="60" cy="144.4" r="3.5" fill="#ff9800" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="145" cy="180" r="3.5" fill="#ff9800" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="230" cy="153.3" r="3.5" fill="#ff9800" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="315" cy="174.7" r="3.5" fill="#ff9800" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="400" cy="169.3" r="3.5" fill="#ff9800" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="485" cy="172.9" r="3.5" fill="#ff9800" stroke="#fff" stroke-width="1.5"/>
+                
+                <!-- Admins (Purple #9c27b0) -->
+                <polyline fill="none" stroke="#9c27b0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                  points="60,28.9 145,126.7 230,119.6 315,144.4 400,148 485,82.2"/>
+                <circle cx="60" cy="28.9" r="3.5" fill="#9c27b0" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="145" cy="126.7" r="3.5" fill="#9c27b0" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="230" cy="119.6" r="3.5" fill="#9c27b0" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="315" cy="144.4" r="3.5" fill="#9c27b0" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="400" cy="148" r="3.5" fill="#9c27b0" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="485" cy="82.2" r="3.5" fill="#9c27b0" stroke="#fff" stroke-width="1.5"/>
+                
+                <!-- Stuffs (Hot Pink #e91e63) -->
+                <polyline fill="none" stroke="#e91e63" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                  points="60,100 145,46.7 230,55.6 315,37.8 400,144.4 485,100"/>
+                <circle cx="60" cy="100" r="3.5" fill="#e91e63" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="145" cy="46.7" r="3.5" fill="#e91e63" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="230" cy="55.6" r="3.5" fill="#e91e63" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="315" cy="37.8" r="3.5" fill="#e91e63" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="400" cy="144.4" r="3.5" fill="#e91e63" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="485" cy="100" r="3.5" fill="#e91e63" stroke="#fff" stroke-width="1.5"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Chart 2: Enrollment per course -->
+          <div class="sk-chart-card">
+            <div class="sk-chart-title">Enrollment per course</div>
+            <div class="sk-chart-legend">
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#80deea"></span>Comp.S</span>
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#ffd54f"></span>Architecture</span>
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#ba68c8"></span>Civil Eng</span>
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#f06292"></span>Accounting</span>
+              <span class="sk-legend-item"><span class="sk-legend-chip" style="background:#757575"></span>Business M.</span>
+            </div>
+            <div class="sk-svg-wrap">
+              <svg viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+                <!-- Horizontal Grid Lines -->
+                <line x1="36" y1="20" x2="495" y2="20" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="24" fill="#94a3b8" font-size="10.5" text-anchor="end">90</text>
+                
+                <line x1="36" y1="37.8" x2="495" y2="37.8" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="41.8" fill="#94a3b8" font-size="10.5" text-anchor="end">80</text>
+                
+                <line x1="36" y1="55.6" x2="495" y2="55.6" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="59.6" fill="#94a3b8" font-size="10.5" text-anchor="end">70</text>
+                
+                <line x1="36" y1="73.3" x2="495" y2="73.3" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="77.3" fill="#94a3b8" font-size="10.5" text-anchor="end">60</text>
+                
+                <line x1="36" y1="91.1" x2="495" y2="91.1" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="95.1" fill="#94a3b8" font-size="10.5" text-anchor="end">50</text>
+                
+                <line x1="36" y1="108.9" x2="495" y2="108.9" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="112.9" fill="#94a3b8" font-size="10.5" text-anchor="end">40</text>
+                
+                <line x1="36" y1="126.7" x2="495" y2="126.7" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="130.7" fill="#94a3b8" font-size="10.5" text-anchor="end">30</text>
+                
+                <line x1="36" y1="144.4" x2="495" y2="144.4" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="148.4" fill="#94a3b8" font-size="10.5" text-anchor="end">20</text>
+                
+                <line x1="36" y1="162.2" x2="495" y2="162.2" stroke="#f1f5f9" stroke-width="1"/>
+                <text x="26" y="166.2" fill="#94a3b8" font-size="10.5" text-anchor="end">10</text>
+                
+                <line x1="36" y1="180" x2="495" y2="180" stroke="#cbd5e1" stroke-width="1.2"/>
+                <text x="26" y="184" fill="#94a3b8" font-size="10.5" text-anchor="end">0</text>
+                
+                <!-- Year 2016 -->
+                <text x="80" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">2016</text>
+                <rect x="58" y="144.4" width="10" height="35.6" fill="#ffd54f" rx="1.5"/>
+                <rect x="70" y="28.9" width="10" height="151.1" fill="#ba68c8" rx="1.5"/>
+                <rect x="82" y="100" width="10" height="80" fill="#f06292" rx="1.5"/>
+                <rect x="94" y="153.3" width="10" height="26.7" fill="#757575" rx="1.5"/>
+                
+                <!-- Year 2017 -->
+                <text x="160" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">2017</text>
+                <rect x="138" y="162.2" width="10" height="17.8" fill="#80deea" rx="1.5"/>
+                <rect x="150" y="126.7" width="10" height="53.3" fill="#ba68c8" rx="1.5"/>
+                <rect x="162" y="46.7" width="10" height="133.3" fill="#f06292" rx="1.5"/>
+                <rect x="174" y="46.7" width="10" height="133.3" fill="#757575" rx="1.5"/>
+                
+                <!-- Year 2018 -->
+                <text x="240" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">2018</text>
+                <rect x="218" y="171.1" width="10" height="8.9" fill="#80deea" rx="1.5"/>
+                <rect x="230" y="153.3" width="10" height="26.7" fill="#ffd54f" rx="1.5"/>
+                <rect x="242" y="119.6" width="10" height="60.4" fill="#ba68c8" rx="1.5"/>
+                <rect x="254" y="55.6" width="10" height="124.4" fill="#f06292" rx="1.5"/>
+                <rect x="266" y="100" width="10" height="80" fill="#757575" rx="1.5"/>
+                
+                <!-- Year 2019 -->
+                <text x="320" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">2019</text>
+                <rect x="298" y="176.4" width="10" height="3.6" fill="#80deea" rx="1.5"/>
+                <rect x="310" y="172.9" width="10" height="7.1" fill="#ffd54f" rx="1.5"/>
+                <rect x="322" y="144.4" width="10" height="35.6" fill="#ba68c8" rx="1.5"/>
+                <rect x="334" y="37.8" width="10" height="142.2" fill="#f06292" rx="1.5"/>
+                <rect x="346" y="20" width="10" height="160" fill="#757575" rx="1.5"/>
+                
+                <!-- Year 2020 -->
+                <text x="400" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">2020</text>
+                <rect x="378" y="144.4" width="10" height="35.6" fill="#80deea" rx="1.5"/>
+                <rect x="390" y="169.3" width="10" height="10.7" fill="#ffd54f" rx="1.5"/>
+                <rect x="402" y="144.4" width="10" height="35.6" fill="#ba68c8" rx="1.5"/>
+                <rect x="414" y="144.4" width="10" height="35.6" fill="#f06292" rx="1.5"/>
+                <rect x="426" y="73.3" width="10" height="106.7" fill="#757575" rx="1.5"/>
+                
+                <!-- Year 2021 -->
+                <text x="480" y="196" fill="#64748b" font-size="10.5" text-anchor="middle">2021</text>
+                <rect x="458" y="126.7" width="10" height="53.3" fill="#80deea" rx="1.5"/>
+                <rect x="470" y="172.9" width="10" height="7.1" fill="#ffd54f" rx="1.5"/>
+                <rect x="482" y="82.2" width="10" height="97.8" fill="#ba68c8" rx="1.5"/>
+                <rect x="494" y="126.7" width="10" height="53.3" fill="#f06292" rx="1.5"/>
+                <rect x="506" y="126.7" width="10" height="53.3" fill="#757575" rx="1.5"/>
+              </svg>
+            </div>
+          </div>
+        </div><!-- /.sk-charts-grid -->
+
+        <!-- Collapsible Executive Operations & ID Drawer (Maintains Regression Compatibility) -->
+        <details class="sk-drawer-toggle" id="executiveDrawer">
+          <summary style="display:flex;align-items:center;justify-content:space-between;width:100%;list-style:none">
+            <span style="display:flex;align-items:center;gap:8px">
+              <span class="material-symbols-outlined" style="color:#0284c7">shield_person</span>
+              Executive Console &amp; Infrastructure Operations
+            </span>
+            <span class="material-symbols-outlined">expand_more</span>
+          </summary>
+          
+          <div style="margin-top:16px">
+            <div class="dash-overlap">
+              <!-- Column 1: Administrator Profile Card -->
+              <div class="ov-profile">
+                <div class="ov-profile-header">
+                  <img class="ov-avatar" src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Sok Panha Heng">
+                  <div class="ov-profile-info">
+                    <div class="ov-profile-name" id="dtAdminName">Sok Panha Heng</div>
+                    <div class="ov-profile-grade">Super Administrator &middot; Executive Console</div>
+                    <span class="ov-profile-badge">System Administrator</span>
+                  </div>
+                </div>
+                <div class="ov-profile-body">
+                  <div class="ov-info-row" title="admin@ngis.edu.kh">
+                    <span class="material-symbols-outlined">mail</span>
+                    <span class="ov-info-text" id="dtAdminEmail">admin@ngis.edu.kh</span>
+                  </div>
+                  <div class="ov-info-row" title="Executive Suite 101 · Central Campus">
+                    <span class="material-symbols-outlined">location_on</span>
+                    <span class="ov-info-text">Executive Suite 101 &middot; Central Campus</span>
+                  </div>
+                  <div class="ov-info-row" title="Full System Security &amp; RBAC Control">
+                    <span class="material-symbols-outlined">shield_person</span>
+                    <span class="ov-info-text">Master Security &amp; RBAC Control</span>
+                  </div>
+                </div>
+                <div class="ov-actions">
+                  <button class="ov-btn-main" id="viewIdBtn"><span class="material-symbols-outlined">badge</span>Admin ID Card</button>
+                  <button class="ov-btn-ic" title="Campus Group Chat" aria-label="Messages" onclick="window.location.href='../shared/group-chat.html'"><span class="material-symbols-outlined">chat</span></button>
+                  <button class="ov-btn-ic" title="System Settings" aria-label="Settings" onclick="window.location.href='admin-settings.html'"><span class="material-symbols-outlined">settings</span></button>
+                </div>
+              </div>
+
+              <!-- Column 2: Institutional Operations -->
+              <div class="ov-upcoming">
+                <div class="ov-card-head">
+                  <div class="ov-card-title"><span class="material-symbols-outlined">domain</span>Institutional Operations</div>
+                  <a href="admin-timetables.html" class="ov-card-link">Campus Timetable &rarr;</a>
+                </div>
+                <div class="ov-inner-grid">
+                  <div class="ov-inner-panel">
+                    <div class="ov-inner-head"><span class="material-symbols-outlined" style="color:#13829b">event</span>Today's Briefings</div>
+                    <div class="ov-inner-item"><div class="ov-inner-item-t">Campus Inspection</div><div class="ov-inner-item-s">09:00 AM &middot; Toul Kork Branch</div></div>
+                    <div class="ov-inner-item"><div class="ov-inner-item-t">Ministry Accreditation</div><div class="ov-inner-item-s">11:30 AM &middot; Central Hall</div></div>
+                  </div>
+                  <div class="ov-inner-panel">
+                    <div class="ov-inner-head"><span class="material-symbols-outlined" style="color:#059669">how_to_reg</span>Pending Approvals</div>
+                    <div class="ov-inner-item"><div class="ov-inner-item-t">3 Faculty Accounts</div><div class="ov-inner-item-s">Awaiting Verification</div></div>
+                    <div class="ov-inner-item"><div class="ov-inner-item-t">Term 2 Fee Schedules</div><div class="ov-inner-item-s">Finance Review Ready</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Column 3: System Health -->
+              <div class="ov-deadlines">
+                <div class="ov-card-head">
+                  <div class="ov-card-title"><span class="material-symbols-outlined" style="color:#10b981">dns</span>System Health</div>
+                  <a href="admin-logs.html" class="ov-card-link">Audit Logs</a>
+                </div>
+                <div class="ov-deadline-list">
+                  <div class="ov-deadline-card">
+                    <div class="flex between center mb4"><span class="badge green">99.98% Uptime</span><span style="font-size:10.5px;color:#059669;font-weight:400">Optimal</span></div>
+                    <div style="font-size:12.5px;font-weight:400">Core ERP Engine</div>
+                    <p class="muted" style="font-size:11px;margin-top:2px">SQLite single-source &middot; 4 Campuses live</p>
+                  </div>
+                  <div class="ov-deadline-card">
+                    <div class="flex between center mb4"><span class="badge blue">Active Sessions</span><span style="font-size:10.5px;color:#0284c7;font-weight:400">312 Users</span></div>
+                    <div style="font-size:12.5px;font-weight:400">Connected JWT Auth</div>
+                    <p class="muted" style="font-size:11px;margin-top:2px">Zero unauthorized session leaks</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div><!-- /#paneDashboard -->
+
+
+      <!-- ────────────────────────────────────────────────────────────
+           TAB PANE 2: STUDENTS (Image 1)
+           Filter Bar + Students Table
+           ──────────────────────────────────────────────────────────── -->
+      <div class="sk-tab-pane" id="paneStudents" style="display:none">
+        <!-- Filter Bar -->
+        <div class="sk-filter-bar">
+          <input type="text" class="sk-filter-input" id="filterStudentId" placeholder="ID No.">
+          <input type="text" class="sk-filter-input" id="filterStudentName" placeholder="Name">
+          <input type="text" class="sk-filter-input" id="filterStudentEmail" placeholder="Email">
+          <input type="text" class="sk-filter-input" id="filterStudentProgram" placeholder="Program">
+          <button type="button" class="sk-filter-btn" id="btnFilterStudents">
+            <span class="material-symbols-outlined">tune</span>Filter
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="sk-table-wrap">
+          <table class="sk-table" id="tableStudents">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th style="width:140px">ID No.</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Program</th>
+                <th style="width:80px;text-align:center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1.</td>
+                <td>student_demo</td>
+                <td><a href="admin-users.html?role=students" class="sk-table-link">Alex Johnson</a></td>
+                <td>student@skylearn.edu</td>
+                <td>Computer Science &amp; Engineering</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>2.</td>
+                <td>STU-2024-089</td>
+                <td><a href="admin-users.html?role=students" class="sk-table-link">Nrinphouneta Hok</a></td>
+                <td>student@ngis.edu.kh</td>
+                <td>Computer Science &amp; Engineering</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>3.</td>
+                <td>STU-2024-042</td>
+                <td><a href="admin-users.html?role=students" class="sk-table-link">Kosal Rith Mony</a></td>
+                <td>rithmony@ngis.edu.kh</td>
+                <td>Business Administration</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>4.</td>
+                <td>STU-2024-015</td>
+                <td><a href="admin-users.html?role=students" class="sk-table-link">Sovan Kiry</a></td>
+                <td>sovan.kiry@ngis.edu.kh</td>
+                <td>Civil Engineering &amp; Architecture</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div><!-- /#paneStudents -->
+
+
+      <!-- ────────────────────────────────────────────────────────────
+           TAB PANE 3: LECTURERS (Image 2)
+           Filter Bar + Lecturers Table + Bottom Action Buttons
+           ──────────────────────────────────────────────────────────── -->
+      <div class="sk-tab-pane" id="paneLecturers" style="display:none">
+        <!-- Filter Bar -->
+        <div class="sk-filter-bar">
+          <input type="text" class="sk-filter-input" id="filterLecturerId" placeholder="ID No.">
+          <input type="text" class="sk-filter-input" id="filterLecturerEmail" placeholder="Email">
+          <input type="text" class="sk-filter-input" id="filterLecturerName" placeholder="Name">
+          <button type="button" class="sk-filter-btn" id="btnFilterLecturers">
+            <span class="material-symbols-outlined">tune</span>Filter
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="sk-table-wrap">
+          <table class="sk-table" id="tableLecturers">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th style="width:140px">ID No.</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Mob No.</th>
+                <th>Address/city</th>
+                <th>Last login</th>
+                <th style="width:80px;text-align:center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1.</td>
+                <td>lecturer_demo</td>
+                <td><a href="admin-users.html?role=teachers" class="sk-table-link">Alan Turing</a></td>
+                <td>lecturer@skylearn.edu</td>
+                <td>None</td>
+                <td>None</td>
+                <td>None</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>2.</td>
+                <td>TCH-2024-042</td>
+                <td><a href="admin-users.html?role=teachers" class="sk-table-link">Dr. Sarah Jenkins</a></td>
+                <td>teacher@ngis.edu.kh</td>
+                <td>+855 12 345 678</td>
+                <td>Phnom Penh</td>
+                <td>Today, 10:20 AM</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>3.</td>
+                <td>TCH-2024-011</td>
+                <td><a href="admin-users.html?role=teachers" class="sk-table-link">Prof. Marcus Vance</a></td>
+                <td>marcus.v@ngis.edu.kh</td>
+                <td>+855 12 889 001</td>
+                <td>Phnom Penh</td>
+                <td>Yesterday</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>4.</td>
+                <td>TCH-2024-088</td>
+                <td><a href="admin-users.html?role=teachers" class="sk-table-link">Dr. Meng Sothea</a></td>
+                <td>sothea.meng@ngis.edu.kh</td>
+                <td>+855 17 223 344</td>
+                <td>Siem Reap</td>
+                <td>3 days ago</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Bottom Action Buttons (Image 2) -->
+        <div class="sk-bottom-btns">
+          <a href="admin-users.html?role=teachers&amp;action=add" class="sk-blue-btn">
+            <span class="material-symbols-outlined">add</span>Add Lecturer
+          </a>
+          <button type="button" class="sk-blue-btn" onclick="window.print()">
+            <span class="material-symbols-outlined">download</span>Download pdf
+          </button>
+        </div>
+      </div><!-- /#paneLecturers -->
+
+
+      <!-- ────────────────────────────────────────────────────────────
+           TAB PANE 4: PROGRAM LIST (Image 3)
+           Filter Bar + Program Table + Bottom Button
+           ──────────────────────────────────────────────────────────── -->
+      <div class="sk-tab-pane" id="panePrograms" style="display:none">
+        <!-- Filter Bar -->
+        <div class="sk-filter-bar">
+          <input type="text" class="sk-filter-input" id="filterProgramName" placeholder="Program name" style="min-width:200px">
+          <button type="button" class="sk-filter-btn" id="btnFilterPrograms">
+            <span class="material-symbols-outlined">tune</span>Filter
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="sk-table-wrap">
+          <table class="sk-table" id="tablePrograms">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th style="width:260px">Program Name</th>
+                <th>Summary</th>
+                <th style="width:80px;text-align:center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1.</td>
+                <td><a href="admin-departments.html" class="sk-table-link">Computer Science &amp; Engineering</a></td>
+                <td>Comprehensive program covering modern software engineering, systems, algorithms, and AI.</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>2.</td>
+                <td><a href="admin-departments.html" class="sk-table-link">Business Administration</a></td>
+                <td>Global management, economics, corporate strategy, and modern digital business.</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>3.</td>
+                <td><a href="admin-departments.html" class="sk-table-link">Civil Engineering &amp; Architecture</a></td>
+                <td>Structural mechanics, CAD modeling, environmental engineering, and building codes.</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td>4.</td>
+                <td><a href="admin-departments.html" class="sk-table-link">Accounting &amp; Finance</a></td>
+                <td>Auditing, managerial accounting, financial reporting standards, and quantitative economics.</td>
+                <td style="text-align:center">
+                  <button type="button" class="sk-action-btn" title="More options" aria-label="More options"><span class="material-symbols-outlined">more_vert</span></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Bottom Action Button (Image 3) -->
+        <div class="sk-bottom-btns">
+          <a href="admin-departments.html" class="sk-blue-btn">
+            <span class="material-symbols-outlined">add</span>Add Program
+          </a>
+        </div>
+      </div><!-- /#panePrograms -->
+
+
+      <!-- ────────────────────────────────────────────────────────────
+           TAB PANE 5: SEMESTER LIST (Image 4)
+           Semester Table with Check/Cross Status and Circular Actions
+           ──────────────────────────────────────────────────────────── -->
+      <div class="sk-tab-pane" id="paneSemesters" style="display:none">
+        <div class="sk-table-wrap">
+          <table class="sk-table">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th>Semester</th>
+                <th>Is Current semester</th>
+                <th>Session</th>
+                <th>Next Semester Begins</th>
+                <th style="width:120px">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1.</td>
+                <td><strong>First</strong></td>
+                <td>
+                  <span class="sk-status-circle check" title="Current Active Semester">
+                    <span class="material-symbols-outlined">check</span>
+                  </span>
+                </td>
+                <td>2025/2026</td>
+                <td>None</td>
+                <td>
+                  <button type="button" class="sk-circle-icon-btn" title="Edit semester" aria-label="Edit semester">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button type="button" class="sk-circle-icon-btn delete" title="Delete semester" aria-label="Delete semester">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>2.</td>
+                <td><strong>Second</strong></td>
+                <td>
+                  <span class="sk-status-circle cross" title="Upcoming Semester">
+                    <span class="material-symbols-outlined">close</span>
+                  </span>
+                </td>
+                <td>2025/2026</td>
+                <td>None</td>
+                <td>
+                  <button type="button" class="sk-circle-icon-btn" title="Edit semester" aria-label="Edit semester">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button type="button" class="sk-circle-icon-btn delete" title="Delete semester" aria-label="Delete semester">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>3.</td>
+                <td><strong>Summer Term</strong></td>
+                <td>
+                  <span class="sk-status-circle cross" title="Special Session">
+                    <span class="material-symbols-outlined">close</span>
+                  </span>
+                </td>
+                <td>2025/2026</td>
+                <td>2026-07-01</td>
+                <td>
+                  <button type="button" class="sk-circle-icon-btn" title="Edit semester" aria-label="Edit semester">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button type="button" class="sk-circle-icon-btn delete" title="Delete semester" aria-label="Delete semester">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="sk-bottom-btns">
+          <button type="button" class="sk-blue-btn" onclick="alert('Add Semester Dialog (Demo)')">
+            <span class="material-symbols-outlined">add</span>Add Semester
+          </button>
+        </div>
+      </div><!-- /#paneSemesters -->
+
+    </div><!-- /.page -->
+  </div><!-- /.admin-desktop-view -->
+
+
+  <!-- ════════════════════════════════════════════════════════
+       2. MOBILE VIEW (Screen <= 768px)
+       ════════════════════════════════════════════════════════ -->
+  <div class="admin-mobile-view px-4 pt-4 pb-28">
+
+    <!-- Mobile Top Bar -->
+    <header class="flex items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="relative w-11 h-11 shrink-0">
+          <img class="w-11 h-11 rounded-full object-cover border-2 border-[#13829b] shadow-sm" src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Sok Panha Heng">
+          <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+        </div>
+        <div class="min-w-0">
+          <p class="text-[11px] font-medium text-slate-500 truncate">Administrator Console</p>
+          <h1 class="text-sm font-medium text-slate-800 truncate" id="mobAdminName">Sok Panha Heng</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button type="button" onclick="document.getElementById('idModal').classList.add('open')" class="px-3 py-1.5 bg-[#0066ff] text-white text-xs font-normal rounded-xl shadow-xs">
+          Admin ID
         </button>
       </div>
+    </header>
 
-    </div>
-
-    <!-- ── Tier 2: Subbar (Breadcrumb + Live Status Ticker) ── -->
-    <div class="htb-subbar">
-      <nav class="htb-breadcrumbs" aria-label="Breadcrumb">
-        <a href="admin.html" class="htb-crumb-home">
-          <span class="mi">home</span>
-          <span>Home</span>
-        </a>
-        <span class="htb-crumb-sep">/</span>
-        <a href="admin.html" class="htb-crumb-item">Administration</a>
-        <span class="htb-crumb-sep">/</span>
-        <span class="htb-crumb-cur">Dashboard Overview</span>
-      </nav>
-
-      <div class="htb-live-ticker">
-        <span class="htb-status-pip" aria-hidden="true"></span>
-        <span class="htb-ticker-term">Academic Year 2025–2026</span>
-        <span class="htb-ticker-dot">•</span>
-        <span class="htb-ticker-class">
-          <span class="htb-class-label">System Status:</span>
-          <span class="htb-class-val">All Services Operational</span>
-        </span>
+    <!-- Mobile 8 Stat Cards in 2x4 Grid -->
+    <section class="grid grid-cols-2 gap-2.5 mb-4">
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#26a69a] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-users text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Students</div>
+          <div class="text-lg font-normal text-slate-800">1</div>
+        </div>
       </div>
-    </div>
-
-    <div class="htb-dd-backdrop" id="htbBackdrop"></div>
-    <div class="hero-body">
-      <div class="hero-text">
-        <div class="hero-date" id="heroDate">—</div>
-        <h1 class="hero-title">Welcome back, <span data-user="name">Admin</span> 👋</h1>
-        <p class="hero-greeting">Live KPIs from the connected database.</p>
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#ffa726] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-chalkboard-teacher text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Lecturers</div>
+          <div class="text-lg font-normal text-slate-800">1</div>
+        </div>
       </div>
-    </div>
-  </header>
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#ec407a] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-shield-check text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Admins</div>
+          <div class="text-lg font-normal text-slate-800">1</div>
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#ab47bc] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-flask text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Lab Assist.</div>
+          <div class="text-lg font-normal text-slate-800">500</div>
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#ec407a] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-books text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Librarians</div>
+          <div class="text-lg font-normal text-slate-800">300</div>
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#ab47bc] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-eye text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Supervisors</div>
+          <div class="text-lg font-normal text-slate-800">660</div>
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#ffa726] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-briefcase text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Office Assist.</div>
+          <div class="text-lg font-normal text-slate-800">1,700</div>
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs">
+        <div class="w-9 h-9 rounded-full bg-[#26a69a] text-white flex items-center justify-center text-sm shadow-xs">
+          <i class="ph-bold ph-dots-three-circle text-base"></i>
+        </div>
+        <div class="text-right">
+          <div class="text-[11px] text-slate-500">Others</div>
+          <div class="text-lg font-normal text-slate-800">1,250</div>
+        </div>
+      </div>
+    </section>
 
-  <div class="page anim-up">
-
-    <section class="dashboard-stats-grid" aria-label="Statistics Summary">
-      <a href="admin-students.html" class="stat-card">
-        <div class="stat-card-badge sc-purple"><span class="material-symbols-outlined">school</span></div>
-        <span class="stat-card-label">Total Students</span>
-        <span class="stat-card-value" id="kpiStudents">—</span>
-        <div class="stat-card-trend up"><span class="material-symbols-outlined">trending_up</span><span>Live</span></div>
+    <!-- Mobile Quick Navigation Tiles -->
+    <section class="grid grid-cols-4 gap-2 mb-4">
+      <a href="admin-users.html" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-blue-50 border border-blue-100 text-blue-700">
+        <i class="ph-bold ph-users-four text-lg mb-1"></i>
+        <span class="text-[10.5px] font-normal">Users</span>
       </a>
-      <a href="admin-accounts.html" class="stat-card">
-        <div class="stat-card-badge sc-green"><span class="material-symbols-outlined">co_present</span></div>
-        <span class="stat-card-label">Total Teachers</span>
-        <span class="stat-card-value" id="kpiTeachers">—</span>
-        <div class="stat-card-trend up"><span class="material-symbols-outlined">trending_up</span><span>Live</span></div>
+      <a href="admin-departments.html" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700">
+        <i class="ph-bold ph-buildings text-lg mb-1"></i>
+        <span class="text-[10.5px] font-normal">Programs</span>
       </a>
-      <a href="admin-accounts.html" class="stat-card">
-        <div class="stat-card-badge sc-blue"><span class="material-symbols-outlined">family_restroom</span></div>
-        <span class="stat-card-label">Total Parents</span>
-        <span class="stat-card-value" id="kpiParents">—</span>
-        <div class="stat-card-trend up"><span class="material-symbols-outlined">trending_up</span><span>Live</span></div>
+      <a href="admin-timetables.html" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-amber-50 border border-amber-100 text-amber-700">
+        <i class="ph-bold ph-calendar text-lg mb-1"></i>
+        <span class="text-[10.5px] font-normal">Sessions</span>
       </a>
-      <a href="admin-students.html" class="stat-card">
-        <div class="stat-card-badge sc-purple"><span class="material-symbols-outlined">grade</span></div>
-        <span class="stat-card-label">Grades Recorded</span>
-        <span class="stat-card-value" id="kpiGrades">—</span>
-        <div class="stat-card-trend purple"><span class="stat-card-trend-dot"></span><span>Live</span></div>
+      <a href="admin-settings.html" class="flex flex-col items-center justify-center p-2.5 rounded-xl bg-purple-50 border border-purple-100 text-purple-700">
+        <i class="ph-bold ph-gear text-lg mb-1"></i>
+        <span class="text-[10.5px] font-normal">Settings</span>
       </a>
     </section>
 
-    <section class="mvp-command-center" aria-label="NGIS command center">
-      <div class="mvp-panel">
-        <div class="mvp-panel-head">
-          <div>
-            <div class="mvp-kicker">Connected School ERP</div>
-            <h2>Phase 1–2 Active — Auth, Academics, Admin tools</h2>
-          </div>
-        </div>
-        <div class="mvp-flow">
-          <div class="mvp-flow-step"><span class="mi">verified_user</span><span>Authenticated</span><span>Real JWT session.</span></div>
-          <div class="mvp-flow-step"><span class="mi">storage</span><span>Real Database</span><span>SQLite single source of truth.</span></div>
-          <div class="mvp-flow-step"><span class="mi">security</span><span>RBAC Active</span><span>Role checks on every API.</span></div>
-          <div class="mvp-flow-step"><span class="mi">sync</span><span>One System</span><span>All portals share data.</span></div>
-        </div>
-      </div>
-    </section>
+  </div><!-- /.admin-mobile-view -->
 
-    <section class="actions-card" aria-label="Quick Actions">
-      <div class="actions-card-header"><h2 class="actions-card-title">Quick Actions</h2></div>
-      <div class="actions-row">
-        <a href="admin-students.html" class="act-btn"><div class="act-btn-icon-wrapper qa-blue"><span class="material-symbols-outlined">person_add</span></div><span class="act-btn-label">Add Student</span></a>
-        <a href="admin-accounts.html" class="act-btn"><div class="act-btn-icon-wrapper qa-green"><span class="material-symbols-outlined">person_add</span></div><span class="act-btn-label">Accounts</span></a>
-        <a href="admin-accounts.html" class="act-btn"><div class="act-btn-icon-wrapper qa-purple"><span class="material-symbols-outlined">link</span></div><span class="act-btn-label">Link Family</span></a>
-        <a href="admin-news.html" class="act-btn"><div class="act-btn-icon-wrapper qa-orange"><span class="material-symbols-outlined">campaign</span></div><span class="act-btn-label">Announcements</span></a>
-      </div>
-    </section>
-
-    <footer class="dashboard-footer">
-      <span>© 2026 New Gateway International School — Connected ERP v2.0</span>
-      <span>Authenticated Session</span>
-    </footer>
-  </div>
 </main>
 
-<script>window.PAGE={"role":"admin","active":"dashboard"};</script>
-<script src="../../assets/js/layout.js?v=3.0"></script>
-<script>
-(function() {
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const now = new Date();
-  const dateEl = document.getElementById('heroDate');
-  if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-
-  const user = window.NGISAuth ? NGISAuth.getUser() : null;
-  const displayName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'Admin';
-  const displayEmail = user ? user.email : 'admin@ngis.edu.kh';
-
-  const ddHtml = `
-    <div class="htb-dropdown" id="htbDropdown">
-      <div class="htb-dd-header">
-        <img class="htb-dd-avatar" src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160" alt="${displayName}">
-        <div>
-          <div class="htb-dd-name">${displayName}</div>
-          <div class="htb-dd-id">${displayEmail}</div>
+<!-- Digital Administrator ID Card Modal -->
+<div class="id-modal-overlay" id="idModal">
+  <div class="id-modal-container">
+    <div class="id-modal-header">
+      <span class="id-modal-title">Executive Administrator ID Card</span>
+      <button class="id-close-btn" onclick="document.getElementById('idModal').classList.remove('open')" aria-label="Close modal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="id-modal-body">
+      <div class="id-card-wrapper">
+        <div class="id-card-top">
+          <span class="id-card-school">New Gateway International School</span>
+          <span class="badge" style="background:rgba(255,255,255,0.25);color:#fff;font-size:10px">EXECUTIVE PASS</span>
+        </div>
+        <div class="id-card-user">
+          <img class="id-card-photo" src="https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Sok Panha Heng">
+          <div class="id-card-info">
+            <div class="id-card-name" id="modalAdminName">Sok Panha Heng</div>
+            <div class="id-card-role">Super Administrator &middot; Executive Console</div>
+            <div class="id-card-idnum">ID: ADM-2026-001</div>
+          </div>
+        </div>
+        <div class="id-card-grid">
+          <div>
+            <div class="id-card-field-label">Clearance</div>
+            <div class="id-card-field-val">Level 5 &middot; Master Security</div>
+          </div>
+          <div>
+            <div class="id-card-field-label">Executive Office</div>
+            <div class="id-card-field-val">Suite 101, Central Campus</div>
+          </div>
+          <div>
+            <div class="id-card-field-label">Jurisdiction</div>
+            <div class="id-card-field-val">All 4 Institutional Campuses</div>
+          </div>
+          <div>
+            <div class="id-card-field-label">Status</div>
+            <div class="id-card-field-val" style="color:#bbf7d0">Active Super Admin</div>
+          </div>
         </div>
       </div>
-      <div class="htb-dd-divider"></div>
-      <div class="htb-dd-actions">
-        <a href="admin-settings.html" class="htb-dd-btn"><span class="mi">manage_accounts</span>My Profile</a>
-        <a href="#" class="htb-dd-btn htb-dd-btn-danger" id="logoutBtn"><span class="mi">logout</span>Sign Out</a>
-      </div>
-    </div>`;
-  const ddEl = document.createElement('div');
-  ddEl.innerHTML = ddHtml;
-  const dropdown = ddEl.firstElementChild;
-  document.body.appendChild(dropdown);
+    </div>
+  </div>
+</div>
 
-  document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (window.NGISAuth) NGISAuth.logout();
-    else window.location.href = '/';
-  });
+<script>window.PAGE={"role":"admin","active":"dashboard"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'admin',
+  active: 'dashboard',
+  isDashboard: true,
+  showHeroBody: true,
+  name: 'Sok Panha Heng',
+  id: 'Admin ID: ADM-2026-001',
+  grade: 'Super Administrator · Executive Console',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'admin-settings.html',
+  notifLink: 'admin-logs.html',
+  chatLink: '../shared/group-chat.html',
+  notifCount: 5,
+  title: 'Welcome to your dashboard',
+  greeting: 'Institutional metrics, user administration, and system governance.',
+  breadcrumbs: [{ label: 'Dashboard' }],
+  ddRows: [
+    { icon: 'shield_person', text: 'Super Administrator' },
+    { icon: 'domain', text: 'All 4 Institutional Campuses' },
+    { icon: 'email', text: 'admin@ngis.edu.kh' },
+    { icon: 'security', text: 'Master RBAC Access' },
+    { icon: 'database', text: 'SQLite Core Engine Connected' }
+  ]
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
 
-  function positionDropdown() {
-    if (window.innerWidth <= 600) return;
-    const profile = document.getElementById('htbProfile');
-    if (!profile) return;
-    const rect = profile.getBoundingClientRect();
-    dropdown.style.top = (rect.bottom + 10) + 'px';
-    dropdown.style.right = (window.innerWidth - rect.right) + 'px';
-    dropdown.style.left = 'auto';
-  }
-  function openDD() { positionDropdown(); dropdown.classList.add('open'); document.getElementById('htbParr')?.classList.add('open'); document.getElementById('htbBackdrop')?.classList.add('open'); }
-  function closeDD() { dropdown.classList.remove('open'); document.getElementById('htbParr')?.classList.remove('open'); document.getElementById('htbBackdrop')?.classList.remove('open'); }
-
-  document.addEventListener('click', function (e) {
-    const profile = document.getElementById('htbProfile');
-    if (profile && profile.contains(e.target)) {
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Gear dropdown toggle
+  const gearBtn = document.getElementById("skGearBtn");
+  const gearDropdown = document.getElementById("skGearDropdown");
+  if (gearBtn && gearDropdown) {
+    gearBtn.addEventListener("click", function(e) {
       e.stopPropagation();
-      dropdown.classList.contains('open') ? closeDD() : openDD();
-      return;
+      gearDropdown.classList.toggle("show");
+    });
+    document.addEventListener("click", function() {
+      gearDropdown.classList.remove("show");
+    });
+  }
+
+  // ID Modal
+  const viewIdBtn = document.getElementById("viewIdBtn");
+  const modal = document.getElementById("idModal");
+  if (viewIdBtn && modal) {
+    viewIdBtn.addEventListener("click", function() {
+      modal.classList.add("open");
+    });
+  }
+  if (modal) {
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) modal.classList.remove("open");
+    });
+  }
+
+  // Interactive Tabs Switching
+  const tabButtons = document.querySelectorAll(".sk-nav-tab");
+  const tabPanes = {
+    dashboard: document.getElementById("paneDashboard"),
+    students: document.getElementById("paneStudents"),
+    lecturers: document.getElementById("paneLecturers"),
+    programs: document.getElementById("panePrograms"),
+    semesters: document.getElementById("paneSemesters")
+  };
+
+  const titleConfig = {
+    dashboard: { title: "Dashboard", icon: "dashboard", crumb: "Dashboard" },
+    students: { title: "Students", icon: "school", crumb: "Students" },
+    lecturers: { title: "Lecturers", icon: "co_present", crumb: "Lecturers" },
+    programs: { title: "Program List", icon: "menu_book", crumb: "Program List" },
+    semesters: { title: "Semester List", icon: "calendar_month", crumb: "Semester List" }
+  };
+
+  function switchTab(tabKey, updateUrl = true) {
+    if (!tabPanes[tabKey]) tabKey = "dashboard";
+    tabButtons.forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.tab === tabKey);
+    });
+
+    Object.keys(tabPanes).forEach(key => {
+      if (tabPanes[key]) {
+        tabPanes[key].style.display = key === tabKey ? "block" : "none";
+      }
+    });
+
+    const cfg = titleConfig[tabKey] || titleConfig.dashboard;
+    const titleEl = document.getElementById("skSectionTitle");
+    const iconEl = document.getElementById("skTitleIcon");
+    const crumbEl = document.getElementById("skCrumbActive");
+
+    if (titleEl) titleEl.textContent = cfg.title;
+    if (iconEl) iconEl.innerHTML = `<span class="material-symbols-outlined">${cfg.icon}</span>`;
+    if (crumbEl) crumbEl.textContent = cfg.crumb;
+
+    if (updateUrl && window.history && window.history.replaceState) {
+      const url = new URL(window.location);
+      if (tabKey === 'dashboard') {
+        url.searchParams.delete('tab');
+      } else {
+        url.searchParams.set('tab', tabKey);
+      }
+      window.history.replaceState(null, '', url.pathname + url.search);
     }
-    if (!dropdown.contains(e.target)) closeDD();
+  }
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener("click", function() {
+      switchTab(this.dataset.tab, true);
+    });
   });
 
-  // Live KPIs
+  // Client-side filtering for Students Table
+  const filterBtnStudents = document.getElementById("btnFilterStudents");
+  if (filterBtnStudents) {
+    filterBtnStudents.addEventListener("click", function() {
+      const qId = (document.getElementById("filterStudentId")?.value || "").toLowerCase().trim();
+      const qName = (document.getElementById("filterStudentName")?.value || "").toLowerCase().trim();
+      const qEmail = (document.getElementById("filterStudentEmail")?.value || "").toLowerCase().trim();
+      const qProg = (document.getElementById("filterStudentProgram")?.value || "").toLowerCase().trim();
+
+      const rows = document.querySelectorAll("#tableStudents tbody tr");
+      rows.forEach(tr => {
+        const idText = tr.children[1]?.textContent.toLowerCase() || "";
+        const nameText = tr.children[2]?.textContent.toLowerCase() || "";
+        const emailText = tr.children[3]?.textContent.toLowerCase() || "";
+        const progText = tr.children[4]?.textContent.toLowerCase() || "";
+
+        const match = (!qId || idText.includes(qId)) &&
+                      (!qName || nameText.includes(qName)) &&
+                      (!qEmail || emailText.includes(qEmail)) &&
+                      (!qProg || progText.includes(qProg));
+        tr.style.display = match ? "" : "none";
+      });
+    });
+  }
+
+  // Client-side filtering for Lecturers Table
+  const filterBtnLecturers = document.getElementById("btnFilterLecturers");
+  if (filterBtnLecturers) {
+    filterBtnLecturers.addEventListener("click", function() {
+      const qId = (document.getElementById("filterLecturerId")?.value || "").toLowerCase().trim();
+      const qEmail = (document.getElementById("filterLecturerEmail")?.value || "").toLowerCase().trim();
+      const qName = (document.getElementById("filterLecturerName")?.value || "").toLowerCase().trim();
+
+      const rows = document.querySelectorAll("#tableLecturers tbody tr");
+      rows.forEach(tr => {
+        const idText = tr.children[1]?.textContent.toLowerCase() || "";
+        const nameText = tr.children[2]?.textContent.toLowerCase() || "";
+        const emailText = tr.children[3]?.textContent.toLowerCase() || "";
+
+        const match = (!qId || idText.includes(qId)) &&
+                      (!qEmail || emailText.includes(qEmail)) &&
+                      (!qName || nameText.includes(qName));
+        tr.style.display = match ? "" : "none";
+      });
+    });
+  }
+
+  // Client-side filtering for Programs Table
+  const filterBtnPrograms = document.getElementById("btnFilterPrograms");
+  if (filterBtnPrograms) {
+    filterBtnPrograms.addEventListener("click", function() {
+      const qProg = (document.getElementById("filterProgramName")?.value || "").toLowerCase().trim();
+      const rows = document.querySelectorAll("#tablePrograms tbody tr");
+      rows.forEach(tr => {
+        const progText = tr.children[1]?.textContent.toLowerCase() || "";
+        tr.style.display = (!qProg || progText.includes(qProg)) ? "" : "none";
+      });
+    });
+  }
+
+  // Check URL query or hash for direct tab opening (e.g. admin.html?tab=students or admin.html#students)
+  function getTabFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hash = window.location.hash.replace("#", "").toLowerCase().trim();
+    return urlParams.get("tab") || hash;
+  }
+
+  const initialTab = getTabFromUrl();
+  if (initialTab && tabPanes[initialTab]) {
+    switchTab(initialTab, false);
+  }
+
+  window.addEventListener("popstate", function() {
+    const activeTab = getTabFromUrl() || "dashboard";
+    if (tabPanes[activeTab]) {
+      switchTab(activeTab, false);
+    }
+  });
+
+  // Hydrate user info & stats from auth
   setTimeout(async () => {
     try {
-      const res = await NGISAuth.api('/api/admin/stats');
-      const d = res.data || {};
-      document.getElementById('kpiStudents').textContent = d.students ?? '0';
-      document.getElementById('kpiTeachers').textContent = d.teachers ?? '0';
-      document.getElementById('kpiParents').textContent = d.parents ?? '0';
-      document.getElementById('kpiGrades').textContent = d.grades ?? '0';
-    } catch (_) {
-      document.getElementById('kpiStudents').textContent = '—';
-    }
-  }, 200);
-})();
+      if (window.NGISAuth) {
+        const u = NGISAuth.getUser();
+        if (u) {
+          const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Sok Panha Heng';
+          const dt = document.getElementById("dtAdminName");
+          const mb = document.getElementById("mobAdminName");
+          const md = document.getElementById("modalAdminName");
+          const em = document.getElementById("dtAdminEmail");
+          if (dt) dt.textContent = name;
+          if (mb) mb.textContent = name;
+          if (md) md.textContent = name;
+          if (em && u.email) em.textContent = u.email;
+        }
+      }
+    } catch (_) {}
+  }, 100);
+});
 </script>
 </body>
 </html>

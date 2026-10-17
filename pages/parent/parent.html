@@ -4,189 +4,544 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>NGIS — Parent Dashboard</title>
+
+<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/app.css">
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="../../assets/css/portal-dashboard.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<!-- Phosphor Icons for Mobile View -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS (for native mobile experience) -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<!-- Theme bootstrap -->
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
 </head>
-<body>
+<body data-role="parent" data-page="dashboard">
 <main class="main">
-<div id="heroBanner"></div>
-<div class="page">
 
-  <section class="mt16 anim-up-2" aria-label="Choose child">
-    <div class="flex gap8 wrap" id="childrenList">
-      <span class="muted">Loading children…</span>
-    </div>
-  </section>
+  <!-- ════════════════════════════════════════════════════════
+       1. DESKTOP VIEW (Screen >= 769px)
+       ════════════════════════════════════════════════════════ -->
+  <div class="parent-desktop-view">
+    <div id="heroBanner"></div>
 
-  <section class="mt16 anim-up-2" aria-label="Quick actions">
-    <div class="quick-grid">
-      <a class="quick" href="parent-grades.html"><span class="qi t-green"><span class="material-symbols-outlined">grade</span></span><span><span>Grades</span><small>Report card</small></span></a>
-      <a class="quick" href="parent-assignments.html"><span class="qi t-blue"><span class="material-symbols-outlined">assignment</span></span><span><span>Assignments</span><small>Homework status</small></span></a>
-      <a class="quick" href="parent-fees.html"><span class="qi t-amber"><span class="material-symbols-outlined">payments</span></span><span><span>Pay fees</span><small>View invoices</small></span></a>
-      <a class="quick" href="parent-announcements.html"><span class="qi t-purple"><span class="material-symbols-outlined">campaign</span></span><span><span>Messages</span><small>School updates</small></span></a>
-    </div>
-  </section>
+    <div class="page" style="padding-top:0">
+      <div class="dash-overlap anim-up">
 
-  <div class="col-main mt16 anim-up-3">
-    <div class="stack" style="flex:2">
-
-      <div class="card">
-        <div class="card-head">
-          <div><h3 id="childScheduleTitle">Child's schedule today</h3><div class="sub" id="todayDate">—</div></div>
-          <a class="link-btn" href="parent-calendar.html">Calendar</a>
+        <!-- Column 1: Parent & Guardian Profile Card -->
+        <div class="ov-profile">
+          <div class="ov-profile-header">
+            <img class="ov-avatar" src="https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Chan Dara Vuth">
+            <div class="ov-profile-info">
+              <div class="ov-profile-name" id="dtParentName">Chan Dara Vuth</div>
+              <div class="ov-profile-grade">Primary Guardian &middot; PAR-2026-042</div>
+              <span class="ov-profile-badge">Guardian Account</span>
+            </div>
+          </div>
+          <div class="ov-profile-body">
+            <div class="ov-info-row" title="dara.vuth@gmail.com">
+              <span class="material-symbols-outlined">mail</span>
+              <span class="ov-info-text">dara.vuth@gmail.com</span>
+            </div>
+            <div class="ov-info-row" title="+855 12 889 900">
+              <span class="material-symbols-outlined">phone</span>
+              <span class="ov-info-text">+855 12 889 900</span>
+            </div>
+            <div class="ov-info-row" title="Phnom Penh, Cambodia">
+              <span class="material-symbols-outlined">family_restroom</span>
+              <span class="ov-info-text">2 Enrolled Children</span>
+            </div>
+          </div>
+          <div class="ov-actions">
+            <button class="ov-btn-main" id="viewIdBtn"><span class="material-symbols-outlined">badge</span>Family ID Card</button>
+            <button class="ov-btn-ic" title="Teacher Messages" aria-label="Messages" onclick="window.location.href='../shared/chat.html?portal=parent'"><span class="material-symbols-outlined">chat</span></button>
+            <button class="ov-btn-ic" title="Child Schedule" aria-label="Schedule" onclick="window.location.href='parent-calendar.html'"><span class="material-symbols-outlined">calendar_month</span></button>
+          </div>
         </div>
-        <div class="card-pad" style="display:flex;flex-direction:column;gap:9px" id="scheduleList">
-          <div class="row-item"><div class="row-body"><span>No schedule data yet</span><small>Connected system — timetable coming in next phase</small></div></div>
+
+        <!-- Column 2: Child Schedule & Live Activity Feed -->
+        <div class="ov-upcoming">
+          <div class="ov-card-head">
+            <div class="ov-card-title">
+              <span class="material-symbols-outlined">schedule</span>Child's Daily Schedule
+            </div>
+            <a href="parent-calendar.html" class="ov-card-link">Full Schedule &rarr;</a>
+          </div>
+          <div class="ov-inner-grid">
+
+            <!-- Panel 1: Classes Today -->
+            <div class="ov-inner-panel">
+              <div class="ov-inner-head">
+                <span class="material-symbols-outlined" style="color:#13829b">school</span>Classes Today
+              </div>
+              <div class="ov-inner-item">
+                <div class="ov-inner-item-t">Advanced Mathematics</div>
+                <div class="ov-inner-item-s">08:00–10:00 &middot; Room 302</div>
+              </div>
+              <div class="ov-inner-item">
+                <div class="ov-inner-item-t">Physics Laboratory</div>
+                <div class="ov-inner-item-s">10:15–12:00 &middot; Science Lab 1</div>
+              </div>
+              <div class="ov-inner-item">
+                <div class="ov-inner-item-t">Khmer Literature</div>
+                <div class="ov-inner-item-s">13:30–15:00 &middot; Room 204</div>
+              </div>
+            </div>
+
+            <!-- Panel 2: Homework & Upcoming Exams -->
+            <div class="ov-inner-panel">
+              <div class="ov-inner-head">
+                <span class="material-symbols-outlined" style="color:#059669">assignment</span>Homework Tasks
+              </div>
+              <div class="ov-inner-item">
+                <div class="ov-inner-item-t">Physics Lab Report 04</div>
+                <div class="ov-inner-item-s">Due: Thu 26 Jun &middot; In Progress</div>
+              </div>
+              <div class="ov-inner-item">
+                <div class="ov-inner-item-t">Math Problem Set 4</div>
+                <div class="ov-inner-item-s">Due: Fri 27 Jun &middot; Ready to submit</div>
+              </div>
+              <div class="ov-inner-item">
+                <div class="ov-inner-item-t">Biology Midterm Exam</div>
+                <div class="ov-inner-item-s">Jul 04 &middot; Cambridge Hall</div>
+              </div>
+            </div>
+
+            <!-- Panel 3: Live School Activity Feed -->
+            <div class="ov-inner-panel" style="padding:0;overflow:hidden;display:flex;flex-direction:column">
+              <div class="ov-inner-head" style="padding:8px 10px;border-bottom:1px solid #f1f5f9;margin:0">
+                <span class="material-symbols-outlined" style="color:#e11d48">campaign</span>
+                <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">School Activity Feed</span>
+                <span style="display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;color:#e11d48">
+                  <span style="width:6px;height:6px;border-radius:50%;background:#e11d48;animation:feedPulse 1.4s ease-in-out infinite"></span>LIVE
+                </span>
+              </div>
+              <div class="activity-feed-list">
+                <div class="feed-row">
+                  <div class="feed-bar" style="background:#059669"></div>
+                  <div class="feed-content">
+                    <div class="feed-header">
+                      <span class="feed-badge" style="background:#dcfce7;color:#15803d">Grade</span>
+                      <span class="feed-time">2h ago</span>
+                    </div>
+                    <div class="feed-title">Chemistry Lab Graded: 88%</div>
+                    <div class="feed-sub">Teacher comment: Excellent laboratory writeup</div>
+                  </div>
+                </div>
+                <div class="feed-row">
+                  <div class="feed-bar" style="background:#13829b"></div>
+                  <div class="feed-content">
+                    <div class="feed-header">
+                      <span class="feed-badge" style="background:#e0f2fe;color:#0369a1">Notice</span>
+                      <span class="feed-time">4h ago</span>
+                    </div>
+                    <div class="feed-title">Term 1 Report Cards Released</div>
+                    <div class="feed-sub">Download verified digital transcript</div>
+                  </div>
+                </div>
+                <div class="feed-row">
+                  <div class="feed-bar" style="background:#f59e0b"></div>
+                  <div class="feed-content">
+                    <div class="feed-header">
+                      <span class="feed-badge" style="background:#fef3c7;color:#b45309">Payment</span>
+                      <span class="feed-time">1d ago</span>
+                    </div>
+                    <div class="feed-title">Term 2 Tuition Invoice Verified</div>
+                    <div class="feed-sub">Payment status: Settled &middot; No balance</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
+
+        <!-- Column 3: Academic Health & Status -->
+        <div class="ov-deadlines">
+          <div class="ov-card-head">
+            <div class="ov-card-title">
+              <span class="material-symbols-outlined" style="color:#059669">verified</span>Child Performance
+            </div>
+            <a href="parent-grades.html" class="ov-card-link">Report Cards</a>
+          </div>
+          <div class="ov-deadline-list">
+            <div class="ov-deadline-card">
+              <div class="flex between center mb4">
+                <span class="badge green">Term Attendance</span>
+                <span style="font-size:10.5px;color:#059669;font-weight:600">96.4%</span>
+              </div>
+              <div style="font-size:12.5px;font-weight:600">On Track &middot; Exemplary</div>
+              <p class="muted" style="font-size:11px;margin-top:2px">44 of 46 sessions attended on time</p>
+            </div>
+            <div class="ov-deadline-card">
+              <div class="flex between center mb4">
+                <span class="badge blue">Academic Standing</span>
+                <span style="font-size:10.5px;color:#0284c7;font-weight:600">GPA 3.87</span>
+              </div>
+              <div style="font-size:12.5px;font-weight:600">Dean's Honor Roll</div>
+              <p class="muted" style="font-size:11px;margin-top:2px">Ranked top 5% in Grade 10 Science Stream</p>
+            </div>
+            <div class="ov-deadline-card">
+              <div class="flex between center mb4">
+                <span class="badge purple">Tuition Fees</span>
+                <span style="font-size:10.5px;color:#7c3aed;font-weight:600">Paid</span>
+              </div>
+              <div style="font-size:12.5px;font-weight:600">All Invoices Settled</div>
+              <p class="muted" style="font-size:11px;margin-top:2px">Official receipt #REC-2026-9021</p>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.dash-overlap -->
+
+      <!-- Child Switcher Bar -->
+      <div class="parent-child-bar anim-up-2">
+        <div class="flex center gap8 wrap">
+          <span class="parent-child-label"><span class="material-symbols-outlined" style="font-size:18px;color:var(--accent,#13829b)">family_restroom</span>Active Student Profile:</span>
+          <button type="button" class="btn btn-sm btn-primary child-btn" id="btnChild1" onclick="switchChild(1)">
+            <span class="material-symbols-outlined" style="font-size:16px">face</span>Dara Sophea &middot; Grade 10-A
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost child-btn" id="btnChild2" onclick="switchChild(2)">
+            <span class="material-symbols-outlined" style="font-size:16px">face</span>Dara Bopha &middot; Grade 7-B
+          </button>
+        </div>
+        <a class="link-btn" href="parent-children.html" style="font-size:12px;font-weight:600">All Linked Students &rarr;</a>
       </div>
 
-      <div class="card">
-        <div class="card-head"><div><h3>Recent announcements</h3></div><a class="link-btn" href="parent-announcements.html">View all</a></div>
-        <div class="card-pad" style="display:flex;flex-direction:column;gap:10px">
-          <div class="notif-card notif-blue">
-            <div class="flex between center"><span style="font-size:14px">Welcome to the Connected Parent Portal</span><small class="faint">Just now</small></div>
-            <p class="muted mt4" style="font-size:13px">You are logged in with real authentication. Your linked children appear above.</p>
+      <!-- Row 2: Statistics & Tools -->
+      <div class="grid g-4 mb16 anim-up-2">
+        <a href="parent-grades.html" class="stat">
+          <div class="stat-top"><div class="stat-ico t-accent"><span class="material-symbols-outlined fill">grade</span></div></div>
+          <div class="stat-val">3.87</div><div class="stat-label">Cumulative GPA</div>
+        </a>
+        <a href="parent-attendance.html" class="stat">
+          <div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">how_to_reg</span></div></div>
+          <div class="stat-val">96.4%</div><div class="stat-label">Term Attendance</div>
+        </a>
+        <a href="parent-assignments.html" class="stat">
+          <div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">assignment</span></div></div>
+          <div class="stat-val">4</div><div class="stat-label">Pending Tasks</div>
+        </a>
+        <a href="parent-fees.html" class="stat">
+          <div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">payments</span></div></div>
+          <div class="stat-val">$0 Due</div><div class="stat-label">Account Balance</div>
+        </a>
+      </div>
+
+      <!-- Quick Actions Grid -->
+      <section class="mb16 anim-up-3" aria-label="Quick actions">
+        <div class="quick-grid">
+          <a class="quick" href="parent-grades.html"><span class="qi t-green"><span class="material-symbols-outlined">grade</span></span><span><span>Grades</span><small>Report card</small></span></a>
+          <a class="quick" href="parent-assignments.html"><span class="qi t-blue"><span class="material-symbols-outlined">assignment</span></span><span><span>Assignments</span><small>Homework status</small></span></a>
+          <a class="quick" href="parent-fees.html"><span class="qi t-amber"><span class="material-symbols-outlined">payments</span></span><span><span>Pay fees</span><small>View invoices</small></span></a>
+          <a class="quick" href="parent-announcements.html"><span class="qi t-purple"><span class="material-symbols-outlined">campaign</span></span><span><span>Messages</span><small>School updates</small></span></a>
+        </div>
+      </section>
+
+    </div>
+  </div><!-- /.parent-desktop-view -->
+
+
+  <!-- ════════════════════════════════════════════════════════
+       2. MOBILE VIEW (Screen <= 768px)
+       ════════════════════════════════════════════════════════ -->
+  <div class="parent-mobile-view px-4 pt-4 pb-28">
+
+    <!-- Mobile Top Bar -->
+    <header class="flex items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="relative w-11 h-11 shrink-0">
+          <img class="w-11 h-11 rounded-full object-cover border-2 border-[#13829b] shadow-sm" src="https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Chan Dara Vuth">
+          <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+        </div>
+        <div class="min-w-0">
+          <p class="text-[11px] font-medium text-slate-500 truncate">Guardian Account</p>
+          <h1 class="text-sm font-semibold text-slate-800 truncate" id="mobParentName">Chan Dara Vuth</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="parent-notifications.html" class="relative w-9 h-9 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 shadow-xs">
+          <i class="ph-bold ph-bell text-lg"></i>
+          <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500"></span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Child Selector Capsule (Mobile) -->
+    <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-1 no-scrollbar">
+      <button type="button" id="mobBtnChild1" onclick="switchChild(1)" class="px-3.5 py-1.5 rounded-full bg-[#13829b] text-white text-xs font-semibold whitespace-nowrap shadow-xs active:scale-95 transition-all">
+        Dara Sophea (Grade 10-A)
+      </button>
+      <button type="button" id="mobBtnChild2" onclick="switchChild(2)" class="px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-medium whitespace-nowrap active:scale-95 transition-all">
+        Dara Bopha (Grade 7-B)
+      </button>
+    </div>
+
+    <!-- Child Academic Status Banner -->
+    <section class="bg-gradient-to-br from-[#13829b] to-[#0e6d82] text-white rounded-2xl p-4 shadow-float mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[11px] font-medium uppercase tracking-wider text-teal-100">Academic Progress</span>
+        <span class="text-[10px] font-semibold bg-white/20 px-2 py-0.5 rounded-full text-white">GPA: 3.87</span>
+      </div>
+      <div class="flex items-end justify-between">
+        <div>
+          <div class="text-xl font-bold">Dara Sophea</div>
+          <p class="text-xs text-teal-100 mt-0.5">Grade 10-A &middot; 96.4% Attendance</p>
+        </div>
+        <button type="button" onclick="document.getElementById('idModal').classList.add('open')" class="px-3 py-1.5 bg-white text-[#13829b] font-semibold text-xs rounded-xl shadow-xs active:scale-95 transition-all">
+          Family ID
+        </button>
+      </div>
+    </section>
+
+    <!-- 4-Tile Primary Actions Grid -->
+    <section class="grid grid-cols-4 gap-2.5 mb-4" data-purpose="primary-quick-actions">
+      <a href="parent-grades.html" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#eff6ff] border border-blue-100/60 active:scale-95 transition-all">
+        <div class="w-9 h-9 rounded-xl bg-white text-blue-600 flex items-center justify-center mb-1.5 shadow-xs">
+          <i class="ph-bold ph-chart-line-up text-lg"></i>
+        </div>
+        <span class="text-[11px] font-medium text-blue-800 text-center leading-tight">Grades</span>
+      </a>
+      <a href="parent-assignments.html" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#fffbeb] border border-amber-100/60 active:scale-95 transition-all">
+        <div class="w-9 h-9 rounded-xl bg-white text-amber-600 flex items-center justify-center mb-1.5 shadow-xs">
+          <i class="ph-bold ph-books text-lg"></i>
+        </div>
+        <span class="text-[11px] font-medium text-amber-800 text-center leading-tight">Tasks</span>
+      </a>
+      <a href="parent-fees.html" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#f0fdf4] border border-emerald-100/60 active:scale-95 transition-all">
+        <div class="w-9 h-9 rounded-xl bg-white text-emerald-600 flex items-center justify-center mb-1.5 shadow-xs">
+          <i class="ph-bold ph-credit-card text-lg"></i>
+        </div>
+        <span class="text-[11px] font-medium text-emerald-800 text-center leading-tight">Fees</span>
+      </a>
+      <a href="../shared/chat.html?portal=parent" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#f5f3ff] border border-purple-100/60 active:scale-95 transition-all">
+        <div class="w-9 h-9 rounded-xl bg-white text-purple-600 flex items-center justify-center mb-1.5 shadow-xs">
+          <i class="ph-bold ph-chat-circle-dots text-lg"></i>
+        </div>
+        <span class="text-[11px] font-medium text-purple-800 text-center leading-tight">Chat</span>
+      </a>
+    </section>
+
+    <!-- Child Attendance Gauge -->
+    <section class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-700">Child Attendance Status</h3>
+        </div>
+        <span class="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Term 1</span>
+      </div>
+      <div class="flex items-center gap-4 py-1">
+        <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+          <svg class="gauge-svg w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+            <path class="gauge-track" stroke="#e2e8f0" stroke-width="3.5" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="gauge-val val-green" id="mobGaugePath" stroke="#10b981" stroke-dasharray="96, 100" stroke-width="3.5" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          </svg>
+          <span class="absolute text-xs font-bold text-slate-800">96%</span>
+        </div>
+        <div class="flex-1 space-y-1 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Present</span>
+            <span class="font-semibold text-slate-800">44 sessions</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2 h-2 rounded-full bg-[#13829b]"></span>Excused</span>
+            <span class="font-semibold text-slate-800">2 sessions</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Unexcused</span>
+            <span class="font-semibold text-slate-800">0 sessions</span>
           </div>
         </div>
       </div>
+    </section>
 
-    </div>
-
-    <div class="stack" style="flex:1">
-
-      <div class="card card-pad">
-        <div class="flex between center mb12"><h3>Attendance</h3><span class="badge green">On track</span></div>
-        <div class="att-figure"><span id="childAttendance">—</span><span>this term</span></div>
-        <div class="bar green mt12"><span id="attBar" style="width:0%"></span></div>
-        <p class="muted mt12" style="font-size:13px" id="attNote">Select a child to view attendance.</p>
+    <!-- Recent Child Deadlines -->
+    <section>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-600">Upcoming Homework &amp; Deadlines</h3>
+        <a href="parent-assignments.html" class="text-xs font-medium text-[#13829b]">View All</a>
       </div>
+      <div class="space-y-2">
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
+              <i class="ph-bold ph-hourglass-high text-lg"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs font-semibold text-slate-800 truncate">Physics Lab Report 04</h4>
+                <span class="text-[9px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded">Due Thu</span>
+              </div>
+              <p class="text-[11px] text-slate-500 truncate mt-0.5">Dara Sophea &middot; In Progress</p>
+            </div>
+          </div>
+          <a href="parent-assignments.html" class="px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-medium rounded-xl shrink-0">Details</a>
+        </div>
 
-      <div class="card">
-        <div class="card-head"><div><h3>Linked children</h3></div></div>
-        <div class="card-pad" id="childrenDetail">
-          <p class="muted">Loading…</p>
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+              <i class="ph-bold ph-check-circle text-lg"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs font-semibold text-slate-800 truncate">Chemistry Lab Evaluation</h4>
+                <span class="text-[9px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded">88%</span>
+              </div>
+              <p class="text-[11px] text-slate-500 truncate mt-0.5">Graded by Ms. Kiry Sokha</p>
+            </div>
+          </div>
+          <a href="parent-grades.html" class="px-3 py-1.5 bg-[#13829b] text-white text-xs font-medium rounded-xl shrink-0">Report</a>
         </div>
       </div>
+    </section>
 
+  </div><!-- /.parent-mobile-view -->
+
+</main>
+
+<!-- Digital Family ID Card Modal -->
+<div class="id-modal-overlay" id="idModal">
+  <div class="id-modal-container">
+    <div class="id-modal-header">
+      <span class="id-modal-title">Family / Guardian Digital Pass</span>
+      <button class="id-close-btn" onclick="document.getElementById('idModal').classList.remove('open')" aria-label="Close modal">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="id-modal-body">
+      <div class="id-card-wrapper">
+        <div class="id-card-top">
+          <span class="id-card-school">New Gateway International School</span>
+          <span class="badge" style="background:rgba(255,255,255,0.25);color:#fff;font-size:10px">GUARDIAN PASS</span>
+        </div>
+        <div class="id-card-user">
+          <img class="id-card-photo" src="https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=160" alt="Chan Dara Vuth">
+          <div class="id-card-info">
+            <div class="id-card-name" id="modalParentName">Chan Dara Vuth</div>
+            <div class="id-card-role">Primary Guardian</div>
+            <div class="id-card-idnum">ID: PAR-2026-042</div>
+          </div>
+        </div>
+        <div class="id-card-grid">
+          <div>
+            <div class="id-card-field-label">Linked Child 1</div>
+            <div class="id-card-field-val">Dara Sophea (Grade 10-A)</div>
+          </div>
+          <div>
+            <div class="id-card-field-label">Linked Child 2</div>
+            <div class="id-card-field-val">Dara Bopha (Grade 7-B)</div>
+          </div>
+          <div>
+            <div class="id-card-field-label">Campus Pickup Clearance</div>
+            <div class="id-card-field-val">Gate 1 &amp; Central Quad</div>
+          </div>
+          <div>
+            <div class="id-card-field-label">Account Status</div>
+            <div class="id-card-field-val" style="color:#bbf7d0">Active Guardian</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
 </div>
-</main>
+
 <script>window.PAGE={"role":"parent","active":"dashboard"};</script>
 <script>
-// Will be updated after auth hydration
 window.HERO_CONFIG = {
   role: 'parent',
   active: 'dashboard',
   isDashboard: true,
-  name: 'Parent',
-  id: 'Guardian Account',
-  grade: 'Parent',
+  showHeroBody: true,
+  name: 'Chan Dara Vuth',
+  id: 'Guardian ID: PAR-2026-042',
+  grade: 'Primary Guardian &middot; 2 Linked Children',
   avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
   signOutLink: '../../index.html',
   profileLink: 'parent-profile.html',
   notifLink: 'parent-notifications.html',
-  chatLink: '../shared/chat.html',
-  notifCount: 0,
+  chatLink: '../shared/chat.html?portal=parent',
+  notifCount: 2,
   title: 'Welcome to your dashboard',
-  greeting: 'Here is how your children are doing.',
-  ddRows: []
+  greeting: 'Here is your children academic progress, attendance, and school reports.',
+  breadcrumbs: [{ label: 'Dashboard' }],
+  ddRows: [
+    { icon: 'family_restroom', text: 'Guardian: Chan Dara Vuth' },
+    { icon: 'school', text: 'Dara Sophea &middot; Grade 10-A' },
+    { icon: 'school', text: 'Dara Bopha &middot; Grade 7-B' },
+    { icon: 'email', text: 'dara.vuth@gmail.com' },
+    { icon: 'verified', text: 'Verified Guardian Account' }
+  ]
 };
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+
 <script>
-(function() {
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const now = new Date();
-  const dateEl = document.getElementById('todayDate');
-  if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+function switchChild(num) {
+  const b1 = document.getElementById("btnChild1");
+  const b2 = document.getElementById("btnChild2");
+  const mb1 = document.getElementById("mobBtnChild1");
+  const mb2 = document.getElementById("mobBtnChild2");
+  
+  if (num === 1) {
+    if (b1) { b1.classList.add("btn-primary"); b1.classList.remove("btn-ghost"); }
+    if (b2) { b2.classList.add("btn-ghost"); b2.classList.remove("btn-primary"); }
+    if (mb1) { mb1.className = "px-3.5 py-1.5 rounded-full bg-[#13829b] text-white text-xs font-semibold whitespace-nowrap shadow-xs active:scale-95 transition-all"; }
+    if (mb2) { mb2.className = "px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-medium whitespace-nowrap active:scale-95 transition-all"; }
+  } else {
+    if (b2) { b2.classList.add("btn-primary"); b2.classList.remove("btn-ghost"); }
+    if (b1) { b1.classList.add("btn-ghost"); b1.classList.remove("btn-primary"); }
+    if (mb2) { mb2.className = "px-3.5 py-1.5 rounded-full bg-[#13829b] text-white text-xs font-semibold whitespace-nowrap shadow-xs active:scale-95 transition-all"; }
+    if (mb1) { mb1.className = "px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-medium whitespace-nowrap active:scale-95 transition-all"; }
+  }
+}
 
-  // Wait for children to load from auth bootstrap
+document.addEventListener("DOMContentLoaded", function() {
+  const btn = document.getElementById("viewIdBtn");
+  if (btn) {
+    btn.addEventListener("click", function() {
+      const modal = document.getElementById("idModal");
+      if (modal) modal.classList.add("open");
+    });
+  }
+  const modal = document.getElementById("idModal");
+  if (modal) {
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) modal.classList.remove("open");
+    });
+  }
+
+  // Hydrate parent user details if logged in
   const check = setInterval(() => {
-    if (!window.NGIS_CHILDREN) return;
+    if (!window.NGIS_CURRENT_USER) return;
     clearInterval(check);
-
-    const children = window.NGIS_CHILDREN;
-    const user = window.NGIS_CURRENT_USER || NGISAuth.getUser();
-
-    // Update hero
-    if (user && window.HERO_CONFIG) {
-      window.HERO_CONFIG.name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-      window.HERO_CONFIG.greeting = `Hello! You have ${children.length} linked child${children.length !== 1 ? 'ren' : ''}.`;
-    }
-
-    // Children tabs
-    const listEl = document.getElementById('childrenList');
-    if (listEl) {
-      if (!children.length) {
-        listEl.innerHTML = '<span class="muted">No children linked to this account.</span>';
-      } else {
-        listEl.innerHTML = children.map((c, i) => {
-          const initials = ((c.first_name || '')[0] || '') + ((c.last_name || '')[0] || '');
-          return `<button class="child-tab ${i === 0 ? 'on' : ''}" data-id="${c.id}">
-            <span class="ava t-blue" style="width:24px;height:24px;font-size:10px">${initials.toUpperCase()}</span>
-            ${c.first_name || ''} · ${c.grade || ''}
-          </button>`;
-        }).join('');
-
-        // Select first child by default
-        selectChild(children[0]);
-
-        listEl.querySelectorAll('.child-tab').forEach(btn => {
-          btn.addEventListener('click', () => {
-            listEl.querySelectorAll('.child-tab').forEach(b => b.classList.remove('on'));
-            btn.classList.add('on');
-            const child = children.find(c => c.id === btn.dataset.id);
-            if (child) selectChild(child);
-          });
-        });
-      }
-    }
-
-    // Detail list
-    const detailEl = document.getElementById('childrenDetail');
-    if (detailEl) {
-      detailEl.innerHTML = children.map(c => `
-        <div class="row-item" style="margin-bottom:8px">
-          <div class="row-body">
-            <span>${c.first_name || ''} ${c.last_name || ''}</span>
-            <small>${c.grade || ''} · ${c.student_number || ''}</small>
-          </div>
-          <span class="badge green">${Math.round(c.attendance_rate || 0)}%</span>
-        </div>
-      `).join('') || '<p class="muted">No children linked.</p>';
-    }
-
-    function selectChild(c) {
-      const title = document.getElementById('childScheduleTitle');
-      if (title) title.textContent = `${c.first_name || 'Child'}'s schedule today`;
-
-      const att = document.getElementById('childAttendance');
-      if (att) att.textContent = `${Math.round(c.attendance_rate || 0)}%`;
-
-      const bar = document.getElementById('attBar');
-      if (bar) bar.style.width = `${c.attendance_rate || 0}%`;
-
-      const note = document.getElementById('attNote');
-      if (note) note.textContent = `${c.grade || ''} · Student #${c.student_number || '—'}`;
-    }
+    const u = window.NGIS_CURRENT_USER;
+    const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Chan Dara Vuth';
+    const dt = document.getElementById("dtParentName");
+    const mb = document.getElementById("mobParentName");
+    const md = document.getElementById("modalParentName");
+    if (dt) dt.textContent = name;
+    if (mb) mb.textContent = name;
+    if (md) md.textContent = name;
   }, 100);
-})();
+});
 </script>
 </body>
 </html>

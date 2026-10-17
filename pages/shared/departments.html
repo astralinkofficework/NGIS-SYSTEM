@@ -299,6 +299,14 @@ try {
   try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
   var p = new URLSearchParams(window.location.search);
   var role = (p.get('portal') || p.get('role') || localStorage.getItem('ngis_active_portal') || (saved && saved.role) || 'student').toLowerCase();
+  if (role === 'teacher') {
+    window.location.href = '../teacher/teacher-departments.html';
+    return;
+  }
+  if (role === 'admin' || role === 'principal') {
+    window.location.href = '../admin/admin-departments.html';
+    return;
+  }
   window.PAGE = { role: role, active: 'departments' };
   if (saved && saved.role === role) window.CURRENT_USER = saved;
   document.body.classList.add('ready');

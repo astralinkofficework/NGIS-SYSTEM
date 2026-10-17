@@ -42,7 +42,6 @@
           { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/admin/admin-assignments.html" },
           { id:"exams",       label:"Exams",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
           { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
         { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
           { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
@@ -86,10 +85,15 @@
         { label:"Main", icon:"home", links:[
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/teacher/teacher.html" },
         ]},
-        { label:"Teaching", icon:"school", links:[
-          { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
-          { id:"classes",     label:"My Classes",  icon:"school",    href:"pages/teacher/teacher-classes.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
+        { label:"Teaching & Classes", icon:"school", links:[
+          { id:"classes",     label:"My Classes",          icon:"school",             href:"pages/teacher/teacher-classes.html" },
+          { id:"attendance",  label:"Attendance",          icon:"how_to_reg",         href:"pages/teacher/teacher-attendance.html" },
+          { id:"assignments", label:"Assignments",         icon:"assignment",         href:"pages/teacher/teacher-assignments.html" },
+          { id:"lessons",     label:"Lessons & Materials", icon:"menu_book",          href:"pages/teacher/teacher-lessons.html" },
+          { id:"grades",       label:"Grades",              icon:"grade",              href:"pages/teacher/teacher-grades.html" },
+          { id:"calendar",    label:"Timetable",           icon:"calendar_view_week", href:"pages/teacher/teacher-calendar.html" },
+          { id:"documents",   label:"Course Materials",    icon:"description",        href:"pages/teacher/teacher-documents.html" },
+          { id:"departments", label:"Departments",         icon:"apartment",          href:"pages/teacher/teacher-departments.html" },
         ]},
         { id:"messaging", label:"Messaging", icon:"forum", links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
@@ -115,6 +119,7 @@
         ]},
         { label:"Learning", icon:"school", links:[
           { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
+          { id:"calendar",    label:"Calendar", icon:"calendar_month", href:"pages/student/student-calendar.html" },
           { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
           { id:"clubs",       label:"Clubs & Activities", icon:"diversity_3", href:"pages/student/student-clubs.html" },
           { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
@@ -137,22 +142,81 @@
       brand: "Parent", meta: "Guardian Account · 2025–26",
       groups: [
         { label:"Main", icon:"home", links:[
-          { id:"dashboard", label:"Dashboard",   icon:"dashboard",       href:"pages/parent/parent.html" },
-          { id:"children",  label:"My Children", icon:"family_restroom", href:"pages/parent/parent-children.html" },
+          { id:"dashboard",   label:"Dashboard",        icon:"dashboard",        href:"pages/parent/parent.html" },
+          { id:"children",    label:"My Children",      icon:"family_restroom",  href:"pages/parent/parent-children.html" },
         ]},
-        { label:"Learning", icon:"school", links:[
-          { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
-          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/parent/parent-services.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
+        { label:"Child Progress", icon:"school", links:[
+          { id:"grades",      label:"Grades & Reports", icon:"grade",            href:"pages/parent/parent-grades.html" },
+          { id:"attendance",  label:"Attendance",       icon:"how_to_reg",        href:"pages/parent/parent-attendance.html" },
+          { id:"assignments", label:"Homework & Tasks", icon:"assignment",       href:"pages/parent/parent-assignments.html" },
+          { id:"calendar",    label:"Schedule",         icon:"calendar_month",    href:"pages/parent/parent-calendar.html" },
+          { id:"fees",        label:"Fees & Invoices",  icon:"payments",          href:"pages/parent/parent-fees.html" },
+          { id:"documents",   label:"Documents",        icon:"folder",            href:"pages/parent/parent-documents.html" },
+          { id:"departments", label:"Departments",      icon:"apartment",         href:"pages/shared/departments.html" },
+          { id:"services",    label:"Student Services",  icon:"assignment",        href:"pages/parent/parent-services.html" },
         ]},
         { id:"messaging", label:"Messaging", icon:"forum", links:[
-          { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"1" },
-          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"1" },
-          { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"1" },
+          { id:"chat",          label:"Direct Messages",      icon:"mail",       href:"pages/shared/chat.html", badge:"1" },
+          { id:"announcements", label:"School Announcements",  icon:"newspaper",  href:"pages/shared/announcements.html", badge:"1" },
+          { id:"group-chat",    label:"Group Chats",           icon:"groups",     href:"pages/shared/group-chat.html", badge:"1" },
         ]},
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/parent/parent-notifications.html", badge:"2" },
           { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/parent/parent-profile.html" },
+        ]},
+      ],
+    },
+    principal: {
+      brand: "Principal", meta: "Executive Leadership · 2025–26",
+      groups: [
+        { label:"Overview", icon:"dashboard", links:[
+          { id:"dashboard", label:"Executive Dashboard", icon:"dashboard", href:"pages/principal/principal.html" },
+          { id:"approvals", label:"Executive Approvals", icon:"verified",  href:"pages/principal/principal-approvals.html" },
+        ]},
+        { id:"academic-oversight", label:"Academic Leadership", icon:"school", collapsible:true, links:[
+          { id:"reports",     label:"Academic Reports",  icon:"assessment", href:"pages/principal/principal-reports.html" },
+          { id:"classes",     label:"Classes & Cohorts", icon:"school",     href:"pages/admin/admin-classes.html" },
+          { id:"departments", label:"Departments",        icon:"apartment",  href:"pages/admin/admin-departments.html" },
+          { id:"campuses",    label:"Campuses",           icon:"location_city", href:"pages/admin/admin-campuses.html" },
+          { id:"grades",      label:"Academic Grades",    icon:"grade",      href:"pages/admin/admin-grades.html" },
+          { id:"exams",       label:"Examinations",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
+        ]},
+        { id:"faculty-students", label:"Faculty & Students", icon:"group", collapsible:true, links:[
+          { id:"teachers",   label:"Teacher Oversight",  icon:"co_present", href:"pages/admin/admin-users.html?role=teachers" },
+          { id:"students",   label:"Student Records",    icon:"school",     href:"pages/admin/admin-users.html?role=students" },
+          { id:"attendance", label:"Attendance Summary", icon:"how_to_reg",  href:"pages/admin/admin-attendance.html" },
+        ]},
+        { id:"messaging", label:"Messaging", icon:"forum", links:[
+          { id:"campus-announcements", label:"Campus Announcements", icon:"campaign", href:"pages/messaging/campus-announcements.html" },
+          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
+          { id:"chat",                label:"Direct Messages",      icon:"mail",      href:"pages/shared/chat.html", badge:"2" },
+          { id:"group-chat",          label:"Leadership Forum",     icon:"groups",    href:"pages/shared/group-chat.html", badge:"3" },
+        ]},
+        { label:"Account", icon:"person", links:[
+          { id:"profile",       label:"Executive Profile", icon:"person", href:"pages/principal/principal-profile.html" },
+        ]},
+      ],
+    },
+    staff: {
+      brand: "Staff", meta: "Campus Operations · 2025–26",
+      groups: [
+        { label:"Main", icon:"home", links:[
+          { id:"dashboard", label:"Operations Dashboard", icon:"dashboard", href:"pages/staff/staff.html" },
+        ]},
+        { id:"operations", label:"Services & Operations", icon:"room_service", collapsible:true, links:[
+          { id:"services",    label:"Service Requests",     icon:"assignment",        href:"pages/staff/staff-services.html" },
+          { id:"timetables",  label:"Facility Schedules",   icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
+          { id:"classes",     label:"Class Directory",      icon:"school",             href:"pages/admin/admin-classes.html" },
+        ]},
+        { id:"messaging", label:"Messaging", icon:"forum", links:[
+          { id:"campus-announcements", label:"Campus Announcements", icon:"campaign",  href:"pages/messaging/campus-announcements.html" },
+          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"2" },
+          { id:"department-channels", label:"Department Channels",  icon:"apartment", href:"pages/messaging/department-channels.html" },
+          { id:"chat",                label:"Direct Messages",      icon:"mail",       href:"pages/shared/chat.html", badge:"1" },
+          { id:"group-chat",          label:"Staff Forum",          icon:"groups",     href:"pages/shared/group-chat.html", badge:"2" },
+        ]},
+        { label:"Account", icon:"person", links:[
+          { id:"profile",       label:"Staff Profile", icon:"person", href:"pages/staff/staff-profile.html" },
         ]},
       ],
     },
@@ -184,28 +248,51 @@
     ],
     parent: [
       { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/parent/parent.html" },
-      { id:"departments",label:"Departments",icon:"apartment",      href:"pages/shared/departments.html" },
+      { id:"children",   label:"Children",   icon:"family_restroom",href:"pages/parent/parent-children.html" },
       { id:"services",   label:"Services",   icon:"assignment",     href:"pages/parent/parent-services.html" },
       { id:"notifications",label:"Alerts",   icon:"notifications",  href:"pages/parent/parent-notifications.html", badge:"2" },
+    ],
+    principal: [
+      { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/principal/principal.html" },
+      { id:"reports",    label:"Reports",    icon:"assessment",     href:"pages/principal/principal-reports.html" },
+      { id:"approvals",  label:"Approvals",  icon:"verified",       href:"pages/principal/principal-approvals.html" },
+      { id:"profile",    label:"Profile",    icon:"person",         href:"pages/principal/principal-profile.html" },
+    ],
+    staff: [
+      { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/staff/staff.html" },
+      { id:"services",   label:"Services",   icon:"assignment",     href:"pages/staff/staff-services.html" },
+      { id:"announcements",label:"Alerts",   icon:"campaign",       href:"pages/shared/announcements.html", badge:"2" },
+      { id:"profile",    label:"Profile",    icon:"person",         href:"pages/staff/staff-profile.html" },
     ],
   };
 
   /* Central quick-chat action shown between the left and right dock items */
   const CHAT = {
-    admin:   { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"4" },
-    teacher: { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
-    student: { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
-    parent:  { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"1" },
+    admin:     { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"4" },
+    teacher:   { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
+    student:   { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
+    parent:    { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"1" },
+    principal: { label:"Forum",      href:"pages/shared/group-chat.html", badge:"3" },
+    staff:     { label:"Chat",       href:"pages/shared/chat.html", badge:"1" },
   };
 
   const DEFAULT_USER = {
-    admin:   { name:"Sok Panha Heng",    role:"Super Administrator",  initials:"SH" },
-    teacher: { name:"Dr. Sarah Jenkins", role:"Mathematics Dept.",    initials:"SJ" },
-    student: { name:"Nrinphouneta Hok",   role:"Student · Grade 11-A", initials:"NH" },
-    parent:  { name:"Chan Dara Vuth",    role:"Parent / Guardian",    initials:"CV" },
+    admin:     { name:"Sok Panha Heng",  role:"Super Administrator",  initials:"SH" },
+    teacher:   { name:"Dr. Sarah Jenkins", role:"Mathematics Dept.",  initials:"SJ" },
+    student:   { name:"Nrinphouneta Hok", role:"Student · Grade 11-A", initials:"NH" },
+    parent:    { name:"Chan Dara Vuth",  role:"Parent / Guardian",    initials:"CV" },
+    principal: { name:"Dr. Ly Bunheng",  role:"Campus Principal",     initials:"LB" },
+    staff:     { name:"Ms. Sreymom Lim", role:"Operations Coordinator", initials:"SL" },
   };
 
-  const PORTAL_HOME = { admin:"pages/admin/admin.html", teacher:"pages/teacher/teacher.html", student:"pages/student/student.html", parent:"pages/parent/parent.html" };
+  const PORTAL_HOME = {
+    admin: "pages/admin/admin.html",
+    teacher: "pages/teacher/teacher.html",
+    student: "pages/student/student.html",
+    parent: "pages/parent/parent.html",
+    principal: "pages/principal/principal.html",
+    staff: "pages/staff/staff.html"
+  };
 
   /* Resolve the portal from the authenticated session and scoped URL. */
   function readStoredUser(key) {
@@ -219,23 +306,43 @@
   }
   function resolvePortalRole(pageRole) {
     const path = window.location.pathname || "";
-    const match = path.match(/\/pages\/(admin|teacher|student|parent)\//);
+    const match = path.match(/\/pages\/(admin|teacher|student|parent|staff|principal)\//);
     const pathRole = match ? match[1] : null;
-    if (pathRole) {
+    const sessionRole = getSessionRole();
+
+    // Priority 1: Explicit non-student portal directory path
+    if (pathRole && pathRole !== "student") {
       try { localStorage.setItem("ngis_active_portal", pathRole); } catch (e) {}
       return pathRole;
     }
+
+    // Priority 2: Explicit URL query param
     const params = new URLSearchParams(window.location.search || "");
     const queryRole = (params.get("portal") || params.get("role") || "").toLowerCase();
-    if (["admin", "teacher", "student", "parent"].includes(queryRole)) {
+    if (["admin", "teacher", "student", "parent", "staff", "principal"].includes(queryRole)) {
       try { localStorage.setItem("ngis_active_portal", queryRole); } catch (e) {}
       return queryRole;
     }
+
+    // Priority 3: Visiting student directory — respect active staff/teacher/admin/parent/principal session
+    if (pathRole === "student") {
+      if (sessionRole && sessionRole !== "student") {
+        return sessionRole;
+      }
+      try { localStorage.setItem("ngis_active_portal", "student"); } catch (e) {}
+      return "student";
+    }
+
+    // Priority 4: Stored portal preference
     const storedPortal = localStorage.getItem("ngis_active_portal");
-    if (storedPortal && ["admin", "teacher", "student", "parent"].includes(storedPortal)) {
+    if (storedPortal && ["admin", "teacher", "student", "parent", "staff", "principal"].includes(storedPortal)) {
+      if (sessionRole && storedPortal === "student" && sessionRole !== "student") {
+        return sessionRole;
+      }
       return storedPortal;
     }
-    return normalizeRole(pageRole) || getSessionRole() || "student";
+
+    return normalizeRole(pageRole) || sessionRole || "student";
   }
 
   /* Path prefix — resolves root-relative hrefs from any depth.
@@ -385,18 +492,95 @@
       </header>`);
   }
 
-  function getStudentActiveTab(active) {
+  const MOB_NAV_TABS = {
+    student: [
+      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/student/student.html" },
+      { id: "department", label: "Departments", icon: "ph-bold ph-buildings", href: "pages/shared/departments.html" },
+      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/student/student-chat.html", isCenter: true },
+      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/student/student-notifications.html", hasDot: true },
+      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/student/student-profile.html" },
+    ],
+    teacher: [
+      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/teacher/teacher.html" },
+      { id: "classes", label: "Classes", icon: "ph-bold ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
+      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/chat.html?portal=teacher", isCenter: true },
+      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/teacher/teacher-notifications.html", hasDot: true },
+      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/teacher/teacher-profile.html" },
+    ],
+    parent: [
+      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/parent/parent.html" },
+      { id: "children", label: "Children", icon: "ph-bold ph-users-three", href: "pages/parent/parent-children.html" },
+      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/chat.html?portal=parent", isCenter: true },
+      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/parent/parent-notifications.html", hasDot: true },
+      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/parent/parent-profile.html" },
+    ],
+    admin: [
+      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/admin/admin.html" },
+      { id: "users", label: "Users", icon: "ph-bold ph-users-four", href: "pages/admin/admin-users.html" },
+      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/group-chat.html", isCenter: true },
+      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/admin/admin-logs.html", hasDot: true },
+      { id: "settings", label: "Settings", icon: "ph-bold ph-gear", href: "pages/admin/admin-settings.html" },
+    ],
+    principal: [
+      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/principal/principal.html" },
+      { id: "reports", label: "Reports", icon: "ph-bold ph-chart-line-up", href: "pages/admin/admin-reports.html" },
+      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/group-chat.html", isCenter: true },
+      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/admin/admin-logs.html", hasDot: true },
+      { id: "settings", label: "Settings", icon: "ph-bold ph-gear", href: "pages/admin/admin-settings.html" },
+    ],
+    staff: [
+      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/staff/staff.html" },
+      { id: "services", label: "Services", icon: "ph-bold ph-stack", href: "pages/admin/admin-services.html" },
+      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/chat.html", isCenter: true },
+      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/shared/announcements.html", hasDot: true },
+      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/staff/staff-profile.html" },
+    ],
+  };
+
+  function getRoleActiveTab(role, active) {
     const path = (window.location.pathname || '').toLowerCase();
     const file = (path.split('/').pop() || '').toLowerCase();
-    if (file === 'student.html' || (active === 'dashboard' && file.indexOf('student-') === -1)) return 'home';
-    if (file.indexOf('chat') !== -1 || active === 'chat' || active === 'teacher-chat' || active === 'group-chat') return 'chat';
-    if (file.indexOf('notification') !== -1 || file.indexOf('announcement') !== -1 || active === 'notifications' || active === 'announcements' || active === 'alerts') return 'alerts';
-    if (file.indexOf('profile') !== -1 || file.indexOf('student-id') !== -1 || active === 'profile' || active === 'student-id') return 'profile';
-    return 'department';
+    if (file === `${role}.html` || (active === 'dashboard' && file.indexOf(`${role}-`) === -1)) return 'home';
+    if (file.indexOf('chat') !== -1 || active === 'chat' || active === 'teacher-chat' || active === 'group-chat' || active === 'class-chats') return 'chat';
+    if (file.indexOf('notification') !== -1 || file.indexOf('announcement') !== -1 || file.indexOf('log') !== -1 || active === 'notifications' || active === 'announcements' || active === 'alerts' || active === 'logs') return 'alerts';
+    if (file.indexOf('profile') !== -1 || file.indexOf('setting') !== -1 || active === 'profile' || active === 'settings' || active === 'preferences') {
+      return (role === 'admin' || role === 'principal') ? 'settings' : 'profile';
+    }
+    if (role === 'teacher' && (file.indexOf('class') !== -1 || active === 'classes')) return 'classes';
+    if (role === 'parent' && (file.indexOf('child') !== -1 || active === 'children')) return 'children';
+    if (role === 'admin' && (file.indexOf('user') !== -1 || active === 'users' || active === 'admins' || active === 'teachers' || active === 'students' || active === 'parents')) return 'users';
+    if (role === 'principal' && (file.indexOf('report') !== -1 || active === 'reports')) return 'reports';
+    if (role === 'staff' && (file.indexOf('service') !== -1 || active === 'services')) return 'services';
+    if (role === 'student' && (file.indexOf('department') !== -1 || active === 'departments')) return 'department';
+    return 'home';
   }
 
-  function buildStudentBottomNav(active) {
-    const curTab = getStudentActiveTab(active);
+  function buildBottomNav(role, active) {
+    const tabs = MOB_NAV_TABS[role] || MOB_NAV_TABS.student;
+    const curTab = getRoleActiveTab(role, active);
+    const itemsHtml = tabs.map(tab => {
+      const isActive = tab.id === curTab;
+      if (tab.isCenter) {
+        return `
+          <a href="${_P}${tab.href}" class="mob-bn-item mob-bn-chat ${isActive ? 'is-active' : ''}" data-tab="${tab.id}" aria-label="${esc(tab.label)}"${isActive ? ' aria-current="page"' : ''}>
+            <span class="mob-bn-icon-row">
+              <span class="mob-bn-chat-core">
+                <i class="${tab.icon}"></i>
+              </span>
+            </span>
+          </a>`;
+      }
+      return `
+        <a href="${_P}${tab.href}" class="mob-bn-item ${isActive ? 'is-active' : ''}" data-tab="${tab.id}" aria-label="${esc(tab.label)}"${isActive ? ' aria-current="page"' : ''}>
+          <span class="mob-bn-icon-row">
+            <span class="mob-bn-icon-wrap">
+              <i class="${tab.icon}"></i>
+              ${tab.hasDot ? `<span class="mob-bn-dot"></span>` : ''}
+            </span>
+          </span>
+        </a>`;
+    }).join("");
+
     return el(`
       <nav class="mob-bottomnav" id="mobBottomNav" role="navigation" aria-label="Mobile Navigation" data-purpose="bottom-navigation-bar">
         <div class="mob-bn-glow" aria-hidden="true"></div>
@@ -404,84 +588,7 @@
           <div class="mob-bn-track">
             <div class="mob-bn-slider" id="mobBnSlider" aria-hidden="true"></div>
             <div class="mob-bn-inner">
-              <a href="${_P}pages/student/student.html" class="mob-bn-item ${curTab === 'home' ? 'is-active' : ''}" data-tab="home" aria-label="Home"${curTab === 'home' ? ' aria-current="page"' : ''}>
-                <span class="mob-bn-icon-row">
-                  <i class="ph-fill ph-house-simple"></i>
-                </span>
-              </a>
-              <a href="${_P}pages/shared/departments.html" class="mob-bn-item ${curTab === 'department' ? 'is-active' : ''}" data-tab="department" aria-label="Department"${curTab === 'department' ? ' aria-current="page"' : ''}>
-                <span class="mob-bn-icon-row">
-                  <i class="ph-bold ph-buildings"></i>
-                </span>
-              </a>
-              <a href="${_P}pages/student/student-chat.html" class="mob-bn-item mob-bn-chat ${curTab === 'chat' ? 'is-active' : ''}" data-tab="chat" aria-label="Chat"${curTab === 'chat' ? ' aria-current="page"' : ''}>
-                <span class="mob-bn-icon-row">
-                  <span class="mob-bn-chat-core">
-                    <i class="ph-fill ph-chat-circle-dots"></i>
-                  </span>
-                </span>
-              </a>
-              <a href="${_P}pages/student/student-notifications.html" class="mob-bn-item ${curTab === 'alerts' ? 'is-active' : ''}" data-tab="alerts" aria-label="Alerts"${curTab === 'alerts' ? ' aria-current="page"' : ''}>
-                <span class="mob-bn-icon-row">
-                  <span class="mob-bn-icon-wrap">
-                    <i class="ph-bold ph-bell"></i>
-                    <span class="mob-bn-dot"></span>
-                  </span>
-                </span>
-              </a>
-              <a href="${_P}pages/student/student-profile.html" class="mob-bn-item ${curTab === 'profile' ? 'is-active' : ''}" data-tab="profile" aria-label="Profile"${curTab === 'profile' ? ' aria-current="page"' : ''}>
-                <span class="mob-bn-icon-row">
-                  <i class="ph-bold ph-user"></i>
-                </span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
-    `);
-  }
-
-  function buildBottomNav(role, active) {
-    if (role === 'student') {
-      return buildStudentBottomNav(active);
-    }
-    const list = BOTTOM[role] || BOTTOM.admin;
-    const chat = CHAT[role] || CHAT.admin;
-    const chatActive = active === "group-chat" || active === "chat";
-    const itemHtml = it => {
-      const isActive = it.id === active;
-      return `
-        <a class="bn-item ${isActive ? "active" : ""}" href="${_P}${it.href}" data-tab="${it.id}" aria-label="${esc(it.label)}"${isActive ? ' aria-current="page"' : ''}>
-          <div class="bn-icon-bubble">
-            <span class="material-symbols-outlined bn-icon">${it.icon}</span>
-            ${it.badge ? `<span class="bn-badge">${it.badge}</span>` : ""}
-          </div>
-          <span class="bn-label">${esc(it.label)}</span>
-          <span class="bn-droplet" aria-hidden="true"></span>
-        </a>`;
-    };
-    const leftItems  = list.slice(0, 2).map(itemHtml).join("");
-    const rightItems = list.slice(2).map(itemHtml).join("");
-    const chatHtml = `
-      <div class="bn-chat-wrap">
-        <a class="bn-chat-btn" href="${_P}${chat.href}" data-tab="chat" aria-label="${esc(chat.label)}"${chatActive ? ' aria-current="page"' : ''}>
-          <span class="material-symbols-outlined bn-icon">chat</span>
-          ${chat.badge ? `<span class="bn-badge">${chat.badge}</span>` : ""}
-        </a>
-      </div>`;
-
-    return el(`
-      <nav class="bottomnav" id="bottomnav" role="navigation" aria-label="Mobile Navigation">
-        <div class="bottomnav-glow" aria-hidden="true"></div>
-        <div class="bottomnav-shell">
-          <div class="bottomnav-track">
-            <div class="bottomnav-melt-slider" id="bnMeltSlider" aria-hidden="true">
-              <span class="melt-slider-core"></span>
-            </div>
-            <div class="bottomnav-inner">
-              ${leftItems}
-              ${chatHtml}
-              ${rightItems}
+              ${itemsHtml}
             </div>
           </div>
         </div>
@@ -634,7 +741,7 @@
       'audit': 'messaging-audit'
     };
     if (ALIAS_MAP[active]) active = ALIAS_MAP[active];
-    if ((PAGE.role === "student" || PAGE.role === "parent") && DEPT_CHILD.includes(active)) {
+    if (PAGE.role === "student" && DEPT_CHILD.includes(active)) {
       active = "departments";
     }
 
@@ -860,14 +967,12 @@
       bNav = buildBottomNav(PAGE.role, active);
       document.body.appendChild(bNav);
     }
-    if (PAGE.role === 'student') {
-      const legacyNav = document.getElementById("bottomnav");
-      if (legacyNav) legacyNav.remove();
-    }
+    const legacyNav = document.getElementById("bottomnav");
+    if (legacyNav) legacyNav.remove();
     initBottomNav(bNav);
 
-    // Ensure Phosphor icons are available for student mobile navigation
-    if (PAGE.role === 'student' && !document.querySelector('script[src*="@phosphor-icons/web"]')) {
+    // Ensure Phosphor icons are available for mobile navigation across all portals
+    if (!document.querySelector('script[src*="@phosphor-icons/web"]')) {
       const ph = document.createElement("script");
       ph.src = "https://unpkg.com/@phosphor-icons/web";
       ph.async = true;

@@ -33,7 +33,14 @@
 
       console.log("[NGIS] Parent portal hydrated", children.length, "children");
     } catch (err) {
-      console.error("[NGIS] Failed to load parent data:", err.message);
+      console.warn("[NGIS Demo] Using local demo session for parent hydration:", err.message);
+      const user = (window.NGISAuth && NGISAuth.getUser()) || { firstName: "Chan Dara", lastName: "Vuth", email: "parent@ngis.edu.kh", role: "parent" };
+      document.querySelectorAll("[data-user='name']").forEach(el => {
+        el.textContent = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+      });
+      document.querySelectorAll("[data-user='email']").forEach(el => {
+        el.textContent = user.email || "";
+      });
     }
   });
 })();

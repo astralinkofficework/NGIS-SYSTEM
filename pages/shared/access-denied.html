@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
 <style>
   body {
     min-height: 100vh;
@@ -116,7 +117,11 @@
   </div>
 
   <div class="denied-actions">
-    <a href="../../index.html" class="btn btn-primary btn-full" id="btnMyPortal">
+    <button class="btn btn-primary btn-full" id="btnSwitchAndEnter" style="display:none;background:var(--primary);color:#fff">
+      <span class="material-symbols-outlined">play_circle</span>
+      <span id="btnSwitchAndEnterText">Switch Demo Role &amp; Enter Page</span>
+    </button>
+    <a href="../../index.html" class="btn btn-secondary btn-full" id="btnMyPortal">
       <span class="material-symbols-outlined">arrow_back</span>
       <span>Return to My Portal</span>
     </a>
@@ -144,9 +149,33 @@
       admin: '../admin/admin.html',
       teacher: '../teacher/teacher.html',
       parent: '../parent/parent.html',
-      student: '../student/student.html'
+      student: '../student/student.html',
+      staff: '../staff/staff.html',
+      principal: '../principal/principal.html'
     };
     myPortalBtn.href = homeMap[role] || '../../index.html';
+  }
+
+  var targetRoleMatch = attempted.match(/\/pages\/(admin|teacher|student|parent|staff|principal)\//);
+  var targetRole = targetRoleMatch ? targetRoleMatch[1] : null;
+  if (targetRole && targetRole !== role) {
+    var enterBtn = document.getElementById('btnSwitchAndEnter');
+    var enterText = document.getElementById('btnSwitchAndEnterText');
+    if (enterBtn && enterText) {
+      enterBtn.style.display = 'inline-flex';
+      enterText.textContent = 'Switch to ' + targetRole.charAt(0).toUpperCase() + targetRole.slice(1) + ' Demo & Continue';
+      enterBtn.addEventListener('click', function() {
+        if (window.NGISAuth) {
+          window.NGISAuth.switchDemo(targetRole, attempted);
+        } else {
+          try {
+            localStorage.setItem('ngis_active_portal', targetRole);
+            localStorage.setItem('ngis_token', 'mock-jwt-token-' + targetRole);
+          } catch(e) {}
+          window.location.href = attempted;
+        }
+      });
+    }
   }
 })();
 </script>

@@ -31,7 +31,14 @@
 
       console.log("[NGIS] Admin portal hydrated", user?.firstName);
     } catch (err) {
-      console.error("[NGIS] Failed to load admin data:", err.message);
+      console.warn("[NGIS Demo] Using local demo session for admin hydration:", err.message);
+      const user = (window.NGISAuth && NGISAuth.getUser()) || { firstName: "Sok Panha", lastName: "Heng", email: "admin@ngis.edu.kh" };
+      document.querySelectorAll("[data-user='name']").forEach(el => {
+        el.textContent = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+      });
+      document.querySelectorAll("[data-user='email']").forEach(el => {
+        el.textContent = user.email || "";
+      });
     }
   });
 })();

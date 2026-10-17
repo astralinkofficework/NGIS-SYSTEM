@@ -1639,88 +1639,7 @@
   <!-- --- CONSOLE GRID LIST SECTION --- -->
   <div id="usersConsoleSection" style="display:flex; flex-direction:column; gap:20px">
     
-    <!-- --- 2. USER TYPE SELECTION CARDS (TABS) --- -->
-    <div class="role-nav-grid">
-      <!-- Students -->
-      <a class="role-card role-students" href="#" data-tab-role="students">
-        <div class="role-card-header">
-          <div class="role-icon-box"><span class="material-symbols-outlined">school</span></div>
-          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
-        </div>
-        <div>
-          <div class="role-card-title">Students</div>
-          <div class="role-card-count" id="countStudents">2,450</div>
-        </div>
-        <div class="role-card-footer">
-          <span>View Directory</span>
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </div>
-      </a>
-      
-      <!-- Teachers -->
-      <a class="role-card role-teachers" href="#" data-tab-role="teachers">
-        <div class="role-card-header">
-          <div class="role-icon-box"><span class="material-symbols-outlined">co_present</span></div>
-          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
-        </div>
-        <div>
-          <div class="role-card-title">Teachers</div>
-          <div class="role-card-count" id="countTeachers">186</div>
-        </div>
-        <div class="role-card-footer">
-          <span>View Directory</span>
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </div>
-      </a>
 
-      <!-- Parents -->
-      <a class="role-card role-parents" href="#" data-tab-role="parents">
-        <div class="role-card-header">
-          <div class="role-icon-box"><span class="material-symbols-outlined">family_restroom</span></div>
-          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
-        </div>
-        <div>
-          <div class="role-card-title">Parents</div>
-          <div class="role-card-count" id="countParents">2,120</div>
-        </div>
-        <div class="role-card-footer">
-          <span>View Directory</span>
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </div>
-      </a>
-
-      <!-- Admins -->
-      <a class="role-card role-admins" href="#" data-tab-role="admins">
-        <div class="role-card-header">
-          <div class="role-icon-box"><span class="material-symbols-outlined">admin_panel_settings</span></div>
-          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
-        </div>
-        <div>
-          <div class="role-card-title">Admins</div>
-          <div class="role-card-count" id="countAdmins">12</div>
-        </div>
-        <div class="role-card-footer">
-          <span>View Directory</span>
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </div>
-      </a>
-
-      <!-- Principals -->
-      <a class="role-card role-principals" href="#" data-tab-role="principals">
-        <div class="role-card-header">
-          <div class="role-icon-box"><span class="material-symbols-outlined">military_tech</span></div>
-          <span class="material-symbols-outlined" style="color:var(--faint)">more_vert</span>
-        </div>
-        <div>
-          <div class="role-card-title">Principals</div>
-          <div class="role-card-count" id="countPrincipals">3</div>
-        </div>
-        <div class="role-card-footer">
-          <span>View Directory</span>
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </div>
-      </a>
-    </div>
 
     <!-- --- 3. DYNAMIC STATISTICS GRID --- -->
     <div class="stats-summary-grid" id="statsGrid">
@@ -2219,21 +2138,23 @@
 
     // --- 5. UI LAYOUT SWITCHERS (ROLE DIRECTORY AND TABLES) ---
     function updateRoleCardsUI() {
-      elements.roleCards.forEach(card => {
-        const cardRole = card.dataset.tabRole;
-        if (cardRole === state.activeRole) {
-          card.classList.add("active");
-        } else {
-          card.classList.remove("active");
-        }
-      });
+      if (elements.roleCards) {
+        elements.roleCards.forEach(card => {
+          const cardRole = card.dataset.tabRole;
+          if (cardRole === state.activeRole) {
+            card.classList.add("active");
+          } else {
+            card.classList.remove("active");
+          }
+        });
+      }
 
       // Count calculations
-      elements.countStudents.textContent = DB.filter(u => u.role === "student").length.toLocaleString();
-      elements.countTeachers.textContent = DB.filter(u => u.role === "teacher").length.toLocaleString();
-      elements.countParents.textContent = DB.filter(u => u.role === "parent").length.toLocaleString();
-      elements.countAdmins.textContent = DB.filter(u => u.role === "admin").length.toLocaleString();
-      elements.countPrincipals.textContent = DB.filter(u => u.role === "principal").length.toLocaleString();
+      if (elements.countStudents) elements.countStudents.textContent = DB.filter(u => u.role === "student").length.toLocaleString();
+      if (elements.countTeachers) elements.countTeachers.textContent = DB.filter(u => u.role === "teacher").length.toLocaleString();
+      if (elements.countParents) elements.countParents.textContent = DB.filter(u => u.role === "parent").length.toLocaleString();
+      if (elements.countAdmins) elements.countAdmins.textContent = DB.filter(u => u.role === "admin").length.toLocaleString();
+      if (elements.countPrincipals) elements.countPrincipals.textContent = DB.filter(u => u.role === "principal").length.toLocaleString();
     }
 
     // Stat summaries depend on selected card

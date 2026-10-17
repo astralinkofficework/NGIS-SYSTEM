@@ -26,7 +26,7 @@
                 now.getDate() + ', ' + now.getFullYear();
 
   /* ── Role & Path Resolution ── */
-  var VALID_ROLES = ['admin', 'teacher', 'parent', 'student'];
+  var VALID_ROLES = ['admin', 'teacher', 'parent', 'student', 'principal', 'staff'];
   var pathname = (window.location.pathname || '').toLowerCase();
   var params = new URLSearchParams(window.location.search || '');
   var queryRole = (params.get('portal') || params.get('role') || '').toLowerCase();
@@ -34,15 +34,27 @@
   if (pathname.indexOf('/pages/admin/') !== -1 || pathname.indexOf('/admin') !== -1) pathRole = 'admin';
   else if (pathname.indexOf('/pages/teacher/') !== -1 || pathname.indexOf('/teacher') !== -1) pathRole = 'teacher';
   else if (pathname.indexOf('/pages/parent/') !== -1 || pathname.indexOf('/parent') !== -1) pathRole = 'parent';
+  else if (pathname.indexOf('/pages/principal/') !== -1 || pathname.indexOf('/principal') !== -1) pathRole = 'principal';
+  else if (pathname.indexOf('/pages/staff/') !== -1 || pathname.indexOf('/staff') !== -1) pathRole = 'staff';
   else if (pathname.indexOf('/pages/student/') !== -1 || pathname.indexOf('/student') !== -1) pathRole = 'student';
 
   var storedRole = '';
   try { storedRole = (localStorage.getItem('ngis_active_portal') || '').toLowerCase(); } catch (e) {}
 
+  var sessionRole = '';
+  try {
+    var rawUser = localStorage.getItem('ngis_user');
+    if (rawUser) {
+      var u = JSON.parse(rawUser);
+      if (u && u.role) sessionRole = String(u.role).toLowerCase();
+    }
+  } catch (e) {}
+
   var activeRole = (pathRole && VALID_ROLES.indexOf(pathRole) !== -1) ? pathRole :
                    (queryRole && VALID_ROLES.indexOf(queryRole) !== -1) ? queryRole :
-                   (storedRole && VALID_ROLES.indexOf(storedRole) !== -1) ? storedRole :
                    (window.PAGE && window.PAGE.role && VALID_ROLES.indexOf(String(window.PAGE.role).toLowerCase()) !== -1) ? String(window.PAGE.role).toLowerCase() :
+                   (sessionRole && VALID_ROLES.indexOf(sessionRole) !== -1) ? sessionRole :
+                   (storedRole && VALID_ROLES.indexOf(storedRole) !== -1) ? storedRole :
                    'student';
 
   var rootPrefix = pathname.indexOf('/pages/') !== -1 ? '../../' : '';
@@ -64,7 +76,7 @@
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face',
       id: 'Admin ID: ADM-2024-001',
       calendar: 'admin-calendar.html',
-      profile: 'admin-profile.html',
+      profile: 'admin-settings.html',
       home: 'admin.html',
       ddRows: [
         { icon: 'badge', text: 'Admin ID: ADM-2024-001' },
@@ -78,7 +90,7 @@
       roleMeta: 'Mathematics Lead',
       avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80',
       id: 'Teacher ID: TCH-2024-042',
-      calendar: 'teacher-timetable.html',
+      calendar: 'teacher-calendar.html',
       profile: 'teacher-profile.html',
       home: 'teacher.html',
       ddRows: [
@@ -97,9 +109,39 @@
       profile: 'parent-profile.html',
       home: 'parent.html',
       ddRows: [
-        { icon: 'family_restroom', text: 'Child: Chan Sokha (Grade 10-A)' },
+        { icon: 'family_restroom', text: 'Child: Nrinphouneta Hok (Grade 11-A)' },
         { icon: 'verified', text: 'Primary Guardian' },
         { icon: 'payments', text: 'Tuition: Current' }
+      ]
+    },
+    principal: {
+      brandSub: 'PRINCIPAL PORTAL',
+      name: 'Dr. Ly Bunheng',
+      roleMeta: 'Executive Principal',
+      avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=80',
+      id: 'Principal ID: PRN-2024-002',
+      calendar: 'principal-reports.html',
+      profile: 'principal-profile.html',
+      home: 'principal.html',
+      ddRows: [
+        { icon: 'verified', text: 'Executive Campus Leadership' },
+        { icon: 'domain', text: 'Phnom Penh Main Campus' },
+        { icon: 'assessment', text: 'Cambridge & MoEYS' }
+      ]
+    },
+    staff: {
+      brandSub: 'OPERATIONS PORTAL',
+      name: 'Dara Sok',
+      roleMeta: 'Campus Operations Coordinator',
+      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=80',
+      id: 'Staff ID: STF-2026-014',
+      calendar: 'staff-services.html',
+      profile: 'staff-profile.html',
+      home: 'staff.html',
+      ddRows: [
+        { icon: 'engineering', text: 'Facilities & Logistics Lead' },
+        { icon: 'assignment_turned_in', text: 'Operational Support' },
+        { icon: 'verified_user', text: 'All Wings Authorized' }
       ]
     },
     student: {
@@ -179,6 +221,8 @@
     filename === 'teacher.html' ||
     filename === 'admin.html' ||
     filename === 'parent.html' ||
+    filename === 'principal.html' ||
+    filename === 'staff.html' ||
     filename === 'index.html' ||
     filename === ''
   );
@@ -244,7 +288,7 @@
 
       '<div class="htb-dd-backdrop" id="htbBackdrop"></div>' +
 
-      (C.showHeroBody === true ?
+      ((C.showHeroBody === true || C.isDashboard === true || isMainPage === true) ?
       '<div class="hero-body">' +
         '<div class="hero-text">' +
           '<div class="hero-date">' + dateStr + '</div>' +
@@ -276,7 +320,18 @@
         '</div>' +
       '</div>' +
       '<div class="htb-dd-divider"></div>' +
-      '<div class="htb-dd-info">' + rowsHtml + '</div>' +
+      '<div class="htb-dd-divider"></div>' +
+      '<div class="htb-dd-demo-box">' +
+        '<div class="htb-dd-demo-title"><span class="mi" style="font-size:15px">swap_horiz</span>Switch Demo Role</div>' +
+        '<div class="htb-dd-demo-grid">' +
+          '<a href="' + resolveRoleUrl('student', 'student.html') + '" class="htb-dd-demo-item' + (activeRole==='student'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'student\')">Student</a>' +
+          '<a href="' + resolveRoleUrl('teacher', 'teacher.html') + '" class="htb-dd-demo-item' + (activeRole==='teacher'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'teacher\')">Teacher</a>' +
+          '<a href="' + resolveRoleUrl('parent', 'parent.html') + '" class="htb-dd-demo-item' + (activeRole==='parent'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'parent\')">Parent</a>' +
+          '<a href="' + resolveRoleUrl('admin', 'admin.html') + '" class="htb-dd-demo-item' + (activeRole==='admin'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'admin\')">Admin</a>' +
+          '<a href="' + resolveRoleUrl('principal', 'principal.html') + '" class="htb-dd-demo-item' + (activeRole==='principal'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'principal\')">Principal</a>' +
+          '<a href="' + resolveRoleUrl('staff', 'staff.html') + '" class="htb-dd-demo-item' + (activeRole==='staff'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'staff\')">Staff</a>' +
+        '</div>' +
+      '</div>' +
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-actions">' +
         '<a href="' + profileLink + '" class="htb-dd-btn">' +

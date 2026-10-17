@@ -39,7 +39,7 @@ def test_chat_css_responsive_and_animations():
     # Modern Animations
     assert "@keyframes sDotPulse" in css, "Missing @keyframes sDotPulse"
     assert "@keyframes msgPopIn" in css, "Missing @keyframes msgPopIn"
-    assert "linear-gradient(135deg, var(--primary) 0%, #0d9488 100%)" in css, "Missing outgoing bubble gradient"
+    assert "var(--chat-bubble-out)" in css, "Missing outgoing bubble style token"
     print("[PASS] chat.css 3-tier responsive rules and modern animations verified.")
 
 def test_chat_js_controller():

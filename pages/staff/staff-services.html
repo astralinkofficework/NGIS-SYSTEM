@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Staff Service Requests Fulfillment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+<style>
+  .filters-bar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:16px; }
+  .tab-group { display:flex; gap:6px; background:var(--surface); padding:4px; border-radius:10px; border:1px solid var(--border); }
+  .tab-btn { padding:6px 14px; border-radius:8px; border:none; background:transparent; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; }
+  .tab-btn.active { background:var(--primary); color:#fff; }
+
+  .search-box { position:relative; max-width:280px; width:100%; }
+  .search-box input { width:100%; padding:8px 12px 8px 34px; border-radius:8px; border:1px solid var(--border); background:var(--surface); font-size:13px; }
+  .search-box .material-symbols-outlined { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:18px; }
+
+  .table-responsive { width:100%; overflow-x:auto; }
+  .custom-table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  .custom-table th { text-align:left; padding:12px 14px; background:var(--surface-2); color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:0.04em; border-bottom:1px solid var(--border); }
+  .custom-table td { padding:14px; border-bottom:1px solid var(--border); vertical-align:middle; color:var(--text); }
+  .custom-table tr:hover { background:rgba(0,0,0,0.015); }
+
+  .status-pill { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font-size:11.5px; font-weight:600; }
+  .status-pending { background:rgba(245,158,11,0.12); color:#b45309; }
+  .status-processing { background:rgba(37,99,235,0.12); color:#1d4ed8; }
+  .status-completed { background:rgba(16,185,129,0.12); color:#047857; }
+</style>
+</head>
+<body>
+<main class="main">
+  <div id="heroBanner"></div>
+  <div class="page">
+
+    <div class="filters-bar anim-up">
+      <div class="tab-group" id="filterTabs">
+        <button class="tab-btn active" onclick="setTab('all', this)">All (6)</button>
+        <button class="tab-btn" onclick="setTab('pending', this)">Pending (3)</button>
+        <button class="tab-btn" onclick="setTab('processing', this)">In Progress (2)</button>
+        <button class="tab-btn" onclick="setTab('completed', this)">Completed (1)</button>
+      </div>
+      <div class="search-box">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" id="searchInput" placeholder="Search student or request..." oninput="filterTable()">
+      </div>
+    </div>
+
+    <div class="card mt16 anim-up-2">
+      <div class="card-head">
+        <div>
+          <h3>Service Fulfillment Register</h3>
+          <div class="sub">Verify credentials, produce documentation, and mark handovers</div>
+        </div>
+        <button class="btn btn-sm btn-primary" onclick="exportServiceLog()">
+          <span class="material-symbols-outlined" style="font-size:16px">download</span> Export Manifest
+        </button>
+      </div>
+      <div class="card-pad table-responsive">
+        <table class="custom-table" id="servicesFulfillTable">
+          <thead>
+            <tr>
+              <th>Tracking ID</th>
+              <th>Student Name</th>
+              <th>Service Category</th>
+              <th>Submitted Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="fulfillTbody">
+            <tr data-status="pending">
+              <td><strong>REQ-2026-081</strong></td>
+              <td>Nrinphouneta Hok (STU-089)</td>
+              <td>Official Transcript (Sealed)</td>
+              <td>Oct 15, 2026</td>
+              <td><span class="status-pill status-pending"><span class="material-symbols-outlined" style="font-size:13px">hourglass_empty</span>Pending</span></td>
+              <td>
+                <button class="btn btn-sm btn-ghost" onclick="setRowStatus(this, 'processing')">Start Processing</button>
+              </td>
+            </tr>
+            <tr data-status="processing">
+              <td><strong>REQ-2026-082</strong></td>
+              <td>Dara Sovann (STU-102)</td>
+              <td>Student Smart ID Replacement</td>
+              <td>Oct 14, 2026</td>
+              <td><span class="status-pill status-processing"><span class="material-symbols-outlined" style="font-size:13px">sync</span>In Progress</span></td>
+              <td>
+                <button class="btn btn-sm btn-primary" onclick="setRowStatus(this, 'completed')">Mark Issued</button>
+              </td>
+            </tr>
+            <tr data-status="pending">
+              <td><strong>REQ-2026-083</strong></td>
+              <td>Chhaya Vong (STU-094)</td>
+              <td>Formal Enrollment Certificate</td>
+              <td>Oct 16, 2026</td>
+              <td><span class="status-pill status-pending"><span class="material-symbols-outlined" style="font-size:13px">hourglass_empty</span>Pending</span></td>
+              <td>
+                <button class="btn btn-sm btn-ghost" onclick="setRowStatus(this, 'processing')">Start Processing</button>
+              </td>
+            </tr>
+            <tr data-status="processing">
+              <td><strong>REQ-2026-084</strong></td>
+              <td>Chenda Khem (STU-110)</td>
+              <td>Campus Locker Allocation (Locker #42)</td>
+              <td>Oct 13, 2026</td>
+              <td><span class="status-pill status-processing"><span class="material-symbols-outlined" style="font-size:13px">sync</span>In Progress</span></td>
+              <td>
+                <button class="btn btn-sm btn-primary" onclick="setRowStatus(this, 'completed')">Issue Key</button>
+              </td>
+            </tr>
+            <tr data-status="completed">
+              <td><strong>REQ-2026-079</strong></td>
+              <td>Bopha Tep (STU-088)</td>
+              <td>Medical Leave Certificate Clearance</td>
+              <td>Oct 11, 2026</td>
+              <td><span class="status-pill status-completed"><span class="material-symbols-outlined" style="font-size:13px">check_circle</span>Completed</span></td>
+              <td>
+                <span class="muted" style="font-size:12px">Delivered</span>
+              </td>
+            </tr>
+            <tr data-status="pending">
+              <td><strong>REQ-2026-085</strong></td>
+              <td>Sovanmony Kim (STU-115)</td>
+              <td>Recommendation Letter Verification</td>
+              <td>Oct 17, 2026</td>
+              <td><span class="status-pill status-pending"><span class="material-symbols-outlined" style="font-size:13px">hourglass_empty</span>Pending</span></td>
+              <td>
+                <button class="btn btn-sm btn-ghost" onclick="setRowStatus(this, 'processing')">Start Processing</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>window.PAGE={"role":"staff","active":"services"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'staff',
+  active: 'services',
+  isDashboard: false,
+  name: 'Staff Operations',
+  id: 'STF-2024-015',
+  grade: 'Campus Services',
+  avatar: 'https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'staff-profile.html',
+  notifLink: '../shared/announcements.html',
+  chatLink: '../shared/chat.html',
+  notifCount: 1,
+  title: 'Service Fulfillment Register',
+  greeting: 'Track, process, and deliver certificates, student IDs, and requests.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+let currentFilter = 'all';
+
+function setTab(status, btn) {
+  document.querySelectorAll('#filterTabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = status;
+  filterTable();
+}
+
+function filterTable() {
+  const query = (document.getElementById('searchInput').value || '').toLowerCase();
+  const rows = document.querySelectorAll('#fulfillTbody tr');
+  rows.forEach(r => {
+    const status = r.getAttribute('data-status');
+    const text = r.textContent.toLowerCase();
+    const matchStatus = (currentFilter === 'all') || (status === currentFilter);
+    const matchQuery = !query || text.includes(query);
+    r.style.display = (matchStatus && matchQuery) ? '' : 'none';
+  });
+}
+
+function setRowStatus(btn, targetStatus) {
+  const tr = btn.closest('tr');
+  tr.setAttribute('data-status', targetStatus);
+  const statusTd = tr.children[4];
+  const actionTd = tr.children[5];
+
+  if (targetStatus === 'processing') {
+    statusTd.innerHTML = '<span class="status-pill status-processing"><span class="material-symbols-outlined" style="font-size:13px">sync</span>In Progress</span>';
+    actionTd.innerHTML = '<button class="btn btn-sm btn-primary" onclick="setRowStatus(this, \'completed\')">Complete</button>';
+  } else if (targetStatus === 'completed') {
+    statusTd.innerHTML = '<span class="status-pill status-completed"><span class="material-symbols-outlined" style="font-size:13px">check_circle</span>Completed</span>';
+    actionTd.innerHTML = '<span class="muted" style="font-size:12px">Delivered</span>';
+  }
+  filterTable();
+}
+
+function exportServiceLog() {
+  alert('Exporting service requests register to CSV manifest…');
+}
+</script>
+</body>
+</html>
