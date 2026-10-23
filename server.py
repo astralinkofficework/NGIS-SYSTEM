@@ -18,7 +18,7 @@ import base64
 from datetime import datetime
 from flask import Flask, request, jsonify, send_from_directory, abort
 from flask_cors import CORS
-
+import academic_store as ACADEMIC
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
@@ -1264,25 +1264,253 @@ AUTH_USERS = {
     }
 }
 
+# Persistent academic source of truth. The legacy DB remains available for
+# unrelated demo modules while Grades & Attendance uses this transactional
+# store and its explicit authorization rules.
+ACADEMIC.init(DB)
+
+def _academic_user():
+    """Resolve an exact demo bearer token; never infer a role from a substring."""
+    header = request.headers.get('Authorization', '')
+    if not header.startswith('Bearer '):
+        return None
+    token = header[7:].strip()
+    for role, email in {
+        'admin': 'admin@ngis.edu.kh', 'principal': 'principal@ngis.edu.kh',
+        'teacher': 'teacher@ngis.edu.kh', 'student': 'student@ngis.edu.kh',
+        'parent': 'parent@ngis.edu.kh', 'staff': 'staff@ngis.edu.kh'
+    }.items():
+        if token == f'mock-jwt-token-{role}':
+            user = dict(AUTH_USERS[email])
+            # Canonical academic identifiers are the IDs used by enrollments.
+            if role == 'student': user['id'] = '2026-STD-0142'
+            return user
+    return None
+
+def _academic_require(roles=None):
+    user = _academic_user()
+    if not user:
+        return None, (jsonify({'error': {'code': 'UNAUTHORIZED', 'message': 'A valid academic session is required'}}), 401)
+    if roles and user['role'] not in roles:
+        return None, (jsonify({'error': {'code': 'FORBIDDEN', 'message': 'This role is not allowed to perform this action'}}), 403)
+    return user, None
+
+def _student(student_id):
+    return next((s for s in DB['students'] if str(s.get('id')) == str(student_id)), None)
+
+def _parent_can_view(user, student_id):
+    if user['role'] != 'parent': return True
+    parent = next((p for p in DB['parents'] if p.get('id') == user['id']), None)
+    # Demo parent ID is PAR-2024-118 and is the authenticated parent record.
+    if parent is None and user['id'] == 'PAR-2024-118': parent = DB['parents'][0]
+    return bool(parent and student_id in parent.get('children', []))
+
+def _teacher_can_class(user, class_id):
+    if user['role'] in ('admin', 'principal'): return True
+    if user['role'] != 'teacher': return False
+    teacher = next((t for t in DB['teachers'] if t.get('id') == user['id']), None)
+    cls = next((c for c in DB['classes'] if c.get('id') == class_id), None)
+    return bool(teacher and cls and (cls.get('name', '').replace('Grade ', '') in teacher.get('classes', [])))
+
+def _academic_error(code, message, status=400):
+    return jsonify({'error': {'code': code, 'message': message}}), status
+
+@app.route('/api/academic/config', methods=['GET'])
+def academic_config():
+    user, error = _academic_require()
+    if error: return error
+    return jsonify({'data': {
+        'academicYears': ACADEMIC.query('SELECT * FROM academic_years ORDER BY name DESC'),
+        'gradingPeriods': ACADEMIC.query('SELECT * FROM grading_periods ORDER BY sequence_no'),
+        'subjects': ACADEMIC.query('SELECT * FROM subjects WHERE status="active" ORDER BY name'),
+        'gradingRules': ACADEMIC.query('SELECT id, name, version, max_gpa, rules_json FROM grading_rules WHERE is_active=1')
+    }})
+
+@app.route('/api/academic/overview', methods=['GET'])
+def academic_overview():
+    user, error = _academic_require()
+    if error: return error
+    requested = request.args.get('studentId')
+    if user['role'] == 'student': requested = user['id']
+    if user['role'] == 'parent' and requested and not _parent_can_view(user, requested):
+        return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+    students = DB['students']
+    if requested: students = [s for s in students if s.get('id') == requested]
+    elif user['role'] == 'parent':
+        parent = next((p for p in DB['parents'] if p.get('id') == user['id']), DB['parents'][0])
+        students = [s for s in students if s.get('id') in parent.get('children', [])]
+    elif user['role'] == 'teacher':
+        teacher = next((t for t in DB['teachers'] if t.get('id') == user['id']), None)
+        names = (teacher or {}).get('classes', [])
+        students = [s for s in students if s.get('class') in names]
+    rows = []
+    for student in students:
+        rows.append({**student, 'gpa': ACADEMIC.aggregate_gpa(student['id']), 'attendance': ACADEMIC.attendance_summary(student['id'])['percentage']})
+    return jsonify({'data': {'students': rows, 'total': len(rows), 'generatedAt': ACADEMIC.now()}})
+
+def _academic_grade_row(row):
+    pct = (float(row['score']) / float(row['max_score']) * 100) if row.get('score') is not None and row.get('max_score') else None
+    letter, points = ACADEMIC.grade_band(pct)
+    return {**row, 'percentage': round(pct, 2) if pct is not None else None, 'letterGrade': letter, 'gpaPoints': points,
+            'studentId': row.get('student_id'), 'subjectId': row.get('subject_id'), 'assessmentTitle': row.get('assessment_title'),
+            'maxScore': row.get('max_score'), 'recordedAt': row.get('recorded_at'),
+            'student_name': (_student(row.get('student_id')) or {}).get('name', row.get('student_id')),
+            'subject_name': (ACADEMIC.one('SELECT name FROM subjects WHERE id=?', (row.get('subject_id'),)) or {}).get('name', row.get('subject_id')),
+            'assessment_title': row.get('assessment_title'), 'max_score': row.get('max_score'),
+            'letter_grade': letter, 'recorded_at': row.get('recorded_at')}
+
+@app.route('/api/academic/grades', methods=['GET', 'POST'])
+def academic_grades():
+    user, error = _academic_require()
+    if error: return error
+    if request.method == 'GET':
+        student_id = request.args.get('studentId')
+        if user['role'] == 'student': student_id = user['id']
+        if user['role'] == 'parent' and student_id and not _parent_can_view(user, student_id):
+            return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+        clauses, args = ['1=1'], []
+        if student_id: clauses.append('g.student_id=?'); args.append(student_id)
+        if request.args.get('periodId'): clauses.append('a.grading_period_id=?'); args.append(request.args['periodId'])
+        if user['role'] == 'teacher':
+            teacher_classes = [c['id'] for c in DB['classes'] if c.get('name','').replace('Grade ','') in (next((t.get('classes',[]) for t in DB['teachers'] if t.get('id') == user['id']), []))]
+            if not teacher_classes: return jsonify({'data': [], 'meta': {'total': 0}})
+            clauses.append('a.class_id IN (%s)' % ','.join('?' for _ in teacher_classes)); args.extend(teacher_classes)
+        rows = ACADEMIC.query('''SELECT g.*, a.title AS assessment_title, a.max_score, a.class_id, a.subject_id,
+          a.grading_period_id, a.category, a.status AS assessment_status FROM grades g JOIN assessments a ON a.id=g.assessment_id
+          WHERE ''' + ' AND '.join(clauses) + ' ORDER BY g.updated_at DESC', args)
+        return jsonify({'data': [_academic_grade_row(r) for r in rows], 'meta': {'total': len(rows)}})
+    if user['role'] not in ('teacher', 'admin'):
+        return _academic_error('FORBIDDEN', 'Only teachers and administrators can record grades', 403)
+    data = request.get_json(silent=True) or {}
+    required = ['studentId', 'classId', 'subjectId', 'assessmentTitle', 'score', 'maxScore']
+    missing = [k for k in required if data.get(k) in (None, '')]
+    if missing: return _academic_error('VALIDATION_ERROR', 'Missing: ' + ', '.join(missing))
+    if not _teacher_can_class(user, data['classId']): return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+    student = _student(data['studentId'])
+    if not student: return _academic_error('NOT_FOUND', 'Student not found', 404)
+    cls = next((c for c in DB['classes'] if c.get('id') == data['classId']), None)
+    if not cls or student.get('class') != cls.get('name','').replace('Grade ',''): return _academic_error('VALIDATION_ERROR', 'Student is not enrolled in this class')
+    try: score, max_score = float(data['score']), float(data['maxScore'])
+    except (TypeError, ValueError): return _academic_error('VALIDATION_ERROR', 'Score and maxScore must be numbers')
+    if max_score <= 0 or score < 0 or score > max_score: return _academic_error('VALIDATION_ERROR', 'Score must be between 0 and maxScore')
+    period_id = data.get('gradingPeriodId', 'gp-term-2')
+    if not ACADEMIC.one('SELECT id FROM grading_periods WHERE id=?', (period_id,)): return _academic_error('VALIDATION_ERROR', 'Unknown grading period')
+    subject = ACADEMIC.one('SELECT * FROM subjects WHERE id=?', (data['subjectId'],))
+    if not subject: return _academic_error('NOT_FOUND', 'Subject not found', 404)
+    assessment_id = data.get('assessmentId') or ACADEMIC.new_id('asm')
+    grade_id = ACADEMIC.new_id('grd'); now = ACADEMIC.now(); workflow = data.get('workflow', 'submitted' if user['role'] == 'teacher' else 'published')
+    if workflow not in ('draft', 'submitted', 'published', 'returned'): return _academic_error('VALIDATION_ERROR', 'Invalid workflow state')
+    statements = []
+    if not data.get('assessmentId'):
+        statements.append(('INSERT INTO assessments(id,class_id,subject_id,grading_period_id,title,category,max_score,weight,teacher_id,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+          (assessment_id, data['classId'], data['subjectId'], period_id, str(data['assessmentTitle']).strip(), data.get('category','assessment'), max_score, float(data.get('weight', 1)), user['id'], 'published', now)))
+    statements.append(('INSERT INTO grades(id,assessment_id,student_id,score,state,comments,workflow,recorded_by,recorded_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(assessment_id,student_id) DO UPDATE SET score=excluded.score, comments=excluded.comments, workflow=excluded.workflow, updated_at=excluded.updated_at',
+      (grade_id, assessment_id, data['studentId'], score, 'graded', data.get('comments',''), workflow, user['id'], now, now)))
+    try: ACADEMIC.transaction(statements)
+    except Exception as exc: return _academic_error('CONFLICT', f'Could not save grade: {exc}', 409)
+    ACADEMIC.audit(user['id'], user['role'], 'GRADE_UPSERT', 'grade', grade_id, data.get('reason',''), {'studentId': data['studentId'], 'assessmentId': assessment_id})
+    row = ACADEMIC.one('''SELECT g.*, a.title AS assessment_title, a.max_score, a.class_id, a.subject_id, a.grading_period_id, a.category, a.status AS assessment_status FROM grades g JOIN assessments a ON a.id=g.assessment_id WHERE g.assessment_id=? AND g.student_id=?''', (assessment_id, data['studentId']))
+    return jsonify({'data': _academic_grade_row(row), 'message': 'Grade saved'}), 201
+
+@app.route('/api/academic/grades/<grade_id>/workflow', methods=['PATCH'])
+def academic_grade_workflow(grade_id):
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+    data = request.get_json(silent=True) or {}; state = data.get('workflow')
+    if state not in ('draft', 'submitted', 'published', 'returned'): return _academic_error('VALIDATION_ERROR', 'Invalid workflow state')
+    row = ACADEMIC.one('SELECT * FROM grades WHERE id=?', (grade_id,))
+    if not row: return _academic_error('NOT_FOUND', 'Grade not found', 404)
+    if state == 'published' and user['role'] not in ('admin', 'principal'): return _academic_error('FORBIDDEN', 'Only administrators or principals can publish grades', 403)
+    ACADEMIC.execute('UPDATE grades SET workflow=?, updated_at=? WHERE id=?', (state, ACADEMIC.now(), grade_id))
+    ACADEMIC.audit(user['id'], user['role'], 'GRADE_WORKFLOW', 'grade', grade_id, data.get('reason',''), {'workflow': state})
+    return jsonify({'data': ACADEMIC.one('SELECT * FROM grades WHERE id=?', (grade_id,))})
+
+@app.route('/api/academic/attendance', methods=['GET', 'POST'])
+def academic_attendance():
+    user, error = _academic_require()
+    if error: return error
+    if request.method == 'GET':
+        student_id = request.args.get('studentId')
+        if user['role'] == 'student': student_id = user['id']
+        if user['role'] == 'parent' and student_id and not _parent_can_view(user, student_id): return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+        clauses, args = ['1=1'], []
+        if student_id: clauses.append('student_id=?'); args.append(student_id)
+        if request.args.get('classId'): clauses.append('class_id=?'); args.append(request.args['classId'])
+        if request.args.get('from'): clauses.append('attendance_date>=?'); args.append(request.args['from'])
+        if request.args.get('to'): clauses.append('attendance_date<=?'); args.append(request.args['to'])
+        rows = ACADEMIC.query('SELECT * FROM attendance WHERE ' + ' AND '.join(clauses) + ' ORDER BY attendance_date DESC', args)
+        rows = [{**r, 'date': r.get('attendance_date'), 'notes': r.get('note', ''), 'status': 'late' if r.get('status') == 'tardy' else r.get('status')} for r in rows]
+        summary = ACADEMIC.attendance_summary(student_id) if student_id else None
+        # Teacher roster mode: return every enrolled student for the selected class,
+        # overlaying today's saved record so the UI can mark missing students.
+        if request.args.get('classId') and not student_id:
+            class_id = request.args['classId']; date = request.args.get('date')
+            roster = ACADEMIC.query('SELECT student_id FROM enrollments WHERE class_id=? AND academic_year_id=? ORDER BY student_id', (class_id, 'ay-2025-26'))
+            existing = {r['student_id']: r for r in rows if not date or r['attendance_date'] == date}
+            data = []
+            for item in roster:
+                student = _student(item['student_id']) or {}
+                rec = existing.get(item['student_id'], {})
+                data.append({'student_id': item['student_id'], 'student_number': item['student_id'], 'first_name': student.get('name','').split(' ')[0], 'last_name': ' '.join(student.get('name','').split(' ')[1:]), 'status': rec.get('status', 'present'), 'date': date, 'class_id': class_id})
+            return jsonify({'data': data, 'meta': {'total': len(data)}})
+        meta = {'total': len(rows), 'summary': summary}
+        if summary:
+            meta.update({'present': summary['present'], 'late': summary['tardy'], 'absent': summary['absent'], 'rate': summary['percentage']})
+        return jsonify({'data': rows, 'meta': meta})
+    if user['role'] not in ('teacher', 'admin'): return _academic_error('FORBIDDEN', 'Only teachers and administrators can record attendance', 403)
+    payload = request.get_json(silent=True) or {}; records = payload.get('records') if isinstance(payload, dict) else payload
+    if not isinstance(records, list): records = [payload]
+    allowed = {'present', 'absent', 'tardy', 'late', 'excused'}; saved = []
+    for item in records:
+        item = {**payload, **item} if isinstance(payload, dict) else item
+        for field in ('studentId', 'classId', 'date', 'status'):
+            if item.get(field) in (None, ''): return _academic_error('VALIDATION_ERROR', f'{field} is required')
+        if item['status'] not in allowed: return _academic_error('VALIDATION_ERROR', 'Status must be present, absent, tardy, or excused')
+        if not _teacher_can_class(user, item['classId']): return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+        student = _student(item['studentId']); cls = next((c for c in DB['classes'] if c.get('id') == item['classId']), None)
+        if not student or not cls: return _academic_error('NOT_FOUND', 'Student or class not found', 404)
+        if student.get('class') != cls.get('name','').replace('Grade ',''): return _academic_error('VALIDATION_ERROR', 'Student is not enrolled in this class')
+        stored_status = 'tardy' if item['status'] == 'late' else item['status']
+        now = ACADEMIC.now(); record_id = ACADEMIC.new_id('att')
+        ACADEMIC.execute('''INSERT INTO attendance(id,student_id,class_id,subject_id,attendance_date,session,status,note,workflow,recorded_by,recorded_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+          ON CONFLICT(student_id,class_id,subject_id,attendance_date,session) DO UPDATE SET status=excluded.status,note=excluded.note,updated_at=excluded.updated_at,recorded_by=excluded.recorded_by''',
+          (record_id, item['studentId'], item['classId'], item.get('subjectId') or '', item['date'], item.get('session','daily'), stored_status, item.get('note',''), item.get('workflow','submitted'), user['id'], now, now))
+        saved.append(item['studentId'])
+    ACADEMIC.audit(user['id'], user['role'], 'ATTENDANCE_BULK_UPSERT', 'attendance', ','.join(saved), payload.get('reason','') if isinstance(payload, dict) else '', {'count': len(saved)})
+    return jsonify({'data': ACADEMIC.query('SELECT * FROM attendance ORDER BY updated_at DESC LIMIT ?', (len(saved),)), 'message': f'{len(saved)} attendance record(s) saved'}), 201
+
+@app.route('/api/academic/report-cards', methods=['GET'])
+def academic_report_cards():
+    user, error = _academic_require()
+    if error: return error
+    student_id = request.args.get('studentId')
+    if user['role'] == 'student': student_id = user['id']
+    if user['role'] == 'parent' and student_id and not _parent_can_view(user, student_id): return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+    if not student_id: return _academic_error('VALIDATION_ERROR', 'studentId is required')
+    student = _student(student_id)
+    if not student: return _academic_error('NOT_FOUND', 'Student not found', 404)
+    period_id = request.args.get('periodId', 'gp-term-2'); grades = academic_grades_for_report(student_id, period_id)
+    return jsonify({'data': {'student': student, 'gradingPeriod': ACADEMIC.one('SELECT * FROM grading_periods WHERE id=?', (period_id,)), 'grades': grades, 'gpa': ACADEMIC.aggregate_gpa(student_id, period_id), 'attendance': ACADEMIC.attendance_summary(student_id)}})
+
+def academic_grades_for_report(student_id, period_id):
+    rows = ACADEMIC.query('''SELECT g.*, a.title AS assessment_title, a.max_score, a.class_id, a.subject_id, a.grading_period_id, a.category FROM grades g JOIN assessments a ON a.id=g.assessment_id WHERE g.student_id=? AND a.grading_period_id=? ORDER BY a.subject_id, a.title''', (student_id, period_id))
+    return [_academic_grade_row(r) for r in rows]
+
+@app.route('/api/academic/audit', methods=['GET'])
+def academic_audit():
+    user, error = _academic_require(('admin', 'principal'))
+    if error: return error
+    limit = min(max(int(request.args.get('limit', 50)), 1), 200)
+    return jsonify({'data': ACADEMIC.query('SELECT * FROM audit_events ORDER BY id DESC LIMIT ?', (limit,)), 'meta': {'total': limit}})
+
 @app.route('/api/auth/login', methods=['POST'])
 def auth_login():
     data = request.get_json(silent=True) or {}
     email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
     user = AUTH_USERS.get(email)
-    if not user:
-        if 'teacher' in email:
-            user = AUTH_USERS['teacher@ngis.edu.kh']
-        elif 'student' in email:
-            user = AUTH_USERS['student@ngis.edu.kh']
-        elif 'parent' in email:
-            user = AUTH_USERS['parent@ngis.edu.kh']
-        elif 'staff' in email:
-            user = AUTH_USERS['staff@ngis.edu.kh']
-        elif 'principal' in email:
-            user = AUTH_USERS['principal@ngis.edu.kh']
-        else:
-            user = AUTH_USERS['admin@ngis.edu.kh']
-            
+    if not user or password != 'password123':
+        return _academic_error('INVALID_CREDENTIALS', 'Invalid email or password', 401)
     token = f"mock-jwt-token-{user['role']}"
     return jsonify({
         'data': {
@@ -1293,22 +1521,9 @@ def auth_login():
 
 @app.route('/api/auth/me', methods=['GET'])
 def auth_me():
-    auth_header = request.headers.get('Authorization', '')
-    role = 'admin'
-    for r in ['admin', 'teacher', 'student', 'parent', 'staff', 'principal']:
-        if f'mock-jwt-token-{r}' in auth_header or f'role-{r}' in auth_header:
-            role = r
-            break
-            
-    email_map = {
-        'admin': 'admin@ngis.edu.kh',
-        'teacher': 'teacher@ngis.edu.kh',
-        'student': 'student@ngis.edu.kh',
-        'parent': 'parent@ngis.edu.kh',
-        'staff': 'staff@ngis.edu.kh',
-        'principal': 'principal@ngis.edu.kh'
-    }
-    user = AUTH_USERS.get(email_map.get(role, 'admin@ngis.edu.kh'))
+    user = _academic_user()
+    if not user:
+        return _academic_error('UNAUTHORIZED', 'A valid session is required', 401)
     return jsonify({'data': user})
 
 # ── CONNECTED ROLE-SPECIFIC APIS ──
