@@ -12,26 +12,20 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- NGIS Styles -->
-<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
 <link rel="stylesheet" href="../../assets/css/hero.css?v=3.2">
 <link rel="stylesheet" href="../../assets/css/portal-dashboard.css?v=3.2">
 <link rel="stylesheet" href="../../assets/css/admin-view.css?v=3.2">
 <link rel="stylesheet" href="../../assets/css/interactions.css?v=3.2">
-
-<!-- Phosphor Icons for Mobile View -->
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-<!-- Tailwind CSS (for native mobile experience) -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-<!-- Theme bootstrap -->
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
 
 <style>
-  /* Strict "No Bold Font" Guarantee: Maximum 500 weight, never 700/800 */
+
   body, body * {
     font-weight: 400;
   }
@@ -88,8 +82,18 @@
   }
   .student-gov-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: 1fr;
     gap: 16px;
+  }
+  @media (min-width: 640px) {
+    .student-gov-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .student-gov-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
   }
   .student-gov-card {
     background: #ffffff;
@@ -169,6 +173,15 @@
     gap: 8px;
     padding-top: 12px;
     border-top: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 480px) {
+    .student-gov-actions .btn-gov-primary,
+    .student-gov-actions .btn-gov-secondary {
+      flex: 1 1 auto;
+      text-align: center;
+      justify-content: center;
+    }
   }
   .btn-gov-primary {
     display: inline-flex;
@@ -214,10 +227,15 @@
 
   /* Responsive Grid Spans */
   .col-span-2-lg {
-    grid-column: span 6;
+    grid-column: span 1;
   }
   .col-span-3-lg {
-    grid-column: span 6;
+    grid-column: span 1;
+  }
+  @media (min-width: 640px) {
+    .col-span-3-lg {
+      grid-column: span 2;
+    }
   }
   @media (min-width: 1024px) {
     .col-span-2-lg {
@@ -352,6 +370,149 @@
   [data-theme="dark"] .stu-modal-close:hover {
     background: #334155;
     color: #f8fafc;
+  }
+
+  /* Digital Executive Administrator ID Card Modal */
+  .id-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .id-modal-overlay.open,
+  .id-modal-overlay.is-open {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .id-modal-container {
+    background: #ffffff;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: stuModalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .id-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .id-modal-title {
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #0f172a;
+  }
+  .id-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+  }
+  .id-modal-body {
+    padding: 20px;
+  }
+  .id-card-wrapper {
+    background: linear-gradient(135deg, #0d3860 0%, #11426b 50%, #1b5e91 100%);
+    border-radius: 16px;
+    padding: 20px;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(17, 66, 107, 0.35);
+  }
+  .id-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  .id-card-school {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #7dd3fc;
+  }
+  .id-card-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0;
+  }
+  .id-card-photo {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  .id-card-name {
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    color: #ffffff;
+  }
+  .id-card-role {
+    font-size: 12px;
+    color: #bae6fd;
+    margin-top: 2px;
+  }
+  .id-card-idnum {
+    font-size: 11px;
+    color: #7dd3fc;
+    font-family: monospace;
+    margin-top: 2px;
+  }
+  .id-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 11.5px;
+  }
+  .id-card-field-label {
+    color: #7dd3fc;
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+  .id-card-field-val {
+    color: #ffffff;
+    font-weight: 500;
+    margin-top: 1px;
+  }
+  [data-theme="dark"] .id-modal-container {
+    background: #1e293b;
+    border-color: #334155;
+  }
+  [data-theme="dark"] .id-modal-header {
+    border-bottom-color: #334155;
+  }
+  [data-theme="dark"] .id-modal-title {
+    color: #f8fafc;
+  }
+  [data-theme="dark"] .id-close-btn {
+    border-color: #334155;
+    color: #cbd5e1;
   }
 </style>
 </head>
@@ -650,6 +811,194 @@
                 <button type="button" class="btn-gov-secondary" id="btnHallTickets" onclick="openHallTicketModal()">
                   <span class="material-symbols-outlined" style="font-size:16px">confirmation_number</span>Hall Tickets
                 </button>
+              </div>
+            </article>
+
+          </div>
+        </section>
+
+        <!-- ════════════════════════════════════════════════════════
+             MOEYS SIS SYSTEM ARCHITECTURE & GOVERNANCE SUITE (ប្រព័ន្ធ)
+             5 Core Operational Pillars Aligned with MoEYS SIS Hierarchy
+             ════════════════════════════════════════════════════════ -->
+        <section class="student-gov-section anim-up mt-8" id="moeysSystemSection">
+          <div class="student-gov-header">
+            <div class="student-gov-title-group">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#13829b] text-xl">settings</span>
+                <h2 style="font-family:'Kantumruy Pro', 'Inter', sans-serif;">ប្រព័ន្ធ — MoEYS SIS System Architecture &amp; Governance</h2>
+              </div>
+              <p>National EMIS/SIS centralized infrastructure: school accreditation, academic structures, curriculum mapping, role matrix, and institutional timetable.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-500 font-normal">Cambodia MoEYS SIS Aligned</span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#13829b]/10 text-[#13829b] text-xs border border-[#13829b]/25 font-normal">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#13829b]"></span>
+                5 Core Modules Active
+              </span>
+            </div>
+          </div>
+
+          <div class="student-gov-grid">
+
+            <!-- 1. ព័ត៌មានសាលារៀន (School Information) -->
+            <article class="student-gov-card col-span-2-lg">
+              <div>
+                <div class="student-gov-card-top">
+                  <div class="student-gov-icon-box" style="background:#f0fdf4;border:1px solid #bbf7d0">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#16a34a">school</span>
+                  </div>
+                  <span class="student-gov-badge" style="background:#f0fdf4;color:#15803d;border-color:#86efac">Code: NGIS-PNH</span>
+                </div>
+                <h3 class="student-gov-name" style="font-family:'Kantumruy Pro', sans-serif;">ព័ត៌មានសាលារៀន</h3>
+                <p class="student-gov-desc">Institutional credentials, national school code, campus branches, international and MoEYS accreditations, and official leadership registers.</p>
+                <div class="student-gov-tags">
+                  <span class="student-gov-tag"><span class="material-symbols-outlined" style="font-size:13px">badge</span>School Code</span>
+                  <span class="student-gov-tag"><span class="material-symbols-outlined" style="font-size:13px">verified</span>Accreditation</span>
+                  <span class="student-gov-tag"><span class="material-symbols-outlined" style="font-size:13px">domain</span>4 Campuses</span>
+                </div>
+              </div>
+              <div class="student-gov-actions">
+                <a href="admin-settings.html?tab=school" class="btn-gov-primary">
+                  <span class="material-symbols-outlined" style="font-size:16px">tune</span>គ្រប់គ្រងព័ត៌មានសាលា
+                </a>
+              </div>
+            </article>
+
+            <!-- 2. កំណត់រចនាសម្ព័ន្ធឆ្នាំសិក្សា (Academic Year Structure) - Spans 4 Columns -->
+            <article class="student-gov-card col-span-4-lg" style="grid-column: span 4 / span 4;">
+              <div>
+                <div class="student-gov-card-top">
+                  <div class="student-gov-icon-box" style="background:#eff6ff;border:1px solid #bfdbfe">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#2563eb">account_tree</span>
+                  </div>
+                  <span class="student-gov-badge" style="background:#eff6ff;color:#1d4ed8;border-color:#93c5fd">9 Sub-modules Operational</span>
+                </div>
+                <h3 class="student-gov-name" style="font-family:'Kantumruy Pro', sans-serif;">កំណត់រចនាសម្ព័ន្ធឆ្នាំសិក្សា</h3>
+                <p class="student-gov-desc">Academic terms, examination frameworks, grading lock policies, curriculum benchmarks, classroom enrollment, and supervisory faculty assignments.</p>
+                
+                <!-- 9 Sub-module Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 my-3">
+                  <a href="admin-settings.html?tab=academic" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">ឆ្នាំសិក្សា</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">calendar_month</span>
+                  </a>
+                  <a href="admin-timetables.html?tab=weeks" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">សប្តាហ៍</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">date_range</span>
+                  </a>
+                  <a href="admin-exams.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">កំណត់រចនាសម្ព័ន្ធការប្រឡង</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">edit_note</span>
+                  </a>
+                  <a href="admin-grades.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">ការកំណត់រចនាសម្ព័ន្ធចាក់សោពិន្ទុ</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">lock_clock</span>
+                  </a>
+                  <a href="admin-departments.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">កំណត់កម្មវិធីសិក្សា</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">menu_book</span>
+                  </a>
+                  <a href="admin-lessons.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">ការរចនាកម្មវិធីសិក្សា</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">design_services</span>
+                  </a>
+                  <a href="admin-classes.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">បង្កើតថ្នាក់រៀន</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">meeting_room</span>
+                  </a>
+                  <a href="admin-users.html?role=students" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">រៀបចំសិស្សឆ្នាំចាស់ទៅឆ្នាំថ្មី</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">sync_alt</span>
+                  </a>
+                  <a href="admin-users.html?role=teachers" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">ចាត់តាំងគ្រូបច្ចេកទេស និងត្រួតពិនិត្យ</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">assignment_ind</span>
+                  </a>
+                </div>
+              </div>
+              <div class="student-gov-actions">
+                <a href="admin-classes.html" class="btn-gov-primary">
+                  <span class="material-symbols-outlined" style="font-size:16px">account_tree</span>រចនាសម្ព័ន្ធឆ្នាំសិក្សា
+                </a>
+              </div>
+            </article>
+            
+            <article class="student-gov-card col-span-3-lg">
+              <div>
+                <div class="student-gov-card-top">
+                  <div class="student-gov-icon-box" style="background:#fdf4ff;border:1px solid #f5d0fe">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#a855f7">manage_accounts</span>
+                  </div>
+                  <span class="student-gov-badge" style="background:#fdf4ff;color:#9333ea;border-color:#e9d5ff">RBAC Protected</span>
+                </div>
+                <h3 class="student-gov-name" style="font-family:'Kantumruy Pro', sans-serif;">ការគ្រប់គ្រងគណនី</h3>
+                <p class="student-gov-desc">Identity provisioning, role permissions, password security policies, parent-student relationships, and teacher group authority matrices.</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-3">
+                  <a href="admin-settings.html?tab=roles" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">ការកំណត់តួនាទីក្រុមគណនីគ្រូ</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">shield_person</span>
+                  </a>
+                  <a href="admin-users.html?role=teachers" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">គណនីគ្រូ</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">co_present</span>
+                  </a>
+                  <a href="admin-users.html?role=students" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">គណនីសិស្ស</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">school</span>
+                  </a>
+                  <a href="admin-users.html?role=parents" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">គណនីអាណាព្យាបាល</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">family_restroom</span>
+                  </a>
+                </div>
+              </div>
+              <div class="student-gov-actions">
+                <a href="admin-users.html" class="btn-gov-primary">
+                  <span class="material-symbols-outlined" style="font-size:16px">group</span>គ្រប់គ្រងគណនីទាំងអស់
+                </a>
+              </div>
+            </article>
+
+            <!-- 4. កាលវិភាគ (Timetable) & 5. ការកំណត់ទូទៅ (General Settings) - Spans 3 Columns -->
+            <article class="student-gov-card col-span-3-lg">
+              <div>
+                <div class="student-gov-card-top">
+                  <div class="student-gov-icon-box" style="background:#fffbeb;border:1px solid #fde68a">
+                    <span class="material-symbols-outlined" style="font-size:22px;color:#d97706">tune</span>
+                  </div>
+                  <span class="student-gov-badge" style="background:#fffbeb;color:#b45309;border-color:#fcd34d">Core Configuration</span>
+                </div>
+                <h3 class="student-gov-name" style="font-family:'Kantumruy Pro', sans-serif;">កាលវិភាគ &amp; ការកំណត់ទូទៅ</h3>
+                <p class="student-gov-desc">Conflict-free master timetables, room &amp; facility scheduling, security policies, backup snapshots, and Telegram notification dispatch.</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 my-3">
+                  <a href="admin-timetables.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">កាលវិភាគ</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">calendar_view_week</span>
+                  </a>
+                  <a href="admin-settings.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">ការកំណត់ទូទៅ</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">tune</span>
+                  </a>
+                  <a href="admin-settings.html?tab=backup" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">Backup &amp; Restore</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">backup</span>
+                  </a>
+                  <a href="admin-logs.html" class="p-2 rounded-lg border border-slate-200 hover:border-[#13829b] hover:bg-slate-50 transition-all flex items-center justify-between text-xs">
+                    <span class="font-normal text-slate-700" style="font-family:'Kantumruy Pro', sans-serif;">Audit Logs</span>
+                    <span class="material-symbols-outlined text-slate-400 text-sm">history</span>
+                  </a>
+                </div>
+              </div>
+              <div class="student-gov-actions">
+                <a href="admin-timetables.html" class="btn-gov-primary">
+                  <span class="material-symbols-outlined" style="font-size:16px">calendar_view_week</span>កាលវិភាគ
+                </a>
+                <a href="admin-settings.html" class="btn-gov-secondary">
+                  <span class="material-symbols-outlined" style="font-size:16px">settings</span>ការកំណត់ទូទៅ
+                </a>
               </div>
             </article>
 
@@ -1548,6 +1897,98 @@
               Hall Tickets
             </button>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mobile MoEYS SIS System Architecture Suite (ប្រព័ន្ធ) -->
+    <section class="mt-4 mb-2">
+      <div class="flex items-center justify-between mb-2 px-1">
+        <div class="flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[#13829b] text-base">settings</span>
+          <h2 class="text-xs font-medium text-slate-800" style="font-family:'Kantumruy Pro', sans-serif;">ប្រព័ន្ធ — MoEYS SIS Architecture</h2>
+        </div>
+        <span class="text-[10px] font-medium text-[#13829b] bg-[#13829b]/10 px-2 py-0.5 rounded border border-[#13829b]/25">5 Modules</span>
+      </div>
+
+      <div class="flex flex-col gap-2.5">
+        <!-- 1. ព័ត៌មានសាលារៀន -->
+        <a href="admin-settings.html?tab=school" class="bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-between shadow-xs hover:border-[#13829b] transition-all">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <span class="material-symbols-outlined text-base">school</span>
+            </div>
+            <div>
+              <div class="text-xs font-medium text-slate-800" style="font-family:'Kantumruy Pro', sans-serif;">ព័ត៌មានសាលារៀន</div>
+              <div class="text-[10.5px] text-slate-500 font-normal">Code: NGIS-PNH · 4 Campuses</div>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+        </a>
+
+        <!-- 2. កំណត់រចនាសម្ព័ន្ធឆ្នាំសិក្សា -->
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+                <span class="material-symbols-outlined text-base">account_tree</span>
+              </div>
+              <div class="text-xs font-medium text-slate-800" style="font-family:'Kantumruy Pro', sans-serif;">កំណត់រចនាសម្ព័ន្ធឆ្នាំសិក្សា</div>
+            </div>
+            <span class="text-[10px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">9 Sub-modules</span>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5 pt-1.5 border-t border-slate-100 text-[11px]">
+            <a href="admin-settings.html?tab=academic" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">ឆ្នាំសិក្សា</a>
+            <a href="admin-timetables.html?tab=weeks" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">សប្តាហ៍</a>
+            <a href="admin-exams.html" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">រចនាសម្ព័ន្ធការប្រឡង</a>
+            <a href="admin-grades.html" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">ចាក់សោពិន្ទុ</a>
+            <a href="admin-departments.html" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">កំណត់កម្មវិធីសិក្សា</a>
+            <a href="admin-lessons.html" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">រចនាកម្មវិធីសិក្សា</a>
+            <a href="admin-classes.html" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">បង្កើតថ្នាក់រៀន</a>
+            <a href="admin-users.html?role=students" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">រៀបចំសិស្សឆ្នាំចាស់-ថ្មី</a>
+            <a href="admin-users.html?role=teachers" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate col-span-2 text-center" style="font-family:'Kantumruy Pro', sans-serif;">ចាត់តាំងគ្រូបច្ចេកទេស និងត្រួតពិនិត្យ</a>
+          </div>
+        </div>
+
+        <!-- 3. ការគ្រប់គ្រងគណនី -->
+        <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
+                <span class="material-symbols-outlined text-base">manage_accounts</span>
+              </div>
+              <div class="text-xs font-medium text-slate-800" style="font-family:'Kantumruy Pro', sans-serif;">ការគ្រប់គ្រងគណនី</div>
+            </div>
+            <span class="text-[10px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">RBAC</span>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5 pt-1.5 border-t border-slate-100 text-[11px]">
+            <a href="admin-settings.html?tab=roles" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">តួនាទីក្រុមគ្រូ</a>
+            <a href="admin-users.html?role=teachers" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">គណនីគ្រូ</a>
+            <a href="admin-users.html?role=students" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">គណនីសិស្ស</a>
+            <a href="admin-users.html?role=parents" class="p-1.5 rounded bg-slate-50 text-slate-700 hover:bg-slate-100 truncate" style="font-family:'Kantumruy Pro', sans-serif;">គណនីអាណាព្យាបាល</a>
+          </div>
+        </div>
+
+        <!-- 4. កាលវិភាគ & 5. ការកំណត់ទូទៅ -->
+        <div class="grid grid-cols-2 gap-2">
+          <a href="admin-timetables.html" class="bg-white border border-slate-200 rounded-xl p-2.5 flex items-center gap-2 shadow-xs hover:border-[#13829b] transition-all">
+            <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-sm">calendar_view_week</span>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-medium text-slate-800 truncate" style="font-family:'Kantumruy Pro', sans-serif;">កាលវិភាគ</div>
+              <div class="text-[10px] text-slate-500 font-normal">Timetables</div>
+            </div>
+          </a>
+          <a href="admin-settings.html" class="bg-white border border-slate-200 rounded-xl p-2.5 flex items-center gap-2 shadow-xs hover:border-[#13829b] transition-all">
+            <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-sm">tune</span>
+            </div>
+            <div class="min-w-0">
+              <div class="text-xs font-medium text-slate-800 truncate" style="font-family:'Kantumruy Pro', sans-serif;">ការកំណត់ទូទៅ</div>
+              <div class="text-[10px] text-slate-500 font-normal">Settings</div>
+            </div>
+          </a>
         </div>
       </div>
     </section>

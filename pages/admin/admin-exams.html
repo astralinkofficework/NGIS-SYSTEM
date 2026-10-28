@@ -47,7 +47,7 @@
             <td>2026-07-14</td>
             <td><span class="badge green">Published</span></td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-exam-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Unpublish" onclick="window.togglePublish(this)"><span class="material-symbols-outlined" style="font-size:16px">visibility_off</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.deleteExamRow(this)"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -59,7 +59,7 @@
             <td>2026-07-09</td>
             <td><span class="badge gray">Draft</span></td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-exam-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Publish" onclick="window.togglePublish(this)"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.deleteExamRow(this)"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -71,7 +71,7 @@
             <td>2026-07-20</td>
             <td><span class="badge green">Published</span></td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-exam-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Unpublish" onclick="window.togglePublish(this)"><span class="material-symbols-outlined" style="font-size:16px">visibility_off</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.deleteExamRow(this)"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -83,7 +83,7 @@
             <td>2026-08-02</td>
             <td><span class="badge gray">Draft</span></td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-exam-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Publish" onclick="window.togglePublish(this)"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.deleteExamRow(this)"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -95,7 +95,7 @@
             <td>2026-07-11</td>
             <td><span class="badge green">Published</span></td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-exam-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Unpublish" onclick="window.togglePublish(this)"><span class="material-symbols-outlined" style="font-size:16px">visibility_off</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.deleteExamRow(this)"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -188,18 +188,67 @@
     { icon: 'verified', text: 'Principal Administrator' }
   ]
 };</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script>Protect.require(['admin']);</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script>
 (function () {
+  var editingExamRow = null;
+
   function rowActionsHtml(status) {
     var isPub = status === 'Published';
     return '<div class="flex gap4 wrap">' +
-      '<button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
+      '<button class="icon-btn edit-exam-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
       '<button class="icon-btn" title="' + (isPub ? 'Unpublish' : 'Publish') + '" onclick="window.togglePublish(this)"><span class="material-symbols-outlined" style="font-size:16px">' + (isPub ? 'visibility_off' : 'visibility') + '</span></button>' +
       '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.deleteExamRow(this)"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
     '</div>';
   }
+
+  // Ensure all existing rows have the edit-exam-btn class
+  document.querySelectorAll('#examsTable tbody tr').forEach(function (tr) {
+    var editBtn = tr.querySelector('button[title="Edit"]');
+    if (editBtn) editBtn.classList.add('edit-exam-btn');
+  });
+
+  // Table action delegation: Edit
+  document.getElementById('examsTable').addEventListener('click', function (e) {
+    var editBtn = e.target.closest('.edit-exam-btn, [title="Edit"]');
+    if (editBtn) {
+      var tr = editBtn.closest('tr');
+      if (!tr) return;
+      editingExamRow = tr;
+      var titleEl = tr.querySelector('td:first-child span');
+      var deptEl = tr.querySelector('td:first-child .faint');
+      var campusTd = tr.querySelector('td:nth-child(3)');
+      var dateTd = tr.querySelector('td:nth-child(4)');
+      var statusBadge = tr.querySelector('td:nth-child(5) .badge');
+
+      document.getElementById('addExamTitle').textContent = 'Edit Exam';
+      document.getElementById('examTitle').value = titleEl ? titleEl.textContent.trim() : '';
+      if (deptEl) {
+        var dText = deptEl.textContent.replace(' Department', '').trim();
+        document.getElementById('examDept').value = dText;
+      }
+      if (campusTd) document.getElementById('examCampus').value = campusTd.textContent.trim();
+      if (dateTd && dateTd.textContent.trim() !== '—') document.getElementById('examDate').value = dateTd.textContent.trim();
+      if (statusBadge) document.getElementById('examStatus').value = statusBadge.textContent.trim();
+
+      var ov = document.querySelector('.drawer-overlay[data-drawer="addExamDrawer"]');
+      if (ov) ov.classList.add('show', 'open');
+      return;
+    }
+  });
+
+  // Reset drawer state when opened via Schedule Exam button
+  document.querySelectorAll('[data-open-drawer="addExamDrawer"]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      editingExamRow = null;
+      document.getElementById('addExamTitle').textContent = 'Schedule Exam';
+      document.getElementById('addExamForm').reset();
+    });
+  });
 
   // Toggle a row's Publish/Unpublish state (works for seeded rows and new rows alike).
   window.togglePublish = function (btn) {
@@ -245,26 +294,83 @@
       classesHtml = '<div class="flex gap4 wrap">' + classesHtml + '</div>';
     }
 
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + ' Department</div></td>' +
-      '<td>' + classesHtml + '</td>' +
-      '<td>' + campus + '</td>' +
-      '<td>' + date + '</td>' +
-      '<td><span class="badge ' + badgeCls + '">' + status + '</span></td>' +
-      '<td>' + rowActionsHtml(status) + '</td>';
-    document.querySelector('#examsTable tbody').prepend(tr);
-    window.toast('Exam created', 'success');
+    if (editingExamRow) {
+      editingExamRow.innerHTML =
+        '<td><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + ' Department</div></td>' +
+        '<td>' + classesHtml + '</td>' +
+        '<td>' + campus + '</td>' +
+        '<td>' + date + '</td>' +
+        '<td><span class="badge ' + badgeCls + '">' + status + '</span></td>' +
+        '<td>' + rowActionsHtml(status) + '</td>';
+      editingExamRow = null;
+      window.toast('Exam updated successfully', 'success');
+    } else {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + ' Department</div></td>' +
+        '<td>' + classesHtml + '</td>' +
+        '<td>' + campus + '</td>' +
+        '<td>' + date + '</td>' +
+        '<td><span class="badge ' + badgeCls + '">' + status + '</span></td>' +
+        '<td>' + rowActionsHtml(status) + '</td>';
+      document.querySelector('#examsTable tbody').prepend(tr);
+      window.toast('Exam created', 'success');
+    }
 
     var ov = document.querySelector('.drawer-overlay[data-drawer="addExamDrawer"]');
-    if (ov) ov.classList.remove('show');
+    if (ov) ov.classList.remove('show', 'open');
     document.getElementById('addExamForm').reset();
   }
 
   document.getElementById('examSaveBtn').addEventListener('click', saveExam);
 
+  // Search & Filters
+  var searchInput = document.querySelector('.toolbar input');
+  var selects = document.querySelectorAll('.toolbar select');
+  function filterRows() {
+    var q = (searchInput ? searchInput.value : '').toLowerCase();
+    var deptFilter = selects[0] ? selects[0].value : 'All Departments';
+    var campusFilter = selects[1] ? selects[1].value : 'All Campuses';
+    var statusFilter = selects[2] ? selects[2].value : 'All Status';
+
+    document.querySelectorAll('#examsTable tbody tr').forEach(function (tr) {
+      var txt = tr.textContent.toLowerCase();
+      var matchesQ = !q || txt.includes(q);
+      var matchesDept = deptFilter === 'All Departments' || txt.includes(deptFilter.toLowerCase());
+      var matchesCampus = campusFilter === 'All Campuses' || txt.includes(campusFilter.toLowerCase());
+      var matchesStatus = statusFilter === 'All Status' || txt.includes(statusFilter.toLowerCase());
+
+      tr.style.display = (matchesQ && matchesDept && matchesCampus && matchesStatus) ? '' : 'none';
+    });
+  }
+
+  if (searchInput) searchInput.addEventListener('input', filterRows);
+  selects.forEach(function (sel) { sel.addEventListener('change', filterRows); });
+
+  // Pagination buttons
+  var paginationBtns = document.querySelectorAll('.card-pad .btn-sm');
+  paginationBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var label = btn.textContent.trim();
+      paginationBtns.forEach(function (b) {
+        if (/^\d+$/.test(b.textContent.trim())) {
+          b.className = 'btn btn-ghost btn-sm';
+        }
+      });
+      if (/^\d+$/.test(label)) {
+        btn.className = 'btn btn-sm btn-primary';
+        if (window.toast) window.toast('Showing page ' + label + ' of exams', 'info');
+      } else if (label === 'Next') {
+        if (window.toast) window.toast('Loaded next page of exams', 'info');
+      } else if (label === 'Previous') {
+        if (window.toast) window.toast('Returned to previous page', 'info');
+      }
+    });
+  });
+
   if (new URLSearchParams(location.search).get('add') === '1') {
-    document.querySelector('.drawer-overlay[data-drawer="addExamDrawer"]').classList.add('show');
+    var ov = document.querySelector('.drawer-overlay[data-drawer="addExamDrawer"]');
+    if (ov) ov.classList.add('show', 'open');
   }
 })();
 </script>

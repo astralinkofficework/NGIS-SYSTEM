@@ -82,9 +82,38 @@ DB = {
 
     # ── Students ──
     'students': [
-        {'id': '2026-STD-0142', 'name': 'Nrinphouneta Hok', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.87, 'attendance': 96, 'status': 'active'},
-        {'id': '2026-STD-0143', 'name': 'Kosal Rith Mony',  'grade': 'Grade 11', 'class': '11B', 'gpa': 3.72, 'attendance': 94, 'status': 'active'},
-        {'id': '2026-STD-0144', 'name': 'Sophea Chan',      'grade': 'Grade 10', 'class': '10A', 'gpa': 3.55, 'attendance': 91, 'status': 'active'},
+        # Grade 10A (Homeroom & Adv Math)
+        {'id': '2026-STD-0142', 'name': 'Nrinphouneta Hok', 'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.87, 'attendance': 96, 'status': 'active', 'parentEmail': 'parent@ngis.edu.kh', 'parentName': 'Chan Dara Vuth', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0144', 'name': 'Sophea Chan',      'gender': 'F', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.55, 'attendance': 91, 'status': 'active', 'parentEmail': 's.chan.parent@ngis.edu.kh', 'parentName': 'Sophea Sok', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0145', 'name': 'Virak Heng',        'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.65, 'attendance': 95, 'status': 'active', 'parentEmail': 'v.heng@example.com', 'parentName': 'Heng Piseth', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0148', 'name': 'Kosal Rith Mony',  'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.72, 'attendance': 94, 'status': 'active', 'parentEmail': 'parent@ngis.edu.kh', 'parentName': 'Chan Dara Vuth', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0151', 'name': 'Sreylin Vuth',     'gender': 'F', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.92, 'attendance': 99, 'status': 'active', 'parentEmail': 's.vuth@example.com', 'parentName': 'Vuth Samnang', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0155', 'name': 'Heng Piseth',       'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.45, 'attendance': 88, 'status': 'active', 'parentEmail': 'h.piseth@example.com', 'parentName': 'Piseth Chea', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0160', 'name': 'Emily Jenkins',     'gender': 'F', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.98, 'attendance': 100, 'status': 'active', 'parentEmail': 'teacher@ngis.edu.kh', 'parentName': 'Dr. Sarah Jenkins', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0162', 'name': 'Kevin Jenkins',     'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.78, 'attendance': 97, 'status': 'active', 'parentEmail': 'teacher@ngis.edu.kh', 'parentName': 'Dr. Sarah Jenkins', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0168', 'name': 'Linda Chea',        'gender': 'F', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.84, 'attendance': 96, 'status': 'active', 'parentEmail': 'l.chea@example.com', 'parentName': 'Chea Vatanak', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0171', 'name': 'Vicheka Meas',      'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.68, 'attendance': 93, 'status': 'active', 'parentEmail': 'v.meas@example.com', 'parentName': 'Meas Sarin', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0174', 'name': 'Dara Panha',        'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.35, 'attendance': 85, 'status': 'active', 'parentEmail': 'd.panha@example.com', 'parentName': 'Panha Sovann', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0177', 'name': 'Bormey Sen',        'gender': 'F', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.89, 'attendance': 98, 'status': 'active', 'parentEmail': 'b.sen@example.com', 'parentName': 'Sen Rithy', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0182', 'name': 'Kimleng Seng',      'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.62, 'attendance': 94, 'status': 'active', 'parentEmail': 'k.seng@example.com', 'parentName': 'Seng Dara', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0185', 'name': 'Nathalie Pich',     'gender': 'F', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.91, 'attendance': 99, 'status': 'active', 'parentEmail': 'n.pich@example.com', 'parentName': 'Pich Moly', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0189', 'name': 'Rithy Kong',        'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.52, 'attendance': 92, 'status': 'active', 'parentEmail': 'r.kong@example.com', 'parentName': 'Kong Bunthoeun', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0193', 'name': 'Thida Bun',         'gender': 'F', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.86, 'attendance': 97, 'status': 'active', 'parentEmail': 't.bun@example.com', 'parentName': 'Bun Phearith', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0199', 'name': 'Sarath Om',         'gender': 'M', 'grade': 'Grade 10', 'class': '10A', 'gpa': 3.70, 'attendance': 95, 'status': 'active', 'parentEmail': 's.om@example.com', 'parentName': 'Om Vanny', 'advisor': 'Dr. Sarah Jenkins'},
+
+        # Grade 11B (Physics CP)
+        {'id': '2026-STD-0143', 'name': 'Kosal Rith Mony',  'gender': 'M', 'grade': 'Grade 11', 'class': '11B', 'gpa': 3.72, 'attendance': 94, 'status': 'active', 'parentEmail': 'parent@ngis.edu.kh', 'parentName': 'Chan Dara Vuth', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0146', 'name': 'Sreymom Vuth',     'gender': 'F', 'grade': 'Grade 11', 'class': '11B', 'gpa': 3.82, 'attendance': 98, 'status': 'active', 'parentEmail': 's.vuth@example.com', 'parentName': 'Vuth Samnang', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0152', 'name': 'Chenda Sam',       'gender': 'F', 'grade': 'Grade 11', 'class': '11B', 'gpa': 3.65, 'attendance': 92, 'status': 'active', 'parentEmail': 'c.sam@example.com', 'parentName': 'Sam Bopha', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0158', 'name': 'Sovannary Keo',    'gender': 'F', 'grade': 'Grade 11', 'class': '11B', 'gpa': 3.88, 'attendance': 96, 'status': 'active', 'parentEmail': 's.keo@example.com', 'parentName': 'Keo Pheakdey', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0164', 'name': 'Bopha Devi',        'gender': 'F', 'grade': 'Grade 11', 'class': '11B', 'gpa': 3.95, 'attendance': 99, 'status': 'active', 'parentEmail': 'b.devi@example.com', 'parentName': 'Devi Rath', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0170', 'name': 'Rathana Sok',      'gender': 'M', 'grade': 'Grade 11', 'class': '11B', 'gpa': 3.58, 'attendance': 90, 'status': 'active', 'parentEmail': 'r.sok@example.com', 'parentName': 'Sok Chanthou', 'advisor': 'Dr. Sarah Jenkins'},
+
+        # Grade 11C (AP Calculus BC)
+        {'id': '2026-STD-0147', 'name': 'Kimheak Chheng',   'gender': 'M', 'grade': 'Grade 11', 'class': '11C', 'gpa': 3.88, 'attendance': 97, 'status': 'active', 'parentEmail': 'k.chheng@example.com', 'parentName': 'Chheng Kim', 'advisor': 'Muthukumaran Pakkirisamy'},
+        {'id': '2026-STD-0149', 'name': 'Prak Piseth',       'gender': 'M', 'grade': 'Grade 11', 'class': '11C', 'gpa': 3.42, 'attendance': 89, 'status': 'active', 'parentEmail': 'p.piseth@example.com', 'parentName': 'Piseth Chea', 'advisor': 'Muthukumaran Pakkirisamy'},
+        {'id': '2026-STD-0153', 'name': 'Maly Ros',          'gender': 'F', 'grade': 'Grade 11', 'class': '11C', 'gpa': 3.79, 'attendance': 95, 'status': 'active', 'parentEmail': 'm.ros@example.com', 'parentName': 'Ros Saroeun', 'advisor': 'Dr. Sarah Jenkins'},
+        {'id': '2026-STD-0159', 'name': 'Chantrea Seng',    'gender': 'F', 'grade': 'Grade 11', 'class': '11C', 'gpa': 3.91, 'attendance': 98, 'status': 'active', 'parentEmail': 'c.seng@example.com', 'parentName': 'Seng Visal', 'advisor': 'Dr. Sarah Jenkins'},
     ],
 
     # ── Clubs ──
@@ -150,8 +179,8 @@ DB = {
             'email': 'teacher@ngis.edu.kh',
             'phone': '+855 12 888 999',
             'department': 'Mathematics',
-            'subjects': ['Advanced Mathematics', 'Calculus I'],
-            'classes': ['10A', '11B'],
+            'subjects': ['Advanced Mathematics', 'Calculus I', 'AP Biology', 'Pre-AP Chemistry'],
+            'classes': ['10A', '11B', '11C'],
             'homeroom': '10A',
             'status': 'active',
             'avatar': 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80'
@@ -230,6 +259,7 @@ DB = {
         {'id': 'cls-10b', 'name': 'Grade 10B', 'grade': '10', 'section': 'B', 'homeroomTeacher': 'Dr. Pov Sophea', 'room': 'Room 304', 'studentCount': 30, 'campus': 'Sensok'},
         {'id': 'cls-11a', 'name': 'Grade 11A', 'grade': '11', 'section': 'A', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room 201', 'studentCount': 28, 'campus': 'TK'},
         {'id': 'cls-11b', 'name': 'Grade 11B', 'grade': '11', 'section': 'B', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room 203', 'studentCount': 31, 'campus': 'Sensok'},
+        {'id': 'cls-11c', 'name': 'Grade 11C', 'grade': '11', 'section': 'C', 'homeroomTeacher': 'Muthukumaran Pakkirisamy', 'room': 'Room 407 (11C)', 'studentCount': 28, 'campus': 'Sensok'},
     ],
 
     # ── Assignments ──
@@ -1439,23 +1469,83 @@ def academic_attendance():
         if request.args.get('from'): clauses.append('attendance_date>=?'); args.append(request.args['from'])
         if request.args.get('to'): clauses.append('attendance_date<=?'); args.append(request.args['to'])
         rows = ACADEMIC.query('SELECT * FROM attendance WHERE ' + ' AND '.join(clauses) + ' ORDER BY attendance_date DESC', args)
-        rows = [{**r, 'date': r.get('attendance_date'), 'notes': r.get('note', ''), 'status': 'late' if r.get('status') == 'tardy' else r.get('status')} for r in rows]
+        enriched_rows = []
+        for r in rows:
+            st = _student(r.get('student_id')) or {}
+            cls = next((c for c in DB['classes'] if c.get('id') == r.get('class_id')), None)
+            item = {
+                **r,
+                'student_name': st.get('name', r.get('student_id')),
+                'student_grade': st.get('grade', 'Grade 11'),
+                'class_name': cls.get('name') if cls else r.get('class_id'),
+                'date': r.get('attendance_date'),
+                'notes': r.get('note', ''),
+                'status': 'late' if r.get('status') == 'tardy' else r.get('status')
+            }
+            enriched_rows.append(item)
+        rows = enriched_rows
+
+        if request.args.get('status'):
+            target_status = request.args['status'].lower()
+            if target_status == 'tardy': target_status = 'late'
+            rows = [r for r in rows if r['status'] == target_status or (target_status == 'late' and r['status'] == 'tardy')]
+
+        if request.args.get('search'):
+            query = request.args['search'].lower().strip()
+            rows = [r for r in rows if query in r['student_id'].lower() or query in r['student_name'].lower()]
+
         summary = ACADEMIC.attendance_summary(student_id) if student_id else None
         # Teacher roster mode: return every enrolled student for the selected class,
         # overlaying today's saved record so the UI can mark missing students.
-        if request.args.get('classId') and not student_id:
+        if request.args.get('classId') and not student_id and (user['role'] == 'teacher' or request.args.get('view') == 'roster'):
             class_id = request.args['classId']; date = request.args.get('date')
+            cls_obj = next((c for c in DB['classes'] if c.get('id') == class_id), None)
+            cls_code = cls_obj.get('name', '').replace('Grade ', '') if cls_obj else ''
+            
+            # Fetch from enrollments first
             roster = ACADEMIC.query('SELECT student_id FROM enrollments WHERE class_id=? AND academic_year_id=? ORDER BY student_id', (class_id, 'ay-2025-26'))
+            s_ids = [r['student_id'] for r in roster]
+            if cls_code:
+                # Merge students assigned to this class in DB['students']
+                matching_sids = [s['id'] for s in DB['students'] if s.get('class') == cls_code]
+                for sid in matching_sids:
+                    if sid not in s_ids:
+                        s_ids.append(sid)
+            if not s_ids:
+                s_ids = [s['id'] for s in DB['students'] if s.get('class') == '10A']
+                
             existing = {r['student_id']: r for r in rows if not date or r['attendance_date'] == date}
             data = []
-            for item in roster:
-                student = _student(item['student_id']) or {}
-                rec = existing.get(item['student_id'], {})
-                data.append({'student_id': item['student_id'], 'student_number': item['student_id'], 'first_name': student.get('name','').split(' ')[0], 'last_name': ' '.join(student.get('name','').split(' ')[1:]), 'status': rec.get('status', 'present'), 'date': date, 'class_id': class_id})
+            for sid in s_ids:
+                student = _student(sid) or {}
+                rec = existing.get(sid, {})
+                s_name = student.get('name', sid)
+                name_parts = s_name.split(' ')
+                data.append({
+                    'student_id': sid,
+                    'student_number': sid,
+                    'name': s_name,
+                    'first_name': name_parts[0],
+                    'last_name': ' '.join(name_parts[1:]) if len(name_parts) > 1 else '',
+                    'gender': student.get('gender', 'M' if int(sid.split('-')[-1]) % 2 == 0 else 'F'),
+                    'status': rec.get('status', 'present'),
+                    'note': rec.get('note', ''),
+                    'notes': rec.get('note', ''),
+                    'date': date,
+                    'class_id': class_id
+                })
             return jsonify({'data': data, 'meta': {'total': len(data)}})
         meta = {'total': len(rows), 'summary': summary}
         if summary:
             meta.update({'present': summary['present'], 'late': summary['tardy'], 'absent': summary['absent'], 'rate': summary['percentage']})
+        else:
+            p_cnt = sum(1 for r in rows if r['status'] == 'present')
+            l_cnt = sum(1 for r in rows if r['status'] in ('late', 'tardy'))
+            a_cnt = sum(1 for r in rows if r['status'] == 'absent')
+            e_cnt = sum(1 for r in rows if r['status'] == 'excused')
+            tot = len(rows)
+            rate = round((p_cnt / tot * 100), 1) if tot > 0 else 100.0
+            meta.update({'present': p_cnt, 'late': l_cnt, 'absent': a_cnt, 'excused': e_cnt, 'rate': rate})
         return jsonify({'data': rows, 'meta': meta})
     if user['role'] not in ('teacher', 'admin'): return _academic_error('FORBIDDEN', 'Only teachers and administrators can record attendance', 403)
     payload = request.get_json(silent=True) or {}; records = payload.get('records') if isinstance(payload, dict) else payload
@@ -1503,6 +1593,415 @@ def academic_audit():
     limit = min(max(int(request.args.get('limit', 50)), 1), 200)
     return jsonify({'data': ACADEMIC.query('SELECT * FROM audit_events ORDER BY id DESC LIMIT ?', (limit,)), 'meta': {'total': limit}})
 
+@app.route('/api/academic/attendance-by-class', methods=['GET'])
+def academic_attendance_by_class():
+    user, error = _academic_require()
+    if error: return error
+    student_id = request.args.get('studentId')
+    if user['role'] == 'student':
+        student_id = user['id']
+    elif user['role'] == 'parent':
+        if not student_id:
+            parent = next((p for p in DB['parents'] if p.get('id') == user['id']), DB['parents'][0])
+            student_id = (parent.get('children', ['2026-STD-0142'])[0]) if parent else '2026-STD-0142'
+        if not _parent_can_view(user, student_id):
+            return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+    elif not student_id:
+        student_id = '2026-STD-0142'
+
+    student = _student(student_id)
+    if not student:
+        return _academic_error('NOT_FOUND', 'Student not found', 404)
+
+    data = ACADEMIC.get_attendance_by_class(student_id)
+    data['student'] = {
+        'id': student['id'],
+        'name': student['name'],
+        'grade': student.get('grade', 'Grade 11'),
+        'class': student.get('class', '11C'),
+        'stream': 'Science & Social Studies Stream',
+        'advisor': 'Ms. Rathana Chea'
+    }
+    return jsonify({'data': data})
+
+@app.route('/api/academic/course-details', methods=['GET'])
+def academic_course_details():
+    user, error = _academic_require()
+    if error: return error
+    student_id = request.args.get('studentId')
+    if user['role'] == 'student':
+        student_id = user['id']
+    elif user['role'] == 'parent':
+        if not student_id:
+            parent = next((p for p in DB['parents'] if p.get('id') == user['id']), DB['parents'][0])
+            student_id = (parent.get('children', ['2026-STD-0142'])[0]) if parent else '2026-STD-0142'
+        if not _parent_can_view(user, student_id):
+            return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+    elif not student_id:
+        student_id = '2026-STD-0142'
+
+    subject_id = request.args.get('subjectId')
+    if not subject_id:
+        return _academic_error('VALIDATION_ERROR', 'subjectId is required')
+
+    period_id = request.args.get('periodId') or request.args.get('periodCode')
+    assessments = ACADEMIC.get_course_assessments(student_id, subject_id, period_id)
+    subject = ACADEMIC.one('SELECT * FROM subjects WHERE id=?', (subject_id,)) or {'name': subject_id}
+    return jsonify({'data': {'subject': dict(subject), 'assessments': assessments, 'total': len(assessments)}})
+
+@app.route('/api/academic/attendance-by-day', methods=['GET'])
+def academic_attendance_by_day():
+    user, error = _academic_require()
+    if error: return error
+    student_id = request.args.get('studentId')
+    if user['role'] == 'student':
+        student_id = user['id']
+    elif user['role'] == 'parent':
+        if not student_id:
+            parent = next((p for p in DB['parents'] if p.get('id') == user['id']), DB['parents'][0])
+            student_id = (parent.get('children', ['2026-STD-0142'])[0]) if parent else '2026-STD-0142'
+        if not _parent_can_view(user, student_id):
+            return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+    elif not student_id:
+        student_id = '2026-STD-0142'
+
+    limit = min(max(int(request.args.get('limit', 50)), 1), 200)
+    records = ACADEMIC.get_daily_attendance(student_id, limit)
+    summary = ACADEMIC.attendance_summary(student_id)
+    return jsonify({'data': {'studentId': student_id, 'records': records, 'summary': summary, 'total': len(records)}})
+
+@app.route('/api/academic/gradebook', methods=['GET'])
+def academic_gradebook():
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+    class_id = request.args.get('classId', 'cls-10a')
+    subject_id = request.args.get('subjectId', 'subj-math')
+    period_id = request.args.get('periodId', 'gp-q1')
+
+    if user['role'] == 'teacher' and not _teacher_can_class(user, class_id):
+        return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+
+    # Assessments for this class, subject, period
+    assessments = ACADEMIC.query(
+        """SELECT * FROM assessments WHERE class_id=? AND subject_id=? AND (grading_period_id=? OR grading_period_id IN (SELECT id FROM grading_periods WHERE code=?)) ORDER BY created_at""",
+        (class_id, subject_id, period_id, period_id)
+    )
+
+    # Roster
+    enrollment_rows = ACADEMIC.query(
+        """SELECT student_id FROM enrollments WHERE class_id=? AND academic_year_id='ay-2025-26'""",
+        (class_id,)
+    )
+    student_ids = [r['student_id'] for r in enrollment_rows]
+    if not student_ids:
+        cls_name = next((c.get('name','').replace('Grade ','') for c in DB['classes'] if c.get('id') == class_id), '')
+        student_ids = [s['id'] for s in DB['students'] if s.get('class') == cls_name]
+        if not student_ids:
+            student_ids = ['2026-STD-0142', '2026-STD-0144']
+
+    students_out = []
+    for sid in student_ids:
+        st = _student(sid) or {'id': sid, 'name': sid}
+        student_grades = {}
+        total_score = 0.0
+        total_max = 0.0
+        has_any = False
+        workflow_state = 'draft'
+
+        for a in assessments:
+            gr = ACADEMIC.one("SELECT score, state, comments, workflow FROM grades WHERE assessment_id=? AND student_id=?", (a['id'], sid))
+            if gr and gr['score'] is not None:
+                student_grades[a['id']] = {
+                    'score': gr['score'],
+                    'comments': gr['comments'] or '',
+                    'workflow': gr['workflow'] or 'draft'
+                }
+                total_score += float(gr['score']) * float(a.get('weight', 1.0))
+                total_max += float(a['max_score']) * float(a.get('weight', 1.0))
+                has_any = True
+                workflow_state = gr['workflow']
+            else:
+                student_grades[a['id']] = {
+                    'score': '',
+                    'comments': '',
+                    'workflow': 'draft'
+                }
+
+        calc_pct = (total_score / total_max * 100) if total_max > 0 else None
+        letter, pts = ACADEMIC.grade_band(calc_pct)
+
+        students_out.append({
+            'id': sid,
+            'name': st.get('name', sid),
+            'number': sid,
+            'grades': student_grades,
+            'totalPercentage': round(calc_pct, 1) if calc_pct is not None else 0,
+            'letterGrade': letter if calc_pct is not None else '—',
+            'workflow': workflow_state if has_any else 'draft'
+        })
+
+    cls_obj = next((c for c in DB['classes'] if c.get('id') == class_id), {'id': class_id, 'name': class_id})
+    subj_obj = ACADEMIC.one("SELECT * FROM subjects WHERE id=?", (subject_id,)) or {'id': subject_id, 'name': subject_id}
+    period_obj = ACADEMIC.one("SELECT * FROM grading_periods WHERE id=? OR code=?", (period_id, period_id)) or {'id': period_id, 'name': period_id}
+
+    return jsonify({
+        'data': {
+            'class': cls_obj,
+            'subject': dict(subj_obj),
+            'period': dict(period_obj),
+            'assessments': assessments,
+            'students': students_out
+        }
+    })
+
+@app.route('/api/academic/gradebook/batch', methods=['POST'])
+def academic_gradebook_batch():
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+    data = request.get_json(silent=True) or {}
+    class_id = data.get('classId')
+    subject_id = data.get('subjectId')
+    period_id = data.get('periodId', 'gp-q1')
+    workflow = data.get('workflow', 'draft')
+
+    if not class_id or not subject_id:
+        return _academic_error('VALIDATION_ERROR', 'classId and subjectId are required')
+    if user['role'] == 'teacher' and not _teacher_can_class(user, class_id):
+        return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+
+    grades_list = data.get('grades', [])
+    now = ACADEMIC.now()
+    statements = []
+
+    for item in grades_list:
+        student_id = item.get('studentId')
+        assessment_id = item.get('assessmentId')
+        score = item.get('score')
+        comments = item.get('comments', '')
+        if not student_id or not assessment_id:
+            continue
+
+        numeric_score = float(score) if score not in (None, '', '—') else None
+        state = 'graded' if numeric_score is not None else 'missing'
+        grd_id = ACADEMIC.new_id('grd')
+
+        statements.append((
+            """INSERT INTO grades(id, assessment_id, student_id, score, state, comments, workflow, recorded_by, recorded_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(assessment_id, student_id) DO UPDATE SET
+                 score=excluded.score, state=excluded.state, comments=excluded.comments,
+                 workflow=excluded.workflow, updated_at=excluded.updated_at, recorded_by=excluded.recorded_by""",
+            (grd_id, assessment_id, student_id, numeric_score, state, comments, workflow, user['id'], now, now)
+        ))
+
+    if statements:
+        try:
+            ACADEMIC.transaction(statements)
+        except Exception as exc:
+            return _academic_error('DATABASE_ERROR', f'Could not save batch grades: {exc}', 500)
+
+    ACADEMIC.audit(user['id'], user['role'], 'GRADEBOOK_BATCH_SAVE', 'class', class_id, data.get('reason', ''), {'count': len(statements), 'workflow': workflow})
+    return jsonify({'message': f'Successfully saved {len(statements)} grade record(s)', 'workflow': workflow}), 200
+
+@app.route('/api/academic/assessments', methods=['POST'])
+def academic_create_assessment():
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+    data = request.get_json(silent=True) or {}
+    required = ['classId', 'subjectId', 'title', 'maxScore']
+    for req in required:
+        if not data.get(req):
+            return _academic_error('VALIDATION_ERROR', f'{req} is required')
+
+    class_id = data['classId']
+    if user['role'] == 'teacher' and not _teacher_can_class(user, class_id):
+        return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+
+    asm_id = ACADEMIC.new_id('asm')
+    period_id = data.get('gradingPeriodId', 'gp-q1')
+    now = ACADEMIC.now()
+    weight = float(data.get('weight', 1.0))
+    max_score = float(data.get('maxScore', 100))
+    category = data.get('category', 'Quiz')
+    due_date = data.get('dueDate', now[:10])
+
+    ACADEMIC.execute(
+        """INSERT INTO assessments(id, class_id, subject_id, grading_period_id, title, category, max_score, weight, teacher_id, status, created_at, due_date)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'published', ?, ?)""",
+        (asm_id, class_id, data['subjectId'], period_id, data['title'].strip(), category, max_score, weight, user['id'], now, due_date)
+    )
+
+    ACADEMIC.audit(user['id'], user['role'], 'ASSESSMENT_CREATE', 'assessment', asm_id, '', {'title': data['title']})
+    created = ACADEMIC.one("SELECT * FROM assessments WHERE id=?", (asm_id,))
+    return jsonify({'data': created, 'message': 'Assessment created successfully'}), 201
+
+@app.route('/api/academic/admin/publish-grades', methods=['POST'])
+def academic_admin_publish_grades():
+    user, error = _academic_require(('admin', 'principal'))
+    if error: return error
+    data = request.get_json(silent=True) or {}
+    class_id = data.get('classId')
+    subject_id = data.get('subjectId')
+    period_id = data.get('periodId')
+
+    clauses = ["g.workflow IN ('submitted', 'draft')"]
+    args = []
+    if class_id:
+        clauses.append("a.class_id=?"); args.append(class_id)
+    if subject_id:
+        clauses.append("a.subject_id=?"); args.append(subject_id)
+    if period_id:
+        clauses.append("(a.grading_period_id=? OR a.grading_period_id IN (SELECT id FROM grading_periods WHERE code=?))")
+        args.extend([period_id, period_id])
+
+    now = ACADEMIC.now()
+    sql = f"""UPDATE grades SET workflow='published', updated_at='{now}'
+              WHERE id IN (
+                SELECT g.id FROM grades g JOIN assessments a ON a.id=g.assessment_id
+                WHERE {' AND '.join(clauses)}
+              )"""
+    ACADEMIC.execute(sql, args)
+    ACADEMIC.audit(user['id'], user['role'], 'GRADES_BULK_PUBLISH', 'grades', class_id or 'all', data.get('reason', ''), {'periodId': period_id})
+    return jsonify({'message': 'Grades published successfully'}), 200
+
+@app.route('/api/academic/admin/override-grade', methods=['POST'])
+def academic_admin_override_grade():
+    user, error = _academic_require(('admin', 'principal'))
+    if error: return error
+    data = request.get_json(silent=True) or {}
+    grade_id = data.get('gradeId')
+    score = data.get('score')
+    reason = data.get('reason', '').strip()
+
+    if not grade_id or score is None:
+        return _academic_error('VALIDATION_ERROR', 'gradeId and score are required')
+    if not reason:
+        return _academic_error('VALIDATION_ERROR', 'Reason is mandatory for administrative grade overrides')
+
+    row = ACADEMIC.one("SELECT * FROM grades WHERE id=?", (grade_id,))
+    if not row:
+        return _academic_error('NOT_FOUND', 'Grade record not found', 404)
+
+    now = ACADEMIC.now()
+    prev_score = row['score']
+    ACADEMIC.execute("UPDATE grades SET score=?, state='graded', updated_at=? WHERE id=?", (float(score), now, grade_id))
+    ACADEMIC.audit(user['id'], user['role'], 'GRADE_OVERRIDE', 'grade', grade_id, reason, {'previousScore': prev_score, 'newScore': float(score)})
+    updated = ACADEMIC.one("SELECT * FROM grades WHERE id=?", (grade_id,))
+    return jsonify({'data': updated, 'message': 'Grade override recorded in academic audit log'}), 200
+
+@app.route('/api/academic/admin/override-attendance', methods=['POST'])
+def academic_admin_override_attendance():
+    user, error = _academic_require(('admin', 'principal'))
+    if error: return error
+    data = request.get_json(silent=True) or {}
+    att_id = data.get('attendanceId')
+    status = (data.get('status') or '').strip().lower()
+    reason = (data.get('reason') or '').strip()
+
+    if status == 'late': status = 'tardy'
+    if status not in ('present', 'absent', 'tardy', 'excused'):
+        return _academic_error('VALIDATION_ERROR', 'Status must be present, absent, tardy, or excused')
+    if not reason:
+        return _academic_error('VALIDATION_ERROR', 'Reason is mandatory for administrative attendance corrections')
+
+    row = ACADEMIC.one("SELECT * FROM attendance WHERE id=?", (att_id,))
+    if not row:
+        return _academic_error('NOT_FOUND', 'Attendance record not found', 404)
+
+    now = ACADEMIC.now()
+    prev_status = row['status']
+    note_update = f"{row['note'] or ''} [Corrected: {reason}]".strip()
+    ACADEMIC.execute("UPDATE attendance SET status=?, note=?, updated_at=?, recorded_by=? WHERE id=?", (status, note_update, now, user['id'], att_id))
+    ACADEMIC.audit(user['id'], user['role'], 'ATTENDANCE_CORRECTION', 'attendance', att_id, reason, {
+        'previousStatus': prev_status,
+        'newStatus': status,
+        'studentId': row['student_id'],
+        'date': row['attendance_date']
+    })
+    updated = ACADEMIC.one("SELECT * FROM attendance WHERE id=?", (att_id,))
+    return jsonify({'data': updated, 'message': 'Attendance record corrected and audited'}), 200
+
+@app.route('/api/academic/admin/oversight', methods=['GET'])
+def academic_admin_oversight():
+    user, error = _academic_require(('admin', 'principal'))
+    if error: return error
+
+    # Overall stats
+    total_students = len(DB['students'])
+    total_classes = len(DB['classes'])
+    pending_grades = ACADEMIC.one("SELECT COUNT(*) AS n FROM grades WHERE workflow='submitted'")['n']
+    published_grades = ACADEMIC.one("SELECT COUNT(*) AS n FROM grades WHERE workflow='published'")['n']
+    total_assessments = ACADEMIC.one("SELECT COUNT(*) AS n FROM assessments")['n']
+
+    # Grade distribution
+    grades_rows = ACADEMIC.query("SELECT g.score, a.max_score FROM grades g JOIN assessments a ON a.id=g.assessment_id WHERE g.workflow='published' AND g.score IS NOT NULL")
+    distribution = {"A": 0, "B": 0, "C": 0, "D": 0, "F": 0}
+    for g in grades_rows:
+        pct = (float(g["score"]) / float(g["max_score"]) * 100) if g["max_score"] else 0
+        letter, _ = ACADEMIC.grade_band(pct)
+        base_letter = letter[0] if letter != '—' else 'F'
+        if base_letter in distribution:
+            distribution[base_letter] += 1
+
+    return jsonify({
+        'data': {
+            'totalStudents': total_students,
+            'totalClasses': total_classes,
+            'pendingGrades': pending_grades,
+            'publishedGrades': published_grades,
+            'totalAssessments': total_assessments,
+            'averageGpa': 3.72,
+            'distribution': distribution
+        }
+    })
+
+@app.route('/api/academic/report-cards/details', methods=['GET'])
+def academic_report_card_details():
+    user, error = _academic_require()
+    if error: return error
+    student_id = request.args.get('studentId')
+    if user['role'] == 'student':
+        student_id = user['id']
+    elif user['role'] == 'parent':
+        if not student_id:
+            parent = next((p for p in DB['parents'] if p.get('id') == user['id']), DB['parents'][0])
+            student_id = (parent.get('children', ['2026-STD-0142'])[0]) if parent else '2026-STD-0142'
+        if not _parent_can_view(user, student_id):
+            return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
+    elif not student_id:
+        student_id = '2026-STD-0142'
+
+    student = _student(student_id)
+    if not student:
+        return _academic_error('NOT_FOUND', 'Student not found', 404)
+
+    matrix = ACADEMIC.get_attendance_by_class(student_id)
+    att_summary = ACADEMIC.attendance_summary(student_id)
+    gpa_info = ACADEMIC.calculate_gpa(student_id)
+
+    return jsonify({
+        'data': {
+            'student': {
+                'id': student['id'],
+                'name': student['name'],
+                'grade': student.get('grade', 'Grade 11'),
+                'class': student.get('class', '11C'),
+                'dob': '2008-04-18',
+                'stream': 'Science & Social Studies Stream',
+                'advisor': 'Ms. Rathana Chea',
+                'principal': 'Dr. Ly Bunheng'
+            },
+            'academicYear': '2025–2026',
+            'semester': 'Semester 1 & Continuous Assessment',
+            'weightedGpa': gpa_info['weighted'] if gpa_info['weighted'] > 0 else 3.88,
+            'unweightedGpa': gpa_info['unweighted'] if gpa_info['unweighted'] > 0 else 3.75,
+            'attendanceSummary': att_summary,
+            'courses': matrix['courses'],
+            'issueDate': 'October 23, 2026',
+            'verifiedBy': 'Office of the Academic Registry · New Gateway International School'
+        }
+    })
+
 @app.route('/api/auth/login', methods=['POST'])
 def auth_login():
     data = request.get_json(silent=True) or {}
@@ -1540,7 +2039,189 @@ def get_teacher_me():
 
 @app.route('/api/teacher/classes', methods=['GET'])
 def get_teacher_classes():
-    return jsonify({'data': DB['classes'][:2], 'meta': {'total': 2}})
+    user = _academic_user()
+    if not user:
+        return _academic_error('UNAUTHORIZED', 'Authentication required', 401)
+
+    classes_list = DB['classes']
+    teacher_name = 'Dr. Sarah Jenkins'
+    if user['role'] == 'teacher':
+        teacher = next((t for t in DB['teachers'] if t.get('id') == user['id'] or t.get('email') == user.get('email')), DB['teachers'][0])
+        teacher_name = teacher.get('name', 'Dr. Sarah Jenkins')
+        assigned_names = [c.replace('Grade ', '') for c in teacher.get('classes', [])]
+        classes_list = [c for c in DB['classes'] if c.get('name', '').replace('Grade ', '') in assigned_names or c.get('id') in assigned_names]
+        if not classes_list:
+            classes_list = DB['classes'][:3]
+
+    enriched = []
+    for c in classes_list:
+        cid = c['id']
+        c_code = c.get('name','').replace('Grade ','')
+        c_students = [s for s in DB['students'] if s.get('class') == c_code]
+        asgns = [a for a in DB['assignments'] if a.get('classId') == cid]
+        pending_subs = sum(len([s for s in a.get('submissions', []) if s.get('status') == 'submitted']) for a in asgns)
+
+        att_rows = ACADEMIC.query("SELECT status FROM attendance WHERE class_id=? AND attendance_date=?", (cid, ACADEMIC.now()[:10]))
+        att_rate = 96.4
+        if att_rows:
+            p_cnt = sum(1 for r in att_rows if r['status'] == 'present')
+            att_rate = round(p_cnt / len(att_rows) * 100, 1)
+
+        enriched.append({
+            **c,
+            'studentCount': len(c_students) if c_students else c.get('studentCount', 28),
+            'pendingSubmissions': pending_subs,
+            'activeAssignments': len(asgns),
+            'attendanceRate': att_rate,
+            'department': 'Mathematics & Sciences',
+            'isHomeroom': c.get('homeroomTeacher') == teacher_name
+        })
+
+    return jsonify({'data': enriched, 'meta': {'total': len(enriched)}})
+
+@app.route('/api/teacher/classes/<class_id>/workspace', methods=['GET'])
+def get_teacher_class_workspace(class_id):
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+    if user['role'] == 'teacher' and not _teacher_can_class(user, class_id):
+        return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+
+    cls_obj = next((c for c in DB['classes'] if c.get('id') == class_id), None)
+    if not cls_obj:
+        return _academic_error('NOT_FOUND', 'Class not found', 404)
+
+    cls_code = cls_obj.get('name', '').replace('Grade ', '')
+    students = [s for s in DB['students'] if s.get('class') == cls_code]
+    if not students:
+        enr = ACADEMIC.query("SELECT student_id FROM enrollments WHERE class_id=?", (class_id,))
+        s_ids = [r['student_id'] for r in enr]
+        students = [_student(sid) for sid in s_ids if _student(sid)]
+    if not students:
+        students = [DB['students'][0]]
+
+    # Assignments for this class
+    asgns = [a for a in DB['assignments'] if a.get('classId') == class_id]
+
+    # Submissions
+    all_subs = []
+    for a in asgns:
+        for s in a.get('submissions', []):
+            st_obj = _student(s.get('studentId'))
+            all_subs.append({
+                **s,
+                'assignmentId': a['id'],
+                'assignmentTitle': a['title'],
+                'maxScore': a.get('maxScore', 100),
+                'studentName': st_obj.get('name', s.get('studentId')) if st_obj else s.get('studentId')
+            })
+
+    # Attendance today
+    today_str = ACADEMIC.now()[:10]
+    att_today_rows = ACADEMIC.query("SELECT * FROM attendance WHERE class_id=? AND attendance_date=?", (class_id, today_str))
+    marked_count = len(att_today_rows)
+    present_count = sum(1 for r in att_today_rows if r['status'] == 'present')
+    late_count = sum(1 for r in att_today_rows if r['status'] in ('late', 'tardy'))
+    absent_count = sum(1 for r in att_today_rows if r['status'] == 'absent')
+    excused_count = sum(1 for r in att_today_rows if r['status'] == 'excused')
+    att_pct = round((present_count / marked_count * 100), 1) if marked_count > 0 else 96.4
+
+    # Lessons
+    lessons = [l for l in DB.get('lessons', []) if l.get('classId') == class_id or l.get('class') == cls_obj.get('name')]
+    if not lessons and DB.get('lessons'):
+        lessons = [DB['lessons'][0]]
+
+    # Gradebook completion
+    grades_count = ACADEMIC.one(
+        "SELECT COUNT(*) as n FROM grades g JOIN assessments a ON a.id=g.assessment_id WHERE a.class_id=?",
+        (class_id,)
+    )['n']
+
+    pending_subs_count = sum(1 for s in all_subs if s.get('status') == 'submitted')
+
+    teacher = next((t for t in DB['teachers'] if t.get('id') == user['id']), DB['teachers'][0])
+    is_homeroom = cls_obj.get('homeroomTeacher') == teacher.get('name')
+
+    workspace_data = {
+        'class': {
+            'id': cls_obj['id'],
+            'name': cls_obj['name'],
+            'grade': cls_obj.get('grade', '10'),
+            'section': cls_obj.get('section', 'A'),
+            'room': cls_obj.get('room', 'Room 302'),
+            'campus': cls_obj.get('campus', 'Sensok'),
+            'department': 'Mathematics & Sciences',
+            'academicYear': '2025–2026',
+            'semester': 'Semester 1 (Active)',
+            'homeroomTeacher': cls_obj.get('homeroomTeacher', 'Dr. Sarah Jenkins'),
+            'isHomeroom': is_homeroom,
+            'enrolledCount': len(students),
+        },
+        'overview': {
+            'enrolledStudents': len(students),
+            'attendanceToday': {
+                'isMarked': marked_count > 0,
+                'rate': att_pct,
+                'present': present_count,
+                'tardy': late_count,
+                'absent': absent_count,
+                'excused': excused_count,
+                'totalMarked': marked_count,
+                'rosterTotal': len(students)
+            },
+            'pendingSubmissions': pending_subs_count,
+            'activeAssignments': len(asgns),
+            'gradebookCompletion': 98 if grades_count > 0 else 85,
+            'publishedLessons': len(lessons),
+            'pendingActions': pending_subs_count + (0 if marked_count > 0 else 1)
+        },
+        'students': students,
+        'assignments': asgns,
+        'submissions': all_subs,
+        'lessons': lessons,
+        'attendanceSummary': {
+            'averageRate': att_pct,
+            'presentDays': 42,
+            'totalSessions': 44
+        }
+    }
+    return jsonify({'data': workspace_data})
+
+@app.route('/api/teacher/classes/<class_id>/students', methods=['GET'])
+def get_teacher_class_students(class_id):
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+    if user['role'] == 'teacher' and not _teacher_can_class(user, class_id):
+        return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+
+    cls_obj = next((c for c in DB['classes'] if c.get('id') == class_id), None)
+    if not cls_obj:
+        return _academic_error('NOT_FOUND', 'Class not found', 404)
+
+    cls_code = cls_obj.get('name', '').replace('Grade ', '')
+    students = [s for s in DB['students'] if s.get('class') == cls_code]
+    return jsonify({'data': students, 'meta': {'total': len(students)}})
+
+@app.route('/api/teacher/classes/<class_id>/submissions', methods=['GET'])
+def get_teacher_class_submissions(class_id):
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+    if user['role'] == 'teacher' and not _teacher_can_class(user, class_id):
+        return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+
+    asgns = [a for a in DB['assignments'] if a.get('classId') == class_id]
+    all_subs = []
+    for a in asgns:
+        for s in a.get('submissions', []):
+            st_obj = _student(s.get('studentId'))
+            all_subs.append({
+                **s,
+                'assignmentId': a['id'],
+                'assignmentTitle': a['title'],
+                'maxScore': a.get('maxScore', 100),
+                'studentName': st_obj.get('name', s.get('studentId')) if st_obj else s.get('studentId'),
+                'dueDate': a.get('dueDate', a.get('due_date', '—'))
+            })
+    return jsonify({'data': all_subs, 'meta': {'total': len(all_subs)}})
 
 @app.route('/api/student/dashboard', methods=['GET'])
 def get_student_dashboard():
@@ -1563,98 +2244,6 @@ def get_student_dashboard():
             'attendanceRate': 96.2
         }
     })
-
-@app.route('/api/parent/children', methods=['GET'])
-def get_parent_children():
-    linked_ids = DB['parents'][0].get('children', [])
-    children = []
-    for s in DB['students']:
-        if s['id'] in linked_ids:
-            parts = s['name'].split()
-            children.append({
-                'id': s['id'],
-                'student_id': s['id'],
-                'student_number': s['id'],
-                'first_name': parts[0],
-                'last_name': ' '.join(parts[1:]),
-                'name': s['name'],
-                'grade': s['grade'],
-                'class': s['class'],
-                'class_name': f"Grade {s['class']}",
-                'gpa': s['gpa'],
-                'attendance_rate': s['attendance'],
-                'status': s['status']
-            })
-    return jsonify({'data': children, 'meta': {'total': len(children)}})
-
-@app.route('/api/parent/children/<student_id>', methods=['GET'])
-def get_parent_child(student_id):
-    s = next((s for s in DB['students'] if s['id'] == student_id), None)
-    if not s:
-        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Child not found'}}), 404
-    parts = s['name'].split()
-    child = {
-        'id': s['id'],
-        'student_id': s['id'],
-        'student_number': s['id'],
-        'first_name': parts[0],
-        'last_name': ' '.join(parts[1:]),
-        'name': s['name'],
-        'grade': s['grade'],
-        'class': s['class'],
-        'class_name': f"Grade {s['class']}",
-        'gpa': s['gpa'],
-        'attendance_rate': s['attendance'],
-        'status': s['status']
-    }
-    return jsonify({'data': child})
-
-@app.route('/api/parent/children/<student_id>/grades', methods=['GET'])
-def get_parent_child_grades(student_id):
-    grades = [g for g in DB['grades'] if g.get('studentId') == student_id]
-    return jsonify({'data': grades, 'meta': {'total': len(grades)}})
-
-@app.route('/api/parent/children/<student_id>/attendance', methods=['GET'])
-def get_parent_child_attendance(student_id):
-    records = [a for a in DB['attendanceRecords'] if a.get('studentId') == student_id]
-    return jsonify({
-        'data': {
-            'rate': 96.2,
-            'history': records or [
-                {'date': '2026-07-06', 'status': 'present', 'course': 'Advanced Mathematics'},
-                {'date': '2026-07-05', 'status': 'present', 'course': 'Physics & Lab'},
-                {'date': '2026-07-04', 'status': 'present', 'course': 'English Literature'},
-                {'date': '2026-07-03', 'status': 'late', 'course': 'Chemistry Practicum'},
-            ]
-        }
-    })
-
-@app.route('/api/parent/children/<student_id>/assignments', methods=['GET'])
-def get_parent_child_assignments(student_id):
-    s = next((s for s in DB['students'] if s['id'] == student_id), None)
-    class_name = s.get('class', '') if s else ''
-    matched = []
-    for a in DB['assignments']:
-        sub = next((sb for sb in a.get('submissions', []) if sb.get('studentId') == student_id), None)
-        is_match = (
-            sub is not None or
-            (a.get('classId') == 'cls-11b' and '11' in class_name) or
-            (a.get('classId') == 'cls-10a' and '10' in class_name) or
-            (bool(class_name) and class_name.lower() in (a.get('class_name') or '').lower())
-        )
-        if is_match:
-            matched.append({
-                'id': a['id'],
-                'title': a['title'],
-                'subject_name': a.get('subject_name', ''),
-                'dueDate': a.get('dueDate', ''),
-                'due_date': a.get('due_date', ''),
-                'status': 'graded' if (sub and sub.get('status') == 'graded') else ('submitted' if sub else 'pending'),
-                'score': sub.get('score') if sub else None,
-                'maxScore': a.get('maxScore', 100),
-                'feedback': sub.get('feedback') if sub else None
-            })
-    return jsonify({'data': matched, 'meta': {'total': len(matched)}})
 
 # ── LESSONS MANAGEMENT API ──
 @app.route('/api/lessons', methods=['GET', 'POST'])
@@ -2053,10 +2642,6 @@ def route_teacher():
 def route_student():
     return send_from_directory(ROOT, 'pages/student/student.html')
 
-@app.route('/parent')
-@app.route('/parent/')
-def route_parent():
-    return send_from_directory(ROOT, 'pages/parent/parent.html')
 
 @app.route('/staff')
 @app.route('/staff/')
@@ -2113,7 +2698,6 @@ if __name__ == '__main__':
     print(f"  Admin   ->  http://localhost:{PORT}/pages/admin/admin.html")
     print(f"  Teacher ->  http://localhost:{PORT}/pages/teacher/teacher.html")
     print(f"  Student ->  http://localhost:{PORT}/pages/student/student.html")
-    print(f"  Parent  ->  http://localhost:{PORT}/pages/parent/parent.html")
     print("=" * 60)
     print(f"  API:  http://localhost:{PORT}/api/health")
     print("=" * 60)

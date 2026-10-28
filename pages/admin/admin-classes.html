@@ -317,16 +317,12 @@
           <!-- Table Pagination Footer -->
           <div class="py-3.5 px-5 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
             <div id="paginationSummary">
-              Showing <span class="font-medium text-slate-800">1</span> to <span class="font-medium text-slate-800">6</span> of <span class="font-medium text-slate-800" id="totalClassesCount">186</span> classes
+              Showing <span class="font-medium text-slate-800" id="pgStart">1</span> to <span class="font-medium text-slate-800" id="pgEnd">6</span> of <span class="font-medium text-slate-800" id="totalClassesCount">186</span> classes
             </div>
-            <div class="flex items-center gap-1.5 flex-wrap justify-center">
-              <button class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed" type="button" disabled>Previous</button>
-              <button class="px-3 py-1.5 rounded-lg bg-brand-700 text-white font-medium shadow-xs" type="button">1</button>
-              <button class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">2</button>
-              <button class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">3</button>
-              <span class="px-1 text-slate-400">...</span>
-              <button class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">38</button>
-              <button class="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">Next</button>
+            <div id="classesPagination" class="flex items-center gap-1.5 flex-wrap justify-center">
+              <button id="btnPrevPage" class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed" type="button" disabled>Previous</button>
+              <div id="paginationPageNumbers" class="flex items-center gap-1.5"></div>
+              <button id="btnNextPage" class="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">Next</button>
             </div>
           </div>
         </section>
@@ -466,11 +462,11 @@
     <form id="formAddClass" class="mt-4 space-y-4 text-xs">
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Section Code</label>
+          <label class="block font-medium text-slate-700 mb-1">Section Code</label>
           <input required id="inSectionCode" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. 11-C" type="text">
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Grade Level</label>
+          <label class="block font-medium text-slate-700 mb-1">Grade Level</label>
           <select id="inGradeLevel" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600">
             <option value="10">Grade 10</option>
             <option value="11" selected>Grade 11</option>
@@ -479,32 +475,32 @@
         </div>
       </div>
       <div>
-        <label class="block font-semibold text-slate-700 mb-1">Stream / Description</label>
+        <label class="block font-medium text-slate-700 mb-1">Stream / Description</label>
         <input required id="inStream" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. STEM / Engineering Track" type="text">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Lead Teacher</label>
+          <label class="block font-medium text-slate-700 mb-1">Lead Teacher</label>
           <input required id="inLeadTeacher" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Dr. Kiri Vuth" type="text">
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Primary Subject</label>
+          <label class="block font-medium text-slate-700 mb-1">Primary Subject</label>
           <input required id="inSubject" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Chemistry Honors" type="text">
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Room / Lab Allocation</label>
+          <label class="block font-medium text-slate-700 mb-1">Room / Lab Allocation</label>
           <input required id="inRoom" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Lab 03" type="text">
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Student Capacity Cap</label>
+          <label class="block font-medium text-slate-700 mb-1">Student Capacity Cap</label>
           <input required id="inCap" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" value="35" type="number" min="10" max="45">
         </div>
       </div>
       <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-        <button id="btnCancelModal" type="button" class="px-4 py-2 font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
-        <button type="submit" class="px-4 py-2 font-semibold text-white bg-brand-700 hover:bg-brand-800 rounded-xl shadow-xs transition-colors">Save Section</button>
+        <button id="btnCancelModal" type="button" class="px-4 py-2 font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+        <button type="submit" class="px-4 py-2 font-medium text-white bg-brand-700 hover:bg-brand-800 rounded-xl shadow-xs transition-colors">Save Section</button>
       </div>
     </form>
   </div>
@@ -717,17 +713,101 @@ window.HERO_CONFIG = {
     if (totalCountEl) totalCountEl.textContent = CLASSES_DATA.length;
   }
 
+  let currentPage = 1;
+  const pageSize = 6;
+  let currentFilteredList = CLASSES_DATA.slice();
+  let editingClassCode = null;
+
+  const pgStartEl = document.getElementById('pgStart');
+  const pgEndEl = document.getElementById('pgEnd');
+  const paginationWrap = document.getElementById('paginationPageNumbers');
+  const btnPrev = document.getElementById('btnPrevPage');
+  const btnNext = document.getElementById('btnNextPage');
+
+  function updatePaginationUI() {
+    const total = currentFilteredList.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const startIdx = total === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const endIdx = Math.min(total, currentPage * pageSize);
+
+    if (pgStartEl) pgStartEl.textContent = startIdx;
+    if (pgEndEl) pgEndEl.textContent = endIdx;
+    if (totalCountEl) totalCountEl.textContent = total;
+
+    if (btnPrev) {
+      btnPrev.disabled = currentPage <= 1;
+      btnPrev.className = currentPage <= 1
+        ? 'px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed'
+        : 'px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer';
+    }
+
+    if (btnNext) {
+      btnNext.disabled = currentPage >= totalPages;
+      btnNext.className = currentPage >= totalPages
+        ? 'px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed'
+        : 'px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer';
+    }
+
+    if (paginationWrap) {
+      paginationWrap.innerHTML = '';
+      for (let p = 1; p <= totalPages; p++) {
+        const pBtn = document.createElement('button');
+        pBtn.type = 'button';
+        pBtn.textContent = p;
+        if (p === currentPage) {
+          pBtn.className = 'px-3 py-1.5 rounded-lg bg-brand-700 text-white font-medium shadow-xs';
+        } else {
+          pBtn.className = 'px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors';
+          pBtn.addEventListener('click', () => {
+            currentPage = p;
+            paginateAndRender();
+          });
+        }
+        paginationWrap.appendChild(pBtn);
+      }
+    }
+  }
+
+  function paginateAndRender() {
+    const start = (currentPage - 1) * pageSize;
+    const pageItems = currentFilteredList.slice(start, start + pageSize);
+    renderRows(pageItems);
+    updatePaginationUI();
+  }
+
+  if (btnPrev) {
+    btnPrev.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        paginateAndRender();
+      }
+    });
+  }
+
+  if (btnNext) {
+    btnNext.addEventListener('click', () => {
+      const totalPages = Math.ceil(currentFilteredList.length / pageSize);
+      if (currentPage < totalPages) {
+        currentPage++;
+        paginateAndRender();
+      }
+    });
+  }
+
   function filterData() {
     const q = (searchInput?.value || '').trim().toLowerCase();
     const g = gradeSelect?.value || 'all';
 
-    const filtered = CLASSES_DATA.filter(c => {
+    currentFilteredList = CLASSES_DATA.filter(c => {
       const matchQuery = !q || c.code.toLowerCase().includes(q) || c.teacher.toLowerCase().includes(q) || c.subject.toLowerCase().includes(q) || c.room.toLowerCase().includes(q);
       const matchGrade = g === 'all' || c.grade === g;
       return matchQuery && matchGrade;
     });
 
-    renderRows(filtered);
+    currentPage = 1;
+    paginateAndRender();
   }
 
   // Bind Filter Events
@@ -766,7 +846,29 @@ window.HERO_CONFIG = {
   }
 
   // Modal Handlers
-  function openModal() {
+  function openModal(editItem) {
+    const titleEl = modal.querySelector('h3');
+    const submitBtn = formAddClass.querySelector('button[type="submit"]');
+
+    if (editItem) {
+      editingClassCode = editItem.code;
+      if (titleEl) titleEl.textContent = 'Edit Class Section';
+      if (submitBtn) submitBtn.textContent = 'Update Section';
+
+      document.getElementById('inSectionCode').value = editItem.code;
+      document.getElementById('inGradeLevel').value = editItem.grade;
+      document.getElementById('inStream').value = editItem.stream;
+      document.getElementById('inLeadTeacher').value = editItem.teacher;
+      document.getElementById('inSubject').value = editItem.subject;
+      document.getElementById('inRoom').value = editItem.room;
+      document.getElementById('inCap').value = editItem.cap;
+    } else {
+      editingClassCode = null;
+      if (titleEl) titleEl.textContent = 'Add New Class Section';
+      if (submitBtn) submitBtn.textContent = 'Create Class Section';
+      formAddClass.reset();
+    }
+
     modal.classList.remove('opacity-0', 'pointer-events-none');
     modal.querySelector('.transform').classList.remove('scale-95');
     modal.querySelector('.transform').classList.add('scale-100');
@@ -776,10 +878,11 @@ window.HERO_CONFIG = {
     modal.classList.add('opacity-0', 'pointer-events-none');
     modal.querySelector('.transform').classList.add('scale-95');
     modal.querySelector('.transform').classList.remove('scale-100');
+    editingClassCode = null;
     formAddClass.reset();
   }
 
-  if (addBtn) addBtn.addEventListener('click', openModal);
+  if (addBtn) addBtn.addEventListener('click', () => openModal(null));
   if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
   if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
 
@@ -799,29 +902,40 @@ window.HERO_CONFIG = {
       const subject = document.getElementById('inSubject').value.trim();
       const room = document.getElementById('inRoom').value.trim();
       const cap = parseInt(document.getElementById('inCap').value, 10) || 35;
-
       const initials = teacher.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
 
-      CLASSES_DATA.unshift({
-        code,
-        grade,
-        stream,
-        teacher,
-        initials,
-        teacherBg: 'bg-emerald-100 text-emerald-800',
-        subject,
-        enrolled: 0,
-        cap,
-        room,
-        status: 'Active'
-      });
-
-      filterData();
-      closeModal();
-
-      if (window.toast) {
-        window.toast(`Class Section ${code} created successfully`, 'success');
+      if (editingClassCode) {
+        const target = CLASSES_DATA.find(c => c.code === editingClassCode);
+        if (target) {
+          target.code = code;
+          target.grade = grade;
+          target.stream = stream;
+          target.teacher = teacher;
+          target.initials = initials;
+          target.subject = subject;
+          target.room = room;
+          target.cap = cap;
+        }
+        if (window.toast) window.toast(`Class Section ${code} updated successfully`, 'success');
+      } else {
+        CLASSES_DATA.unshift({
+          code,
+          grade,
+          stream,
+          teacher,
+          initials,
+          teacherBg: 'bg-emerald-100 text-emerald-800',
+          subject,
+          enrolled: 0,
+          cap,
+          room,
+          status: 'Active'
+        });
+        if (window.toast) window.toast(`Class Section ${code} created successfully`, 'success');
       }
+
+      closeModal();
+      filterData();
     });
   }
 
@@ -843,7 +957,7 @@ window.HERO_CONFIG = {
         const code = editBtn.dataset.code;
         const item = CLASSES_DATA.find(c => c.code === code);
         if (item) {
-          alert(`Edit Section: ${item.code} (${item.stream})\nTeacher: ${item.teacher}\nSubject: ${item.subject}\nRoom: ${item.room}`);
+          openModal(item);
         }
         return;
       }
@@ -859,7 +973,7 @@ window.HERO_CONFIG = {
   }
 
   // Initial render
-  renderRows(CLASSES_DATA);
+  paginateAndRender();
 })();
 </script>
 

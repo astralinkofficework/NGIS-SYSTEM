@@ -24,7 +24,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "admin",
       "principal",
       "staff"
@@ -34,21 +33,6 @@ window.NGIS_PAGES = [
       "Departments Catalog",
       "Faculty List",
       "Curriculum Overview"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-assignments.html",
-    "name": "parent-assignments.html",
-    "title": "Child Homework & Upcoming Deadlines",
-    "category": "Academic Oversight",
-    "roles": [
-      "parent"
-    ],
-    "description": "Homework tracking portal for parents. Check active assignments across all subjects, monitor submission status, and stay ahead of deadlines.",
-    "tags": [
-      "Homework Tracker",
-      "Due Dates",
-      "Completion Status"
     ]
   },
   {
@@ -91,7 +75,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "staff"
     ],
     "description": "Department portal for a specific subject area. Access digital textbooks, syllabus outlines, teacher contacts, exam prep, and department announcements.",
@@ -109,7 +92,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "staff"
     ],
     "description": "Subject digital library offering structured curriculum units, interactive lesson slides, reference formulas, and practice worksheets.",
@@ -117,21 +99,6 @@ window.NGIS_PAGES = [
       "Digital Library",
       "Interactive Lessons",
       "Worksheets"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-calendar.html",
-    "name": "parent-calendar.html",
-    "title": "Family School Calendar & Events",
-    "category": "Academic Oversight",
-    "roles": [
-      "parent"
-    ],
-    "description": "School calendar for families. View parent-teacher conference dates, term breaks, public holidays, examination periods, and school exhibitions.",
-    "tags": [
-      "Parent Conferences",
-      "Term Breaks",
-      "School Holidays"
     ]
   },
   {
@@ -257,22 +224,6 @@ window.NGIS_PAGES = [
     ]
   },
   {
-    "path": "pages/teacher/teacher-departments.html",
-    "name": "teacher-departments.html",
-    "title": "Teacher Department Hub & Curriculum Oversight",
-    "category": "Academic Oversight",
-    "roles": [
-      "teacher"
-    ],
-    "description": "Faculty departmental portal. View department academic charter, affiliated courses, assigned teaching cohorts, colleagues, and department resources.",
-    "tags": [
-      "Department Hub",
-      "Curriculum Oversight",
-      "Faculty Directory",
-      "Teacher Cohorts"
-    ]
-  },
-  {
     "path": "pages/teacher/teacher-classes.html",
     "name": "teacher-classes.html",
     "title": "Teacher Class Roster & Section Management",
@@ -315,21 +266,6 @@ window.NGIS_PAGES = [
       "Teaching Timetable",
       "Department Briefings",
       "Conferences"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-attendance.html",
-    "name": "parent-attendance.html",
-    "title": "Child Attendance & Absence Excuse Submission",
-    "category": "Attendance & Monitoring",
-    "roles": [
-      "parent"
-    ],
-    "description": "Real-time attendance monitor. Track child arrival times, check attendance rates, review past absences, and submit official excuse letters with doctor slips.",
-    "tags": [
-      "Live Attendance",
-      "Absence Slips",
-      "Doctor Notes"
     ]
   },
   {
@@ -386,7 +322,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "admin",
       "principal",
       "staff"
@@ -428,21 +363,6 @@ window.NGIS_PAGES = [
       "Multi-Campus",
       "Facility Oversight",
       "Capacity"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-announcements.html",
-    "name": "parent-announcements.html",
-    "title": "Announcements & Circulars for Parents",
-    "category": "Communications",
-    "roles": [
-      "parent"
-    ],
-    "description": "Official announcements tailored for parents and guardians: PTA meetings, school policy updates, campus events, and principal letters.",
-    "tags": [
-      "PTA Circulars",
-      "Parent Letters",
-      "School Policies"
     ]
   },
   {
@@ -488,7 +408,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "admin",
       "principal",
       "staff"
@@ -508,7 +427,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "admin",
       "staff"
     ],
@@ -544,7 +462,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "admin",
       "staff"
     ],
@@ -645,7 +562,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "admin",
       "principal",
       "staff"
@@ -655,21 +571,6 @@ window.NGIS_PAGES = [
       "School Newsroom",
       "Public Bulletins",
       "Circulars"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-notifications.html",
-    "name": "parent-notifications.html",
-    "title": "Parent Notification & Alert Center",
-    "category": "Communications",
-    "roles": [
-      "parent"
-    ],
-    "description": "Important school alerts for parents: emergency closures, bus route updates, fee payment reminders, and teacher message notifications.",
-    "tags": [
-      "Urgent Alerts",
-      "Fee Reminders",
-      "Bus Updates"
     ]
   },
   {
@@ -800,21 +701,6 @@ window.NGIS_PAGES = [
     ]
   },
   {
-    "path": "pages/parent/parent.html",
-    "name": "parent.html",
-    "title": "Parent Guardian Dashboard",
-    "category": "Core Dashboards",
-    "roles": [
-      "parent"
-    ],
-    "description": "Unified family dashboard. Switch between multiple children, view today's attendance status, recent grades, upcoming assignments, and fee balances.",
-    "tags": [
-      "Family Home",
-      "Multi-child Switcher",
-      "Quick Overviews"
-    ]
-  },
-  {
     "path": "pages/student/student.html",
     "name": "student.html",
     "title": "Student Home Dashboard",
@@ -876,21 +762,6 @@ window.NGIS_PAGES = [
     ]
   },
   {
-    "path": "pages/parent/parent-grades.html",
-    "name": "parent-grades.html",
-    "title": "Child Academic Progress & Report Cards",
-    "category": "Examinations & Grading",
-    "roles": [
-      "parent"
-    ],
-    "description": "Official family grade portal. Review term report cards, subject scores, GPA trends, teacher remarks, and areas for academic improvement.",
-    "tags": [
-      "Child Report Card",
-      "Teacher Remarks",
-      "Academic Growth"
-    ]
-  },
-  {
     "path": "pages/admin/admin-exams.html",
     "name": "admin-exams.html",
     "title": "Examination Control & Proctoring Center",
@@ -945,7 +816,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "staff"
     ],
     "description": "Comprehensive exam schedule view showing dates, venue halls, seat numbers, subject codes, rules, and downloadable hall seating diagrams.",
@@ -1033,21 +903,6 @@ window.NGIS_PAGES = [
     ]
   },
   {
-    "path": "pages/parent/parent-fees.html",
-    "name": "parent-fees.html",
-    "title": "Tuition Fees, Invoicing & Digital Payments",
-    "category": "Finance & Billing",
-    "roles": [
-      "parent"
-    ],
-    "description": "Family financial portal. View tuition invoices, term fee breakdowns, ABA Pay / bank payment details, and instant downloadable official receipts.",
-    "tags": [
-      "Tuition Invoices",
-      "ABA Pay",
-      "Official Receipts"
-    ]
-  },
-  {
     "path": "pages/shared/access-denied.html",
     "name": "access-denied.html",
     "title": "Access Restricted & Security Guard",
@@ -1055,7 +910,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "admin",
       "principal",
       "staff"
@@ -1137,7 +991,6 @@ window.NGIS_PAGES = [
     "roles": [
       "student",
       "teacher",
-      "parent",
       "staff"
     ],
     "description": "Interactive lost property registry. Browse photographs of found items (calculators, water bottles, keys), file lost item reports, and claim items.",
@@ -1160,36 +1013,6 @@ window.NGIS_PAGES = [
       "Club Signups",
       "Robotics & Debate",
       "Student Life"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-children.html",
-    "name": "parent-children.html",
-    "title": "Children Profiles & Class Info",
-    "category": "Student Records",
-    "roles": [
-      "parent"
-    ],
-    "description": "Detailed child overview portal. Inspect each child's grade level, homeroom teacher, campus location, weekly schedule, and academic records.",
-    "tags": [
-      "Child Profiles",
-      "Homeroom Teachers",
-      "Schedules"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-documents.html",
-    "name": "parent-documents.html",
-    "title": "Parent Letters, Permissions & Contracts",
-    "category": "Student Records",
-    "roles": [
-      "parent"
-    ],
-    "description": "Digital document vault for families. Download official school letters, sign excursion permission slips, and access enrollment agreements.",
-    "tags": [
-      "Permission Slips",
-      "Enrollment Contracts",
-      "Circulars"
     ]
   },
   {
@@ -1224,21 +1047,6 @@ window.NGIS_PAGES = [
     ]
   },
   {
-    "path": "pages/parent/parent-services.html",
-    "name": "parent-services.html",
-    "title": "Student Services Requests for Parents",
-    "category": "Student Services",
-    "roles": [
-      "parent"
-    ],
-    "description": "Parent services portal. Request school bus transportation routes, sign up for cafeteria lunch programs, and submit health clinic authorizations.",
-    "tags": [
-      "Bus Routes",
-      "Meal Plans",
-      "Health Authorizations"
-    ]
-  },
-  {
     "path": "pages/student/student-id.html",
     "name": "student-id.html",
     "title": "Digital Student Identity Card",
@@ -1267,36 +1075,6 @@ window.NGIS_PAGES = [
       "RBAC",
       "Directory",
       "Bulk Actions"
-    ]
-  },
-  {
-    "path": "pages/admin/admin-parents.html",
-    "name": "admin-parents.html",
-    "title": "Parent & Guardian Registry",
-    "category": "User & Identity Management",
-    "roles": [
-      "admin"
-    ],
-    "description": "Database of verified parents and guardians. Manages family relationships, child linkages, contact channels, and pickup authorizations.",
-    "tags": [
-      "Guardians",
-      "Family Relations",
-      "Contact Verification"
-    ]
-  },
-  {
-    "path": "pages/parent/parent-profile.html",
-    "name": "parent-profile.html",
-    "title": "Parent Profile & Emergency Contacts",
-    "category": "User & Identity Management",
-    "roles": [
-      "parent"
-    ],
-    "description": "Family account profile. Manage guardian phone numbers, home address, authorized pickup contacts, and communication preferences.",
-    "tags": [
-      "Guardian Contacts",
-      "Pickup Authorization",
-      "Address Info"
     ]
   },
   {
@@ -1343,116 +1121,6 @@ window.NGIS_PAGES = [
       "Profile Info",
       "Emergency Contact",
       "Account Preferences"
-    ]
-  },
-  {
-    "path": "pages/principal/principal.html",
-    "name": "principal.html",
-    "title": "Principal Executive Dashboard",
-    "category": "Executive Oversight",
-    "roles": [
-      "principal",
-      "admin"
-    ],
-    "description": "Executive command center for Campus Principal. School-wide KPIs, academic performance metrics, executive approvals queue, and faculty leadership overview.",
-    "tags": [
-      "Executive Dashboard",
-      "Academic Health",
-      "Campus Oversight"
-    ]
-  },
-  {
-    "path": "pages/principal/principal-reports.html",
-    "name": "principal-reports.html",
-    "title": "Principal Academic & Operational Reports",
-    "category": "Executive Oversight",
-    "roles": [
-      "principal",
-      "admin"
-    ],
-    "description": "Strategic academic reporting across grade cohorts, subject pass rates, faculty loads, and campus-wide attendance trends.",
-    "tags": [
-      "Academic Reports",
-      "Cohort Performance",
-      "Attendance Trends"
-    ]
-  },
-  {
-    "path": "pages/principal/principal-approvals.html",
-    "name": "principal-approvals.html",
-    "title": "Principal Executive Approvals",
-    "category": "Executive Oversight",
-    "roles": [
-      "principal",
-      "admin"
-    ],
-    "description": "Formal governance and authorization center for grade amendments, curriculum revisions, and campus-wide notices.",
-    "tags": [
-      "Approvals",
-      "Grade Adjustments",
-      "Curriculum Governance"
-    ]
-  },
-  {
-    "path": "pages/principal/principal-profile.html",
-    "name": "principal-profile.html",
-    "title": "Principal Executive Profile",
-    "category": "User & Identity Management",
-    "roles": [
-      "principal"
-    ],
-    "description": "Executive leadership dossier, institutional accreditation credentials, and campus jurisdictional scope.",
-    "tags": [
-      "Leadership Profile",
-      "Jurisdiction",
-      "Accreditation"
-    ]
-  },
-  {
-    "path": "pages/staff/staff.html",
-    "name": "staff.html",
-    "title": "Staff Operations Dashboard",
-    "category": "Campus Operations",
-    "roles": [
-      "staff",
-      "admin"
-    ],
-    "description": "Operations and facility coordination hub. Active campus task queues, student service fulfillment, lost & found custody, and daily operational schedules.",
-    "tags": [
-      "Operations Command",
-      "Facility Ready",
-      "Service Queue"
-    ]
-  },
-  {
-    "path": "pages/staff/staff-services.html",
-    "name": "staff-services.html",
-    "title": "Staff Student Services Fulfillment",
-    "category": "Campus Operations",
-    "roles": [
-      "staff",
-      "admin"
-    ],
-    "description": "Service request processing center for official transcripts, enrollment certificates, student ID replacements, and locker allocations.",
-    "tags": [
-      "Services Fulfillment",
-      "Transcripts",
-      "Certificate Issuance"
-    ]
-  },
-  {
-    "path": "pages/staff/staff-profile.html",
-    "name": "staff-profile.html",
-    "title": "Staff Profile & Operational Scope",
-    "category": "User & Identity Management",
-    "roles": [
-      "staff"
-    ],
-    "description": "Campus staff deployment records, assigned operational zones, shift hours, and role-based permissions matrix.",
-    "tags": [
-      "Staff Scope",
-      "Duty Shift",
-      "Permissions"
     ]
   }
 ];

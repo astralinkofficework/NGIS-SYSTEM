@@ -3,47 +3,103 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Attendance</title>
+<title>NGIS — Student Attendance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
-  <script src="../../assets/js/auth.js"></script>
-  <script src="../../assets/js/protect.js"></script>
-  <script src="../student/_auth-bootstrap.js"></script>
+
+<style>
+/* Rule: NO BOLD FONTS. Avoid weights > 500 */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div {
+  font-weight: 400 !important;
+}
+.font-medium, .stat-val, .badge, th {
+  font-weight: 500 !important;
+}
+</style>
+
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="../student/_auth-bootstrap.js"></script>
 </head>
 <body data-role="student">
 <main class="main">
 <div id="heroBanner"></div>
+
+<!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+<div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+  <div class="flex items-center gap-2.5">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <i class="ph ph-list text-xl"></i>
+    </button>
+    <span class="text-sm font-medium text-forest-800">Attendance Log</span>
+  </div>
+  <a href="student-grades.html" class="text-xs px-2.5 py-1 rounded-full bg-forest-50 text-forest-700 border border-forest-100 font-medium">By Class View</a>
+</div>
+
 <div class="page">
 
+  <!-- Summary Stats Strip -->
   <div class="grid g-4 anim-up">
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">how_to_reg</span></div><span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>2%</span></div><div class="stat-val">94%</div><div class="stat-label">Overall Attendance</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">event_available</span></div></div><div class="stat-val">112</div><div class="stat-label">Days Present</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">schedule</span></div></div><div class="stat-val">5</div><div class="stat-label">Days Late</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">event_busy</span></div></div><div class="stat-val">3</div><div class="stat-label">Days Absent</div></div>
+    <div class="stat">
+      <div class="stat-top">
+        <div class="stat-ico t-green"><span class="material-symbols-outlined fill">how_to_reg</span></div>
+        <span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>4.0 GPA</span>
+      </div>
+      <div class="stat-val" id="statRate">98.0%</div>
+      <div class="stat-label">Overall Attendance Rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">event_available</span></div></div>
+      <div class="stat-val" id="statPresent">44</div>
+      <div class="stat-label">Days / Sessions Present</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">schedule</span></div></div>
+      <div class="stat-val" id="statLate">1</div>
+      <div class="stat-label">Days Late / Tardy</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">event_busy</span></div></div>
+      <div class="stat-val" id="statAbsent">0</div>
+      <div class="stat-label">Days Absent</div>
+    </div>
   </div>
 
   <div class="col-main mt16 anim-up-2">
     <div class="stack" style="flex:2">
       <div class="card">
-        <div class="card-head"><div><h3>Attendance Log</h3><div class="sub">Most recent first</div></div></div>
+        <div class="card-head">
+          <div>
+            <h3>Official Attendance Log</h3>
+            <div class="sub">Synced in real-time from NGIS Academic Registry</div>
+          </div>
+          <div class="toolbar">
+            <a href="student-grades.html" class="btn btn-primary btn-sm">
+              <span class="material-symbols-outlined text-[16px]">grid_on</span>
+              <span>Attendance By Class View</span>
+            </a>
+          </div>
+        </div>
         <div class="tbl-wrap">
           <table class="tbl">
-            <thead><tr><th>Date</th><th>Day</th><th>Status</th><th>Check-in</th><th>Note</th></tr></thead>
-            <tbody>
-              <tr><td class="faint mono" style="font-size:12px">Jan 27</td><td>Monday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">08:12 AM</td><td class="faint" style="font-size:12px">—</td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 24</td><td>Friday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">07:58 AM</td><td class="faint" style="font-size:12px">—</td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 23</td><td>Thursday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">08:05 AM</td><td class="faint" style="font-size:12px">—</td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 22</td><td>Wednesday</td><td><span class="badge amber">Late</span></td><td class="faint" style="font-size:12px">08:34 AM</td><td class="faint" style="font-size:12px">Traffic</td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 21</td><td>Tuesday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">07:55 AM</td><td class="faint" style="font-size:12px">—</td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 20</td><td>Monday</td><td><span class="badge red">Absent</span></td><td class="faint" style="font-size:12px">—</td><td class="faint" style="font-size:12px">Medical leave</td></tr>
-              <tr><td class="faint mono" style="font-size:12px">Jan 17</td><td>Friday</td><td><span class="badge green">Present</span></td><td class="faint" style="font-size:12px">08:01 AM</td><td class="faint" style="font-size:12px">—</td></tr>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Status</th>
+                <th>Session / Subject</th>
+                <th>Administrative Note</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceLogBody">
+              <tr><td colspan="5" class="py-6 text-center faint">Loading authoritative attendance records…</td></tr>
             </tbody>
           </table>
         </div>
@@ -55,14 +111,17 @@
         <div class="card-head"><h3>Attendance Summary</h3></div>
         <div class="card-pad">
           <div style="display:flex;align-items:baseline;gap:8px">
-            <span style="font-size:34px;font-weight: 400;letter-spacing:-.02em">94%</span>
-            <span class="faint" style="font-size:13px">this term</span>
+            <span style="font-size:34px;font-weight: 500;letter-spacing:-.02em" id="summaryRate">98.0%</span>
+            <span class="faint" style="font-size:13px">this semester</span>
           </div>
-          <div class="bar" style="margin-top:12px"><span style="width:94%"></span></div>
+          <div class="bar" style="margin-top:12px"><span style="width:98%" id="summaryBar"></span></div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;margin-top:18px;width:100%">
-            <div><div style="font-size:20px;font-weight: 400;color:var(--success)">112</div><div class="faint" style="font-size:11px">Present</div></div>
-            <div><div style="font-size:20px;font-weight: 400;color:var(--warning)">5</div><div class="faint" style="font-size:11px">Late</div></div>
-            <div><div style="font-size:20px;font-weight: 400;color:var(--danger)">3</div><div class="faint" style="font-size:11px">Absent</div></div>
+            <div><div style="font-size:20px;font-weight: 500;color:var(--success)" id="boxPresent">44</div><div class="faint" style="font-size:11px">Present</div></div>
+            <div><div style="font-size:20px;font-weight: 500;color:var(--warning)" id="boxLate">1</div><div class="faint" style="font-size:11px">Late</div></div>
+            <div><div style="font-size:20px;font-weight: 500;color:var(--danger)" id="boxAbsent">0</div><div class="faint" style="font-size:11px">Absent</div></div>
+          </div>
+          <div class="faint" style="font-size:12px;margin-top:16px;border-top:1px solid var(--border);padding-top:12px">
+            Excused medical absences do not count against minimum term requirements.
           </div>
         </div>
       </div>
@@ -72,10 +131,11 @@
 </div>
 </main>
 <script>window.PAGE={"role":"student","active":"attendance"};</script>
-<script>window.HERO_CONFIG = {
+<script>
+window.HERO_CONFIG = {
   name: 'Nrinphouneta Hok',
   id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
+  grade: 'Grade 11C',
   avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
@@ -85,18 +145,81 @@
   chatLink: '../shared/chat.html',
   notifCount: 3,
   title: 'Attendance',
-  greeting: 'Monitor your attendance record this semester.',
+  greeting: 'Monitor your attendance and session check-ins.',
   breadcrumbs: [{ label: 'Attendance' }],
   ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A' },
+    { icon: 'school', text: 'Grade 11 — Science Stream' },
+    { icon: 'class', text: 'Class 11C · Rm: 407' },
     { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
     { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
-    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+    { icon: 'emoji_events', text: 'Attendance Rate: 98.0%' }
   ]
-};</script>
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
-  <script src="../../assets/js/academic-live.js"></script>
+
+<script>
+(function() {
+  'use strict';
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  async function loadData() {
+    try {
+      var res = await NGISAuth.api('/api/academic/attendance-by-day');
+      var data = res.data || {};
+      var records = data.records || [];
+      var sum = data.summary || {};
+
+      if (sum.percentage != null) {
+        var pctStr = Number(sum.percentage).toFixed(1) + '%';
+        document.getElementById('statRate').textContent = pctStr;
+        document.getElementById('summaryRate').textContent = pctStr;
+        document.getElementById('summaryBar').style.width = pctStr;
+      }
+      if (sum.present != null) {
+        document.getElementById('statPresent').textContent = sum.present;
+        document.getElementById('boxPresent').textContent = sum.present;
+      }
+      if (sum.tardy != null) {
+        document.getElementById('statLate').textContent = sum.tardy;
+        document.getElementById('boxLate').textContent = sum.tardy;
+      }
+      if (sum.absent != null) {
+        document.getElementById('statAbsent').textContent = sum.absent;
+        document.getElementById('boxAbsent').textContent = sum.absent;
+      }
+
+      var tbody = document.getElementById('attendanceLogBody');
+      if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center faint">No attendance records found.</td></tr>';
+        return;
+      }
+
+      var html = '';
+      records.forEach(function(rec) {
+        var badge = '';
+        if (rec.status === 'present') badge = '<span class="badge green">Present</span>';
+        else if (rec.status === 'tardy') badge = '<span class="badge amber">Late / Tardy</span>';
+        else if (rec.status === 'excused') badge = '<span class="badge blue">Excused</span>';
+        else badge = '<span class="badge red">Absent</span>';
+
+        html += '<tr>' +
+          '<td class="faint mono" style="font-size:12px">' + esc(rec.formattedDate || rec.date) + '</td>' +
+          '<td>' + esc(rec.day) + '</td>' +
+          '<td>' + badge + '</td>' +
+          '<td>' + esc(rec.subject) + '</td>' +
+          '<td class="faint" style="font-size:12px">' + esc(rec.note || '—') + '</td>' +
+        '</tr>';
+      });
+      tbody.innerHTML = html;
+    } catch (e) {
+      console.warn('Attendance load error:', e);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadData);
+})();
+</script>
 </body>
 </html>

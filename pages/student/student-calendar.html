@@ -25,9 +25,9 @@
         <div class="card-head">
           <div><h3>January 2026</h3></div>
           <div class="flex gap4">
-            <button class="icon-btn"><span class="material-symbols-outlined">chevron_left</span></button>
-            <button class="btn btn-ghost btn-sm">Today</button>
-            <button class="icon-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+            <button class="icon-btn" id="calPrevBtn" title="Previous Month"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button class="btn btn-ghost btn-sm" id="calTodayBtn">Today</button>
+            <button class="icon-btn" id="calNextBtn" title="Next Month"><span class="material-symbols-outlined">chevron_right</span></button>
           </div>
         </div>
         <div class="card-pad">
@@ -126,5 +126,65 @@
 };</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script>
+(function() {
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  let currentMonthIndex = 0; // January
+  let currentYear = 2026;
+
+  const titleEl = document.querySelector('.card-head h3');
+  const prevBtn = document.getElementById('calPrevBtn');
+  const nextBtn = document.getElementById('calNextBtn');
+  const todayBtn = document.getElementById('calTodayBtn');
+  const daysContainer = document.querySelector('.card-pad > div:nth-child(2)');
+
+  function updateCalendar() {
+    if (titleEl) titleEl.textContent = `${months[currentMonthIndex]} ${currentYear}`;
+    if (window.toast) window.toast(`Showing academic calendar for ${months[currentMonthIndex]} ${currentYear}`, 'info');
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      currentMonthIndex--;
+      if (currentMonthIndex < 0) { currentMonthIndex = 11; currentYear--; }
+      updateCalendar();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      currentMonthIndex++;
+      if (currentMonthIndex > 11) { currentMonthIndex = 0; currentYear++; }
+      updateCalendar();
+    });
+  }
+
+  if (todayBtn) {
+    todayBtn.addEventListener('click', () => {
+      currentMonthIndex = 0;
+      currentYear = 2026;
+      updateCalendar();
+    });
+  }
+
+  if (daysContainer) {
+    daysContainer.addEventListener('click', (e) => {
+      const cell = e.target.closest('div');
+      if (cell && cell.textContent.trim() && /^\d+$/.test(cell.textContent.trim())) {
+        daysContainer.querySelectorAll('div').forEach(d => {
+          if (d.style.background === 'var(--primary)') {
+            d.style.background = '';
+            d.style.color = '';
+          }
+        });
+        cell.style.background = 'var(--primary)';
+        cell.style.color = '#fff';
+        const day = cell.textContent.trim();
+        if (window.toast) window.toast(`Classes & Assignments for ${months[currentMonthIndex]} ${day}, ${currentYear}`, 'info');
+      }
+    });
+  }
+})();
+</script>
 </body>
 </html>

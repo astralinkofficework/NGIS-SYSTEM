@@ -3,19 +3,21 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
-<title>NGIS — Student Performance & Academic Record</title>
+<title>NGIS — Grades and Attendance</title>
 
 <!-- Fonts & Icons -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <!-- NGIS Framework Styles -->
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
 
-<!-- Tailwind CSS (for page content) -->
+<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
 tailwind.config = {
@@ -35,8 +37,8 @@ tailwind.config = {
           card: "#ffffff",
           page: "#f8fafb",
           subtle: "#f2f5f4",
-          border: "#ffffff",
-          borderLight: "#ffffff"
+          border: "#e5e7eb",
+          borderLight: "#f3f4f6"
         },
         ink: {
           main: "#111b15",
@@ -62,22 +64,21 @@ try {
 </script>
 
 <style>
-/* Card stroke to color white all */
-section, .card, [class*="card"], [class*="rounded-2xl"], [class*="rounded-3xl"], .border-surface-border, .border-surface-borderLight {
-  border-color: #ffffff !important;
+/* Rule: NO BOLD FONTS. Maximum weight 500 */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div {
+  font-weight: 400 !important;
+}
+.font-medium, .stat-val, .badge, th {
+  font-weight: 500 !important;
 }
 
-/* Base overrides */
 html, body {
   background-color: #f8fafb;
   color: #111b15;
   font-family: 'Inter', sans-serif !important;
   -webkit-font-smoothing: antialiased;
 }
-.font-khmer {
-  font-family: 'Kantumruy Pro', sans-serif;
-  line-height: 1.6;
-}
+
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   vertical-align: middle;
@@ -86,7 +87,6 @@ html, body {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Ensure NGIS shell & sidebar layout integration */
 .main {
   min-height: 100vh;
   display: flex;
@@ -96,346 +96,476 @@ html, body {
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 20px 64px;
+  padding: 20px 16px 64px;
 }
-@media (min-width: 640px) {
-  .page { padding: 28px 28px 64px; }
+@media (min-width: 640px) { .page { padding: 24px 24px 64px; } }
+@media (min-width: 1024px) { .page { padding: 28px 32px 72px; } }
+
+/* PowerSchool-style Grade cell badge */
+.grade-cell-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500 !important;
+  transition: all 0.15s ease;
+  cursor: pointer;
 }
-@media (min-width: 1024px) {
-  .page { padding: 32px 36px 72px; }
+.grade-cell-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
-*, h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: 400 !important; }
+.grade-a { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+.grade-b { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.grade-c { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+.grade-d { background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+.grade-f { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.grade-empty { color: #9ca3af; font-size: 14px; }
+
+/* Weekly Attendance dot / UT badge */
+.att-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #10b981;
+}
+.att-badge-ut {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 500 !important;
+}
+
+/* Print styling for official report card */
+@media print {
+  body * { visibility: hidden; }
+  #reportCardPrintArea, #reportCardPrintArea * { visibility: visible; }
+  #reportCardPrintArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px; }
+  #heroBanner, nav, sidebar, .no-print { display: none !important; }
+}
 </style>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-  <script src="../../assets/js/auth.js"></script>
-  <script src="../../assets/js/protect.js"></script>
-  <script src="../student/_auth-bootstrap.js"></script>
+
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="../student/_auth-bootstrap.js"></script>
 </head>
-<body data-page="report-cards" class="font-sans selection:bg-forest-100 selection:text-forest-800">
+<body data-page="grades" class="font-sans selection:bg-forest-100 selection:text-forest-800">
 
 <main class="main">
-  <!-- ═══════════════ TOPBAR / HERO HEADER ═══════════════ -->
-  <!-- Injected dynamically by hero.js (matching all NGIS student pages) -->
+  <!-- Topbar / Hero Header -->
   <div id="heroBanner"></div>
 
-  <!-- ═══════════════ EDITORIAL WORKSPACE ═══════════════ -->
-  <div class="page space-y-9">
+  <!-- Mandatory Mobile Responsive Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-forest-800">Grades &amp; Attendance</span>
+    </div>
+    <span class="text-xs px-2.5 py-1 rounded-full bg-forest-50 text-forest-700 border border-forest-100 font-medium">AY 2025–26</span>
+  </div>
 
-    <!-- Masthead Section: Editorial Identity & Live Metrics Strip -->
-    <section class="relative bg-white rounded-3xl border border-surface-border shadow-sm overflow-hidden p-6 sm:p-8 lg:p-10">
-      <!-- Subtle Architectural Accent -->
-      <div class="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-gradient-to-br from-forest-50 to-transparent pointer-events-none opacity-80"></div>
-      
-      <div class="relative z-10 flex flex-col gap-8">
-        <!-- Top Row: Academic Year Toggle -->
-        <div class="flex items-center justify-between gap-4 border-b border-surface-borderLight pb-5">
-          <span class="text-xs font-normal uppercase tracking-wider text-ink-soft">Academic Year</span>
-          <!-- Year Selector Segmented Control -->
+  <div class="page space-y-6">
+
+    <!-- Masthead Section: Student Identity & Live Academic Metrics Strip -->
+    <section class="bg-white rounded-3xl border border-surface-border shadow-xs p-5 sm:p-7 overflow-hidden relative">
+      <div class="flex flex-col gap-6">
+        <!-- Top Row: Academic Year and Term Selector -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-borderLight pb-4">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-forest-700 text-lg">school</span>
+            <span class="text-xs font-medium uppercase tracking-wider text-ink-soft">Academic Year &amp; Session</span>
+          </div>
           <div class="inline-flex p-1 bg-surface-subtle rounded-xl border border-surface-border" id="yearSelector">
-            <button class="px-3.5 py-1.5 text-xs font-normal rounded-lg bg-white text-forest-800 shadow-xs border border-surface-borderLight" data-year="2025-2026">
+            <button class="px-3 py-1.5 text-xs font-medium rounded-lg bg-white text-forest-800 shadow-xs border border-surface-border" data-action="select-year" data-year="2025-2026">
               2025–2026 (Current)
             </button>
-            <button class="px-3.5 py-1.5 text-xs font-medium text-ink-muted  transition-colors" data-year="2024-2025">
+            <button class="px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink-main transition-colors" data-action="select-year" data-year="2024-2025">
               2024–2025
-            </button>
-            <button class="px-3.5 py-1.5 text-xs font-medium text-ink-muted  transition-colors" data-year="2023-2024">
-              2023–2024
             </button>
           </div>
         </div>
 
-        <!-- Middle Row: Student Headline & Metric Strip -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          <!-- Student Bio Info -->
-          <div class="lg:col-span-5 space-y-2">
-            <div>
-              <h1 class="text-3xl sm:text-4xl font-normal font-display text-forest-800 tracking-tight leading-tight">
-                Nrinphouneta Hok
-              </h1>
-              <p class="text-sm text-ink-muted mt-1 font-medium">
-                ID: <span class="font-mono text-ink-main">#SS2-2026-042</span> • Science &amp; Social Studies Stream
-              </p>
-            </div>
-            <p class="text-xs text-ink-soft flex items-center gap-1.5 pt-1">
-              <span class="material-symbols-outlined text-[16px] text-forest-700">school</span>
-              Academic Advisor: <span class="font-normal text-ink-main">Ms. Rathana Chea</span>
+        <!-- Middle Row: Student Bio & Metrics Strip -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-5 space-y-1.5">
+            <h1 class="text-2xl sm:text-3xl font-normal font-display text-forest-800 tracking-tight" id="studentHeaderName">
+              Nrinphouneta Hok
+            </h1>
+            <p class="text-xs sm:text-sm text-ink-muted font-normal flex items-center gap-1.5 flex-wrap">
+              <span>ID: <span class="font-mono text-ink-main" id="studentHeaderId">2026-STD-0142</span></span>
+              <span>•</span>
+              <span id="studentHeaderStream">Science &amp; Social Studies Stream</span>
+              <span>•</span>
+              <span class="text-forest-700">Grade 11C</span>
+            </p>
+            <p class="text-xs text-ink-soft flex items-center gap-1 pt-1">
+              <span class="material-symbols-outlined text-[15px] text-forest-700">person</span>
+              Academic Advisor: <span class="text-ink-main font-medium">Ms. Rathana Chea</span>
             </p>
           </div>
 
           <!-- Academic Metrics Ribbon -->
-          <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <!-- Metric 1: Cumulative GPA -->
-            <div class="bg-surface-subtle/80 rounded-2xl p-4 sm:p-5 border border-surface-border flex flex-col justify-between">
-              <div class="flex items-center justify-between text-ink-muted text-xs font-medium mb-3">
-                <span>Cumulative GPA</span>
-                <span class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-forest-700 shadow-xs">
-                  <span class="material-symbols-outlined text-[17px]">trending_up</span>
-                </span>
+          <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <!-- Metric 1: Current Weighted GPA -->
+            <div class="bg-surface-subtle/80 rounded-2xl p-3.5 border border-surface-border flex flex-col justify-between">
+              <div class="text-ink-muted text-[11px] font-medium flex items-center justify-between mb-1.5">
+                <span>Weighted GPA (Q1)</span>
+                <span class="material-symbols-outlined text-forest-700 text-sm">trending_up</span>
               </div>
-              <div>
-                <div class="flex items-baseline gap-2">
-                  <span class="text-3xl sm:text-4xl font-display font-normal text-forest-800 tracking-tight">3.88</span>
-                  <span class="text-[11px] font-normal text-forest-600 bg-forest-100/60 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                    <span class="material-symbols-outlined text-[13px]">arrow_upward</span>+0.12
-                  </span>
-                </div>
-                <div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-border/60 text-[11px] text-ink-soft font-medium">
-                  <span>Scale 4.0</span>
-                  <span class="text-forest-700 font-normal">S1 Verified</span>
-                </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-normal text-forest-800 tracking-tight" id="metricWeightedGpa">3.88</span>
+                <span class="text-[11px] text-ink-soft">/ 4.00</span>
               </div>
+              <div class="text-[10px] text-forest-700 pt-1 mt-1 border-t border-surface-border">Honors &amp; AP Weighted</div>
             </div>
 
-            <!-- Metric 2: Class Rank -->
-            <div class="bg-surface-subtle/80 rounded-2xl p-4 sm:p-5 border border-surface-border flex flex-col justify-between">
-              <div class="flex items-center justify-between text-ink-muted text-xs font-medium mb-3">
-                <span>Class Standing</span>
-                <span class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-forest-700 shadow-xs">
-                  <span class="material-symbols-outlined text-[17px]">workspace_premium</span>
-                </span>
+            <!-- Metric 2: Attendance Rate -->
+            <div class="bg-surface-subtle/80 rounded-2xl p-3.5 border border-surface-border flex flex-col justify-between">
+              <div class="text-ink-muted text-[11px] font-medium flex items-center justify-between mb-1.5">
+                <span>Attendance Rate</span>
+                <span class="material-symbols-outlined text-forest-700 text-sm">how_to_reg</span>
               </div>
-              <div>
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-3xl sm:text-4xl font-display font-normal text-forest-800 tracking-tight">#3</span>
-                  <span class="text-xs text-ink-muted font-medium">/ 38 students</span>
-                </div>
-                <div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-border/60 text-[11px] text-ink-soft font-medium">
-                  <span>Percentile</span>
-                  <span class="text-forest-700 font-normal">Top 8% Cohort</span>
-                </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-normal text-forest-800 tracking-tight" id="metricAttendance">98.0%</span>
               </div>
+              <div class="text-[10px] text-forest-700 pt-1 mt-1 border-t border-surface-border">44 / 45 Sessions Present</div>
             </div>
 
-            <!-- Metric 3: Credit Completion -->
-            <div class="bg-surface-subtle/80 rounded-2xl p-4 sm:p-5 border border-surface-border flex flex-col justify-between">
-              <div class="flex items-center justify-between text-ink-muted text-xs font-medium mb-3">
-                <span>Credit Progress</span>
-                <span class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-forest-700 shadow-xs">
-                  <span class="material-symbols-outlined text-[17px]">verified</span>
-                </span>
+            <!-- Metric 3: Absences & Tardies -->
+            <div class="bg-surface-subtle/80 rounded-2xl p-3.5 border border-surface-border flex flex-col justify-between">
+              <div class="text-ink-muted text-[11px] font-medium flex items-center justify-between mb-1.5">
+                <span>Absences / Tardies</span>
+                <span class="material-symbols-outlined text-amber-700 text-sm">schedule</span>
               </div>
-              <div>
-                <div class="flex items-baseline gap-2">
-                  <span class="text-3xl sm:text-4xl font-display font-normal text-forest-800 tracking-tight">24<span class="text-xl font-normal text-ink-soft">/24</span></span>
-                  <span class="text-[11px] font-normal text-forest-700 bg-forest-100/60 px-1.5 py-0.5 rounded">100%</span>
-                </div>
-                <div class="flex items-center justify-between mt-2 pt-2 border-t border-surface-border/60 text-[11px] text-ink-soft font-medium">
-                  <span>Requirements</span>
-                  <span class="text-forest-700 font-normal">Core Fulfilled</span>
-                </div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-normal text-forest-800 tracking-tight" id="metricAbsences">0</span>
+                <span class="text-xs text-ink-soft">abs</span>
+                <span class="text-xs text-amber-700 font-medium" id="metricTardies">1 tardy</span>
               </div>
+              <div class="text-[10px] text-ink-soft pt-1 mt-1 border-t border-surface-border">Pre-AP English II (H)</div>
+            </div>
+
+            <!-- Metric 4: Credits Completed -->
+            <div class="bg-surface-subtle/80 rounded-2xl p-3.5 border border-surface-border flex flex-col justify-between">
+              <div class="text-ink-muted text-[11px] font-medium flex items-center justify-between mb-1.5">
+                <span>Course Credits</span>
+                <span class="material-symbols-outlined text-forest-700 text-sm">verified</span>
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-normal text-forest-800 tracking-tight">27</span>
+                <span class="text-[11px] text-ink-soft">credits</span>
+              </div>
+              <div class="text-[10px] text-forest-700 pt-1 mt-1 border-t border-surface-border">All Cores Active</div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Main Content Area: Reports & Academic Records -->
-    <div class="space-y-6">
-      <!-- Section Controls & View Switcher -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-xl sm:text-2xl font-normal font-display text-forest-800 tracking-tight">
-            Academic Report Cards &amp; Evaluation Record
-          </h2>
-          <p class="text-xs sm:text-sm text-ink-muted mt-0.5 font-medium">
-            Official semester records, monthly reviews, and performance evaluations
-          </p>
+    <!-- Main Navigation View Switcher (Tabs) -->
+    <div class="flex items-center justify-between flex-wrap gap-3 border-b border-surface-border pb-3">
+      <div class="inline-flex p-1 bg-surface-subtle rounded-2xl border border-surface-border" id="mainViewTabs">
+        <button class="px-4 py-2 text-xs font-medium rounded-xl bg-white text-forest-800 shadow-xs border border-surface-border flex items-center gap-1.5 active-tab" data-tab="attendance-by-class">
+          <span class="material-symbols-outlined text-[16px] text-forest-700">grid_on</span>
+          <span>Attendance By Class</span>
+        </button>
+        <button class="px-4 py-2 text-xs font-medium text-ink-muted hover:text-ink-main transition-colors flex items-center gap-1.5" data-tab="attendance-by-day">
+          <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+          <span>Attendance By Day</span>
+        </button>
+        <button class="px-4 py-2 text-xs font-medium text-ink-muted hover:text-ink-main transition-colors flex items-center gap-1.5" data-tab="report-cards">
+          <span class="material-symbols-outlined text-[16px]">description</span>
+          <span>Official Report Cards</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="px-3.5 py-1.5 text-xs font-medium rounded-xl bg-white border border-surface-border text-ink-main shadow-xs hover:bg-surface-subtle flex items-center gap-1.5 transition-all">
+          <span class="material-symbols-outlined text-[16px] text-forest-700">print</span>
+          <span>Print Summary</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 1: ATTENDANCE BY CLASS (Reference School Portal Layout)   -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div id="tabContentClass" class="space-y-4">
+      <div class="bg-white rounded-3xl border border-surface-border shadow-xs overflow-hidden">
+        <!-- Section Header Bar -->
+        <div class="p-4 px-6 bg-surface-subtle/60 border-b border-surface-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base sm:text-lg font-medium text-forest-800 tracking-tight">Attendance By Class</h2>
+            <p class="text-xs text-ink-soft">Click any grade letter below to view detailed assessment scores and teacher feedback.</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-ink-muted">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+            <span>Live Official Records</span>
+          </div>
         </div>
-        <div class="flex items-center gap-2.5 self-start sm:self-auto">
-          <!-- Transcript Export Button -->
-          <button onclick="window.print()" class="flex items-center gap-1.5 px-3.5 py-2 text-xs font-normal rounded-xl bg-white border border-surface-border   text-ink-main shadow-xs transition-all">
-            <span class="material-symbols-outlined text-[17px] text-forest-700">description</span>
-            <span>Export Official PDF</span>
+
+        <!-- Reference Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse" id="attendanceByClassTable">
+            <thead>
+              <tr class="border-b border-surface-border text-ink-soft font-medium uppercase tracking-wider text-[11px] bg-surface-subtle/30">
+                <!-- This Week Sub-columns -->
+                <th colspan="5" class="py-3 px-3 text-center border-r border-surface-border bg-surface-subtle/50">This Week</th>
+                <th class="py-3 px-4 min-w-[260px]">Course &amp; Teacher</th>
+                <!-- Grading Periods P1..Q4 -->
+                <th class="py-3 px-2 text-center w-11">P1</th>
+                <th class="py-3 px-2 text-center w-11">Q1</th>
+                <th class="py-3 px-2 text-center w-11">P2</th>
+                <th class="py-3 px-2 text-center w-11">Q2</th>
+                <th class="py-3 px-2 text-center w-11">P3</th>
+                <th class="py-3 px-2 text-center w-11">Q3</th>
+                <th class="py-3 px-2 text-center w-11">P4</th>
+                <th class="py-3 px-2 text-center w-11">Q4</th>
+                <!-- Absences & Tardies -->
+                <th class="py-3 px-3 text-center w-16">Absences</th>
+                <th class="py-3 px-3 text-center w-16">Tardies</th>
+              </tr>
+              <tr class="border-b border-surface-border text-ink-soft text-[10px] text-center bg-surface-subtle/20">
+                <th class="py-1 px-1.5 w-6">M</th>
+                <th class="py-1 px-1.5 w-6">T</th>
+                <th class="py-1 px-1.5 w-6">W</th>
+                <th class="py-1 px-1.5 w-6">H</th>
+                <th class="py-1 px-1.5 w-6 border-r border-surface-border">F</th>
+                <th colspan="11"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-borderLight" id="classTableBody">
+              <tr>
+                <td colspan="16" class="py-8 text-center text-ink-muted">Loading authoritative grades &amp; attendance…</td>
+              </tr>
+            </tbody>
+            <!-- Attendance Totals Row -->
+            <tfoot class="bg-surface-subtle/50 border-t border-surface-border text-xs font-medium text-ink-main" id="classTableFoot">
+              <tr>
+                <td colspan="5" class="border-r border-surface-border"></td>
+                <td class="py-3.5 px-4 text-right pr-6 text-forest-800 font-medium">Attendance Totals:</td>
+                <td colspan="8"></td>
+                <td class="py-3.5 px-3 text-center font-medium" id="totalAbsencesCell">0</td>
+                <td class="py-3.5 px-3 text-center font-medium" id="totalTardiesCell">1</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Table Bottom Controls Strip matching reference screenshot -->
+        <div class="p-4 px-6 bg-surface-subtle/30 border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-ink-muted">
+          <div class="flex items-center gap-4 flex-wrap">
+            <span class="text-forest-800 font-medium" id="bottomWeightedGpa">Current weighted GPA (Q1): 3.88</span>
+            <label class="flex items-center gap-1.5 cursor-pointer text-ink-soft hover:text-ink-main">
+              <input type="checkbox" id="showDroppedToggle" class="rounded text-forest-700 focus:ring-forest-600">
+              <span>Show dropped classes also</span>
+            </label>
+          </div>
+          <button type="button" class="text-forest-700 hover:text-forest-900 font-medium flex items-center gap-1 cursor-pointer" onclick="switchTab('attendance-by-day')">
+            <span>Attendance By Day</span>
+            <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Comprehensive Editorial Table View -->
-      <div class="bg-white rounded-3xl border border-surface-border shadow-xs overflow-hidden">
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 2: ATTENDANCE BY DAY (Day-by-day Log)                      -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div id="tabContentDay" class="space-y-4 hidden">
+      <div class="bg-white rounded-3xl border border-surface-border shadow-xs overflow-hidden p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-borderLight pb-4">
+          <div>
+            <h2 class="text-lg font-medium text-forest-800">Attendance Log by Day</h2>
+            <p class="text-xs text-ink-muted">Historical daily sign-ins, timestamps, excused absence validations, and remarks.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="dayStatusFilter" class="px-3 py-1.5 text-xs rounded-xl border border-surface-border bg-surface-subtle text-ink-main">
+              <option value="all">All Statuses</option>
+              <option value="present">Present Only</option>
+              <option value="tardy">Late / Tardy Only</option>
+              <option value="absent">Absent Only</option>
+              <option value="excused">Excused Absences</option>
+            </select>
+          </div>
+        </div>
+
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs border-collapse">
             <thead>
-              <tr class="border-b border-surface-borderLight text-ink-soft font-normal uppercase tracking-wider text-[11px] bg-surface-subtle/50">
-                <th class="py-4 px-5">Grading Period &amp; Term</th>
-                <th class="py-4 px-4">Status</th>
-                <th class="py-4 px-4">Note or Feedback from Teacher</th>
-                <th class="py-4 px-5 text-right">Actions</th>
+              <tr class="border-b border-surface-border text-ink-soft font-medium uppercase tracking-wider text-[11px] bg-surface-subtle/50">
+                <th class="py-3 px-4">Date</th>
+                <th class="py-3 px-4">Day</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">Class / Session</th>
+                <th class="py-3 px-4">Notes &amp; Administrative Remarks</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-surface-borderLight">
-              
-              <!-- Row 1: Semester 1 (Hero Record) -->
-              <tr class=" transition-colors group">
-                <td class="py-4.5 px-5">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-forest-50 border border-forest-100 text-forest-700 flex items-center justify-center shrink-0">
-                      <span class="material-symbols-outlined text-[20px]">grading</span>
-                    </div>
-                    <div>
-                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុឆមាសទី១</div>
-                      <div class="text-[11px] text-ink-soft mt-0.5">Semester 1 Examination</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="py-4.5 px-4 whitespace-nowrap">
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-forest-50 text-forest-700 border border-forest-100">
-                    <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
-                    Verified &amp; Uploaded
-                  </span>
-                </td>
-                <td class="py-4.5 px-4 text-ink-muted text-xs">
-                  <div class="font-medium text-ink-main">Demonstrates excellent mastery of coursework and strong analytical skills.</div>
-                  <div class="text-[11px] text-ink-soft mt-0.5">Teacher feedback: "Consistently engages in class discussions and submits exemplary work."</div>
-                </td>
-                <td class="py-4.5 px-5 text-right whitespace-nowrap">
-                  <div class="inline-flex items-center gap-2">
-                    <button onclick="if(window.toast) window.toast('Downloading Semester 1 Verified Report Card…','info'); else alert('Downloading Semester 1 Verified Report Card PDF...')" class="p-2 rounded-xl border border-surface-border  text-ink-muted  bg-white  transition-colors" title="Download Verified PDF">
-                      <span class="material-symbols-outlined text-[18px]">file_download</span>
-                    </button>
-                    <button onclick="if(window.toast) window.toast('Opening Official Semester 1 Report Card…','info'); else alert('Viewing Full Semester 1 Official Report Card (Graded by Jane Doe)')" class="px-3.5 py-1.5 bg-forest-800  text-white font-normal rounded-xl text-xs shadow-xs transition-all flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-[16px]">visibility</span>
-                      <span>View Card</span>
-                    </button>
-                  </div>
-                </td>
+            <tbody class="divide-y divide-surface-borderLight" id="dayTableBody">
+              <tr>
+                <td colspan="5" class="py-8 text-center text-ink-muted">Loading daily attendance records…</td>
               </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-              <!-- Row 2: Monthly Assessments -->
-              <tr class=" transition-colors group">
-                <td class="py-4.5 px-5">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-surface-subtle border border-surface-border text-forest-700 flex items-center justify-center shrink-0">
-                      <span class="material-symbols-outlined text-[20px]">assignment</span>
-                    </div>
-                    <div>
-                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុប្រឡងប្រចាំខែ</div>
-                      <div class="text-[11px] text-ink-soft mt-0.5">Monthly Assessments</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="py-4.5 px-4 whitespace-nowrap">
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-forest-50 text-forest-700 border border-forest-100">
-                    <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
-                    Continuous Evaluated
-                  </span>
-                </td>
-                <td class="py-4.5 px-4 text-ink-muted text-xs">
-                  <div class="font-medium text-ink-main">Steady progress and improvement across all monthly assessments.</div>
-                  <div class="text-[11px] text-ink-soft mt-0.5">Teacher feedback: "Great diligence on practical problem-solving and lab evaluations."</div>
-                </td>
-                <td class="py-4.5 px-5 text-right whitespace-nowrap">
-                  <div class="inline-flex items-center gap-2">
-                    <button onclick="if(window.toast) window.toast('Downloading Monthly Summaries…','info'); else alert('Downloading Monthly Summaries (Oct–Jan)...')" class="p-2 rounded-xl border border-surface-border  text-ink-muted  bg-white  transition-colors" title="Download Monthly Summaries">
-                      <span class="material-symbols-outlined text-[18px]">file_download</span>
-                    </button>
-                    <button onclick="if(window.toast) window.toast('Viewing Monthly Assessment Breakdown…','info'); else alert('Viewing Continuous Monthly Assessment Breakdown')" class="px-3.5 py-1.5 bg-surface-subtle  text-forest-800 font-normal rounded-xl border border-surface-border text-xs transition-all flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-[16px]">insights</span>
-                      <span>Breakdown</span>
-                    </button>
-                  </div>
-                </td>
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <!-- TAB 3: OFFICIAL REPORT CARDS                                   -->
+    <!-- ════════════════════════════════════════════════════════════════ -->
+    <div id="tabContentReports" class="space-y-4 hidden">
+      <div id="reportCardPrintArea" class="bg-white rounded-3xl border border-surface-border shadow-xs p-6 sm:p-10 space-y-8">
+        <!-- Report Card Letterhead -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-6 border-b-2 border-forest-800 pb-6 text-center sm:text-left">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-forest-800 text-white flex items-center justify-center font-display text-2xl shadow-sm">
+              N
+            </div>
+            <div>
+              <div class="text-xs uppercase tracking-widest text-forest-700 font-medium">Official Academic Transcript &amp; Evaluation</div>
+              <h1 class="text-xl sm:text-2xl font-normal font-display text-forest-900 tracking-tight">New Gateway International School</h1>
+              <p class="text-xs text-ink-muted">Accredited Cambridge &amp; National Curriculum • Phnom Penh, Cambodia</p>
+            </div>
+          </div>
+          <div class="text-right sm:border-l sm:border-surface-border sm:pl-6 text-xs text-ink-muted space-y-1">
+            <div><span class="text-ink-soft">Academic Session:</span> <span class="font-medium text-ink-main">2025–2026</span></div>
+            <div><span class="text-ink-soft">Term:</span> <span class="font-medium text-ink-main">Semester 1 &amp; Continuous Review</span></div>
+            <div><span class="text-ink-soft">Registry Date:</span> <span class="font-medium text-ink-main">October 23, 2026</span></div>
+          </div>
+        </div>
+
+        <!-- Student Profile Table in Report Card -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-surface-subtle border border-surface-border text-xs">
+          <div><span class="text-ink-soft block">Student Name:</span><span class="font-medium text-ink-main text-sm" id="rcStudentName">Nrinphouneta Hok</span></div>
+          <div><span class="text-ink-soft block">Student ID:</span><span class="font-mono text-ink-main" id="rcStudentId">2026-STD-0142</span></div>
+          <div><span class="text-ink-soft block">Grade / Class:</span><span class="font-medium text-ink-main" id="rcStudentClass">Grade 11C</span></div>
+          <div><span class="text-ink-soft block">Cumulative Weighted GPA:</span><span class="font-medium text-forest-800 text-sm" id="rcStudentGpa">3.88 / 4.00</span></div>
+        </div>
+
+        <!-- Report Card Subject Grades Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b-2 border-surface-border text-ink-soft font-medium uppercase tracking-wider text-[11px] bg-surface-subtle/70">
+                <th class="py-3 px-4">Course Subject</th>
+                <th class="py-3 px-4">Instructor</th>
+                <th class="py-3 px-3 text-center">Credits</th>
+                <th class="py-3 px-3 text-center">Q1</th>
+                <th class="py-3 px-3 text-center">Q2</th>
+                <th class="py-3 px-3 text-center">Semester Grade</th>
+                <th class="py-3 px-4">Evaluation Remark</th>
               </tr>
-
-              <!-- Row 3: Semester 2 (In Progress) -->
-              <tr class=" transition-colors group">
-                <td class="py-4.5 px-5">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
-                      <span class="material-symbols-outlined text-[20px]">pending_actions</span>
-                    </div>
-                    <div>
-                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុឆមាសទី២</div>
-                      <div class="text-[11px] text-ink-soft mt-0.5">Semester 2 Examination</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="py-4.5 px-4 whitespace-nowrap">
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-amber-50 text-amber-800 border border-amber-200/60">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
-                    In Progress • Active Term
-                  </span>
-                </td>
-                <td class="py-4.5 px-4 text-ink-muted text-xs">
-                  <div class="font-medium text-ink-main">Term active; mid-term assessments and projects are in progress.</div>
-                  <div class="text-[11px] text-ink-soft mt-0.5">Teacher feedback: "Final evaluation and comments will be published following examination review."</div>
-                </td>
-                <td class="py-4.5 px-5 text-right whitespace-nowrap">
-                  <button onclick="this.innerHTML='<span class=\'material-symbols-outlined text-[16px] text-emerald-600\'>check_circle</span> Subscribed'; this.classList.add('bg-emerald-50','text-emerald-800'); if(window.toast) window.toast('Subscribed to Semester 2 notifications','success'); else alert('You will be notified as soon as Semester 2 results are published.')" class="px-3.5 py-1.5 rounded-xl border border-surface-border  text-forest-800 font-normal bg-white  flex items-center gap-1.5 transition-all text-xs ml-auto">
-                    <span class="material-symbols-outlined text-[16px] text-forest-700">notifications_active</span>
-                    <span>Notify When Ready</span>
-                  </button>
-                </td>
-              </tr>
-
-              <!-- Row 4: Annual Cumulative -->
-              <tr class=" transition-colors group">
-                <td class="py-4.5 px-5">
-                  <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-forest-100 border border-forest-200 text-forest-800 flex items-center justify-center shrink-0">
-                      <span class="material-symbols-outlined text-[20px]">military_tech</span>
-                    </div>
-                    <div>
-                      <div class="font-khmer font-normal text-forest-800 text-base leading-tight">ពិន្ទុប្រចាំឆ្នាំ</div>
-                      <div class="text-[11px] text-ink-soft mt-0.5">Annual Cumulative</div>
-                    </div>
-                  </div>
-                </td>
-                <td class="py-4.5 px-4 whitespace-nowrap">
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-normal bg-forest-100 text-forest-800 border border-forest-200">
-                    <span class="material-symbols-outlined text-[13px]">military_tech</span>
-                    Tier 1 Standing
-                  </span>
-                </td>
-                <td class="py-4.5 px-4 text-ink-muted text-xs">
-                  <div class="font-medium text-ink-main">Exemplary overall performance and dedication throughout the entire academic year.</div>
-                  <div class="text-[11px] text-ink-soft mt-0.5">Teacher feedback: "Commended for academic excellence and outstanding character."</div>
-                </td>
-                <td class="py-4.5 px-5 text-right whitespace-nowrap">
-                  <button onclick="if(window.toast) window.toast('Projected GPA: 3.88 - 3.92 / 4.00','info'); else alert('Projected Cumulative GPA: 3.88 - 3.92 / 4.00 based on Semester 1 performance.')" class="px-3.5 py-1.5 border border-surface-border text-forest-800 font-normal rounded-xl  bg-white  flex items-center gap-1.5 transition-all text-xs ml-auto">
-                    <span class="material-symbols-outlined text-[16px] text-forest-700">query_stats</span>
-                    <span>View Projected GPA</span>
-                  </button>
-                </td>
-              </tr>
-
+            </thead>
+            <tbody class="divide-y divide-surface-borderLight" id="rcTableBody">
+              <!-- Dynamically populated from live data -->
             </tbody>
           </table>
         </div>
 
-        <!-- Table Footer Strip -->
-        <div class="p-4 px-5 bg-surface-subtle/50 border-t border-surface-borderLight flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-soft">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-[16px] text-forest-700">verified</span>
-            <span>Official Academic Records • All data authenticated by Office of Academic Registry</span>
+        <!-- Signatures & Official Registry Endorsement -->
+        <div class="pt-8 border-t border-surface-border grid grid-cols-1 sm:grid-cols-3 gap-8 text-center text-xs text-ink-muted">
+          <div class="space-y-2">
+            <div class="h-10 border-b border-ink-soft/40 w-40 mx-auto"></div>
+            <div>Ms. Rathana Chea</div>
+            <div class="text-[11px] text-ink-soft">Academic Advisor</div>
           </div>
-          <div class="text-ink-muted font-medium">
-            Academic Session: 2025–2026
+          <div class="space-y-2">
+            <div class="h-10 border-b border-ink-soft/40 w-40 mx-auto"></div>
+            <div>Dr. Ly Bunheng</div>
+            <div class="text-[11px] text-ink-soft">Campus Principal</div>
+          </div>
+          <div class="space-y-2">
+            <div class="w-12 h-12 rounded-full border-2 border-forest-800 mx-auto flex items-center justify-center text-[9px] font-medium text-forest-800">
+              SEAL
+            </div>
+            <div class="text-[10px] text-ink-soft">Office of the Academic Registry<br/>New Gateway International School</div>
           </div>
         </div>
       </div>
-
     </div>
+
   </div><!-- /page -->
 </main>
 
-<!-- Page Config & NGIS Scripts -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!-- MODAL: COURSE ASSESSMENT BREAKDOWN (Opened on grade cell click) -->
+<!-- ════════════════════════════════════════════════════════════════ -->
+<div id="assessmentModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 hidden" onclick="if(event.target===this) closeAssessmentModal()">
+  <div class="bg-white rounded-3xl max-w-2xl w-full border border-surface-border shadow-xl overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
+    <!-- Modal Header -->
+    <div class="p-5 px-6 border-b border-surface-border bg-surface-subtle/50 flex items-center justify-between">
+      <div>
+        <div class="text-xs uppercase tracking-wider text-forest-700 font-medium" id="modalPeriodBadge">Quarter 1 Breakdown</div>
+        <h3 class="text-lg font-medium text-forest-800" id="modalCourseTitle">AP Biology</h3>
+        <p class="text-xs text-ink-muted" id="modalTeacherInfo">Instructor: Muthukumaran Pakkirisamy • Rm: 407 (11C)</p>
+      </div>
+      <button type="button" class="p-2 rounded-xl text-ink-muted hover:text-ink-main hover:bg-white transition-all cursor-pointer" onclick="closeAssessmentModal()">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Modal Content: Assessments Table -->
+    <div class="p-5 overflow-y-auto flex-1 space-y-4">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="border-b border-surface-border text-ink-soft font-medium uppercase tracking-wider text-[11px] bg-surface-subtle/30">
+              <th class="py-2.5 px-3">Assessment Title</th>
+              <th class="py-2.5 px-3">Category</th>
+              <th class="py-2.5 px-3 text-center">Score / Max</th>
+              <th class="py-2.5 px-3 text-center">Percentage</th>
+              <th class="py-2.5 px-3 text-center">Weight</th>
+              <th class="py-2.5 px-3 text-center">Grade</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-surface-borderLight" id="modalAssessmentsList">
+            <tr>
+              <td colspan="6" class="py-6 text-center text-ink-muted">Loading assessment details…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Feedback note section -->
+      <div class="p-4 rounded-2xl bg-forest-50/70 border border-forest-100 text-xs space-y-1">
+        <div class="font-medium text-forest-800 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">chat</span>
+          <span>Teacher Evaluation Feedback</span>
+        </div>
+        <p class="text-ink-muted leading-relaxed" id="modalFeedbackNote">
+          Outstanding analytical ability, rigorous coursework mastery. Actively contributes during experimental lab demonstrations.
+        </p>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="p-4 px-6 border-t border-surface-border bg-surface-subtle/50 flex items-center justify-between text-xs text-ink-soft">
+      <span>Official gradebook synced from NGIS Registry</span>
+      <button type="button" class="px-4 py-2 bg-forest-800 text-white rounded-xl hover:bg-forest-900 transition-all font-medium cursor-pointer" onclick="closeAssessmentModal()">
+        Done
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Page Scripts -->
 <script>
 window.PAGE = { role: 'student', active: 'grades' };
-(function () {
-  try { var _t = localStorage.getItem('ngis-theme'); if (_t) document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
-  var saved = null;
-  try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
-  if (saved) { window.PAGE.role = saved.role || 'student'; window.CURRENT_USER = saved; }
-  document.body.classList.add('ready');
-})();
-</script>
-
-<script>
 window.HERO_CONFIG = {
   name: 'Nrinphouneta Hok',
   id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
+  grade: 'Grade 11C',
   avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
@@ -444,15 +574,15 @@ window.HERO_CONFIG = {
   notifLink: 'student-notifications.html',
   chatLink: '../shared/chat.html',
   notifCount: 3,
-  title: 'Report Cards & Performance',
-  greeting: 'Official semester records, monthly reviews, and performance evaluations.',
-  breadcrumbs: [{ label: 'Report Cards & Performance' }],
+  title: 'Grades and Attendance',
+  greeting: 'Academic grades, weekly attendance matrix, and official semester evaluation.',
+  breadcrumbs: [{ label: 'Grades and Attendance' }],
   ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A · SS2 KH' },
+    { icon: 'school', text: 'Grade 11 — Science Stream' },
+    { icon: 'class', text: 'Class 11C · Rm: 407' },
     { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
     { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
-    { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
+    { icon: 'emoji_events', text: 'Weighted GPA: 3.88 / 4.00' }
   ]
 };
 </script>
@@ -460,22 +590,273 @@ window.HERO_CONFIG = {
 <script src="../../assets/js/layout.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  // Year Selector
-  const yearButtons = document.querySelectorAll('#yearSelector button');
-  yearButtons.forEach(btn => {
-    btn.addEventListener('click', function() {
-      yearButtons.forEach(b => {
-        b.className = 'px-3.5 py-1.5 text-xs font-medium text-ink-muted  transition-colors';
+(function() {
+  'use strict';
+
+  function esc(str) {
+    return String(str || '').replace(/[&<>"']/g, function(m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  var currentAcademicData = null;
+
+  // Grade badge color utility
+  function getGradeClass(letter) {
+    if (!letter || letter === '—') return 'grade-empty';
+    var ch = letter.charAt(0).toUpperCase();
+    if (ch === 'A') return 'grade-a';
+    if (ch === 'B') return 'grade-b';
+    if (ch === 'C') return 'grade-c';
+    if (ch === 'D') return 'grade-d';
+    return 'grade-f';
+  }
+
+  // Load Attendance By Class from authoritative API
+  async function loadAttendanceByClass() {
+    try {
+      var res = await NGISAuth.api('/api/academic/attendance-by-class');
+      var data = res.data || {};
+      currentAcademicData = data;
+
+      // Update Student Header info
+      if (data.student) {
+        document.getElementById('studentHeaderName').textContent = data.student.name;
+        document.getElementById('studentHeaderId').textContent = data.student.id;
+        document.getElementById('rcStudentName').textContent = data.student.name;
+        document.getElementById('rcStudentId').textContent = data.student.id;
+      }
+
+      // Update Metrics
+      if (data.currentWeightedGpa) {
+        var gpaStr = Number(data.currentWeightedGpa).toFixed(2);
+        document.getElementById('metricWeightedGpa').textContent = gpaStr;
+        document.getElementById('bottomWeightedGpa').textContent = 'Current weighted GPA (' + (data.activePeriod || 'Q1') + '): ' + gpaStr;
+        document.getElementById('rcStudentGpa').textContent = gpaStr + ' / 4.00';
+      }
+
+      var totals = data.totals || { absences: 0, tardies: 0 };
+      document.getElementById('metricAbsences').textContent = totals.absences;
+      document.getElementById('metricTardies').textContent = totals.tardies + ' tardy';
+      document.getElementById('totalAbsencesCell').textContent = totals.absences;
+      document.getElementById('totalTardiesCell').textContent = totals.tardies;
+
+      // Render Class Rows
+      var tbody = document.getElementById('classTableBody');
+      var rcTbody = document.getElementById('rcTableBody');
+      var courses = data.courses || [];
+
+      if (!courses.length) {
+        tbody.innerHTML = '<tr><td colspan="16" class="py-8 text-center text-ink-muted">No course records found for this academic period.</td></tr>';
+        return;
+      }
+
+      var html = '';
+      var rcHtml = '';
+
+      courses.forEach(function(course, idx) {
+        var thisWeek = course.thisWeek || {};
+        var grades = course.grades || {};
+
+        // Sub-column dots for This Week M, T, W, H, F
+        function formatDayStatus(code) {
+          if (code === 'UT') {
+            return '<span class="att-badge-ut" title="Unexcused Tardy (UT)">UT</span>';
+          }
+          if (code === 'A') {
+            return '<span class="att-badge-ut" style="background:#fee2e2;color:#991b1b" title="Absent">A</span>';
+          }
+          if (code === 'EA') {
+            return '<span class="att-badge-ut" style="background:#e0f2fe;color:#0369a1" title="Excused Absence">EA</span>';
+          }
+          return '<span class="att-dot" title="Present"></span>';
+        }
+
+        // Render Period cells P1, Q1, P2, Q2, P3, Q3, P4, Q4
+        var periodCells = ['P1', 'Q1', 'P2', 'Q2', 'P3', 'Q3', 'P4', 'Q4'].map(function(pCode) {
+          var letter = grades[pCode] || '—';
+          var gradeCls = getGradeClass(letter);
+          return '<td class="py-2 px-1.5 text-center">' +
+            '<button type="button" class="grade-cell-btn ' + gradeCls + '" onclick="openAssessmentModal(\'' + esc(course.subjectId) + '\', \'' + esc(course.courseName) + '\', \'' + pCode + '\', \'' + esc(course.teacherName) + '\', \'' + esc(course.room) + '\')" title="Click to view ' + pCode + ' evaluation details">' +
+              esc(letter) +
+            '</button>' +
+          '</td>';
+        }).join('');
+
+        html += '<tr class="hover:bg-surface-subtle/50 transition-colors group">' +
+          '<td class="py-2.5 px-1.5 text-center">' + formatDayStatus(thisWeek.M) + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center">' + formatDayStatus(thisWeek.T) + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center">' + formatDayStatus(thisWeek.W) + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center">' + formatDayStatus(thisWeek.H) + '</td>' +
+          '<td class="py-2.5 px-1.5 text-center border-r border-surface-border">' + formatDayStatus(thisWeek.F) + '</td>' +
+          '<td class="py-3 px-4">' +
+            '<div class="font-medium text-forest-900 text-xs sm:text-sm">' + esc(course.courseName) + '</div>' +
+            '<div class="text-[11px] text-ink-soft flex items-center gap-1.5 mt-0.5">' +
+              '<a href="mailto:' + esc(course.teacherEmail) + '" class="text-forest-700 hover:text-forest-900 flex items-center gap-0.5">' +
+                '<span class="material-symbols-outlined text-[13px]">mail</span>' +
+                '<span>Email ' + esc(course.teacherName) + '</span>' +
+              '</a>' +
+              '<span>- ' + esc(course.room) + '</span>' +
+            '</div>' +
+          '</td>' +
+          periodCells +
+          '<td class="py-2.5 px-3 text-center text-ink-muted">' + (course.absences || 0) + '</td>' +
+          '<td class="py-2.5 px-3 text-center ' + (course.tardies > 0 ? 'text-amber-700 font-medium' : 'text-ink-muted') + '">' + (course.tardies || 0) + '</td>' +
+        '</tr>';
+
+        // Also build official report card rows
+        rcHtml += '<tr>' +
+          '<td class="py-3 px-4 font-medium text-ink-main">' + esc(course.courseName) + '</td>' +
+          '<td class="py-3 px-4 text-ink-muted">' + esc(course.teacherName) + '</td>' +
+          '<td class="py-3 px-3 text-center text-ink-soft">' + (course.creditValue || 1) + '.0</td>' +
+          '<td class="py-3 px-3 text-center font-medium">' + esc(grades.Q1 || '—') + '</td>' +
+          '<td class="py-3 px-3 text-center font-medium">' + esc(grades.Q2 || '—') + '</td>' +
+          '<td class="py-3 px-3 text-center font-medium text-forest-800">' + esc(grades.Q1 || '—') + '</td>' +
+          '<td class="py-3 px-4 text-ink-muted text-[11px]">Consistent diligence and academic integrity.</td>' +
+        '</tr>';
       });
-      btn.className = 'px-3.5 py-1.5 text-xs font-normal rounded-lg bg-white text-forest-800 shadow-xs border border-surface-borderLight';
-      if (window.toast) {
-        window.toast('Switched to Academic Year ' + btn.textContent.trim(), 'info');
+
+      tbody.innerHTML = html;
+      rcTbody.innerHTML = rcHtml;
+
+    } catch (err) {
+      console.warn('Failed loading attendance by class:', err);
+      document.getElementById('classTableBody').innerHTML = '<tr><td colspan="16" class="py-6 text-center text-red-600">Could not sync academic records: ' + esc(err.message) + '</td></tr>';
+    }
+  }
+
+  // Load Attendance By Day
+  async function loadAttendanceByDay() {
+    try {
+      var res = await NGISAuth.api('/api/academic/attendance-by-day');
+      var data = res.data || {};
+      var records = data.records || [];
+      var tbody = document.getElementById('dayTableBody');
+
+      if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-ink-muted">No daily attendance logs recorded yet.</td></tr>';
+        return;
+      }
+
+      var html = '';
+      records.forEach(function(rec) {
+        var statusBadge = '';
+        if (rec.status === 'present') {
+          statusBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Present</span>';
+        } else if (rec.status === 'tardy') {
+          statusBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] bg-amber-50 text-amber-700 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>Tardy</span>';
+        } else if (rec.status === 'excused') {
+          statusBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] bg-blue-50 text-blue-700 border border-blue-200"><span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>Excused</span>';
+        } else {
+          statusBadge = '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] bg-red-50 text-red-700 border border-red-200"><span class="w-1.5 h-1.5 rounded-full bg-red-600"></span>Absent</span>';
+        }
+
+        html += '<tr class="hover:bg-surface-subtle/50 transition-colors">' +
+          '<td class="py-3 px-4 font-mono text-ink-main">' + esc(rec.formattedDate || rec.date) + '</td>' +
+          '<td class="py-3 px-4 text-ink-muted">' + esc(rec.day) + '</td>' +
+          '<td class="py-3 px-4 whitespace-nowrap">' + statusBadge + '</td>' +
+          '<td class="py-3 px-4 text-ink-main font-medium">' + esc(rec.subject) + '</td>' +
+          '<td class="py-3 px-4 text-ink-muted">' + esc(rec.note || 'Regular morning session sign-in') + '</td>' +
+        '</tr>';
+      });
+
+      tbody.innerHTML = html;
+    } catch (err) {
+      console.warn('Failed loading attendance by day:', err);
+    }
+  }
+
+  // Open Assessment Modal for specific course & period
+  window.openAssessmentModal = async function(subjectId, courseName, periodCode, teacherName, room) {
+    var modal = document.getElementById('assessmentModal');
+    modal.classList.remove('hidden');
+    document.getElementById('modalCourseTitle').textContent = courseName;
+    document.getElementById('modalPeriodBadge').textContent = periodCode + ' Evaluation Breakdown';
+    document.getElementById('modalTeacherInfo').textContent = 'Instructor: ' + teacherName + ' • ' + room;
+    document.getElementById('modalAssessmentsList').innerHTML = '<tr><td colspan="6" class="py-6 text-center text-ink-muted">Loading breakdown…</td></tr>';
+
+    try {
+      var res = await NGISAuth.api('/api/academic/course-details?subjectId=' + encodeURIComponent(subjectId) + '&periodCode=' + encodeURIComponent(periodCode));
+      var assessments = (res.data && res.data.assessments) || [];
+
+      if (!assessments.length) {
+        document.getElementById('modalAssessmentsList').innerHTML = '<tr><td colspan="6" class="py-6 text-center text-ink-muted">No individual assignments recorded for ' + esc(periodCode) + '. Grade is based on continuous class engagement.</td></tr>';
+        return;
+      }
+
+      var html = '';
+      var feedback = '';
+      assessments.forEach(function(a) {
+        var pctStr = a.percentage != null ? Number(a.percentage).toFixed(0) + '%' : '—';
+        var gradeCls = getGradeClass(a.letterGrade);
+        if (a.comments) feedback = a.comments;
+
+        html += '<tr class="hover:bg-surface-subtle/40 transition-colors">' +
+          '<td class="py-2.5 px-3 font-medium text-ink-main">' + esc(a.title) + '</td>' +
+          '<td class="py-2.5 px-3 text-ink-soft text-[11px]">' + esc(a.category) + '</td>' +
+          '<td class="py-2.5 px-3 text-center font-mono">' + a.score + ' / ' + a.maxScore + '</td>' +
+          '<td class="py-2.5 px-3 text-center text-ink-muted">' + pctStr + '</td>' +
+          '<td class="py-2.5 px-3 text-center text-ink-soft">' + (a.weight || 1.0) + 'x</td>' +
+          '<td class="py-2.5 px-3 text-center"><span class="grade-cell-btn ' + gradeCls + '" style="cursor:default">' + esc(a.letterGrade) + '</span></td>' +
+        '</tr>';
+      });
+
+      document.getElementById('modalAssessmentsList').innerHTML = html;
+      if (feedback) {
+        document.getElementById('modalFeedbackNote').textContent = feedback;
+      }
+    } catch (err) {
+      document.getElementById('modalAssessmentsList').innerHTML = '<tr><td colspan="6" class="py-6 text-center text-red-600">Failed loading details: ' + esc(err.message) + '</td></tr>';
+    }
+  };
+
+  window.closeAssessmentModal = function() {
+    document.getElementById('assessmentModal').classList.add('hidden');
+  };
+
+  // Switch tabs
+  window.switchTab = function(tabKey) {
+    document.querySelectorAll('#mainViewTabs button').forEach(function(btn) {
+      if (btn.dataset.tab === tabKey) {
+        btn.className = 'px-4 py-2 text-xs font-medium rounded-xl bg-white text-forest-800 shadow-xs border border-surface-border flex items-center gap-1.5 active-tab';
+      } else {
+        btn.className = 'px-4 py-2 text-xs font-medium text-ink-muted hover:text-ink-main transition-colors flex items-center gap-1.5';
       }
     });
+
+    document.getElementById('tabContentClass').classList.toggle('hidden', tabKey !== 'attendance-by-class');
+    document.getElementById('tabContentDay').classList.toggle('hidden', tabKey !== 'attendance-by-day');
+    document.getElementById('tabContentReports').classList.toggle('hidden', tabKey !== 'report-cards');
+
+    if (tabKey === 'attendance-by-day') {
+      loadAttendanceByDay();
+    }
+  };
+
+  // Wire events
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tab click events
+    document.querySelectorAll('#mainViewTabs button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        switchTab(btn.dataset.tab);
+      });
+    });
+
+    // Year buttons
+    document.querySelectorAll('#yearSelector button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('#yearSelector button').forEach(function(b) {
+          b.className = 'px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink-main transition-colors';
+        });
+        btn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg bg-white text-forest-800 shadow-xs border border-surface-border';
+        if (window.toast) window.toast('Switched to Academic Year ' + btn.textContent.trim(), 'info');
+      });
+    });
+
+    // Initial load
+    loadAttendanceByClass();
   });
-});
+})();
 </script>
-  <script src="../../assets/js/academic-live.js"></script>
 </body>
 </html>

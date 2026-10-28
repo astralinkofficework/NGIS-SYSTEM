@@ -487,38 +487,61 @@
      Close:   click backdrop, [data-close-drawer]/[data-close-modal], Escape
      ══════════════════════════════════════════════════ */
   function openOverlay(sel, id) {
-    const ov = document.querySelector(`${sel}[data-${sel === ".drawer-overlay" ? "drawer" : "modal"}="${id}"]`);
-    if (ov) ov.classList.add("show");
+    if (!id) return;
+    const isDrawer = sel === ".drawer-overlay";
+    const attr = isDrawer ? "drawer" : "modal";
+    const ov = document.querySelector(
+      `${sel}[data-${attr}="${id}"], ${sel}#${id}, #${id}${sel}, #${id}[data-${attr}="${id}"], #${id}`
+    );
+    if (ov) {
+      ov.classList.add("show", "open");
+      const inner = ov.querySelector(".drawer, .modal, .modal-box");
+      if (inner) inner.classList.add("show", "open");
+    }
   }
 
   function wireOverlays() {
-    document.querySelectorAll("[data-open-drawer]").forEach(btn => {
-      btn.addEventListener("click", e => {
+    document.addEventListener("click", e => {
+      const openDrawer = e.target.closest("[data-open-drawer]");
+      if (openDrawer) {
         e.preventDefault();
-        openOverlay(".drawer-overlay", btn.getAttribute("data-open-drawer"));
-      });
-    });
-    document.querySelectorAll("[data-open-modal]").forEach(btn => {
-      btn.addEventListener("click", e => {
+        openOverlay(".drawer-overlay", openDrawer.getAttribute("data-open-drawer"));
+        return;
+      }
+
+      const openModal = e.target.closest("[data-open-modal]");
+      if (openModal) {
         e.preventDefault();
-        openOverlay(".modal-overlay", btn.getAttribute("data-open-modal"));
-      });
+        openOverlay(".modal-overlay", openModal.getAttribute("data-open-modal"));
+        return;
+      }
+
+      const closeBtn = e.target.closest("[data-close-drawer], [data-close-modal], [data-dismiss='modal']");
+      if (closeBtn) {
+        e.preventDefault();
+        const ov = closeBtn.closest(".drawer-overlay, .modal-overlay, aside.drawer, .modal");
+        if (ov) {
+          ov.classList.remove("show", "open");
+          const parentOv = ov.closest(".drawer-overlay, .modal-overlay");
+          if (parentOv) parentOv.classList.remove("show", "open");
+        }
+        return;
+      }
+
+      if (e.target.classList.contains("drawer-overlay") || e.target.classList.contains("modal-overlay")) {
+        e.target.classList.remove("show", "open");
+      }
     });
-    document.querySelectorAll(".drawer-overlay, .modal-overlay").forEach(ov => {
-      ov.addEventListener("click", e => { if (e.target === ov) ov.classList.remove("show"); });
-      ov.querySelectorAll("[data-close-drawer],[data-close-modal]").forEach(btn => {
-        btn.addEventListener("click", () => ov.classList.remove("show"));
-      });
-    });
+
     document.addEventListener("keydown", e => {
       if (e.key !== "Escape") return;
-      document.querySelectorAll(".drawer-overlay.show, .modal-overlay.show").forEach(ov => ov.classList.remove("show"));
+      document.querySelectorAll(".drawer-overlay.show, .drawer-overlay.open, .modal-overlay.show, .modal-overlay.open").forEach(ov => ov.classList.remove("show", "open"));
     });
   }
 
   window.closeOverlay = function (el) {
-    const ov = el.closest(".drawer-overlay, .modal-overlay");
-    if (ov) ov.classList.remove("show");
+    const ov = el ? el.closest(".drawer-overlay, .modal-overlay") : document.querySelector(".drawer-overlay.show, .drawer-overlay.open, .modal-overlay.show, .modal-overlay.open");
+    if (ov) ov.classList.remove("show", "open");
   };
   window.openDrawer = id => openOverlay(".drawer-overlay", id);
   window.openModal  = id => openOverlay(".modal-overlay", id);

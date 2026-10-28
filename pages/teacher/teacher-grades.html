@@ -3,155 +3,495 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Grades</title>
+<title>NGIS — Teacher Gradebook</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<style>
+/* Rule: NO BOLD FONTS. Avoid weights > 500 */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div, input, select {
+  font-weight: 400 !important;
+}
+.font-medium, .stat-val, .badge, th {
+  font-weight: 500 !important;
+}
+
+.score-input {
+  width: 68px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--text);
+  transition: all 0.15s ease;
+}
+.score-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  outline: none;
+}
+.score-input.invalid {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.comment-input {
+  width: 100%;
+  min-width: 140px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+</style>
+
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
 </head>
-<body>
+<body data-role="teacher">
 <main class="main">
 <div id="heroBanner"></div>
+
+<!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+<div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+  <div class="flex items-center gap-2.5">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <i class="ph ph-list text-xl"></i>
+    </button>
+    <span class="text-sm font-medium text-forest-800">Teacher Gradebook</span>
+  </div>
+  <button onclick="document.getElementById('addAssessmentModal').classList.remove('hidden')" class="btn btn-primary btn-sm">
+    <span class="material-symbols-outlined text-xs">add</span> Add Test
+  </button>
+</div>
+
 <div class="page">
 
+  <!-- Gradebook Controls Bar -->
   <div class="card anim-up" style="margin-bottom:16px">
-    <div class="card-head"><h3>Enter Grade</h3><div class="sub">Posts to shared database + notifies student</div></div>
+    <div class="card-head">
+      <div>
+        <h3>Course Gradebook &amp; Marks Entry</h3>
+        <div class="sub">Select your assigned class, subject, and grading period to record student marks</div>
+      </div>
+      <div class="toolbar flex items-center gap-2">
+        <a href="teacher-classes.html" class="btn btn-ghost btn-sm flex items-center gap-1 text-forest-700">
+          <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span> My Class
+        </a>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('addAssessmentModal').classList.remove('hidden')">
+          <span class="material-symbols-outlined text-[16px]">add_circle</span>
+          <span>Add Assessment</span>
+        </button>
+      </div>
+    </div>
     <div class="card-pad">
-      <form id="gradeForm" style="display:grid;gap:12px;grid-template-columns:1fr 1fr 1fr">
-        <label style="font-size:13px;font-weight: 400">Student ID
-          <input class="input" name="studentId" value="student-001" required style="width:100%;margin-top:4px">
-        </label>
-        <label style="font-size:13px;font-weight: 400">Subject
-          <select class="select" name="subjectId" style="width:100%;margin-top:4px">
-            <option value="subj-math">Mathematics</option>
-            <option value="subj-phys">Physics</option>
-            <option value="subj-chem">Chemistry</option>
-            <option value="subj-eng">English</option>
-            <option value="subj-hist">History</option>
-          </select>
-        </label>
-        <label style="font-size:13px;font-weight: 400">Class
-          <select class="select" name="classId" style="width:100%;margin-top:4px">
-            <option value="cls-10a">10A</option>
-            <option value="cls-11b">11B</option>
-          </select>
-        </label>
-        <label style="font-size:13px;font-weight: 400">Assessment title
-          <input class="input" name="assessmentTitle" placeholder="Quiz 4" required style="width:100%;margin-top:4px">
-        </label>
-        <label style="font-size:13px;font-weight: 400">Type
-          <select class="select" name="assessmentType" style="width:100%;margin-top:4px">
-            <option value="quiz">Quiz</option>
-            <option value="exam">Exam</option>
-            <option value="homework">Homework</option>
-            <option value="lab">Lab</option>
-          </select>
-        </label>
-        <label style="font-size:13px;font-weight: 400">Score / Max
-          <div class="flex gap8" style="margin-top:4px">
-            <input class="input" type="number" name="score" required min="0" style="flex:1">
-            <input class="input" type="number" name="maxScore" value="100" min="1" style="width:90px">
-          </div>
-        </label>
-        <div style="grid-column:1/-1;display:flex;gap:8px;align-items:center">
-          <button type="submit" class="btn btn-primary">Save grade</button>
-          <span id="formMsg" class="muted" style="font-size:13px"></span>
+      <div class="flex gap12 wrap center between">
+        <div class="flex gap12 wrap center">
+          <label style="font-size:13px;font-weight:400">Class
+            <select id="selectClass" class="select" style="display:block;margin-top:4px;min-width:140px">
+              <option value="cls-10a" selected>Grade 10A</option>
+              <option value="cls-11b">Grade 11B</option>
+              <option value="cls-11c">Grade 11C</option>
+            </select>
+          </label>
+
+          <label style="font-size:13px;font-weight:400">Subject
+            <select id="selectSubject" class="select" style="display:block;margin-top:4px;min-width:180px">
+              <option value="subj-math" selected>Advanced Mathematics</option>
+              <option value="subj-ap-bio">AP Biology</option>
+              <option value="subj-preap-chem">Pre-AP Chemistry</option>
+            </select>
+          </label>
+
+          <label style="font-size:13px;font-weight:400">Grading Period
+            <select id="selectPeriod" class="select" style="display:block;margin-top:4px;min-width:130px">
+              <option value="gp-p1">P1 (Progress 1)</option>
+              <option value="gp-q1" selected>Q1 (Quarter 1)</option>
+              <option value="gp-p2">P2 (Progress 2)</option>
+              <option value="gp-q2">Q2 (Quarter 2)</option>
+              <option value="gp-p3">P3 (Progress 3)</option>
+              <option value="gp-q3">Q3 (Quarter 3)</option>
+              <option value="gp-p4">P4 (Progress 4)</option>
+              <option value="gp-q4">Q4 (Quarter 4)</option>
+            </select>
+          </label>
+
+          <button class="btn btn-primary btn-sm" id="btnLoadGradebook" style="margin-top:18px">
+            <span class="material-symbols-outlined text-[16px]">refresh</span>
+            <span>Load Roster</span>
+          </button>
         </div>
-      </form>
+
+        <div class="flex gap8 center" style="margin-top:18px">
+          <button class="btn btn-ghost btn-sm" id="btnSaveDraft">
+            <span class="material-symbols-outlined text-[16px]">save</span>
+            <span>Save Draft</span>
+          </button>
+          <button class="btn btn-primary btn-sm" id="btnSubmitApproval">
+            <span class="material-symbols-outlined text-[16px]">send</span>
+            <span>Submit for Review</span>
+          </button>
+        </div>
+      </div>
+      <div id="statusAlert" class="mt8 text-xs font-medium" style="display:none"></div>
     </div>
   </div>
 
+  <!-- Gradebook Spreadsheet Card -->
   <div class="card anim-up-2">
-    <div class="card-head"><div><h3>Recent Grades You Recorded</h3></div></div>
-    <div class="card-pad" id="list"><p class="muted">Loading…</p></div>
+    <div class="card-head">
+      <div>
+        <h3 id="gradebookTitle">Student Marks Roster</h3>
+        <div class="sub" id="gradebookSub">Loading gradebook…</div>
+      </div>
+      <div id="gradebookSummaryBadge"></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl" id="gradebookTable">
+        <thead id="gbThead">
+          <tr>
+            <th>Student</th>
+            <th>ID Number</th>
+            <th>Calculated %</th>
+            <th>Letter</th>
+            <th>Status</th>
+            <th>Teacher Comments</th>
+          </tr>
+        </thead>
+        <tbody id="gbTbody">
+          <tr><td colspan="6" class="py-6 text-center faint">Loading class marks roster…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-pad flex between center" style="border-top:1px solid var(--border);font-size:12px;color:var(--muted)">
+      <span>Scores are validated against max marks before saving. Draft marks remain private until officially published.</span>
+      <span id="saveStatusIndicator" class="font-medium text-emerald-700"></span>
+    </div>
   </div>
 
 </div>
 </main>
+
+<!-- Modal: Create Assessment -->
+<div id="addAssessmentModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 hidden" onclick="if(event.target===this) this.classList.add('hidden')">
+  <div class="bg-white rounded-3xl max-w-md w-full border border-surface-border shadow-xl p-6 space-y-4">
+    <div class="flex items-center justify-between border-b border-surface-border pb-3">
+      <h3 class="text-base font-medium text-forest-800">Add New Course Assessment</h3>
+      <button type="button" class="text-ink-muted hover:text-ink-main" onclick="document.getElementById('addAssessmentModal').classList.add('hidden')">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <form id="createAssessmentForm" class="space-y-3 text-xs">
+      <div>
+        <label class="block text-ink-soft mb-1 font-medium">Assessment Title</label>
+        <input type="text" name="title" class="input w-full" placeholder="e.g. Unit 3 Test: Optics & Waves" required>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-ink-soft mb-1 font-medium">Category</label>
+          <select name="category" class="select w-full">
+            <option value="Quiz">Quiz</option>
+            <option value="Homework">Homework</option>
+            <option value="Exam">Exam</option>
+            <option value="Lab">Lab Practical</option>
+            <option value="Project">Project</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-ink-soft mb-1 font-medium">Max Marks</label>
+          <input type="number" name="maxScore" class="input w-full" value="100" min="1" required>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-ink-soft mb-1 font-medium">Category Weight</label>
+          <input type="number" step="0.1" name="weight" class="input w-full" value="1.0" min="0.1">
+        </div>
+        <div>
+          <label class="block text-ink-soft mb-1 font-medium">Due Date</label>
+          <input type="date" name="dueDate" class="input w-full">
+        </div>
+      </div>
+      <div class="pt-3 flex justify-end gap-2 border-t border-surface-border">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('addAssessmentModal').classList.add('hidden')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Create Assessment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>window.PAGE={"role":"teacher","active":"grades"};</script>
 <script>
 window.HERO_CONFIG = {
-  role: 'teacher', active: 'grades', name: 'Teacher', id: 'Teacher', grade: 'Teacher',
-  avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
+  role: 'teacher', active: 'grades',
+  name: 'Dr. Sarah Jenkins', id: 'TCH-2024-042', grade: 'Mathematics Dept. Head',
+  avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
   profileLink: 'teacher-profile.html', notifLink: 'teacher-notifications.html', chatLink: '../shared/chat.html',
-  notifCount: 0, title: 'Grades', greeting: 'Enter and review grades.',
-  breadcrumbs: [{ label: 'Grades' }], ddRows: []
+  notifCount: 2, title: 'Grade Management', greeting: 'Record and manage course gradebooks.',
+  breadcrumbs: [{ label: 'Gradebook' }], ddRows: []
 };
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
-<script>
-(function () {
-  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
 
-  async function load() {
-    const el = document.getElementById('list');
+<script>
+(function() {
+  'use strict';
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  var currentRosterData = null;
+
+  async function loadGradebook() {
+    var classId = document.getElementById('selectClass').value;
+    var subjectId = document.getElementById('selectSubject').value;
+    var periodId = document.getElementById('selectPeriod').value;
+
+    var thead = document.getElementById('gbThead');
+    var tbody = document.getElementById('gbTbody');
+    var subTitle = document.getElementById('gradebookSub');
+    subTitle.textContent = 'Loading records…';
+
     try {
-      const res = await NGISAuth.api('/api/academic/grades');
-      const rows = res.data || [];
-      if (!rows.length) { el.innerHTML = '<p class="muted">No grades recorded yet.</p>'; return; }
-      el.innerHTML = `
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Student</th><th>Subject</th><th>Assessment</th><th>Score</th><th>Letter</th><th>Date</th></tr></thead>
-            <tbody>
-              ${rows.map(g => `<tr>
-                <td>${esc(g.student_name || g.student_id)}</td>
-                <td>${esc(g.subject_name || g.subject_id)}</td>
-                <td>${esc(g.assessment_title)}</td>
-                <td class="mono">${g.score}/${g.max_score}</td>
-                <td><span class="badge green">${esc(g.letter_grade)}</span></td>
-                <td class="faint" style="font-size:12px">${esc((g.recorded_at||'').slice(0,10))}</td>
-              </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>`;
+      var res = await NGISAuth.api('/api/academic/gradebook?classId=' + encodeURIComponent(classId) + '&subjectId=' + encodeURIComponent(subjectId) + '&periodId=' + encodeURIComponent(periodId));
+      var data = res.data || {};
+      currentRosterData = data;
+
+      var cls = data.class || {};
+      var subj = data.subject || {};
+      var period = data.period || {};
+      var assessments = data.assessments || [];
+      var students = data.students || [];
+
+      document.getElementById('gradebookTitle').textContent = (subj.name || 'Subject') + ' — ' + (cls.name || classId);
+      subTitle.textContent = (period.name || periodId) + ' • ' + students.length + ' Enrolled Students';
+
+      // Build Headers: Student, ID, [Assessments...], Total %, Letter, Workflow, Comments
+      var headHtml = '<tr>' +
+        '<th style="min-width:160px">Student Name</th>' +
+        '<th style="width:110px">Student ID</th>';
+
+      assessments.forEach(function(a) {
+        headHtml += '<th class="text-center" style="min-width:90px" title="Max: ' + a.max_score + ', Weight: ' + a.weight + 'x">' +
+          '<div>' + esc(a.title) + '</div>' +
+          '<div class="faint text-[10px] font-normal">/' + a.max_score + ' (' + a.weight + 'x)</div>' +
+        '</th>';
+      });
+
+      headHtml += '<th class="text-center" style="width:90px">Total %</th>' +
+        '<th class="text-center" style="width:70px">Grade</th>' +
+        '<th class="text-center" style="width:90px">Workflow</th>' +
+        '<th style="min-width:180px">Teacher Comments</th>' +
+      '</tr>';
+      thead.innerHTML = headHtml;
+
+      // Build Rows
+      if (!students.length) {
+        tbody.innerHTML = '<tr><td colspan="' + (6 + assessments.length) + '" class="py-6 text-center faint">No students enrolled in this class.</td></tr>';
+        return;
+      }
+
+      var bodyHtml = '';
+      students.forEach(function(student, sIdx) {
+        var sGrades = student.grades || {};
+        var asmInputs = '';
+
+        assessments.forEach(function(a) {
+          var gObj = sGrades[a.id] || {};
+          var val = gObj.score != null ? gObj.score : '';
+          asmInputs += '<td class="text-center py-2 px-2">' +
+            '<input type="number" min="0" max="' + a.max_score + '" step="0.5" class="score-input" ' +
+              'data-student-id="' + esc(student.id) + '" data-assessment-id="' + esc(a.id) + '" ' +
+              'data-max="' + a.max_score + '" value="' + val + '" placeholder="—" ' +
+              'onchange="recalculateStudent(' + sIdx + ')">' +
+          '</td>';
+        });
+
+        var workflowBadge = student.workflow === 'published' ?
+          '<span class="badge green">Published</span>' :
+          (student.workflow === 'submitted' ? '<span class="badge blue">Submitted</span>' : '<span class="badge amber">Draft</span>');
+
+        var commentVal = '';
+        if (assessments.length > 0 && sGrades[assessments[0].id]) {
+          commentVal = sGrades[assessments[0].id].comments || '';
+        }
+
+        bodyHtml += '<tr data-student-idx="' + sIdx + '">' +
+          '<td class="font-medium text-ink-main">' + esc(student.name) + '</td>' +
+          '<td class="faint mono" style="font-size:12px">' + esc(student.number || student.id) + '</td>' +
+          asmInputs +
+          '<td class="text-center font-medium font-mono text-xs total-pct-cell">' + (student.totalPercentage ? student.totalPercentage + '%' : '—') + '</td>' +
+          '<td class="text-center font-medium letter-cell">' + esc(student.letterGrade || '—') + '</td>' +
+          '<td class="text-center">' + workflowBadge + '</td>' +
+          '<td><input type="text" class="comment-input" data-student-id="' + esc(student.id) + '" value="' + esc(commentVal) + '" placeholder="Add feedback…"></td>' +
+        '</tr>';
+      });
+
+      tbody.innerHTML = bodyHtml;
+
     } catch (err) {
-      el.innerHTML = `<p style="color:#b91c1c">${esc(err.message)}</p>`;
+      console.warn('Gradebook load failed:', err);
+      tbody.innerHTML = '<tr><td colspan="6" class="py-6 text-center text-red-600">Failed loading gradebook: ' + esc(err.message) + '</td></tr>';
     }
   }
 
-  document.getElementById('gradeForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const msg = document.getElementById('formMsg');
-    msg.textContent = 'Saving…';
+  // Real-time calculation on input change
+  window.recalculateStudent = function(studentIdx) {
+    var row = document.querySelector('tr[data-student-idx="' + studentIdx + '"]');
+    if (!row) return;
+
+    var inputs = row.querySelectorAll('.score-input');
+    var totalEarned = 0;
+    var totalMax = 0;
+
+    inputs.forEach(function(inp) {
+      var val = parseFloat(inp.value);
+      var max = parseFloat(inp.dataset.max) || 100;
+      if (val > max) {
+        inp.classList.add('invalid');
+      } else {
+        inp.classList.remove('invalid');
+      }
+      if (!isNaN(val)) {
+        totalEarned += val;
+        totalMax += max;
+      }
+    });
+
+    var pctCell = row.querySelector('.total-pct-cell');
+    var letterCell = row.querySelector('.letter-cell');
+
+    if (totalMax > 0) {
+      var pct = (totalEarned / totalMax) * 100;
+      pctCell.textContent = pct.toFixed(1) + '%';
+      var letter = 'F';
+      if (pct >= 90) letter = 'A';
+      else if (pct >= 85) letter = 'B+';
+      else if (pct >= 80) letter = 'B';
+      else if (pct >= 75) letter = 'C+';
+      else if (pct >= 70) letter = 'C';
+      else if (pct >= 60) letter = 'D';
+      letterCell.textContent = letter;
+    } else {
+      pctCell.textContent = '—';
+      letterCell.textContent = '—';
+    }
+  };
+
+  // Save batch function
+  async function saveBatch(targetWorkflow) {
+    var classId = document.getElementById('selectClass').value;
+    var subjectId = document.getElementById('selectSubject').value;
+    var periodId = document.getElementById('selectPeriod').value;
+    var indicator = document.getElementById('saveStatusIndicator');
+
+    indicator.textContent = 'Saving records…';
+
+    var grades = [];
+    var scoreInputs = document.querySelectorAll('.score-input');
+    var commentsMap = {};
+    document.querySelectorAll('.comment-input').forEach(function(ci) {
+      commentsMap[ci.dataset.studentId] = ci.value;
+    });
+
+    scoreInputs.forEach(function(inp) {
+      var sId = inp.dataset.studentId;
+      var aId = inp.dataset.assessmentId;
+      var val = inp.value.trim();
+      grades.push({
+        studentId: sId,
+        assessmentId: aId,
+        score: val !== '' ? parseFloat(val) : null,
+        comments: commentsMap[sId] || ''
+      });
+    });
+
     try {
-      await NGISAuth.api('/api/academic/grades', {
+      var res = await NGISAuth.api('/api/academic/gradebook/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          studentId: fd.get('studentId'),
-          subjectId: fd.get('subjectId'),
-          classId: fd.get('classId'),
-          assessmentType: fd.get('assessmentType'),
-          assessmentTitle: fd.get('assessmentTitle'),
-          score: Number(fd.get('score')),
-          maxScore: Number(fd.get('maxScore') || 100),
-        }),
+          classId: classId,
+          subjectId: subjectId,
+          periodId: periodId,
+          workflow: targetWorkflow,
+          grades: grades
+        })
       });
-      msg.textContent = 'Grade saved. Student notified.';
-      e.target.reset();
-      e.target.studentId.value = 'student-001';
-      e.target.maxScore.value = '100';
-      load();
+
+      var msg = targetWorkflow === 'submitted' ? 'Grades submitted for administrative approval.' : 'Draft marks saved successfully.';
+      indicator.textContent = msg;
+      if (window.toast) window.toast(msg, 'success');
+      loadGradebook();
     } catch (err) {
-      msg.textContent = err.message || 'Failed';
+      indicator.textContent = 'Save failed: ' + err.message;
+      if (window.toast) window.toast(err.message, 'error');
+    }
+  }
+
+  // Create new assessment
+  document.getElementById('createAssessmentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var fd = new FormData(e.target);
+    var classId = document.getElementById('selectClass').value;
+    var subjectId = document.getElementById('selectSubject').value;
+    var periodId = document.getElementById('selectPeriod').value;
+
+    try {
+      await NGISAuth.api('/api/academic/assessments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          classId: classId,
+          subjectId: subjectId,
+          gradingPeriodId: periodId,
+          title: fd.get('title'),
+          category: fd.get('category'),
+          maxScore: parseFloat(fd.get('maxScore')),
+          weight: parseFloat(fd.get('weight') || 1.0),
+          dueDate: fd.get('dueDate') || ''
+        })
+      });
+
+      document.getElementById('addAssessmentModal').classList.add('hidden');
+      e.target.reset();
+      if (window.toast) window.toast('Assessment created.', 'success');
+      loadGradebook();
+    } catch (err) {
+      if (window.toast) window.toast(err.message, 'error');
     }
   });
 
-  setTimeout(load, 200);
+  document.getElementById('btnLoadGradebook').addEventListener('click', loadGradebook);
+  document.getElementById('btnSaveDraft').addEventListener('click', function() { saveBatch('draft'); });
+  function init() {
+    var params = new URLSearchParams(window.location.search);
+    var qClass = params.get('classId') || params.get('class');
+    if (qClass) {
+      var cSel = document.getElementById('selectClass');
+      if (Array.from(cSel.options).some(function(o){ return o.value === qClass; })) {
+        cSel.value = qClass;
+      }
+    }
+    loadGradebook();
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  init();
 })();
 </script>
-  <script src="../../assets/js/academic-live.js"></script>
 </body>
 </html>

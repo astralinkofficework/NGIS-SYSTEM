@@ -28,12 +28,12 @@ for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
     nav_match = re.search(r'const NAV = \{(.*?)\n  \};', layout, re.DOTALL)
     assert nav_match, f"Could not find const NAV in {layout_path}"
     nav_block = nav_match.group(1)
-    for non_student in ("teacher", "admin", "parent", "principal", "staff"):
+    for non_student in ("teacher", "admin", "principal", "staff"):
         start = nav_block.find(f"    {non_student}:")
         assert start != -1, f"Could not find NAV.{non_student} in {layout_path}"
         next_indices = [
             nav_block.find(f"    {other}:", start + 1)
-            for other in ("admin", "teacher", "student", "parent", "principal", "staff")
+            for other in ("admin", "teacher", "student", "principal", "staff")
             if nav_block.find(f"    {other}:", start + 1) != -1
         ]
         end = min(next_indices) if next_indices else len(nav_block)
@@ -83,7 +83,6 @@ dashboards = {
     "student": ROOT / "pages/student/student.html",
     "teacher": ROOT / "pages/teacher/teacher.html",
     "admin": ROOT / "pages/admin/admin.html",
-    "parent": ROOT / "pages/parent/parent.html",
     "principal": ROOT / "pages/principal/principal.html",
     "staff": ROOT / "pages/staff/staff.html",
 }
@@ -105,7 +104,7 @@ for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
     assert "MOB_NAV_TABS" in layout, f"Missing MOB_NAV_TABS in {layout_path}"
     assert "mob-bottomnav" in layout, f"Missing mob-bottomnav class in {layout_path}"
     assert "mob-bn-slider" in layout, f"Missing mob-bn-slider in {layout_path}"
-    for role in ("student", "teacher", "admin", "parent", "principal", "staff"):
+    for role in ("student", "teacher", "admin", "principal", "staff"):
         assert f"{role}:" in layout, f"Missing role {role} tabs in MOB_NAV_TABS in {layout_path}"
 
 print("portal-routing.test.py: PASS")

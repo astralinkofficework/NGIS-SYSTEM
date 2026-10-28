@@ -142,29 +142,69 @@
 
 /* Site-wide request: make all decorative borders, outlines, and SVG strokes transparent white,
    EXCEPT for functional UI icons and buttons that must stay visible. */
-html body *:not(.sidebar-collapse-btn):not(.sidebar-collapse-btn *),
+html body *:not(.sidebar):not(.sidebar *):not(.sidebar-collapse-btn):not(.sidebar-collapse-btn *):not(.sidebar-expand-btn):not(.sidebar-expand-btn *),
 html body *::before,
 html body *::after {
   border-color: rgba(255, 255, 255, 0) !important;
   outline-color: rgba(255, 255, 255, 0) !important;
 }
-html body svg:not(.side-collapse-svg):not(.sidebar-collapse-btn *):not(.gauge-svg):not(.gauge-svg *),
-html body svg:not(.side-collapse-svg):not(.sidebar-collapse-btn *):not(.gauge-svg):not(.gauge-svg *) * {
+html body svg:not(.sidebar svg):not(.sidebar svg *):not(.side-collapse-svg):not(.sidebar-collapse-btn *):not(.side-expand-svg):not(.sidebar-expand-btn *):not(.gauge-svg):not(.gauge-svg *),
+html body svg:not(.sidebar svg):not(.sidebar svg *):not(.side-collapse-svg):not(.sidebar-collapse-btn *):not(.side-expand-svg):not(.sidebar-expand-btn *):not(.gauge-svg):not(.gauge-svg *) * {
   stroke: rgba(255, 255, 255, 0) !important;
 }
 
 /* Explicit restoration for sidebar collapse button and icon */
 html body .sidebar-collapse-btn,
 html body #sidebarCollapseBtn {
-  border: 1px solid #cbd5e1 !important;
-  background: #f8fafc !important;
-  color: #2f4550 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #94a3b8 !important;
+  border-radius: 8px !important;
 }
 html body .sidebar-collapse-btn:hover,
 html body #sidebarCollapseBtn:hover {
-  border-color: #94a3b8 !important;
-  background: #edf2f7 !important;
-  color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+html body .sidebar-collapse-btn .side-collapse-svg,
+html body #sidebarCollapseBtn .side-collapse-svg {
+  stroke: currentColor !important;
+  color: inherit !important;
+}
+
+/* Docked sidebar toggle button (boundary rail expand) */
+.sidebar:not(.collapsed) .sidebar-expand-btn {
+  display: none !important;
+}
+html body .sidebar-expand-btn,
+html body #sidebarExpandBtn {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: #0b1a30 !important;
+  color: #94a3b8 !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+html body .sidebar-expand-btn:hover,
+html body #sidebarExpandBtn:hover {
+  background: #152742 !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+html body .sidebar-expand-btn svg,
+html body .sidebar-expand-btn svg * {
+  stroke: currentColor !important;
+}
+html body .sidebar-expand-btn:hover,
+html body #sidebarExpandBtn:hover {
+  border-color: #38bdf8 !important;
+  background: #f8fafc !important;
+  color: #0284c7 !important;
+}
+html body .sidebar-expand-btn:hover svg,
+html body .sidebar-expand-btn:hover svg * {
+  stroke: #0284c7 !important;
 }
 
 html[data-theme="dark"] body .sidebar-collapse-btn,
@@ -182,6 +222,34 @@ body[data-theme="dark"] #sidebarCollapseBtn:hover {
   border-color: rgba(184, 219, 217, 0.45) !important;
   background: #2b404c !important;
   color: #ffffff !important;
+}
+
+html[data-theme="dark"] body .sidebar-expand-btn,
+html[data-theme="dark"] body #sidebarExpandBtn,
+body[data-theme="dark"] .sidebar-expand-btn,
+body[data-theme="dark"] #sidebarExpandBtn {
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  background: #11426b !important;
+  color: #ffffff !important;
+  border-radius: 9999px !important;
+}
+html[data-theme="dark"] body .sidebar-expand-btn svg,
+html[data-theme="dark"] body .sidebar-expand-btn svg *,
+body[data-theme="dark"] .sidebar-expand-btn svg,
+body[data-theme="dark"] .sidebar-expand-btn svg * {
+  stroke: #7dd3fc !important;
+}
+html[data-theme="dark"] body .sidebar-expand-btn:hover,
+html[data-theme="dark"] body #sidebarExpandBtn:hover,
+body[data-theme="dark"] .sidebar-expand-btn:hover,
+body[data-theme="dark"] #sidebarExpandBtn:hover {
+  border-color: #38bdf8 !important;
+  background: #0d3860 !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] body .sidebar-expand-btn:hover svg,
+html[data-theme="dark"] body .sidebar-expand-btn:hover svg * {
+  stroke: #ffffff !important;
 }
 
 html body .side-collapse-svg,
@@ -814,4 +882,24 @@ body[data-portal="admin"] table svg path,
 [data-theme="dark"] body[data-portal="admin"] .badge {
   color: #cbd5e1 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   STRICT SYSTEM-WIDE TYPOGRAPHY RULE (AGENTS.md): NO BOLD FONTS
+   All weights capped at 400 (normal) or 500 (medium). No 600/700/800.
+   ═══════════════════════════════════════════════════════════════════ */
+html body,
+html body *:not([class*="ph-"]):not(.ph):not([class*="material-symbols"]):not(.material-symbols-outlined) {
+  font-weight: 400;
+}
+
+html body h1, html body h2, html body h3, html body h4, html body h5, html body h6,
+html body th, html body label,
+html body b, html body strong,
+html body .font-medium, html body .font-semibold, html body .font-bold, html body .font-extrabold, html body .font-black,
+html body [class*="font-semibold"], html body [class*="font-bold"], html body [class*="font-extrabold"], html body [class*="font-black"],
+html body .pill, html body .badge, html body .btn, html body button,
+html body .nav-link.active, html body .nav-group-label {
+  font-weight: 500 !important;
+}
+
 

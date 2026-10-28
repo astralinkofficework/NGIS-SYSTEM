@@ -3,200 +3,331 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Grade Management</title>
+<title>NGIS — Grade Management &amp; Oversight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
-  <script src="../../assets/js/auth.js"></script>
-  <script src="../../assets/js/protect.js"></script>
-  <script src="../admin/_auth-bootstrap.js"></script>
+
+<style>
+/* Rule: NO BOLD FONTS. Maximum weight 500 */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div, select, input {
+  font-weight: 400 !important;
+}
+.font-medium, .stat-val, .badge, th {
+  font-weight: 500 !important;
+}
+</style>
+
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="../admin/_auth-bootstrap.js"></script>
 </head>
 <body data-role="admin" data-portal="admin">
 <main class="main">
 <div id="heroBanner"></div>
+
+<!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+<div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+  <div class="flex items-center gap-2.5">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <i class="ph ph-list text-xl"></i>
+    </button>
+    <span class="text-sm font-medium text-forest-800">Grade Management</span>
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="bulkPublish()">Publish All</button>
+</div>
+
 <div class="page">
 
+  <!-- Overview Metrics Strip -->
   <div class="grid g-4 anim-up">
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">grade</span></div><span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>0.2 this term</span></div><div class="stat-val">3.42</div><div class="stat-label">School Average GPA</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">hourglass_top</span></div></div><div class="stat-val">18</div><div class="stat-label">Pending Approval</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">task_alt</span></div></div><div class="stat-val">246</div><div class="stat-label">Published / Approved</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">warning</span></div></div><div class="stat-val">12</div><div class="stat-label">Below Threshold</div></div>
+    <div class="stat">
+      <div class="stat-top">
+        <div class="stat-ico t-blue"><span class="material-symbols-outlined fill">grade</span></div>
+        <span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>Scale 4.0</span>
+      </div>
+      <div class="stat-val" id="ovAvgGpa">3.72</div>
+      <div class="stat-label">School Average GPA</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">hourglass_top</span></div></div>
+      <div class="stat-val" id="ovPending">0</div>
+      <div class="stat-label">Pending Approval</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">task_alt</span></div></div>
+      <div class="stat-val" id="ovPublished">104</div>
+      <div class="stat-label">Published / Approved</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">warning</span></div></div>
+      <div class="stat-val" id="ovBelowThreshold">0</div>
+      <div class="stat-label">Below Threshold (&lt;60%)</div>
+    </div>
   </div>
 
+  <!-- Grades Records Card -->
   <div class="card mt16 anim-up-2">
     <div class="card-head">
-      <div><h3>Grade Records</h3><div class="sub">6 records shown · Academic Year 2025–26</div></div>
+      <div>
+        <h3>Authoritative Grade Records</h3>
+        <div class="sub" id="tableSubInfo">Loading records from NGIS Academic database…</div>
+      </div>
       <div class="toolbar">
-        <input class="input" placeholder="Search grades…" style="width:200px">
-        <select class="select" style="width:auto"><option>All Campuses</option><option>Sen Sok</option><option>Depo</option><option>Bak Touk</option></select>
-        <select class="select" style="width:auto"><option>All Departments</option><option>English</option><option>Khmer</option><option>Chinese</option></select>
-        <select class="select" style="width:auto"><option>All Classes</option><option>11-A</option><option>9-B</option><option>7-C</option><option>12-A</option><option>10-B</option><option>11-B</option></select>
-        <select class="select" style="width:auto"><option>All Students</option><option>Sokha Chan</option><option>Dara Pich</option><option>Sreymom Ly</option><option>Vibol Heng</option><option>Chenda Sok</option><option>Pisey Ouk</option></select>
-        <button class="btn btn-ghost btn-sm" onclick="window.toast('Importing grades…','info')"><span class="material-symbols-outlined">upload</span>Import Grades</button>
-        <button class="btn btn-ghost btn-sm" onclick="window.toast('Exporting grade records…','info')"><span class="material-symbols-outlined">download</span>Export Grades</button>
-        <button class="btn btn-primary btn-sm" id="addGradeRowBtn"><span class="material-symbols-outlined">add</span>Add Grade Row</button>
+        <input class="input" id="searchGrades" placeholder="Search student or subject…" style="width:200px">
+        <select class="select" id="filterClass" style="width:auto">
+          <option value="all">All Classes</option>
+          <option value="cls-10a">Grade 10A</option>
+          <option value="cls-11b">Grade 11B</option>
+          <option value="cls-11c">Grade 11C</option>
+        </select>
+        <select class="select" id="filterWorkflow" style="width:auto">
+          <option value="all">All Statuses</option>
+          <option value="published">Published</option>
+          <option value="submitted">Pending Approval</option>
+          <option value="draft">Draft</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="bulkPublish()">
+          <span class="material-symbols-outlined text-[16px]">verified</span>
+          <span>Approve &amp; Publish All</span>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openOverrideModal('', '', '')">
+          <span class="material-symbols-outlined text-[16px]">edit_note</span>
+          <span>Authorized Override</span>
+        </button>
       </div>
     </div>
     <div class="tbl-wrap">
       <table class="tbl" id="gradesTable">
-        <thead><tr><th>Student</th><th>Class</th><th>Subject</th><th style="text-align:center">Quiz</th><th style="text-align:center">Midterm</th><th style="text-align:center">Final</th><th style="text-align:center">Grade</th><th>Status</th><th style="text-align:center">Average</th><th>Actions</th></tr></thead>
-        <tbody>
+        <thead>
           <tr>
-            <td><div class="flex center gap8"><span class="ava t-blue" style="width:32px;height:32px;border-radius:8px;font-size:12px">SC</span><div><span style="font-size:13px">Sokha Chan</span><div class="faint" style="font-size:11px">ID: STU-2241</div></div></div></td>
-            <td>11-A</td><td>Mathematics</td>
-            <td><input value="88"></td>
-            <td><input value="91"></td>
-            <td><input value="85"></td>
-            <td><span class="badge green">A</span></td>
-            <td><span class="badge amber">Pending</span></td>
-            <td>—</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Grade approved for Sokha Chan','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Grade record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
+            <th>Student</th>
+            <th>Class</th>
+            <th>Subject</th>
+            <th>Assessment Title</th>
+            <th class="text-center">Score / Max</th>
+            <th class="text-center">Percentage</th>
+            <th class="text-center">Letter</th>
+            <th class="text-center">Workflow Status</th>
+            <th class="text-right">Actions</th>
           </tr>
-          <tr>
-            <td><div class="flex center gap8"><span class="ava t-amber" style="width:32px;height:32px;border-radius:8px;font-size:12px">DP</span><div><span style="font-size:13px">Dara Pich</span><div class="faint" style="font-size:11px">ID: STU-2242</div></div></div></td>
-            <td>9-B</td><td>English Literature</td>
-            <td><input value="76"></td>
-            <td><input value="80"></td>
-            <td><input value="72"></td>
-            <td><span class="badge blue">B</span></td>
-            <td><span class="badge green">Approved</span></td>
-            <td>—</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Grade approved for Dara Pich','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Grade record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="flex center gap8"><span class="ava t-purple" style="width:32px;height:32px;border-radius:8px;font-size:12px">SL</span><div><span style="font-size:13px">Sreymom Ly</span><div class="faint" style="font-size:11px">ID: STU-2243</div></div></div></td>
-            <td>7-C</td><td>Khmer Literature</td>
-            <td><input value="95"></td>
-            <td><input value="97"></td>
-            <td><input value="93"></td>
-            <td><span class="badge green">A+</span></td>
-            <td><span class="badge amber">Pending</span></td>
-            <td>—</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Grade approved for Sreymom Ly','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Grade record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="flex center gap8"><span class="ava t-green" style="width:32px;height:32px;border-radius:8px;font-size:12px">VH</span><div><span style="font-size:13px">Vibol Heng</span><div class="faint" style="font-size:11px">ID: STU-2244</div></div></div></td>
-            <td>12-A</td><td>Physics</td>
-            <td><input value="65"></td>
-            <td><input value="70"></td>
-            <td><input value="68"></td>
-            <td><span class="badge amber">C</span></td>
-            <td><span class="badge green">Approved</span></td>
-            <td>—</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Grade approved for Vibol Heng','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Grade record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
-          <tr style="background:rgba(239,68,68,.04)">
-            <td><div class="flex center gap8"><span class="ava t-red" style="width:32px;height:32px;border-radius:8px;font-size:12px">CS</span><div><span style="font-size:13px">Chenda Sok</span><div class="faint" style="font-size:11px">ID: STU-2245</div></div></div></td>
-            <td>10-B</td><td>Chinese</td>
-            <td><input value="55"></td>
-            <td><input value="60"></td>
-            <td><input value="58"></td>
-            <td><span class="badge red">D</span></td>
-            <td><span class="badge amber">Pending</span></td>
-            <td>—</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Grade approved for Chenda Sok','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Grade record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><div class="flex center gap8"><span class="ava t-blue" style="width:32px;height:32px;border-radius:8px;font-size:12px">PO</span><div><span style="font-size:13px">Pisey Ouk</span><div class="faint" style="font-size:11px">ID: STU-2246</div></div></div></td>
-            <td>11-B</td><td>Biology</td>
-            <td><input value="90"></td>
-            <td><input value="88"></td>
-            <td><input value="92"></td>
-            <td><span class="badge green">A</span></td>
-            <td><span class="badge green">Approved</span></td>
-            <td>—</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Grade approved for Pisey Ouk','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Grade record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
+        </thead>
+        <tbody id="adminGradesTbody">
+          <tr><td colspan="9" class="py-6 text-center faint">Loading live grade records…</td></tr>
         </tbody>
       </table>
     </div>
     <div class="card-pad flex between center" style="border-top:1px solid var(--border)">
-      <span class="faint" style="font-size:13px">Showing 1–6 of 264 grade records</span>
+      <span class="faint" style="font-size:13px" id="recordCountText">Showing records</span>
       <div class="flex gap4">
-        <button class="btn btn-ghost btn-sm">Previous</button>
-        <button class="btn btn-sm btn-primary">1</button>
-        <button class="btn btn-ghost btn-sm">2</button>
-        <button class="btn btn-ghost btn-sm">Next</button>
+        <a href="admin-audit.html" class="btn btn-ghost btn-sm">
+          <span class="material-symbols-outlined text-[15px]">history</span>
+          <span>View Academic Audit Log</span>
+        </a>
       </div>
     </div>
   </div>
-</div><!-- /page -->
 
+</div>
 </main>
+
+<!-- Modal: Authorized Grade Override -->
+<div id="overrideModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 hidden" onclick="if(event.target===this) closeOverrideModal()">
+  <div class="bg-white rounded-3xl max-w-md w-full border border-surface-border shadow-xl p-6 space-y-4">
+    <div class="flex items-center justify-between border-b border-surface-border pb-3">
+      <h3 class="text-base font-medium text-forest-800">Authorized Grade Override</h3>
+      <button type="button" class="text-ink-muted hover:text-ink-main" onclick="closeOverrideModal()">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+    <form id="overrideForm" class="space-y-3 text-xs">
+      <div>
+        <label class="block text-ink-soft mb-1 font-medium">Grade Record ID</label>
+        <input type="text" id="overrideGradeId" class="input w-full font-mono" required placeholder="grd-...">
+      </div>
+      <div>
+        <label class="block text-ink-soft mb-1 font-medium">New Score</label>
+        <input type="number" step="0.5" id="overrideScore" class="input w-full" min="0" max="100" required placeholder="e.g. 95">
+      </div>
+      <div>
+        <label class="block text-ink-soft mb-1 font-medium">Mandatory Justification Reason (Audit Trail)</label>
+        <textarea id="overrideReason" class="input w-full" rows="3" required placeholder="State exact policy reason, committee resolution, or re-mark approval..."></textarea>
+      </div>
+      <div class="pt-3 flex justify-end gap-2 border-t border-surface-border">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeOverrideModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">Apply Override &amp; Log</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>window.PAGE={"role":"admin","active":"grades"};</script>
-<script>window.HERO_CONFIG = {
-  name: 'Mr. Heng Samnang',
-  id: 'Admin ID: ADM-2026-001',
-  grade: 'School Administrator',
-  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
-  title: 'Grade Management',
-  greeting: 'Review, approve, and manage grade records across every class.',
-  breadcrumbs: [{ label: 'Grades' }],
+<script>
+window.HERO_CONFIG = {
+  role: 'admin', active: 'grades',
+  name: 'Sok Panha Heng', id: 'ADM-2024-001', grade: 'Super Administrator',
+  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face',
+  avatarSm: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face',
   homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: 'admin-settings.html',
-  notifLink: 'admin-logs.html',
-  chatLink: '../shared/chat.html',
-  notifCount: 4,
-  ddRows: [
-    { icon: 'admin_panel_settings', text: 'School Administration' },
-    { icon: 'groups', text: '5,200 active users' },
-    { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Since: Jan 2018' },
-    { icon: 'verified', text: 'Principal Administrator' }
-  ]
-};</script>
+  profileLink: 'admin-student-profile.html', notifLink: 'admin-logs.html', chatLink: '../shared/chat.html',
+  notifCount: 0, title: 'Academic Grade Oversight', greeting: 'Review, approve, and audit school-wide grades.',
+  breadcrumbs: [{ label: 'Grade Management' }], ddRows: []
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+
 <script>
-(function () {
-  var addBtn = document.getElementById('addGradeRowBtn');
-  if (!addBtn) return;
-  addBtn.addEventListener('click', function () {
-    var tbody = document.querySelector('#gradesTable tbody');
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><div class="flex center gap8"><span class="ava t-accent" style="width:32px;height:32px;border-radius:8px;font-size:12px">NS</span><div><span style="font-size:13px">New Student</span><div class="faint" style="font-size:11px">ID: STU-NEW</div></div></div></td>' +
-      '<td>—</td><td>—</td>' +
-      '<td><input></td>' +
-      '<td><input></td>' +
-      '<td><input></td>' +
-      '<td><span class="badge">—</span></td>' +
-      '<td><span class="badge amber">Pending</span></td>' +
-      '<td>—</td>' +
-      '<td><div class="flex gap4 wrap">' +
-        '<button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast(\'Grade approved\',\'success\')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>' +
-        '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast(\'Grade record deleted\',\'error\')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
-      '</div></td>';
-    tbody.appendChild(tr);
-    window.toast('New grade row added', 'success');
+(function() {
+  'use strict';
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  var allGrades = [];
+
+  async function loadOversight() {
+    try {
+      var res = await NGISAuth.api('/api/academic/admin/oversight');
+      var d = res.data || {};
+      if (d.averageGpa != null) document.getElementById('ovAvgGpa').textContent = Number(d.averageGpa).toFixed(2);
+      if (d.pendingGrades != null) document.getElementById('ovPending').textContent = d.pendingGrades;
+      if (d.publishedGrades != null) document.getElementById('ovPublished').textContent = d.publishedGrades;
+      if (d.distribution && d.distribution.F != null) document.getElementById('ovBelowThreshold').textContent = d.distribution.F;
+    } catch(e) {
+      console.warn('Oversight fetch error:', e);
+    }
+  }
+
+  async function loadGrades() {
+    var tbody = document.getElementById('adminGradesTbody');
+    tbody.innerHTML = '<tr><td colspan="9" class="py-6 text-center faint">Loading live grade records…</td></tr>';
+
+    try {
+      var res = await NGISAuth.api('/api/academic/grades');
+      allGrades = res.data || [];
+      renderGrades();
+    } catch(e) {
+      tbody.innerHTML = '<tr><td colspan="9" class="py-6 text-center text-red-600">Failed loading grades: ' + esc(e.message) + '</td></tr>';
+    }
+  }
+
+  function renderGrades() {
+    var tbody = document.getElementById('adminGradesTbody');
+    var q = (document.getElementById('searchGrades').value || '').toLowerCase();
+    var filterCls = document.getElementById('filterClass').value;
+    var filterWf = document.getElementById('filterWorkflow').value;
+
+    var filtered = allGrades.filter(function(g) {
+      if (filterCls !== 'all' && g.class_id !== filterCls) return false;
+      if (filterWf !== 'all' && (g.workflow || 'draft') !== filterWf) return false;
+      if (q) {
+        var str = (g.student_name + ' ' + g.student_id + ' ' + g.subject_name + ' ' + g.assessment_title).toLowerCase();
+        if (str.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    document.getElementById('tableSubInfo').textContent = filtered.length + ' records shown · Academic Year 2025–26';
+    document.getElementById('recordCountText').textContent = 'Showing ' + filtered.length + ' of ' + allGrades.length + ' total records';
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="9" class="py-6 text-center faint">No grade records matching the filters.</td></tr>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function(g) {
+      var wfBadge = g.workflow === 'published' ?
+        '<span class="badge green">Published</span>' :
+        (g.workflow === 'submitted' ? '<span class="badge blue">Pending Approval</span>' : '<span class="badge amber">Draft</span>');
+
+      var scoreStr = g.score != null ? g.score + ' / ' + g.max_score : '—';
+      var pctStr = g.percentage != null ? g.percentage + '%' : '—';
+
+      html += '<tr>' +
+        '<td>' +
+          '<div class="font-medium text-ink-main">' + esc(g.student_name || g.student_id) + '</div>' +
+          '<div class="faint mono" style="font-size:11px">' + esc(g.student_id) + '</div>' +
+        '</td>' +
+        '<td>' + esc((g.class_id || '').replace('cls-','Grade ').toUpperCase()) + '</td>' +
+        '<td class="font-medium">' + esc(g.subject_name || g.subject_id) + '</td>' +
+        '<td class="faint">' + esc(g.assessment_title) + '</td>' +
+        '<td class="text-center font-mono">' + scoreStr + '</td>' +
+        '<td class="text-center faint">' + pctStr + '</td>' +
+        '<td class="text-center font-medium">' + esc(g.letter_grade || '—') + '</td>' +
+        '<td class="text-center">' + wfBadge + '</td>' +
+        '<td class="text-right whitespace-nowrap">' +
+          '<button class="btn btn-ghost btn-xs" onclick="openOverrideModal(\'' + esc(g.id) + '\', \'' + (g.score || '') + '\', \'' + esc(g.student_name) + '\')" title="Authorized Override">' +
+            '<span class="material-symbols-outlined text-[14px]">edit</span> Override' +
+          '</button>' +
+        '</td>' +
+      '</tr>';
+    });
+
+    tbody.innerHTML = html;
+  }
+
+  window.openOverrideModal = function(gradeId, score, studentName) {
+    document.getElementById('overrideGradeId').value = gradeId || '';
+    document.getElementById('overrideScore').value = score || '';
+    document.getElementById('overrideReason').value = '';
+    document.getElementById('overrideModal').classList.remove('hidden');
+  };
+
+  window.closeOverrideModal = function() {
+    document.getElementById('overrideModal').classList.add('hidden');
+  };
+
+  document.getElementById('overrideForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var gradeId = document.getElementById('overrideGradeId').value.trim();
+    var score = document.getElementById('overrideScore').value.trim();
+    var reason = document.getElementById('overrideReason').value.trim();
+
+    try {
+      await NGISAuth.api('/api/academic/admin/override-grade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gradeId: gradeId, score: parseFloat(score), reason: reason })
+      });
+      closeOverrideModal();
+      if (window.toast) window.toast('Grade override applied and logged in academic audit trail.', 'success');
+      loadGrades();
+      loadOversight();
+    } catch(err) {
+      if (window.toast) window.toast(err.message, 'error');
+    }
+  });
+
+  window.bulkPublish = async function() {
+    try {
+      await NGISAuth.api('/api/academic/admin/publish-grades', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: 'Bulk administrative approval' })
+      });
+      if (window.toast) window.toast('All submitted grades approved and published.', 'success');
+      loadGrades();
+      loadOversight();
+    } catch(err) {
+      if (window.toast) window.toast(err.message, 'error');
+    }
+  };
+
+  document.getElementById('searchGrades').addEventListener('input', renderGrades);
+  document.getElementById('filterClass').addEventListener('change', renderGrades);
+  document.getElementById('filterWorkflow').addEventListener('change', renderGrades);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    loadOversight();
+    loadGrades();
   });
 })();
 </script>
-  <script src="../../assets/js/academic-live.js"></script>
 </body>
 </html>

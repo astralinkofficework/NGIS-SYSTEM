@@ -103,7 +103,7 @@ insertGrade.run({ id: "grade-002", student_id: IDS.student, subject_id: "subj-ma
   { id: "notif-1", user_id: IDS.studentUser, type: "grade", title: "New grade posted", message: "Algebra Quiz 3: 92/100 (A)", link: "/pages/student/student-grades.html", read: 0 },
   { id: "notif-2", user_id: IDS.studentUser, type: "assignment", title: "Assignment due soon", message: "Mathematics Problem Set 4 is due on 10 September.", link: "/pages/student/student-assignments.html", read: 0 },
   { id: "notif-3", user_id: IDS.studentUser, type: "announcement", title: "School notice", message: "Welcome to the Connected NGIS Portal.", link: "/pages/student/student-announcements.html", read: 1 },
-  { id: "notif-4", user_id: IDS.parentUser, type: "info", title: "Parent meeting", message: "Parent-Teacher Meeting — Book Your Slot.", link: "/pages/parent/parent-announcements.html", read: 0 },
+  { id: "notif-4", user_id: IDS.parentUser, type: "info", title: "Parent meeting", message: "Parent-Teacher Meeting — Book Your Slot.", link: "/pages/shared/announcements.html", read: 0 },
 ].forEach(n => insertNotification.run(n));
 
 console.log("  ✓ Assignments, grades, attendance, announcements, notifications");

@@ -26,14 +26,13 @@
                 now.getDate() + ', ' + now.getFullYear();
 
   /* ── Role & Path Resolution ── */
-  var VALID_ROLES = ['admin', 'teacher', 'parent', 'student', 'principal', 'staff'];
+  var VALID_ROLES = ['admin', 'teacher', 'student', 'principal', 'staff'];
   var pathname = (window.location.pathname || '').toLowerCase();
   var params = new URLSearchParams(window.location.search || '');
   var queryRole = (params.get('portal') || params.get('role') || '').toLowerCase();
   var pathRole = '';
   if (pathname.indexOf('/pages/admin/') !== -1 || pathname.indexOf('/admin') !== -1) pathRole = 'admin';
   else if (pathname.indexOf('/pages/teacher/') !== -1 || pathname.indexOf('/teacher') !== -1) pathRole = 'teacher';
-  else if (pathname.indexOf('/pages/parent/') !== -1 || pathname.indexOf('/parent') !== -1) pathRole = 'parent';
   else if (pathname.indexOf('/pages/principal/') !== -1 || pathname.indexOf('/principal') !== -1) pathRole = 'principal';
   else if (pathname.indexOf('/pages/staff/') !== -1 || pathname.indexOf('/staff') !== -1) pathRole = 'staff';
   else if (pathname.indexOf('/pages/student/') !== -1 || pathname.indexOf('/student') !== -1) pathRole = 'student';
@@ -97,21 +96,6 @@
         { icon: 'school', text: 'Faculty of Mathematics' },
         { icon: 'schedule', text: 'Term 2 • AY 2025–26' },
         { icon: 'class', text: 'Assigned: 5 Classes' }
-      ]
-    },
-    parent: {
-      brandSub: 'PARENT PORTAL',
-      name: 'Chan Dara Vuth',
-      roleMeta: 'Parent / Guardian',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&crop=face',
-      id: 'Parent ID: PAR-2024-118',
-      calendar: 'parent-calendar.html',
-      profile: 'parent-profile.html',
-      home: 'parent.html',
-      ddRows: [
-        { icon: 'family_restroom', text: 'Child: Nrinphouneta Hok (Grade 11-A)' },
-        { icon: 'verified', text: 'Primary Guardian' },
-        { icon: 'payments', text: 'Tuition: Current' }
       ]
     },
     principal: {
@@ -220,7 +204,6 @@
     filename === 'student.html' ||
     filename === 'teacher.html' ||
     filename === 'admin.html' ||
-    filename === 'parent.html' ||
     filename === 'principal.html' ||
     filename === 'staff.html' ||
     filename === 'index.html' ||
@@ -238,7 +221,7 @@
       '<!-- ── Tier 1: Main Header Bar ── -->' +
       '<div class="hero-topbar">' +
 
-        '<button type="button" class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
+        '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
           '<span class="mi">menu</span>' +
         '</button>' +
 
@@ -326,7 +309,6 @@
         '<div class="htb-dd-demo-grid">' +
           '<a href="' + resolveRoleUrl('student', 'student.html') + '" class="htb-dd-demo-item' + (activeRole==='student'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'student\')">Student</a>' +
           '<a href="' + resolveRoleUrl('teacher', 'teacher.html') + '" class="htb-dd-demo-item' + (activeRole==='teacher'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'teacher\')">Teacher</a>' +
-          '<a href="' + resolveRoleUrl('parent', 'parent.html') + '" class="htb-dd-demo-item' + (activeRole==='parent'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'parent\')">Parent</a>' +
           '<a href="' + resolveRoleUrl('admin', 'admin.html') + '" class="htb-dd-demo-item' + (activeRole==='admin'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'admin\')">Admin</a>' +
           '<a href="' + resolveRoleUrl('principal', 'principal.html') + '" class="htb-dd-demo-item' + (activeRole==='principal'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'principal\')">Principal</a>' +
           '<a href="' + resolveRoleUrl('staff', 'staff.html') + '" class="htb-dd-demo-item' + (activeRole==='staff'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'staff\')">Staff</a>' +
@@ -636,7 +618,6 @@
       { type: 'Student',    name: 'Heng Piseth',            sub: 'STU-2243 \xb7 12-A',       icon: 'school',              href: 'admin-students.html' },
       { type: 'Teacher',    name: 'Dr. Sarah Jenkins',      sub: 'English Department',       icon: 'co_present',          href: 'admin-teachers.html' },
       { type: 'Teacher',    name: 'Dr. Pov Chanthy',        sub: 'Chinese Department',        icon: 'co_present',          href: 'admin-teachers.html' },
-      { type: 'Parent',     name: 'Dara Mony',              sub: 'PAR-0891',                  icon: 'family_restroom',     href: 'admin-parents.html' },
       { type: 'Admin',      name: 'Ms. Sok Kanha',          sub: 'Campus Admin \xb7 Sen Sok', icon: 'admin_panel_settings',href: 'admin-admins.html' },
       { type: 'Principal',  name: 'Dr. Sok Chenda',         sub: 'Sen Sok Campus',            icon: 'military_tech',       href: 'admin-principals.html' },
       { type: 'Department', name: 'English Department',     sub: '42 teachers',               icon: 'menu_book',           href: 'admin-departments.html' },

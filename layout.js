@@ -12,7 +12,7 @@
      Each role has ordered GROUPS; every group has a title + icon and a
      list of links. Dividers + section labels are rendered between groups.
 
-     Student & Parent portals are DEPARTMENT-CENTRIC: the learning modules
+     Student portal is DEPARTMENT-CENTRIC: the learning modules
      (Attendance, Assignments, Report Cards, Exams, Timetable, Lessons) are
      intentionally NOT top-level items — they live inside each Department.
      Teacher & Admin keep their operator tools, grouped for clarity.
@@ -21,34 +21,59 @@
     admin: {
       brand: "Admin", meta: "New Gateway International School",
       groups: [
-        { label:"Main", icon:"home", links:[
+        { id:"main", links:[
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/admin/admin.html" },
         ]},
-        { id:"users", label:"User Management", icon:"group", collapsible:true, links:[
-          { id:"students",   label:"Students",   icon:"school",             href:"pages/admin/admin-users.html?role=students" },
+        { id:"system", label:"ប្រព័ន្ធ", icon:"settings", collapsible:true, links:[
+          { id:"school-info", label:"ព័ត៌មានសាលារៀន", href:"pages/admin/admin-settings.html?tab=school" },
+          { id:"academic-structure", label:"កំណត់រចនាសម្ព័ន្ធឆ្នាំសិក្សា", collapsible:true, children:[
+            { id:"academic-year", label:"ឆ្នាំសិក្សា", href:"pages/admin/admin-settings.html?tab=academic" },
+            { id:"academic-weeks", label:"សប្តាហ៍", href:"pages/admin/admin-timetables.html?tab=weeks" },
+            { id:"exam-structure", label:"កំណត់រចនាសម្ព័ន្ធការប្រឡង", href:"pages/admin/admin-exams.html" },
+            { id:"score-locking", label:"ការកំណត់រចនាសម្ព័ន្ធចាក់សោពិន្ទុ", href:"pages/admin/admin-grades.html" },
+            { id:"set-curriculum", label:"កំណត់កម្មវិធីសិក្សា", href:"pages/admin/admin-departments.html" },
+            { id:"curriculum-design", label:"ការរចនាកម្មវិធីសិក្សា", href:"pages/admin/admin-lessons.html" },
+            { id:"create-classes", label:"បង្កើតថ្នាក់រៀន", href:"pages/admin/admin-classes.html" },
+            { id:"student-rollforward", label:"រៀបចំសិស្សឆ្នាំសិក្សាចាស់ទៅឆ្នាំសិក្សាថ្មី", href:"pages/admin/admin-users.html?role=students&action=rollforward" },
+            { id:"assign-teachers", label:"ចាត់តាំងគ្រូបច្ចេកទេស និងគ្រូត្រួតពិនិត្យ", href:"pages/admin/admin-users.html?role=teachers&tab=assignment" },
+          ]},
+          { id:"account-management", label:"ការគ្រប់គ្រងគណនី", collapsible:true, children:[
+            { id:"teacher-group-roles", label:"ការកំណត់តួនាទីលើក្រុមគណនីគ្រូ", href:"pages/admin/admin-settings.html?tab=roles" },
+            { id:"teacher-accounts", label:"គណនីគ្រូ", href:"pages/admin/admin-users.html?role=teachers" },
+            { id:"student-accounts", label:"គណនីសិស្ស", href:"pages/admin/admin-users.html?role=students" },
+            { id:"guardian-accounts", label:"គណនីអាណាព្យាបាល", href:"pages/admin/admin-users.html?role=parents" },
+          ]},
+          { id:"system-timetable", label:"កាលវិភាគ", href:"pages/admin/admin-timetables.html" },
+          { id:"general-settings", label:"ការកំណត់ទូទៅ", href:"pages/admin/admin-settings.html" },
+        ]},
+        { id:"users", label:"ការគ្រប់គ្រងរបស់គ្រូបង្រៀន", icon:"co_present", collapsible:true, links:[
           { id:"teachers",   label:"Teachers",   icon:"co_present",         href:"pages/admin/admin-users.html?role=teachers" },
-          { id:"parents",    label:"Parents",    icon:"family_restroom",    href:"pages/admin/admin-users.html?role=parents" },
           { id:"admins",     label:"Admins",     icon:"admin_panel_settings", href:"pages/admin/admin-users.html?role=admins" },
           { id:"principals", label:"Principals", icon:"military_tech",      href:"pages/admin/admin-users.html?role=principals" },
         ]},
-        { id:"academic", label:"Academic", icon:"apartment", collapsible:true, links:[
+        { id:"records", label:"ការគ្រប់គ្រងទិន្នន័យសិស្ស", icon:"school", collapsible:true, links:[
+          { id:"students",   label:"Students",   icon:"school",             href:"pages/admin/admin-users.html?role=students" },
+          { id:"parents",    label:"Parents",    icon:"family_restroom",    href:"pages/admin/admin-users.html?role=parents" },
+          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
+          { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
+        ]},
+        { id:"academic", label:"ការបង្រៀន និងការវាយតម្លៃ", icon:"co_present", collapsible:true, links:[
           { id:"departments", label:"Departments", icon:"apartment",          href:"pages/admin/admin-departments.html" },
           { id:"campuses",    label:"Campuses",    icon:"location_city",      href:"pages/admin/admin-campuses.html" },
           { id:"classes",     label:"Classes",     icon:"school",             href:"pages/admin/admin-classes.html" },
           { id:"timetables",  label:"Timetable",   icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
-        ]},
-        { id:"learning", label:"Learning", icon:"menu_book", collapsible:true, links:[
           { id:"lessons",     label:"Lessons",     icon:"menu_book",  href:"pages/admin/admin-lessons.html" },
           { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/admin/admin-assignments.html" },
+        ]},
+        { id:"learning", label:"ការប្រឡង", icon:"edit_note", collapsible:true, links:[
           { id:"exams",       label:"Exams",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
           { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
         ]},
-        { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
-          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
-          { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
+        { id:"reports-group", label:"របាយការណ៍ និងស្ថិតិ", icon:"query_stats", collapsible:true, links:[
           { id:"reports",     label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
+          { id:"logs",        label:"Audit Logs",         icon:"history",     href:"pages/admin/admin-logs.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
+        { id:"messaging", label:"ប្រអប់សារ", icon:"mail", links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"4" },
@@ -59,18 +84,17 @@
           { id:"archived",            label:"Archived", icon:"archive", href:"pages/messaging/archived.html" },
           { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
         ]},
-        { id:"comms", label:"Communication Tools", icon:"campaign", collapsible:true, links:[
-          { id:"news",           label:"News CMS",       icon:"newspaper", href:"pages/admin/admin-news.html" },
-          { id:"notifications",  label:"Notifications", icon:"notifications", href:"pages/admin/admin-logs.html" },
-        ]},
-        { id:"administration", label:"Administration", icon:"admin_panel_settings", collapsible:true, links:[
-          { id:"logs",        label:"Audit Logs",         icon:"history",     href:"pages/admin/admin-logs.html" },
-          { id:"messaging-admin", label:"Messaging Administration", icon:"forum", href:"pages/messaging/messaging-admin.html" },
-          { id:"telegram-config", label:"Telegram Configuration", icon:"smart_toy", href:"pages/messaging/telegram-config.html" },
-          { id:"messaging-audit", label:"Messaging Audit Logs", icon:"receipt_long", href:"pages/messaging/audit-logs.html" },
-          { id:"roles",       label:"Roles & Permissions", icon:"shield_person", href:"pages/admin/admin-settings.html?tab=roles" },
+        { id:"administration", label:"កន្លែងផ្ទុកទិន្នន័យមេ", icon:"travel_explore", collapsible:true, links:[
           { id:"settings",    label:"System Settings",    icon:"settings",    href:"pages/admin/admin-settings.html" },
+          { id:"roles",       label:"Roles & Permissions", icon:"shield_person", href:"pages/admin/admin-settings.html?tab=roles" },
           { id:"backup",      label:"Backup & Restore",   icon:"backup",      href:"pages/admin/admin-settings.html?tab=backup" },
+        ]},
+        { id:"moodle", label:"Moodle Extension", icon:"extension", collapsible:true, links:[
+          { id:"moodle-courses", label:"Moodle Courses", icon:"school", href:"pages/admin/admin-lessons.html?src=moodle" },
+          { id:"moodle-sync", label:"Moodle Sync", icon:"sync", href:"pages/admin/admin-settings.html?tab=moodle" },
+        ]},
+        { id:"elearning", label:"E-Learning", icon:"cast_for_education", links:[
+          { id:"elearning-portal", label:"E-Learning Platform", icon:"cast_for_education", href:"pages/admin/admin-lessons.html" },
         ]},
         { id:"account", label:"Account", icon:"person", collapsible:true, links:[
           { id:"profile",     label:"My Profile", icon:"person",  href:"pages/admin/admin-settings.html" },
@@ -82,32 +106,26 @@
     teacher: {
       brand: "Teacher", meta: "Academic Year 2025–26",
       groups: [
-        { label:"Main", icon:"home", links:[
-          { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/teacher/teacher.html" },
+        { links:[
+          { id:"dashboard", label:"Dashboard", icon:"home", href:"pages/teacher/teacher.html", chevron:false },
+          { id:"classes",   label:"My Class",  icon:"school", href:"pages/teacher/teacher-classes.html" },
         ]},
-        { label:"Teaching & Classes", icon:"school", links:[
-          { id:"classes",     label:"My Classes",          icon:"school",             href:"pages/teacher/teacher-classes.html" },
-          { id:"attendance",  label:"Attendance",          icon:"how_to_reg",         href:"pages/teacher/teacher-attendance.html" },
-          { id:"assignments", label:"Assignments",         icon:"assignment",         href:"pages/teacher/teacher-assignments.html" },
-          { id:"lessons",     label:"Lessons & Materials", icon:"menu_book",          href:"pages/teacher/teacher-lessons.html" },
-          { id:"grades",       label:"Grades",              icon:"grade",              href:"pages/teacher/teacher-grades.html" },
-          { id:"calendar",    label:"Timetable",           icon:"calendar_view_week", href:"pages/teacher/teacher-calendar.html" },
-          { id:"documents",   label:"Course Materials",    icon:"description",        href:"pages/teacher/teacher-documents.html" },
-          { id:"departments", label:"Departments",         icon:"apartment",          href:"pages/teacher/teacher-departments.html" },
+        { id:"teaching", label:"TEACHING & LEARNING", links:[
+          { id:"lessons",     label:"Lessons & Materials", icon:"menu_book", href:"pages/teacher/teacher-lessons.html" },
+          { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/teacher/teacher-assignments.html" },
+          { id:"submissions", label:"Student Submissions", icon:"description", href:"pages/teacher/teacher-grades.html" },
+          { id:"departments", label:"Class Resources", icon:"folder", href:"pages/teacher/teacher-departments.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
-          { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
-          { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
-          { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"3" },
-          { id:"department-channels", label:"Department Channels", icon:"apartment", href:"pages/messaging/department-channels.html" },
-          { id:"campus-announcements", label:"Campus Announcements", icon:"campaign", href:"pages/messaging/campus-announcements.html" },
-          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
-          { id:"message-requests",    label:"Message Requests", icon:"mail", href:"pages/messaging/message-requests.html", badge:"2" },
-          { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
+        { id:"communication", label:"COMMUNICATION", links:[
+          { id:"announcements", label:"Class Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=teacher" },
+          { id:"class-chats",   label:"Class Chat", icon:"chat", href:"pages/messaging/class-chats.html" },
+          { id:"chat",          label:"Student Feedback", icon:"person_search", href:"pages/shared/chat.html?portal=teacher" },
         ]},
-        { label:"Account", icon:"person", links:[
-          { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/teacher/teacher-notifications.html", badge:"3" },
-          { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/teacher/teacher-profile.html" },
+        { id:"academic-tools", label:"ACADEMIC TOOLS", links:[
+          { id:"gradebook", label:"Gradebook", icon:"grade", href:"pages/teacher/teacher-gradebook.html" },
+          { id:"calendar", label:"Timetable", icon:"calendar_month", href:"pages/teacher/teacher-calendar.html" },
+          { id:"reports",  label:"Class Reports", icon:"analytics", href:"pages/teacher/teacher-grades.html?tab=reports" },
+          { id:"profile",  label:"Class Settings", icon:"settings", href:"pages/teacher/teacher-profile.html" },
         ]},
       ],
     },
@@ -135,34 +153,6 @@
         { label:"Account", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/student/student-notifications.html", badge:"5" },
           { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/student/student-profile.html" },
-        ]},
-      ],
-    },
-    parent: {
-      brand: "Parent", meta: "Guardian Account · 2025–26",
-      groups: [
-        { label:"Main", icon:"home", links:[
-          { id:"dashboard",   label:"Dashboard",        icon:"dashboard",        href:"pages/parent/parent.html" },
-          { id:"children",    label:"My Children",      icon:"family_restroom",  href:"pages/parent/parent-children.html" },
-        ]},
-        { label:"Child Progress", icon:"school", links:[
-          { id:"grades",      label:"Grades & Reports", icon:"grade",            href:"pages/parent/parent-grades.html" },
-          { id:"attendance",  label:"Attendance",       icon:"how_to_reg",        href:"pages/parent/parent-attendance.html" },
-          { id:"assignments", label:"Homework & Tasks", icon:"assignment",       href:"pages/parent/parent-assignments.html" },
-          { id:"calendar",    label:"Schedule",         icon:"calendar_month",    href:"pages/parent/parent-calendar.html" },
-          { id:"fees",        label:"Fees & Invoices",  icon:"payments",          href:"pages/parent/parent-fees.html" },
-          { id:"documents",   label:"Documents",        icon:"folder",            href:"pages/parent/parent-documents.html" },
-          { id:"departments", label:"Departments",      icon:"apartment",         href:"pages/shared/departments.html" },
-          { id:"services",    label:"Student Services",  icon:"assignment",        href:"pages/parent/parent-services.html" },
-        ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
-          { id:"chat",          label:"Direct Messages",      icon:"mail",       href:"pages/shared/chat.html", badge:"1" },
-          { id:"announcements", label:"School Announcements",  icon:"newspaper",  href:"pages/shared/announcements.html", badge:"1" },
-          { id:"group-chat",    label:"Group Chats",           icon:"groups",     href:"pages/shared/group-chat.html", badge:"1" },
-        ]},
-        { label:"Account", icon:"person", links:[
-          { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/parent/parent-notifications.html", badge:"2" },
-          { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/parent/parent-profile.html" },
         ]},
       ],
     },
@@ -236,7 +226,7 @@
     ],
     teacher: [
       { id:"dashboard",  label:"Home",       icon:"home",          href:"pages/teacher/teacher.html" },
-      { id:"classes",    label:"Classes",    icon:"school",        href:"pages/teacher/teacher-classes.html" },
+      { id:"classes",    label:"My Class",   icon:"school",        href:"pages/teacher/teacher-classes.html" },
       { id:"notifications",label:"Alerts",   icon:"notifications", href:"pages/teacher/teacher-notifications.html", badge:"3" },
       { id:"profile",    label:"Profile",    icon:"person",        href:"pages/teacher/teacher-profile.html" },
     ],
@@ -245,12 +235,6 @@
       { id:"departments",  label:"Department", icon:"apartment", href:"pages/shared/departments.html" },
       { id:"announcements",label:"Alerts",     icon:"campaign",  href:"pages/shared/announcements.html", badge:"3" },
       { id:"profile",      label:"Profile",    icon:"person",    href:"pages/student/student-profile.html" },
-    ],
-    parent: [
-      { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/parent/parent.html" },
-      { id:"children",   label:"Children",   icon:"family_restroom",href:"pages/parent/parent-children.html" },
-      { id:"services",   label:"Services",   icon:"assignment",     href:"pages/parent/parent-services.html" },
-      { id:"notifications",label:"Alerts",   icon:"notifications",  href:"pages/parent/parent-notifications.html", badge:"2" },
     ],
     principal: [
       { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/principal/principal.html" },
@@ -271,16 +255,14 @@
     admin:     { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"4" },
     teacher:   { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
     student:   { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
-    parent:    { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"1" },
     principal: { label:"Forum",      href:"pages/shared/group-chat.html", badge:"3" },
     staff:     { label:"Chat",       href:"pages/shared/chat.html", badge:"1" },
   };
 
   const DEFAULT_USER = {
     admin:     { name:"Sok Panha Heng",  role:"Super Administrator",  initials:"SH" },
-    teacher:   { name:"Dr. Sarah Jenkins", role:"Mathematics Dept.",  initials:"SJ" },
+    teacher:   { name:"Oudom Seila", role:"Teacher", initials:"OS" },
     student:   { name:"Nrinphouneta Hok", role:"Student · Grade 11-A", initials:"NH" },
-    parent:    { name:"Chan Dara Vuth",  role:"Parent / Guardian",    initials:"CV" },
     principal: { name:"Dr. Ly Bunheng",  role:"Campus Principal",     initials:"LB" },
     staff:     { name:"Ms. Sreymom Lim", role:"Operations Coordinator", initials:"SL" },
   };
@@ -289,7 +271,6 @@
     admin: "pages/admin/admin.html",
     teacher: "pages/teacher/teacher.html",
     student: "pages/student/student.html",
-    parent: "pages/parent/parent.html",
     principal: "pages/principal/principal.html",
     staff: "pages/staff/staff.html"
   };
@@ -319,12 +300,12 @@
     // Priority 2: Explicit URL query param
     const params = new URLSearchParams(window.location.search || "");
     const queryRole = (params.get("portal") || params.get("role") || "").toLowerCase();
-    if (["admin", "teacher", "student", "parent", "staff", "principal"].includes(queryRole)) {
+    if (["admin", "teacher", "student", "staff", "principal"].includes(queryRole)) {
       try { localStorage.setItem("ngis_active_portal", queryRole); } catch (e) {}
       return queryRole;
     }
 
-    // Priority 3: Visiting student directory — respect active staff/teacher/admin/parent/principal session
+    // Priority 3: Visiting student directory — respect active staff/teacher/admin/principal session
     if (pathRole === "student") {
       if (sessionRole && sessionRole !== "student") {
         return sessionRole;
@@ -335,7 +316,7 @@
 
     // Priority 4: Stored portal preference
     const storedPortal = localStorage.getItem("ngis_active_portal");
-    if (storedPortal && ["admin", "teacher", "student", "parent", "staff", "principal"].includes(storedPortal)) {
+    if (storedPortal && ["admin", "teacher", "student", "staff", "principal"].includes(storedPortal)) {
       if (sessionRole && storedPortal === "student" && sessionRole !== "student") {
         return sessionRole;
       }
@@ -371,89 +352,146 @@
     }
   }
 
-  function buildSidebar(cfg, active) {
+  function buildSidebar(cfg, active, user) {
     const role = (window.PAGE && window.PAGE.role) || "admin";
     const homeHref = PORTAL_HOME[role] ? `${_P}${PORTAL_HOME[role]}` : `${_P}index.html`;
+    const currentUser = user || (window.PAGE && window.PAGE.user) || DEFAULT_USER[role] || DEFAULT_USER.teacher;
+
+    function linkHasId(item, id) {
+      if (!item) return false;
+      if (item.id === id) return true;
+      if (item.children && item.children.some(c => c.id === id)) return true;
+      return false;
+    }
 
     // Auto-detect active link if not set or doesn't match any link in this portal
     let effectiveActive = active;
-    if (!effectiveActive || !cfg.groups.some(g => g.links.some(l => l.id === effectiveActive))) {
+    if (!effectiveActive || !cfg.groups.some(g => g.links.some(l => linkHasId(l, effectiveActive)))) {
       const curFile = (window.location.pathname || '').replace(/\\/g, '/').split('/').pop().toLowerCase();
       for (const g of cfg.groups) {
         for (const l of g.links) {
-          const linkFile = (l.href || '').split('?')[0].split('/').pop().toLowerCase();
-          if (linkFile && linkFile === curFile) {
-            effectiveActive = l.id;
-            break;
+          if (l.children && l.children.length > 0) {
+            for (const sub of l.children) {
+              const linkFile = (sub.href || '').split('?')[0].split('/').pop().toLowerCase();
+              if (linkFile && linkFile === curFile) {
+                effectiveActive = sub.id;
+                break;
+              }
+            }
+          } else {
+            const linkFile = (l.href || '').split('?')[0].split('/').pop().toLowerCase();
+            if (linkFile && linkFile === curFile) {
+              effectiveActive = l.id;
+              break;
+            }
           }
+          if (effectiveActive && cfg.groups.some(grp => grp.links.some(lnk => linkHasId(lnk, effectiveActive)))) break;
         }
-        if (effectiveActive && cfg.groups.some(g => g.links.some(l => l.id === effectiveActive))) break;
       }
     }
 
     const groups = cfg.groups.map((g, gi) => {
-      const links = g.links.map(l =>
-        `<a class="nav-link ${l.id === effectiveActive ? "active" : ""}" href="${_P}${l.href}"${l.id===effectiveActive?' aria-current="page"':''} data-id="${l.id}">
-           <div class="nav-link-icon-bubble">
-             <span class="material-symbols-outlined">${l.icon}</span>
-           </div>
+      const links = g.links.map(l => {
+        if (l.children && l.children.length > 0) {
+          const sublinks = l.children.map(sub =>
+            `<a class="nav-link nav-sub-link ${sub.id === effectiveActive ? "active" : ""}" href="${_P}${sub.href}"${sub.id===effectiveActive?' aria-current="page"':''} data-id="${sub.id}">
+               ${sub.icon ? `<span class="material-symbols-outlined nav-link-icon">${sub.icon}</span>` : ""}
+               <span class="nav-link-label">${esc(sub.label)}</span>
+               ${sub.badge ? `<span class="pill">${sub.badge}</span>` : ""}
+               ${sub.chevron !== false ? `<span class="material-symbols-outlined nav-link-chevron">chevron_right</span>` : ""}
+             </a>`
+          ).join("");
+          const isSubActive = l.children.some(sub => sub.id === effectiveActive);
+          return `
+            <div class="nav-subgroup${l.collapsible ? ' collapsible' : ''}${isSubActive ? ' expanded' : ''}">
+              <button type="button" class="nav-subgroup-label" aria-expanded="${isSubActive ? 'true' : 'false'}" title="${esc(l.label)}">
+                <span>${esc(l.label)}</span>
+                <span class="material-symbols-outlined ngl-subchevron">expand_more</span>
+              </button>
+              <div class="nav-subgroup-links">
+                <div>${sublinks}</div>
+              </div>
+            </div>`;
+        }
+        return `<a class="nav-link ${l.icon ? '' : 'no-icon'} ${l.id === effectiveActive ? "active" : ""}" href="${_P}${l.href}"${l.id===effectiveActive?' aria-current="page"':''} data-id="${l.id}">
+           ${l.icon ? `<span class="material-symbols-outlined nav-link-icon">${l.icon}</span>` : ""}
            <span class="nav-link-label">${esc(l.label)}</span>
            ${l.badge ? `<span class="pill">${l.badge}</span>` : ""}
-         </a>`
-      ).join("");
-      const groupActive = g.id === effectiveActive || g.links.some(l => l.id === effectiveActive);
-      const labelInner = `${g.icon ? `<span class="material-symbols-outlined nav-group-icon">${g.icon}</span>` : ""}<span>${esc(g.label)}</span>${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
+           ${l.chevron !== false && l.id !== 'dashboard' ? `<span class="material-symbols-outlined nav-link-chevron">chevron_right</span>` : ""}
+         </a>`;
+      }).join("");
+      const groupActive = g.id === effectiveActive || g.links.some(l => linkHasId(l, effectiveActive));
+      const labelInner = `
+        ${g.icon ? `<span class="material-symbols-outlined nav-group-icon">${g.icon}</span>` : ""}
+        <span class="nav-group-label-text">${esc(g.label || "")}</span>
+        <span class="nav-group-label-rule"></span>
+        ${g.collapsible ? `<span class="material-symbols-outlined ngl-chevron">expand_more</span>` : ""}`;
 
-      let label, linksHtml;
+      let label = "", linksHtml;
       if (g.collapsible) {
         label = `<button type="button" class="nav-group-label" aria-expanded="false" title="${esc(g.label)}">${labelInner}</button>`;
         linksHtml = `<div class="nav-group-links"><div>${links}</div></div>`;
       } else if (g.href) {
         label = `<a class="nav-group-label nav-group-label-link${groupActive ? " active" : ""}" href="${_P}${g.href}">${labelInner}</a>`;
         linksHtml = links;
-      } else {
+      } else if (g.label) {
         label = `<div class="nav-group-label">${labelInner}</div>`;
+        linksHtml = links;
+      } else {
+        label = "";
         linksHtml = links;
       }
       return `
         <div class="nav-group${g.collapsible ? " collapsible" : ""}"${g.id ? ` data-group-id="${g.id}"` : ""}>
           ${label}
           ${linksHtml}
-        </div>
-        ${gi < cfg.groups.length - 1 ? `<div class="nav-divider" role="separator"></div>` : ""}`;
+        </div>`;
     }).join("");
 
     return el(`
       <aside class="sidebar custom-scrollbar" id="sidebar" role="navigation" aria-label="Main navigation" data-purpose="primary-sidebar">
         <header class="side-brand">
           <a class="side-brand-info" href="${homeHref}" aria-label="New Gateway International School">
-            <img class="side-brand-logo-img" src="${_P}assets/images/logo.png" alt="New Gateway International School" onerror="this.onerror=null;this.src='${_P}pages/student/LOGO%20NGIS%20(2).png'">
+            <img class="side-brand-crest" src="${_P}assets/images/ngis-seal.svg" alt="NGIS Crest" onerror="this.onerror=null;this.src='${_P}pages/student/LOGO%20NGIS%20(2).png'">
+            <div class="side-brand-titles">
+              <span class="side-brand-name">NGIS</span>
+              <span class="side-brand-school">New Gateway International School</span>
+            </div>
           </a>
-          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Toggle sidebar" aria-label="Toggle sidebar" type="button" data-purpose="sidebar-collapse-button">
-            <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-              <path d="M9 4v16"></path>
-              <path d="M15 10l-2 2 2 2"></path>
+          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
+            <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <line x1="6" y1="5" x2="6" y2="19"></line>
+              <polyline points="16 7 10 12 16 17"></polyline>
             </svg>
           </button>
         </header>
+
+        <div class="side-user-card" id="sideUserCard" data-purpose="user-profile-card">
+          <div class="side-user-avatar">
+            <span class="material-symbols-outlined side-user-icon">person</span>
+            <span class="side-user-status" title="Online"></span>
+          </div>
+          <div class="side-user-info">
+            <div class="side-user-name">${esc(currentUser.name)}</div>
+            <div class="side-user-role">${esc(currentUser.role)}</div>
+          </div>
+          <span class="material-symbols-outlined side-user-caret">expand_more</span>
+        </div>
+
         <nav class="side-nav custom-scrollbar" aria-label="Main Navigation">
           ${groups}
         </nav>
+
         <footer class="side-foot">
-          <a class="nav-link side-foot-help" href="${_P}index.html">
-            <div class="nav-link-icon-bubble">
-              <span class="material-symbols-outlined">help_outline</span>
-            </div>
+          <a class="nav-link side-foot-help" href="${_P}pages/teacher/teacher-profile.html?tab=help">
+            <span class="material-symbols-outlined nav-link-icon">help_outline</span>
             <span class="nav-link-label">Help &amp; Support</span>
+            <span class="material-symbols-outlined nav-link-chevron">chevron_right</span>
           </a>
           <a class="nav-link nav-link-danger side-foot-signout" href="${_P}index.html" data-purpose="sign-out-button">
-            <div class="nav-link-icon-bubble">
-              <svg class="side-foot-svg" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </div>
+            <span class="material-symbols-outlined nav-link-icon">logout</span>
             <span class="nav-link-label">Sign Out</span>
+            <span class="material-symbols-outlined nav-link-chevron">chevron_right</span>
           </a>
         </footer>
       </aside>`);
@@ -502,17 +540,10 @@
     ],
     teacher: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/teacher/teacher.html" },
-      { id: "classes", label: "Classes", icon: "ph-bold ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
+      { id: "classes", label: "My Class", icon: "ph-bold ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
       { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/chat.html?portal=teacher", isCenter: true },
       { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/teacher/teacher-notifications.html", hasDot: true },
       { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/teacher/teacher-profile.html" },
-    ],
-    parent: [
-      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/parent/parent.html" },
-      { id: "children", label: "Children", icon: "ph-bold ph-users-three", href: "pages/parent/parent-children.html" },
-      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/chat.html?portal=parent", isCenter: true },
-      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/parent/parent-notifications.html", hasDot: true },
-      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/parent/parent-profile.html" },
     ],
     admin: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/admin/admin.html" },
@@ -547,7 +578,6 @@
       return (role === 'admin' || role === 'principal') ? 'settings' : 'profile';
     }
     if (role === 'teacher' && (file.indexOf('class') !== -1 || active === 'classes')) return 'classes';
-    if (role === 'parent' && (file.indexOf('child') !== -1 || active === 'children')) return 'children';
     if (role === 'admin' && (file.indexOf('user') !== -1 || active === 'users' || active === 'admins' || active === 'teachers' || active === 'students' || active === 'parents')) return 'users';
     if (role === 'principal' && (file.indexOf('report') !== -1 || active === 'reports')) return 'reports';
     if (role === 'staff' && (file.indexOf('service') !== -1 || active === 'services')) return 'services';
@@ -661,7 +691,7 @@
       return;
     }
 
-    // Default Melt/Liquid Dock (Admin, Teacher, Parent)
+    // Default Melt/Liquid Dock (Admin, Teacher)
     const slider = navEl.querySelector("#bnMeltSlider");
     const inner = navEl.querySelector(".bottomnav-inner");
     const items = Array.from(navEl.querySelectorAll(".bn-item"));
@@ -754,7 +784,7 @@
     const shell = el(`<div class="shell"></div>`);
     main.parentNode.insertBefore(shell, main);
 
-    const sidebar = buildSidebar(cfg, active);
+    const sidebar = buildSidebar(cfg, active, user);
     const scrim   = el(`<div class="scrim" id="scrim"></div>`);
     /* Sidebar is position:fixed — mount it on <body> so the mobile drawer stays
        reachable on pages that hide their desktop view (e.g. student dashboard). */
@@ -781,6 +811,12 @@
         const btn = g.querySelector('.nav-group-label');
         if (!btn || btn.tagName !== 'BUTTON') return;
         btn.addEventListener('click', () => {
+          if (sidebar.classList.contains('collapsed')) {
+            setSidebarCollapsed(false);
+            setGroupExpanded(g, true);
+            store.set(OPEN_GROUP_KEY, g.dataset.groupId || '');
+            return;
+          }
           const willOpen = !g.classList.contains('expanded');
           collapsibleGroups.forEach(other => setGroupExpanded(other, other === g && willOpen));
           store.set(OPEN_GROUP_KEY, willOpen ? g.dataset.groupId : '');
@@ -801,6 +837,29 @@
               }
             }, 220);
           }
+        });
+      });
+    }
+
+    /* ── Sidebar sub-accordion (nested collapsible sub-groups) ── */
+    const collapsibleSubgroups = Array.from(sidebar.querySelectorAll('.nav-subgroup.collapsible'));
+    if (collapsibleSubgroups.length) {
+      collapsibleSubgroups.forEach(sg => {
+        const hasActiveSub = sg.querySelector('.nav-link.active');
+        if (hasActiveSub) {
+          sg.classList.add('expanded');
+          const btn = sg.querySelector('.nav-subgroup-label');
+          if (btn) btn.setAttribute('aria-expanded', 'true');
+        }
+
+        const btn = sg.querySelector('.nav-subgroup-label');
+        if (!btn) return;
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const willOpen = !sg.classList.contains('expanded');
+          sg.classList.toggle('expanded', willOpen);
+          btn.setAttribute('aria-expanded', String(willOpen));
         });
       });
     }
@@ -931,23 +990,45 @@
       sidebar.querySelector('.side-brand').appendChild(collapseBtn);
     }
 
-    const expandBtn = el(`
-      <button class="sidebar-expand-btn" id="sidebarExpandBtn" title="Expand sidebar" aria-label="Expand sidebar">
-        <span class="material-symbols-outlined">left_panel_open</span>
-      </button>`);
-    document.body.appendChild(expandBtn);
+    // Docked Open/Collapse Toggle Button directly on sidebar boundary
+    let expandBtn = sidebar.querySelector('#sidebarExpandBtn') || document.getElementById('sidebarExpandBtn');
+    if (!expandBtn) {
+      expandBtn = el(`
+        <button class="sidebar-expand-btn hamburger-btn" id="sidebarExpandBtn" title="Open navigation" aria-label="Open menu" data-action="toggle-sidebar" type="button">
+          <svg class="side-expand-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>`);
+      sidebar.appendChild(expandBtn);
+    } else if (expandBtn.parentElement !== sidebar) {
+      sidebar.appendChild(expandBtn);
+    }
 
     const COLLAPSED_KEY = 'ngis-sidebar-collapsed';
     function setSidebarCollapsed(collapsed) {
+      const brandLogo = sidebar.querySelector('.side-brand-crest') || sidebar.querySelector('.side-brand-logo-img');
       if (collapsed) {
         sidebar.classList.add('collapsed');
         main.classList.add('sidebar-collapsed');
+        document.body.classList.add('sidebar-collapsed');
         expandBtn.classList.add('visible');
+        expandBtn.setAttribute('title', 'Open sidebar');
+        expandBtn.setAttribute('aria-label', 'Open navigation');
+        if (brandLogo && brandLogo.classList.contains('side-brand-logo-img')) {
+          if (!brandLogo.dataset.origSrc) brandLogo.dataset.origSrc = brandLogo.src;
+          brandLogo.src = _P + 'assets/images/moeys-sis-logo.png';
+        }
         store.set(COLLAPSED_KEY, '1');
       } else {
         sidebar.classList.remove('collapsed');
         main.classList.remove('sidebar-collapsed');
-        expandBtn.classList.remove('visible');
+        document.body.classList.remove('sidebar-collapsed');
+        expandBtn.classList.add('visible');
+        expandBtn.setAttribute('title', 'Collapse sidebar');
+        expandBtn.setAttribute('aria-label', 'Collapse sidebar');
+        if (brandLogo && brandLogo.classList.contains('side-brand-logo-img') && brandLogo.dataset.origSrc) {
+          brandLogo.src = brandLogo.dataset.origSrc;
+        }
         store.set(COLLAPSED_KEY, '0');
         setTimeout(() => scrollActiveItemIntoView(false), 160);
       }
@@ -956,11 +1037,32 @@
         btn.setAttribute("aria-expanded", String(isExpanded));
       });
     }
-    // Restore persisted state
-    if (store.get(COLLAPSED_KEY) === '1') setSidebarCollapsed(true);
+    // Restore persisted state or default to collapsed on admin as requested
+    const savedCollapsed = store.get(COLLAPSED_KEY);
+    if (savedCollapsed === '1' || (savedCollapsed === null && PAGE.role === 'admin')) {
+      setSidebarCollapsed(true);
+    }
 
-    collapseBtn.addEventListener('click', () => setSidebarCollapsed(true));
-    expandBtn.addEventListener('click',   () => setSidebarCollapsed(false));
+    const sideBrand = sidebar.querySelector('.side-brand');
+    if (sideBrand) {
+      sideBrand.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('collapsed')) {
+          e.preventDefault();
+          e.stopPropagation();
+          setSidebarCollapsed(false);
+        }
+      });
+    }
+
+    collapseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setSidebarCollapsed(true);
+    });
+    expandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+      setSidebarCollapsed(!isCurrentlyCollapsed);
+    });
 
     let bNav = document.getElementById("mobBottomNav");
     if (!bNav) {
@@ -1010,6 +1112,9 @@
 
     /* Mobile drawer with smooth bottomnav disappearance */
     const openNav = () => {
+      if (sidebar.classList.contains("collapsed")) {
+        sidebar.classList.remove("collapsed");
+      }
       sidebar.classList.add("open");
       scrim.classList.add("show");
       document.body.classList.add("sidebar-open");
@@ -1051,6 +1156,7 @@
 
     const wireButtons = () => {
       document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => {
+        if (btn.id === 'sidebarCollapseBtn' || btn.id === 'sidebarExpandBtn') return;
         if (btn.dataset.sidebarBound) return;
         btn.dataset.sidebarBound = "true";
         btn.addEventListener("click", (e) => {
@@ -1070,6 +1176,7 @@
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']");
       if (!btn) return;
+      if (btn.id === 'sidebarCollapseBtn' || btn.id === 'sidebarExpandBtn') return;
       if (e.__sidebarHandled) return;
       e.__sidebarHandled = true;
       e.preventDefault();
@@ -1081,6 +1188,49 @@
     scrim.addEventListener("click", closeNav);
     sidebar.querySelectorAll(".nav-link").forEach(a => a.addEventListener("click", closeNav));
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeNav(); });
+
+    // Universal Drawer & Modal delegation
+    document.addEventListener("click", (e) => {
+      const openDrawer = e.target.closest("[data-open-drawer]");
+      if (openDrawer) {
+        e.preventDefault();
+        const id = openDrawer.getAttribute("data-open-drawer");
+        const drawer = document.querySelector(`.drawer-overlay[data-drawer="${id}"], .drawer-overlay#${id}, #${id}.drawer-overlay, #${id}`);
+        if (drawer) {
+          drawer.classList.add("show", "open");
+          const inner = drawer.querySelector(".drawer");
+          if (inner) inner.classList.add("show", "open");
+        }
+        return;
+      }
+      const closeDrawer = e.target.closest("[data-close-drawer]");
+      if (closeDrawer) {
+        e.preventDefault();
+        const drawer = closeDrawer.closest(".drawer-overlay, aside.drawer");
+        if (drawer) {
+          drawer.classList.remove("show", "open");
+          if (drawer.parentElement && drawer.parentElement.classList.contains("drawer-overlay")) {
+            drawer.parentElement.classList.remove("show", "open");
+          }
+        }
+        return;
+      }
+      const openModal = e.target.closest("[data-open-modal]");
+      if (openModal) {
+        e.preventDefault();
+        const id = openModal.getAttribute("data-open-modal");
+        const modal = document.querySelector(`.modal-overlay[data-modal="${id}"], .modal-overlay#${id}, #${id}.modal-overlay, #${id}`);
+        if (modal) modal.classList.add("show", "open");
+        return;
+      }
+      const closeModal = e.target.closest("[data-close-modal], [data-dismiss='modal']");
+      if (closeModal) {
+        e.preventDefault();
+        const modal = closeModal.closest(".modal-overlay, .modal");
+        if (modal) modal.classList.remove("show", "open");
+        return;
+      }
+    });
 
     // Edge swipe gestures
     let tx = 0;

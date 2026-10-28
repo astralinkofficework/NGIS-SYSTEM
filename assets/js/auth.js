@@ -59,22 +59,12 @@
       email: "student@ngis.edu.kh",
       title: "Student · Grade 11-A",
       avatar: "https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80"
-    },
-    parent: {
-      id: "PAR-2024-118",
-      firstName: "Chan Dara",
-      lastName: "Vuth",
-      role: "parent",
-      portal: "parent",
-      email: "parent@ngis.edu.kh",
-      title: "Parent / Guardian",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&fit=crop&crop=face"
     }
   };
 
   function detectContextRole() {
     const path = (window.location.pathname || "").toLowerCase();
-    const match = path.match(/\/pages\/(admin|teacher|student|parent|staff|principal)\//);
+    const match = path.match(/\/pages\/(admin|teacher|student|staff|principal)\//);
     if (match && DEMO_USERS[match[1]]) return match[1];
 
     const params = new URLSearchParams(window.location.search || "");
@@ -127,7 +117,6 @@
         admin: rootPrefix + "pages/admin/admin.html",
         teacher: rootPrefix + "pages/teacher/teacher.html",
         student: rootPrefix + "pages/student/student.html",
-        parent: rootPrefix + "pages/parent/parent.html",
         principal: rootPrefix + "pages/principal/principal.html",
         staff: rootPrefix + "pages/staff/staff.html"
       };

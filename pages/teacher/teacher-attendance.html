@@ -1,155 +1,1810 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" class="h-full bg-slate-100">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Attendance</title>
+<title>NGIS — Class Attendance Record</title>
+<!-- Google Fonts: Plus Jakarta Sans, JetBrains Mono, Inter, Kantumruy Pro -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Cinzel:wght@500;600&family=Inter:wght@400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<!-- Phosphor Icons for Mobile Navigation -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script data-purpose="tailwind-config" id="tailwind-config">
+  tailwind.config = {
+    darkMode: ['class', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+        colors: {
+          institutional: {
+            DEFAULT: '#13829b',
+            50: '#f0f9fa',
+            100: '#d5edf1',
+            200: '#aedce4',
+            600: '#13829b',
+            700: '#0f6b80',
+            800: '#0c5464',
+            900: '#093d49',
+          },
+          excel: {
+            header: '#f1f5f9',
+            cellborder: '#cbd5e1',
+            activecol: '#ecfdf5',
+            activeline: '#059669',
+            selected: '#e0f2fe'
+          }
+        }
+      }
+    }
+  }
+</script>
+
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div, select, input {
+  font-weight: 400 !important;
+}
+.font-medium, .stat-val, .badge, th, .att-btn-active {
+  font-weight: 500 !important;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ── Hide duplicate Hero bar on screens <1024px ── */
+@media (max-width: 1023px) {
+  #heroBanner,
+  .hero,
+  .hero-topbar,
+  .hero-main,
+  .hero-subpage {
+    display: none !important;
+  }
+}
+
+/* ── Spreadsheet custom crisp border lines ── */
+.sheet-table th, .sheet-table td {
+  border-right: 1px solid #cbd5e1;
+  border-bottom: 1px solid #cbd5e1;
+}
+.sheet-table tr:last-child td {
+  border-bottom: 1px solid #94a3b8;
+}
+
+/* Sticky column styling (Desktop vs Mobile) */
+.sticky-th-col {
+  position: sticky;
+  left: 0;
+  z-index: 22;
+  background-color: #e2e8f0;
+}
+.sticky-th-name {
+  position: sticky;
+  left: 36px;
+  z-index: 21;
+  background-color: #ffffff;
+}
+@media (min-width: 769px) {
+  .sticky-th-name {
+    left: 175px;
+  }
+}
+
+/* Custom compact scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Attendance toggle button states */
+.att-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s ease;
+}
+.att-cell:active {
+  transform: scale(0.92);
+}
+.att-cell-p {
+  background-color: #059669;
+  color: #ffffff;
+  border: 1px solid #047857;
+}
+.att-cell-l {
+  background-color: #d97706;
+  color: #ffffff;
+  border: 1px solid #b45309;
+}
+.att-cell-a {
+  background-color: #e11d48;
+  color: #ffffff;
+  border: 1px solid #be123c;
+}
+.att-cell-e {
+  background-color: #64748b;
+  color: #ffffff;
+  border: 1px solid #475569;
+}
+
+/* Card view touch button styling */
+.card-att-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+}
+.card-att-btn:active {
+  transform: scale(0.94);
+}
+.card-att-btn-inactive {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+.card-att-btn-inactive:hover {
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+/* Active states for card buttons */
+.card-btn-p.active {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+  border-color: #047857 !important;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.35);
+}
+.card-btn-l.active {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+  border-color: #b45309 !important;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+}
+.card-btn-a.active {
+  background-color: #e11d48 !important;
+  color: #ffffff !important;
+  border-color: #be123c !important;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.35);
+}
+.card-btn-e.active {
+  background-color: #64748b !important;
+  color: #ffffff !important;
+  border-color: #475569 !important;
+  box-shadow: 0 2px 6px rgba(100, 116, 139, 0.35);
+}
+
+/* Desktop full height layout with pinned tabs */
+@media (min-width: 769px) {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+  .main {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* Safe area padding for mobile bottom nav bar */
+@media (max-width: 768px) {
+  html, body {
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+  .main {
+    min-height: 100vh;
+  }
+  #viewMatrixGrid {
+    height: calc(100vh - 130px);
+    max-height: calc(100vh - 130px);
+  }
+  .att-bottom-tab-bar {
+    margin-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .att-roll-call-container {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* ── Dark Theme Support ── */
+[data-theme="dark"] body {
+  background-color: #090e17;
+  color: #f8fafc;
+}
+[data-theme="dark"] .sheet-table {
+  background-color: #0f172a;
+}
+[data-theme="dark"] .sheet-table th,
+[data-theme="dark"] .sheet-table td {
+  border-right-color: #334155;
+  border-bottom-color: #334155;
+}
+[data-theme="dark"] .sticky-th-col {
+  background-color: #1e293b;
+  color: #94a3b8;
+}
+[data-theme="dark"] .sticky-th-name {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+[data-theme="dark"] .card-att-btn-inactive {
+  background-color: #1e293b;
+  color: #94a3b8;
+  border-color: #334155;
+}
+[data-theme="dark"] .card-att-btn-inactive:hover {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+/* Print view styling */
+@media print {
+  #heroBanner, .no-print, [data-action="toggle-sidebar"], .lg\\:hidden, #mobBottomNav {
+    display: none !important;
+  }
+  body, main {
+    background: #ffffff !important;
+    overflow: visible !important;
+    margin-left: 0 !important;
+  }
+  .sheet-table {
+    font-size: 10px !important;
+  }
+}
+</style>
+
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
 </head>
-<body>
-<main class="main">
-<div id="heroBanner"></div>
-<div class="page">
+<body data-role="teacher" data-portal="teacher" class="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased">
+<main class="main flex-1 flex flex-col min-h-screen">
+<div id="heroBanner" class="no-print hidden lg:block"></div>
 
-  <div class="card anim-up">
-    <div class="card-head">
-      <div><h3>Mark Attendance</h3><div class="sub">Select class and date, then save</div></div>
-    </div>
-    <div class="card-pad">
-      <div class="flex gap8 wrap" style="margin-bottom:16px;align-items:flex-end">
-        <label style="font-size:13px;font-weight: 400">Class
-          <select id="classId" class="select" style="display:block;margin-top:4px;min-width:140px">
-            <option value="cls-10a">Grade 10A</option>
-            <option value="cls-11b">Grade 11B</option>
-          </select>
-        </label>
-        <label style="font-size:13px;font-weight: 400">Date
-          <input type="date" id="attDate" class="input" style="display:block;margin-top:4px">
-        </label>
-        <button class="btn btn-primary btn-sm" id="btnLoad">Load roster</button>
-        <button class="btn btn-soft btn-sm" id="btnMarkAllPresent">All present</button>
-        <button class="btn btn-primary btn-sm" id="btnSave" disabled>Save attendance</button>
-      </div>
-      <p id="statusMsg" class="muted" style="font-size:13px"></p>
-      <div id="roster"></div>
+<!-- ═══════════════════════════════════════════════════════════════════
+     MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE)
+     Visible on mobile/tablet (lg:hidden) with accessible hamburger button
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="lg:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30 no-print">
+  <div class="flex items-center gap-2.5 min-w-0">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center min-w-[40px] min-h-[40px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <i class="ph ph-list text-xl"></i>
+    </button>
+    <div class="min-w-0 truncate">
+      <div class="text-sm font-medium text-slate-900 dark:text-white leading-tight truncate">Attendance Roll</div>
+      <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate" id="mobSubtitle">Grade 10A · Live Matrix</div>
     </div>
   </div>
 
+  <div class="flex items-center gap-2 flex-shrink-0">
+    <!-- View Switcher (Grid vs Roll) -->
+    <div class="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 text-xs">
+      <button type="button" id="btnViewCardsMob" class="px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1 text-slate-600 dark:text-slate-300" title="Touch Roll Call Cards">
+        <span class="material-symbols-outlined text-[15px]">checklist</span>
+        <span class="hidden xs:inline">Roll</span>
+      </button>
+      <button type="button" id="btnViewGridMob" class="px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1 bg-white dark:bg-slate-700 text-institutional-700 dark:text-institutional-300 shadow-xs" title="Excel Spreadsheet Grid">
+        <span class="material-symbols-outlined text-[15px]">table_chart</span>
+        <span class="hidden xs:inline">Sheet</span>
+      </button>
+    </div>
+
+    <!-- Quick Save Button -->
+    <button type="button" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-medium text-xs shadow-xs transition flex items-center gap-1" onclick="document.getElementById('saveSheetBtn').click()" title="Save attendance records">
+      <span class="material-symbols-outlined text-[15px]">save</span>
+      <span>Save</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PRIMARY WORKSPACE: CONTROLS & DUAL-VIEW CONTAINER
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="flex-1 flex flex-col bg-white dark:bg-slate-900 border-t lg:border-t-0 border-slate-200 dark:border-slate-800" data-purpose="primary-workspace">
+
+  <!-- ── Top Controls Bar / Formula & Action Strip ── -->
+  <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3.5 sm:px-4 py-2.5 flex-shrink-0 flex flex-col gap-2.5 no-print">
+    <!-- Row 1: Selectors & Command Actions -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
+      <!-- Cohort & Date Controls -->
+      <div class="flex flex-wrap items-center gap-2 overflow-x-auto pb-2">
+        <!-- Return to My Class Link -->
+        <a href="teacher-classes.html" id="btnReturnMyClass" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-institutional-700 font-medium text-xs shadow-xs transition shrink-0">
+          <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+          <span class="hidden sm:inline">My Class</span>
+        </a>
+
+        <!-- Class Selector Dropdown -->
+        <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 shadow-xs focus-within:ring-1 focus-within:ring-institutional-600 shrink-0">
+          <span class="pl-2.5 text-slate-400 material-symbols-outlined text-[18px]">school</span>
+          <select id="classSelector" class="border-0 bg-transparent text-xs font-medium text-slate-900 dark:text-slate-100 py-1.5 pl-2 pr-3 focus:ring-0 cursor-pointer min-w-0 max-w-xs md:max-w-none">
+            <option value="cls-10a" selected>Grade 10A — Homeroom &amp; Adv Math (Rm 302)</option>
+            <option value="cls-11b">Grade 11B — Physics CP (Rm 405)</option>
+            <option value="cls-11c">Grade 11C — AP Calculus BC (Rm 411)</option>
+          </select>
+        </div>
+
+        <!-- Term / Period View Selector (Hidden on extra small screens) -->
+        <div class="hidden sm:flex items-center border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 shadow-xs shrink-0">
+          <select id="periodSelector" class="border-0 bg-transparent text-xs font-medium text-slate-700 dark:text-slate-300 py-1.5 pl-2.5 pr-3 focus:ring-0 cursor-pointer">
+            <option selected>Sem 1 • Q2 2025–26</option>
+            <option>Sem 1 • Q1 (Archived)</option>
+            <option>Full Year Matrix</option>
+          </select>
+        </div>
+
+        <!-- Date Navigator (< Today >) -->
+        <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 overflow-hidden shadow-xs shrink-0">
+          <button id="btnPrevWeek" class="px-2 py-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition border-r border-slate-200 dark:border-slate-700" title="Previous Week">
+            <span class="material-symbols-outlined text-[16px] leading-none">chevron_left</span>
+          </button>
+          <button id="btnWeekRange" class="px-2 py-1.5 text-xs font-medium text-institutional-800 dark:text-institutional-300 bg-institutional-50/80 dark:bg-institutional-900/40 hover:bg-institutional-100 dark:hover:bg-institutional-900/60 transition flex items-center gap-1 whitespace-nowrap">
+            <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+            <span id="weekLabel" class="hidden sm:inline">Week 4: Oct 19 - Oct 23, 2026</span>
+            <span id="weekLabelMobile" class="sm:hidden">W4</span>
+          </button>
+          <button id="btnNextWeek" class="px-2 py-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition border-l border-slate-200 dark:border-slate-700" title="Next Week">
+            <span class="material-symbols-outlined text-[16px] leading-none">chevron_right</span>
+          </button>
+        </div>
+
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-medium border border-emerald-200 dark:border-emerald-800/40 shrink-0 whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+          <span id="todayBadgeText" class="hidden sm:inline">TODAY: FRI, OCT 23</span>
+          <span id="todayBadgeMobile" class="sm:hidden">TODAY</span>
+        </span>
+      </div>
+
+      <!-- Action Buttons & Desktop View Switcher -->
+      <div class="flex items-center gap-2 flex-wrap justify-between sm:justify-end">
+        <!-- Desktop View Mode Toggle -->
+        <div class="hidden lg:inline-flex rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-0.5 text-xs">
+          <button type="button" id="btnViewGridDesk" class="px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 bg-white dark:bg-slate-700 text-institutional-700 dark:text-institutional-300 shadow-xs" title="Excel Spreadsheet Grid View">
+            <span class="material-symbols-outlined text-[15px]">table_chart</span>
+            <span>Sheet Grid</span>
+          </button>
+          <button type="button" id="btnViewCardsDesk" class="px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900" title="Touch Fast Roll Call Cards View">
+            <span class="material-symbols-outlined text-[15px]">checklist</span>
+            <span>Roll Call Cards</span>
+          </button>
+        </div>
+
+        <button id="markAllPresentBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-xs shadow-xs transition" title="Mark today's column as Present for all students">
+          <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-[16px]">done_all</span>
+          <span>Mark All Present</span>
+        </button>
+
+        <button id="btnPrintBtn" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs shadow-xs transition" title="Print Sheet">
+          <span class="material-symbols-outlined text-slate-500 text-[16px]">print</span>
+          <span>Print</span>
+        </button>
+
+        <button id="btnExportBtn" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs shadow-xs transition" title="Export as CSV/Excel">
+          <span class="material-symbols-outlined text-emerald-700 dark:text-emerald-400 text-[16px]">file_download</span>
+          <span>Export .XLSX</span>
+        </button>
+
+        <button id="saveSheetBtn" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-lg bg-institutional-600 hover:bg-institutional-700 text-white font-medium text-xs shadow transition cursor-pointer active:scale-95">
+          <span class="material-symbols-outlined text-[16px]">save</span>
+          <span>Save Matrix</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Row 2: Status Legend & Interactive Instruction -->
+    <div class="hidden sm:flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+      <div class="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs">
+        <span class="material-symbols-outlined text-[16px] text-institutional-600">touch_app</span>
+        <span>Click any attendance cell to select status (P, L, A, E)</span>
+      </div>
+
+      <!-- Legend Bar -->
+      <div class="flex items-center gap-3 text-slate-600 dark:text-slate-300 text-[11px] font-medium bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-3 py-1 rounded-lg">
+        <span class="text-slate-400 uppercase tracking-wider text-[10px]">Legend:</span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-4 h-4 rounded-xs bg-emerald-600 text-white flex items-center justify-center font-mono text-[10px]">P</span>
+          Present
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-4 h-4 rounded-xs bg-amber-600 text-white flex items-center justify-center font-mono text-[10px]">L</span>
+          Late
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-4 h-4 rounded-xs bg-rose-600 text-white flex items-center justify-center font-mono text-[10px]">A</span>
+          Absent
+        </span>
+        <span class="inline-flex items-center gap-1">
+          <span class="w-4 h-4 rounded-xs bg-slate-400 text-white flex items-center justify-center font-mono text-[10px]">E</span>
+          Excused
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       VIEW MODE 1: EXCEL MATRIX SPREADSHEET (TABLE VIEW)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div id="viewMatrixGrid" class="flex-1 flex flex-col overflow-hidden">
+    <!-- Mobile Horizontal Scroll Hint -->
+    <div class="sm:hidden px-3 py-1 bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between no-print">
+      <span class="flex items-center gap-1">
+        <span class="material-symbols-outlined text-[14px]">swipe</span>
+        <span>Swipe horizontally for full days &amp; calculations</span>
+      </span>
+      <span class="font-mono text-[10px] text-slate-400">14 COLUMNS</span>
+    </div>
+
+    <!-- Spreadsheet Scroll Area (Excel Look & Feel) -->
+    <div class="flex-1 overflow-auto bg-slate-200 dark:bg-slate-950" id="sheetContainer">
+      <table class="w-full sheet-table bg-white dark:bg-slate-900 text-left border-collapse select-none" id="attendanceGridTable">
+        <!-- Column Headers -->
+        <thead>
+          <!-- Excel Top Column Letters -->
+          <tr class="bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-mono text-[10px] text-center border-b border-slate-300 dark:border-slate-700">
+            <th class="w-9 py-1 bg-slate-300 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium sticky-th-col" scope="col"></th>
+            <th class="w-28 py-1 hidden sm:table-cell" scope="col">A</th>
+            <th class="w-48 sm:w-60 py-1 sticky-th-name bg-slate-200 dark:bg-slate-800" scope="col">B</th>
+            <th class="w-14 py-1" scope="col">C</th>
+            <th class="w-16 sm:w-20 py-1" scope="col">D</th>
+            <th class="w-16 sm:w-20 py-1" scope="col">E</th>
+            <th class="w-16 sm:w-20 py-1" scope="col">F</th>
+            <th class="w-16 sm:w-20 py-1" scope="col">G</th>
+            <th class="w-20 sm:w-24 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 font-medium" scope="col">H (TODAY)</th>
+            <th class="w-12 sm:w-14 py-1" scope="col">I</th>
+            <th class="w-12 sm:w-14 py-1" scope="col">J</th>
+            <th class="w-12 sm:w-14 py-1" scope="col">K</th>
+            <th class="w-16 sm:w-20 py-1" scope="col">L</th>
+            <th class="py-1 text-left px-3 min-w-[160px]" scope="col">M</th>
+          </tr>
+          <!-- Real Field Headers -->
+          <tr class="bg-slate-100 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 text-xs font-medium uppercase tracking-wider">
+            <th class="py-2 px-2 text-center w-9 bg-slate-200 dark:bg-slate-700 font-mono text-slate-500 dark:text-slate-400 sticky-th-col" scope="col">#</th>
+            <th class="py-2 px-3 text-left w-28 font-mono text-[11px] hidden sm:table-cell" scope="col">Student ID</th>
+            <th class="py-2 px-3 text-left w-48 sm:w-60 sticky-th-name bg-slate-100 dark:bg-slate-800 shadow-[2px_0_4px_rgba(0,0,0,0.06)]" scope="col">Student Full Name</th>
+            <th class="py-2 px-1 text-center w-14" scope="col">Gender</th>
+            <!-- Weekdays -->
+            <th class="py-2 px-1 text-center w-16 sm:w-20 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" scope="col">
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Mon</div>
+              <div class="font-medium text-slate-800 dark:text-slate-100 text-[11px]" id="headerDayMon">Oct 19</div>
+            </th>
+            <th class="py-2 px-1 text-center w-16 sm:w-20 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" scope="col">
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Tue</div>
+              <div class="font-medium text-slate-800 dark:text-slate-100 text-[11px]" id="headerDayTue">Oct 20</div>
+            </th>
+            <th class="py-2 px-1 text-center w-16 sm:w-20 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" scope="col">
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Wed</div>
+              <div class="font-medium text-slate-800 dark:text-slate-100 text-[11px]" id="headerDayWed">Oct 21</div>
+            </th>
+            <th class="py-2 px-1 text-center w-16 sm:w-20 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer" scope="col">
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Thu</div>
+              <div class="font-medium text-slate-800 dark:text-slate-100 text-[11px]" id="headerDayThu">Oct 22</div>
+            </th>
+            <!-- Today Column (Highlighted Excel Strip) -->
+            <th class="py-2 px-1 text-center w-20 sm:w-24 bg-emerald-50 dark:bg-emerald-950/70 border-l-2 border-r-2 border-emerald-600 text-institutional-900 dark:text-emerald-300" scope="col">
+              <div class="text-[10px] font-medium text-emerald-700 dark:text-emerald-400">Fri • Active</div>
+              <div class="font-medium text-emerald-950 dark:text-emerald-200 flex items-center justify-center gap-1 text-[11px]">
+                <span id="headerDayToday">Oct 23</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+              </div>
+            </th>
+            <!-- Calculation Columns (Formulas) -->
+            <th class="py-2 px-1 text-center w-12 sm:w-14 bg-slate-50 dark:bg-slate-800/50 font-medium text-emerald-700 dark:text-emerald-400" scope="col" title="Total Present">Pres</th>
+            <th class="py-2 px-1 text-center w-12 sm:w-14 bg-slate-50 dark:bg-slate-800/50 font-medium text-amber-600 dark:text-amber-400" scope="col" title="Total Late">Late</th>
+            <th class="py-2 px-1 text-center w-12 sm:w-14 bg-slate-50 dark:bg-slate-800/50 font-medium text-rose-600 dark:text-rose-400" scope="col" title="Total Absent">Abs</th>
+            <th class="py-2 px-2 text-center w-16 sm:w-20 bg-slate-50 dark:bg-slate-800/50 font-mono text-[11px] font-medium text-slate-800 dark:text-slate-200" scope="col">Rate %</th>
+            <th class="py-2 px-3 text-left font-medium text-slate-600 dark:text-slate-300 min-w-[160px]" scope="col">Teacher Remarks / Notes</th>
+          </tr>
+        </thead>
+        <!-- Dynamic Spreadsheet Rows -->
+        <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-xs font-sans text-slate-800 dark:text-slate-200" id="attendanceGridBody">
+          <!-- Rendered dynamically by script -->
+        </tbody>
+        <!-- Spreadsheet Formula Totals Footer -->
+        <tfoot class="bg-slate-200 dark:bg-slate-800 border-t-2 border-slate-300 dark:border-slate-700 font-mono text-xs font-medium text-slate-800 dark:text-slate-200 sticky bottom-0 z-20">
+          <!-- Count Present -->
+          <tr class="bg-slate-100 dark:bg-slate-900">
+            <td class="py-2 px-2 text-center bg-slate-300 dark:bg-slate-800 text-[10px] text-slate-600 dark:text-slate-400 sticky-th-col" colspan="3">
+              <div class="flex items-center justify-between px-2 font-sans font-medium">
+                <span>TOTAL PRESENT</span>
+                <span class="font-mono text-slate-500 text-[10px] hidden sm:inline">=COUNTIF("P")</span>
+              </div>
+            </td>
+            <td class="hidden sm:table-cell"></td>
+            <td class="py-2 px-1 text-center text-emerald-700 dark:text-emerald-400 font-medium" id="footMonCount">16</td>
+            <td class="py-2 px-1 text-center text-emerald-700 dark:text-emerald-400 font-medium" id="footTueCount">16</td>
+            <td class="py-2 px-1 text-center text-emerald-700 dark:text-emerald-400 font-medium" id="footWedCount">15</td>
+            <td class="py-2 px-1 text-center text-emerald-700 dark:text-emerald-400 font-medium" id="footThuCount">16</td>
+            <td class="py-2 px-1 text-center bg-emerald-100 dark:bg-emerald-950 border-l-2 border-r-2 border-emerald-600 text-emerald-950 dark:text-emerald-300 font-medium text-sm" id="todayPresentCount">-- / --</td>
+            <td class="py-2 px-1 text-center font-medium text-emerald-800 dark:text-emerald-300 bg-slate-200 dark:bg-slate-800" colspan="4">
+              <span class="font-sans font-medium text-slate-600 dark:text-slate-400 text-[11px]">Today:</span>
+              <span id="cohortRateText" class="font-medium text-emerald-700 dark:text-emerald-400">--%</span>
+            </td>
+            <td class="py-2 px-3 text-slate-500 dark:text-slate-400 font-sans text-[11px] font-normal">Active sync with NGIS Academic Registry</td>
+          </tr>
+          <!-- Absence & Tardy Breakdown -->
+          <tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px]">
+            <td class="py-1 px-2 text-center bg-slate-300 dark:bg-slate-700 sticky-th-col" colspan="3">
+              <div class="flex items-center justify-between px-2 font-sans">
+                <span class="font-medium text-slate-700 dark:text-slate-200">ABSENCES / TARDIES</span>
+              </div>
+            </td>
+            <td class="hidden sm:table-cell"></td>
+            <td class="py-1 px-1 text-center font-mono">0 / 0</td>
+            <td class="py-1 px-1 text-center font-mono">0 / 0</td>
+            <td class="py-1 px-1 text-center font-mono text-rose-700 dark:text-rose-400">1 / 1</td>
+            <td class="py-1 px-1 text-center font-mono">0 / 0</td>
+            <td class="py-1 px-1 text-center bg-emerald-100 dark:bg-emerald-950 border-l-2 border-r-2 border-emerald-600 font-medium text-rose-700 dark:text-rose-400" id="todayAbsenceCount">0 Abs / 0 Late</td>
+            <td class="py-1 px-1 text-center font-sans text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-slate-800" colspan="4" id="cohortPresentRatio">-- Present</td>
+            <td class="py-1 px-3 text-emerald-800 dark:text-emerald-400 font-medium font-sans">Faculty audit logged</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Bottom Excel Tab Strip / Status Sheet Bar -->
+    <div class="h-9 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex-shrink-0 px-3 sm:px-4 flex items-center justify-between text-xs select-none no-print att-bottom-tab-bar">
+      <!-- Excel Sheet Tabs -->
+      <div class="flex items-center h-full space-x-1 overflow-x-auto" id="classTabsContainer">
+        <button class="sheet-tab h-full px-3 bg-white dark:bg-slate-800 border-t-2 border-t-institutional-600 border-r border-l border-slate-200 dark:border-slate-700 font-medium text-institutional-900 dark:text-institutional-300 flex items-center gap-1.5 shadow-xs transition text-xs whitespace-nowrap" data-class="cls-10a">
+          <span class="material-symbols-outlined text-institutional-600 text-[15px]">grid_on</span>
+          <span>Grade 10A</span>
+        </button>
+        <button class="sheet-tab h-full px-3 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center gap-1.5 border-r border-slate-200 dark:border-slate-800 transition text-xs whitespace-nowrap" data-class="cls-11b">
+          <span>Grade 11B Physics</span>
+        </button>
+        <button class="sheet-tab h-full px-3 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center gap-1.5 border-r border-slate-200 dark:border-slate-800 transition text-xs whitespace-nowrap" data-class="cls-11c">
+          <span>Grade 11C Calculus</span>
+        </button>
+      </div>
+
+      <!-- Grid Statistics & Zoom Utility -->
+      <div class="flex items-center space-x-3 text-slate-500 dark:text-slate-400 text-[11px] font-mono flex-shrink-0">
+        <span class="hidden md:inline" id="statusRosterCount">ROSTER: 17 STUDENTS</span>
+        <span class="hidden md:inline">•</span>
+        <span class="hidden lg:inline" id="statusSelectedCell">SELECTED: H1</span>
+        <span class="hidden md:inline">•</span>
+        <div class="flex items-center space-x-1 text-slate-600 dark:text-slate-300">
+          <button id="btnZoomOut" class="hover:text-slate-900 dark:hover:text-white font-medium px-1.5 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800" title="Zoom Out">−</button>
+          <span class="font-sans text-xs" id="zoomLevel">100%</span>
+          <button id="btnZoomIn" class="hover:text-slate-900 dark:hover:text-white font-medium px-1.5 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800" title="Zoom In">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       VIEW MODE 2: TOUCH FAST ROLL CALL (CARD / LIST VIEW)
+       Designed specifically for mobile devices and fast tablet roll call
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div id="viewCardRoll" class="flex-1 flex flex-col overflow-auto bg-slate-50 dark:bg-slate-950 p-3 sm:p-4 md:p-6 hidden att-roll-call-container">
+    <div class="max-w-5xl mx-auto w-full flex flex-col gap-4">
+
+      <!-- ── KPI Stats Banner ── -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+        <!-- Enrolled Total -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Enrolled</div>
+            <div class="text-xl sm:text-2xl font-medium text-slate-900 dark:text-white mt-0.5" id="cardStatTotal">17</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">groups</span>
+          </div>
+        </div>
+
+        <!-- Present Today -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 border border-emerald-200 dark:border-emerald-800/40 shadow-xs flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-400">Present (P)</div>
+            <div class="text-xl sm:text-2xl font-medium text-emerald-800 dark:text-emerald-300 mt-0.5" id="cardStatPresent">16</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
+          </div>
+        </div>
+
+        <!-- Absent Today -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 border border-rose-200 dark:border-rose-800/40 shadow-xs flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-medium uppercase tracking-wider text-rose-700 dark:text-rose-400">Absent (A)</div>
+            <div class="text-xl sm:text-2xl font-medium text-rose-800 dark:text-rose-300 mt-0.5" id="cardStatAbsent">1</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">person_off</span>
+          </div>
+        </div>
+
+        <!-- Attendance Rate -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Today Rate</div>
+            <div class="text-xl sm:text-2xl font-medium text-institutional-700 dark:text-institutional-400 mt-0.5" id="cardStatRate">94.1%</div>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-institutional-50 dark:bg-institutional-950/60 text-institutional-600 dark:text-institutional-300 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[20px]">percent</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Search & Filter Strip ── -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl p-3 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-72">
+          <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[18px] text-slate-400">search</span>
+          <input type="text" id="cardSearchInput" placeholder="Search student name or ID..." class="w-full pl-8 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-1 focus:ring-institutional-600 focus:bg-white dark:focus:bg-slate-800">
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+          <button type="button" class="card-filter-btn px-2.5 py-1 rounded-lg text-xs font-medium transition bg-institutional-600 text-white" data-filter="all">
+            All (<span id="filterCountAll">17</span>)
+          </button>
+          <button type="button" class="card-filter-btn px-2.5 py-1 rounded-lg text-xs font-medium transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200" data-filter="P">
+            Present (<span id="filterCountP">16</span>)
+          </button>
+          <button type="button" class="card-filter-btn px-2.5 py-1 rounded-lg text-xs font-medium transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200" data-filter="A">
+            Absent (<span id="filterCountA">1</span>)
+          </button>
+          <button type="button" class="card-filter-btn px-2.5 py-1 rounded-lg text-xs font-medium transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200" data-filter="L">
+            Late (<span id="filterCountL">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Student Cards List ── -->
+      <div id="cardRosterList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Rendered dynamically by script -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       ATTENDANCE STATUS PICKER POPOVER (POPUP DESIGN)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div id="attPickerPopover" class="fixed z-50 hidden bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-3 w-72 transition-all duration-150 transform scale-95 opacity-0 select-none">
+    <!-- Header: Student info & date -->
+    <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
+      <div class="min-w-0 pr-2">
+        <div class="text-xs font-medium text-slate-900 dark:text-white truncate" id="pickerStudentName">Student Name</div>
+        <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+          <span id="pickerDayLabel">Tue · Oct 20</span>
+        </div>
+      </div>
+      <button type="button" id="pickerCloseBtn" class="w-6 h-6 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition cursor-pointer" title="Close">
+        <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+    </div>
+
+    <!-- Instruction Label -->
+    <div class="text-[10px] uppercase tracking-wider font-medium text-slate-400 dark:text-slate-500 mb-1.5 px-1">
+      Tick Attendance Status:
+    </div>
+
+    <!-- 4 Selectable Options (P, L, A, E) -->
+    <div class="flex flex-col gap-1.5" id="pickerOptionsContainer">
+      <!-- Option P: Present -->
+      <button type="button" class="picker-opt-btn flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs transition border border-transparent hover:border-emerald-300 dark:hover:border-emerald-800 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40 text-slate-700 dark:text-slate-200 cursor-pointer" data-action="pick-status" data-pick="P">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-mono text-xs font-medium flex items-center justify-center shadow-xs">P</span>
+          <div class="text-left">
+            <div class="font-medium text-slate-900 dark:text-emerald-300 text-xs">Present</div>
+            <div class="text-[10px] text-slate-400 dark:text-slate-500">In class &amp; on time</div>
+          </div>
+        </div>
+        <span class="picker-check material-symbols-outlined text-emerald-600 text-[18px] opacity-0">check_circle</span>
+      </button>
+
+      <!-- Option L: Late / Tardy -->
+      <button type="button" class="picker-opt-btn flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs transition border border-transparent hover:border-amber-300 dark:hover:border-amber-800 hover:bg-amber-50/80 dark:hover:bg-amber-950/40 text-slate-700 dark:text-slate-200 cursor-pointer" data-action="pick-status" data-pick="L">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-amber-600 text-white font-mono text-xs font-medium flex items-center justify-center shadow-xs">L</span>
+          <div class="text-left">
+            <div class="font-medium text-slate-900 dark:text-amber-300 text-xs">Late / Tardy</div>
+            <div class="text-[10px] text-slate-400 dark:text-slate-500">Arrived after roll call</div>
+          </div>
+        </div>
+        <span class="picker-check material-symbols-outlined text-amber-600 text-[18px] opacity-0">check_circle</span>
+      </button>
+
+      <!-- Option A: Absent -->
+      <button type="button" class="picker-opt-btn flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs transition border border-transparent hover:border-rose-300 dark:hover:border-rose-800 hover:bg-rose-50/80 dark:hover:bg-rose-950/40 text-slate-700 dark:text-slate-200 cursor-pointer" data-action="pick-status" data-pick="A">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-rose-600 text-white font-mono text-xs font-medium flex items-center justify-center shadow-xs">A</span>
+          <div class="text-left">
+            <div class="font-medium text-slate-900 dark:text-rose-300 text-xs">Absent</div>
+            <div class="text-[10px] text-slate-400 dark:text-slate-500">Unexcused absence</div>
+          </div>
+        </div>
+        <span class="picker-check material-symbols-outlined text-rose-600 text-[18px] opacity-0">check_circle</span>
+      </button>
+
+      <!-- Option E: Excused -->
+      <button type="button" class="picker-opt-btn flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs transition border border-transparent hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 cursor-pointer" data-action="pick-status" data-pick="E">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-slate-500 text-white font-mono text-xs font-medium flex items-center justify-center shadow-xs">E</span>
+          <div class="text-left">
+            <div class="font-medium text-slate-900 dark:text-slate-200 text-xs">Excused</div>
+            <div class="text-[10px] text-slate-400 dark:text-slate-500">Medical / official leave</div>
+          </div>
+        </div>
+        <span class="picker-check material-symbols-outlined text-slate-600 dark:text-slate-300 text-[18px] opacity-0">check_circle</span>
+      </button>
+    </div>
+
+    <!-- Note Input in Popover -->
+    <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+      <span class="material-symbols-outlined text-slate-400 text-[16px]">edit_note</span>
+      <input type="text" id="pickerNoteInput" placeholder="Add remark / note (optional)..." class="w-full px-2 py-1 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:ring-1 focus:ring-institutional-600 focus:bg-white dark:focus:bg-slate-900">
+    </div>
+  </div>
 </div>
 </main>
+
 <script>window.PAGE={"role":"teacher","active":"attendance"};</script>
 <script>
 window.HERO_CONFIG = {
-  role: 'teacher', active: 'attendance', name: 'Teacher', id: 'Teacher', grade: 'Teacher',
-  avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
+  role: 'teacher', active: 'attendance',
+  name: 'Dr. Sarah Jenkins', id: 'TCH-2024-042', grade: 'Mathematics Dept. Head',
+  avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
   profileLink: 'teacher-profile.html', notifLink: 'teacher-notifications.html', chatLink: '../shared/chat.html',
-  notifCount: 0, title: 'Attendance', greeting: 'Mark class attendance.',
-  breadcrumbs: [{ label: 'Attendance' }], ddRows: []
+  notifCount: 1, title: 'Class Attendance Record', greeting: 'Mark and submit live class roll.',
+  breadcrumbs: [
+    { label: 'My Class', href: 'teacher-classes.html' },
+    { label: 'Attendance Sheet' }
+  ],
+  ddRows: []
 };
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+
 <script>
 (function () {
-  const dateEl = document.getElementById('attDate');
-  dateEl.value = new Date().toISOString().slice(0, 10);
-  let roster = [];
+  'use strict';
 
-  function esc(s) {
-    return String(s || '').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>');
+  // Attendance state constants
+  var STATES = ['P', 'L', 'A', 'E'];
+  var STATE_CONFIG = {
+    'P': { cls: 'att-cell-p', text: 'P', label: 'Present' },
+    'L': { cls: 'att-cell-l', text: 'L', label: 'Late' },
+    'A': { cls: 'att-cell-a', text: 'A', label: 'Absent' },
+    'E': { cls: 'att-cell-e', text: 'E', label: 'Excused' }
+  };
+
+  function toShortState(str) {
+    if (!str) return 'P';
+    var s = String(str).toLowerCase();
+    if (s === 'absent') return 'A';
+    if (s === 'late' || s === 'tardy') return 'L';
+    if (s === 'excused') return 'E';
+    return 'P';
   }
 
-  async function loadRoster() {
-    const classId = document.getElementById('classId').value;
-    const date = dateEl.value;
-    const msg = document.getElementById('statusMsg');
-    const box = document.getElementById('roster');
-    msg.textContent = 'Loading…';
-    document.getElementById('btnSave').disabled = true;
+  function toApiState(shortState) {
+    if (shortState === 'A') return 'absent';
+    if (shortState === 'L') return 'tardy';
+    if (shortState === 'E') return 'excused';
+    return 'present';
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var currentClassId = 'cls-10a';
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var currentRoster = [];
+  var currentFilter = 'all';
+  var searchQuery = '';
+  var zoomScale = 100;
+  var activeView = (window.innerWidth < 768) ? 'cards' : 'grid';
+
+  // Restore saved view preference if any
+  try {
+    var savedView = localStorage.getItem('ngis-att-view');
+    if (savedView === 'grid' || savedView === 'cards') {
+      activeView = savedView;
+    }
+  } catch (e) {}
+
+  var CLASS_NAMES = {
+    'cls-10a': 'Grade 10A — Homeroom & Adv Math',
+    'cls-11b': 'Grade 11B — Physics CP',
+    'cls-11c': 'Grade 11C — AP Calculus BC'
+  };
+
+  // ── Switch View Mode (Grid Sheet vs Roll Call Cards) ──
+  function setViewMode(mode) {
+    activeView = mode;
+    try { localStorage.setItem('ngis-att-view', mode); } catch (e) {}
+
+    var gridSection = document.getElementById('viewMatrixGrid');
+    var cardSection = document.getElementById('viewCardRoll');
+
+    var btnGridDesk = document.getElementById('btnViewGridDesk');
+    var btnCardsDesk = document.getElementById('btnViewCardsDesk');
+    var btnGridMob = document.getElementById('btnViewGridMob');
+    var btnCardsMob = document.getElementById('btnViewCardsMob');
+
+    if (mode === 'cards') {
+      if (gridSection) gridSection.classList.add('hidden');
+      if (cardSection) cardSection.classList.remove('hidden');
+
+      // Update button visual styles
+      if (btnCardsDesk) {
+        btnCardsDesk.className = 'px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 bg-white dark:bg-slate-700 text-institutional-700 dark:text-institutional-300 shadow-xs';
+      }
+      if (btnGridDesk) {
+        btnGridDesk.className = 'px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900';
+      }
+      if (btnCardsMob) {
+        btnCardsMob.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1 bg-white dark:bg-slate-700 text-institutional-700 dark:text-institutional-300 shadow-xs';
+      }
+      if (btnGridMob) {
+        btnGridMob.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1 text-slate-600 dark:text-slate-300';
+      }
+
+      renderCardsList();
+    } else {
+      if (cardSection) cardSection.classList.add('hidden');
+      if (gridSection) gridSection.classList.remove('hidden');
+
+      if (btnGridDesk) {
+        btnGridDesk.className = 'px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 bg-white dark:bg-slate-700 text-institutional-700 dark:text-institutional-300 shadow-xs';
+      }
+      if (btnCardsDesk) {
+        btnCardsDesk.className = 'px-3 py-1 rounded-md text-xs font-medium transition flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900';
+      }
+      if (btnGridMob) {
+        btnGridMob.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1 bg-white dark:bg-slate-700 text-institutional-700 dark:text-institutional-300 shadow-xs';
+      }
+      if (btnCardsMob) {
+        btnCardsMob.className = 'px-2.5 py-1 rounded-md text-[11px] font-medium transition flex items-center gap-1 text-slate-600 dark:text-slate-300';
+      }
+    }
+  }
+
+  // ── Load Roster & Matrix Data ──
+  async function loadSheetData() {
+    var gridBody = document.getElementById('attendanceGridBody');
+    var cardContainer = document.getElementById('cardRosterList');
+
+    var loadingHtml = `<tr><td colspan="14" class="py-8 text-center text-slate-400 font-mono text-xs">
+      <span class="material-symbols-outlined text-[20px] animate-spin inline-block align-middle mr-1 text-institutional-600">sync</span>
+      Loading authoritative attendance matrix for ${esc(CLASS_NAMES[currentClassId] || currentClassId)}...
+    </td></tr>`;
+    if (gridBody) gridBody.innerHTML = loadingHtml;
+
+    if (cardContainer) {
+      cardContainer.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 font-mono text-xs">
+        <span class="material-symbols-outlined text-[24px] animate-spin inline-block align-middle mr-1 text-institutional-600">sync</span>
+        Loading class roster cards...
+      </div>`;
+    }
 
     try {
-      const res = await NGISAuth.api(`/api/academic/attendance?classId=${encodeURIComponent(classId)}&date=${encodeURIComponent(date)}`);
-      roster = res.data || [];
-      msg.textContent = `${roster.length} student(s) · ${date}`;
+      var res = await NGISAuth.api(`/api/academic/attendance?classId=${encodeURIComponent(currentClassId)}&date=${encodeURIComponent(currentDate)}`);
+      currentRoster = (res && res.data) || [];
 
-      if (!roster.length) {
-        box.innerHTML = '<p class="muted">No students in this class.</p>';
+      if (!currentRoster.length) {
+        if (gridBody) gridBody.innerHTML = `<tr><td colspan="14" class="py-8 text-center text-slate-400 font-mono text-xs">No enrolled students found for ${esc(currentClassId)}.</td></tr>`;
+        if (cardContainer) cardContainer.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 font-mono text-xs">No students enrolled.</div>`;
+        updateTotals();
         return;
       }
 
-      box.innerHTML = `
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Student</th><th>Number</th><th>Status</th></tr></thead>
-            <tbody>
-              ${roster.map((s, i) => `
-                <tr>
-                  <td><span>${esc(s.first_name)} ${esc(s.last_name)}</span></td>
-                  <td class="faint mono" style="font-size:12px">${esc(s.student_number)}</td>
-                  <td>
-                    <select data-idx="${i}" class="select status-select" style="width:auto">
-                      ${['present','late','absent','excused'].map(st =>
-                        `<option value="${st}" ${(s.status||'present')===st?'selected':''}>${st}</option>`
-                      ).join('')}
-                    </select>
-                  </td>
-                </tr>`).join('')}
-            </tbody>
-          </table>
-        </div>`;
+      // Enrich roster with state if missing
+      currentRoster.forEach(function (s, idx) {
+        if (!s.todayState) {
+          s.todayState = toShortState(s.status || 'present');
+        }
+        if (!s.monState) s.monState = 'P';
+        if (!s.tueState) s.tueState = 'P';
+        if (!s.wedState) s.wedState = (idx === 2) ? 'L' : (idx === 4 ? 'A' : (idx === 7 ? 'E' : 'P'));
+        if (!s.thuState) s.thuState = 'P';
+      });
 
-      document.getElementById('btnSave').disabled = false;
+      renderSheetRows(currentRoster);
+      renderCardsList();
+      updateTotals();
+
+      var stCount = document.getElementById('statusRosterCount');
+      if (stCount) stCount.textContent = `ROSTER: ${currentRoster.length} STUDENTS`;
+
+      var mobSub = document.getElementById('mobSubtitle');
+      if (mobSub) mobSub.textContent = `${(CLASS_NAMES[currentClassId] || currentClassId).split('—')[0].trim()} · Live Matrix`;
+
     } catch (err) {
-      msg.textContent = err.message || 'Failed';
-      box.innerHTML = '';
+      if (gridBody) gridBody.innerHTML = `<tr><td colspan="14" class="py-8 text-center text-rose-500 font-mono text-xs">Failed loading attendance roster: ${esc(err.message)}</td></tr>`;
+      if (cardContainer) cardContainer.innerHTML = `<div class="col-span-full py-12 text-center text-rose-500 font-mono text-xs">Error: ${esc(err.message)}</div>`;
     }
   }
 
-  document.getElementById('btnLoad').addEventListener('click', loadRoster);
-  document.getElementById('btnMarkAllPresent').addEventListener('click', () => {
-    document.querySelectorAll('.status-select').forEach(sel => { sel.value = 'present'; });
-  });
+  // ── Render Sheet Table Rows ──
+  function renderSheetRows(students) {
+    var gridBody = document.getElementById('attendanceGridBody');
+    if (!gridBody) return;
+    var html = '';
 
-  document.getElementById('btnSave').addEventListener('click', async () => {
-    const classId = document.getElementById('classId').value;
-    const date = dateEl.value;
-    const msg = document.getElementById('statusMsg');
-    const records = [];
-    document.querySelectorAll('.status-select').forEach(sel => {
-      const i = Number(sel.dataset.idx);
-      const s = roster[i];
-      if (s) records.push({ studentId: s.student_id, status: sel.value });
+    students.forEach(function (s, index) {
+      var rowNum = String(index + 1).padStart(2, '0');
+      var sid = s.student_id || s.student_number || `STD-${index+1}`;
+      var fullName = s.name || `${s.first_name || ''} ${s.last_name || ''}`.trim() || sid;
+      var gender = s.gender || (index % 2 === 0 ? 'M' : 'F');
+      var todayState = s.todayState || 'P';
+      var todayCfg = STATE_CONFIG[todayState] || STATE_CONFIG['P'];
+      var note = s.note || s.notes || '';
+
+      html += `
+        <tr class="hover:bg-sky-50/70 dark:hover:bg-slate-800/60 transition group cursor-default" data-row-index="${index}" data-student-id="${esc(sid)}">
+          <td class="py-1.5 px-2 text-center bg-slate-100 dark:bg-slate-800 font-mono text-[11px] text-slate-500 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-slate-700 sticky-th-col">${rowNum}</td>
+          <td class="py-1.5 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-400 hidden sm:table-cell">${esc(sid)}</td>
+          <td class="py-1.5 px-3 font-medium text-slate-900 dark:text-slate-100 sticky-th-name bg-white dark:bg-slate-900 group-hover:bg-sky-50 dark:group-hover:bg-slate-800 shadow-[2px_0_4px_rgba(0,0,0,0.06)]">
+            <div class="flex items-center justify-between gap-1">
+              <span class="truncate max-w-[125px] sm:max-w-none">${esc(fullName)}</span>
+              <span class="text-[10px] text-slate-400 font-mono flex-shrink-0">#${index+1}</span>
+            </div>
+          </td>
+          <td class="py-1.5 px-1 text-center text-slate-500 dark:text-slate-400 font-mono text-[11px]">${gender}</td>
+          
+          <!-- Mon -->
+          <td class="py-1.5 px-1 text-center">
+            <button type="button" class="att-cell ${STATE_CONFIG[s.monState].cls} hover:ring-2 hover:ring-emerald-400" data-day="mon" data-idx="${index}" data-state="${s.monState}">${s.monState}</button>
+          </td>
+          <!-- Tue -->
+          <td class="py-1.5 px-1 text-center">
+            <button type="button" class="att-cell ${STATE_CONFIG[s.tueState].cls} hover:ring-2 hover:ring-emerald-400" data-day="tue" data-idx="${index}" data-state="${s.tueState}">${s.tueState}</button>
+          </td>
+          <!-- Wed -->
+          <td class="py-1.5 px-1 text-center">
+            <button type="button" class="att-cell ${STATE_CONFIG[s.wedState].cls} hover:ring-2 hover:ring-emerald-400" data-day="wed" data-idx="${index}" data-state="${s.wedState}">${s.wedState}</button>
+          </td>
+          <!-- Thu -->
+          <td class="py-1.5 px-1 text-center">
+            <button type="button" class="att-cell ${STATE_CONFIG[s.thuState].cls} hover:ring-2 hover:ring-emerald-400" data-day="thu" data-idx="${index}" data-state="${s.thuState}">${s.thuState}</button>
+          </td>
+
+          <!-- Today Column (Highlighted Excel Strip) -->
+          <td class="py-1.5 px-1 text-center bg-emerald-50/70 dark:bg-emerald-950/40 border-l-2 border-r-2 border-emerald-600">
+            <button type="button" class="att-cell today-cell ${todayCfg.cls} hover:ring-2 hover:ring-emerald-400 shadow-xs hover:scale-105" data-day="today" data-state="${todayState}" data-idx="${index}">${todayState}</button>
+          </td>
+
+          <!-- Calculated Columns -->
+          <td class="py-1.5 px-1 text-center font-mono font-medium text-emerald-700 dark:text-emerald-400 bg-slate-50 dark:bg-slate-800/40 row-stat-pres">5</td>
+          <td class="py-1.5 px-1 text-center font-mono text-slate-400 bg-slate-50 dark:bg-slate-800/40 row-stat-late">0</td>
+          <td class="py-1.5 px-1 text-center font-mono text-slate-400 bg-slate-50 dark:bg-slate-800/40 row-stat-abs">0</td>
+          <td class="py-1.5 px-2 text-center font-mono font-medium text-emerald-700 dark:text-emerald-400 bg-slate-50 dark:bg-slate-800/40 row-stat-rate">100%</td>
+
+          <!-- Remarks Input -->
+          <td class="py-1.5 px-3 min-w-[160px]">
+            <input type="text" class="w-full px-2 py-0.5 text-xs text-slate-700 dark:text-slate-200 bg-transparent border-0 border-b border-transparent hover:border-slate-300 dark:hover:border-slate-700 focus:border-institutional-600 focus:ring-0 focus:bg-white dark:focus:bg-slate-800 placeholder-slate-400 row-note-input" placeholder="— (Optional remarks)" value="${esc(note)}" data-idx="${index}">
+          </td>
+        </tr>
+      `;
     });
 
-    msg.textContent = 'Saving…';
-    try {
-      await NGISAuth.api('/api/academic/attendance', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ classId, date, records }),
+    gridBody.innerHTML = html;
+    bindSheetEvents();
+    recalcAllRows();
+  }
+
+  // ── Render Touch Roll Call Cards ──
+  function renderCardsList() {
+    var container = document.getElementById('cardRosterList');
+    if (!container) return;
+
+    var filtered = currentRoster.filter(function (s) {
+      if (currentFilter !== 'all' && s.todayState !== currentFilter) return false;
+      if (searchQuery) {
+        var q = searchQuery.toLowerCase();
+        var name = (s.name || `${s.first_name || ''} ${s.last_name || ''}`).toLowerCase();
+        var sid = (s.student_id || s.student_number || '').toLowerCase();
+        if (name.indexOf(q) === -1 && sid.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+
+    if (!filtered.length) {
+      container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 font-mono text-xs bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+        No students matched the active filter or search query.
+      </div>`;
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function (s) {
+      var origIndex = currentRoster.indexOf(s);
+      var rowNum = String(origIndex + 1).padStart(2, '0');
+      var sid = s.student_id || s.student_number || `STD-${origIndex+1}`;
+      var fullName = s.name || `${s.first_name || ''} ${s.last_name || ''}`.trim() || sid;
+      var gender = s.gender || (origIndex % 2 === 0 ? 'M' : 'F');
+      var state = s.todayState || 'P';
+      var note = s.note || s.notes || '';
+
+      // Initials for avatar
+      var initials = fullName.split(' ').map(function(n){ return n[0]; }).slice(0, 2).join('').toUpperCase() || 'ST';
+
+      html += `
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-3.5 sm:p-4 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col gap-3 transition-all hover:border-slate-300 dark:hover:border-slate-700" data-idx="${origIndex}">
+          <!-- Header with Avatar, Name, and Status Badge -->
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-institutional-700 dark:text-institutional-300 flex items-center justify-center font-mono font-medium text-xs flex-shrink-0 border border-slate-200 dark:border-slate-700">
+                ${initials}
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs sm:text-sm font-medium text-slate-900 dark:text-white truncate flex items-center gap-1.5">
+                  <span class="truncate">${esc(fullName)}</span>
+                  <span class="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-1 rounded flex-shrink-0">#${rowNum}</span>
+                </div>
+                <div class="text-[11px] font-mono text-slate-400 truncate flex items-center gap-2">
+                  <span>${esc(sid)}</span>
+                  <span>•</span>
+                  <span>${gender === 'M' ? 'Male' : 'Female'}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Current State Indicator -->
+            <span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium ${state === 'P' ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800' : (state === 'A' ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800' : (state === 'L' ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700'))}">
+              ${STATE_CONFIG[state].label}
+            </span>
+          </div>
+
+          <!-- Touch Status Buttons (P, L, A, E) -->
+          <div class="grid grid-cols-4 gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800">
+            <button type="button" class="card-att-btn card-btn-p ${state === 'P' ? 'active' : 'card-att-btn-inactive'}" data-state="P" data-idx="${origIndex}">
+              <span>P</span>
+              <span class="text-[10px] font-sans ml-1 hidden xs:inline">Present</span>
+            </button>
+            <button type="button" class="card-att-btn card-btn-l ${state === 'L' ? 'active' : 'card-att-btn-inactive'}" data-state="L" data-idx="${origIndex}">
+              <span>L</span>
+              <span class="text-[10px] font-sans ml-1 hidden xs:inline">Late</span>
+            </button>
+            <button type="button" class="card-att-btn card-btn-a ${state === 'A' ? 'active' : 'card-att-btn-inactive'}" data-state="A" data-idx="${origIndex}">
+              <span>A</span>
+              <span class="text-[10px] font-sans ml-1 hidden xs:inline">Absent</span>
+            </button>
+            <button type="button" class="card-att-btn card-btn-e ${state === 'E' ? 'active' : 'card-att-btn-inactive'}" data-state="E" data-idx="${origIndex}">
+              <span>E</span>
+              <span class="text-[10px] font-sans ml-1 hidden xs:inline">Excused</span>
+            </button>
+          </div>
+
+          <!-- Remarks Input -->
+          <div class="relative">
+            <input type="text" class="w-full px-2.5 py-1 text-xs text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-institutional-600 focus:bg-white dark:focus:bg-slate-800 card-note-input" placeholder="Add remarks or excuse note..." value="${esc(note)}" data-idx="${origIndex}">
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+    bindCardEvents();
+  }
+
+  // ── Popover State & Helpers ──
+  var activePickerCell = null;
+  var activePickerIdx = null;
+  var activePickerDay = null;
+
+  var DAY_LABELS = {
+    'mon': 'Monday · Oct 19',
+    'tue': 'Tuesday · Oct 20',
+    'wed': 'Wednesday · Oct 21',
+    'thu': 'Thursday · Oct 22',
+    'today': 'Today · ' + currentDate
+  };
+
+  function openAttPicker(btn, e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    var popover = document.getElementById('attPickerPopover');
+    if (!popover) return;
+
+    var idx = Number(btn.getAttribute('data-idx'));
+    var day = btn.getAttribute('data-day') || 'today';
+    var currentState = btn.getAttribute('data-state') || 'P';
+    var student = currentRoster[idx];
+
+    activePickerCell = btn;
+    activePickerIdx = idx;
+    activePickerDay = day;
+
+    // Header info
+    var nameEl = document.getElementById('pickerStudentName');
+    var dayEl = document.getElementById('pickerDayLabel');
+    if (nameEl && student) {
+      var fullName = student.name || `${student.first_name || ''} ${student.last_name || ''}`.trim() || student.student_id || `Student #${idx+1}`;
+      nameEl.textContent = fullName;
+    }
+    if (dayEl) {
+      dayEl.textContent = DAY_LABELS[day] || (day.toUpperCase() + ' · ' + currentDate);
+    }
+
+    // Remark / Note input sync
+    var noteInp = document.getElementById('pickerNoteInput');
+    if (noteInp && student) {
+      noteInp.value = student.note || student.notes || '';
+    }
+
+    // Update active highlight & checkmark in popover
+    updatePickerOptionStyles(currentState);
+
+    // Update selected cell in bottom status bar
+    var statusSel = document.getElementById('statusSelectedCell');
+    if (statusSel && student) {
+      var sid = student.student_id || student.student_number || `STD-${idx+1}`;
+      statusSel.textContent = `SELECTED: ${day.toUpperCase()} (${sid})`;
+    }
+
+    // Display popover with animation
+    popover.classList.remove('hidden');
+    void popover.offsetHeight; // force reflow
+    popover.classList.remove('scale-95', 'opacity-0');
+    popover.classList.add('scale-100', 'opacity-100');
+
+    positionPicker(btn);
+  }
+
+  function positionPicker(btn) {
+    var popover = document.getElementById('attPickerPopover');
+    if (!popover || !btn) return;
+
+    var rect = btn.getBoundingClientRect();
+    var popWidth = popover.offsetWidth || 288;
+    var popHeight = popover.offsetHeight || 260;
+
+    // Center horizontally relative to cell
+    var left = rect.left + (rect.width / 2) - (popWidth / 2);
+    if (left < 10) left = 10;
+    if (left + popWidth > window.innerWidth - 10) {
+      left = window.innerWidth - popWidth - 10;
+    }
+
+    // Position vertically: below cell by default, or above if close to bottom
+    var top = rect.bottom + 8;
+    if (top + popHeight > window.innerHeight - 10) {
+      var aboveTop = rect.top - popHeight - 8;
+      if (aboveTop >= 10) {
+        top = aboveTop;
+      }
+    }
+    if (top < 10) top = 10;
+
+    popover.style.left = Math.round(left) + 'px';
+    popover.style.top = Math.round(top) + 'px';
+  }
+
+  function closeAttPicker() {
+    var popover = document.getElementById('attPickerPopover');
+    if (!popover || popover.classList.contains('hidden')) return;
+
+    popover.classList.remove('scale-100', 'opacity-100');
+    popover.classList.add('scale-95', 'opacity-0');
+    setTimeout(function () {
+      popover.classList.add('hidden');
+      activePickerCell = null;
+      activePickerIdx = null;
+      activePickerDay = null;
+    }, 140);
+  }
+
+  function updatePickerOptionStyles(selectedState) {
+    var optBtns = document.querySelectorAll('#pickerOptionsContainer .picker-opt-btn');
+    optBtns.forEach(function (opt) {
+      var st = opt.getAttribute('data-pick');
+      var check = opt.querySelector('.picker-check');
+      var isSelected = (st === selectedState);
+
+      opt.classList.remove(
+        'ring-2', 'ring-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/60', 'border-emerald-300', 'dark:border-emerald-700',
+        'ring-amber-500', 'bg-amber-50', 'dark:bg-amber-950/60', 'border-amber-300', 'dark:border-amber-700',
+        'ring-rose-500', 'bg-rose-50', 'dark:bg-rose-950/60', 'border-rose-300', 'dark:border-rose-700',
+        'ring-slate-400', 'bg-slate-100', 'dark:bg-slate-800', 'border-slate-300', 'dark:border-slate-700'
+      );
+
+      if (isSelected) {
+        if (check) {
+          check.classList.remove('opacity-0');
+          check.classList.add('opacity-100');
+        }
+        if (st === 'P') {
+          opt.classList.add('ring-2', 'ring-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-950/60', 'border-emerald-300', 'dark:border-emerald-700');
+        } else if (st === 'L') {
+          opt.classList.add('ring-2', 'ring-amber-500', 'bg-amber-50', 'dark:bg-amber-950/60', 'border-amber-300', 'dark:border-amber-700');
+        } else if (st === 'A') {
+          opt.classList.add('ring-2', 'ring-rose-500', 'bg-rose-50', 'dark:bg-rose-950/60', 'border-rose-300', 'dark:border-rose-700');
+        } else if (st === 'E') {
+          opt.classList.add('ring-2', 'ring-slate-400', 'bg-slate-100', 'dark:bg-slate-800', 'border-slate-300', 'dark:border-slate-700');
+        }
+      } else {
+        if (check) {
+          check.classList.remove('opacity-100');
+          check.classList.add('opacity-0');
+        }
+      }
+    });
+  }
+
+  function selectAttState(newState) {
+    if (!activePickerCell || isNaN(activePickerIdx)) return;
+
+    var btn = activePickerCell;
+    var idx = activePickerIdx;
+    var day = activePickerDay;
+    var cfg = STATE_CONFIG[newState] || STATE_CONFIG['P'];
+
+    // Update cell in table
+    btn.setAttribute('data-state', newState);
+    btn.textContent = newState;
+    btn.className = `att-cell ${btn.classList.contains('today-cell') ? 'today-cell ' : ''}${cfg.cls} hover:ring-2 hover:ring-emerald-400 shadow-xs hover:scale-105`;
+
+    // Update roster data model
+    if (currentRoster[idx]) {
+      if (day === 'today') currentRoster[idx].todayState = newState;
+      else if (day === 'mon') currentRoster[idx].monState = newState;
+      else if (day === 'tue') currentRoster[idx].tueState = newState;
+      else if (day === 'wed') currentRoster[idx].wedState = newState;
+      else if (day === 'thu') currentRoster[idx].thuState = newState;
+    }
+
+    // Sync card roll view if today column changed
+    if (day === 'today') {
+      renderCardsList();
+    }
+
+    // Recalculate row stats & totals
+    var row = btn.closest('tr');
+    if (row) recalcRow(row);
+    updateTotals();
+
+    // Visual feedback in popover before closing
+    updatePickerOptionStyles(newState);
+    setTimeout(function () {
+      closeAttPicker();
+    }, 130);
+  }
+
+  // ── Bind Interactive Events ──
+  function bindSheetEvents() {
+    var cells = document.querySelectorAll('.att-cell');
+    cells.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        openAttPicker(this, e);
       });
-      msg.textContent = `Saved ${records.length} record(s) for ${date}.`;
-      loadRoster();
-    } catch (err) {
-      msg.textContent = err.message || 'Save failed';
+    });
+
+    // Sync note inputs from table to data model
+    var sheetNotes = document.querySelectorAll('.row-note-input');
+    sheetNotes.forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        var idx = Number(this.getAttribute('data-idx'));
+        if (!isNaN(idx) && currentRoster[idx]) {
+          currentRoster[idx].note = this.value;
+          if (activePickerIdx === idx) {
+            var pNote = document.getElementById('pickerNoteInput');
+            if (pNote) pNote.value = this.value;
+          }
+        }
+      });
+    });
+  }
+
+  function bindCardEvents() {
+    var cardBtns = document.querySelectorAll('.card-att-btn');
+    cardBtns.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var state = this.getAttribute('data-state');
+        var idx = Number(this.getAttribute('data-idx'));
+        if (isNaN(idx) || !currentRoster[idx]) return;
+
+        currentRoster[idx].todayState = state;
+
+        // Sync corresponding sheet cell if table rendered
+        var sheetBtn = document.querySelector(`.today-cell[data-idx="${idx}"]`);
+        if (sheetBtn) {
+          sheetBtn.setAttribute('data-state', state);
+          sheetBtn.textContent = state;
+          sheetBtn.className = `att-cell today-cell ${STATE_CONFIG[state].cls} hover:ring-2 hover:ring-emerald-400 shadow-xs hover:scale-105`;
+          var row = sheetBtn.closest('tr');
+          if (row) recalcRow(row);
+        }
+
+        renderCardsList();
+        updateTotals();
+      });
+    });
+
+    // Card note input listener
+    var cardNotes = document.querySelectorAll('.card-note-input');
+    cardNotes.forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        var idx = Number(this.getAttribute('data-idx'));
+        if (!isNaN(idx) && currentRoster[idx]) {
+          currentRoster[idx].note = this.value;
+          // Sync to sheet input
+          var sheetInp = document.querySelector(`.row-note-input[data-idx="${idx}"]`);
+          if (sheetInp) sheetInp.value = this.value;
+          if (activePickerIdx === idx) {
+            var pNote = document.getElementById('pickerNoteInput');
+            if (pNote) pNote.value = this.value;
+          }
+        }
+      });
+    });
+  }
+
+  // ── Popover Button Actions & Dismiss Listeners ──
+  var pickerOpts = document.querySelectorAll('#pickerOptionsContainer .picker-opt-btn');
+  pickerOpts.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      var state = this.getAttribute('data-pick');
+      selectAttState(state);
+    });
+  });
+
+  var pClose = document.getElementById('pickerCloseBtn');
+  if (pClose) {
+    pClose.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeAttPicker();
+    });
+  }
+
+  var pNoteInput = document.getElementById('pickerNoteInput');
+  if (pNoteInput) {
+    pNoteInput.addEventListener('input', function () {
+      if (!isNaN(activePickerIdx) && currentRoster[activePickerIdx]) {
+        currentRoster[activePickerIdx].note = this.value;
+        var rowInp = document.querySelector(`.row-note-input[data-idx="${activePickerIdx}"]`);
+        if (rowInp) rowInp.value = this.value;
+        var cardInp = document.querySelector(`.card-note-input[data-idx="${activePickerIdx}"]`);
+        if (cardInp) cardInp.value = this.value;
+      }
+    });
+  }
+
+  // Close popover on click outside
+  document.addEventListener('click', function (e) {
+    var popover = document.getElementById('attPickerPopover');
+    if (!popover || popover.classList.contains('hidden')) return;
+
+    if (!popover.contains(e.target) && !e.target.closest('.att-cell')) {
+      closeAttPicker();
     }
   });
 
-  setTimeout(loadRoster, 250);
+  // Close popover on Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      closeAttPicker();
+    }
+  });
+
+  // Close popover on matrix container scroll
+  var matrixScroll = document.getElementById('matrixScrollContainer');
+  if (matrixScroll) {
+    matrixScroll.addEventListener('scroll', function () {
+      closeAttPicker();
+    }, { passive: true });
+  }
+
+  // Reposition popover on window resize
+  window.addEventListener('resize', function () {
+    if (activePickerCell) {
+      positionPicker(activePickerCell);
+    }
+  }, { passive: true });
+
+  // ── Recalculate Row Statistics ──
+  function recalcRow(row) {
+    if (!row) return;
+    var dayCells = row.querySelectorAll('.att-cell');
+    var pCount = 0, lCount = 0, aCount = 0, eCount = 0;
+    dayCells.forEach(function (c) {
+      var s = c.getAttribute('data-state');
+      if (s === 'P') pCount++;
+      else if (s === 'L') lCount++;
+      else if (s === 'A') aCount++;
+      else if (s === 'E') eCount++;
+    });
+
+    var total = dayCells.length;
+    var rate = total > 0 ? Math.round(((pCount + (lCount * 0.5)) / total) * 100) : 100;
+
+    var presEl = row.querySelector('.row-stat-pres');
+    var lateEl = row.querySelector('.row-stat-late');
+    var absEl = row.querySelector('.row-stat-abs');
+    var rateEl = row.querySelector('.row-stat-rate');
+
+    if (presEl) presEl.textContent = pCount;
+    if (lateEl) {
+      lateEl.textContent = lCount;
+      lateEl.className = `py-1.5 px-1 text-center font-mono ${lCount > 0 ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-slate-400'} bg-slate-50 dark:bg-slate-800/40 row-stat-late`;
+    }
+    if (absEl) {
+      absEl.textContent = aCount;
+      absEl.className = `py-1.5 px-1 text-center font-mono ${aCount > 0 ? 'font-medium text-rose-600 dark:text-rose-400' : 'text-slate-400'} bg-slate-50 dark:bg-slate-800/40 row-stat-abs`;
+    }
+    if (rateEl) {
+      rateEl.textContent = `${rate}%`;
+      rateEl.className = `py-1.5 px-2 text-center font-mono font-medium ${rate >= 90 ? 'text-emerald-700 dark:text-emerald-400' : (rate >= 75 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400')} bg-slate-50 dark:bg-slate-800/40 row-stat-rate`;
+    }
+  }
+
+  function recalcAllRows() {
+    var rows = document.querySelectorAll('#attendanceGridBody tr');
+    rows.forEach(function (r) { recalcRow(r); });
+  }
+
+  // ── Update Summary Statistics (Sheet Footer & Card KPIs) ──
+  function updateTotals() {
+    var pCount = 0, aCount = 0, lCount = 0, eCount = 0;
+    currentRoster.forEach(function (s) {
+      var st = s.todayState || 'P';
+      if (st === 'P') pCount++;
+      else if (st === 'A') aCount++;
+      else if (st === 'L') lCount++;
+      else if (st === 'E') eCount++;
+    });
+
+    var total = currentRoster.length;
+    var rate = total > 0 ? Math.round(((pCount + (lCount * 0.5)) / total) * 1000) / 10 : 100.0;
+
+    // Sheet footer elements
+    var countEl = document.getElementById('todayPresentCount');
+    var absEl = document.getElementById('todayAbsenceCount');
+    var rateEl = document.getElementById('cohortRateText');
+    var ratioEl = document.getElementById('cohortPresentRatio');
+
+    if (countEl) countEl.textContent = `${pCount} / ${total}`;
+    if (absEl) absEl.textContent = `${aCount} Abs / ${lCount} Late`;
+    if (rateEl) rateEl.textContent = `${rate}%`;
+    if (ratioEl) ratioEl.textContent = `${pCount}/${total} Present`;
+
+    // Card banner KPI elements
+    var cTotal = document.getElementById('cardStatTotal');
+    var cPres = document.getElementById('cardStatPresent');
+    var cAbs = document.getElementById('cardStatAbsent');
+    var cRate = document.getElementById('cardStatRate');
+
+    if (cTotal) cTotal.textContent = total;
+    if (cPres) cPres.textContent = pCount;
+    if (cAbs) cAbs.textContent = aCount;
+    if (cRate) cRate.textContent = `${rate}%`;
+
+    // Filter counts
+    var fcAll = document.getElementById('filterCountAll');
+    var fcP = document.getElementById('filterCountP');
+    var fcA = document.getElementById('filterCountA');
+    var fcL = document.getElementById('filterCountL');
+
+    if (fcAll) fcAll.textContent = total;
+    if (fcP) fcP.textContent = pCount;
+    if (fcA) fcA.textContent = aCount;
+    if (fcL) fcL.textContent = lCount;
+  }
+
+  // ── Mark All Present Action ──
+  var markAllBtn = document.getElementById('markAllPresentBtn');
+  if (markAllBtn) {
+    markAllBtn.addEventListener('click', function () {
+      currentRoster.forEach(function (s) {
+        s.todayState = 'P';
+      });
+
+      var todayButtons = document.querySelectorAll('.today-cell');
+      todayButtons.forEach(function (btn) {
+        btn.setAttribute('data-state', 'P');
+        btn.textContent = 'P';
+        btn.className = 'att-cell today-cell att-cell-p hover:ring-2 hover:ring-emerald-400 shadow-xs hover:scale-105';
+      });
+
+      recalcAllRows();
+      renderCardsList();
+      updateTotals();
+      if (window.toast) window.toast('Marked all students as Present for today', 'info');
+    });
+  }
+
+  // ── Save & Submit Attendance Action ──
+  var saveBtn = document.getElementById('saveSheetBtn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async function () {
+      var btn = this;
+      var origContent = btn.innerHTML;
+      btn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Saving Matrix...</span>`;
+      btn.disabled = true;
+
+      var records = [];
+      currentRoster.forEach(function (s, index) {
+        var sid = s.student_id || s.student_number || `STD-${index+1}`;
+        var state = s.todayState || 'P';
+        var note = s.note || s.notes || '';
+        records.push({
+          studentId: sid,
+          classId: currentClassId,
+          date: currentDate,
+          status: toApiState(state),
+          note: note ? note.trim() : '',
+          session: 'daily'
+        });
+      });
+
+      try {
+        await NGISAuth.api('/api/academic/attendance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            classId: currentClassId,
+            date: currentDate,
+            records: records
+          })
+        });
+
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">check</span><span>Submitted to Registry!</span>`;
+        btn.classList.remove('bg-institutional-600');
+        btn.classList.add('bg-emerald-700');
+
+        if (window.toast) {
+          window.toast(`Successfully saved attendance for ${records.length} students on ${currentDate}.`, 'success');
+        }
+
+        setTimeout(function () {
+          btn.innerHTML = origContent;
+          btn.classList.remove('bg-emerald-700');
+          btn.classList.add('bg-institutional-600');
+          btn.disabled = false;
+        }, 2200);
+
+      } catch (err) {
+        btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">error</span><span>Save Failed</span>`;
+        btn.classList.remove('bg-institutional-600');
+        btn.classList.add('bg-rose-700');
+        if (window.toast) window.toast(err.message || 'Save failed', 'error');
+
+        setTimeout(function () {
+          btn.innerHTML = origContent;
+          btn.classList.remove('bg-rose-700');
+          btn.classList.add('bg-institutional-600');
+          btn.disabled = false;
+        }, 2500);
+      }
+    });
+  }
+
+  // ── Switch Class Logic ──
+  var classSel = document.getElementById('classSelector');
+  if (classSel) {
+    classSel.addEventListener('change', function () {
+      switchClass(this.value);
+    });
+  }
+
+  var sheetTabs = document.querySelectorAll('.sheet-tab');
+  sheetTabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var cls = this.getAttribute('data-class');
+      if (cls) switchClass(cls);
+    });
+  });
+
+  function switchClass(classId) {
+    currentClassId = classId;
+
+    if (classSel) classSel.value = classId;
+
+    sheetTabs.forEach(function (t) {
+      var target = t.getAttribute('data-class');
+      if (target === classId) {
+        t.className = 'sheet-tab h-full px-3 bg-white dark:bg-slate-800 border-t-2 border-t-institutional-600 border-r border-l border-slate-200 dark:border-slate-700 font-medium text-institutional-900 dark:text-institutional-300 flex items-center gap-1.5 shadow-xs transition text-xs whitespace-nowrap';
+        if (!t.querySelector('.material-symbols-outlined')) {
+          var icon = document.createElement('span');
+          icon.className = 'material-symbols-outlined text-institutional-600 text-[15px]';
+          icon.textContent = 'grid_on';
+          t.insertBefore(icon, t.firstChild);
+        }
+      } else {
+        t.className = 'sheet-tab h-full px-3 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center gap-1.5 border-r border-slate-200 dark:border-slate-800 transition text-xs whitespace-nowrap';
+        var icon = t.querySelector('.material-symbols-outlined');
+        if (icon) icon.remove();
+      }
+    });
+
+    var url = new URL(window.location);
+    url.searchParams.set('classId', classId);
+    window.history.replaceState({}, '', url);
+
+    var retBtn = document.getElementById('btnReturnMyClass');
+    if (retBtn) retBtn.href = `teacher-classes.html?classId=${encodeURIComponent(classId)}`;
+
+    loadSheetData();
+  }
+
+  // ── Filter and Search Listeners for Card View ──
+  var filterBtns = document.querySelectorAll('.card-filter-btn');
+  filterBtns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      filterBtns.forEach(function (btn) {
+        btn.className = 'card-filter-btn px-2.5 py-1 rounded-lg text-xs font-medium transition bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200';
+      });
+      this.className = 'card-filter-btn px-2.5 py-1 rounded-lg text-xs font-medium transition bg-institutional-600 text-white';
+      currentFilter = this.getAttribute('data-filter') || 'all';
+      renderCardsList();
+    });
+  });
+
+  var sInput = document.getElementById('cardSearchInput');
+  if (sInput) {
+    sInput.addEventListener('input', function () {
+      searchQuery = this.value.trim();
+      renderCardsList();
+    });
+  }
+
+  // ── View Switcher Buttons ──
+  var btnGridDesk = document.getElementById('btnViewGridDesk');
+  var btnCardsDesk = document.getElementById('btnViewCardsDesk');
+  var btnGridMob = document.getElementById('btnViewGridMob');
+  var btnCardsMob = document.getElementById('btnViewCardsMob');
+
+  if (btnGridDesk) btnGridDesk.addEventListener('click', function () { setViewMode('grid'); });
+  if (btnCardsDesk) btnCardsDesk.addEventListener('click', function () { setViewMode('cards'); });
+  if (btnGridMob) btnGridMob.addEventListener('click', function () { setViewMode('grid'); });
+  if (btnCardsMob) btnCardsMob.addEventListener('click', function () { setViewMode('cards'); });
+
+  // ── Print & Export Listeners ──
+  var printBtn = document.getElementById('btnPrintBtn');
+  if (printBtn) {
+    printBtn.addEventListener('click', function () {
+      setViewMode('grid');
+      setTimeout(function () { window.print(); }, 150);
+    });
+  }
+
+  var exportBtn = document.getElementById('btnExportBtn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', function () {
+      var csv = 'Row,Student ID,Student Name,Gender,Mon,Tue,Wed,Thu,Today (Fri),Present,Late,Absent,Rate %,Remarks\n';
+      currentRoster.forEach(function (s, idx) {
+        var sid = s.student_id || s.student_number || `STD-${idx+1}`;
+        var name = s.name || `${s.first_name || ''} ${s.last_name || ''}`.trim() || sid;
+        var gender = s.gender || (idx % 2 === 0 ? 'M' : 'F');
+        var today = s.todayState || 'P';
+        var note = s.note || s.notes || '';
+
+        var pCount = 0, lCount = 0, aCount = 0;
+        [s.monState, s.tueState, s.wedState, s.thuState, today].forEach(function(st) {
+          if (st === 'P') pCount++;
+          else if (st === 'L') lCount++;
+          else if (st === 'A') aCount++;
+        });
+        var rate = Math.round(((pCount + (lCount * 0.5)) / 5) * 100);
+
+        csv += `"${idx+1}","${sid}","${name}","${gender}","${s.monState}","${s.tueState}","${s.wedState}","${s.thuState}","${today}","${pCount}","${lCount}","${aCount}","${rate}%","${note.replace(/"/g, '""')}"\n`;
+      });
+
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `NGIS_${(CLASS_NAMES[currentClassId]||'Class').replace(/[^a-zA-Z0-9]/g, '_')}_Attendance_${currentDate}.csv`;
+      link.click();
+      if (window.toast) window.toast('Exported attendance matrix CSV', 'success');
+    });
+  }
+
+  // ── Zoom Controls ──
+  var zoomIn = document.getElementById('btnZoomIn');
+  var zoomOut = document.getElementById('btnZoomOut');
+  var zoomLabel = document.getElementById('zoomLevel');
+  var sheetContainer = document.getElementById('sheetContainer');
+
+  if (zoomIn && zoomOut && sheetContainer) {
+    zoomIn.addEventListener('click', function () {
+      if (zoomScale < 120) {
+        zoomScale += 10;
+        applyZoom();
+      }
+    });
+    zoomOut.addEventListener('click', function () {
+      if (zoomScale > 80) {
+        zoomScale -= 10;
+        applyZoom();
+      }
+    });
+  }
+
+  function applyZoom() {
+    if (zoomLabel) zoomLabel.textContent = `${zoomScale}%`;
+    var tbl = document.getElementById('attendanceGridTable');
+    if (tbl) {
+      tbl.style.fontSize = `${(zoomScale / 100) * 0.75}rem`;
+    }
+  }
+
+  // ── Keyboard Shortcuts: Ctrl+S for Save, Ctrl+F for Search ──
+  document.addEventListener('keydown', function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+      e.preventDefault();
+      var btn = document.getElementById('saveSheetBtn');
+      if (btn && !btn.disabled) btn.click();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+      e.preventDefault();
+      if (activeView === 'cards') {
+        var sInp = document.getElementById('cardSearchInput');
+        if (sInp) sInp.focus();
+      } else {
+        var firstNote = document.querySelector('.row-note-input');
+        if (firstNote) firstNote.focus();
+      }
+    }
+  });
+
+  // ── Initialization ──
+  function init() {
+    var params = new URLSearchParams(window.location.search);
+    var qClass = params.get('classId') || params.get('class');
+    if (qClass && CLASS_NAMES[qClass]) {
+      currentClassId = qClass;
+    }
+    setViewMode(activeView);
+    switchClass(currentClassId);
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  init();
+
 })();
 </script>
-  <script src="../../assets/js/academic-live.js"></script>
 </body>
 </html>

@@ -54,7 +54,7 @@
             <td>2026-07-05</td>
             <td>30/30</td>
             <td><span class="badge green">Graded</span></td>
-            <td><div class="flex gap4"><button class="icon-btn sm" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
+            <td><div class="flex gap4"><button class="icon-btn sm edit-asg-btn" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm subs-asg-btn" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
           </tr>
           <tr>
             <td><span style="font-size:13px">HSK3 Vocabulary Quiz</span><div class="faint" style="font-size:11px">Chinese</div></td>
@@ -62,7 +62,7 @@
             <td>2026-07-15</td>
             <td>2/28</td>
             <td><span class="badge gray">Draft</span></td>
-            <td><div class="flex gap4"><button class="icon-btn sm" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
+            <td><div class="flex gap4"><button class="icon-btn sm edit-asg-btn" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm subs-asg-btn" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
           </tr>
           <tr>
             <td><span style="font-size:13px">Algebra Problem Set 8</span><div class="faint" style="font-size:11px">English</div></td>
@@ -70,7 +70,7 @@
             <td>2026-06-28</td>
             <td>27/31</td>
             <td><span class="badge green">Graded</span></td>
-            <td><div class="flex gap4"><button class="icon-btn sm" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
+            <td><div class="flex gap4"><button class="icon-btn sm edit-asg-btn" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm subs-asg-btn" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
           </tr>
           <tr>
             <td><span style="font-size:13px">Reading Comprehension: Short Stories</span><div class="faint" style="font-size:11px">English</div></td>
@@ -78,7 +78,7 @@
             <td>2026-07-08</td>
             <td>18/29</td>
             <td><span class="badge blue">Published</span></td>
-            <td><div class="flex gap4"><button class="icon-btn sm" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
+            <td><div class="flex gap4"><button class="icon-btn sm edit-asg-btn" title="Edit"><span class="material-symbols-outlined">edit</span></button><button class="icon-btn sm subs-asg-btn" title="Submissions"><span class="material-symbols-outlined">visibility</span></button></div></td>
           </tr>
         </tbody>
       </table>
@@ -168,18 +168,81 @@
     { icon: 'verified', text: 'Principal Administrator' }
   ]
 };</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script>Protect.require(['admin']);</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script>
 (function () {
+  var editingRow = null;
+
   function rowActionsHtml() {
     return '<div class="flex gap4 wrap">' +
-      '<button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
-      '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast(\'Assignment deleted\',\'error\')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
+      '<button class="icon-btn edit-asg-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
+      '<button class="icon-btn subs-asg-btn" title="Submissions"><span class="material-symbols-outlined" style="font-size:16px">visibility</span></button>' +
+      '<button class="icon-btn del-asg-btn" title="Delete" style="color:var(--danger)"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
     '</div>';
   }
-  document.querySelectorAll('#assignmentsTable td').forEach(function (td) {
-    if (td.textContent.indexOf('__ACTIONS__') === 0) td.innerHTML = rowActionsHtml();
+
+  // Ensure all existing rows have consistent action buttons with classes
+  document.querySelectorAll('#assignmentsTable tbody tr').forEach(function (tr) {
+    var lastTd = tr.querySelector('td:last-child');
+    if (lastTd) {
+      lastTd.innerHTML = rowActionsHtml();
+    }
+  });
+
+  // Table action delegation: Edit, Submissions, Delete
+  document.getElementById('assignmentsTable').addEventListener('click', function (e) {
+    var editBtn = e.target.closest('.edit-asg-btn, [title="Edit"]');
+    if (editBtn) {
+      var tr = editBtn.closest('tr');
+      if (!tr) return;
+      editingRow = tr;
+      var titleEl = tr.querySelector('td:first-child span');
+      var deptEl = tr.querySelector('td:first-child .faint');
+      var dueTd = tr.querySelector('td:nth-child(3)');
+      var statusBadge = tr.querySelector('td:nth-child(5) .badge');
+
+      document.getElementById('addAssignmentTitle').textContent = 'Edit Assignment';
+      document.getElementById('asgTitle').value = titleEl ? titleEl.textContent.trim() : '';
+      if (deptEl) document.getElementById('asgDept').value = deptEl.textContent.trim();
+      if (dueTd && dueTd.textContent.trim() !== '—') document.getElementById('asgDue').value = dueTd.textContent.trim();
+      if (statusBadge) document.getElementById('asgStatus').value = statusBadge.textContent.trim();
+
+      var ov = document.querySelector('.drawer-overlay[data-drawer="addAssignmentDrawer"]');
+      if (ov) ov.classList.add('show', 'open');
+      return;
+    }
+
+    var subsBtn = e.target.closest('.subs-asg-btn, [title="Submissions"]');
+    if (subsBtn) {
+      var tr = subsBtn.closest('tr');
+      var title = tr ? tr.querySelector('td:first-child span')?.textContent : 'Assignment';
+      var subs = tr ? tr.querySelector('td:nth-child(4)')?.textContent : '0/0';
+      if (window.toast) window.toast('Viewing submissions for ' + title + ' (' + subs + ' turned in)', 'info');
+      return;
+    }
+
+    var delBtn = e.target.closest('.del-asg-btn, [title="Delete"]');
+    if (delBtn) {
+      var tr = delBtn.closest('tr');
+      if (tr) {
+        tr.remove();
+        if (window.toast) window.toast('Assignment deleted successfully', 'error');
+      }
+      return;
+    }
+  });
+
+  // Reset drawer state when opened via Create button
+  document.querySelectorAll('[data-open-drawer="addAssignmentDrawer"]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      editingRow = null;
+      document.getElementById('addAssignmentTitle').textContent = 'Create Assignment';
+      document.getElementById('addAssignmentForm').reset();
+    });
   });
 
   function saveAssignment() {
@@ -194,26 +257,83 @@
       ? checked.map(function (c) { return '<span class="badge blue">' + c.value + '</span>'; }).join('')
       : '—';
 
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + '</div></td>' +
-      '<td><div class="flex gap4 wrap">' + classesHtml + '</div></td>' +
-      '<td>' + due + '</td>' +
-      '<td>0/0</td>' +
-      '<td><span class="badge ' + badgeCls + '">' + status + '</span></td>' +
-      '<td>' + rowActionsHtml() + '</td>';
-    document.querySelector('#assignmentsTable tbody').prepend(tr);
-    window.toast('Assignment created', 'success');
+    if (editingRow) {
+      editingRow.innerHTML =
+        '<td><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + '</div></td>' +
+        '<td><div class="flex gap4 wrap">' + classesHtml + '</div></td>' +
+        '<td>' + due + '</td>' +
+        '<td>24/30</td>' +
+        '<td><span class="badge ' + badgeCls + '">' + status + '</span></td>' +
+        '<td>' + rowActionsHtml() + '</td>';
+      editingRow = null;
+      if (window.toast) window.toast('Assignment updated successfully', 'success');
+    } else {
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + '</div></td>' +
+        '<td><div class="flex gap4 wrap">' + classesHtml + '</div></td>' +
+        '<td>' + due + '</td>' +
+        '<td>0/0</td>' +
+        '<td><span class="badge ' + badgeCls + '">' + status + '</span></td>' +
+        '<td>' + rowActionsHtml() + '</td>';
+      document.querySelector('#assignmentsTable tbody').prepend(tr);
+      if (window.toast) window.toast('Assignment created successfully', 'success');
+    }
 
     var ov = document.querySelector('.drawer-overlay[data-drawer="addAssignmentDrawer"]');
-    if (ov) ov.classList.remove('show');
+    if (ov) ov.classList.remove('show', 'open');
     document.getElementById('addAssignmentForm').reset();
   }
 
   document.getElementById('asgSaveBtn').addEventListener('click', saveAssignment);
 
+  // Search & Filters
+  var searchInput = document.querySelector('.toolbar input');
+  var selects = document.querySelectorAll('.toolbar select');
+  function filterRows() {
+    var q = (searchInput ? searchInput.value : '').toLowerCase();
+    var deptFilter = selects[0] ? selects[0].value : 'All Departments';
+    var classFilter = selects[1] ? selects[1].value : 'All Classes';
+    var statusFilter = selects[2] ? selects[2].value : 'All Status';
+
+    document.querySelectorAll('#assignmentsTable tbody tr').forEach(function (tr) {
+      var txt = tr.textContent.toLowerCase();
+      var matchesQ = !q || txt.includes(q);
+      var matchesDept = deptFilter === 'All Departments' || txt.includes(deptFilter.toLowerCase());
+      var matchesClass = classFilter === 'All Classes' || txt.includes(classFilter.toLowerCase());
+      var matchesStatus = statusFilter === 'All Status' || txt.includes(statusFilter.toLowerCase());
+
+      tr.style.display = (matchesQ && matchesDept && matchesClass && matchesStatus) ? '' : 'none';
+    });
+  }
+
+  if (searchInput) searchInput.addEventListener('input', filterRows);
+  selects.forEach(function (sel) { sel.addEventListener('change', filterRows); });
+
+  // Pagination buttons
+  var paginationBtns = document.querySelectorAll('.card-pad .btn-sm');
+  paginationBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var label = btn.textContent.trim();
+      paginationBtns.forEach(function (b) {
+        if (/^\d+$/.test(b.textContent.trim())) {
+          b.className = 'btn btn-ghost btn-sm';
+        }
+      });
+      if (/^\d+$/.test(label)) {
+        btn.className = 'btn btn-sm btn-primary';
+        if (window.toast) window.toast('Showing page ' + label + ' of assignments', 'info');
+      } else if (label === 'Next') {
+        if (window.toast) window.toast('Loaded next page of assignments', 'info');
+      } else if (label === 'Previous') {
+        if (window.toast) window.toast('Returned to previous page', 'info');
+      }
+    });
+  });
+
   if (new URLSearchParams(location.search).get('add') === '1') {
-    document.querySelector('.drawer-overlay[data-drawer="addAssignmentDrawer"]').classList.add('show');
+    var ov = document.querySelector('.drawer-overlay[data-drawer="addAssignmentDrawer"]');
+    if (ov) ov.classList.add('show', 'open');
   }
 })();
 </script>

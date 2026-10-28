@@ -756,10 +756,10 @@ tailwind.config = {
           <h3>Calendar</h3>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
-          <button class="cal-nav-btn"><span class="mi">chevron_left</span></button>
-          <span class="cal-month">June 2025</span>
-          <button class="cal-nav-btn"><span class="mi">chevron_right</span></button>
-          <a href="#" class="sec-link" style="margin-left:4px">View Full Calendar</a>
+          <button class="cal-nav-btn" id="studentCalPrev" aria-label="Previous month"><span class="mi">chevron_left</span></button>
+          <span class="cal-month" id="studentCalMonth">October 2026</span>
+          <button class="cal-nav-btn" id="studentCalNext" aria-label="Next month"><span class="mi">chevron_right</span></button>
+          <a href="student-calendar.html" class="sec-link" style="margin-left:4px">View Full Calendar</a>
         </div>
       </div>
       <div class="cal-inner">
@@ -1129,7 +1129,7 @@ tailwind.config = {
         <div class="flex items-center justify-between mb-2 px-0.5">
           <h3 class="text-xs font-normal uppercase tracking-wider text-slate-600">Recent Deadlines &amp; Tasks</h3>
           <div class="flex items-center gap-2">
-            <button type="button" aria-label="Filter" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition-colors">
+            <button type="button" aria-label="Filter" onclick="window.location.href='student-assignments.html'" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition-colors" title="Filter pending deadlines">
               <i class="ph-bold ph-funnel text-xs"></i>
             </button>
             <a href="student-assignments.html" class="text-xs font-normal text-[#13829b] hover:underline">View All</a>
@@ -1428,7 +1428,7 @@ tailwind.config = {
 </div>
 
 <script>
-  // Global Digital ID Modal Trigger
+  // Global Digital ID Modal Trigger & Card Flip
   window.openDigitalIdModal = function() {
     const modal = document.getElementById('idModal');
     if (modal) {
@@ -1436,6 +1436,115 @@ tailwind.config = {
       document.body.style.overflow = 'hidden';
     }
   };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // 1. Digital ID Modal Close & Flip
+    const idModal = document.getElementById('idModal');
+    const idCloseBtn = document.getElementById('idCloseBtn');
+    const idCard = document.getElementById('idCard');
+
+    function closeIdModal() {
+      if (idModal) {
+        idModal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    }
+
+    if (idCloseBtn) idCloseBtn.addEventListener('click', closeIdModal);
+    if (idModal) {
+      idModal.addEventListener('click', (e) => {
+        if (e.target === idModal) closeIdModal();
+      });
+    }
+    if (idCard) {
+      idCard.addEventListener('click', () => {
+        idCard.classList.toggle('flipped');
+      });
+    }
+
+    // 2. Promo Carousel Slideshow
+    const track = document.getElementById('promoTrack');
+    const slides = document.querySelectorAll('.promo-slide');
+    const dots = document.querySelectorAll('.promo-dot');
+    const prevBtn = document.getElementById('promoPrev');
+    const nextBtn = document.getElementById('promoNext');
+    let currentSlide = 0;
+    const totalSlides = slides.length || 3;
+
+    function goToSlide(idx) {
+      if (idx < 0) idx = totalSlides - 1;
+      if (idx >= totalSlides) idx = 0;
+      currentSlide = idx;
+      if (track) track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+      });
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => goToSlide(i));
+    });
+
+    setInterval(() => {
+      goToSlide(currentSlide + 1);
+    }, 6000);
+
+    // 3. Mini Calendar Populator
+    const calGrid = document.getElementById('calGrid');
+    const calMonth = document.getElementById('studentCalMonth');
+    const calPrev = document.getElementById('studentCalPrev');
+    const calNext = document.getElementById('studentCalNext');
+    const calSide = document.getElementById('calSide');
+
+    const calMonths = ['September 2026', 'October 2026', 'November 2026'];
+    let calMonthIdx = 1; // October 2026
+
+    function renderMiniCal() {
+      if (!calGrid) return;
+      if (calMonth) calMonth.textContent = calMonths[calMonthIdx];
+      calGrid.innerHTML = '';
+
+      // Header row
+      const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+      days.forEach(d => {
+        const h = document.createElement('div');
+        h.className = 'cal-day-head';
+        h.textContent = d;
+        calGrid.appendChild(h);
+      });
+
+      // Days 1..31
+      for (let i = 1; i <= 31; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell' + (i === 24 ? ' today active' : '');
+        cell.textContent = i;
+        cell.addEventListener('click', () => {
+          calGrid.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('active'));
+          cell.classList.add('active');
+          if (calSide) {
+            calSide.innerHTML = `
+              <div class="cal-side-title">Schedule on Oct ${i}</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">
+                ${i % 2 === 0 ? '• 08:00 AM — English Literature<br>• 10:15 AM — Chemistry Lab' : '• 09:00 AM — Advanced Khmer<br>• 01:30 PM — Study Hall'}
+              </div>`;
+          }
+          if (window.toast) window.toast(`Selected October ${i}, 2026`, 'info');
+        });
+        calGrid.appendChild(cell);
+      }
+    }
+
+    if (calPrev) calPrev.addEventListener('click', () => {
+      if (calMonthIdx > 0) { calMonthIdx--; renderMiniCal(); }
+    });
+    if (calNext) calNext.addEventListener('click', () => {
+      if (calMonthIdx < calMonths.length - 1) { calMonthIdx++; renderMiniCal(); }
+    });
+
+    renderMiniCal();
+  });
 </script>
 </body>
 </html>

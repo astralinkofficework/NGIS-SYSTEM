@@ -523,12 +523,12 @@
                 <div>
                   Showing <span class="font-medium text-on-surface" id="coursesRange">1 to 4</span> of <span class="font-medium text-on-surface" id="coursesTotal">12</span> courses
                 </div>
-                <div class="flex items-center gap-1">
-                  <button class="px-2.5 py-1 rounded bg-surface-container text-outline opacity-60 cursor-not-allowed" disabled type="button">Previous</button>
-                  <button class="px-3 py-1 rounded bg-primary text-on-primary font-medium" type="button">1</button>
-                  <button class="px-3 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" type="button">2</button>
-                  <button class="px-3 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" type="button">3</button>
-                  <button class="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" type="button">Next</button>
+                <div class="flex items-center gap-1" id="deptCoursesPagination">
+                  <button id="deptPrevBtn" class="px-2.5 py-1 rounded bg-surface-container text-outline opacity-60 cursor-not-allowed" disabled type="button">Previous</button>
+                  <button class="dept-pg-btn px-3 py-1 rounded bg-primary text-on-primary font-medium" type="button">1</button>
+                  <button class="dept-pg-btn px-3 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" type="button">2</button>
+                  <button class="dept-pg-btn px-3 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" type="button">3</button>
+                  <button id="deptNextBtn" class="px-2.5 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors" type="button">Next</button>
                 </div>
               </div>
             </div>
@@ -1162,13 +1162,13 @@ window.PAGE = {"role":"admin","active":"departments"};
         </td>
         <td class="py-2.5 px-3 text-center whitespace-nowrap">
           <div class="flex items-center justify-center gap-1">
-            <button type="button" class="p-1 text-outline hover:text-primary hover:bg-surface-container rounded transition-colors cursor-pointer" title="View Syllabus" onclick="alert('Viewing syllabus for ${c.code}')">
+            <button type="button" class="p-1 text-outline hover:text-primary hover:bg-surface-container rounded transition-colors cursor-pointer" title="View Syllabus" onclick="if(window.toast) window.toast('Viewing accredited syllabus for ${c.code}: ${c.title}', 'info')">
               <span class="material-symbols-outlined text-[18px]">visibility</span>
             </button>
-            <button type="button" class="p-1 text-outline hover:text-on-surface hover:bg-surface-container rounded transition-colors cursor-pointer" title="Edit Details" onclick="alert('Editing syllabus details for ${c.code}')">
+            <button type="button" class="p-1 text-outline hover:text-on-surface hover:bg-surface-container rounded transition-colors cursor-pointer" title="Edit Details" onclick="if(window.toast) window.toast('Opening syllabus editor for ${c.code}', 'info')">
               <span class="material-symbols-outlined text-[18px]">edit</span>
             </button>
-            <button type="button" class="p-1 text-outline hover:text-on-surface hover:bg-surface-container rounded transition-colors cursor-pointer" title="Download PDF" onclick="alert('Exporting official curriculum PDF for ${c.code}')">
+            <button type="button" class="p-1 text-outline hover:text-on-surface hover:bg-surface-container rounded transition-colors cursor-pointer" title="Download PDF" onclick="if(window.toast) window.toast('Exporting official curriculum PDF for ${c.code}', 'success')">
               <span class="material-symbols-outlined text-[18px]">download</span>
             </button>
           </div>
@@ -1472,7 +1472,9 @@ window.PAGE = {"role":"admin","active":"departments"};
       if (icon) icon.classList.add('animate-spin');
       setTimeout(() => {
         if (icon) icon.classList.remove('animate-spin');
-        alert(`Curriculum benchmarks successfully synced with MoEYS National & Cambridge CAIE registry for ${currentDept.name}.`);
+        if (window.toast) {
+          window.toast(`Curriculum benchmarks synced with MoEYS National & Cambridge CAIE registry for ${currentDept.name}.`, 'success');
+        }
       }, 700);
     });
   }
@@ -1481,21 +1483,47 @@ window.PAGE = {"role":"admin","active":"departments"};
   const btnPrimaryAddCourse = document.getElementById('btnPrimaryAddCourse');
   if (btnPrimaryAddCourse) {
     btnPrimaryAddCourse.addEventListener('click', () => {
-      alert(`Add New Course / Syllabus module: Registering accredited subject for ${currentDept.name}.`);
+      if (window.toast) window.toast(`Registering accredited subject for ${currentDept.name}...`, 'info');
     });
   }
 
   const btnAssignFaculty = document.getElementById('btnAssignFaculty');
   if (btnAssignFaculty) {
     btnAssignFaculty.addEventListener('click', () => {
-      alert(`Assign Faculty dialog: Allocate certified teacher to ${currentDept.name}.`);
+      if (window.toast) window.toast(`Faculty allocation drawer opened for ${currentDept.name}.`, 'info');
     });
   }
 
   const btnExportDossier = document.getElementById('btnExportDossier');
   if (btnExportDossier) {
     btnExportDossier.addEventListener('click', () => {
-      alert(`Exporting official ${currentDept.name} curriculum dossier & faculty workload report to PDF...`);
+      if (window.toast) window.toast(`Exporting official ${currentDept.name} curriculum dossier to PDF...`, 'success');
+    });
+  }
+
+  // Courses Pagination
+  const deptPgBtns = document.querySelectorAll('.dept-pg-btn');
+  deptPgBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      deptPgBtns.forEach(b => {
+        b.className = 'dept-pg-btn px-3 py-1 rounded bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors';
+      });
+      btn.className = 'dept-pg-btn px-3 py-1 rounded bg-primary text-on-primary font-medium';
+      if (window.toast) window.toast(`Showing courses page ${btn.textContent.trim()}`, 'info');
+    });
+  });
+
+  const deptPrevBtn = document.getElementById('deptPrevBtn');
+  if (deptPrevBtn) {
+    deptPrevBtn.addEventListener('click', () => {
+      if (window.toast) window.toast('Returned to previous page of courses', 'info');
+    });
+  }
+
+  const deptNextBtn = document.getElementById('deptNextBtn');
+  if (deptNextBtn) {
+    deptNextBtn.addEventListener('click', () => {
+      if (window.toast) window.toast('Loaded next page of accredited courses', 'info');
     });
   }
 

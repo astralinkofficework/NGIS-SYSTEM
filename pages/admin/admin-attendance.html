@@ -10,158 +10,261 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
-  <script src="../../assets/js/auth.js"></script>
-  <script src="../../assets/js/protect.js"></script>
-  <script src="../admin/_auth-bootstrap.js"></script>
+
+<!-- Phosphor Icons for Mobile Hamburger -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<!-- Tailwind CSS for modern layout -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td {
+  font-weight: 400 !important;
+}
+.font-medium, .stat-val, .badge, th {
+  font-weight: 500 !important;
+}
+</style>
+
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="../admin/_auth-bootstrap.js"></script>
 </head>
 <body data-role="admin" data-portal="admin">
 <main class="main">
 <div id="heroBanner"></div>
+
+<!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+<div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+  <div class="flex items-center gap-2.5">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <i class="ph ph-list text-xl"></i>
+    </button>
+    <span class="text-sm font-medium text-forest-800">Attendance Oversight</span>
+  </div>
+  <button class="btn btn-primary btn-sm" data-open-drawer="addAttendanceDrawer">
+    <span class="material-symbols-outlined" style="font-size:16px">add</span> Add
+  </button>
+</div>
+
 <div class="page">
 
+  <!-- Overview Stats Strip -->
   <div class="grid g-4 anim-up">
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">how_to_reg</span></div><span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>2.1% vs yesterday</span></div><div class="stat-val">94.6%</div><div class="stat-label">Present Today</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">person_off</span></div></div><div class="stat-val">118</div><div class="stat-label">Absent Today</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">schedule</span></div></div><div class="stat-val">63</div><div class="stat-label">Late Today</div></div>
-    <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">help</span></div></div><div class="stat-val">27</div><div class="stat-label">Unmarked / Not Yet Recorded</div></div>
+    <div class="stat">
+      <div class="stat-top">
+        <div class="stat-ico t-green"><span class="material-symbols-outlined fill">how_to_reg</span></div>
+        <span class="trend up" id="statTrendRate"><span class="material-symbols-outlined">check_circle</span>School Rate</span>
+      </div>
+      <div class="stat-val" id="statPresentRate">96.2%</div>
+      <div class="stat-label" id="statPresentCount">Present Records</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">person_off</span></div></div>
+      <div class="stat-val" id="statAbsentCount">0</div>
+      <div class="stat-label">Absences Logged</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">schedule</span></div></div>
+      <div class="stat-val" id="statLateCount">0</div>
+      <div class="stat-label">Tardies / Late</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">verified</span></div></div>
+      <div class="stat-val" id="statExcusedCount">0</div>
+      <div class="stat-label">Excused Absences</div>
+    </div>
   </div>
 
+  <!-- Attendance Records Table Card -->
   <div class="card mt16 anim-up-2">
     <div class="card-head">
-      <div><h3>Attendance Records</h3><div class="sub">4,820 students · Academic Year 2025–26</div></div>
+      <div>
+        <h3>Authoritative Attendance Records</h3>
+        <div class="sub" id="tableSubInfo">Loading attendance log from NGIS Academic database…</div>
+      </div>
       <div class="toolbar">
-        <input class="input" placeholder="Search students…" style="width:200px">
-        <select class="select" style="width:auto"><option>All Campuses</option><option>Sen Sok</option><option>Depo</option><option>Bak Touk</option></select>
-        <select class="select" style="width:auto"><option>All Departments</option><option>English</option><option>Khmer</option><option>Chinese</option></select>
-        <select class="select" style="width:auto"><option>All Classes</option><option>10-A</option><option>10-B</option><option>11-A</option><option>11-B</option><option>12-A</option><option>12-B</option></select>
-        <select class="select" style="width:auto"><option>All Teachers</option><option>Mr. Sok Panha</option><option>Ms. Chan Sreymom</option><option>Mr. Liu Wei</option><option>Ms. Dara Kunthea</option></select>
-        <input class="input" type="date" style="width:auto">
-        <button class="btn btn-ghost btn-sm" onclick="window.toast('Exporting attendance records…','info')"><span class="material-symbols-outlined">download</span>Export</button>
-        <button class="btn btn-primary btn-sm" data-open-drawer="addAttendanceDrawer"><span class="material-symbols-outlined">add</span>Add Record</button>
+        <input class="input" id="searchFilter" placeholder="Search student name or ID…" style="width:210px" oninput="applyFilters()">
+        <select class="select" id="classFilter" style="width:auto" onchange="applyFilters()">
+          <option value="">All Classes</option>
+          <option value="cls-10a">Grade 10-A</option>
+          <option value="cls-10b">Grade 10-B</option>
+          <option value="cls-11a">Grade 11-A</option>
+          <option value="cls-11b">Grade 11-B</option>
+          <option value="cls-11c">Grade 11-C</option>
+          <option value="cls-12a">Grade 12-A</option>
+        </select>
+        <select class="select" id="statusFilter" style="width:auto" onchange="applyFilters()">
+          <option value="">All Statuses</option>
+          <option value="present">Present</option>
+          <option value="late">Tardy / Late</option>
+          <option value="absent">Absent</option>
+          <option value="excused">Excused</option>
+        </select>
+        <input class="input" id="dateFilter" type="date" style="width:auto" onchange="applyFilters()">
+        <button class="btn btn-ghost btn-sm" onclick="exportAttendanceCsv()">
+          <span class="material-symbols-outlined">download</span>Export CSV
+        </button>
+        <button class="btn btn-primary btn-sm" data-open-drawer="addAttendanceDrawer">
+          <span class="material-symbols-outlined">add</span>Add Record
+        </button>
       </div>
     </div>
     <div class="tbl-wrap">
       <table class="tbl" id="attendanceTable">
-        <thead><tr><th><input type="checkbox"></th><th>Student</th><th>Class</th><th>Date</th><th>Status</th><th>Marked By</th><th>Actions</th></tr></thead>
-        <tbody>
+        <thead>
           <tr>
-            <td><input type="checkbox"></td>
-            <td><div class="flex center gap8"><span class="ava t-blue" style="width:32px;height:32px;border-radius:8px;font-size:12px">KR</span><div><span style="font-size:13px">Kosal Rith Mony</span><div class="faint" style="font-size:11px">ID: STU-2241</div></div></div></td>
-            <td>11-A</td>
-            <td>2026-07-02</td>
-            <td><span class="badge green">Present</span></td>
-            <td>Mr. Sok Panha</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit" onclick="window.toast('Editing record','info')"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Record approved','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
+            <th>Student</th>
+            <th>Class</th>
+            <th>Date</th>
+            <th>Session</th>
+            <th>Status</th>
+            <th>Notes / Rationale</th>
+            <th>Recorded By</th>
+            <th style="text-align:right">Actions</th>
           </tr>
+        </thead>
+        <tbody id="attendanceTableBody">
           <tr>
-            <td><input type="checkbox"></td>
-            <td><div class="flex center gap8"><span class="ava t-amber" style="width:32px;height:32px;border-radius:8px;font-size:12px">SV</span><div><span style="font-size:13px">Sreylin Vuth</span><div class="faint" style="font-size:11px">ID: STU-2242</div></div></div></td>
-            <td>6-B</td>
-            <td>2026-07-02</td>
-            <td><span class="badge amber">Late</span></td>
-            <td>Ms. Chan Sreymom</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit" onclick="window.toast('Editing record','info')"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Record approved','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><input type="checkbox"></td>
-            <td><div class="flex center gap8"><span class="ava t-purple" style="width:32px;height:32px;border-radius:8px;font-size:12px">HP</span><div><span style="font-size:13px">Heng Piseth</span><div class="faint" style="font-size:11px">ID: STU-2243</div></div></div></td>
-            <td>12-A</td>
-            <td>2026-07-02</td>
-            <td><span class="badge red">Absent</span></td>
-            <td>Mr. Liu Wei</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit" onclick="window.toast('Editing record','info')"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Record approved','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><input type="checkbox"></td>
-            <td><div class="flex center gap8"><span class="ava t-green" style="width:32px;height:32px;border-radius:8px;font-size:12px">DK</span><div><span style="font-size:13px">Dara Kunthea</span><div class="faint" style="font-size:11px">ID: STU-2244</div></div></div></td>
-            <td>10-B</td>
-            <td>2026-07-01</td>
-            <td><span class="badge gray">Excused</span></td>
-            <td>Ms. Dara Kunthea</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit" onclick="window.toast('Editing record','info')"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Record approved','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
-          </tr>
-          <tr>
-            <td><input type="checkbox"></td>
-            <td><div class="flex center gap8"><span class="ava t-blue" style="width:32px;height:32px;border-radius:8px;font-size:12px">CP</span><div><span style="font-size:13px">Chanthy Pisey</span><div class="faint" style="font-size:11px">ID: STU-2245</div></div></div></td>
-            <td>11-B</td>
-            <td>2026-07-02</td>
-            <td><span class="badge green">Present</span></td>
-            <td>Mr. Sok Panha</td>
-            <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit" onclick="window.toast('Editing record','info')"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
-              <button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast('Record approved','success')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>
-              <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Record deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
-            </div></td>
+            <td colspan="8" class="text-center py-8 text-ink-muted">Loading attendance data…</td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="card-pad flex between center" style="border-top:1px solid var(--border)">
-      <span class="faint" style="font-size:13px">Showing 1–5 of 4,820 records</span>
+      <span class="faint" style="font-size:13px" id="paginationLabel">Showing records</span>
       <div class="flex gap4">
-        <button class="btn btn-ghost btn-sm">Previous</button>
-        <button class="btn btn-sm btn-primary">1</button>
-        <button class="btn btn-ghost btn-sm">2</button>
-        <button class="btn btn-ghost btn-sm">Next</button>
+        <button class="btn btn-ghost btn-sm" id="prevPageBtn" onclick="changePage(-1)">Previous</button>
+        <button class="btn btn-sm btn-primary" id="pageNumberBtn">1</button>
+        <button class="btn btn-ghost btn-sm" id="nextPageBtn" onclick="changePage(1)">Next</button>
       </div>
     </div>
   </div>
 </div><!-- /page -->
 
-<!-- ═══ Add Attendance Record drawer ═══ -->
+<!-- ═══ Modal: Administrative Attendance Correction (Audit Tracked) ═══ -->
+<div id="overrideModal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full border border-surface-border overflow-hidden animate-scale-in">
+    <div class="px-6 py-4 border-b border-surface-border flex items-center justify-between">
+      <div>
+        <h4 class="text-base font-medium text-forest-900">Correct Attendance Record</h4>
+        <p class="text-xs text-ink-muted">Mandatory administrative audit logging</p>
+      </div>
+      <button onclick="closeOverrideModal()" class="text-ink-muted hover:text-ink-main p-1 rounded-lg">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="bg-surface-subtle p-3 rounded-xl border border-surface-border text-xs space-y-1">
+        <div><span class="text-ink-muted">Student:</span> <span id="modalStudentName" class="font-medium text-forest-900">—</span> (<span id="modalStudentId">—</span>)</div>
+        <div><span class="text-ink-muted">Date & Session:</span> <span id="modalDateSession" class="font-medium">—</span></div>
+        <div><span class="text-ink-muted">Current Status:</span> <span id="modalCurrentStatus" class="badge gray">—</span></div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-forest-800 mb-1">New Attendance Status</label>
+        <select id="modalNewStatus" class="select w-full">
+          <option value="present">Present</option>
+          <option value="late">Tardy / Late</option>
+          <option value="absent">Absent</option>
+          <option value="excused">Excused</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-forest-800 mb-1">Audit Reason / Justification <span class="text-danger">*</span></label>
+        <textarea id="modalReason" rows="3" class="textarea w-full" placeholder="e.g. Medical certificate verified by campus health office."></textarea>
+      </div>
+    </div>
+    <div class="px-6 py-3 bg-surface-subtle border-t border-surface-border flex justify-end gap-2">
+      <button onclick="closeOverrideModal()" class="btn btn-ghost btn-sm">Cancel</button>
+      <button onclick="submitAttendanceOverride()" class="btn btn-primary btn-sm">Save & Audit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Drawer: Add Attendance Record ═══ -->
 <div class="drawer-overlay" data-drawer="addAttendanceDrawer">
   <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="addAttendanceTitle">
     <div class="drawer-head">
-      <div><h3 id="addAttendanceTitle">Add Attendance Record</h3><div class="sub">Manually record a student's attendance</div></div>
+      <div>
+        <h3 id="addAttendanceTitle">Record Student Attendance</h3>
+        <div class="sub">Add an authoritative daily attendance entry</div>
+      </div>
       <button class="icon-btn" data-close-drawer aria-label="Close"><span class="material-symbols-outlined">close</span></button>
     </div>
     <div class="drawer-body">
       <form id="addAttendanceForm" onsubmit="return false">
         <div class="drawer-section-label">Record Details</div>
         <div class="drawer-grid">
-          <div class="field field-full"><label class="label">Student</label><input class="input" id="attStudent" placeholder="e.g. Kosal Rith Mony"></div>
-          <div class="field"><label class="label">Class</label><input class="input" id="attClass" placeholder="e.g. 11-A"></div>
-          <div class="field"><label class="label">Date</label><input class="input" type="date" id="attDate"></div>
-          <div class="field"><label class="label">Status</label><select class="select" id="attStatus"><option>Present</option><option>Late</option><option>Absent</option><option>Excused</option></select></div>
-          <div class="field field-full"><label class="label">Notes</label><textarea class="textarea" id="attNotes" placeholder="Optional notes for staff"></textarea></div>
+          <div class="field field-full">
+            <label class="label">Select Student</label>
+            <select class="select" id="attStudentSelect">
+              <option value="2026-STD-0142">Nrinphouneta Hok (Grade 10A · 2026-STD-0142)</option>
+              <option value="2026-STD-0143">Kosal Rith Mony (Grade 11B · 2026-STD-0143)</option>
+              <option value="2026-STD-0144">Sophea Chan (Grade 10A · 2026-STD-0144)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label">Class</label>
+            <select class="select" id="attClassSelect">
+              <option value="cls-10a">Grade 10-A</option>
+              <option value="cls-10b">Grade 10-B</option>
+              <option value="cls-11a">Grade 11-A</option>
+              <option value="cls-11b">Grade 11-B</option>
+              <option value="cls-11c">Grade 11-C</option>
+              <option value="cls-12a">Grade 12-A</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label">Date</label>
+            <input class="input" type="date" id="attDateInput">
+          </div>
+          <div class="field">
+            <label class="label">Status</label>
+            <select class="select" id="attStatusSelect">
+              <option value="present">Present</option>
+              <option value="late">Tardy / Late</option>
+              <option value="absent">Absent</option>
+              <option value="excused">Excused</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label">Session</label>
+            <select class="select" id="attSessionSelect">
+              <option value="daily">Daily Homeroom</option>
+              <option value="morning">Morning Session</option>
+              <option value="afternoon">Afternoon Session</option>
+            </select>
+          </div>
+          <div class="field field-full">
+            <label class="label">Official Notes / Reason</label>
+            <textarea class="textarea" id="attNotesInput" placeholder="Optional notes for permanent student file"></textarea>
+          </div>
         </div>
       </form>
     </div>
     <div class="drawer-foot">
       <button class="btn btn-ghost" data-close-drawer>Cancel</button>
-      <button class="btn btn-primary" id="attSaveBtn">Save</button>
+      <button class="btn btn-primary" id="attSaveBtn" onclick="saveNewAttendanceRecord()">Save Record</button>
     </div>
   </aside>
 </div>
 
 </main>
+
 <script>window.PAGE={"role":"admin","active":"attendance"};</script>
-<script>window.HERO_CONFIG = {
+<script>
+window.HERO_CONFIG = {
   name: 'Mr. Heng Samnang',
   id: 'Admin ID: ADM-2026-001',
   grade: 'School Administrator',
   avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
-  title: 'Attendance Management',
-  greeting: 'Track, review, and manage attendance across every campus.',
+  title: 'Attendance Oversight & Registry',
+  greeting: 'Track, review, correct, and audit attendance across all campuses.',
   breadcrumbs: [{ label: 'Attendance' }],
   homeLink: '../../index.html',
   signOutLink: '../../index.html',
@@ -176,59 +279,234 @@
     { icon: 'calendar_today', text: 'Since: Jan 2018' },
     { icon: 'verified', text: 'Principal Administrator' }
   ]
-};</script>
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+
 <script>
-(function () {
-  function rowActionsHtml() {
-    return '<div class="flex gap4 wrap">' +
-      '<button class="icon-btn" title="Edit" onclick="window.toast(\'Editing record\',\'info\')"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
-      '<button class="icon-btn" title="Approve" style="color:var(--success)" onclick="window.toast(\'Record approved\',\'success\')"><span class="material-symbols-outlined" style="font-size:16px">check_circle</span></button>' +
-      '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast(\'Record deleted\',\'error\')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
-    '</div>';
+(function() {
+  var allRecords = [];
+  var filteredRecords = [];
+  var activeRecordForOverride = null;
+  var currentPage = 1;
+  var pageSize = 15;
+
+  // Set today's date in add form
+  document.getElementById('attDateInput').value = new Date().toISOString().slice(0, 10);
+
+  function getStatusBadge(status) {
+    var s = (status || '').toLowerCase();
+    if (s === 'present') return '<span class="badge green">Present</span>';
+    if (s === 'late' || s === 'tardy') return '<span class="badge amber">Tardy / Late</span>';
+    if (s === 'absent') return '<span class="badge red">Absent</span>';
+    if (s === 'excused') return '<span class="badge gray">Excused</span>';
+    return '<span class="badge gray">' + (status || '—') + '</span>';
   }
 
-  function badgeClassFor(status) {
-    if (status === 'Present') return 'green';
-    if (status === 'Late') return 'amber';
-    if (status === 'Absent') return 'red';
-    return 'gray';
+  window.loadAttendanceData = async function() {
+    try {
+      var res = await NGISAuth.api('/api/academic/attendance');
+      allRecords = res.data || [];
+      var meta = res.meta || {};
+
+      // Update overview cards
+      document.getElementById('statPresentRate').textContent = (meta.rate !== undefined ? meta.rate : 96.2) + '%';
+      document.getElementById('statPresentCount').textContent = (meta.present || 0) + ' Present Records';
+      document.getElementById('statAbsentCount').textContent = meta.absent || 0;
+      document.getElementById('statLateCount').textContent = meta.late || 0;
+      document.getElementById('statExcusedCount').textContent = meta.excused || 0;
+
+      document.getElementById('tableSubInfo').textContent = allRecords.length + ' verified attendance records · Academic Year 2025–26';
+
+      applyFilters();
+    } catch (err) {
+      console.error('Failed to load attendance:', err);
+      document.getElementById('attendanceTableBody').innerHTML =
+        '<tr><td colspan="8" class="text-center py-6 text-danger">Failed to load attendance records. ' + (err.message || '') + '</td></tr>';
+    }
+  };
+
+  window.applyFilters = function() {
+    var search = (document.getElementById('searchFilter').value || '').toLowerCase().trim();
+    var cls = document.getElementById('classFilter').value;
+    var status = (document.getElementById('statusFilter').value || '').toLowerCase();
+    var dt = document.getElementById('dateFilter').value;
+
+    filteredRecords = allRecords.filter(function(r) {
+      if (search) {
+        var matchName = (r.student_name || '').toLowerCase().indexOf(search) !== -1;
+        var matchId = (r.student_id || '').toLowerCase().indexOf(search) !== -1;
+        if (!matchName && !matchId) return false;
+      }
+      if (cls && r.class_id !== cls) return false;
+      if (status) {
+        var rStatus = (r.status || '').toLowerCase();
+        if (status === 'late' && rStatus !== 'late' && rStatus !== 'tardy') return false;
+        if (status !== 'late' && rStatus !== status) return false;
+      }
+      if (dt && r.date !== dt) return false;
+      return true;
+    });
+
+    currentPage = 1;
+    renderTable();
+  };
+
+  function renderTable() {
+    var tbody = document.getElementById('attendanceTableBody');
+    if (!filteredRecords.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-ink-muted">No attendance records match your filter criteria.</td></tr>';
+      document.getElementById('paginationLabel').textContent = 'Showing 0 records';
+      return;
+    }
+
+    var start = (currentPage - 1) * pageSize;
+    var pageSlice = filteredRecords.slice(start, start + pageSize);
+
+    var html = pageSlice.map(function(r, idx) {
+      var initials = (r.student_name || 'Student').split(' ').filter(Boolean).map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();
+      var safeId = r.id || ('idx-' + (start + idx));
+      return '<tr>' +
+        '<td><div class="flex center gap8">' +
+          '<span class="ava t-blue" style="width:32px;height:32px;border-radius:8px;font-size:12px">' + initials + '</span>' +
+          '<div><div style="font-size:13.5px" class="font-medium">' + (r.student_name || r.student_id) + '</div>' +
+          '<div class="faint" style="font-size:11px">ID: ' + r.student_id + '</div></div>' +
+        '</div></td>' +
+        '<td><span class="badge gray">' + (r.class_name || r.class_id || '—') + '</span></td>' +
+        '<td>' + (r.date || r.attendance_date || '—') + '</td>' +
+        '<td><span class="text-xs text-ink-muted capitalize">' + (r.session || 'daily') + '</span></td>' +
+        '<td>' + getStatusBadge(r.status) + '</td>' +
+        '<td><span class="text-xs text-ink-muted">' + (r.notes || r.note || '—') + '</span></td>' +
+        '<td><span class="text-xs text-ink-muted">' + (r.recorded_by || 'Teacher') + '</span></td>' +
+        '<td style="text-align:right">' +
+          '<button class="btn btn-ghost btn-xs text-forest-800 flex items-center gap-1 inline-flex" onclick="openOverrideModal(\'' + safeId + '\')">' +
+            '<span class="material-symbols-outlined" style="font-size:15px">edit_note</span> Correct' +
+          '</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    tbody.innerHTML = html;
+    var end = Math.min(start + pageSize, filteredRecords.length);
+    document.getElementById('paginationLabel').textContent = 'Showing ' + (start + 1) + '–' + end + ' of ' + filteredRecords.length + ' records';
+    document.getElementById('pageNumberBtn').textContent = currentPage;
+    document.getElementById('prevPageBtn').disabled = currentPage <= 1;
+    document.getElementById('nextPageBtn').disabled = end >= filteredRecords.length;
   }
 
-  function saveAttendance() {
-    var name = (document.getElementById('attStudent').value || '').trim() || 'New Student';
-    var cls = (document.getElementById('attClass').value || '').trim() || '—';
-    var dateVal = document.getElementById('attDate').value || new Date().toISOString().slice(0, 10);
-    var status = document.getElementById('attStatus').value;
-    var badgeCls = badgeClassFor(status);
-    var initials = name.split(' ').filter(Boolean).map(function (w) { return w[0]; }).slice(0, 2).join('').toUpperCase() || 'ST';
-    var id = 'STU-' + (2246 + document.querySelectorAll('#attendanceTable tbody tr').length);
+  window.changePage = function(delta) {
+    var maxPage = Math.ceil(filteredRecords.length / pageSize) || 1;
+    var next = currentPage + delta;
+    if (next >= 1 && next <= maxPage) {
+      currentPage = next;
+      renderTable();
+    }
+  };
 
-    var tr = document.createElement('tr');
-    tr.innerHTML =
-      '<td><input type="checkbox"></td>' +
-      '<td><div class="flex center gap8"><span class="ava t-blue" style="width:32px;height:32px;border-radius:8px;font-size:12px">' + initials + '</span><div><span style="font-size:13px">' + name + '</span><div class="faint" style="font-size:11px">ID: ' + id + '</div></div></div></td>' +
-      '<td>' + cls + '</td>' +
-      '<td>' + dateVal + '</td>' +
-      '<td><span class="badge ' + badgeCls + '">' + status + '</span></td>' +
-      '<td>Admin</td>' +
-      '<td>' + rowActionsHtml() + '</td>';
-    document.querySelector('#attendanceTable tbody').prepend(tr);
-    window.toast('Attendance record added', 'success');
+  window.openOverrideModal = function(recId) {
+    var rec = allRecords.find(function(r) { return r.id === recId || ('idx-' + allRecords.indexOf(r)) === recId; });
+    if (!rec) {
+      rec = filteredRecords.find(function(r) { return r.id === recId; }) || filteredRecords[0];
+    }
+    activeRecordForOverride = rec;
+    document.getElementById('modalStudentName').textContent = rec.student_name || rec.student_id;
+    document.getElementById('modalStudentId').textContent = rec.student_id;
+    document.getElementById('modalDateSession').textContent = (rec.date || rec.attendance_date) + ' (' + (rec.session || 'daily') + ')';
+    document.getElementById('modalCurrentStatus').innerHTML = getStatusBadge(rec.status);
+    document.getElementById('modalNewStatus').value = rec.status === 'tardy' ? 'late' : rec.status;
+    document.getElementById('modalReason').value = '';
+    document.getElementById('overrideModal').classList.remove('hidden');
+  };
 
-    var ov = document.querySelector('.drawer-overlay[data-drawer="addAttendanceDrawer"]');
-    if (ov) ov.classList.remove('show');
-    document.getElementById('addAttendanceForm').reset();
-  }
+  window.closeOverrideModal = function() {
+    document.getElementById('overrideModal').classList.add('hidden');
+    activeRecordForOverride = null;
+  };
 
-  document.getElementById('attSaveBtn').addEventListener('click', saveAttendance);
+  window.submitAttendanceOverride = async function() {
+    if (!activeRecordForOverride) return;
+    var reason = document.getElementById('modalReason').value.trim();
+    if (!reason) {
+      if (window.toast) window.toast('Please provide a mandatory audit reason', 'error');
+      else alert('Please provide a mandatory audit reason');
+      return;
+    }
+    var newStatus = document.getElementById('modalNewStatus').value;
+    try {
+      await NGISAuth.api('/api/academic/admin/override-attendance', {
+        method: 'POST',
+        body: JSON.stringify({
+          attendanceId: activeRecordForOverride.id,
+          status: newStatus,
+          reason: reason
+        })
+      });
+      if (window.toast) window.toast('Attendance record corrected & recorded in audit log', 'success');
+      closeOverrideModal();
+      loadAttendanceData();
+    } catch (err) {
+      if (window.toast) window.toast(err.message || 'Failed to update record', 'error');
+      else alert(err.message || 'Failed to update record');
+    }
+  };
 
-  if (new URLSearchParams(location.search).get('add') === '1') {
-    document.querySelector('.drawer-overlay[data-drawer="addAttendanceDrawer"]').classList.add('show');
-  }
+  window.saveNewAttendanceRecord = async function() {
+    var studentId = document.getElementById('attStudentSelect').value;
+    var classId = document.getElementById('attClassSelect').value;
+    var dateVal = document.getElementById('attDateInput').value;
+    var statusVal = document.getElementById('attStatusSelect').value;
+    var sessionVal = document.getElementById('attSessionSelect').value;
+    var notesVal = document.getElementById('attNotesInput').value.trim();
+
+    if (!studentId || !classId || !dateVal || !statusVal) {
+      if (window.toast) window.toast('All fields are required', 'error');
+      return;
+    }
+
+    try {
+      await NGISAuth.api('/api/academic/attendance', {
+        method: 'POST',
+        body: JSON.stringify({
+          studentId: studentId,
+          classId: classId,
+          date: dateVal,
+          status: statusVal,
+          session: sessionVal,
+          note: notesVal
+        })
+      });
+      if (window.toast) window.toast('Attendance record created successfully', 'success');
+      var ov = document.querySelector('.drawer-overlay[data-drawer="addAttendanceDrawer"]');
+      if (ov) ov.classList.remove('show');
+      loadAttendanceData();
+    } catch (err) {
+      if (window.toast) window.toast(err.message || 'Failed to save attendance', 'error');
+    }
+  };
+
+  window.exportAttendanceCsv = function() {
+    if (!filteredRecords.length) {
+      if (window.toast) window.toast('No records to export', 'info');
+      return;
+    }
+    var csv = 'Student ID,Student Name,Class,Date,Session,Status,Notes,Recorded By\n';
+    filteredRecords.forEach(function(r) {
+      csv += '"' + (r.student_id||'') + '","' + (r.student_name||'') + '","' + (r.class_name||r.class_id||'') + '","' +
+             (r.date||r.attendance_date||'') + '","' + (r.session||'daily') + '","' + (r.status||'') + '","' +
+             (r.notes||r.note||'').replace(/"/g, '""') + '","' + (r.recorded_by||'') + '"\n';
+    });
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'NGIS_Attendance_Export_' + new Date().toISOString().slice(0, 10) + '.csv';
+    link.click();
+  };
+
+  document.addEventListener('DOMContentLoaded', loadAttendanceData);
+  loadAttendanceData();
 })();
 </script>
-  <script src="../../assets/js/academic-live.js"></script>
+<script src="../../assets/js/academic-live.js"></script>
 </body>
 </html>

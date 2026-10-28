@@ -16,7 +16,6 @@ const fs = require("fs");
 const { getDb } = require("./backend/db/connection");
 const authRoutes = require("./backend/routes/auth");
 const studentRoutes = require("./backend/routes/students");
-const parentRoutes = require("./backend/routes/parent");
 const assignmentRoutes = require("./backend/routes/assignments");
 const gradesRoutes = require("./backend/routes/grades");
 const attendanceRoutes = require("./backend/routes/attendance");
@@ -49,7 +48,6 @@ app.use(express.static(ROOT, { extensions: ["html"], index: "index.html", etag: 
 
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
-app.use("/api/parent", parentRoutes);
 app.use("/api/assignments", assignmentRoutes);
 app.use("/api/grades", gradesRoutes);
 app.use("/api/attendance", attendanceRoutes);

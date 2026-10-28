@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Student Work Submissions</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+
+<!-- Phosphor Icons for Mobile View -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+  /* Global typography constraint: No bold font */
+  * { font-weight: 400; }
+  b, strong, th, h1, h2, h3, h4, h5, h6,
+  .font-bold, .font-extrabold, .font-semibold, .font-medium,
+  [class*="font-medium"] {
+    font-weight: 500 !important;
+  }
+  
+  html, body {
+    overflow-x: hidden;
+  }
+  
+  @media (max-width: 1023px) {
+    #heroBanner, .hero, .hero-topbar, .hero-main, .hero-subpage {
+      display: none !important;
+    }
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  @media (max-width: 640px) {
+    .table-container {
+      margin: 0 -1rem;
+      padding: 0 1rem;
+    }
+  }
+
+  /* Modal Overlay */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open {
+    display: flex;
+  }
+  .modal-content {
+    background: white;
+    border-radius: 1rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  [data-theme="dark"] .modal-content {
+    background-color: #1e293b;
+  }
+</style>
+
+<!-- Theme bootstrap -->
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="teacher" data-page="submissions">
+<main class="main">
+
+  <!-- Hero Banner -->
+  <div id="heroBanner"></div>
+
+  <!-- Desktop View -->
+  <div class="teacher-desktop-view">
+    <div class="page" style="padding-top: 2rem;">
+      <div class="mb-8">
+        <h1 class="text-2xl font-medium text-slate-900 dark:text-white mb-1">Student Work Submissions</h1>
+        <p class="text-sm text-slate-600 dark:text-slate-400">Review student work, track submissions, and provide digital feedback.</p>
+      </div>
+
+      <!-- Filter Toolbar -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700 p-4 mb-6 shadow-subtle">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
+          <!-- Search by Name/ID -->
+          <div>
+            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Student</label>
+            <input type="text" id="searchInput" placeholder="Name or ID..." class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
+          </div>
+
+          <!-- Assignment Filter -->
+          <div>
+            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Assignment</label>
+            <select id="assignmentFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
+              <option value="">All Assignments</option>
+              <option value="hw1">Calculus Problem Set 3</option>
+              <option value="hw2">Statistics Quiz</option>
+              <option value="hw3">Physics Lab Report</option>
+            </select>
+          </div>
+
+          <!-- Class Filter -->
+          <div>
+            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Class</label>
+            <select id="classFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
+              <option value="">All Classes</option>
+              <option value="10A">Grade 10A</option>
+              <option value="11B">Grade 11B</option>
+              <option value="11C">Grade 11C</option>
+            </select>
+          </div>
+
+          <!-- Status Filter -->
+          <div>
+            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Status</label>
+            <select id="statusFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
+              <option value="">All Submissions</option>
+              <option value="submitted">Submitted</option>
+              <option value="late">Late</option>
+              <option value="not-submitted">Not Submitted</option>
+              <option value="reviewed">Reviewed</option>
+            </select>
+          </div>
+
+          <!-- Sort -->
+          <div>
+            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Sort by</label>
+            <select id="sortBy" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
+              <option value="recent">Most Recent</option>
+              <option value="student">Student Name</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-2 text-xs">
+          <span class="text-slate-600 dark:text-slate-400"><span id="resultCount">0</span> submissions</span>
+          <button id="clearFiltersBtn" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Submissions Table -->
+      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-subtle overflow-hidden">
+        <div class="table-container">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Student</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Assignment</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Class</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Submitted</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Status</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Grade</th>
+                <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Action</th>
+              </tr>
+            </thead>
+            <tbody id="submissionsTable">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile View -->
+  <div class="teacher-mobile-view px-4 pt-4 pb-28">
+    <header class="flex items-center justify-between gap-3 mb-4">
+      <button type="button" class="mobile-hamburger-btn hamburger-btn" aria-label="Open menu" aria-expanded="false" data-action="toggle-sidebar" title="Open navigation">
+        <i class="ph-bold ph-list text-xl"></i>
+      </button>
+      <div class="flex-1 min-w-0">
+        <h1 class="text-base font-medium text-slate-900 dark:text-white">Submissions</h1>
+      </div>
+      <a href="teacher-classes.html" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </a>
+    </header>
+
+    <!-- Mobile Submissions List -->
+    <div id="submissionsMobileList" class="space-y-2">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-content">
+      <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+        <h2 class="text-lg font-medium text-slate-900 dark:text-white">Review Submission</h2>
+        <button onclick="document.getElementById('reviewModal').classList.remove('open')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <!-- Student Info -->
+        <div class="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
+          <div class="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center">
+            <span class="material-symbols-outlined">person</span>
+          </div>
+          <div class="min-w-0">
+            <div class="font-medium text-slate-900 dark:text-white" id="modalStudentName">Nrinphouneta Hok</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400" id="modalStudentId">2026-STD-0142</div>
+          </div>
+        </div>
+
+        <!-- Assignment Info -->
+        <div>
+          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Assignment</div>
+          <div class="text-sm text-slate-900 dark:text-white" id="modalAssignmentTitle">Calculus Problem Set 3</div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="modalAssignmentDetails">Due: Oct 23, 2026</div>
+        </div>
+
+        <!-- Submission Details -->
+        <div>
+          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">Submission</div>
+          <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 text-xs space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-600 dark:text-slate-400">Submitted:</span>
+              <span id="modalSubmittedTime" class="text-slate-900 dark:text-white">Oct 22, 2026 at 11:45 PM</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-600 dark:text-slate-400">Status:</span>
+              <span id="modalStatus" class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300">On Time</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Preview -->
+        <div>
+          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">Submitted File</div>
+          <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-3 flex items-center gap-3">
+            <span class="material-symbols-outlined text-slate-400">description</span>
+            <div class="min-w-0 flex-1">
+              <div class="text-sm text-slate-900 dark:text-white truncate">problem_set_3_solution.pdf</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">2.4 MB</div>
+            </div>
+            <button class="px-2 py-1 rounded-lg text-xs font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition">
+              Download
+            </button>
+          </div>
+        </div>
+
+        <!-- Feedback -->
+        <div>
+          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">Digital Feedback</div>
+          <textarea id="feedbackInput" placeholder="Enter feedback for this submission..." class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400" rows="4"></textarea>
+        </div>
+
+        <!-- Grade -->
+        <div>
+          <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-2">Grade (out of 100)</label>
+          <input type="number" id="gradeInput" placeholder="75" min="0" max="100" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <button onclick="document.getElementById('reviewModal').classList.remove('open')" class="flex-1 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium">
+            Cancel
+          </button>
+          <button id="saveReviewBtn" class="flex-1 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white transition text-sm font-medium">
+            Save Review
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<script>
+// ── STUDENT WORK SUBMISSIONS PAGE LOGIC ──
+(function() {
+  let allSubmissions = [];
+  let filteredSubmissions = [];
+
+  // Mock submission data
+  const mockSubmissions = [
+    { id: 'sub-1', studentId: '2026-STD-0142', studentName: 'Nrinphouneta Hok', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: '2026-10-22 11:45 PM', status: 'submitted', grade: 82, file: 'solution.pdf' },
+    { id: 'sub-2', studentId: '2026-STD-0144', studentName: 'Sophea Chan', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: '2026-10-23 02:15 AM', status: 'late', grade: null, file: 'solution.pdf' },
+    { id: 'sub-3', studentId: '2026-STD-0145', studentName: 'Virak Heng', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: null, status: 'not-submitted', grade: null, file: null },
+    { id: 'sub-4', studentId: '2026-STD-0148', studentName: 'Kosal Rith Mony', assignmentTitle: 'Statistics Quiz', class: '10A', submittedAt: '2026-10-21 05:30 PM', status: 'reviewed', grade: 78, file: 'quiz_answers.pdf' },
+    { id: 'sub-5', studentId: '2026-STD-0151', studentName: 'Sreylin Vuth', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: '2026-10-22 08:00 PM', status: 'submitted', grade: null, file: 'solution.pdf' },
+  ];
+
+  function applyFilters() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const assignmentFilter = document.getElementById('assignmentFilter').value;
+    const classFilter = document.getElementById('classFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const sortBy = document.getElementById('sortBy').value;
+
+    filteredSubmissions = allSubmissions.filter(sub => {
+      const matchesSearch = !search || 
+        sub.studentName.toLowerCase().includes(search) || 
+        sub.studentId.toLowerCase().includes(search);
+      const matchesAssignment = !assignmentFilter || sub.assignmentTitle.includes('Calculus' ? 'hw1' : 'hw2');
+      const matchesClass = !classFilter || sub.class === classFilter;
+      const matchesStatus = !statusFilter || sub.status === statusFilter;
+      return matchesSearch && matchesClass && matchesStatus;
+    });
+
+    // Apply sorting
+    switch(sortBy) {
+      case 'student':
+        filteredSubmissions.sort((a, b) => a.studentName.localeCompare(b.studentName));
+        break;
+      case 'status':
+        filteredSubmissions.sort((a, b) => a.status.localeCompare(b.status));
+        break;
+      case 'recent':
+      default:
+        filteredSubmissions.sort((a, b) => {
+          if (!a.submittedAt && !b.submittedAt) return 0;
+          if (!a.submittedAt) return 1;
+          if (!b.submittedAt) return -1;
+          return new Date(b.submittedAt) - new Date(a.submittedAt);
+        });
+    }
+
+    document.getElementById('resultCount').textContent = filteredSubmissions.length;
+    renderTable();
+    renderMobileList();
+  }
+
+  function getStatusBadge(status) {
+    const badges = {
+      'submitted': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-800 dark:text-blue-300', label: 'Submitted' },
+      'late': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-800 dark:text-amber-300', label: 'Late' },
+      'not-submitted': { bg: 'bg-slate-100 dark:bg-slate-900/30', text: 'text-slate-800 dark:text-slate-300', label: 'Not Submitted' },
+      'reviewed': { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-800 dark:text-emerald-300', label: 'Reviewed' },
+    };
+    const badge = badges[status] || badges['submitted'];
+    return { ...badge, status };
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('submissionsTable');
+    
+    if (filteredSubmissions.length === 0) {
+      tbody.innerHTML = `
+        <tr class="border-b border-slate-100 dark:border-slate-700/50">
+          <td colspan="7" class="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+            <div class="flex flex-col items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-4xl opacity-30">description</span>
+              <span>No submissions found</span>
+            </div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = filteredSubmissions.map(sub => {
+      const badge = getStatusBadge(sub.status);
+      return `
+        <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+          <td class="px-4 py-3 text-slate-900 dark:text-slate-100 text-sm">${sub.studentName}</td>
+          <td class="px-4 py-3 text-slate-600 dark:text-slate-400 text-sm">${sub.assignmentTitle}</td>
+          <td class="px-4 py-3 text-slate-600 dark:text-slate-400 text-sm">Grade ${sub.class}</td>
+          <td class="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs">${sub.submittedAt || '—'}</td>
+          <td class="px-4 py-3 text-center">
+            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text}">
+              ${badge.label}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-center text-slate-900 dark:text-slate-100 font-medium">${sub.grade !== null ? sub.grade : '—'}</td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="openReview('${sub.id}')" class="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium transition">
+              Review
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderMobileList() {
+    const list = document.getElementById('submissionsMobileList');
+    
+    if (filteredSubmissions.length === 0) {
+      list.innerHTML = `
+        <div class="text-center py-8 text-slate-500 dark:text-slate-400">
+          <span class="material-symbols-outlined text-4xl opacity-30 block mb-2">description</span>
+          <span>No submissions found</span>
+        </div>
+      `;
+      return;
+    }
+
+    list.innerHTML = filteredSubmissions.map(sub => {
+      const badge = getStatusBadge(sub.status);
+      return `
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div class="min-w-0 flex-1">
+              <div class="font-medium text-slate-900 dark:text-white text-sm truncate">${sub.studentName}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${sub.assignmentTitle}</div>
+            </div>
+            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text} shrink-0">
+              ${badge.label}
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs mb-3">
+            <div>
+              <div class="text-slate-500 dark:text-slate-400">Submitted</div>
+              <div class="font-medium text-slate-900 dark:text-white">${sub.submittedAt?.split(' ')[0] || '—'}</div>
+            </div>
+            <div>
+              <div class="text-slate-500 dark:text-slate-400">Grade</div>
+              <div class="font-medium text-slate-900 dark:text-white">${sub.grade !== null ? sub.grade : '—'}</div>
+            </div>
+          </div>
+          <button onclick="openReview('${sub.id}')" class="w-full px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition active:scale-95">
+            Review
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.openReview = function(submissionId) {
+    const sub = allSubmissions.find(s => s.id === submissionId);
+    if (!sub) return;
+    
+    document.getElementById('modalStudentName').textContent = sub.studentName;
+    document.getElementById('modalStudentId').textContent = sub.studentId;
+    document.getElementById('modalAssignmentTitle').textContent = sub.assignmentTitle;
+    document.getElementById('modalSubmittedTime').textContent = sub.submittedAt || 'Not submitted';
+    document.getElementById('modalStatus').textContent = getStatusBadge(sub.status).label;
+    document.getElementById('gradeInput').value = sub.grade || '';
+    document.getElementById('feedbackInput').value = '';
+    
+    document.getElementById('reviewModal').classList.add('open');
+  };
+
+  // Event listeners
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+  document.getElementById('assignmentFilter').addEventListener('change', applyFilters);
+  document.getElementById('classFilter').addEventListener('change', applyFilters);
+  document.getElementById('statusFilter').addEventListener('change', applyFilters);
+  document.getElementById('sortBy').addEventListener('change', applyFilters);
+  document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('assignmentFilter').value = '';
+    document.getElementById('classFilter').value = '';
+    document.getElementById('statusFilter').value = '';
+    document.getElementById('sortBy').value = 'recent';
+    applyFilters();
+  });
+  
+  document.getElementById('saveReviewBtn').addEventListener('click', () => {
+    const feedback = document.getElementById('feedbackInput').value;
+    const grade = document.getElementById('gradeInput').value;
+    if (feedback || grade) {
+      alert('Review saved! (Mock save)');
+      document.getElementById('reviewModal').classList.remove('open');
+    }
+  });
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    allSubmissions = mockSubmissions;
+    applyFilters();
+  });
+})();
+</script>
+
+</body>
+</html>

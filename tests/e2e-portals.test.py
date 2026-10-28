@@ -41,14 +41,6 @@ class TestNgisRolePortals(unittest.TestCase):
             "pages/teacher/teacher-grades.html",
             "pages/teacher/teacher-calendar.html",
             "pages/teacher/teacher-profile.html",
-            # Parent
-            "pages/parent/parent.html",
-            "pages/parent/parent-children.html",
-            "pages/parent/parent-grades.html",
-            "pages/parent/parent-attendance.html",
-            "pages/parent/parent-assignments.html",
-            "pages/parent/parent-calendar.html",
-            "pages/parent/parent-profile.html",
             # Admin
             "pages/admin/admin.html",
             "pages/admin/admin-users.html",
@@ -85,17 +77,17 @@ class TestNgisRolePortals(unittest.TestCase):
         layout_mirror = (ROOT / "assets/js/layout.js").read_text(encoding="utf-8")
         self.assertEqual(layout_main, layout_mirror, "assets/js/layout.js must match layout.js exactly")
 
-        for role in ["admin", "teacher", "student", "parent", "principal", "staff"]:
+        for role in ["admin", "teacher", "student", "principal", "staff"]:
             self.assertIn(f"{role}:", layout_main, f"Role {role} missing in NAV/BOTTOM/PORTAL_HOME")
 
-        # Verify access-denied.html includes all 6 roles
+        # Verify access-denied.html includes all 5 roles
         access_denied = (ROOT / "pages/shared/access-denied.html").read_text(encoding="utf-8")
-        for role in ["admin", "teacher", "parent", "student", "staff", "principal"]:
+        for role in ["admin", "teacher", "student", "staff", "principal"]:
             self.assertIn(f"{role}:", access_denied, f"Role {role} missing in access-denied homeMap")
 
     def test_03_clean_route_shortcuts(self):
         """Verify clean portal route shortcuts in server.py."""
-        shortcuts = ["/admin", "/teacher", "/student", "/parent", "/staff", "/principal"]
+        shortcuts = ["/admin", "/teacher", "/student", "/staff", "/principal"]
         for sc in shortcuts:
             resp = self.client.get(sc, follow_redirects=True)
             self.assertEqual(resp.status_code, 200, f"Route {sc} returned status {resp.status_code}")
@@ -131,7 +123,7 @@ class TestNgisRolePortals(unittest.TestCase):
         2. Student views the assignment in their class.
         3. Student submits coursework.
         4. Teacher grades submission and provides feedback.
-        5. Parent views child's assignment, grade, and teacher feedback.
+        5. Student fetches assignment and verifies graded score and feedback.
         """
         # Step 1: Teacher creates an assignment
         asgn_payload = {
@@ -167,15 +159,17 @@ class TestNgisRolePortals(unittest.TestCase):
         })
         self.assertEqual(grade_resp.status_code, 200)
 
-        # Step 4: Parent fetches child's assignments and verifies score and feedback
-        parent_resp = self.client.get(f"/api/parent/children/{student_id}/assignments")
-        self.assertEqual(parent_resp.status_code, 200)
-        parent_assignments = parent_resp.get_json()["data"]
-        matching = next((a for a in parent_assignments if a["id"] == asgn_id), None)
-        self.assertIsNotNone(matching, "Child's graded assignment must be visible to parent")
-        self.assertEqual(matching["score"], 98)
-        self.assertEqual(matching["feedback"], "Outstanding mathematical rigor and lucid physical explanations!")
-        self.assertEqual(matching["status"], "graded")
+        # Step 4: Verify graded assignment has updated score and feedback
+        asgn_resp = self.client.get("/api/assignments")
+        self.assertEqual(asgn_resp.status_code, 200)
+        assignments = asgn_resp.get_json()["data"]
+        matching = next((a for a in assignments if a["id"] == asgn_id), None)
+        self.assertIsNotNone(matching, "Graded assignment must be visible")
+        sub = next((s for s in matching.get("submissions", []) if s.get("studentId") == student_id), None)
+        self.assertIsNotNone(sub, "Student graded submission must exist")
+        self.assertEqual(sub["score"], 98)
+        self.assertEqual(sub["feedback"], "Outstanding mathematical rigor and lucid physical explanations!")
+        self.assertEqual(sub["status"], "graded")
 
     def test_06_staff_and_principal_endpoints(self):
         """Verify Staff and Principal stats and operational task endpoints."""
@@ -275,12 +269,12 @@ class TestNgisRolePortals(unittest.TestCase):
             self.assertIn("pages/student/student-calendar.html", nav_block)
 
             # Verify non-student portals do NOT contain student page links
-            for role in ["teacher", "admin", "parent", "principal", "staff"]:
+            for role in ["teacher", "admin", "principal", "staff"]:
                 start = nav_block.find(f"    {role}:")
                 self.assertNotEqual(start, -1, f"Missing {role} in NAV")
                 next_indices = [
                     nav_block.find(f"    {other}:", start + 1)
-                    for other in ("admin", "teacher", "student", "parent", "principal", "staff")
+                    for other in ("admin", "teacher", "student", "principal", "staff")
                     if nav_block.find(f"    {other}:", start + 1) != -1
                 ]
                 end = min(next_indices) if next_indices else len(nav_block)

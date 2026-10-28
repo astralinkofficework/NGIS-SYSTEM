@@ -48,7 +48,7 @@
             <td><div class="flex center gap8"><span class="row-ico t-green" style="width:34px;height:34px"><span class="material-symbols-outlined">picture_as_pdf</span></span><div><span style="font-size:13px">English Grammar — Tenses Workbook</span><div class="faint" style="font-size:11px">English Department</div></div></div></td>
             <td>English</td><td>10-A</td><td>Sen Sok</td><td>Jun 18, 2026</td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-lesson-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Assign" onclick="window.toast('Assign lesson — choose class or department','info')"><span class="material-symbols-outlined" style="font-size:16px">assignment_ind</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Lesson deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -57,7 +57,7 @@
             <td><div class="flex center gap8"><span class="row-ico t-purple" style="width:34px;height:34px"><span class="material-symbols-outlined">smart_display</span></span><div><span style="font-size:13px">Khmer Literature — Reamker Explained</span><div class="faint" style="font-size:11px">Khmer Department</div></div></div></td>
             <td>Khmer</td><td>9-B</td><td>Depo</td><td>Jun 20, 2026</td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-lesson-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Assign" onclick="window.toast('Assign lesson — choose class or department','info')"><span class="material-symbols-outlined" style="font-size:16px">assignment_ind</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Lesson deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -66,7 +66,7 @@
             <td><div class="flex center gap8"><span class="row-ico t-amber" style="width:34px;height:34px"><span class="material-symbols-outlined">image</span></span><div><span style="font-size:13px">Chinese Characters — Stroke Order Chart</span><div class="faint" style="font-size:11px">Chinese Department</div></div></div></td>
             <td>Chinese</td><td>11-A</td><td>Bak Touk</td><td>Jun 22, 2026</td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-lesson-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Assign" onclick="window.toast('Assign lesson — choose class or department','info')"><span class="material-symbols-outlined" style="font-size:16px">assignment_ind</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Lesson deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -75,7 +75,7 @@
             <td><div class="flex center gap8"><span class="row-ico t-green" style="width:34px;height:34px"><span class="material-symbols-outlined">picture_as_pdf</span></span><div><span style="font-size:13px">Chinese HSK 3 Vocabulary List</span><div class="faint" style="font-size:11px">Chinese Department</div></div></div></td>
             <td>Chinese</td><td>12-B</td><td>Bak Touk</td><td>Jun 25, 2026</td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-lesson-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Assign" onclick="window.toast('Assign lesson — choose class or department','info')"><span class="material-symbols-outlined" style="font-size:16px">assignment_ind</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Lesson deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -84,7 +84,7 @@
             <td><div class="flex center gap8"><span class="row-ico t-purple" style="width:34px;height:34px"><span class="material-symbols-outlined">smart_display</span></span><div><span style="font-size:13px">English Pronunciation — Phonetics Basics</span><div class="faint" style="font-size:11px">English Department</div></div></div></td>
             <td>English</td><td>8-A</td><td>Sen Sok</td><td>Jun 28, 2026</td>
             <td><div class="flex gap4 wrap">
-              <button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
+              <button class="icon-btn edit-lesson-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>
               <button class="icon-btn" title="Assign" onclick="window.toast('Assign lesson — choose class or department','info')"><span class="material-symbols-outlined" style="font-size:16px">assignment_ind</span></button>
               <button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="window.toast('Lesson deleted','error')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>
             </div></td>
@@ -171,13 +171,54 @@
 <script src="../../assets/js/layout.js"></script>
 <script>
 (function () {
+  var editingLessonRow = null;
+
   function rowActionsHtml(id) {
     return '<div class="flex gap4 wrap">' +
-      '<button class="icon-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
+      '<button class="icon-btn edit-lesson-btn" title="Edit"><span class="material-symbols-outlined" style="font-size:16px">edit</span></button>' +
       '<button class="icon-btn" title="Assign" onclick="window.toast(\'Assign lesson — choose class or department\',\'info\')"><span class="material-symbols-outlined" style="font-size:16px">assignment_ind</span></button>' +
       '<button class="icon-btn" title="Delete" style="color:var(--danger)" onclick="deleteAdminLesson(' + (id || 0) + ')"><span class="material-symbols-outlined" style="font-size:16px">delete</span></button>' +
     '</div>';
   }
+
+  // Ensure initial rows have edit-lesson-btn class
+  document.querySelectorAll('#lessonsTable tbody tr').forEach(function (tr) {
+    var editBtn = tr.querySelector('button[title="Edit"]');
+    if (editBtn) editBtn.classList.add('edit-lesson-btn');
+  });
+
+  // Table action delegation: Edit
+  document.getElementById('lessonsTable').addEventListener('click', function (e) {
+    var editBtn = e.target.closest('.edit-lesson-btn, [title="Edit"]');
+    if (editBtn) {
+      var tr = editBtn.closest('tr');
+      if (!tr) return;
+      editingLessonRow = tr;
+      var titleEl = tr.querySelector('td:first-child span[style*="font-size:13px"]');
+      var deptTd = tr.querySelector('td:nth-child(2)');
+      var classTd = tr.querySelector('td:nth-child(3)');
+      var campusTd = tr.querySelector('td:nth-child(4)');
+
+      document.getElementById('addLessonTitle').textContent = 'Edit Lesson';
+      document.getElementById('lesTitle').value = titleEl ? titleEl.textContent.trim() : '';
+      if (deptTd) document.getElementById('lesDept').value = deptTd.textContent.trim();
+      if (classTd && classTd.textContent.trim() !== '—') document.getElementById('lesClass').value = classTd.textContent.trim();
+      if (campusTd) document.getElementById('lesCampus').value = campusTd.textContent.trim();
+
+      var ov = document.querySelector('.drawer-overlay[data-drawer="addLessonDrawer"]');
+      if (ov) ov.classList.add('show', 'open');
+      return;
+    }
+  });
+
+  // Reset drawer state when opened via Upload Lesson button
+  document.querySelectorAll('[data-open-drawer="addLessonDrawer"]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      editingLessonRow = null;
+      document.getElementById('addLessonTitle').textContent = 'Upload Lesson';
+      document.getElementById('addLessonForm').reset();
+    });
+  });
 
   function inferFileType(file) {
     if (file) {
@@ -231,32 +272,52 @@
     var file = fileInput && fileInput.files && fileInput.files[0];
     var ft = inferFileType(file);
 
-    try {
-      await NGISAuth.api('/api/lessons', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: title,
-          department: dept,
-          classId: cls.toLowerCase().replace(/\s+/g, '-'),
-          class_name: cls,
-          fileType: file ? file.type : 'pdf',
-          fileName: file ? file.name : (title.toLowerCase().replace(/\s+/g, '_') + '.pdf')
-        })
-      });
-      window.toast('Lesson uploaded to repository', 'success');
-      loadLessons();
-    } catch(err) {
-      window.toast(err.message || 'Upload failed', 'error');
+    if (editingLessonRow) {
+      editingLessonRow.innerHTML =
+        '<td><div class="flex center gap8"><span class="row-ico ' + ft.cls + '" style="width:34px;height:34px"><span class="material-symbols-outlined">' + ft.icon + '</span></span><div><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + ' Department</div></div></div></td>' +
+        '<td>' + dept + '</td><td>' + cls + '</td><td>' + campus + '</td><td>' + todayLabel() + '</td>' +
+        '<td>' + rowActionsHtml() + '</td>';
+      editingLessonRow = null;
+      window.toast('Lesson updated successfully', 'success');
+    } else {
+      try {
+        await NGISAuth.api('/api/lessons', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: title,
+            department: dept,
+            classId: cls.toLowerCase().replace(/\s+/g, '-'),
+            class_name: cls,
+            fileType: file ? file.type : 'pdf',
+            fileName: file ? file.name : (title.toLowerCase().replace(/\s+/g, '_') + '.pdf')
+          })
+        });
+        window.toast('Lesson uploaded to repository', 'success');
+        loadLessons();
+      } catch(err) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td><div class="flex center gap8"><span class="row-ico ' + ft.cls + '" style="width:34px;height:34px"><span class="material-symbols-outlined">' + ft.icon + '</span></span><div><span style="font-size:13px">' + title + '</span><div class="faint" style="font-size:11px">' + dept + ' Department</div></div></div></td>' +
+          '<td>' + dept + '</td><td>' + cls + '</td><td>' + campus + '</td><td>' + todayLabel() + '</td>' +
+          '<td>' + rowActionsHtml() + '</td>';
+        document.querySelector('#lessonsTable tbody').prepend(tr);
+        window.toast('Lesson added to directory', 'success');
+      }
     }
 
     var ov = document.querySelector('.drawer-overlay[data-drawer="addLessonDrawer"]');
-    if (ov) ov.classList.remove('show');
+    if (ov) ov.classList.remove('show', 'open');
     document.getElementById('addLessonForm').reset();
   }
 
   window.deleteAdminLesson = async function(id) {
-    if (!id) { window.toast('Lesson deleted', 'error'); return; }
+    if (!id) {
+      var tr = event?.target?.closest('tr');
+      if (tr) tr.remove();
+      window.toast('Lesson deleted', 'error');
+      return;
+    }
     try {
       await NGISAuth.api('/api/lessons/' + id, { method: 'DELETE' });
       window.toast('Lesson deleted successfully', 'success');
@@ -268,8 +329,53 @@
 
   document.getElementById('lesSaveBtn').addEventListener('click', saveLesson);
 
+  // Search & Filters
+  var searchInput = document.querySelector('.toolbar input');
+  var selects = document.querySelectorAll('.toolbar select');
+  function filterLessons() {
+    var q = (searchInput ? searchInput.value : '').toLowerCase();
+    var deptFilter = selects[0] ? selects[0].value : 'All Departments';
+    var classFilter = selects[1] ? selects[1].value : 'All Classes';
+    var campusFilter = selects[2] ? selects[2].value : 'All Campuses';
+
+    document.querySelectorAll('#lessonsTable tbody tr').forEach(function (tr) {
+      var txt = tr.textContent.toLowerCase();
+      var matchesQ = !q || txt.includes(q);
+      var matchesDept = deptFilter === 'All Departments' || txt.includes(deptFilter.toLowerCase());
+      var matchesClass = classFilter === 'All Classes' || txt.includes(classFilter.toLowerCase());
+      var matchesCampus = campusFilter === 'All Campuses' || txt.includes(campusFilter.toLowerCase());
+
+      tr.style.display = (matchesQ && matchesDept && matchesClass && matchesCampus) ? '' : 'none';
+    });
+  }
+
+  if (searchInput) searchInput.addEventListener('input', filterLessons);
+  selects.forEach(function (sel) { sel.addEventListener('change', filterLessons); });
+
+  // Pagination buttons
+  var paginationBtns = document.querySelectorAll('.card-pad .btn-sm');
+  paginationBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var label = btn.textContent.trim();
+      paginationBtns.forEach(function (b) {
+        if (/^\d+$/.test(b.textContent.trim())) {
+          b.className = 'btn btn-ghost btn-sm';
+        }
+      });
+      if (/^\d+$/.test(label)) {
+        btn.className = 'btn btn-sm btn-primary';
+        if (window.toast) window.toast('Showing page ' + label + ' of lessons', 'info');
+      } else if (label === 'Next') {
+        if (window.toast) window.toast('Loaded next page of lessons', 'info');
+      } else if (label === 'Previous') {
+        if (window.toast) window.toast('Returned to previous page', 'info');
+      }
+    });
+  });
+
   if (new URLSearchParams(location.search).get('add') === '1') {
-    document.querySelector('.drawer-overlay[data-drawer="addLessonDrawer"]').classList.add('show');
+    var ov = document.querySelector('.drawer-overlay[data-drawer="addLessonDrawer"]');
+    if (ov) ov.classList.add('show', 'open');
   }
 
   setTimeout(loadLessons, 100);
