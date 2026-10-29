@@ -3,496 +3,1453 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Student Work Submissions</title>
+<title>NGIS — Student Work Submissions | New Gateway International School</title>
 
-<!-- Fonts -->
+<!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- Phosphor Icons for Mobile Hamburger Menu (AGENTS.md Critical Rule) -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <!-- NGIS Stylesheets -->
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 
-<!-- Phosphor Icons for Mobile View -->
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-<!-- Tailwind CSS -->
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<style>
-  /* Global typography constraint: No bold font */
-  * { font-weight: 400; }
-  b, strong, th, h1, h2, h3, h4, h5, h6,
-  .font-bold, .font-extrabold, .font-semibold, .font-medium,
-  [class*="font-medium"] {
+<script id="tailwind-config">
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
+      },
+      colors: {
+        ngis: {
+          primary: '#1e4d38',
+          hover: '#163b2a',
+          surface: '#f8fafb',
+          border: '#e2e8f0',
+          accent: '#2f6e52'
+        }
+      }
+    }
+  }
+};
+</script>
+
+<style data-purpose="custom-rules">
+  /* ── Strict Typography Constraint: NO BOLD FONTS (AGENTS.md) ── */
+  *, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div, input, select, textarea {
+    font-weight: 400;
+  }
+  .font-medium, .stat-val, .badge, th, h1, h2, h3, h4,
+  .font-bold, .font-semibold, .font-extrabold, .font-black,
+  [class*="font-semibold"], [class*="font-bold"], [class*="font-extrabold"], [class*="font-black"], [class*="font-medium"] {
     font-weight: 500 !important;
   }
-  
+
   html, body {
-    overflow-x: hidden;
+    overflow-x: hidden !important;
+    background-color: #f8fafb;
+    color: #1e293b;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
-  
+
+  /* Subtle custom scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
   @media (max-width: 1023px) {
     #heroBanner, .hero, .hero-topbar, .hero-main, .hero-subpage {
       display: none !important;
     }
   }
-  
-  .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  @media (max-width: 640px) {
-    .table-container {
-      margin: 0 -1rem;
-      padding: 0 1rem;
-    }
-  }
 
-  /* Modal Overlay */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-overlay.open {
-    display: flex;
-  }
-  .modal-content {
-    background: white;
-    border-radius: 1rem;
-    max-width: 600px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  }
-  [data-theme="dark"] .modal-content {
-    background-color: #1e293b;
+  /* Print Stylesheet */
+  @media print {
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+    #heroBanner, header, .no-print, .hamburger-btn, nav, #mobBottomNav, #scrim, .no-print-area {
+      display: none !important;
+    }
+    .page, main {
+      padding: 0 !important;
+      max-width: 100% !important;
+    }
   }
 </style>
 
-<!-- Theme bootstrap -->
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<!-- Enforce Light Mode (No Dark Toggle) -->
+<script>
+try {
+  localStorage.setItem('ngis-theme', 'light');
+  document.documentElement.setAttribute('data-theme', 'light');
+} catch(e) {}
+</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
 </head>
-<body data-role="teacher" data-page="submissions">
-<main class="main">
 
-  <!-- Hero Banner -->
-  <div id="heroBanner"></div>
+<body data-role="teacher" data-portal="teacher" data-page="submissions" class="bg-[#f8fafb] text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+<main class="main flex-1 flex flex-col min-w-0">
 
-  <!-- Desktop View -->
-  <div class="teacher-desktop-view">
-    <div class="page" style="padding-top: 2rem;">
-      <div class="mb-8">
-        <h1 class="text-2xl font-medium text-slate-900 dark:text-white mb-1">Student Work Submissions</h1>
-        <p class="text-sm text-slate-600 dark:text-slate-400">Review student work, track submissions, and provide digital feedback.</p>
-      </div>
+  <!-- Desktop Hero Banner -->
+  <div id="heroBanner" class="hidden lg:block no-print"></div>
 
-      <!-- Filter Toolbar -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700 p-4 mb-6 shadow-subtle">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
-          <!-- Search by Name/ID -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Student</label>
-            <input type="text" id="searchInput" placeholder="Name or ID..." class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-          </div>
-
-          <!-- Assignment Filter -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Assignment</label>
-            <select id="assignmentFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="">All Assignments</option>
-              <option value="hw1">Calculus Problem Set 3</option>
-              <option value="hw2">Statistics Quiz</option>
-              <option value="hw3">Physics Lab Report</option>
-            </select>
-          </div>
-
-          <!-- Class Filter -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Class</label>
-            <select id="classFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="">All Classes</option>
-              <option value="10A">Grade 10A</option>
-              <option value="11B">Grade 11B</option>
-              <option value="11C">Grade 11C</option>
-            </select>
-          </div>
-
-          <!-- Status Filter -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Status</label>
-            <select id="statusFilter" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="">All Submissions</option>
-              <option value="submitted">Submitted</option>
-              <option value="late">Late</option>
-              <option value="not-submitted">Not Submitted</option>
-              <option value="reviewed">Reviewed</option>
-            </select>
-          </div>
-
-          <!-- Sort -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Sort by</label>
-            <select id="sortBy" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="recent">Most Recent</option>
-              <option value="student">Student Name</option>
-              <option value="status">Status</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between gap-2 text-xs">
-          <span class="text-slate-600 dark:text-slate-400"><span id="resultCount">0</span> submissions</span>
-          <button id="clearFiltersBtn" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
-            Clear Filters
-          </button>
-        </div>
-      </div>
-
-      <!-- Submissions Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-subtle overflow-hidden">
-        <div class="table-container">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Student</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Assignment</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Class</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Submitted</th>
-                <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Status</th>
-                <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Grade</th>
-                <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Action</th>
-              </tr>
-            </thead>
-            <tbody id="submissionsTable">
-              <!-- Populated by JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Mobile View -->
-  <div class="teacher-mobile-view px-4 pt-4 pb-28">
-    <header class="flex items-center justify-between gap-3 mb-4">
-      <button type="button" class="mobile-hamburger-btn hamburger-btn" aria-label="Open menu" aria-expanded="false" data-action="toggle-sidebar" title="Open navigation">
+  <!-- ═══════════════════════════════════════════════════════════════════
+       MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE)
+       Visible on screen width <= 1024px (lg:hidden) with accessible hamburger button
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+    <div class="flex items-center gap-3 min-w-0">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
         <i class="ph-bold ph-list text-xl"></i>
       </button>
-      <div class="flex-1 min-w-0">
-        <h1 class="text-base font-medium text-slate-900 dark:text-white">Submissions</h1>
+      <div class="min-w-0 truncate">
+        <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Student Work Submissions</h1>
+        <p class="text-[11px] text-slate-500 leading-none mt-0.5 truncate">Grade 10A • Calculus Problem Set 3</p>
       </div>
-      <a href="teacher-classes.html" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300">
-        <span class="material-symbols-outlined text-lg">close</span>
-      </a>
-    </header>
-
-    <!-- Mobile Submissions List -->
-    <div id="submissionsMobileList" class="space-y-2">
-      <!-- Populated by JS -->
     </div>
-  </div>
 
-  <!-- Review Modal -->
-  <div class="modal-overlay" id="reviewModal">
-    <div class="modal-content">
-      <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-        <h2 class="text-lg font-medium text-slate-900 dark:text-white">Review Submission</h2>
-        <button onclick="document.getElementById('reviewModal').classList.remove('open')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-          <span class="material-symbols-outlined">close</span>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <button type="button" onclick="exportSubmissionsCSV()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition" title="Export CSV">
+        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+      <button type="button" onclick="batchPublishGrades()" class="px-3 py-1.5 rounded-lg bg-[#1e4d38] text-white font-medium text-xs shadow-xs active:scale-95 transition flex items-center gap-1.5" title="Publish Grades">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span>Publish</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       MAIN WORKSPACE CONTENT CONTAINER
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="flex-1 max-w-[1720px] w-full mx-auto px-4 lg:px-8 py-5 pb-28 lg:pb-12" data-purpose="submissions-workspace">
+
+    <!-- BEGIN: HeaderAndActions (Desktop Context Bar) -->
+    <section class="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4 no-print">
+      <div>
+        <h2 class="text-xl font-medium text-slate-900 tracking-tight">Student Work Submissions</h2>
+        <p class="text-xs text-slate-500 mt-1">Homeroom Grade 10A &bull; Review student submissions, evaluate rubric criteria, and provide verified academic feedback.</p>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        <button id="btnExportCSV" onclick="exportSubmissionsCSV()" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition shadow-xs active:scale-95" type="button">
+          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          <span>Export (.CSV)</span>
+        </button>
+
+        <button id="btnDownloadZip" onclick="downloadAttachmentsZip()" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:text-slate-900 transition shadow-xs active:scale-95" type="button">
+          <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          <span>Download Attachments (.ZIP)</span>
+        </button>
+
+        <button id="btnBatchPublish" onclick="batchPublishGrades()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-[#1e4d38] hover:bg-[#163b2a] border border-[#1e4d38] rounded-lg shadow-xs transition active:scale-95 focus:ring-2 focus:ring-offset-2 focus:ring-[#1e4d38]" type="button">
+          <svg class="w-3.5 h-3.5 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+          <span>Batch Publish Grades</span>
         </button>
       </div>
-      <div class="p-6 space-y-4">
-        <!-- Student Info -->
-        <div class="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
-          <div class="w-10 h-10 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 flex items-center justify-center">
-            <span class="material-symbols-outlined">person</span>
-          </div>
-          <div class="min-w-0">
-            <div class="font-medium text-slate-900 dark:text-white" id="modalStudentName">Nrinphouneta Hok</div>
-            <div class="text-xs text-slate-500 dark:text-slate-400" id="modalStudentId">2026-STD-0142</div>
+    </section>
+    <!-- END: HeaderAndBreadcrumbs -->
+
+    <!-- BEGIN: KpiSummaryCards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5" data-purpose="summary-kpis">
+      <!-- KPI Card 1 -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Submissions</span>
+          <span class="text-[11px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md" id="kpiCohortPill">Grade 10A</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-slate-900 font-mono" id="kpiTotal">27</span>
+          <span class="text-xs text-slate-500 font-medium">registered students</span>
+        </div>
+        <div class="mt-2 text-[11px] text-slate-500 flex items-center gap-1">
+          <span class="font-medium text-slate-700">100%</span> enrollment response tracking
+        </div>
+      </div>
+
+      <!-- KPI Card 2 -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-amber-700 uppercase tracking-wider">Awaiting Evaluation</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-amber-700 font-mono" id="kpiPending">4</span>
+          <span class="text-xs text-slate-500 font-medium">pending reviews</span>
+        </div>
+        <div class="mt-2 text-[11px] text-amber-600 font-medium flex items-center gap-1">
+          Calculus Set 3 queue active
+        </div>
+      </div>
+
+      <!-- KPI Card 3 -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-emerald-800 uppercase tracking-wider">Graded &amp; Completed</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#1e4d38]"></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-slate-900 font-mono" id="kpiGraded">21</span>
+          <span class="text-xs text-emerald-700 font-medium bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded" id="kpiGradedPct">77.8%</span>
+        </div>
+        <div class="mt-2 text-[11px] text-slate-500">
+          Average class mark: <span class="font-medium text-slate-800" id="kpiAvgMark">83.4 / 100</span>
+        </div>
+      </div>
+
+      <!-- KPI Card 4 -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-rose-700 uppercase tracking-wider">Late / Overdue</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-rose-700 font-mono" id="kpiLate">2</span>
+          <span class="text-xs text-slate-500 font-medium">submissions flagged</span>
+        </div>
+        <div class="mt-2 text-[11px] text-rose-600 font-medium">
+          Late penalty rules applied (-5%)
+        </div>
+      </div>
+    </section>
+    <!-- END: KpiSummaryCards -->
+
+    <!-- BEGIN: FilterToolbar -->
+    <section class="bg-white border border-slate-200 rounded-xl p-3.5 mb-5 shadow-xs no-print">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-3">
+        <!-- Search Field -->
+        <div class="lg:col-span-3">
+          <label for="searchStudent" class="block text-[11px] font-medium text-slate-600 mb-1">Student Search</label>
+          <div class="relative">
+            <input id="searchStudent" oninput="onSearchInput(this.value)" class="w-full text-xs py-1.5 pl-8 pr-2.5 border border-slate-200 rounded-lg focus:border-[#1e4d38] focus:ring-1 focus:ring-[#1e4d38] shadow-xs" placeholder="Search by student name, ID..." type="text">
+            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
           </div>
         </div>
 
-        <!-- Assignment Info -->
-        <div>
-          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">Assignment</div>
-          <div class="text-sm text-slate-900 dark:text-white" id="modalAssignmentTitle">Calculus Problem Set 3</div>
-          <div class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="modalAssignmentDetails">Due: Oct 23, 2026</div>
+        <!-- Assignment Selector -->
+        <div class="lg:col-span-3">
+          <label for="selectAssignment" class="block text-[11px] font-medium text-slate-600 mb-1">Assignment</label>
+          <select id="selectAssignment" onchange="onAssignmentChange(this.value)" class="w-full text-xs py-1.5 px-2.5 border border-slate-200 rounded-lg focus:border-[#1e4d38] focus:ring-1 focus:ring-[#1e4d38] bg-white text-slate-800 shadow-xs cursor-pointer">
+            <option selected>Calculus Problem Set 3 (Active)</option>
+            <option>Statistics Quiz 2</option>
+            <option>Calculus Problem Set 2</option>
+            <option>Trigonometric Proofs Task</option>
+          </select>
         </div>
 
-        <!-- Submission Details -->
-        <div>
-          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">Submission</div>
-          <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-3 text-xs space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-400">Submitted:</span>
-              <span id="modalSubmittedTime" class="text-slate-900 dark:text-white">Oct 22, 2026 at 11:45 PM</span>
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-400">Status:</span>
-              <span id="modalStatus" class="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300">On Time</span>
-            </div>
-          </div>
+        <!-- Class / Cohort Selector -->
+        <div class="lg:col-span-2">
+          <label for="selectCohort" class="block text-[11px] font-medium text-slate-600 mb-1">Class / Cohort</label>
+          <select id="selectCohort" onchange="onCohortChange(this.value)" class="w-full text-xs py-1.5 px-2.5 border border-slate-200 rounded-lg focus:border-[#1e4d38] focus:ring-1 focus:ring-[#1e4d38] bg-white text-slate-800 shadow-xs cursor-pointer">
+            <option selected>Grade 10A (Adv Math)</option>
+            <option>Grade 10B (Adv Math)</option>
+            <option>Grade 11A (Calculus BC)</option>
+            <option>Grade 12B (Applied Stats)</option>
+          </select>
         </div>
 
-        <!-- File Preview -->
-        <div>
-          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">Submitted File</div>
-          <div class="border border-slate-200 dark:border-slate-700 rounded-lg p-3 flex items-center gap-3">
-            <span class="material-symbols-outlined text-slate-400">description</span>
-            <div class="min-w-0 flex-1">
-              <div class="text-sm text-slate-900 dark:text-white truncate">problem_set_3_solution.pdf</div>
-              <div class="text-xs text-slate-500 dark:text-slate-400">2.4 MB</div>
-            </div>
-            <button class="px-2 py-1 rounded-lg text-xs font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition">
-              Download
+        <!-- Status Filter -->
+        <div class="lg:col-span-2">
+          <label for="selectStatus" class="block text-[11px] font-medium text-slate-600 mb-1">Submission Status</label>
+          <select id="selectStatus" onchange="onStatusFilterChange(this.value)" class="w-full text-xs py-1.5 px-2.5 border border-slate-200 rounded-lg focus:border-[#1e4d38] focus:ring-1 focus:ring-[#1e4d38] bg-white text-slate-800 shadow-xs cursor-pointer">
+            <option value="all" selected>All Submissions (27)</option>
+            <option value="submitted">Submitted (21)</option>
+            <option value="pending">Needs Grading (4)</option>
+            <option value="late">Late Submission (2)</option>
+            <option value="missing">Not Submitted (1)</option>
+          </select>
+        </div>
+
+        <!-- Sort Option -->
+        <div class="lg:col-span-2">
+          <label for="selectSort" class="block text-[11px] font-medium text-slate-600 mb-1">Sort By</label>
+          <div class="flex items-center gap-2">
+            <select id="selectSort" onchange="onSortChange(this.value)" class="w-full text-xs py-1.5 px-2.5 border border-slate-200 rounded-lg focus:border-[#1e4d38] focus:ring-1 focus:ring-[#1e4d38] bg-white text-slate-800 shadow-xs cursor-pointer">
+              <option value="date-desc" selected>Date (Newest)</option>
+              <option value="name-asc">Student Name (A-Z)</option>
+              <option value="grade-desc">Grade (High to Low)</option>
+              <option value="grade-asc">Grade (Low to High)</option>
+            </select>
+            <button onclick="resetFilters()" class="p-2 border border-slate-200 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-50 shadow-xs transition" title="Reset Filters" type="button">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
             </button>
           </div>
         </div>
-
-        <!-- Feedback -->
-        <div>
-          <div class="text-xs font-medium text-slate-600 dark:text-slate-300 mb-2">Digital Feedback</div>
-          <textarea id="feedbackInput" placeholder="Enter feedback for this submission..." class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400" rows="4"></textarea>
-        </div>
-
-        <!-- Grade -->
-        <div>
-          <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-2">Grade (out of 100)</label>
-          <input type="number" id="gradeInput" placeholder="75" min="0" max="100" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
-          <button onclick="document.getElementById('reviewModal').classList.remove('open')" class="flex-1 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium">
-            Cancel
-          </button>
-          <button id="saveReviewBtn" class="flex-1 px-4 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white transition text-sm font-medium">
-            Save Review
-          </button>
-        </div>
       </div>
+    </section>
+    <!-- END: FilterToolbar -->
+
+    <!-- BEGIN: TableAndDetailSplitLayout -->
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+
+      <!-- Left Column: Master Table (Straight Line Border Layout) -->
+      <section class="xl:col-span-8 bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs flex flex-col justify-between">
+        <div>
+          <!-- Table Control Strip -->
+          <div class="px-4 py-3 bg-white border-b border-slate-200 flex flex-wrap items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2 text-xs font-medium text-slate-700">
+              <span id="assignmentHeaderLabel">Assignment Records: Calculus Problem Set 3</span>
+              <span class="text-slate-400">&bull;</span>
+              <span class="text-slate-500 font-normal">Due: Oct 22, 2026 at 11:59 PM</span>
+            </div>
+            <span class="text-[11px] text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200">
+              Selected: <span class="font-medium text-slate-800" id="selectedStudentPill">Sophea Chan</span>
+            </span>
+          </div>
+
+          <!-- Strict Grid Lines Table Container -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse min-w-[760px]" id="submissionsTable">
+              <thead class="bg-slate-50 text-slate-600 uppercase text-[11px] font-medium tracking-wider select-none">
+                <tr class="border-b border-slate-200">
+                  <th class="w-8 px-3 py-3 border-r border-slate-200 text-center font-medium">
+                    <input id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="rounded border-slate-300 text-[#1e4d38] focus:ring-[#1e4d38] cursor-pointer" type="checkbox">
+                  </th>
+                  <th class="w-10 px-2.5 py-3 border-r border-slate-200 text-center font-medium">#</th>
+                  <th class="px-4 py-3 border-r border-slate-200 font-medium">Student &amp; ID</th>
+                  <th class="px-3 py-3 border-r border-slate-200 font-medium">Class</th>
+                  <th class="px-4 py-3 border-r border-slate-200 font-medium">Submitted Date</th>
+                  <th class="px-3 py-3 border-r border-slate-200 text-center font-medium">Status</th>
+                  <th class="px-3 py-3 border-r border-slate-200 text-center font-medium">Grade</th>
+                  <th class="px-3 py-3 text-center font-medium">Action</th>
+                </tr>
+              </thead>
+              <tbody id="submissionsTableBody" class="divide-y divide-slate-200 text-slate-700">
+                <!-- Populated via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Table Footer / Pagination -->
+        <div class="px-4 py-3 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 no-print">
+          <div class="flex items-center gap-3">
+            <span>Showing <span class="font-medium text-slate-900" id="pageRangeLabel">1–8</span> of <span class="font-medium text-slate-900" id="totalSubmissionsCount">27</span> submissions</span>
+            <div class="h-4 w-px bg-slate-200"></div>
+            <div class="flex items-center gap-1.5">
+              <span>Rows per page:</span>
+              <select id="selectRowsPerPage" onchange="onRowsPerPageChange(this.value)" class="text-xs py-0.5 px-2 border border-slate-200 rounded-md bg-white text-slate-700 cursor-pointer">
+                <option value="8" selected>8</option>
+                <option value="15">15</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1" id="paginationButtonsContainer">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Quick Review & Scoring Drawer/Panel -->
+      <section class="xl:col-span-4 bg-white border border-slate-200 rounded-xl p-5 shadow-xs flex flex-col justify-between" id="scoringDrawer">
+        <div>
+          <!-- Drawer Header -->
+          <div class="flex items-start justify-between pb-4 border-b border-slate-200">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="inline-block w-2.5 h-2.5 rounded-full" id="drawerStatusDot"></span>
+                <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Evaluation Preview</span>
+              </div>
+              <h3 class="text-base font-medium text-slate-900 mt-1" id="drawerStudentName">Sophea Chan</h3>
+              <div class="text-xs text-slate-500" id="drawerStudentMeta">ID: 2026-STD-0144 &bull; Calculus Problem Set 3</div>
+            </div>
+            <span class="px-2 py-0.5 text-[10px] font-medium border rounded uppercase" id="drawerPenaltyBadge">
+              Late (-5%)
+            </span>
+          </div>
+
+          <!-- Document Attachment Box -->
+          <div class="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-700 font-medium text-xs flex-shrink-0">
+                  PDF
+                </div>
+                <div class="min-w-0 truncate">
+                  <div class="text-xs font-medium text-slate-800 truncate" id="drawerFileName">Sophea_Chan_Set3_Final.pdf</div>
+                  <div class="text-[11px] text-slate-500 truncate" id="drawerFileMeta">Submitted Oct 23, 2026 &bull; 2.4 MB &bull; 4 Pages</div>
+                </div>
+              </div>
+              <button type="button" onclick="openAttachedDocument()" class="text-xs text-[#1e4d38] font-medium hover:underline inline-flex items-center gap-1 flex-shrink-0 ml-2">
+                <span>Open</span>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Rubric Breakdown -->
+          <div class="mt-4">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-xs font-medium text-slate-900 uppercase tracking-wide">Standard Grading Rubric</h4>
+              <span class="text-[11px] font-medium text-slate-500">Max: 100 pts</span>
+            </div>
+            <div class="space-y-2.5">
+              <!-- Criterion 1 -->
+              <div class="p-2.5 border border-slate-200 rounded-lg bg-white shadow-2xs">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-medium text-slate-800">1. Mathematical Accuracy</span>
+                  <div class="flex items-center gap-1">
+                    <input id="rubricCrit1" oninput="onRubricChange()" class="w-14 text-center text-xs py-1 px-1.5 border border-slate-300 bg-slate-50 hover:bg-white rounded-md font-medium text-slate-800 focus:ring-1 focus:ring-[#1e4d38] focus:border-[#1e4d38] shadow-2xs transition" max="40" min="0" type="number" value="38">
+                    <span class="text-slate-400 text-xs">/ 40</span>
+                  </div>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">Integration by parts applied correctly in Q1–Q6.</div>
+              </div>
+
+              <!-- Criterion 2 -->
+              <div class="p-2.5 border border-slate-200 rounded-lg bg-white shadow-2xs">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-medium text-slate-800">2. Derivation Methodology</span>
+                  <div class="flex items-center gap-1">
+                    <input id="rubricCrit2" oninput="onRubricChange()" class="w-14 text-center text-xs py-1 px-1.5 border border-slate-300 bg-slate-50 hover:bg-white rounded-md font-medium text-slate-800 focus:ring-1 focus:ring-[#1e4d38] focus:border-[#1e4d38] shadow-2xs transition" max="40" min="0" type="number" value="34">
+                    <span class="text-slate-400 text-xs">/ 40</span>
+                  </div>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">Minor step omission in Question 4 derivation.</div>
+              </div>
+
+              <!-- Criterion 3 -->
+              <div class="p-2.5 border border-slate-200 rounded-lg bg-white shadow-2xs">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-medium text-slate-800">3. Presentation &amp; Notation</span>
+                  <div class="flex items-center gap-1">
+                    <input id="rubricCrit3" oninput="onRubricChange()" class="w-14 text-center text-xs py-1 px-1.5 border border-slate-300 bg-slate-50 hover:bg-white rounded-md font-medium text-slate-800 focus:ring-1 focus:ring-[#1e4d38] focus:border-[#1e4d38] shadow-2xs transition" max="20" min="0" type="number" value="18">
+                    <span class="text-slate-400 text-xs">/ 20</span>
+                  </div>
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1">Clean graphs, accurate limits of integration labeled.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teacher Feedback Note -->
+          <div class="mt-4">
+            <label for="drawerFeedback" class="block text-xs font-medium text-slate-900 uppercase tracking-wide mb-1.5">Feedback / Comments to Student</label>
+            <textarea id="drawerFeedback" class="w-full text-xs p-2.5 border border-slate-300 bg-slate-50 hover:bg-white rounded-lg focus:border-[#1e4d38] focus:ring-1 focus:ring-[#1e4d38] text-slate-800 placeholder-slate-400 shadow-2xs transition" placeholder="Good work! Enter teacher evaluation remarks..." rows="3">Excellent logical progression overall. Remember to write the boundary conditions clearly for Problem 4. Late submission penalty of -5 points applied as per department policy.</textarea>
+          </div>
+
+          <!-- Total Score Summary -->
+          <div class="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between shadow-2xs">
+            <div>
+              <div class="text-[11px] uppercase font-medium text-slate-500">Calculated Final Mark</div>
+              <div class="text-xs text-slate-400" id="drawerCalculationBreakdown">Rubric total: 90 &bull; Late penalty: -5 pts</div>
+            </div>
+            <div class="text-right">
+              <span class="text-2xl font-medium text-[#1e4d38]" id="drawerFinalScoreDisplay">85</span>
+              <span class="text-xs text-slate-500 font-medium"> / 100</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="pt-4 border-t border-slate-200 flex items-center gap-2 mt-4">
+          <button type="button" onclick="saveEvaluationDraft()" class="flex-1 py-2 px-3 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition active:scale-95 shadow-xs">
+            Save as Draft
+          </button>
+          <button type="button" onclick="saveAndPublishMark()" class="flex-1 py-2 px-3 text-xs font-medium text-white bg-[#1e4d38] hover:bg-[#163b2a] rounded-lg shadow-xs transition active:scale-95">
+            Save &amp; Publish Mark
+          </button>
+        </div>
+      </section>
+
     </div>
+    <!-- END: TableAndDetailSplitLayout -->
+
   </div>
 
 </main>
 
+<!-- Hero & Layout Engine Scripts -->
+<script>
+window.PAGE = { role: 'teacher', active: 'submissions' };
+window.HERO_CONFIG = {
+  role: 'teacher',
+  active: 'submissions',
+  isDashboard: false,
+  title: 'Student Work Submissions',
+  breadcrumbs: [{ label: 'Teacher', href: 'teacher.html' }, { label: 'Submissions' }]
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 
+<!-- ═══════════════════════════════════════════════════════════════════
+     INTERACTIVE JAVASCRIPT: MASTER TABLE, SCORING DRAWER & CALCULATION
+     ═══════════════════════════════════════════════════════════════════ -->
 <script>
-// ── STUDENT WORK SUBMISSIONS PAGE LOGIC ──
 (function() {
-  let allSubmissions = [];
-  let filteredSubmissions = [];
+  "use strict";
 
-  // Mock submission data
-  const mockSubmissions = [
-    { id: 'sub-1', studentId: '2026-STD-0142', studentName: 'Nrinphouneta Hok', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: '2026-10-22 11:45 PM', status: 'submitted', grade: 82, file: 'solution.pdf' },
-    { id: 'sub-2', studentId: '2026-STD-0144', studentName: 'Sophea Chan', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: '2026-10-23 02:15 AM', status: 'late', grade: null, file: 'solution.pdf' },
-    { id: 'sub-3', studentId: '2026-STD-0145', studentName: 'Virak Heng', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: null, status: 'not-submitted', grade: null, file: null },
-    { id: 'sub-4', studentId: '2026-STD-0148', studentName: 'Kosal Rith Mony', assignmentTitle: 'Statistics Quiz', class: '10A', submittedAt: '2026-10-21 05:30 PM', status: 'reviewed', grade: 78, file: 'quiz_answers.pdf' },
-    { id: 'sub-5', studentId: '2026-STD-0151', studentName: 'Sreylin Vuth', assignmentTitle: 'Calculus Problem Set 3', class: '10A', submittedAt: '2026-10-22 08:00 PM', status: 'submitted', grade: null, file: 'solution.pdf' },
+  // Authentic 27 students in Grade 10A cohort matching user prompt specifications
+  let submissionsData = [
+    {
+      id: '2026-STD-0144',
+      name: 'Sophea Chan',
+      initials: 'SC',
+      avatarBg: 'bg-[#1e4d38] text-white',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 23, 2026',
+      submittedTime: '02:15 AM (+2h 16m)',
+      status: 'Late', // Late, Graded, Submitted, Missing
+      grade: null, // Pending evaluation
+      rubric: { c1: 38, c2: 34, c3: 18 },
+      penalty: 5,
+      feedback: 'Excellent logical progression overall. Remember to write the boundary conditions clearly for Problem 4. Late submission penalty of -5 points applied as per department policy.',
+      fileName: 'Sophea_Chan_Set3_Final.pdf',
+      fileMeta: 'Submitted Oct 23, 2026 • 2.4 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0142',
+      name: 'Nrinphouneta Hok',
+      initials: 'NH',
+      avatarBg: 'bg-slate-200 text-slate-700',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '11:45 PM (On-time)',
+      status: 'Graded',
+      grade: 82,
+      rubric: { c1: 34, c2: 32, c3: 16 },
+      penalty: 0,
+      feedback: 'Strong understanding of derivatives and integration limits. Minor calculation error on Question 3.',
+      fileName: 'Nrinphouneta_Hok_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 1.8 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0151',
+      name: 'Sreylin Vuth',
+      initials: 'SV',
+      avatarBg: 'bg-slate-200 text-slate-700',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '08:00 PM (On-time)',
+      status: 'Submitted',
+      grade: null,
+      rubric: { c1: 36, c2: 35, c3: 17 },
+      penalty: 0,
+      feedback: 'Well-formatted document and clear steps throughout.',
+      fileName: 'Sreylin_Vuth_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.1 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0148',
+      name: 'Kosal Rith Mony',
+      initials: 'KM',
+      avatarBg: 'bg-slate-200 text-slate-700',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 21, 2026',
+      submittedTime: '05:30 PM (Early)',
+      status: 'Graded',
+      grade: 78,
+      rubric: { c1: 32, c2: 30, c3: 16 },
+      penalty: 0,
+      feedback: 'Submitted ahead of schedule. Needs review of integration by substitution.',
+      fileName: 'Kosal_Rith_Mony_Set3.pdf',
+      fileMeta: 'Submitted Oct 21, 2026 • 1.9 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0145',
+      name: 'Virak Heng',
+      initials: 'VH',
+      avatarBg: 'bg-rose-100 text-rose-700',
+      class: 'Grade 10A',
+      submittedDate: 'No record',
+      submittedTime: 'Overdue 2 days',
+      status: 'Missing',
+      grade: 0,
+      rubric: { c1: 0, c2: 0, c3: 0 },
+      penalty: 0,
+      feedback: 'No work submitted prior to final deadline. Automated alert sent to parent/advisor.',
+      fileName: 'No_Submission_File',
+      fileMeta: 'Unsubmitted'
+    },
+    {
+      id: '2026-STD-0139',
+      name: 'Elena Seng',
+      initials: 'ES',
+      avatarBg: 'bg-slate-200 text-slate-700',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '10:18 PM (On-time)',
+      status: 'Graded',
+      grade: 94,
+      rubric: { c1: 38, c2: 38, c3: 18 },
+      penalty: 0,
+      feedback: 'Exemplary work! Beautiful notations and rigorous mathematical proofs.',
+      fileName: 'Elena_Seng_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 3.2 MB • 5 Pages'
+    },
+    {
+      id: '2026-STD-0155',
+      name: 'David Kim',
+      initials: 'DK',
+      avatarBg: 'bg-slate-200 text-slate-700',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '11:15 PM (On-time)',
+      status: 'Submitted',
+      grade: null,
+      rubric: { c1: 35, c2: 33, c3: 17 },
+      penalty: 0,
+      feedback: 'Detailed step-by-step calculus solutions.',
+      fileName: 'David_Kim_Calculus_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.0 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0147',
+      name: 'Pich Sreyleak',
+      initials: 'PS',
+      avatarBg: 'bg-slate-200 text-slate-700',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 21, 2026',
+      submittedTime: '09:12 PM (Early)',
+      status: 'Graded',
+      grade: 88,
+      rubric: { c1: 36, c2: 34, c3: 18 },
+      penalty: 0,
+      feedback: 'Great accuracy and clear graphical representations.',
+      fileName: 'Pich_Sreyleak_Set3.pdf',
+      fileMeta: 'Submitted Oct 21, 2026 • 2.6 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0158',
+      name: 'Heng Piseth',
+      initials: 'HP',
+      avatarBg: 'bg-amber-100 text-amber-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 23, 2026',
+      submittedTime: '01:10 AM (+1h 10m)',
+      status: 'Late',
+      grade: 75,
+      rubric: { c1: 32, c2: 32, c3: 16 },
+      penalty: 5,
+      feedback: 'Submitted after midnight cutoff. Late penalty of -5 applied.',
+      fileName: 'Heng_Piseth_Set3.pdf',
+      fileMeta: 'Submitted Oct 23, 2026 • 1.7 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0160',
+      name: 'Emily Jenkins',
+      initials: 'EJ',
+      avatarBg: 'bg-purple-100 text-purple-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '06:45 PM (Early)',
+      status: 'Graded',
+      grade: 98,
+      rubric: { c1: 40, c2: 39, c3: 19 },
+      penalty: 0,
+      feedback: 'Flawless execution of advanced problems.',
+      fileName: 'Emily_Jenkins_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.8 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0162',
+      name: 'Kevin Jenkins',
+      initials: 'KJ',
+      avatarBg: 'bg-cyan-100 text-cyan-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '07:15 PM (Early)',
+      status: 'Graded',
+      grade: 85,
+      rubric: { c1: 35, c2: 33, c3: 17 },
+      penalty: 0,
+      feedback: 'Good derivations and clear answers.',
+      fileName: 'Kevin_Jenkins_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.2 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0168',
+      name: 'Linda Chea',
+      initials: 'LC',
+      avatarBg: 'bg-emerald-100 text-emerald-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '09:20 PM (On-time)',
+      status: 'Graded',
+      grade: 91,
+      rubric: { c1: 37, c2: 36, c3: 18 },
+      penalty: 0,
+      feedback: 'Consistent rigor and high quality presentation.',
+      fileName: 'Linda_Chea_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.4 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0171',
+      name: 'Vicheka Meas',
+      initials: 'VM',
+      avatarBg: 'bg-orange-100 text-orange-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '11:05 PM (On-time)',
+      status: 'Submitted',
+      grade: null,
+      rubric: { c1: 36, c2: 34, c3: 17 },
+      penalty: 0,
+      feedback: 'Awaiting formal review of final graphs.',
+      fileName: 'Vicheka_Meas_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 1.9 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0174',
+      name: 'Dara Panha',
+      initials: 'DP',
+      avatarBg: 'bg-blue-100 text-blue-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '10:45 PM (On-time)',
+      status: 'Graded',
+      grade: 86,
+      rubric: { c1: 35, c2: 34, c3: 17 },
+      penalty: 0,
+      feedback: 'Solid problem solutions and clean handwriting.',
+      fileName: 'Dara_Panha_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.3 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0177',
+      name: 'Bormey Sen',
+      initials: 'BS',
+      avatarBg: 'bg-sky-100 text-sky-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '08:50 PM (On-time)',
+      status: 'Graded',
+      grade: 89,
+      rubric: { c1: 36, c2: 35, c3: 18 },
+      penalty: 0,
+      feedback: 'Great precision in linear modeling steps.',
+      fileName: 'Bormey_Sen_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.5 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0182',
+      name: 'Kimleng Seng',
+      initials: 'KS',
+      avatarBg: 'bg-indigo-100 text-indigo-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '10:30 PM (On-time)',
+      status: 'Graded',
+      grade: 80,
+      rubric: { c1: 33, c2: 31, c3: 16 },
+      penalty: 0,
+      feedback: 'Good work overall. Review Question 5 proofs.',
+      fileName: 'Kimleng_Seng_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.1 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0185',
+      name: 'Nathalie Pich',
+      initials: 'NP',
+      avatarBg: 'bg-fuchsia-100 text-fuchsia-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '07:40 PM (Early)',
+      status: 'Graded',
+      grade: 95,
+      rubric: { c1: 39, c2: 38, c3: 18 },
+      penalty: 0,
+      feedback: 'Outstanding mathematical explanations.',
+      fileName: 'Nathalie_Pich_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.7 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0189',
+      name: 'Rithy Kong',
+      initials: 'RK',
+      avatarBg: 'bg-stone-100 text-stone-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '09:05 PM (On-time)',
+      status: 'Graded',
+      grade: 76,
+      rubric: { c1: 32, c2: 29, c3: 15 },
+      penalty: 0,
+      feedback: 'Review calculus fundamentals and boundary notation.',
+      fileName: 'Rithy_Kong_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 1.9 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0193',
+      name: 'Thida Bun',
+      initials: 'TB',
+      avatarBg: 'bg-rose-100 text-rose-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '08:15 PM (On-time)',
+      status: 'Graded',
+      grade: 90,
+      rubric: { c1: 37, c2: 36, c3: 17 },
+      penalty: 0,
+      feedback: 'Strong problem-solving methodology throughout.',
+      fileName: 'Thida_Bun_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.4 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0199',
+      name: 'Sarath Om',
+      initials: 'SO',
+      avatarBg: 'bg-slate-100 text-slate-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '09:55 PM (On-time)',
+      status: 'Graded',
+      grade: 84,
+      rubric: { c1: 34, c2: 33, c3: 17 },
+      penalty: 0,
+      feedback: 'Well articulated steps on calculus integrals.',
+      fileName: 'Sarath_Om_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.0 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0205',
+      name: 'Sophat Mean',
+      initials: 'SM',
+      avatarBg: 'bg-amber-100 text-amber-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '10:10 PM (On-time)',
+      status: 'Graded',
+      grade: 81,
+      rubric: { c1: 33, c2: 32, c3: 16 },
+      penalty: 0,
+      feedback: 'Good work overall.',
+      fileName: 'Sophat_Mean_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.1 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0212',
+      name: 'Chhayrith Vong',
+      initials: 'CV',
+      avatarBg: 'bg-emerald-100 text-emerald-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '07:30 PM (Early)',
+      status: 'Graded',
+      grade: 92,
+      rubric: { c1: 38, c2: 36, c3: 18 },
+      penalty: 0,
+      feedback: 'Clean derivations and high accuracy.',
+      fileName: 'Chhayrith_Vong_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.6 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0218',
+      name: 'Sokha Meng',
+      initials: 'SM',
+      avatarBg: 'bg-blue-100 text-blue-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '08:45 PM (On-time)',
+      status: 'Graded',
+      grade: 86,
+      rubric: { c1: 35, c2: 34, c3: 17 },
+      penalty: 0,
+      feedback: 'Good understanding of core concepts.',
+      fileName: 'Sokha_Meng_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.3 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0222',
+      name: 'Vannak Chem',
+      initials: 'VC',
+      avatarBg: 'bg-lime-100 text-lime-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '09:40 PM (On-time)',
+      status: 'Graded',
+      grade: 77,
+      rubric: { c1: 32, c2: 30, c3: 15 },
+      penalty: 0,
+      feedback: 'Needs practice with integration substitution rules.',
+      fileName: 'Vannak_Chem_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 1.9 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0229',
+      name: 'Leakhena Roeun',
+      initials: 'LR',
+      avatarBg: 'bg-pink-100 text-pink-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '06:15 PM (Early)',
+      status: 'Graded',
+      grade: 94,
+      rubric: { c1: 38, c2: 37, c3: 19 },
+      penalty: 0,
+      feedback: 'Superb work and elegant solutions.',
+      fileName: 'Leakhena_Roeun_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.9 MB • 4 Pages'
+    },
+    {
+      id: '2026-STD-0236',
+      name: 'Moniroth Keo',
+      initials: 'MK',
+      avatarBg: 'bg-cyan-100 text-cyan-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '08:20 PM (On-time)',
+      status: 'Graded',
+      grade: 85,
+      rubric: { c1: 35, c2: 33, c3: 17 },
+      penalty: 0,
+      feedback: 'Consistent progress and clear diagrams.',
+      fileName: 'Moniroth_Keo_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.1 MB • 3 Pages'
+    },
+    {
+      id: '2026-STD-0242',
+      name: 'Chanthou Ly',
+      initials: 'CL',
+      avatarBg: 'bg-teal-100 text-teal-800',
+      class: 'Grade 10A',
+      submittedDate: 'Oct 22, 2026',
+      submittedTime: '09:30 PM (On-time)',
+      status: 'Graded',
+      grade: 87,
+      rubric: { c1: 35, c2: 34, c3: 18 },
+      penalty: 0,
+      feedback: 'Very solid work and thorough answers.',
+      fileName: 'Chanthou_Ly_Set3.pdf',
+      fileMeta: 'Submitted Oct 22, 2026 • 2.4 MB • 4 Pages'
+    }
   ];
 
-  function applyFilters() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const assignmentFilter = document.getElementById('assignmentFilter').value;
-    const classFilter = document.getElementById('classFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    const sortBy = document.getElementById('sortBy').value;
+  let selectedStudentId = '2026-STD-0144'; // Sophea Chan default selected
+  let searchQuery = '';
+  let statusFilter = 'all';
+  let sortBy = 'date-desc';
+  let currentPage = 1;
+  let rowsPerPage = 8;
+  let selectedStudentIds = new Set(['2026-STD-0144']);
 
-    filteredSubmissions = allSubmissions.filter(sub => {
-      const matchesSearch = !search || 
-        sub.studentName.toLowerCase().includes(search) || 
-        sub.studentId.toLowerCase().includes(search);
-      const matchesAssignment = !assignmentFilter || sub.assignmentTitle.includes('Calculus' ? 'hw1' : 'hw2');
-      const matchesClass = !classFilter || sub.class === classFilter;
-      const matchesStatus = !statusFilter || sub.status === statusFilter;
-      return matchesSearch && matchesClass && matchesStatus;
-    });
+  function getFilteredSubmissions() {
+    let result = [...submissionsData];
 
-    // Apply sorting
-    switch(sortBy) {
-      case 'student':
-        filteredSubmissions.sort((a, b) => a.studentName.localeCompare(b.studentName));
-        break;
-      case 'status':
-        filteredSubmissions.sort((a, b) => a.status.localeCompare(b.status));
-        break;
-      case 'recent':
-      default:
-        filteredSubmissions.sort((a, b) => {
-          if (!a.submittedAt && !b.submittedAt) return 0;
-          if (!a.submittedAt) return 1;
-          if (!b.submittedAt) return -1;
-          return new Date(b.submittedAt) - new Date(a.submittedAt);
-        });
+    // Search query filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(s => s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q));
     }
 
-    document.getElementById('resultCount').textContent = filteredSubmissions.length;
-    renderTable();
-    renderMobileList();
+    // Status filter
+    if (statusFilter !== 'all') {
+      if (statusFilter === 'submitted') result = result.filter(s => s.status === 'Submitted' || s.status === 'Graded');
+      else if (statusFilter === 'pending') result = result.filter(s => s.status === 'Late' || s.status === 'Submitted');
+      else if (statusFilter === 'late') result = result.filter(s => s.status === 'Late');
+      else if (statusFilter === 'missing') result = result.filter(s => s.status === 'Missing');
+    }
+
+    // Sorting
+    if (sortBy === 'name-asc') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'grade-desc') {
+      result.sort((a, b) => (b.grade || 0) - (a.grade || 0));
+    } else if (sortBy === 'grade-asc') {
+      result.sort((a, b) => (a.grade || 0) - (b.grade || 0));
+    }
+
+    return result;
   }
 
-  function getStatusBadge(status) {
-    const badges = {
-      'submitted': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-800 dark:text-blue-300', label: 'Submitted' },
-      'late': { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-800 dark:text-amber-300', label: 'Late' },
-      'not-submitted': { bg: 'bg-slate-100 dark:bg-slate-900/30', text: 'text-slate-800 dark:text-slate-300', label: 'Not Submitted' },
-      'reviewed': { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-800 dark:text-emerald-300', label: 'Reviewed' },
-    };
-    const badge = badges[status] || badges['submitted'];
-    return { ...badge, status };
+  function getStatusBadgeHTML(status) {
+    if (status === 'Late') {
+      return `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Late</span>`;
+    }
+    if (status === 'Graded') {
+      return `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">Graded</span>`;
+    }
+    if (status === 'Submitted') {
+      return `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-sky-50 text-sky-800 border border-sky-200">Submitted</span>`;
+    }
+    return `<span class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">Missing</span>`;
   }
 
   function renderTable() {
-    const tbody = document.getElementById('submissionsTable');
-    
-    if (filteredSubmissions.length === 0) {
+    const tbody = document.getElementById('submissionsTableBody');
+    if (!tbody) return;
+
+    const filtered = getFilteredSubmissions();
+    const totalCount = filtered.length;
+
+    const maxPages = Math.max(1, Math.ceil(totalCount / rowsPerPage));
+    if (currentPage > maxPages) currentPage = maxPages;
+
+    const startIdx = (currentPage - 1) * rowsPerPage;
+    const endIdx = Math.min(startIdx + rowsPerPage, totalCount);
+    const pageRows = filtered.slice(startIdx, endIdx);
+
+    if (pageRows.length === 0) {
       tbody.innerHTML = `
-        <tr class="border-b border-slate-100 dark:border-slate-700/50">
-          <td colspan="7" class="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
-            <div class="flex flex-col items-center justify-center gap-2">
-              <span class="material-symbols-outlined text-4xl opacity-30">description</span>
-              <span>No submissions found</span>
-            </div>
+        <tr>
+          <td colspan="8" class="py-8 text-center text-slate-400 font-sans">
+            No matching submissions found for current filters.
           </td>
         </tr>
       `;
-      return;
+    } else {
+      tbody.innerHTML = pageRows.map((s, idx) => {
+        const globalIdx = String(startIdx + idx + 1).padStart(2, '0');
+        const isSelected = s.id === selectedStudentId;
+        const rowBg = isSelected ? 'bg-emerald-50/50 hover:bg-emerald-50/80 font-medium' : 'hover:bg-slate-50';
+        const isChecked = selectedStudentIds.has(s.id);
+        const statusBadge = getStatusBadgeHTML(s.status);
+
+        // Grade presentation
+        let gradeHTML = '';
+        if (s.grade !== null && s.grade !== undefined) {
+          gradeHTML = `${s.grade} <span class="text-[10px] text-slate-400 font-normal">/ 100</span>`;
+        } else {
+          gradeHTML = `<span class="text-xs font-medium text-slate-400 italic">Pending</span>`;
+        }
+
+        // Action button
+        let actionBtn = '';
+        if (s.status === 'Missing') {
+          actionBtn = `<button type="button" onclick="window.sendMissingAlert('${s.id}')" class="px-2.5 py-1 text-[11px] font-medium text-rose-700 hover:text-rose-900 hover:underline">Send Alert</button>`;
+        } else if (s.status === 'Graded') {
+          actionBtn = `<button type="button" onclick="window.selectStudent('${s.id}')" class="px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:text-slate-900 hover:underline">Edit Mark</button>`;
+        } else {
+          actionBtn = `<button type="button" onclick="window.selectStudent('${s.id}')" class="px-2.5 py-1 text-[11px] font-medium text-[#1e4d38] bg-white border border-[#1e4d38] rounded-md hover:bg-[#1e4d38] hover:text-white transition shadow-2xs">Review</button>`;
+        }
+
+        return `
+          <tr class="${rowBg} transition-colors cursor-pointer group" data-student-id="${s.id}" onclick="window.onRowClick(event, '${s.id}')">
+            <!-- Checkbox -->
+            <td class="px-3 py-3 border-r border-slate-200 text-center" onclick="event.stopPropagation()">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="window.toggleRowSelect('${s.id}', this.checked)" class="rounded border-slate-300 text-[#1e4d38] focus:ring-[#1e4d38] cursor-pointer">
+            </td>
+
+            <!-- # Index -->
+            <td class="px-2.5 py-3 border-r border-slate-200 text-center font-mono text-[11px] text-slate-500">
+              ${globalIdx}
+            </td>
+
+            <!-- Student & ID -->
+            <td class="px-4 py-3 border-r border-slate-200">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded ${s.avatarBg} flex items-center justify-center font-medium text-[10px] flex-shrink-0">
+                  ${s.initials}
+                </div>
+                <div class="min-w-0">
+                  <div class="font-medium text-slate-900 leading-tight">${s.name}</div>
+                  <div class="text-[10px] text-slate-500 font-mono">${s.id}</div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Class -->
+            <td class="px-3 py-3 border-r border-slate-200 font-medium text-slate-600">
+              ${s.class}
+            </td>
+
+            <!-- Submitted Date -->
+            <td class="px-4 py-3 border-r border-slate-200">
+              <div class="text-slate-800 font-medium">${s.submittedDate}</div>
+              <div class="text-[10px] text-slate-500">${s.submittedTime}</div>
+            </td>
+
+            <!-- Status -->
+            <td class="px-3 py-3 border-r border-slate-200 text-center">
+              ${statusBadge}
+            </td>
+
+            <!-- Grade -->
+            <td class="px-3 py-3 border-r border-slate-200 text-center font-medium text-slate-900" id="tableGrade-${s.id}">
+              ${gradeHTML}
+            </td>
+
+            <!-- Action -->
+            <td class="px-3 py-3 text-center" onclick="event.stopPropagation()">
+              ${actionBtn}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    tbody.innerHTML = filteredSubmissions.map(sub => {
-      const badge = getStatusBadge(sub.status);
-      return `
-        <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-          <td class="px-4 py-3 text-slate-900 dark:text-slate-100 text-sm">${sub.studentName}</td>
-          <td class="px-4 py-3 text-slate-600 dark:text-slate-400 text-sm">${sub.assignmentTitle}</td>
-          <td class="px-4 py-3 text-slate-600 dark:text-slate-400 text-sm">Grade ${sub.class}</td>
-          <td class="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs">${sub.submittedAt || '—'}</td>
-          <td class="px-4 py-3 text-center">
-            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text}">
-              ${badge.label}
-            </span>
-          </td>
-          <td class="px-4 py-3 text-center text-slate-900 dark:text-slate-100 font-medium">${sub.grade !== null ? sub.grade : '—'}</td>
-          <td class="px-4 py-3 text-center">
-            <button onclick="openReview('${sub.id}')" class="text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium transition">
-              Review
-            </button>
-          </td>
-        </tr>
-      `;
-    }).join('');
+    renderPagination(totalCount, startIdx, endIdx);
+    updateKpis();
   }
 
-  function renderMobileList() {
-    const list = document.getElementById('submissionsMobileList');
-    
-    if (filteredSubmissions.length === 0) {
-      list.innerHTML = `
-        <div class="text-center py-8 text-slate-500 dark:text-slate-400">
-          <span class="material-symbols-outlined text-4xl opacity-30 block mb-2">description</span>
-          <span>No submissions found</span>
-        </div>
-      `;
-      return;
+  function renderPagination(totalCount, startIdx, endIdx) {
+    const rangeLabel = document.getElementById('pageRangeLabel');
+    const totalLabel = document.getElementById('totalSubmissionsCount');
+    if (rangeLabel) rangeLabel.textContent = totalCount > 0 ? `${startIdx + 1}–${endIdx}` : '0–0';
+    if (totalLabel) totalLabel.textContent = totalCount;
+
+    const container = document.getElementById('paginationButtonsContainer');
+    if (!container) return;
+
+    const totalPages = Math.max(1, Math.ceil(totalCount / rowsPerPage));
+    let html = '';
+
+    // Previous
+    const prevDisabled = currentPage <= 1 ? 'disabled class="px-2.5 py-1 rounded border border-slate-200 text-slate-400 cursor-not-allowed"' : 'onclick="window.goToPage(' + (currentPage - 1) + ')" class="px-2.5 py-1 rounded border border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer"';
+    html += `<button type="button" ${prevDisabled}>Previous</button>`;
+
+    // Numbers
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === currentPage) {
+        html += `<button type="button" class="px-2.5 py-1 rounded bg-[#1e4d38] text-white font-medium">${p}</button>`;
+      } else {
+        html += `<button type="button" onclick="window.goToPage(${p})" class="px-2.5 py-1 rounded border border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer">${p}</button>`;
+      }
     }
 
-    list.innerHTML = filteredSubmissions.map(sub => {
-      const badge = getStatusBadge(sub.status);
-      return `
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-          <div class="flex items-start justify-between gap-2 mb-2">
-            <div class="min-w-0 flex-1">
-              <div class="font-medium text-slate-900 dark:text-white text-sm truncate">${sub.studentName}</div>
-              <div class="text-xs text-slate-500 dark:text-slate-400 truncate">${sub.assignmentTitle}</div>
-            </div>
-            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text} shrink-0">
-              ${badge.label}
-            </span>
-          </div>
-          <div class="grid grid-cols-2 gap-2 text-xs mb-3">
-            <div>
-              <div class="text-slate-500 dark:text-slate-400">Submitted</div>
-              <div class="font-medium text-slate-900 dark:text-white">${sub.submittedAt?.split(' ')[0] || '—'}</div>
-            </div>
-            <div>
-              <div class="text-slate-500 dark:text-slate-400">Grade</div>
-              <div class="font-medium text-slate-900 dark:text-white">${sub.grade !== null ? sub.grade : '—'}</div>
-            </div>
-          </div>
-          <button onclick="openReview('${sub.id}')" class="w-full px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition active:scale-95">
-            Review
-          </button>
-        </div>
-      `;
-    }).join('');
+    // Next
+    const nextDisabled = currentPage >= totalPages ? 'disabled class="px-2.5 py-1 rounded border border-slate-200 text-slate-400 cursor-not-allowed"' : 'onclick="window.goToPage(' + (currentPage + 1) + ')" class="px-2.5 py-1 rounded border border-slate-200 hover:bg-slate-50 text-slate-700 cursor-pointer"';
+    html += `<button type="button" ${nextDisabled}>Next</button>`;
+
+    container.innerHTML = html;
   }
 
-  window.openReview = function(submissionId) {
-    const sub = allSubmissions.find(s => s.id === submissionId);
-    if (!sub) return;
-    
-    document.getElementById('modalStudentName').textContent = sub.studentName;
-    document.getElementById('modalStudentId').textContent = sub.studentId;
-    document.getElementById('modalAssignmentTitle').textContent = sub.assignmentTitle;
-    document.getElementById('modalSubmittedTime').textContent = sub.submittedAt || 'Not submitted';
-    document.getElementById('modalStatus').textContent = getStatusBadge(sub.status).label;
-    document.getElementById('gradeInput').value = sub.grade || '';
-    document.getElementById('feedbackInput').value = '';
-    
-    document.getElementById('reviewModal').classList.add('open');
+  function updateKpis() {
+    const total = submissionsData.length;
+    let pending = 0;
+    let graded = 0;
+    let late = 0;
+    let sumGraded = 0;
+
+    submissionsData.forEach(s => {
+      if (s.status === 'Late' || s.status === 'Submitted') pending++;
+      if (s.status === 'Graded') {
+        graded++;
+        sumGraded += (s.grade || 0);
+      }
+      if (s.status === 'Late' || (s.penalty && s.penalty > 0)) late++;
+    });
+
+    const gradedPct = total > 0 ? ((graded / total) * 100).toFixed(1) : '0.0';
+    const avgMark = graded > 0 ? (sumGraded / graded).toFixed(1) : '0.0';
+
+    const elTotal = document.getElementById('kpiTotal');
+    const elPending = document.getElementById('kpiPending');
+    const elGraded = document.getElementById('kpiGraded');
+    const elGradedPct = document.getElementById('kpiGradedPct');
+    const elAvgMark = document.getElementById('kpiAvgMark');
+    const elLate = document.getElementById('kpiLate');
+
+    if (elTotal) elTotal.textContent = total;
+    if (elPending) elPending.textContent = pending;
+    if (elGraded) elGraded.textContent = graded;
+    if (elGradedPct) elGradedPct.textContent = `${gradedPct}%`;
+    if (elAvgMark) elAvgMark.textContent = `${avgMark} / 100`;
+    if (elLate) elLate.textContent = late;
+  }
+
+  function updateScoringDrawer() {
+    const student = submissionsData.find(s => s.id === selectedStudentId);
+    if (!student) return;
+
+    // Header updates
+    const elPill = document.getElementById('selectedStudentPill');
+    if (elPill) elPill.textContent = student.name;
+
+    const elDot = document.getElementById('drawerStatusDot');
+    if (elDot) {
+      if (student.status === 'Late') elDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-amber-500';
+      else if (student.status === 'Graded') elDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-[#1e4d38]';
+      else if (student.status === 'Missing') elDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-rose-500';
+      else elDot.className = 'inline-block w-2.5 h-2.5 rounded-full bg-sky-500';
+    }
+
+    const elName = document.getElementById('drawerStudentName');
+    if (elName) elName.textContent = student.name;
+
+    const elMeta = document.getElementById('drawerStudentMeta');
+    if (elMeta) elMeta.textContent = `ID: ${student.id} • Calculus Problem Set 3`;
+
+    const elPenalty = document.getElementById('drawerPenaltyBadge');
+    if (elPenalty) {
+      if (student.status === 'Late' || student.penalty > 0) {
+        elPenalty.className = 'px-2 py-0.5 text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded uppercase';
+        elPenalty.textContent = 'Late (-5%)';
+      } else if (student.status === 'Missing') {
+        elPenalty.className = 'px-2 py-0.5 text-[10px] font-medium text-rose-700 bg-rose-50 border border-rose-200 rounded uppercase';
+        elPenalty.textContent = 'Missing';
+      } else {
+        elPenalty.className = 'px-2 py-0.5 text-[10px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded uppercase';
+        elPenalty.textContent = 'On-Time';
+      }
+    }
+
+    // File updates
+    const elFile = document.getElementById('drawerFileName');
+    const elFileMeta = document.getElementById('drawerFileMeta');
+    if (elFile) elFile.textContent = student.fileName;
+    if (elFileMeta) elFileMeta.textContent = student.fileMeta;
+
+    // Rubric inputs
+    const c1 = document.getElementById('rubricCrit1');
+    const c2 = document.getElementById('rubricCrit2');
+    const c3 = document.getElementById('rubricCrit3');
+    if (c1) c1.value = student.rubric.c1;
+    if (c2) c2.value = student.rubric.c2;
+    if (c3) c3.value = student.rubric.c3;
+
+    // Feedback
+    const elFeedback = document.getElementById('drawerFeedback');
+    if (elFeedback) elFeedback.value = student.feedback || '';
+
+    // Calculate score
+    calculateDrawerScore();
+  }
+
+  function calculateDrawerScore() {
+    const student = submissionsData.find(s => s.id === selectedStudentId);
+    if (!student) return;
+
+    const c1Val = parseFloat(document.getElementById('rubricCrit1')?.value) || 0;
+    const c2Val = parseFloat(document.getElementById('rubricCrit2')?.value) || 0;
+    const c3Val = parseFloat(document.getElementById('rubricCrit3')?.value) || 0;
+
+    const rubricSum = Math.min(100, Math.max(0, c1Val + c2Val + c3Val));
+    const penalty = (student.status === 'Late' || student.penalty > 0) ? 5 : 0;
+    const finalScore = Math.max(0, rubricSum - penalty);
+
+    const elBreakdown = document.getElementById('drawerCalculationBreakdown');
+    if (elBreakdown) {
+      if (penalty > 0) {
+        elBreakdown.textContent = `Rubric total: ${rubricSum} • Late penalty: -${penalty} pts`;
+      } else {
+        elBreakdown.textContent = `Rubric total: ${rubricSum} • Standard criteria`;
+      }
+    }
+
+    const elDisplay = document.getElementById('drawerFinalScoreDisplay');
+    if (elDisplay) elDisplay.textContent = Math.round(finalScore);
+
+    return Math.round(finalScore);
+  }
+
+  // Window Public Methods
+  window.selectStudent = function(id) {
+    selectedStudentId = id;
+    renderTable();
+    updateScoringDrawer();
   };
 
-  // Event listeners
-  document.getElementById('searchInput').addEventListener('input', applyFilters);
-  document.getElementById('assignmentFilter').addEventListener('change', applyFilters);
-  document.getElementById('classFilter').addEventListener('change', applyFilters);
-  document.getElementById('statusFilter').addEventListener('change', applyFilters);
-  document.getElementById('sortBy').addEventListener('change', applyFilters);
-  document.getElementById('clearFiltersBtn').addEventListener('click', () => {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('assignmentFilter').value = '';
-    document.getElementById('classFilter').value = '';
-    document.getElementById('statusFilter').value = '';
-    document.getElementById('sortBy').value = 'recent';
-    applyFilters();
-  });
-  
-  document.getElementById('saveReviewBtn').addEventListener('click', () => {
-    const feedback = document.getElementById('feedbackInput').value;
-    const grade = document.getElementById('gradeInput').value;
-    if (feedback || grade) {
-      alert('Review saved! (Mock save)');
-      document.getElementById('reviewModal').classList.remove('open');
+  window.onRowClick = function(e, id) {
+    // Avoid double trigger if clicking buttons/checkboxes
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+    window.selectStudent(id);
+  };
+
+  window.onRubricChange = function() {
+    calculateDrawerScore();
+  };
+
+  window.saveEvaluationDraft = function() {
+    const student = submissionsData.find(s => s.id === selectedStudentId);
+    if (!student) return;
+
+    student.rubric.c1 = parseFloat(document.getElementById('rubricCrit1')?.value) || 0;
+    student.rubric.c2 = parseFloat(document.getElementById('rubricCrit2')?.value) || 0;
+    student.rubric.c3 = parseFloat(document.getElementById('rubricCrit3')?.value) || 0;
+    student.feedback = document.getElementById('drawerFeedback')?.value || '';
+
+    if (window.toast) window.toast(`Evaluation draft saved for ${student.name}`, 'info');
+  };
+
+  window.saveAndPublishMark = function() {
+    const student = submissionsData.find(s => s.id === selectedStudentId);
+    if (!student) return;
+
+    const finalMark = calculateDrawerScore();
+    student.grade = finalMark;
+    student.status = 'Graded';
+    student.rubric.c1 = parseFloat(document.getElementById('rubricCrit1')?.value) || 0;
+    student.rubric.c2 = parseFloat(document.getElementById('rubricCrit2')?.value) || 0;
+    student.rubric.c3 = parseFloat(document.getElementById('rubricCrit3')?.value) || 0;
+    student.feedback = document.getElementById('drawerFeedback')?.value || '';
+
+    renderTable();
+    updateScoringDrawer();
+    updateKpis();
+
+    if (window.toast) window.toast(`Published mark ${finalMark}/100 for ${student.name}`, 'success');
+  };
+
+  window.batchPublishGrades = function() {
+    let count = 0;
+    submissionsData.forEach(s => {
+      if (s.status === 'Late' || s.status === 'Submitted') {
+        const sum = s.rubric.c1 + s.rubric.c2 + s.rubric.c3;
+        const pen = s.status === 'Late' ? 5 : 0;
+        s.grade = Math.max(0, sum - pen);
+        s.status = 'Graded';
+        count++;
+      }
+    });
+
+    renderTable();
+    updateScoringDrawer();
+    updateKpis();
+
+    if (window.toast) window.toast(`Published marks for ${count} students in Calculus Problem Set 3`, 'success');
+  };
+
+  window.exportSubmissionsCSV = function() {
+    const headers = ['Student ID', 'Student Full Name', 'Class', 'Submitted Date', 'Submitted Time', 'Status', 'Rubric Total (100)', 'Final Score (100)', 'Teacher Feedback'];
+    const rows = submissionsData.map(s => {
+      const rubricTotal = s.rubric.c1 + s.rubric.c2 + s.rubric.c3;
+      return [
+        s.id,
+        `"${s.name.replace(/"/g, '""')}"`,
+        s.class,
+        s.submittedDate,
+        `"${s.submittedTime}"`,
+        s.status,
+        rubricTotal,
+        s.grade !== null ? s.grade : 'Pending',
+        `"${(s.feedback || '').replace(/"/g, '""')}"`
+      ];
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `ngis_submissions_calculus_set3_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    if (window.toast) window.toast('Exported submission records to CSV', 'success');
+  };
+
+  window.downloadAttachmentsZip = function() {
+    if (window.toast) window.toast('Packaging and downloading 26 student submission attachments (.ZIP)...', 'info');
+  };
+
+  window.sendMissingAlert = function(studentId) {
+    const s = submissionsData.find(item => item.id === studentId);
+    if (!s) return;
+    if (window.toast) window.toast(`Overdue submission notification sent to ${s.name} and parent`, 'warning');
+  };
+
+  window.openAttachedDocument = function() {
+    const student = submissionsData.find(s => s.id === selectedStudentId);
+    if (window.toast) window.toast(`Opening preview: ${student ? student.fileName : 'Attachment'}`, 'info');
+  };
+
+  window.toggleSelectAll = function(checked) {
+    if (checked) {
+      submissionsData.forEach(s => selectedStudentIds.add(s.id));
+    } else {
+      selectedStudentIds.clear();
     }
+    renderTable();
+  };
+
+  window.toggleRowSelect = function(id, checked) {
+    if (checked) selectedStudentIds.add(id);
+    else selectedStudentIds.delete(id);
+    renderTable();
+  };
+
+  window.onSearchInput = function(val) {
+    searchQuery = val;
+    currentPage = 1;
+    renderTable();
+  };
+
+  window.onAssignmentChange = function(asgn) {
+    const lbl = document.getElementById('assignmentHeaderLabel');
+    if (lbl) lbl.textContent = `Assignment Records: ${asgn}`;
+    if (window.toast) window.toast(`Loaded assignment: ${asgn}`, 'info');
+  };
+
+  window.onCohortChange = function(cohort) {
+    const pill = document.getElementById('kpiCohortPill');
+    if (pill) pill.textContent = cohort.split(' ')[0] + ' ' + (cohort.split(' ')[1] || '');
+    if (window.toast) window.toast(`Switched cohort to ${cohort}`, 'info');
+  };
+
+  window.onStatusFilterChange = function(status) {
+    statusFilter = status;
+    currentPage = 1;
+    renderTable();
+  };
+
+  window.onSortChange = function(val) {
+    sortBy = val;
+    renderTable();
+  };
+
+  window.resetFilters = function() {
+    searchQuery = '';
+    statusFilter = 'all';
+    sortBy = 'date-desc';
+    const sInput = document.getElementById('searchStudent');
+    if (sInput) sInput.value = '';
+    const stSelect = document.getElementById('selectStatus');
+    if (stSelect) stSelect.value = 'all';
+    const soSelect = document.getElementById('selectSort');
+    if (soSelect) soSelect.value = 'date-desc';
+    currentPage = 1;
+    renderTable();
+    if (window.toast) window.toast('Cleared all filters', 'info');
+  };
+
+  window.goToPage = function(p) {
+    currentPage = p;
+    renderTable();
+  };
+
+  window.onRowsPerPageChange = function(val) {
+    rowsPerPage = parseInt(val, 10);
+    currentPage = 1;
+    renderTable();
+  };
+
+  // Initialization
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTable();
+    updateScoringDrawer();
   });
 
-  // Initialize
-  document.addEventListener('DOMContentLoaded', () => {
-    allSubmissions = mockSubmissions;
-    applyFilters();
-  });
 })();
 </script>
-
 </body>
 </html>

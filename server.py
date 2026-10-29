@@ -1573,6 +1573,35 @@ def academic_attendance():
 def academic_report_cards():
     user, error = _academic_require()
     if error: return error
+    class_id = request.args.get('classId')
+    period_id = request.args.get('periodId', 'gp-term-2')
+
+    if class_id:
+        if user['role'] == 'teacher' and not _teacher_can_class(user, class_id):
+            return _academic_error('FORBIDDEN', 'You are not assigned to this class', 403)
+        cls_obj = next((c for c in DB['classes'] if c.get('id') == class_id), None)
+        cls_code = cls_obj.get('name', '').replace('Grade ', '') if cls_obj else ''
+        students = [s for s in DB['students'] if s.get('class') == cls_code]
+        if not students:
+            enr = ACADEMIC.query("SELECT student_id FROM enrollments WHERE class_id=?", (class_id,))
+            students = [_student(r['student_id']) for r in enr if _student(r['student_id'])]
+
+        cards = []
+        for s in students:
+            sid = s['id']
+            cards.append({
+                'studentId': sid,
+                'name': s.get('name', sid),
+                'classId': class_id,
+                'className': cls_obj.get('name', class_id) if cls_obj else class_id,
+                'term': period_id,
+                'status': 'Issued' if (s.get('attendance', 95) or 95) > 94 else 'Ready',
+                'lastGenerated': '2026-10-23',
+                'gpa': s.get('gpa', 3.8),
+                'attendance': s.get('attendance', 96)
+            })
+        return jsonify({'data': {'items': cards, 'total': len(cards)}})
+
     student_id = request.args.get('studentId')
     if user['role'] == 'student': student_id = user['id']
     if user['role'] == 'parent' and student_id and not _parent_can_view(user, student_id): return _academic_error('FORBIDDEN', 'This student is not linked to your account', 403)
@@ -2222,6 +2251,153 @@ def get_teacher_class_submissions(class_id):
                 'dueDate': a.get('dueDate', a.get('due_date', '—'))
             })
     return jsonify({'data': all_subs, 'meta': {'total': len(all_subs)}})
+
+@app.route('/api/teacher/exams', methods=['GET'])
+def get_teacher_exams():
+    user, error = _academic_require(('teacher', 'admin', 'principal'))
+    if error: return error
+
+    teacher_classes = ['cls-10a', 'cls-11b', 'cls-11c']
+
+    my_exams = [
+        {
+            'id': 'exam-10a-math-midterm',
+            'title': 'Mid-Term Exam: Advanced Mathematics',
+            'subjectId': 'subj-math',
+            'subjectName': 'Advanced Mathematics',
+            'classId': 'cls-10a',
+            'className': 'Grade 10A',
+            'date': '2026-11-04',
+            'time': '08:30 – 10:30',
+            'room': 'Room 302',
+            'role': 'Lead Examiner & Invigilator',
+            'status': 'Scheduled',
+            'enrolledCount': 17,
+            'maxScore': 50,
+            'isToday': False,
+            'instructions': 'Distribute Formula Sheets (Form C) and scientific calculators. Scratch paper collected at end.'
+        },
+        {
+            'id': 'exam-11b-phys-midterm',
+            'title': 'Mid-Term Exam: Physics CP & Kinematics',
+            'subjectId': 'subj-phys',
+            'subjectName': 'Physics CP',
+            'classId': 'cls-11b',
+            'className': 'Grade 11B',
+            'date': '2026-11-06',
+            'time': '10:45 – 12:15',
+            'room': 'Room 203',
+            'role': 'Course Teacher',
+            'status': 'Scheduled',
+            'enrolledCount': 6,
+            'maxScore': 50,
+            'isToday': False,
+            'instructions': 'Formula packet attached to exam booklet. Graphing calculators permitted.'
+        },
+        {
+            'id': 'exam-10a-math-final',
+            'title': 'Semester 1 Final Examination: Mathematics',
+            'subjectId': 'subj-math',
+            'subjectName': 'Advanced Mathematics',
+            'classId': 'cls-10a',
+            'className': 'Grade 10A',
+            'date': '2026-12-14',
+            'time': '08:30 – 11:00',
+            'room': 'Room 302',
+            'role': 'Chief Invigilator',
+            'status': 'Upcoming',
+            'enrolledCount': 17,
+            'maxScore': 100,
+            'isToday': False,
+            'instructions': 'Formal institutional examination. Student ID check at door mandatory.'
+        }
+    ]
+
+    invigilation_duties = [
+        {
+            'id': 'duty-inv-01',
+            'examTitle': 'Mid-Term Exam: Advanced Mathematics',
+            'classId': 'cls-10a',
+            'className': 'Grade 10A',
+            'room': 'Room 302',
+            'date': '2026-11-04',
+            'time': '08:30 – 10:30',
+            'reportingTime': '08:10 (20 mins prior)',
+            'dutyRole': 'Chief Invigilator',
+            'partnerInvigilator': 'Muthukumaran Pakkirisamy',
+            'studentCount': 17,
+            'status': 'Confirmed',
+            'conflict': None,
+            'checklist': [
+                'Collect test packets from Examination Office (Room 101) at 08:05',
+                'Verify student photo IDs upon seating',
+                'Ensure mobile phones and smart devices are powered off in bags at front',
+                'Announce 15-minute remaining warning at 10:15',
+                'Seal answer booklets in presence of student witness'
+            ]
+        },
+        {
+            'id': 'duty-inv-02',
+            'examTitle': 'Final Written Test: Khmer Literature',
+            'classId': 'cls-12a',
+            'className': 'Grade 12A',
+            'room': 'Room 407 (11C)',
+            'date': '2026-11-05',
+            'time': '13:30 – 15:30',
+            'reportingTime': '13:15 (15 mins prior)',
+            'dutyRole': 'Assistant Invigilator',
+            'partnerInvigilator': 'Sokha Meng',
+            'studentCount': 14,
+            'status': 'Confirmed',
+            'conflict': None,
+            'checklist': [
+                'Support Chief Invigilator with attendance roll verification',
+                'Monitor room perimeter and corridor restroom transitions',
+                'Collect test papers in alphabetical sequence'
+            ]
+        }
+    ]
+
+    room_arrangements = []
+    for c_id in teacher_classes:
+        c_obj = next((c for c in DB['classes'] if c.get('id') == c_id), None)
+        if not c_obj: continue
+        c_code = c_obj.get('name','').replace('Grade ','')
+        students = [s for s in DB['students'] if s.get('class') == c_code]
+        room_name = c_obj.get('room', 'Room 302')
+        capacity = 24 if '302' in room_name else (20 if '203' in room_name else 16)
+        is_over = len(students) > capacity
+
+        room_arrangements.append({
+            'roomId': c_obj.get('room', 'Room 302').lower().replace(' ', '-').replace('(', '').replace(')', ''),
+            'roomName': room_name,
+            'classId': c_id,
+            'className': c_obj.get('name', c_id),
+            'capacity': capacity,
+            'assignedCount': len(students),
+            'availableDesks': max(0, capacity - len(students)),
+            'isOverCapacity': is_over,
+            'students': [
+                {
+                    'id': s['id'],
+                    'name': s['name'],
+                    'desk': f"Desk {idx + 1:02d}",
+                    'specialAccommodations': 'Standard' if idx % 4 != 0 else 'Extra 15 mins (IEP)'
+                }
+                for idx, s in enumerate(students)
+            ],
+            'supervisor': 'Dr. Sarah Jenkins',
+            'emergencyExit': 'Stairwell B (North Wing)'
+        })
+
+    return jsonify({
+        'data': {
+            'exams': my_exams,
+            'invigilations': invigilation_duties,
+            'rooms': room_arrangements,
+            'conflicts': []
+        }
+    })
 
 @app.route('/api/student/dashboard', methods=['GET'])
 def get_student_dashboard():

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Exam Timetable &amp; Invigilation</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- Phosphor Icons for Mobile Hamburger -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/teacher-portal.css">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<!-- Auth Bootstrap -->
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="teacher" data-page="exams">
+<main class="main tp-main-container">
+
+  <!-- Mobile App Bar (AGENTS.md Critical Rule) -->
+  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-3">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all flex items-center justify-center min-w-[44px] min-h-[44px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-2xl"></i>
+      </button>
+      <div>
+        <h1 class="text-base font-medium text-slate-900 m-0 leading-tight">Exam Timetable</h1>
+        <p class="text-xs text-slate-500 m-0">Duties &amp; Rooms</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content Container -->
+  <div class="tp-content-wrap">
+
+    <!-- Page Header (Desktop / Tablet) -->
+    <header class="tp-page-header">
+      <div class="tp-page-header-titles">
+        <h1 class="tp-page-title">Exam Timetable</h1>
+        <p class="tp-page-desc">View exam schedules, room arrangements, and invigilation duties.</p>
+      </div>
+      <div class="tp-page-header-actions">
+        <button type="button" class="tp-btn tp-btn-secondary" onclick="window.print()">
+          <svg class="w-4 h-4 text-slate-600 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <span>Print Schedule</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs: My Exams, Invigilation, Room Arrangement -->
+    <div class="flex items-center gap-2 mb-5 border-b border-slate-200 overflow-x-auto">
+      <button type="button" class="tp-tab-btn active px-4 py-3 border-b-2 border-emerald-800 text-emerald-800 font-medium text-sm flex items-center gap-2" data-tab="exams">
+        <span class="material-symbols-outlined text-[18px]">edit_note</span>
+        <span>My Exams</span>
+      </button>
+      <button type="button" class="tp-tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-2" data-tab="duties">
+        <span class="material-symbols-outlined text-[18px]">shield_person</span>
+        <span>Invigilation Duties</span>
+      </button>
+      <button type="button" class="tp-tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-2" data-tab="rooms">
+        <span class="material-symbols-outlined text-[18px]">meeting_room</span>
+        <span>Room Arrangement</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: MY EXAMS TABLE -->
+    <div id="tabContentExams" class="tab-pane">
+      <div class="tp-table-card">
+        <div class="tp-table-scroll">
+          <table class="tp-table" aria-label="My Exams Table">
+            <thead>
+              <tr>
+                <th scope="col" class="w-12 text-center">#</th>
+                <th scope="col" class="tp-sticky-col-1">Date &amp; Time</th>
+                <th scope="col">Exam Title &amp; Subject</th>
+                <th scope="col">Class</th>
+                <th scope="col">Room</th>
+                <th scope="col">My Role</th>
+                <th scope="col">Status</th>
+                <th scope="col" class="text-right">Details</th>
+              </tr>
+            </thead>
+            <tbody id="examsTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: INVIGILATION DUTIES -->
+    <div id="tabContentDuties" class="tab-pane hidden">
+      <div class="space-y-4" id="dutiesListWrap">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- TAB 3: ROOM ARRANGEMENT -->
+    <div id="tabContentRooms" class="tab-pane hidden">
+      <div class="space-y-6" id="roomsListWrap">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- Empty / Error Container -->
+    <div id="examsEmptyState" class="hidden"></div>
+
+  </div>
+</main>
+
+<!-- Shared Layout Engine -->
+<script>window.PAGE = { role: "teacher", active: "exams" };</script>
+<script src="../../assets/js/layout.js"></script>
+<script src="../../assets/js/teacher-shared.js"></script>
+
+<!-- Exams Controller -->
+<script>
+(function() {
+  "use strict";
+
+  let examData = { exams: [], invigilations: [], rooms: [], conflicts: [] };
+  let currentTab = "exams";
+
+  const tabButtons = document.querySelectorAll(".tp-tab-btn");
+  const tabPanes = {
+    exams: document.getElementById("tabContentExams"),
+    duties: document.getElementById("tabContentDuties"),
+    rooms: document.getElementById("tabContentRooms")
+  };
+  const elements = {
+    examsTableBody: document.getElementById("examsTableBody"),
+    dutiesListWrap: document.getElementById("dutiesListWrap"),
+    roomsListWrap: document.getElementById("roomsListWrap"),
+    emptyState: document.getElementById("examsEmptyState")
+  };
+
+  async function init() {
+    try {
+      examData = await TeacherPortal.api.getExams();
+      render();
+    } catch (err) {
+      console.error("[Exams] Load error:", err);
+      TeacherPortal.ui.renderErrorState(elements.emptyState, {
+        title: "Could not load exam timetable",
+        message: "Please check your network connection and try again.",
+        onRetry: init
+      });
+      elements.emptyState.classList.remove("hidden");
+    }
+  }
+
+  function render() {
+    renderExamsTable();
+    renderDuties();
+    renderRooms();
+  }
+
+  function renderExamsTable() {
+    const list = examData.exams || [];
+    if (list.length === 0) {
+      elements.examsTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-500">No exams scheduled for you right now.</td></tr>`;
+      return;
+    }
+
+    elements.examsTableBody.innerHTML = list.map((ex, idx) => {
+      const isToday = ex.isToday;
+      const statusBadge = isToday
+        ? `<span class="tp-badge tp-badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span><span>Today</span></span>`
+        : `<span class="tp-badge tp-badge-neutral"><span>${TeacherPortal.format.esc(ex.status || 'Scheduled')}</span></span>`;
+
+      return `
+        <tr>
+          <td class="text-center font-mono text-xs text-slate-400">${idx + 1}</td>
+          <td class="tp-sticky-col-1">
+            <div class="font-medium text-slate-900">${TeacherPortal.format.formatDate(ex.date)}</div>
+            <div class="font-mono text-xs text-slate-500">${TeacherPortal.format.esc(ex.time)}</div>
+          </td>
+          <td>
+            <div class="font-medium text-slate-900">${TeacherPortal.format.esc(ex.title)}</div>
+            <div class="text-xs text-slate-500">${TeacherPortal.format.esc(ex.subjectName || 'Subject')}</div>
+          </td>
+          <td><span class="tp-badge tp-badge-neutral">${TeacherPortal.format.esc(ex.className || 'Grade 10A')}</span></td>
+          <td>
+            <span class="inline-flex items-center gap-1 text-slate-700 text-xs">
+              <span class="material-symbols-outlined text-[16px] text-slate-400">meeting_room</span>
+              <span>${TeacherPortal.format.esc(ex.room || 'Room 302')}</span>
+            </span>
+          </td>
+          <td><span class="text-xs font-medium text-slate-700">${TeacherPortal.format.esc(ex.role || 'Teacher')}</span></td>
+          <td>${statusBadge}</td>
+          <td class="text-right">
+            <button type="button" class="tp-btn tp-btn-secondary tp-btn-sm" data-action="view-exam" data-exam-id="${TeacherPortal.format.esc(ex.id)}">
+              <span class="material-symbols-outlined text-[15px]">info</span>
+              <span>Details</span>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderDuties() {
+    const list = examData.invigilations || [];
+    if (list.length === 0) {
+      elements.dutiesListWrap.innerHTML = `
+        <div class="tp-empty-state bg-white border border-slate-200 rounded-xl p-8">
+          <div class="tp-state-icon"><span class="material-symbols-outlined">shield_person</span></div>
+          <h3 class="tp-state-title">No invigilation duties assigned</h3>
+          <p class="tp-state-desc">You currently have no exam supervision or invigilation duties on record.</p>
+        </div>
+      `;
+      return;
+    }
+
+    elements.dutiesListWrap.innerHTML = list.map(d => {
+      const checklistHtml = (d.checklist || []).map(item => `
+        <li class="flex items-start gap-2 text-xs text-slate-700">
+          <span class="material-symbols-outlined text-emerald-700 text-[16px] shrink-0 mt-0.5">check_circle</span>
+          <span>${TeacherPortal.format.esc(item)}</span>
+        </li>
+      `).join("");
+
+      return `
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="tp-badge tp-badge-success text-xs">${TeacherPortal.format.esc(d.dutyRole || 'Invigilator')}</span>
+                <span class="text-xs text-slate-400 font-mono">Duty ID: ${TeacherPortal.format.esc(d.id)}</span>
+              </div>
+              <h3 class="text-base font-medium text-slate-900 mt-1 m-0">${TeacherPortal.format.esc(d.examTitle)}</h3>
+            </div>
+            <div class="text-left sm:text-right">
+              <div class="text-sm font-medium text-slate-900">${TeacherPortal.format.formatDate(d.date)} · ${TeacherPortal.format.esc(d.time)}</div>
+              <div class="text-xs text-amber-700 font-medium mt-0.5">Report at ${TeacherPortal.format.esc(d.reportingTime)}</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4 text-xs">
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-slate-400 font-medium block mb-1">LOCATION &amp; CLASS</span>
+              <span class="font-medium text-slate-800 text-sm">${TeacherPortal.format.esc(d.room)}</span>
+              <span class="text-slate-500 block mt-0.5">${TeacherPortal.format.esc(d.className)} (${d.studentCount || 0} candidates)</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-slate-400 font-medium block mb-1">PARTNER INVIGILATOR</span>
+              <span class="font-medium text-slate-800 text-sm">${TeacherPortal.format.esc(d.partnerInvigilator || 'None')}</span>
+              <span class="text-slate-500 block mt-0.5">Co-supervising</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+              <span class="text-slate-400 font-medium block mb-1">DUTY STATUS</span>
+              <span class="tp-badge tp-badge-success text-xs mt-1">${TeacherPortal.format.esc(d.status || 'Confirmed')}</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Protocol &amp; Invigilation Checklist</h4>
+            <ul class="space-y-1.5 p-3 rounded-lg bg-slate-50 border border-slate-200">
+              ${checklistHtml}
+            </ul>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderRooms() {
+    const list = examData.rooms || [];
+    if (list.length === 0) {
+      elements.roomsListWrap.innerHTML = `
+        <div class="tp-empty-state bg-white border border-slate-200 rounded-xl p-8">
+          <div class="tp-state-icon"><span class="material-symbols-outlined">meeting_room</span></div>
+          <h3 class="tp-state-title">No rooms configured</h3>
+          <p class="tp-state-desc">Room layouts and desk arrangements have not been assigned yet.</p>
+        </div>
+      `;
+      return;
+    }
+
+    elements.roomsListWrap.innerHTML = list.map(r => {
+      const studentGridHtml = (r.students || []).map(st => `
+        <div class="p-2.5 rounded-lg border border-slate-200 bg-white text-xs">
+          <div class="flex items-center justify-between font-mono text-[11px] text-slate-400 mb-1">
+            <span>${TeacherPortal.format.esc(st.desk)}</span>
+            <span>${TeacherPortal.format.esc(st.id)}</span>
+          </div>
+          <div class="font-medium text-slate-900 truncate">${TeacherPortal.format.esc(st.name)}</div>
+          <div class="text-[11px] text-slate-500 mt-1">${TeacherPortal.format.esc(st.specialAccommodations)}</div>
+        </div>
+      `).join("");
+
+      return `
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-xs">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <h3 class="text-base font-medium text-slate-900 m-0">${TeacherPortal.format.esc(r.roomName)}</h3>
+              <p class="text-xs text-slate-500 m-0 mt-0.5">${TeacherPortal.format.esc(r.className)} · Supervisor: ${TeacherPortal.format.esc(r.supervisor)}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="tp-badge tp-badge-neutral text-xs">Capacity: ${r.capacity} seats</span>
+              <span class="tp-badge tp-badge-success text-xs">${r.assignedCount} candidates assigned</span>
+            </div>
+          </div>
+
+          <div class="mb-3 flex items-center justify-between text-xs text-slate-500">
+            <span>Desk Layout Arrangement:</span>
+            <span>Emergency Exit: <strong>${TeacherPortal.format.esc(r.emergencyExit)}</strong></span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-200">
+            ${studentGridHtml}
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function openExamDetails(examId) {
+    const ex = (examData.exams || []).find(e => e.id === examId);
+    if (!ex) return;
+
+    TeacherPortal.ui.drawer.open({
+      title: `Exam Details — ${ex.title}`,
+      bodyHtml: `
+        <div class="space-y-4 text-sm">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <h4 class="text-base font-medium text-slate-900 m-0">${TeacherPortal.format.esc(ex.title)}</h4>
+            <div class="text-xs text-slate-500 mt-1">${TeacherPortal.format.esc(ex.subjectName)} · ${TeacherPortal.format.esc(ex.className)}</div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-lg border border-slate-200">
+              <span class="text-slate-400 font-medium block mb-1">DATE &amp; TIME</span>
+              <span class="font-medium text-slate-900 text-sm">${TeacherPortal.format.formatDate(ex.date)}</span>
+              <span class="text-slate-500 block font-mono mt-0.5">${TeacherPortal.format.esc(ex.time)}</span>
+            </div>
+            <div class="p-3 rounded-lg border border-slate-200">
+              <span class="text-slate-400 font-medium block mb-1">EXAM ROOM</span>
+              <span class="font-medium text-slate-900 text-sm">${TeacherPortal.format.esc(ex.room)}</span>
+              <span class="text-slate-500 block mt-0.5">${ex.enrolledCount || 0} candidates</span>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-lg border border-slate-200 text-xs">
+            <span class="text-slate-400 font-medium block mb-1">EXAM SPECIFICATIONS</span>
+            <div class="text-slate-800">Maximum Score: <strong>${ex.maxScore || 100} points</strong></div>
+            <div class="text-slate-800 mt-1">Assigned Role: <strong>${TeacherPortal.format.esc(ex.role)}</strong></div>
+          </div>
+
+          <div class="p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900">
+            <span class="font-medium block mb-1">Invigilation Instructions:</span>
+            <p class="m-0">${TeacherPortal.format.esc(ex.instructions || 'Standard examination protocols apply.')}</p>
+          </div>
+        </div>
+      `,
+      footerHtml: `
+        <button type="button" class="tp-btn tp-btn-secondary" onclick="document.getElementById('tpDrawerCloseBtn').click()">Close</button>
+      `
+    });
+  }
+
+  // Delegated clicks
+  document.addEventListener("click", e => {
+    const btn = e.target.closest("[data-action='view-exam']");
+    if (btn) {
+      e.preventDefault();
+      openExamDetails(btn.dataset.examId);
+    }
+  });
+
+  // Tab switching
+  tabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      tabButtons.forEach(b => {
+        b.classList.remove("active", "border-emerald-800", "text-emerald-800");
+        b.classList.add("border-transparent", "text-slate-500");
+      });
+      btn.classList.add("active", "border-emerald-800", "text-emerald-800");
+      btn.classList.remove("border-transparent", "text-slate-500");
+
+      currentTab = btn.dataset.tab;
+      Object.keys(tabPanes).forEach(k => {
+        tabPanes[k].classList.toggle("hidden", k !== currentTab);
+      });
+    });
+  });
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</body>
+</html>

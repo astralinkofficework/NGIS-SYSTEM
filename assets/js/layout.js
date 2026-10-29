@@ -21,59 +21,35 @@
     admin: {
       brand: "Admin", meta: "New Gateway International School",
       groups: [
-        { id:"main", links:[
+        { label:"Main", icon:"home", links:[
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/admin/admin.html" },
+          { id:"lifecycle", label:"Student Lifecycle & MoEYS", icon:"account_tree", href:"pages/admin/admin-lifecycle.html" },
         ]},
-        { id:"system", label:"ប្រព័ន្ធ", icon:"settings", collapsible:true, links:[
-          { id:"school-info", label:"ព័ត៌មានសាលារៀន", href:"pages/admin/admin-settings.html?tab=school" },
-          { id:"academic-structure", label:"កំណត់រចនាសម្ព័ន្ធឆ្នាំសិក្សា", collapsible:true, children:[
-            { id:"academic-year", label:"ឆ្នាំសិក្សា", href:"pages/admin/admin-settings.html?tab=academic" },
-            { id:"academic-weeks", label:"សប្តាហ៍", href:"pages/admin/admin-timetables.html?tab=weeks" },
-            { id:"exam-structure", label:"កំណត់រចនាសម្ព័ន្ធការប្រឡង", href:"pages/admin/admin-exams.html" },
-            { id:"score-locking", label:"ការកំណត់រចនាសម្ព័ន្ធចាក់សោពិន្ទុ", href:"pages/admin/admin-grades.html" },
-            { id:"set-curriculum", label:"កំណត់កម្មវិធីសិក្សា", href:"pages/admin/admin-departments.html" },
-            { id:"curriculum-design", label:"ការរចនាកម្មវិធីសិក្សា", href:"pages/admin/admin-lessons.html" },
-            { id:"create-classes", label:"បង្កើតថ្នាក់រៀន", href:"pages/admin/admin-classes.html" },
-            { id:"student-rollforward", label:"រៀបចំសិស្សឆ្នាំសិក្សាចាស់ទៅឆ្នាំសិក្សាថ្មី", href:"pages/admin/admin-users.html?role=students&action=rollforward" },
-            { id:"assign-teachers", label:"ចាត់តាំងគ្រូបច្ចេកទេស និងគ្រូត្រួតពិនិត្យ", href:"pages/admin/admin-users.html?role=teachers&tab=assignment" },
-          ]},
-          { id:"account-management", label:"ការគ្រប់គ្រងគណនី", collapsible:true, children:[
-            { id:"teacher-group-roles", label:"ការកំណត់តួនាទីលើក្រុមគណនីគ្រូ", href:"pages/admin/admin-settings.html?tab=roles" },
-            { id:"teacher-accounts", label:"គណនីគ្រូ", href:"pages/admin/admin-users.html?role=teachers" },
-            { id:"student-accounts", label:"គណនីសិស្ស", href:"pages/admin/admin-users.html?role=students" },
-            { id:"guardian-accounts", label:"គណនីអាណាព្យាបាល", href:"pages/admin/admin-users.html?role=parents" },
-          ]},
-          { id:"system-timetable", label:"កាលវិភាគ", href:"pages/admin/admin-timetables.html" },
-          { id:"general-settings", label:"ការកំណត់ទូទៅ", href:"pages/admin/admin-settings.html" },
-        ]},
-        { id:"users", label:"ការគ្រប់គ្រងរបស់គ្រូបង្រៀន", icon:"co_present", collapsible:true, links:[
+        { id:"users", label:"User Management", icon:"group", collapsible:true, links:[
+          { id:"students",   label:"Students",   icon:"school",             href:"pages/admin/admin-users.html?role=students" },
           { id:"teachers",   label:"Teachers",   icon:"co_present",         href:"pages/admin/admin-users.html?role=teachers" },
+          { id:"parents",    label:"Parents",    icon:"family_restroom",    href:"pages/admin/admin-users.html?role=parents" },
           { id:"admins",     label:"Admins",     icon:"admin_panel_settings", href:"pages/admin/admin-users.html?role=admins" },
           { id:"principals", label:"Principals", icon:"military_tech",      href:"pages/admin/admin-users.html?role=principals" },
         ]},
-        { id:"records", label:"ការគ្រប់គ្រងទិន្នន័យសិស្ស", icon:"school", collapsible:true, links:[
-          { id:"students",   label:"Students",   icon:"school",             href:"pages/admin/admin-users.html?role=students" },
-          { id:"parents",    label:"Parents",    icon:"family_restroom",    href:"pages/admin/admin-users.html?role=parents" },
-          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
-          { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
-        ]},
-        { id:"academic", label:"ការបង្រៀន និងការវាយតម្លៃ", icon:"co_present", collapsible:true, links:[
+        { id:"academic", label:"Academic", icon:"apartment", collapsible:true, links:[
           { id:"departments", label:"Departments", icon:"apartment",          href:"pages/admin/admin-departments.html" },
           { id:"campuses",    label:"Campuses",    icon:"location_city",      href:"pages/admin/admin-campuses.html" },
           { id:"classes",     label:"Classes",     icon:"school",             href:"pages/admin/admin-classes.html" },
           { id:"timetables",  label:"Timetable",   icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
+        ]},
+        { id:"learning", label:"Learning", icon:"menu_book", collapsible:true, links:[
           { id:"lessons",     label:"Lessons",     icon:"menu_book",  href:"pages/admin/admin-lessons.html" },
           { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/admin/admin-assignments.html" },
-        ]},
-        { id:"learning", label:"ការប្រឡង", icon:"edit_note", collapsible:true, links:[
           { id:"exams",       label:"Exams",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
           { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
         ]},
-        { id:"reports-group", label:"របាយការណ៍ និងស្ថិតិ", icon:"query_stats", collapsible:true, links:[
+        { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
+          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
+          { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
           { id:"reports",     label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
-          { id:"logs",        label:"Audit Logs",         icon:"history",     href:"pages/admin/admin-logs.html" },
         ]},
-        { id:"messaging", label:"ប្រអប់សារ", icon:"mail", links:[
+        { id:"messaging", label:"Messaging", icon:"forum", links:[
           { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
           { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
           { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"4" },
@@ -84,17 +60,18 @@
           { id:"archived",            label:"Archived", icon:"archive", href:"pages/messaging/archived.html" },
           { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
         ]},
-        { id:"administration", label:"កន្លែងផ្ទុកទិន្នន័យមេ", icon:"travel_explore", collapsible:true, links:[
-          { id:"settings",    label:"System Settings",    icon:"settings",    href:"pages/admin/admin-settings.html" },
+        { id:"comms", label:"Communication Tools", icon:"campaign", collapsible:true, links:[
+          { id:"news",           label:"News CMS",       icon:"newspaper", href:"pages/admin/admin-news.html" },
+          { id:"notifications",  label:"Notifications", icon:"notifications", href:"pages/admin/admin-logs.html" },
+        ]},
+        { id:"administration", label:"Administration", icon:"admin_panel_settings", collapsible:true, links:[
+          { id:"logs",        label:"Audit Logs",         icon:"history",     href:"pages/admin/admin-logs.html" },
+          { id:"messaging-admin", label:"Messaging Administration", icon:"forum", href:"pages/messaging/messaging-admin.html" },
+          { id:"telegram-config", label:"Telegram Configuration", icon:"smart_toy", href:"pages/messaging/telegram-config.html" },
+          { id:"messaging-audit", label:"Messaging Audit Logs", icon:"receipt_long", href:"pages/messaging/audit-logs.html" },
           { id:"roles",       label:"Roles & Permissions", icon:"shield_person", href:"pages/admin/admin-settings.html?tab=roles" },
+          { id:"settings",    label:"System Settings",    icon:"settings",    href:"pages/admin/admin-settings.html" },
           { id:"backup",      label:"Backup & Restore",   icon:"backup",      href:"pages/admin/admin-settings.html?tab=backup" },
-        ]},
-        { id:"moodle", label:"Moodle Extension", icon:"extension", collapsible:true, links:[
-          { id:"moodle-courses", label:"Moodle Courses", icon:"school", href:"pages/admin/admin-lessons.html?src=moodle" },
-          { id:"moodle-sync", label:"Moodle Sync", icon:"sync", href:"pages/admin/admin-settings.html?tab=moodle" },
-        ]},
-        { id:"elearning", label:"E-Learning", icon:"cast_for_education", links:[
-          { id:"elearning-portal", label:"E-Learning Platform", icon:"cast_for_education", href:"pages/admin/admin-lessons.html" },
         ]},
         { id:"account", label:"Account", icon:"person", collapsible:true, links:[
           { id:"profile",     label:"My Profile", icon:"person",  href:"pages/admin/admin-settings.html" },
@@ -106,26 +83,33 @@
     teacher: {
       brand: "Teacher", meta: "Academic Year 2025–26",
       groups: [
-        { links:[
-          { id:"dashboard", label:"Dashboard", icon:"home", href:"pages/teacher/teacher.html", chevron:false },
-          { id:"classes",   label:"My Class",  icon:"school", href:"pages/teacher/teacher-classes.html" },
+        { label:"Overview", links:[
+          { id:"dashboard",  label:"Home",                       icon:"home",           href:"pages/teacher/teacher.html", chevron:false },
         ]},
-        { id:"teaching", label:"TEACHING & LEARNING", links:[
-          { id:"lessons",     label:"Lessons & Materials", icon:"menu_book", href:"pages/teacher/teacher-lessons.html" },
-          { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/teacher/teacher-assignments.html" },
-          { id:"submissions", label:"Student Submissions", icon:"description", href:"pages/teacher/teacher-grades.html" },
-          { id:"departments", label:"Class Resources", icon:"folder", href:"pages/teacher/teacher-departments.html" },
+        { id:"teaching", label:"TEACHING", icon:"school", links:[
+          { id:"classes",    label:"My Classes",                 icon:"school",         href:"pages/teacher/teacher-classes.html" },
+          { id:"attendance", label:"Attendance",                 icon:"how_to_reg",     href:"pages/teacher/teacher-attendance.html" },
+          { id:"roster",     label:"Roster & Profiles",          icon:"badge",          href:"pages/teacher/teacher-roster.html" },
+          { id:"lessons",    label:"Lessons & Materials",        icon:"menu_book",      href:"pages/teacher/teacher-lessons.html" },
+          { id:"departments",label:"Department",                 icon:"apartment",      href:"pages/teacher/teacher-departments.html" },
+          { id:"calendar",   label:"Timetable",                  icon:"calendar_month", href:"pages/teacher/teacher-calendar.html" },
         ]},
-        { id:"communication", label:"COMMUNICATION", links:[
-          { id:"announcements", label:"Class Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=teacher" },
-          { id:"class-chats",   label:"Class Chat", icon:"chat", href:"pages/messaging/class-chats.html" },
-          { id:"chat",          label:"Student Feedback", icon:"person_search", href:"pages/shared/chat.html?portal=teacher" },
+        { id:"assessment", label:"ASSESSMENT", icon:"grading", links:[
+          { id:"submissions", label:"Assignments & Student Work", icon:"description",  href:"pages/teacher/teacher-submissions.html" },
+          { id:"exams",       label:"Exam Timetable",             icon:"edit_note",    href:"pages/teacher/teacher-exams.html" },
+          { id:"gradebook",   label:"Exam Grades / Gradebook",    icon:"grade",        href:"pages/teacher/teacher-gradebook.html" },
         ]},
-        { id:"academic-tools", label:"ACADEMIC TOOLS", links:[
-          { id:"gradebook", label:"Gradebook", icon:"grade", href:"pages/teacher/teacher-gradebook.html" },
-          { id:"calendar", label:"Timetable", icon:"calendar_month", href:"pages/teacher/teacher-calendar.html" },
-          { id:"reports",  label:"Class Reports", icon:"analytics", href:"pages/teacher/teacher-grades.html?tab=reports" },
-          { id:"profile",  label:"Class Settings", icon:"settings", href:"pages/teacher/teacher-profile.html" },
+        { id:"reports-grp", label:"REPORTS", icon:"query_stats", links:[
+          { id:"reports",    label:"Official Reports",           icon:"analytics",      href:"pages/teacher/teacher-reports.html" },
+        ]},
+        { id:"communication", label:"COMMUNICATION", icon:"forum", collapsible:true, links:[
+          { id:"announcements", label:"Class Announcements",      icon:"campaign",      href:"pages/shared/announcements.html?portal=teacher" },
+          { id:"class-chats",   label:"Class Chat",               icon:"chat",          href:"pages/messaging/class-chats.html" },
+          { id:"chat",          label:"Student Feedback",         icon:"person_search", href:"pages/shared/chat.html?portal=teacher" },
+        ]},
+        { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
+          { id:"profile",       label:"Settings & Profile",       icon:"settings",      href:"pages/teacher/teacher-profile.html" },
+          { id:"logout",        label:"Log out",                  icon:"logout",        href:"index.html" },
         ]},
       ],
     },
@@ -225,10 +209,11 @@
       { id:"settings",   label:"Settings",    icon:"settings",  href:"pages/admin/admin-settings.html" },
     ],
     teacher: [
-      { id:"dashboard",  label:"Home",       icon:"home",          href:"pages/teacher/teacher.html" },
-      { id:"classes",    label:"My Class",   icon:"school",        href:"pages/teacher/teacher-classes.html" },
-      { id:"notifications",label:"Alerts",   icon:"notifications", href:"pages/teacher/teacher-notifications.html", badge:"3" },
-      { id:"profile",    label:"Profile",    icon:"person",        href:"pages/teacher/teacher-profile.html" },
+      { id: "home", label: "Home", icon: "ph ph-house", href: "pages/teacher/teacher.html" },
+      { id: "classes", label: "Classes", icon: "ph ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
+      { id: "submissions", label: "Work", icon: "ph ph-file-text", href: "pages/teacher/teacher-submissions.html" },
+      { id: "gradebook", label: "Grades", icon: "ph ph-chart-bar", href: "pages/teacher/teacher-gradebook.html" },
+      { id: "profile", label: "Profile", icon: "ph ph-user", href: "pages/teacher/teacher-profile.html" },
     ],
     student: [
       { id:"dashboard",    label:"Home",       icon:"home",      href:"pages/student/student.html" },
@@ -344,11 +329,11 @@
   };
 
   function applyTheme(mode) {
-    document.documentElement.setAttribute("data-theme", mode);
+    document.documentElement.setAttribute("data-theme", "light");
+    if (document.body) document.body.setAttribute("data-theme", "light");
     const btn = document.getElementById("themeToggle");
     if (btn) {
-      const ic = btn.querySelector(".material-symbols-outlined");
-      if (ic) ic.textContent = mode === "dark" ? "light_mode" : "dark_mode";
+      btn.style.display = "none";
     }
   }
 
@@ -458,15 +443,15 @@
               <span class="side-brand-school">New Gateway International School</span>
             </div>
           </a>
-          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
+${role === 'teacher' ? '' : `          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
             <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
               <line x1="6" y1="5" x2="6" y2="19"></line>
               <polyline points="16 7 10 12 16 17"></polyline>
             </svg>
-          </button>
+          </button>`}
         </header>
 
-        <div class="side-user-card" id="sideUserCard" data-purpose="user-profile-card">
+${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCard" data-purpose="user-profile-card">
           <div class="side-user-avatar">
             <span class="material-symbols-outlined side-user-icon">person</span>
             <span class="side-user-status" title="Online"></span>
@@ -476,7 +461,7 @@
             <div class="side-user-role">${esc(currentUser.role)}</div>
           </div>
           <span class="material-symbols-outlined side-user-caret">expand_more</span>
-        </div>
+        </div>`}
 
         <nav class="side-nav custom-scrollbar" aria-label="Main Navigation">
           ${groups}
@@ -486,12 +471,10 @@
           <a class="nav-link side-foot-help" href="${_P}pages/teacher/teacher-profile.html?tab=help">
             <span class="material-symbols-outlined nav-link-icon">help_outline</span>
             <span class="nav-link-label">Help &amp; Support</span>
-            <span class="material-symbols-outlined nav-link-chevron">chevron_right</span>
           </a>
           <a class="nav-link nav-link-danger side-foot-signout" href="${_P}index.html" data-purpose="sign-out-button">
             <span class="material-symbols-outlined nav-link-icon">logout</span>
-            <span class="nav-link-label">Sign Out</span>
-            <span class="material-symbols-outlined nav-link-chevron">chevron_right</span>
+            <span class="nav-link-label">Log out</span>
           </a>
         </footer>
       </aside>`);
@@ -513,7 +496,7 @@
             <span class="material-symbols-outlined" style="font-size:18px">language</span>
             <span>EN</span>
           </button>
-          <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode">
+          <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode" style="display:none !important">
             <span class="material-symbols-outlined">dark_mode</span>
           </button>
           <a class="icon-btn" href="${_P}${PORTAL_HOME[document.body.dataset.role]||'index.html'}" aria-label="Notifications">
@@ -539,11 +522,11 @@
       { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/student/student-profile.html" },
     ],
     teacher: [
-      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/teacher/teacher.html" },
-      { id: "classes", label: "My Class", icon: "ph-bold ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
-      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/chat.html?portal=teacher", isCenter: true },
-      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/teacher/teacher-notifications.html", hasDot: true },
-      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/teacher/teacher-profile.html" },
+      { id: "home", label: "Home", icon: "ph ph-house", href: "pages/teacher/teacher.html" },
+      { id: "classes", label: "Classes", icon: "ph ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
+      { id: "submissions", label: "Work", icon: "ph ph-file-text", href: "pages/teacher/teacher-submissions.html" },
+      { id: "gradebook", label: "Grades", icon: "ph ph-chart-bar", href: "pages/teacher/teacher-gradebook.html" },
+      { id: "profile", label: "Profile", icon: "ph ph-user", href: "pages/teacher/teacher-profile.html" },
     ],
     admin: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/admin/admin.html" },
@@ -577,7 +560,14 @@
     if (file.indexOf('profile') !== -1 || file.indexOf('setting') !== -1 || active === 'profile' || active === 'settings' || active === 'preferences') {
       return (role === 'admin' || role === 'principal') ? 'settings' : 'profile';
     }
-    if (role === 'teacher' && (file.indexOf('class') !== -1 || active === 'classes')) return 'classes';
+    if (role === 'teacher') {
+      if (file === 'teacher.html' || active === 'dashboard') return 'home';
+      if (file.indexOf('class') !== -1 || active === 'classes') return 'classes';
+      if (file.indexOf('submission') !== -1 || file.indexOf('assignment') !== -1 || active === 'submissions' || active === 'assignments') return 'submissions';
+      if (file.indexOf('gradebook') !== -1 || file.indexOf('grade') !== -1 || active === 'gradebook') return 'gradebook';
+      if (file.indexOf('profile') !== -1 || active === 'profile') return 'profile';
+      return 'home';
+    }
     if (role === 'admin' && (file.indexOf('user') !== -1 || active === 'users' || active === 'admins' || active === 'teachers' || active === 'students' || active === 'parents')) return 'users';
     if (role === 'principal' && (file.indexOf('report') !== -1 || active === 'reports')) return 'reports';
     if (role === 'staff' && (file.indexOf('service') !== -1 || active === 'services')) return 'services';
@@ -599,6 +589,16 @@
               </span>
             </span>
           </a>`;
+      }
+      if (tab.isMore) {
+        return `
+          <button type="button" class="mob-bn-item" data-tab="more" data-action="toggle-more-sheet" aria-label="More teacher pages">
+            <span class="mob-bn-icon-row">
+              <span class="mob-bn-icon-wrap">
+                <i class="${tab.icon}"></i>
+              </span>
+            </span>
+          </button>`;
       }
       return `
         <a href="${_P}${tab.href}" class="mob-bn-item ${isActive ? 'is-active' : ''}" data-tab="${tab.id}" aria-label="${esc(tab.label)}"${isActive ? ' aria-current="page"' : ''}>
@@ -978,7 +978,7 @@
 
     /* ── Sidebar collapse / expand (desktop) ── */
     let collapseBtn = sidebar.querySelector('#sidebarCollapseBtn');
-    if (!collapseBtn) {
+    if (!collapseBtn && portalRole !== 'teacher') {
       collapseBtn = el(`
         <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
           <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -1000,7 +1000,7 @@
           </svg>
         </button>`);
       sidebar.appendChild(expandBtn);
-    } else if (expandBtn.parentElement !== sidebar) {
+    } else if (expandBtn && expandBtn.parentElement !== sidebar) {
       sidebar.appendChild(expandBtn);
     }
 
@@ -1054,21 +1054,26 @@
       });
     }
 
-    collapseBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setSidebarCollapsed(true);
-    });
-    expandBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
-      setSidebarCollapsed(!isCurrentlyCollapsed);
-    });
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSidebarCollapsed(true);
+      });
+    }
+    if (expandBtn) {
+      expandBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isCurrentlyCollapsed = sidebar.classList.contains('collapsed');
+        setSidebarCollapsed(!isCurrentlyCollapsed);
+      });
+    }
 
     let bNav = document.getElementById("mobBottomNav");
     if (!bNav) {
       bNav = buildBottomNav(PAGE.role, active);
       document.body.appendChild(bNav);
     }
+
     const legacyNav = document.getElementById("bottomnav");
     if (legacyNav) legacyNav.remove();
     initBottomNav(bNav);
@@ -1090,8 +1095,9 @@
       document.body.appendChild(el(`<div class="toast-wrap" id="toasts" role="region" aria-live="polite"></div>`));
     }
 
-    /* Theme */
-    applyTheme(store.get("ngis-theme") || "light");
+    /* Theme: enforce light mode */
+    store.set("ngis-theme", "light");
+    applyTheme("light");
     const themeToggle = document.getElementById("themeToggle");
     if (themeToggle) themeToggle.addEventListener("click", () => {
       const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";

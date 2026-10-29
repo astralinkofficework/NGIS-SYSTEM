@@ -3,423 +3,908 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Teacher Gradebook</title>
+<title>NGIS — Teacher Gradebook | New Gateway International School</title>
 
-<!-- Fonts -->
+<!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- Phosphor Icons for Mobile Hamburger Menu (AGENTS.md Critical Rule) -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <!-- NGIS Stylesheets -->
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 
-<!-- Phosphor Icons for Mobile View -->
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-<!-- Tailwind CSS -->
+<!-- Tailwind CSS v3 CDN with forms & container plugins -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<style>
-  /* Global typography constraint: No bold font */
-  * { font-weight: 400; }
-  b, strong, th, h1, h2, h3, h4, h5, h6,
-  .font-bold, .font-extrabold, .font-semibold, .font-medium,
-  [class*="font-medium"] {
+<script id="tailwind-config">
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#f0f7f3',
+          100: '#dceee3',
+          200: '#bbdecb',
+          500: '#2d7354',
+          700: '#1e4d38', // institutional NGIS primary
+          800: '#173c2c',
+          900: '#0f291e',
+        },
+        surface: {
+          base: '#f8fafb',
+          card: '#ffffff',
+          border: '#e2e8f0',
+          muted: '#f1f5f9',
+        }
+      },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+      },
+      boxShadow: {
+        crisp: '0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.02)',
+        soft: '0 4px 16px -2px rgba(15, 23, 42, 0.05)',
+      }
+    }
+  }
+};
+</script>
+
+<style data-purpose="custom-grid-styles">
+  /* ── Strict Typography Constraint: NO BOLD FONTS (AGENTS.md) ── */
+  *, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div, input, select {
+    font-weight: 400;
+  }
+  .font-medium, .stat-val, .badge, th, h1, h2, h3, h4,
+  .font-bold, .font-semibold, .font-extrabold, .font-black,
+  [class*="font-semibold"], [class*="font-bold"], [class*="font-extrabold"], [class*="font-black"], [class*="font-medium"] {
     font-weight: 500 !important;
   }
-  
+
   html, body {
-    overflow-x: hidden;
+    overflow-x: hidden !important;
+    background-color: #f8fafb;
+    color: #1e293b;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
-  
+
+  /* Table spreadsheet straight lines & cell styling */
+  .spreadsheet-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .spreadsheet-table th,
+  .spreadsheet-table td {
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  .spreadsheet-table tr:hover td {
+    background-color: #f8fafc;
+  }
+  /* Sticky column for student names on horizontal scroll */
+  .sticky-col-idx {
+    position: sticky;
+    left: 0;
+    z-index: 20;
+    background-color: inherit;
+  }
+  .sticky-col-name {
+    position: sticky;
+    left: 48px;
+    z-index: 20;
+    background-color: inherit;
+  }
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+  /* Input simulation for score cells */
+  .score-cell-input:focus {
+    outline: 2px solid #1e4d38;
+    background-color: #ffffff !important;
+    border-radius: 2px;
+  }
+
+  /* Subtle scrollbar for data dense tables */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
   @media (max-width: 1023px) {
     #heroBanner, .hero, .hero-topbar, .hero-main, .hero-subpage {
       display: none !important;
     }
   }
-  
-  .gradebook-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .gradebook-table {
-    min-width: 600px;
-  }
-  
-  .grade-cell {
-    padding: 0.5rem;
-  }
-  
-  .grade-input {
-    width: 60px;
-    padding: 0.25rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.375rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.875rem;
-    text-align: center;
-  }
-  
-  .grade-input.modified {
-    background-color: #fef3c7;
-  }
-  
-  [data-theme="dark"] .grade-input.modified {
-    background-color: #7c2d12;
-  }
-  
-  .sticky-col-name {
-    position: sticky;
-    left: 0;
-    z-index: 10;
-    background-color: #f8fafc;
-  }
-  
-  [data-theme="dark"] .sticky-col-name {
-    background-color: #0f172a;
-  }
 
-  @media (max-width: 640px) {
-    .gradebook-container {
-      margin: 0 -1rem;
-      padding: 0 1rem;
+  /* Print Stylesheet */
+  @media print {
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+    #heroBanner, header, .no-print, .hamburger-btn, nav, #mobBottomNav, #scrim, .no-print-area {
+      display: none !important;
+    }
+    .page, main {
+      padding: 0 !important;
+      max-width: 100% !important;
     }
   }
 </style>
 
-<!-- Theme bootstrap -->
-<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<!-- Enforce Light Mode (No Dark Toggle) -->
+<script>
+try {
+  localStorage.setItem('ngis-theme', 'light');
+  document.documentElement.setAttribute('data-theme', 'light');
+} catch(e) {}
+</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
 </head>
-<body data-role="teacher" data-page="gradebook">
-<main class="main">
 
-  <!-- Hero Banner -->
-  <div id="heroBanner"></div>
+<body data-role="teacher" data-portal="teacher" data-page="gradebook" class="bg-surface-base font-sans text-slate-800 antialiased min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-900">
+<main class="main flex-1 flex flex-col min-w-0">
 
-  <!-- Desktop View -->
-  <div class="teacher-desktop-view">
-    <div class="page" style="padding-top: 2rem;">
-      <div class="mb-8">
-        <h1 class="text-2xl font-medium text-slate-900 dark:text-white mb-1">Teacher Gradebook</h1>
-        <p class="text-sm text-slate-600 dark:text-slate-400">Record, review, and manage student grades.</p>
-      </div>
+  <!-- Desktop Hero Banner -->
+  <div id="heroBanner" class="hidden lg:block no-print"></div>
 
-      <!-- Selection Toolbar -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700 p-4 mb-6 shadow-subtle">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 mb-4">
-          <!-- Class Selector -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Class</label>
-            <select id="classSelector" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="">Select a class...</option>
-              <option value="10A">Grade 10A — Homeroom & Adv Math</option>
-              <option value="11B">Grade 11B — Physics CP</option>
-              <option value="11C">Grade 11C — AP Calculus BC</option>
-            </select>
-          </div>
-
-          <!-- Subject Selector -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Subject</label>
-            <select id="subjectSelector" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="">All Subjects</option>
-              <option value="math">Mathematics</option>
-              <option value="physics">Physics</option>
-              <option value="chemistry">Chemistry</option>
-            </select>
-          </div>
-
-          <!-- Academic Year -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Academic Year</label>
-            <select id="academicYearSelector" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="2025-26">2025–26</option>
-              <option value="2024-25">2024–25</option>
-            </select>
-          </div>
-
-          <!-- Term/Semester -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Term</label>
-            <select id="termSelector" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-              <option value="">Semester 1</option>
-              <option value="q1">Q1</option>
-              <option value="q2">Q2</option>
-            </select>
-          </div>
-
-          <!-- Search -->
-          <div>
-            <label class="text-xs font-medium text-slate-600 dark:text-slate-300 block mb-1.5">Search Student</label>
-            <input type="text" id="studentSearch" placeholder="Name or ID..." class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-brand-600 dark:focus:border-brand-400">
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between gap-2 text-xs">
-          <span class="text-slate-600 dark:text-slate-400" id="selectionInfo">Select a class to view gradebook</span>
-          <div class="flex items-center gap-2">
-            <span id="unsavedIndicator" class="px-2 py-1 rounded-lg text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 hidden">
-              <span class="material-symbols-outlined text-[14px] inline-block -mt-0.5">edit</span> Unsaved Changes
-            </span>
-            <button id="saveChangesBtn" class="px-4 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-xs font-medium transition disabled:opacity-50" disabled>
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Gradebook Table -->
-      <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200/80 dark:border-slate-700 shadow-subtle overflow-hidden">
-        <div id="gradebookContainer" class="gradebook-container">
-          <div class="text-center py-12 text-slate-500 dark:text-slate-400">
-            <span class="material-symbols-outlined text-5xl opacity-30 block mb-2">grade</span>
-            <span>Select a class to view and edit grades</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Mobile View -->
-  <div class="teacher-mobile-view px-4 pt-4 pb-28">
-    <header class="flex items-center justify-between gap-3 mb-4">
-      <button type="button" class="mobile-hamburger-btn hamburger-btn" aria-label="Open menu" aria-expanded="false" data-action="toggle-sidebar" title="Open navigation">
+  <!-- ═══════════════════════════════════════════════════════════════════
+       MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE)
+       Visible on screen width <= 1024px (lg:hidden) with accessible hamburger button
+       ═══════════════════════════════════════════════════════════════════ -->
+  <header class="lg:hidden bg-white border-b border-surface-border px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+    <div class="flex items-center gap-3 min-w-0">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
         <i class="ph-bold ph-list text-xl"></i>
       </button>
-      <div class="flex-1 min-w-0">
-        <h1 class="text-base font-medium text-slate-900 dark:text-white">Gradebook</h1>
-      </div>
-      <a href="teacher-classes.html" class="w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300">
-        <span class="material-symbols-outlined text-lg">close</span>
-      </a>
-    </header>
-
-    <!-- Mobile Class Selector -->
-    <div class="mb-4">
-      <select id="classSelectorMobile" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100">
-        <option value="">Select a class...</option>
-        <option value="10A">Grade 10A</option>
-        <option value="11B">Grade 11B</option>
-        <option value="11C">Grade 11C</option>
-      </select>
-    </div>
-
-    <!-- Mobile Gradebook -->
-    <div id="gradebookMobileContainer">
-      <div class="text-center py-8 text-slate-500 dark:text-slate-400">
-        <span class="material-symbols-outlined text-4xl opacity-30 block mb-2">grade</span>
-        <span class="text-sm">Select a class to view grades</span>
+      <div class="min-w-0 truncate">
+        <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Teacher Gradebook</h1>
+        <p class="text-[11px] text-slate-500 leading-none mt-0.5 truncate">Grade 10A • Advanced Mathematics</p>
       </div>
     </div>
+
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <button type="button" onclick="exportGradebookCSV()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition" title="Export CSV">
+        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </button>
+      <button type="button" onclick="saveGradebook()" class="px-3 py-1.5 rounded-lg bg-brand-700 text-white font-medium text-xs shadow-xs active:scale-95 transition flex items-center gap-1.5" title="Save All Changes">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        <span>Save</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       ACADEMIC WORKSPACE WRAPPER
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="flex-1 max-w-[1720px] w-full mx-auto px-4 lg:px-6 py-4 sm:py-6 flex flex-col gap-5 pb-28 lg:pb-12" data-purpose="gradebook-workspace">
+
+    <!-- BEGIN: Masthead (Desktop Command Bar) -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4 no-print">
+      <div>
+        <div class="flex items-center gap-3">
+          <h2 class="text-xl font-medium text-slate-900 tracking-tight">Gradebook &amp; Exam Evaluation</h2>
+          <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+            Active Cycle 2025–26
+          </span>
+        </div>
+        <p class="text-xs text-slate-500 mt-1">Homeroom Grade 10A &bull; Fall Semester 2026 &bull; Advanced Mathematics</p>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <button id="btnExportCSV" onclick="exportGradebookCSV()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 shadow-xs transition active:scale-95" type="button">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <span>Export CSV / Excel</span>
+        </button>
+
+        <button id="btnRecalc" onclick="recalculateWeightedScores()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 shadow-xs transition active:scale-95" type="button">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <span>Recalculate Weighted</span>
+        </button>
+
+        <button id="btnSaveGradebook" onclick="saveGradebook()" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white bg-brand-700 hover:bg-brand-800 active:bg-brand-900 rounded-lg shadow-xs transition focus:ring-2 focus:ring-offset-2 focus:ring-brand-700 active:scale-95" type="button">
+          <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          <span>Save All Changes</span>
+        </button>
+      </div>
+    </div>
+    <!-- END: Masthead & Context Breadcrumbs -->
+
+    <!-- BEGIN: GradebookKpiBar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" data-purpose="summary-kpis">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-crisp">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Enrolled Students</span>
+          <span class="p-1.5 bg-slate-100 rounded-lg text-slate-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-slate-900 font-mono" id="kpiEnrolled">27</span>
+          <span class="text-xs text-emerald-700 font-medium">100% Active</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1" id="kpiCohortSubtitle">Homeroom Cohort 10-A</div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-crisp">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider text-emerald-700">Class Average</span>
+          <span class="p-1.5 bg-brand-50 rounded-lg text-brand-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-brand-700 font-mono" id="kpiClassAvg">86.4%</span>
+          <span class="text-xs font-medium px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md" id="kpiClassGrade">B+</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1">+2.1% higher than midterm benchmark</div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-crisp">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider text-blue-700">Passing Rate</span>
+          <span class="p-1.5 bg-blue-50 rounded-lg text-blue-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-slate-900 font-mono" id="kpiPassingRate">96.3%</span>
+          <span class="text-xs text-slate-500 font-medium" id="kpiPassingCount">26 / 27 Students</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1">Passing requirement &ge; 65.0%</div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-crisp">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium uppercase tracking-wider text-amber-600">Pending Marking</span>
+          <span class="p-1.5 bg-amber-50 rounded-lg text-amber-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-medium text-amber-600 font-mono" id="kpiPendingCount">4</span>
+          <span class="text-xs text-amber-700 font-medium">Submissions awaiting grade</span>
+        </div>
+        <div class="text-[11px] text-slate-400 mt-1">Project A revisions submitted</div>
+      </div>
+    </div>
+    <!-- END: GradebookKpiBar -->
+
+    <!-- BEGIN: CohortFiltersAndControls -->
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-crisp flex flex-col gap-4 no-print" data-purpose="filtering-control-panel">
+      <!-- Top Row Filters -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <!-- Class Selector -->
+        <div>
+          <label for="selectCohort" class="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-1">Class Cohort</label>
+          <select id="selectCohort" onchange="onCohortChange(this.value)" class="w-full text-xs font-medium text-slate-800 bg-white border border-slate-300 rounded-lg py-2 px-2.5 focus:border-brand-700 focus:ring-brand-700 shadow-xs cursor-pointer">
+            <option value="10A" selected>Grade 10A — Adv Math &amp; Homeroom (Rm 302)</option>
+            <option value="10B">Grade 10B — Standard Math (Rm 304)</option>
+            <option value="11A">Grade 11A — AP Calculus BC (Rm 310)</option>
+            <option value="12A">Grade 12A — Statistics &amp; Probability (Rm 308)</option>
+          </select>
+        </div>
+
+        <!-- Subject Selector -->
+        <div>
+          <label for="selectSubject" class="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-1">Subject</label>
+          <select id="selectSubject" onchange="onSubjectChange(this.value)" class="w-full text-xs font-medium text-slate-800 bg-white border border-slate-300 rounded-lg py-2 px-2.5 focus:border-brand-700 focus:ring-brand-700 shadow-xs cursor-pointer">
+            <option selected>Advanced Mathematics (MATH-10-ADV)</option>
+            <option>Homeroom Advisory &amp; Advisory Metrics</option>
+            <option>Discrete Math Foundations</option>
+          </select>
+        </div>
+
+        <!-- Academic Year -->
+        <div>
+          <label for="selectYear" class="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-1">Academic Year</label>
+          <select id="selectYear" class="w-full text-xs font-medium text-slate-800 bg-white border border-slate-300 rounded-lg py-2 px-2.5 focus:border-brand-700 focus:ring-brand-700 shadow-xs cursor-pointer">
+            <option selected>2025–2026 Academic Cycle</option>
+            <option>2024–2025 (Archived)</option>
+            <option>2023–2024 (Archived)</option>
+          </select>
+        </div>
+
+        <!-- Term Selector -->
+        <div>
+          <label for="selectTerm" class="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-1">Grading Term</label>
+          <select id="selectTerm" class="w-full text-xs font-medium text-slate-800 bg-white border border-slate-300 rounded-lg py-2 px-2.5 focus:border-brand-700 focus:ring-brand-700 shadow-xs cursor-pointer">
+            <option selected>Semester 1 (Current Active)</option>
+            <option>Semester 2 (Upcoming)</option>
+            <option>Full Year Cumulative Review</option>
+          </select>
+        </div>
+
+        <!-- Quick Search Student -->
+        <div>
+          <label for="searchStudent" class="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-1">Quick Filter Student</label>
+          <div class="relative">
+            <input id="searchStudent" oninput="onSearchInput(this.value)" class="w-full text-xs font-medium text-slate-800 bg-white border border-slate-300 rounded-lg py-2 pl-8 pr-2 focus:border-brand-700 focus:ring-brand-700 shadow-xs" placeholder="Name or student ID..." type="text">
+            <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END: CohortFiltersAndControls -->
+
+    <!-- BEGIN: SpreadsheetGradeGrid -->
+    <div class="bg-white border border-slate-200 rounded-xl shadow-crisp overflow-hidden flex flex-col" data-purpose="primary-grade-matrix">
+
+      <!-- Horizontal Scroll Grid Container -->
+      <div class="overflow-x-auto w-full">
+        <table class="spreadsheet-table text-left border-collapse text-xs min-w-[1080px]" id="gradebookSpreadsheet">
+          <!-- Table Header -->
+          <thead class="bg-slate-100 text-slate-700 uppercase font-medium text-[11px] tracking-wider border-b border-slate-200 select-none">
+            <tr>
+              <th class="py-3 px-3 text-center w-12 sticky-col-idx bg-slate-100 border-r border-slate-200 font-medium" scope="col">#</th>
+              <th class="py-3 px-3 w-32 border-r border-slate-200 font-medium" scope="col">Student ID</th>
+              <th class="py-3 px-4 min-w-[220px] sticky-col-name bg-slate-100 border-r border-slate-200 font-medium" scope="col">Student Full Name</th>
+
+              <!-- Homework 1 -->
+              <th class="py-2.5 px-3 min-w-[125px] text-right border-r border-slate-200 bg-slate-50/80 font-medium" scope="col">
+                <div class="font-medium text-slate-800">Homework 1</div>
+                <div class="text-[10px] font-normal text-slate-500 lowercase">Vectors &amp; Matrices &bull; Max 10 (10%)</div>
+              </th>
+
+              <!-- Quiz 1 -->
+              <th class="py-2.5 px-3 min-w-[125px] text-right border-r border-slate-200 bg-slate-50/80 font-medium" scope="col">
+                <div class="font-medium text-slate-800">Quiz 1</div>
+                <div class="text-[10px] font-normal text-slate-500 lowercase">Linear Equations &bull; Max 20 (20%)</div>
+              </th>
+
+              <!-- Midterm Exam -->
+              <th class="py-2.5 px-3 min-w-[135px] text-right border-r border-slate-200 bg-blue-50/40 font-medium" scope="col">
+                <div class="font-medium text-slate-900">Midterm Exam</div>
+                <div class="text-[10px] font-normal text-slate-500 lowercase">Formal Session &bull; Max 100 (40%)</div>
+              </th>
+
+              <!-- Project A -->
+              <th class="py-2.5 px-3 min-w-[130px] text-right border-r border-slate-200 bg-slate-50/80 font-medium" scope="col">
+                <div class="font-medium text-slate-800">Project A</div>
+                <div class="text-[10px] font-normal text-slate-500 lowercase">Applied Modeling &bull; Max 50 (30%)</div>
+              </th>
+
+              <!-- Weighted Total -->
+              <th class="py-2.5 px-3 min-w-[120px] text-right border-r border-slate-200 bg-emerald-50/40 font-medium" scope="col">
+                <div class="font-medium text-brand-700">Weighted %</div>
+                <div class="text-[10px] font-normal text-slate-500 lowercase">Overall Total</div>
+              </th>
+
+              <!-- Letter Grade -->
+              <th class="py-3 px-3 text-center min-w-[70px] border-r border-slate-200 bg-emerald-50/40 font-medium text-brand-700" scope="col">Grade</th>
+
+              <!-- Performance Status / Action -->
+              <th class="py-3 px-3 min-w-[170px] text-left font-medium" scope="col">Remarks &amp; Academic Standing</th>
+            </tr>
+          </thead>
+
+          <!-- Table Body with Straight Grid Lines -->
+          <tbody id="gradebookBody" class="divide-y divide-slate-200 font-mono text-slate-700">
+            <!-- Populated via JavaScript -->
+          </tbody>
+
+          <!-- Table Summary Footer (Class Average Straight Line) -->
+          <tfoot id="gradebookFoot" class="bg-slate-100 font-medium text-slate-800 border-t-2 border-slate-400 select-none">
+            <!-- Populated via JavaScript -->
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Pagination & Table Operations Footbar -->
+      <div class="px-4 py-3 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs no-print">
+        <div class="text-slate-500 font-medium" id="paginationSummary">
+          Showing <span class="font-medium text-slate-800" id="pageRangeLabel">1 – 10</span> of <span class="font-medium text-slate-800" id="pageTotalLabel">27</span> enrolled students
+        </div>
+
+        <div class="flex items-center gap-1" id="paginationControls">
+          <!-- Populated via JavaScript -->
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-slate-500">Rows per view:</span>
+          <select id="selectRowsPerPage" onchange="onRowsPerPageChange(this.value)" class="text-xs font-medium py-1 px-2 border border-slate-300 rounded-lg bg-white cursor-pointer">
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="999">All</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <!-- END: SpreadsheetGradeGrid -->
+
   </div>
 
 </main>
 
+<!-- Hero & Layout Engine Scripts -->
+<script>
+window.PAGE = { role: 'teacher', active: 'gradebook' };
+window.HERO_CONFIG = {
+  role: 'teacher',
+  active: 'gradebook',
+  isDashboard: false,
+  title: 'Teacher Gradebook',
+  breadcrumbs: [{ label: 'Teacher', href: 'teacher.html' }, { label: 'Gradebook' }]
+};
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 
+<!-- ═══════════════════════════════════════════════════════════════════
+     INTERACTIVE JAVASCRIPT: GRADEBOOK REAL-TIME CALCULATIONS & WORKSPACE
+     ═══════════════════════════════════════════════════════════════════ -->
 <script>
-// ── TEACHER GRADEBOOK PAGE LOGIC ──
 (function() {
-  let allGrades = {};
-  let selectedClass = null;
-  let hasUnsavedChanges = false;
+  "use strict";
 
-  // Mock grade data
-  const mockGrades = {
-    '10A': [
-      { studentId: '2026-STD-0142', name: 'Nrinphouneta Hok', assignment1: 85, assignment2: 90, quiz: 88, exam: 82 },
-      { studentId: '2026-STD-0144', name: 'Sophea Chan', assignment1: 78, assignment2: 82, quiz: 80, exam: 75 },
-      { studentId: '2026-STD-0145', name: 'Virak Heng', assignment1: null, assignment2: 88, quiz: 85, exam: null },
-      { studentId: '2026-STD-0148', name: 'Kosal Rith Mony', assignment1: 92, assignment2: 94, quiz: 91, exam: 89 },
-      { studentId: '2026-STD-0151', name: 'Sreylin Vuth', assignment1: 95, assignment2: 96, quiz: 94, exam: 92 },
-    ],
-    '11B': [
-      { studentId: '2026-STD-0143', name: 'Kosal Rith Mony', assignment1: 88, assignment2: 90, quiz: 87, exam: 85 },
-      { studentId: '2026-STD-0146', name: 'Sreymom Vuth', assignment1: 91, assignment2: 93, quiz: 92, exam: 90 },
-    ],
-    '11C': [
-      { studentId: '2026-STD-0147', name: 'Kimheak Chheng', assignment1: 89, assignment2: 91, quiz: 88, exam: 86 },
-      { studentId: '2026-STD-0149', name: 'Prak Piseth', assignment1: 72, assignment2: 75, quiz: 71, exam: 70 },
-    ]
-  };
+  // 27 Students in Grade 10A cohort matching user specifications & institutional dataset
+  let gradebookData = [
+    { id: '2026-STD-0142', name: 'Nrinphouneta Hok', initials: 'NH', color: 'bg-brand-700', hw: 9.5, quiz: 19.0, midterm: 96.0, project: 48.5, standing: 'Exemplary Performance' },
+    { id: '2026-STD-0145', name: 'Sophea Chan',      initials: 'SC', color: 'bg-slate-700', hw: 8.0, quiz: 16.5, midterm: 84.0, project: 43.0, standing: 'On Track' },
+    { id: '2026-STD-0150', name: 'Virak Heng',        initials: 'VH', color: 'bg-indigo-700', hw: 10.0, quiz: 18.5, midterm: 91.0, project: 46.0, standing: 'High Honor List' },
+    { id: '2026-STD-0158', name: 'Kosal Rith Mony',   initials: 'KR', color: 'bg-amber-700', hw: 7.5, quiz: 14.0, midterm: 71.0, project: 38.0, standing: 'Needs Support (Tutoring)' },
+    { id: '2026-STD-0164', name: 'Sreylin Vuth',      initials: 'SV', color: 'bg-teal-700', hw: 9.0, quiz: 18.0, midterm: 88.0, project: 45.0, standing: 'Consistent Progress' },
+    { id: '2026-STD-0171', name: 'Heng Piseth',       initials: 'HP', color: 'bg-rose-700', hw: 6.5, quiz: 12.0, midterm: 62.0, project: 32.0, standing: 'Academic Warning Alert' },
+    { id: '2026-STD-0180', name: 'Emily Jenkins',     initials: 'EJ', color: 'bg-purple-700', hw: 10.0, quiz: 20.0, midterm: 98.0, project: 49.0, standing: 'Top Class Rank #1' },
+    { id: '2026-STD-0182', name: 'Kevin Jenkins',     initials: 'KJ', color: 'bg-cyan-700', hw: 8.5, quiz: 17.0, midterm: 85.0, project: 44.0, standing: 'Active Participant' },
+    { id: '2026-STD-0191', name: 'Linda Chea',        initials: 'LC', color: 'bg-emerald-700', hw: 9.0, quiz: 19.0, midterm: 90.0, project: 47.0, standing: 'Excellent Lab Work' },
+    { id: '2026-STD-0204', name: 'Vicheka Meas',      initials: 'VM', color: 'bg-orange-700', hw: 9.5, quiz: 17.5, midterm: 89.0, project: 44.5, standing: 'On Track' },
+    { id: '2026-STD-0210', name: 'Dara Panha',        initials: 'DP', color: 'bg-blue-700', hw: 8.5, quiz: 17.0, midterm: 86.0, project: 43.5, standing: 'Consistent Progress' },
+    { id: '2026-STD-0215', name: 'Elena Seng',        initials: 'ES', color: 'bg-pink-700', hw: 9.0, quiz: 18.5, midterm: 92.0, project: 46.5, standing: 'High Honor List' },
+    { id: '2026-STD-0220', name: 'David Kim',         initials: 'DK', color: 'bg-violet-700', hw: 8.0, quiz: 16.0, midterm: 82.0, project: 42.0, standing: 'On Track' },
+    { id: '2026-STD-0224', name: 'Pich Sreyleak',     initials: 'PS', color: 'bg-emerald-600', hw: 9.5, quiz: 19.0, midterm: 93.0, project: 47.0, standing: 'Exemplary Performance' },
+    { id: '2026-STD-0228', name: 'Chanthou Ly',       initials: 'CL', color: 'bg-teal-600', hw: 8.5, quiz: 17.0, midterm: 87.0, project: 44.0, standing: 'Consistent Progress' },
+    { id: '2026-STD-0232', name: 'Bormey Sen',        initials: 'BS', color: 'bg-sky-700', hw: 9.0, quiz: 18.0, midterm: 88.0, project: 45.0, standing: 'Active Participant' },
+    { id: '2026-STD-0235', name: 'Kimleng Seng',      initials: 'KS', color: 'bg-indigo-600', hw: 8.0, quiz: 15.5, midterm: 79.0, project: 40.5, standing: 'On Track' },
+    { id: '2026-STD-0240', name: 'Nathalie Pich',     initials: 'NP', color: 'bg-fuchsia-700', hw: 9.5, quiz: 19.5, midterm: 95.0, project: 48.0, standing: 'Exemplary Performance' },
+    { id: '2026-STD-0245', name: 'Rithy Kong',        initials: 'RK', color: 'bg-stone-700', hw: 7.0, quiz: 14.5, midterm: 74.0, project: 37.0, standing: 'Needs Support (Tutoring)' },
+    { id: '2026-STD-0250', name: 'Thida Bun',         initials: 'TB', color: 'bg-rose-600', hw: 9.0, quiz: 18.0, midterm: 90.0, project: 46.0, standing: 'High Honor List' },
+    { id: '2026-STD-0255', name: 'Sarath Om',         initials: 'SO', color: 'bg-slate-600', hw: 8.5, quiz: 17.0, midterm: 85.0, project: 43.0, standing: 'On Track' },
+    { id: '2026-STD-0260', name: 'Sophat Mean',       initials: 'SM', color: 'bg-amber-600', hw: 8.0, quiz: 16.0, midterm: 81.0, project: 41.5, standing: 'On Track' },
+    { id: '2026-STD-0265', name: 'Chhayrith Vong',    initials: 'CV', color: 'bg-emerald-800', hw: 9.0, quiz: 18.5, midterm: 91.0, project: 45.5, standing: 'High Honor List' },
+    { id: '2026-STD-0270', name: 'Sokha Meng',        initials: 'SM', color: 'bg-blue-600', hw: 8.5, quiz: 17.5, midterm: 86.0, project: 44.0, standing: 'Consistent Progress' },
+    { id: '2026-STD-0275', name: 'Vannak Chem',       initials: 'VC', color: 'bg-lime-700', hw: 7.5, quiz: 15.0, midterm: 76.0, project: 39.0, standing: 'Needs Support (Tutoring)' },
+    { id: '2026-STD-0280', name: 'Leakhena Roeun',    initials: 'LR', color: 'bg-pink-600', hw: 9.5, quiz: 19.0, midterm: 94.0, project: 47.5, standing: 'Exemplary Performance' },
+    { id: '2026-STD-0285', name: 'Moniroth Keo',      initials: 'MK', color: 'bg-cyan-600', hw: 8.5, quiz: 17.0, midterm: 85.0, project: 43.5, standing: 'Active Participant' }
+  ];
 
-  function renderGradebook() {
-    if (!selectedClass) {
-      document.getElementById('gradebookContainer').innerHTML = `
-        <div class="text-center py-12 text-slate-500 dark:text-slate-400">
-          <span class="material-symbols-outlined text-5xl opacity-30 block mb-2">grade</span>
-          <span>Select a class to view and edit grades</span>
-        </div>
-      `;
-      return;
+  let searchQuery = '';
+  let currentPage = 1;
+  let rowsPerPage = 10;
+
+  // Maximum possible points for calculations
+  const MAX_SCORES = { hw: 10, quiz: 20, midterm: 100, project: 50 };
+  const WEIGHTS = { hw: 0.10, quiz: 0.20, midterm: 0.40, project: 0.30 };
+
+  // Calculate weighted percent (0-100)
+  function computeWeighted(s) {
+    const hwPct = (s.hw / MAX_SCORES.hw) * 100;
+    const quizPct = (s.quiz / MAX_SCORES.quiz) * 100;
+    const midPct = (s.midterm / MAX_SCORES.midterm) * 100;
+    const projPct = (s.project / MAX_SCORES.project) * 100;
+    const weighted = (hwPct * WEIGHTS.hw) + (quizPct * WEIGHTS.quiz) + (midPct * WEIGHTS.midterm) + (projPct * WEIGHTS.project);
+    return Math.round(weighted * 10) / 10;
+  }
+
+  // Calculate letter grade
+  function computeGrade(weighted) {
+    if (weighted >= 97) return 'A+';
+    if (weighted >= 93) return 'A';
+    if (weighted >= 90) return 'A-';
+    if (weighted >= 87) return 'B+';
+    if (weighted >= 83) return 'B';
+    if (weighted >= 80) return 'B-';
+    if (weighted >= 77) return 'C+';
+    if (weighted >= 73) return 'C';
+    if (weighted >= 70) return 'C-';
+    if (weighted >= 65) return 'D';
+    return 'F';
+  }
+
+  // Get color styles for letter grade badge
+  function getGradeBadgeClasses(grade) {
+    if (grade.startsWith('A')) return 'bg-emerald-50 text-emerald-800';
+    if (grade.startsWith('B')) return 'bg-blue-50 text-blue-800';
+    if (grade.startsWith('C')) return 'bg-amber-50 text-amber-800';
+    if (grade === 'D') return 'bg-rose-50 text-rose-700';
+    return 'bg-rose-100 text-rose-900';
+  }
+
+  // Get standing icon & text styling
+  function getStandingHTML(standing, weighted) {
+    if (weighted >= 95) {
+      return `<span class="inline-flex items-center gap-1.5 text-emerald-700 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> ${standing}</span>`;
     }
+    if (weighted >= 90) {
+      return `<span class="inline-flex items-center gap-1.5 text-emerald-700 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> ${standing}</span>`;
+    }
+    if (weighted >= 80) {
+      return `<span class="inline-flex items-center gap-1.5 text-slate-600 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> ${standing}</span>`;
+    }
+    if (weighted >= 65) {
+      return `<span class="inline-flex items-center gap-1.5 text-amber-700 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> ${standing}</span>`;
+    }
+    return `<span class="inline-flex items-center gap-1.5 text-rose-700 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span> ${standing}</span>`;
+  }
 
-    const students = mockGrades[selectedClass] || [];
-    const assessments = ['Assignment 1', 'Assignment 2', 'Quiz', 'Exam'];
+  function getFilteredStudents() {
+    if (!searchQuery) return gradebookData;
+    const q = searchQuery.toLowerCase().trim();
+    return gradebookData.filter(s => s.name.toLowerCase().includes(q) || s.id.toLowerCase().includes(q));
+  }
 
-    let html = `
-      <table class="w-full gradebook-table text-sm border-collapse">
-        <thead>
-          <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-            <th class="sticky-col-name px-4 py-3 text-left text-xs font-medium text-slate-600 dark:text-slate-300">Student</th>
-    `;
+  function renderGradebookTable() {
+    const tbody = document.getElementById('gradebookBody');
+    if (!tbody) return;
 
-    assessments.forEach((assessment, idx) => {
-      html += `<th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">${assessment}<br><span style="font-weight: 400; font-size: 10px; color: #64748b;">/ 100</span></th>`;
-    });
+    const filtered = getFilteredStudents();
+    const totalCount = filtered.length;
 
-    html += `
-            <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Total</th>
-            <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Average</th>
-            <th class="px-4 py-3 text-center text-xs font-medium text-slate-600 dark:text-slate-300">Grade</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
+    // Adjust current page if out of bounds
+    const maxPages = Math.max(1, Math.ceil(totalCount / rowsPerPage));
+    if (currentPage > maxPages) currentPage = maxPages;
 
-    students.forEach((student, idx) => {
-      const grades = [student.assignment1, student.assignment2, student.quiz, student.exam];
-      const validGrades = grades.filter(g => g !== null && g !== undefined);
-      const total = validGrades.reduce((a, b) => a + b, 0);
-      const average = validGrades.length > 0 ? Math.round(total / validGrades.length) : null;
-      const letterGrade = average !== null ? (average >= 90 ? 'A' : average >= 80 ? 'B' : average >= 70 ? 'C' : average >= 60 ? 'D' : 'F') : '—';
+    const startIdx = (currentPage - 1) * rowsPerPage;
+    const endIdx = Math.min(startIdx + rowsPerPage, totalCount);
+    const pageStudents = filtered.slice(startIdx, endIdx);
 
-      html += `
-        <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-          <td class="sticky-col-name px-4 py-3 text-slate-900 dark:text-slate-100 text-sm">${student.name}</td>
-      `;
-
-      grades.forEach((grade, gradeIdx) => {
-        const inputId = `grade-${idx}-${gradeIdx}`;
-        html += `
-          <td class="grade-cell text-center border-r border-slate-200 dark:border-slate-700">
-            <input type="number" id="${inputId}" min="0" max="100" 
-              value="${grade !== null ? grade : ''}" 
-              placeholder="—"
-              class="grade-input"
-              data-student-id="${student.studentId}"
-              data-assessment="${gradeIdx}"
-              onchange="handleGradeChange(this)">
+    if (pageStudents.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="10" class="py-8 text-center text-slate-400 font-sans">
+            No matching students found for "${searchQuery}".
           </td>
-        `;
-      });
-
-      html += `
-          <td class="grade-cell text-center border-r border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium">${average !== null ? average : '—'}</td>
-          <td class="grade-cell text-center border-r border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-medium">${average !== null ? average : '—'}</td>
-          <td class="grade-cell text-center text-slate-900 dark:text-slate-100 font-medium">${letterGrade}</td>
         </tr>
       `;
-    });
+    } else {
+      tbody.innerHTML = pageStudents.map((s, idx) => {
+        const globalIdx = startIdx + idx + 1;
+        const weighted = computeWeighted(s);
+        const grade = computeGrade(weighted);
+        const badgeClass = getGradeBadgeClasses(grade);
+        const standingHTML = getStandingHTML(s.standing, weighted);
 
-    html += `
-        </tbody>
-      </table>
-    `;
+        return `
+          <tr class="bg-white hover:bg-slate-50 transition group" data-student-id="${s.id}">
+            <!-- # Index -->
+            <td class="text-center font-sans font-medium text-slate-400 sticky-col-idx bg-white group-hover:bg-slate-50 py-2.5 px-2 border-r border-slate-200">
+              ${globalIdx}
+            </td>
 
-    document.getElementById('gradebookContainer').innerHTML = html;
+            <!-- Student ID -->
+            <td class="font-mono text-xs text-slate-600 py-2.5 px-3 border-r border-slate-200 bg-slate-50/30">
+              ${s.id}
+            </td>
+
+            <!-- Student Full Name -->
+            <td class="font-sans font-medium text-slate-900 sticky-col-name bg-white group-hover:bg-slate-50 py-2.5 px-4 border-r border-slate-200">
+              <div class="flex items-center gap-2.5">
+                <div class="w-6 h-6 rounded-full ${s.color} text-white font-medium text-[10px] flex items-center justify-center shrink-0">
+                  ${s.initials}
+                </div>
+                <span class="text-xs font-medium">${s.name}</span>
+              </div>
+            </td>
+
+            <!-- Homework 1 (Max 10) -->
+            <td class="text-right py-1.5 px-2.5 border-r border-slate-200">
+              <input class="w-full text-right bg-slate-50 border border-slate-300 rounded-md py-1 px-2 text-xs font-mono score-cell-input hover:border-slate-400 hover:bg-white focus:bg-white focus:border-brand-700 shadow-2xs" type="number" step="0.5" min="0" max="10" value="${s.hw}" oninput="window.updateScore('${s.id}', 'hw', this.value)" aria-label="Homework 1 for ${s.name}">
+            </td>
+
+            <!-- Quiz 1 (Max 20) -->
+            <td class="text-right py-1.5 px-2.5 border-r border-slate-200">
+              <input class="w-full text-right bg-slate-50 border border-slate-300 rounded-md py-1 px-2 text-xs font-mono score-cell-input hover:border-slate-400 hover:bg-white focus:bg-white focus:border-brand-700 shadow-2xs" type="number" step="0.5" min="0" max="20" value="${s.quiz}" oninput="window.updateScore('${s.id}', 'quiz', this.value)" aria-label="Quiz 1 for ${s.name}">
+            </td>
+
+            <!-- Midterm Exam (Max 100) -->
+            <td class="text-right py-1.5 px-2.5 border-r border-slate-200 bg-blue-50/10 font-medium text-slate-900">
+              <input class="w-full text-right bg-slate-50 border border-slate-300 rounded-md py-1 px-2 text-xs font-mono score-cell-input hover:border-slate-400 hover:bg-white focus:bg-white focus:border-brand-700 shadow-2xs" type="number" step="0.5" min="0" max="100" value="${s.midterm}" oninput="window.updateScore('${s.id}', 'midterm', this.value)" aria-label="Midterm Exam for ${s.name}">
+            </td>
+
+            <!-- Project A (Max 50) -->
+            <td class="text-right py-1.5 px-2.5 border-r border-slate-200">
+              <input class="w-full text-right bg-slate-50 border border-slate-300 rounded-md py-1 px-2 text-xs font-mono score-cell-input hover:border-slate-400 hover:bg-white focus:bg-white focus:border-brand-700 shadow-2xs" type="number" step="0.5" min="0" max="50" value="${s.project}" oninput="window.updateScore('${s.id}', 'project', this.value)" aria-label="Project A for ${s.name}">
+            </td>
+
+            <!-- Weighted % -->
+            <td class="text-right py-2.5 px-3 border-r border-slate-200 bg-emerald-50/20 font-medium text-slate-950 text-sm">
+              <span id="weighted-${s.id}">${weighted.toFixed(1)}%</span>
+            </td>
+
+            <!-- Letter Grade -->
+            <td class="text-center py-2.5 px-3 border-r border-slate-200 bg-emerald-50/20 font-sans font-medium text-xs">
+              <span id="grade-${s.id}" class="inline-block px-1.5 py-0.5 rounded ${badgeClass}">${grade}</span>
+            </td>
+
+            <!-- Remarks & Academic Standing -->
+            <td class="font-sans text-xs py-2 px-3" id="standing-${s.id}">
+              ${standingHTML}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    renderTableFooter(filtered);
+    renderPagination(totalCount, startIdx, endIdx);
+    updateKpis(filtered);
   }
 
-  function renderMobileGradebook() {
-    if (!selectedClass) {
-      document.getElementById('gradebookMobileContainer').innerHTML = `
-        <div class="text-center py-8 text-slate-500 dark:text-slate-400">
-          <span class="material-symbols-outlined text-4xl opacity-30 block mb-2">grade</span>
-          <span class="text-sm">Select a class to view grades</span>
-        </div>
-      `;
+  function renderTableFooter(filtered) {
+    const tfoot = document.getElementById('gradebookFoot');
+    if (!tfoot) return;
+
+    const n = filtered.length;
+    if (n === 0) {
+      tfoot.innerHTML = '';
       return;
     }
 
-    const students = mockGrades[selectedClass] || [];
-    let html = `<div class="space-y-3">`;
-
-    students.forEach(student => {
-      const grades = [student.assignment1, student.assignment2, student.quiz, student.exam];
-      const validGrades = grades.filter(g => g !== null && g !== undefined);
-      const average = validGrades.length > 0 ? Math.round(validGrades.reduce((a, b) => a + b, 0) / validGrades.length) : null;
-
-      html += `
-        <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-          <div class="font-medium text-slate-900 dark:text-white mb-2">${student.name}</div>
-          <div class="grid grid-cols-2 gap-2 text-xs mb-2">
-            <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-400">Assign 1:</span>
-              <input type="number" min="0" max="100" value="${student.assignment1 || ''}" placeholder="—" class="grade-input w-12">
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-400">Assign 2:</span>
-              <input type="number" min="0" max="100" value="${student.assignment2 || ''}" placeholder="—" class="grade-input w-12">
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-400">Quiz:</span>
-              <input type="number" min="0" max="100" value="${student.quiz || ''}" placeholder="—" class="grade-input w-12">
-            </div>
-            <div class="flex items-center justify-between">
-              <span class="text-slate-600 dark:text-slate-400">Exam:</span>
-              <input type="number" min="0" max="100" value="${student.exam || ''}" placeholder="—" class="grade-input w-12">
-            </div>
-          </div>
-          <div class="pt-2 border-t border-slate-200 dark:border-slate-700 text-xs flex items-center justify-between">
-            <span class="text-slate-600 dark:text-slate-400">Average:</span>
-            <span class="font-medium text-slate-900 dark:text-white">${average || '—'}</span>
-          </div>
-        </div>
-      `;
+    let sumHw = 0, sumQuiz = 0, sumMid = 0, sumProj = 0, sumWeighted = 0;
+    filtered.forEach(s => {
+      sumHw += parseFloat(s.hw) || 0;
+      sumQuiz += parseFloat(s.quiz) || 0;
+      sumMid += parseFloat(s.midterm) || 0;
+      sumProj += parseFloat(s.project) || 0;
+      sumWeighted += computeWeighted(s);
     });
 
-    html += `</div>`;
-    document.getElementById('gradebookMobileContainer').innerHTML = html;
+    const avgHw = (sumHw / n).toFixed(1);
+    const avgQuiz = (sumQuiz / n).toFixed(1);
+    const avgMid = (sumMid / n).toFixed(1);
+    const avgProj = (sumProj / n).toFixed(1);
+    const avgWeighted = (sumWeighted / n).toFixed(1);
+    const avgGrade = computeGrade(parseFloat(avgWeighted));
+
+    const hwPct = Math.round((avgHw / MAX_SCORES.hw) * 100);
+    const quizPct = Math.round((avgQuiz / MAX_SCORES.quiz) * 100);
+    const midPct = Math.round((avgMid / MAX_SCORES.midterm) * 100);
+    const projPct = Math.round((avgProj / MAX_SCORES.project) * 100);
+
+    tfoot.innerHTML = `
+      <tr>
+        <td class="py-3 px-4 text-right uppercase tracking-wider font-sans text-xs border-r border-slate-300 sticky-col-idx bg-slate-100 font-medium" colspan="3">
+          Cohort Mean / Class Average (N=${n}):
+        </td>
+        <td class="py-3 px-3 text-right font-mono text-xs border-r border-slate-300 font-medium">
+          ${avgHw} / 10 <span class="text-[10px] text-slate-500 font-normal">(${hwPct}%)</span>
+        </td>
+        <td class="py-3 px-3 text-right font-mono text-xs border-r border-slate-300 font-medium">
+          ${avgQuiz} / 20 <span class="text-[10px] text-slate-500 font-normal">(${quizPct}%)</span>
+        </td>
+        <td class="py-3 px-3 text-right font-mono text-xs border-r border-slate-300 bg-blue-100/50 font-medium">
+          ${avgMid} / 100 <span class="text-[10px] text-slate-600 font-normal">(${midPct}%)</span>
+        </td>
+        <td class="py-3 px-3 text-right font-mono text-xs border-r border-slate-300 font-medium">
+          ${avgProj} / 50 <span class="text-[10px] text-slate-500 font-normal">(${projPct}%)</span>
+        </td>
+        <td class="py-3 px-3 text-right font-mono text-brand-800 text-sm border-r border-slate-300 bg-emerald-100/70 font-medium">
+          ${avgWeighted}%
+        </td>
+        <td class="py-3 px-3 text-center font-sans text-brand-800 font-medium text-xs border-r border-slate-300 bg-emerald-100/70">
+          ${avgGrade}
+        </td>
+        <td class="py-3 px-3 text-left font-sans text-xs text-slate-600 font-medium">
+          Target Met (Curriculum Standard: &ge; 80.0%)
+        </td>
+      </tr>
+    `;
   }
 
-  window.handleGradeChange = function(input) {
-    hasUnsavedChanges = true;
-    document.getElementById('unsavedIndicator').classList.remove('hidden');
-    document.getElementById('saveChangesBtn').disabled = false;
-    input.classList.add('modified');
+  function updateKpis(filtered) {
+    const n = filtered.length;
+    let sumWeighted = 0;
+    let passingCount = 0;
+
+    filtered.forEach(s => {
+      const w = computeWeighted(s);
+      sumWeighted += w;
+      if (w >= 65.0) passingCount++;
+    });
+
+    const classAvg = n > 0 ? (sumWeighted / n).toFixed(1) : '0.0';
+    const classGrade = computeGrade(parseFloat(classAvg));
+    const passRate = n > 0 ? ((passingCount / n) * 100).toFixed(1) : '100.0';
+
+    const elEnrolled = document.getElementById('kpiEnrolled');
+    const elClassAvg = document.getElementById('kpiClassAvg');
+    const elClassGrade = document.getElementById('kpiClassGrade');
+    const elPassRate = document.getElementById('kpiPassingRate');
+    const elPassCount = document.getElementById('kpiPassingCount');
+
+    if (elEnrolled) elEnrolled.textContent = n;
+    if (elClassAvg) elClassAvg.textContent = `${classAvg}%`;
+    if (elClassGrade) elClassGrade.textContent = classGrade;
+    if (elPassRate) elPassRate.textContent = `${passRate}%`;
+    if (elPassCount) elPassCount.textContent = `${passingCount} / ${n} Students`;
+  }
+
+  function renderPagination(totalCount, startIdx, endIdx) {
+    const rangeLabel = document.getElementById('pageRangeLabel');
+    const totalLabel = document.getElementById('pageTotalLabel');
+    if (rangeLabel) rangeLabel.textContent = totalCount > 0 ? `${startIdx + 1} – ${endIdx}` : '0 – 0';
+    if (totalLabel) totalLabel.textContent = totalCount;
+
+    const controls = document.getElementById('paginationControls');
+    if (!controls) return;
+
+    const totalPages = Math.max(1, Math.ceil(totalCount / rowsPerPage));
+    let buttonsHtml = '';
+
+    // Prev Button
+    const prevDisabled = currentPage <= 1 ? 'disabled class="inline-flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded text-slate-400 cursor-not-allowed"' : 'onclick="window.goToPage(' + (currentPage - 1) + ')" class="inline-flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 cursor-pointer"';
+    buttonsHtml += `<button ${prevDisabled}><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Previous</span></button>`;
+
+    // Page Buttons
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === currentPage) {
+        buttonsHtml += `<button class="px-2.5 py-1.5 border border-brand-700 bg-brand-700 text-white font-medium rounded">${p}</button>`;
+      } else {
+        buttonsHtml += `<button onclick="window.goToPage(${p})" class="px-2.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 cursor-pointer">${p}</button>`;
+      }
+    }
+
+    // Next Button
+    const nextDisabled = currentPage >= totalPages ? 'disabled class="inline-flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded text-slate-400 cursor-not-allowed"' : 'onclick="window.goToPage(' + (currentPage + 1) + ')" class="inline-flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 cursor-pointer"';
+    buttonsHtml += `<button ${nextDisabled}><span>Next</span><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>`;
+
+    controls.innerHTML = buttonsHtml;
+  }
+
+  // Window Public Methods
+  window.updateScore = function(studentId, key, val) {
+    const s = gradebookData.find(item => item.id === studentId);
+    if (!s) return;
+
+    const num = parseFloat(val) || 0;
+    const max = MAX_SCORES[key] || 100;
+    s[key] = Math.max(0, Math.min(max, num));
+
+    // Update in-place
+    const weighted = computeWeighted(s);
+    const grade = computeGrade(weighted);
+    const badgeClass = getGradeBadgeClasses(grade);
+
+    // Auto-update standing message based on score
+    if (weighted >= 95) s.standing = 'Exemplary Performance';
+    else if (weighted >= 90) s.standing = 'High Honor List';
+    else if (weighted >= 80) s.standing = 'On Track';
+    else if (weighted >= 65) s.standing = 'Needs Support (Tutoring)';
+    else s.standing = 'Academic Warning Alert';
+
+    const wEl = document.getElementById(`weighted-${s.id}`);
+    const gEl = document.getElementById(`grade-${s.id}`);
+    const stEl = document.getElementById(`standing-${s.id}`);
+
+    if (wEl) wEl.textContent = `${weighted.toFixed(1)}%`;
+    if (gEl) {
+      gEl.textContent = grade;
+      gEl.className = `inline-block px-1.5 py-0.5 rounded ${badgeClass}`;
+    }
+    if (stEl) stEl.innerHTML = getStandingHTML(s.standing, weighted);
+
+    renderTableFooter(getFilteredStudents());
+    updateKpis(getFilteredStudents());
   };
 
-  // Event listeners
-  document.getElementById('classSelector').addEventListener('change', (e) => {
-    selectedClass = e.target.value;
-    document.getElementById('classSelectorMobile').value = selectedClass;
-    if (selectedClass) {
-      document.getElementById('selectionInfo').textContent = `Grade ${selectedClass} Gradebook`;
-      renderGradebook();
-      renderMobileGradebook();
-    } else {
-      renderGradebook();
-      renderMobileGradebook();
-    }
-  });
+  window.onSearchInput = function(query) {
+    searchQuery = query;
+    currentPage = 1;
+    renderGradebookTable();
+  };
 
-  document.getElementById('classSelectorMobile').addEventListener('change', (e) => {
-    document.getElementById('classSelector').value = e.target.value;
-    document.getElementById('classSelector').dispatchEvent(new Event('change'));
-  });
+  window.onCohortChange = function(cohortVal) {
+    const sub = document.getElementById('kpiCohortSubtitle');
+    if (sub) sub.textContent = `Cohort ${cohortVal}`;
+    if (window.toast) window.toast(`Loaded cohort Grade ${cohortVal}`, 'info');
+  };
 
-  document.getElementById('saveChangesBtn').addEventListener('click', () => {
-    alert('Grades saved! (Mock save)');
-    hasUnsavedChanges = false;
-    document.getElementById('unsavedIndicator').classList.add('hidden');
-    document.getElementById('saveChangesBtn').disabled = true;
-    const inputs = document.querySelectorAll('.grade-input.modified');
-    inputs.forEach(input => input.classList.remove('modified'));
-  });
+  window.onSubjectChange = function(subjVal) {
+    if (window.toast) window.toast(`Active Subject: ${subjVal}`, 'info');
+  };
 
-  // Initialize
+  window.goToPage = function(page) {
+    currentPage = page;
+    renderGradebookTable();
+  };
+
+  window.onRowsPerPageChange = function(val) {
+    rowsPerPage = parseInt(val, 10);
+    currentPage = 1;
+    renderGradebookTable();
+  };
+
+  window.exportGradebookCSV = function() {
+    const headers = ['Student ID', 'Full Name', 'Homework 1 (Max 10)', 'Quiz 1 (Max 20)', 'Midterm Exam (Max 100)', 'Project A (Max 50)', 'Weighted (%)', 'Letter Grade', 'Academic Standing'];
+    const rows = gradebookData.map(s => {
+      const w = computeWeighted(s);
+      const g = computeGrade(w);
+      return [
+        s.id,
+        `"${s.name.replace(/"/g, '""')}"`,
+        s.hw,
+        s.quiz,
+        s.midterm,
+        s.project,
+        w,
+        g,
+        `"${s.standing.replace(/"/g, '""')}"`
+      ];
+    });
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `ngis_gradebook_grade10a_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    if (window.toast) window.toast('Exported Grade 10A Gradebook to CSV', 'success');
+  };
+
+  window.recalculateWeightedScores = function() {
+    renderGradebookTable();
+    if (window.toast) window.toast('All student weighted percentages successfully recalculated', 'info');
+  };
+
+  window.saveGradebook = function() {
+    try {
+      localStorage.setItem('ngis_gradebook_matrix_cache', JSON.stringify(gradebookData));
+    } catch(e) {}
+    if (window.toast) window.toast('All gradebook changes successfully saved & synced', 'success');
+  };
+
+  // Initialization & Event Binding
   document.addEventListener('DOMContentLoaded', () => {
-    allGrades = mockGrades;
+    try {
+      const cached = localStorage.getItem('ngis_gradebook_matrix_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          gradebookData = parsed;
+        }
+      }
+    } catch(e) {}
+
+    renderGradebookTable();
+
+    // Attach event listeners to action buttons
+    const btnSave = document.getElementById('btnSaveGradebook');
+    if (btnSave) btnSave.addEventListener('click', (e) => { e.preventDefault(); window.saveGradebook(); });
+
+    const btnRecalc = document.getElementById('btnRecalc');
+    if (btnRecalc) btnRecalc.addEventListener('click', (e) => { e.preventDefault(); window.recalculateWeightedScores(); });
+
+    const btnExport = document.getElementById('btnExportCSV');
+    if (btnExport) btnExport.addEventListener('click', (e) => { e.preventDefault(); window.exportGradebookCSV(); });
   });
+
 })();
 </script>
-
 </body>
 </html>
