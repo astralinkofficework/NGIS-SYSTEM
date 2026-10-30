@@ -892,6 +892,80 @@ body[data-portal="admin"] table svg path,
   background-color: #1e293b !important;
 }
 
+/* ============================================================
+   GLOBAL SURFACE + RESPONSIVE POLISH
+   Cards and structural boxes must not flash tinted colors on hover.
+   Interactive controls keep their own intentional hover states.
+   ============================================================ */
+:where(
+  .card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
+  .lesson-card, .ann-card, .exam-card, .rc-filecard, .card-hover,
+  .card-hover-sm, .candidate-card, .club-card, .cert-card, .portal-card,
+  .role-card, .news-card, .subj-card, .cal-card, .att-card, .ql-card,
+  .pf-card, .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel,
+  .ov-deadline-panel, .sh-card, .sh-stat-card, .sh-request-item,
+  .task-card, .quick, .stat-mini, .msg-section, .msg-action, .msg-campus,
+  .news-auto-card, .mvp-scope-card, .tt-board-card, .dept-user-card
+):hover {
+  background-color: var(--surface, #ffffff) !important;
+}
+
+/* Neutralize only decorative row/card hover fills; selected/active states and
+   buttons are deliberately excluded so feedback remains understandable. */
+:where(
+  .dept-item, .msg-row, .msg-class-row, .row-item, .class-item,
+  .people-result-item, .user-result-item, .conv-item, .list-card-link,
+  .hpd-item, .ann-notice-item, .ann-ev-item, .ann-pop-item
+):hover:not(.active):not(.selected):not([aria-current="page"]) {
+  background-color: transparent !important;
+}
+
+/* Prevent sticky hover transforms on touch screens and keep compact layouts
+   inside the viewport at every phone/tablet breakpoint. */
+@media (hover: none), (pointer: coarse) {
+  :where(
+    .card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
+    .lesson-card, .ann-card, .exam-card, .rc-filecard, .card-hover,
+    .card-hover-sm, .candidate-card, .club-card, .cert-card, .portal-card,
+    .role-card, .news-card, .subj-card, .cal-card, .att-card, .ql-card,
+    .pf-card, .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel,
+    .ov-deadline-panel, .sh-card, .sh-stat-card, .sh-request-item,
+    .task-card, .quick, .stat-mini
+  ):hover {
+    translate: none !important;
+    scale: none !important;
+    box-shadow: var(--sh-1, 0 1px 3px rgba(47,69,80,.05)) !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .page, .page > *, .card, .card-head, .card-pad, .toolbar,
+  .page-head, .head-actions, .col-main, .col-main-2 {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .toolbar, .head-actions { width: 100%; }
+  .toolbar > input, .toolbar > select, .toolbar > .input,
+  .toolbar > .select { max-width: 100%; }
+}
+
+@media (max-width: 768px) {
+  .page { padding-left: 16px !important; padding-right: 16px !important; }
+  .card-head, .page-head { align-items: flex-start; }
+  .card-head > *, .page-head > *, .toolbar > * { min-width: 0; }
+  .tbl-wrap, .table-wrap, .overflow-x { max-width: 100%; overflow-x: auto; }
+  .tbl { min-width: 640px; }
+  .toolbar .input, .toolbar .select, .toolbar input, .toolbar select,
+  .toolbar button { width: 100% !important; max-width: none; }
+}
+
+@media (max-width: 480px) {
+  .page { padding-left: 12px !important; padding-right: 12px !important; }
+  .card-pad { padding: 14px !important; }
+  .card-head { padding: 13px 14px !important; }
+  .card-head h3, .page-head h1 { overflow-wrap: anywhere; }
+}
+
 [data-theme="dark"] body[data-role="admin"] .ava,
 [data-theme="dark"] body[data-role="admin"] .avatar-circle,
 [data-theme="dark"] body[data-role="admin"] [class*="ava-"],
