@@ -80,4 +80,5 @@
   };
 
   window.NGISProtect = Protect;
+  window.Protect = Protect;
 })(window);

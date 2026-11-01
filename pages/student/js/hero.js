@@ -16,13 +16,11 @@
     email:     'nrinphouneta@ngis.edu.kh',
     enrolled:  'Sep 2024',
     gpa:       '3.87 / 4.00',
-    avatar:    '../../assets/images/dashboard-student-portrait.jpg',
-    avatarSm:  '../../assets/images/dashboard-student-portrait.jpg',
+    avatar:    'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+    avatarSm:  'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
   };
 
   var notifLink     = 'student-notifications.html';
-  var chatLink      = '../shared/chat.html';
-  var groupChatLink = '../shared/group-chat.html';
 
   /* ── Live date ── */
   var DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -31,6 +29,78 @@
   var now    = new Date();
   var dateStr = DAYS[now.getDay()] + ', ' + MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
   var firstName = STUDENT.name.split(' ')[0];
+
+  /* ── Page title & subtitle resolution ── */
+  var C = window.HERO_CONFIG || {};
+
+  var pageTitles = {
+    'student.html': {
+      title: 'Welcome to your dashboard',
+      greeting: 'Hello, ' + firstName + '! Ready to learn today?'
+    },
+    'student-attendance.html': {
+      title: 'Official Attendance Record',
+      greeting: 'Real-time attendance logs, term presence percentage, and session records'
+    },
+    'student-grades.html': {
+      title: 'Academic Performance & Report Cards',
+      greeting: 'Official semester records, monthly reviews, and performance evaluations'
+    },
+    'student-assignments.html': {
+      title: 'Assignments & Coursework',
+      greeting: 'Track upcoming homework, submitted problem sets, lab reports, and teacher reviews'
+    },
+    'student-exams.html': {
+      title: 'Examinations & Assessments',
+      greeting: 'Official exam schedule, hall allocations, seat assignments, and results'
+    },
+    'student-timetable.html': {
+      title: 'Weekly Class Timetable',
+      greeting: 'Academic schedule, course periods, classroom locations, and instructors'
+    },
+    'student-calendar.html': {
+      title: 'Academic & Campus Calendar',
+      greeting: 'Scheduled school events, examination windows, campus activities, and holidays'
+    },
+    'student-announcements.html': {
+      title: 'Official Announcements & Circulars',
+      greeting: 'School notifications, campus news, academic bulletins, and alerts'
+    },
+    'student-services.html': {
+      title: 'Student Services Hub',
+      greeting: 'Official document requests, student support, counseling, and campus facilities'
+    },
+    'student-notifications.html': {
+      title: 'Notifications & Communications',
+      greeting: 'Campus alerts, instructor communications, and activity notifications'
+    },
+    'student-profile.html': {
+      title: 'Student Profile & Academic Standing',
+      greeting: 'Personal information, enrollment credentials, program stream, and records'
+    },
+    'student-id.html': {
+      title: 'Digital Student ID Card',
+      greeting: 'Official student credential, library card barcode, and campus access pass'
+    },
+    'student-clubs.html': {
+      title: 'Student Clubs & Co-Curricular',
+      greeting: 'Campus clubs, student leadership, extracurricular activities, and events'
+    },
+    'student-lost-found.html': {
+      title: 'Campus Lost & Found Hub',
+      greeting: 'Report lost personal items, browse discovered campus articles, and claim belongings'
+    }
+  };
+
+  var currFile = (window.location.pathname.split('/').pop() || 'student.html').toLowerCase();
+  var defaultInfo = pageTitles[currFile] || {
+    title: C.title || 'Student Portal',
+    greeting: C.greeting || C.subtitle || ('Hello, ' + firstName + '! Ready to learn today?')
+  };
+
+  var heroTitle = C.title || defaultInfo.title;
+  var heroGreeting = C.greeting || C.subtitle || defaultInfo.greeting;
+  var heroDate = C.date || dateStr;
 
   /* ── Build HTML ── */
   var html =
@@ -60,10 +130,12 @@
             '<span class="mi">notifications</span>' +
             '<span class="htb-ctrl-badge">3</span>' +
           '</button>' +
-          '<button type="button" id="htbMailBtn" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
+
+
+          '<a href="student-notifications.html" class="htb-ctrl-btn" id="htbMsgBtn" title="Messages" aria-label="Messages">' +
             '<span class="mi">mail</span>' +
-            '<span class="htb-ctrl-badge">11</span>' +
-          '</button>' +
+            '<span class="htb-ctrl-badge" style="background:#e11d48">11</span>' +
+          '</a>' +
 
           '<div class="htb-ctrl-divider" aria-hidden="true"></div>' +
 
@@ -80,7 +152,7 @@
             '</div>' +
           '</div>' +
 
-          '<button type="button" class="htb-hamburger" id="htbHamburger" aria-label="Open menu" aria-expanded="false">' +
+          '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
             '<span class="mi">menu</span>' +
           '</button>' +
         '</div>' +
@@ -91,9 +163,9 @@
 
       '<div class="hero-body">' +
         '<div class="hero-text">' +
-          '<div class="hero-date">' + dateStr + '</div>' +
-          '<h1 class="hero-title">Welcome to your dashboard</h1>' +
-          '<p class="hero-greeting">Hello, ' + firstName + '! Ready to learn today?</p>' +
+          '<div class="hero-date">' + heroDate + '</div>' +
+          '<h1 class="hero-title">' + heroTitle + '</h1>' +
+          '<p class="hero-greeting">' + heroGreeting + '</p>' +
         '</div>' +
       '</div>' +
 
@@ -151,11 +223,8 @@
 
   function closePanels() {
     if (notifPanel) notifPanel.classList.remove('open');
-    if (mailPanel)  mailPanel.classList.remove('open');
     var nb = document.getElementById('htbNotifBtn');
     if (nb) nb.classList.remove('active');
-    var mb = document.getElementById('htbMailBtn');
-    if (mb) mb.classList.remove('active');
   }
 
   function openDD() {
@@ -330,96 +399,6 @@
     });
   });
 
-  /* ── Mail dropdown ── */
-  var directData = [
-    { initials: 'PS', color: '#7c3aed', name: 'Dr. Pov Sophea', msg: 'Please review Chapter 7 before tomorrow’s lab…', time: '5m ago',  badge: 2, href: chatLink },
-    { initials: 'RL', color: '#0891b2', name: 'Ms. Rin Lina',   msg: 'Your essay submission was received.',                                time: '1h ago', badge: 1, href: chatLink }
-  ];
-  var groupData = [
-    { name: 'Grade 10 Science', msg: 'Tomorrow’s quiz covers chapters 5–7', time: '30m ago', badge: 5, href: groupChatLink },
-    { name: 'Study Group 10A', msg: 'Can anyone share notes from today?',                            time: '2h ago',  badge: 3, href: groupChatLink }
-  ];
-
-  var mailItemsHtml = '<div class="hpd-section">Direct Messages</div>';
-  for (var d = 0; d < directData.length; d++) {
-    var dm = directData[d];
-    mailItemsHtml +=
-      '<a href="' + dm.href + '" class="hpd-item">' +
-        '<div class="hpd-mail-init" style="background:' + dm.color + '">' + dm.initials + '</div>' +
-        '<div class="hpd-mail-body">' +
-          '<div class="hpd-mail-name">' + dm.name + '</div>' +
-          '<div class="hpd-mail-msg">' + dm.msg + '</div>' +
-          '<div class="hpd-mail-time">' + dm.time + '</div>' +
-        '</div>' +
-        '<span class="hpd-mail-badge">' + dm.badge + '</span>' +
-      '</a>';
-  }
-  mailItemsHtml += '<div class="hpd-section">Group Chats</div>';
-  for (var g = 0; g < groupData.length; g++) {
-    var gm = groupData[g];
-    mailItemsHtml +=
-      '<a href="' + gm.href + '" class="hpd-item">' +
-        '<div class="hpd-mail-group-ico"><span class="mi">group</span></div>' +
-        '<div class="hpd-mail-body">' +
-          '<div class="hpd-mail-name">' + gm.name + '</div>' +
-          '<div class="hpd-mail-msg">' + gm.msg + '</div>' +
-          '<div class="hpd-mail-time">' + gm.time + '</div>' +
-        '</div>' +
-        '<span class="hpd-mail-badge">' + gm.badge + '</span>' +
-      '</a>';
-  }
-
-  var mailPanelEl = document.createElement('div');
-  mailPanelEl.innerHTML =
-    '<div class="hpd" id="htbMailPanel">' +
-      '<div class="hpd-head">' +
-        '<span class="hpd-head-title">Messages</span>' +
-      '</div>' +
-      '<div class="hpd-list">' +
-        mailItemsHtml +
-      '</div>' +
-      '<div class="hpd-footer">' +
-        '<a href="' + chatLink + '" class="hpd-footer-btn">' +
-          '<span class="mi">chat</span>Direct Chat' +
-        '</a>' +
-        '<a href="' + groupChatLink + '" class="hpd-footer-btn">' +
-          '<span class="mi">group</span>Group Chat' +
-        '</a>' +
-      '</div>' +
-    '</div>';
-  var mailPanel = mailPanelEl.firstChild;
-  document.body.appendChild(mailPanel);
-
-  /* ── Panel positioning ── */
-  function posBelow(btn, panel) {
-    if (!btn || !panel) return;
-    var rect = btn.getBoundingClientRect();
-    panel.style.top = (rect.bottom + 8) + 'px';
-
-    if (window.innerWidth <= 600) {
-      panel.style.left = '12px';
-      panel.style.right = '12px';
-      panel.style.width = 'auto';
-      panel.style.maxWidth = 'calc(100vw - 24px)';
-      panel.style.marginLeft = 'auto';
-      panel.style.marginRight = 'auto';
-      return;
-    }
-
-    panel.style.width = '330px';
-    panel.style.maxWidth = 'calc(100vw - 24px)';
-    panel.style.left = 'auto';
-    panel.style.marginLeft = '0';
-    panel.style.marginRight = '0';
-
-    var rightEdge = window.innerWidth - rect.right;
-    if (rightEdge < 12) rightEdge = 12;
-    if (window.innerWidth - rightEdge - 330 < 12) {
-      rightEdge = Math.max(12, window.innerWidth - 330 - 12);
-    }
-    panel.style.right = rightEdge + 'px';
-  }
-
   /* ── Notif button ── */
   var notifBtn = document.getElementById('htbNotifBtn');
   if (notifBtn) {
@@ -436,36 +415,13 @@
     });
   }
 
-  /* ── Mail button ── */
-  var mailBtn = document.getElementById('htbMailBtn');
-  if (mailBtn) {
-    mailBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var wasOpen = mailPanel.classList.contains('open');
-      closePanels();
-      closeDD();
-      if (!wasOpen) {
-        posBelow(mailBtn, mailPanel);
-        mailPanel.classList.add('open');
-        mailBtn.classList.add('active');
-      }
-    });
-  }
-
   /* ── Close panels on outside click ── */
   document.addEventListener('click', function (e) {
     var nb = document.getElementById('htbNotifBtn');
-    var mb = document.getElementById('htbMailBtn');
     if (notifPanel && notifPanel.classList.contains('open')) {
       if (!notifPanel.contains(e.target) && !(nb && nb.contains(e.target))) {
         notifPanel.classList.remove('open');
         if (nb) nb.classList.remove('active');
-      }
-    }
-    if (mailPanel && mailPanel.classList.contains('open')) {
-      if (!mailPanel.contains(e.target) && !(mb && mb.contains(e.target))) {
-        mailPanel.classList.remove('open');
-        if (mb) mb.classList.remove('active');
       }
     }
   });
@@ -473,9 +429,7 @@
   /* ── Reposition on scroll/resize ── */
   function reposOpen() {
     var nb = document.getElementById('htbNotifBtn');
-    var mb = document.getElementById('htbMailBtn');
     if (nb && notifPanel && notifPanel.classList.contains('open')) posBelow(nb, notifPanel);
-    if (mb && mailPanel && mailPanel.classList.contains('open'))   posBelow(mb, mailPanel);
   }
   window.addEventListener('resize', reposOpen);
   window.addEventListener('scroll', reposOpen, true);

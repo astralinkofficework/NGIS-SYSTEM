@@ -100,7 +100,7 @@ async def run_tests():
                 print("'Mark All Present' verified.")
 
             # 5. Dual View Switcher (Sheet vs Cards)
-            cards_btn = page.locator("#btnViewCardsDesk") if width >= 1024 else page.locator("#btnViewCardsMob")
+            cards_btn = page.locator("#btnViewCardsDesk, #btnViewCardsMob").first
             await cards_btn.click()
             await page.wait_for_timeout(200)
             cards_view = page.locator("#viewModeCards")
@@ -110,7 +110,7 @@ async def run_tests():
             print("Switched to Cards view successfully.")
 
             # Switch back to Grid view
-            grid_btn = page.locator("#btnViewGridDesk") if width >= 1024 else page.locator("#btnViewGridMob")
+            grid_btn = page.locator("#btnViewGridDesk, #btnViewGridMob").first
             await grid_btn.click()
             await page.wait_for_timeout(200)
             assert await grid_view.is_visible(), "Grid view container should be visible again!"

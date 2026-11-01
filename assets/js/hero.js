@@ -62,7 +62,7 @@
     if (!filename) return '#';
     if (filename.indexOf('/') !== -1 || filename.indexOf('http') === 0 || filename.indexOf('#') === 0) return filename;
     if (pathname.indexOf('/pages/' + targetRole + '/') !== -1) return filename;
-    if (pathname.indexOf('/pages/shared/') !== -1 || pathname.indexOf('/pages/messaging/') !== -1) return '../' + targetRole + '/' + filename;
+    if (pathname.indexOf('/pages/shared/') !== -1) return '../' + targetRole + '/' + filename;
     if (pathname.indexOf('/pages/') !== -1) return '../' + targetRole + '/' + filename;
     return 'pages/' + targetRole + '/' + filename;
   }
@@ -162,13 +162,9 @@
 
   /* ── Badges ── */
   var notifBadge = C.notifCount ? '<span class="htb-ctrl-badge">' + C.notifCount + '</span>' : '';
-  var mailCount  = C.mailCount != null ? C.mailCount : 11;
-  var mailBadge  = mailCount ? '<span class="htb-ctrl-badge">' + mailCount + '</span>' : '';
 
   /* ── Link targets ── */
   var notifLink     = C.notifLink     || resolveRoleUrl(activeRole, activeRole + '-notifications.html');
-  var chatLink      = C.chatLink      || (resolveRoleUrl('shared', 'chat.html') + '?portal=' + activeRole);
-  var groupChatLink = C.groupChatLink || (resolveRoleUrl('shared', 'group-chat.html') + '?portal=' + activeRole);
   var calendarLink  = C.calendarLink  || resolveRoleUrl(activeRole, rDef.calendar);
   var profileLink   = C.profileLink   || resolveRoleUrl(activeRole, rDef.profile);
 
@@ -246,10 +242,12 @@
             '<span class="mi">notifications</span>' +
             (notifBadge || '<span class="htb-ctrl-badge">3</span>') +
           '</button>' +
-          '<button type="button" id="htbMailBtn" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
+          (activeRole === 'student' ?
+          '<a href="' + (C.chatLink || resolveRoleUrl('student', 'student-notifications.html')) + '" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
             '<span class="mi">mail</span>' +
-            (mailBadge || '<span class="htb-ctrl-badge">11</span>') +
-          '</button>' +
+            '<span class="htb-ctrl-badge" style="background:#e11d48">11</span>' +
+          '</a>' : '') +
+
 
           '<div class="htb-ctrl-divider" aria-hidden="true"></div>' +
 
@@ -348,12 +346,9 @@
 
   function closePanels() {
     if (notifPanel) notifPanel.classList.remove('open');
-    if (mailPanel)  mailPanel.classList.remove('open');
     if (searchPanel) searchPanel.classList.remove('open');
     var nb = document.getElementById('htbNotifBtn');
     if (nb) nb.classList.remove('active');
-    var mb = document.getElementById('htbMailBtn');
-    if (mb) mb.classList.remove('active');
   }
 
   function openDD() {
@@ -550,64 +545,6 @@
     });
   });
 
-  /* ── Mail dropdown ── */
-  var directData = [
-    { initials: 'PS', color: '#7c3aed', name: 'Dr. Pov Sophea', msg: 'Please review Chapter 7 before tomorrow’s lab…', time: '5m ago',  badge: 2, href: chatLink },
-    { initials: 'RL', color: '#0891b2', name: 'Ms. Rin Lina',   msg: 'Your essay submission was received.',                         time: '1h ago', badge: 1, href: chatLink }
-  ];
-  var groupData = [
-    { name: 'Grade 10 Science', msg: 'Tomorrow’s quiz covers chapters 5–7', time: '30m ago', badge: 5, href: groupChatLink },
-    { name: 'Study Group 10A', msg: 'Can anyone share notes from today?',              time: '2h ago',  badge: 3, href: groupChatLink }
-  ];
-
-  var mailItemsHtml = '<div class="hpd-section">Direct Messages</div>';
-  for (var d = 0; d < directData.length; d++) {
-    var dm = directData[d];
-    mailItemsHtml +=
-      '<a href="' + dm.href + '" class="hpd-item">' +
-        '<div class="hpd-mail-init" style="background:' + dm.color + '">' + dm.initials + '</div>' +
-        '<div class="hpd-mail-body">' +
-          '<div class="hpd-mail-name">' + dm.name + '</div>' +
-          '<div class="hpd-mail-msg">' + dm.msg + '</div>' +
-          '<div class="hpd-mail-time">' + dm.time + '</div>' +
-        '</div>' +
-        '<span class="hpd-mail-badge">' + dm.badge + '</span>' +
-      '</a>';
-  }
-  mailItemsHtml += '<div class="hpd-section">Group Chats</div>';
-  for (var g = 0; g < groupData.length; g++) {
-    var gm = groupData[g];
-    mailItemsHtml +=
-      '<a href="' + gm.href + '" class="hpd-item">' +
-        '<div class="hpd-mail-group-ico"><span class="mi">group</span></div>' +
-        '<div class="hpd-mail-body">' +
-          '<div class="hpd-mail-name">' + gm.name + '</div>' +
-          '<div class="hpd-mail-msg">' + gm.msg + '</div>' +
-          '<div class="hpd-mail-time">' + gm.time + '</div>' +
-        '</div>' +
-        '<span class="hpd-mail-badge">' + gm.badge + '</span>' +
-      '</a>';
-  }
-
-  var mailPanelEl = document.createElement('div');
-  mailPanelEl.innerHTML =
-    '<div class="hpd" id="htbMailPanel">' +
-      '<div class="hpd-head">' +
-        '<span class="hpd-head-title">Messages</span>' +
-      '</div>' +
-      mailItemsHtml +
-      '<div class="hpd-footer">' +
-        '<a href="' + chatLink + '" class="hpd-footer-btn">' +
-          '<span class="mi">chat</span>Direct Chat' +
-        '</a>' +
-        '<a href="' + groupChatLink + '" class="hpd-footer-btn">' +
-          '<span class="mi">group</span>Group Chat' +
-        '</a>' +
-      '</div>' +
-    '</div>';
-  var mailPanel = mailPanelEl.firstChild;
-  document.body.appendChild(mailPanel);
-
   /* ── Global search (admin only) ── */
   var searchPanel = null;
   var ROLE = (window.PAGE && window.PAGE.role) || activeRole;
@@ -636,7 +573,7 @@
       '<div class="hpd hpd-search" id="htbSearchPanel">' +
         '<div class="hpd-search-input-wrap">' +
           '<span class="mi" style="font-size:18px;color:var(--muted,#94a3b8)">search</span>' +
-          '<input type="search" id="htbSearchInput" class="hpd-search-input" placeholder="Search students, teachers, campuses…" aria-label="Search everything">' +
+          '<input type="search" id="hpdSearchInput" class="hpd-search-input" placeholder="Search students, teachers, campuses…" aria-label="Search everything">' +
         '</div>' +
         '<div id="htbSearchResults"></div>' +
       '</div>';
@@ -644,7 +581,7 @@
     document.body.appendChild(searchPanel);
 
     var searchResultsEl = document.getElementById('htbSearchResults');
-    var searchInputEl   = document.getElementById('htbSearchInput');
+    var searchInputEl   = searchPanel.querySelector('.hpd-search-input');
 
     function renderSearch(q) {
       q = (q || '').trim().toLowerCase();
@@ -757,36 +694,13 @@
     });
   }
 
-  /* ── Mail button ── */
-  var mailBtn = document.getElementById('htbMailBtn');
-  if (mailBtn) {
-    mailBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var wasOpen = mailPanel.classList.contains('open');
-      closePanels();
-      closeDD();
-      if (!wasOpen) {
-        posBelow(mailBtn, mailPanel);
-        mailPanel.classList.add('open');
-        mailBtn.classList.add('active');
-      }
-    });
-  }
-
   /* ── Close panels on outside click ── */
   document.addEventListener('click', function (e) {
     var nb = document.getElementById('htbNotifBtn');
-    var mb = document.getElementById('htbMailBtn');
     if (notifPanel && notifPanel.classList.contains('open')) {
       if (!notifPanel.contains(e.target) && !(nb && nb.contains(e.target))) {
         notifPanel.classList.remove('open');
         if (nb) nb.classList.remove('active');
-      }
-    }
-    if (mailPanel && mailPanel.classList.contains('open')) {
-      if (!mailPanel.contains(e.target) && !(mb && mb.contains(e.target))) {
-        mailPanel.classList.remove('open');
-        if (mb) mb.classList.remove('active');
       }
     }
   });
@@ -794,10 +708,8 @@
   /* ── Reposition on scroll/resize ── */
   function reposOpen() {
     var nb = document.getElementById('htbNotifBtn');
-    var mb = document.getElementById('htbMailBtn');
     var sb = document.getElementById('htbSearchBtn');
-    if (nb && notifPanel.classList.contains('open')) posBelow(nb, notifPanel);
-    if (mb && mailPanel.classList.contains('open'))  posBelow(mb, mailPanel);
+    if (nb && notifPanel && notifPanel.classList.contains('open')) posBelow(nb, notifPanel);
     if (sb && searchPanel && searchPanel.classList.contains('open')) posBelow(sb, searchPanel);
   }
   window.addEventListener('resize', reposOpen);

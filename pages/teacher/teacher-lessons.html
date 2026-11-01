@@ -8,7 +8,7 @@
 <!-- Google Fonts: Plus Jakarta Sans, Cinzel, Inter, Kantumruy Pro -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- Phosphor Icons for Mobile Hamburger Menu (AGENTS.md Critical Rule) -->
@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
 
 <!-- Tailwind CSS CDN with Forms & Container Queries -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -572,6 +573,7 @@ window.HERO_CONFIG = {
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+<script src="../../assets/js/ui-states.js"></script>
 
 <script>
 (function() {
@@ -664,11 +666,26 @@ window.HERO_CONFIG = {
     if (!items.length) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="9" class="py-10 text-center text-on-surface-variant font-body-sm">
-            No lesson files match the selected filters. Click "Upload Lesson" to publish one.
+          <td colspan="9" class="py-8 text-center" id="lessonsEmptyCell">
           </td>
         </tr>
       `;
+      const cell = document.getElementById('lessonsEmptyCell');
+      if (window.NGISUI && window.NGISUI.renderNoResults) {
+        window.NGISUI.renderNoResults(cell, {
+          title: 'No lesson materials found',
+          desc: 'No course materials matched your active search query.',
+          onReset: function() {
+            const searchInput = document.getElementById('lessonSearch');
+            const classFilter = document.getElementById('classFilter');
+            const formatFilter = document.getElementById('formatFilter');
+            if (searchInput) searchInput.value = '';
+            if (classFilter) classFilter.value = 'all';
+            if (formatFilter) formatFilter.value = 'all';
+            filterTable();
+          }
+        });
+      }
       document.getElementById('paginationStatusText').textContent = 'Showing 0 of ' + materials.length + ' materials';
       return;
     }
@@ -773,6 +790,7 @@ window.HERO_CONFIG = {
 
     renderTable(filtered);
   }
+  window.filterTable = filterTable;
 
   // Modal helpers
   window.openUploadModal = function() {

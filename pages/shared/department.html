@@ -6,10 +6,14 @@
 <title>NGIS — Department Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/ui-states.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 
 <style>
@@ -19,18 +23,24 @@
    Font: Inter · Kantumruy Pro fallback
    ═══════════════════════════════════════════════════════════════ */
 
+*, *::before, *::after {
+  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
   --hub-font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --hub-card-bg: #ffffff;
-  --hub-card-border: rgba(47, 69, 80, 0.10);
-  --hub-card-border-hover: rgba(47, 69, 80, 0.24);
+  --hub-card-border: rgba(47, 69, 80, 0.12);
+  --hub-card-border-hover: rgba(47, 69, 80, 0.28);
   --hub-icon-bg: rgba(184, 219, 217, 0.35);
   --hub-icon-border: rgba(184, 219, 217, 0.60);
   --hub-divider: rgba(47, 69, 80, 0.08);
 }
 
-[data-theme="dark"] {
-  --hub-card-bg: #22323a;
+html[data-theme="dark"], [data-theme="dark"] {
+  --hub-card-bg: #182329;
   --hub-card-border: rgba(184, 219, 217, 0.18);
   --hub-card-border-hover: rgba(184, 219, 217, 0.38);
   --hub-icon-bg: rgba(184, 219, 217, 0.14);
@@ -38,97 +48,185 @@
   --hub-divider: rgba(184, 219, 217, 0.12);
 }
 
-body {
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
   font-family: var(--hub-font) !important;
+  background-color: var(--ghost-white, #f4f7fa);
 }
 
-/* ── Content Wrapper ── */
-.hub-content-container {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 8px 0 32px;
+html[data-theme="dark"] body, [data-theme="dark"] body,
+html[data-theme="dark"] .main, [data-theme="dark"] .main,
+html[data-theme="dark"] .page, [data-theme="dark"] .page {
+  background-color: #0c121e !important;
+  color: #e2e8f0 !important;
 }
 
-/* ── Academic Overview Header ── */
-.hub-header {
+/* Strict Typography Constraint: NO BOLD FONTS */
+* {
+  font-weight: 400;
+}
+b, strong, th, h1, h2, h3, h4, h5, h6,
+.font-bold, .font-extrabold, .font-semibold, .font-medium,
+[class*="font-medium"] {
+  font-weight: 500 !important;
+}
+
+/* Page Scaffolding */
+.main {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100vh;
   display: flex;
+  flex-direction: column;
+  overflow-x: hidden !important;
+}
+
+.page {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 20px 24px 80px !important;
+  box-sizing: border-box !important;
+  flex: 1;
+}
+
+/* Content Container */
+.hub-content-container {
+  width: 100% !important;
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+
+/* Hub Header & Clean Title Section */
+.hub-header-section {
+  margin-bottom: 24px;
+}
+.hub-header-top-row {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  margin-bottom: 22px;
-  padding-bottom: 4px;
+  gap: 12px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
-
-.hub-header-main {
-  flex: 1;
-  min-width: 280px;
+.hub-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--charcoal-blue, #2f4550);
+  background: #ffffff;
+  border: 1px solid rgba(47, 69, 80, 0.12);
+  padding: 6px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
-
+.hub-back-btn:hover {
+  background: var(--light-blue, #b8dbd9);
+  color: var(--charcoal-blue, #2f4550);
+  transform: translateX(-2px);
+}
+[data-theme="dark"] .hub-back-btn {
+  background: #182329;
+  border-color: rgba(184, 219, 217, 0.22);
+  color: var(--light-blue, #b8dbd9);
+}
+[data-theme="dark"] .hub-back-btn:hover {
+  background: rgba(184, 219, 217, 0.25);
+  color: #ffffff;
+}
+.hub-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .hub-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--blue-slate, #586f7c);
-  margin-bottom: 8px;
-  user-select: none;
+  margin-bottom: 2px;
 }
-
+[data-theme="dark"] .hub-eyebrow {
+  color: var(--light-blue, #b8dbd9);
+}
 .hub-eyebrow-dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--blue-slate, #586f7c);
-  opacity: 0.8;
+  background-color: var(--charcoal-blue, #2f4550);
 }
-
+[data-theme="dark"] .hub-eyebrow-dot {
+  background-color: var(--light-blue, #b8dbd9);
+}
 .hub-title {
-  font-size: 28px !important;
-  font-weight: 500!important;
-  color: var(--charcoal-blue, #2f4550) !important;
-  letter-spacing: -0.025em;
-  line-height: 1.22;
-  margin: 0 0 8px 0 !important;
+  font-size: 24px;
+  font-weight: 500 !important;
+  color: var(--charcoal-blue, #2f4550);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 0;
 }
-
 [data-theme="dark"] .hub-title {
-  color: #ffffff !important;
+  color: #ffffff;
 }
-
 .hub-subtitle {
-  font-size: 14.5px !important;
-  font-weight: 400 !important;
-  color: var(--blue-slate, #586f7c) !important;
-  line-height: 1.52;
-  margin: 0 !important;
-  max-width: 640px;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--blue-slate, #586f7c);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 820px;
 }
-
 [data-theme="dark"] .hub-subtitle {
-  color: #9eb8b7 !important;
+  color: #9eb8b7;
+}
+@media (min-width: 640px) {
+  .hub-title {
+    font-size: 26px;
+  }
+}
+@media (max-width: 480px) {
+  .hub-header-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 
-/* Right Meta Badge */
-.hub-meta-side {
+/* Top Nav / Status Bar */
+.hub-top-nav-bar {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  gap: 12px;
 }
 
 .hub-term-badge {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--charcoal-blue, #2f4550);
   background: #ffffff;
   border: 1px solid rgba(47, 69, 80, 0.12);
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 999px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   letter-spacing: -0.01em;
@@ -143,63 +241,12 @@ body {
 }
 
 .hub-term-badge .material-symbols-outlined {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--blue-slate, #586f7c);
 }
 
 [data-theme="dark"] .hub-term-badge .material-symbols-outlined {
   color: var(--light-blue, #b8dbd9);
-}
-
-/* ── Department Switcher Tabs ── */
-.dept-quick-tabs {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 24px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-.dept-quick-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.dept-tab {
-  background: #ffffff;
-  border: 1px solid rgba(47, 69, 80, 0.12);
-  border-radius: 999px;
-  padding: 6px 15px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--blue-slate, #586f7c);
-  cursor: pointer;
-  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
-  user-select: none;
-}
-.dept-tab:hover {
-}
-.dept-tab.active {
-  background: var(--charcoal-blue, #2f4550) !important;
-  color: #ffffff !important;
-  border-color: var(--charcoal-blue, #2f4550) !important;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(47, 69, 80, 0.22);
-}
-
-[data-theme="dark"] .dept-tab {
-  background: #182329;
-  border-color: rgba(184, 219, 217, 0.2);
-  color: #9eb8b7;
-}
-[data-theme="dark"] .dept-tab:hover {
-}
-[data-theme="dark"] .dept-tab.active {
-  background: var(--light-blue, #b8dbd9) !important;
-  color: var(--charcoal-blue, #2f4550) !important;
-  border-color: var(--light-blue, #b8dbd9) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -208,7 +255,8 @@ body {
 .hub-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
+  gap: 18px;
+  width: 100%;
 }
 
 /* ── Individual Hub Card ── */
@@ -216,55 +264,57 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 224px;
-  background: var(--hub-card-bg);
-  border: 1px solid var(--hub-card-border);
-  border-radius: 20px;
-  padding: 22px 22px 18px;
+  min-height: 200px;
+  background: var(--hub-card-bg, #ffffff) !important;
+  border: 1px solid var(--hub-card-border, rgba(47, 69, 80, 0.12)) !important;
+  border-radius: 16px !important;
+  padding: 18px 18px 15px;
   text-decoration: none !important;
   color: inherit !important;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03), 0 1px 2px rgba(15, 23, 42, 0.02);
-  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  box-sizing: border-box !important;
 }
 
-.hub-card:hover { }
-
-.hub-card:active { }
+.hub-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--hub-card-border-hover, rgba(47, 69, 80, 0.28)) !important;
+  box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.08) !important;
+}
 
 /* Top Row: Icon Container + Metric Badge */
 .hub-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  border: none !important;
+  background: transparent !important;
 }
 
 .hub-card-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: var(--hub-icon-bg);
-  border: 1px solid var(--hub-icon-border);
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--hub-icon-bg) !important;
+  border: 1px solid var(--hub-icon-border) !important;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--charcoal-blue, #2f4550);
   flex-shrink: 0;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .hub-card-icon {
   color: var(--light-blue, #b8dbd9);
 }
 
-.hub-card:hover .hub-card-icon { }
-
 .hub-card-icon .material-symbols-outlined {
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1;
 }
 
@@ -272,60 +322,63 @@ body {
 .hub-card-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--charcoal-blue, #2f4550);
-  background: rgba(47, 69, 80, 0.05);
-  border: 1px solid rgba(47, 69, 80, 0.12);
-  padding: 4px 11px;
-  border-radius: 999px;
+  background: rgba(47, 69, 80, 0.06) !important;
+  border: 1px solid rgba(47, 69, 80, 0.12) !important;
+  padding: 3px 10px;
+  border-radius: 999px !important;
   letter-spacing: -0.01em;
   user-select: none;
-  transition: all 0.2s ease;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] .hub-card-badge {
   color: var(--light-blue, #b8dbd9);
-  background: rgba(184, 219, 217, 0.1);
-  border-color: rgba(184, 219, 217, 0.22);
+  background: rgba(184, 219, 217, 0.1) !important;
+  border-color: rgba(184, 219, 217, 0.22) !important;
 }
 
-/* Status variants matching screenshot & NGIS tokens */
 .hub-card-badge.badge-present {
-  background: rgba(46, 111, 94, 0.08);
-  color: #2e6f5e;
-  border-color: rgba(46, 111, 94, 0.22);
+  background: rgba(46, 111, 94, 0.08) !important;
+  color: #2e6f5e !important;
+  border-color: rgba(46, 111, 94, 0.22) !important;
 }
 [data-theme="dark"] .hub-card-badge.badge-present {
-  background: rgba(107, 179, 159, 0.15);
-  color: #6bb39f;
-  border-color: rgba(107, 179, 159, 0.3);
+  background: rgba(107, 179, 159, 0.15) !important;
+  color: #6bb39f !important;
+  border-color: rgba(107, 179, 159, 0.3) !important;
 }
 
 .hub-card-badge.badge-due {
-  background: rgba(140, 98, 43, 0.08);
-  color: #8c622b;
-  border-color: rgba(140, 98, 43, 0.22);
+  background: rgba(140, 98, 43, 0.08) !important;
+  color: #8c622b !important;
+  border-color: rgba(140, 98, 43, 0.22) !important;
 }
 [data-theme="dark"] .hub-card-badge.badge-due {
-  background: rgba(212, 167, 106, 0.15);
-  color: #d4a76a;
-  border-color: rgba(212, 167, 106, 0.3);
+  background: rgba(212, 167, 106, 0.15) !important;
+  color: #d4a76a !important;
+  border-color: rgba(212, 167, 106, 0.3) !important;
 }
 
 /* Middle: Title + Description */
 .hub-card-body {
   flex: 1;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+  border: none !important;
+  background: transparent !important;
 }
 
 .hub-card-title {
-  font-size: 16.5px !important;
-  font-weight: 500!important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
   color: var(--charcoal-blue, #2f4550) !important;
   letter-spacing: -0.015em;
-  line-height: 1.32;
+  line-height: 1.3;
   margin: 0 0 6px 0 !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 [data-theme="dark"] .hub-card-title {
@@ -333,11 +386,13 @@ body {
 }
 
 .hub-card-desc {
-  font-size: 13.5px !important;
+  font-size: 13px !important;
   font-weight: 400 !important;
   color: var(--blue-slate, #586f7c) !important;
-  line-height: 1.52;
+  line-height: 1.5;
   margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 [data-theme="dark"] .hub-card-desc {
@@ -349,13 +404,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 14px;
-  border-top: 1px solid var(--hub-divider);
+  padding-top: 13px;
+  border-top: 1px solid var(--hub-divider) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   margin-top: auto;
 }
 
 .hub-card-action {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
   color: var(--charcoal-blue, #2f4550);
   transition: color 0.18s ease;
@@ -366,67 +427,213 @@ body {
 }
 
 .hub-card-chevron {
-  font-size: 19px !important;
+  font-size: 18px !important;
   color: var(--blue-slate, #586f7c);
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              color 0.18s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease;
+}
+
+.hub-card:hover .hub-card-chevron {
+  transform: translateX(3px);
+  color: var(--charcoal-blue, #2f4550);
 }
 
 [data-theme="dark"] .hub-card-chevron {
   color: #9eb8b7;
 }
 
-.hub-card:hover .hub-card-chevron { }
+[data-theme="dark"] .hub-card:hover .hub-card-chevron {
+  color: #ffffff;
+}
 
-[data-theme="dark"] .hub-card:hover .hub-card-chevron { }
+/* ── Advisor & Syllabus Strip ── */
+.hub-advisor-strip {
+  margin-top: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(47, 69, 80, 0.12);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-sizing: border-box !important;
+}
+
+[data-theme="dark"] .hub-advisor-strip {
+  background: #182329;
+  border-color: rgba(184, 219, 217, 0.18);
+}
+
+.hub-advisor-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hub-advisor-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(184, 219, 217, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--charcoal-blue, #2f4550);
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 1px solid rgba(184, 219, 217, 0.6);
+}
+
+[data-theme="dark"] .hub-advisor-avatar {
+  color: var(--light-blue, #b8dbd9);
+  background: rgba(184, 219, 217, 0.14);
+}
+
+.hub-advisor-meta h4 {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--charcoal-blue, #2f4550);
+  margin: 0 0 3px 0;
+}
+
+[data-theme="dark"] .hub-advisor-meta h4 {
+  color: #ffffff;
+}
+
+.hub-advisor-meta p {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--blue-slate, #586f7c);
+  margin: 0;
+}
+
+[data-theme="dark"] .hub-advisor-meta p {
+  color: #9eb8b7;
+}
+
+.hub-advisor-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hub-advisor-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid rgba(47, 69, 80, 0.18);
+  background: #ffffff;
+  color: var(--charcoal-blue, #2f4550);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-decoration: none;
+}
+
+.hub-advisor-btn:hover {
+  background: #f8fafc;
+  border-color: rgba(47, 69, 80, 0.3);
+}
+
+.hub-advisor-btn-primary {
+  background: var(--charcoal-blue, #2f4550);
+  color: #ffffff;
+  border-color: var(--charcoal-blue, #2f4550);
+}
+
+.hub-advisor-btn-primary:hover {
+  background: #23343d;
+  color: #ffffff;
+}
+
+[data-theme="dark"] .hub-advisor-btn {
+  background: #22323a;
+  border-color: rgba(184, 219, 217, 0.22);
+  color: #e2e8f0;
+}
+[data-theme="dark"] .hub-advisor-btn:hover {
+  background: #283a44;
+}
+[data-theme="dark"] .hub-advisor-btn-primary {
+  background: var(--light-blue, #b8dbd9);
+  color: var(--charcoal-blue, #2f4550);
+  border-color: var(--light-blue, #b8dbd9);
+}
+[data-theme="dark"] .hub-advisor-btn-primary:hover {
+  background: #a6c9c7;
+}
 
 /* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS (Fluid mobile adaptation)
    ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
+  .page {
+    padding: 16px 20px 88px !important;
+  }
   .hub-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
   }
-  .hub-title {
-    font-size: 25px !important;
-  }
 }
 
-@media (max-width: 640px) {
-  .hub-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
+@media (max-width: 768px) {
+  .page {
+    padding: 12px 14px 96px !important;
   }
-  .hub-meta-side {
-    width: 100%;
+  .hub-top-nav-bar {
+    justify-content: flex-start;
+    margin-bottom: 14px;
   }
   .hub-term-badge {
     width: 100%;
     justify-content: center;
+    font-size: 11.5px;
+    padding: 7px 12px;
   }
+  .hub-advisor-strip {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 16px;
+  }
+  .hub-advisor-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  .hub-advisor-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
   .hub-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 12px;
   }
   .hub-card {
     min-height: auto;
-    padding: 18px 18px 15px;
-    border-radius: 16px;
+    padding: 16px 16px 14px;
   }
-  .hub-title {
-    font-size: 22px !important;
+}
+
+@media (max-width: 400px) {
+  .page {
+    padding: 10px 10px 96px !important;
   }
-  .hub-subtitle {
-    font-size: 13.5px !important;
+  .hub-advisor-actions {
+    grid-template-columns: 1fr;
   }
 }
 </style>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
 </head>
 
-<body data-page="department">
+<body data-page="department" data-role="student">
 <main class="main">
 
   <div id="heroBanner"></div>
@@ -435,20 +642,32 @@ body {
     <div class="hub-content-container">
 
       <!-- ════════════════════════════════════════════════════════
-           ACADEMIC OVERVIEW HEADER
+           TOP NAVIGATION BAR (Back to All Departments)
            ════════════════════════════════════════════════════════ -->
-      <header class="hub-header" role="region" aria-label="Academic Overview">
-        <div class="hub-header-main">
-          <h1 class="hub-title" id="hubTitle">Student Portal Hub</h1>
-          <p class="hub-subtitle" id="hubSubtitle">Central access for your attendance records, coursework materials, examinations, and official evaluations.</p>
-        </div>
-        <div class="hub-meta-side">
-          <div class="hub-term-badge">
-            <span class="material-symbols-outlined">calendar_today</span>
-            <span>Academic Year 2024–2025 · Term 2</span>
-          </div>
-        </div>
-      </header>
+      <!-- ================================================================
+     CLEAN DEPARTMENT TITLE HEADER
+     ================================================================ -->
+<section class="hub-header-section" aria-label="Department Overview">
+  <div class="hub-header-top-row">
+    <a href="departments.html" class="hub-back-btn" title="Back to All Departments">
+      <span class="material-symbols-outlined text-[17px]">arrow_back</span>
+      <span>All Departments</span>
+    </a>
+    <div class="hub-term-badge">
+      <span class="material-symbols-outlined">calendar_today</span>
+      <span>Academic Year 2025–2026 · Term 2</span>
+    </div>
+  </div>
+
+  <div class="hub-title-block">
+    <div class="hub-eyebrow" id="hubEyebrow">
+      <span class="hub-eyebrow-dot"></span>
+      <span id="hubEyebrowText">ACADEMIC OVERVIEW · CAMBRIDGE CURRICULUM</span>
+    </div>
+    <h1 class="hub-title" id="hubTitle">English Department Hub</h1>
+    <p class="hub-subtitle" id="hubSubtitle">English literature syllabi, essay coursework submissions, IGCSE past papers, and evaluations.</p>
+  </div>
+</section>
 
       <!-- ════════════════════════════════════════════════════════
            3-COLUMN CARDS GRID (1:1 with Reference Design)
@@ -456,16 +675,16 @@ body {
       <div class="hub-grid" id="hubCardsGrid">
 
         <!-- ① ATTENDANCE -->
-        <a class="hub-card" id="cardAttendance" href="../student/student-attendance.html?dept=science" aria-label="Attendance">
+        <a class="hub-card" id="cardAttendance" href="../student/student-attendance.html?dept=english" aria-label="Attendance">
           <div class="hub-card-top">
             <div class="hub-card-icon">
-              <span class="material-symbols-outlined">person</span>
+              <span class="material-symbols-outlined">how_to_reg</span>
             </div>
-            <span class="hub-card-badge badge-present" id="badgeAttendance">96% Present</span>
+            <span class="hub-card-badge badge-present" id="badgeAttendance">98% Present</span>
           </div>
           <div class="hub-card-body">
             <h2 class="hub-card-title">Attendance</h2>
-            <p class="hub-card-desc" id="descAttendance">96% term average with 2 excused absences and 1 late arrival recorded.</p>
+            <p class="hub-card-desc" id="descAttendance">98% term attendance average across literature and language seminars.</p>
           </div>
           <div class="hub-card-footer">
             <span class="hub-card-action">View attendance history</span>
@@ -473,17 +692,17 @@ body {
           </div>
         </a>
 
-        <!-- ② REPORT CARDS -->
-        <a class="hub-card" id="cardReports" href="../student/student-grades.html?dept=science" aria-label="Report Cards">
+        <!-- ② REPORT CARDS & GRADES -->
+        <a class="hub-card" id="cardReports" href="../student/student-grades.html?dept=english" aria-label="Report Cards & Grades">
           <div class="hub-card-top">
             <div class="hub-card-icon">
-              <span class="material-symbols-outlined">description</span>
+              <span class="material-symbols-outlined">grade</span>
             </div>
-            <span class="hub-card-badge" id="badgeReports">3 Reports</span>
+            <span class="hub-card-badge" id="badgeReports">4 Reports</span>
           </div>
           <div class="hub-card-body">
-            <h2 class="hub-card-title">Report Cards</h2>
-            <p class="hub-card-desc" id="descReports">Official teacher grade evaluations, progress notes, and verified transcripts.</p>
+            <h2 class="hub-card-title">Report Cards &amp; Grades</h2>
+            <p class="hub-card-desc" id="descReports">Reading comprehension, essay drafting, and oral presentation rubrics.</p>
           </div>
           <div class="hub-card-footer">
             <span class="hub-card-action">Download evaluations</span>
@@ -492,16 +711,16 @@ body {
         </a>
 
         <!-- ③ LESSONS & MATERIALS -->
-        <a class="hub-card" id="cardLessons" href="lessons.html?dept=science" aria-label="Lessons and Materials">
+        <a class="hub-card" id="cardLessons" href="lessons.html?dept=english" aria-label="Lessons and Materials">
           <div class="hub-card-top">
             <div class="hub-card-icon">
-              <span class="material-symbols-outlined">folder</span>
+              <span class="material-symbols-outlined">menu_book</span>
             </div>
-            <span class="hub-card-badge" id="badgeLessons">34 Files</span>
+            <span class="hub-card-badge" id="badgeLessons">48 Files</span>
           </div>
           <div class="hub-card-body">
             <h2 class="hub-card-title">Lessons &amp; Materials</h2>
-            <p class="hub-card-desc" id="descLessons">Course lecture slides, syllabus guidelines, and supplementary study worksheets.</p>
+            <p class="hub-card-desc" id="descLessons">Shakespeare lecture slides, modern rhetoric guides, and vocabulary packets.</p>
           </div>
           <div class="hub-card-footer">
             <span class="hub-card-action">Browse repository</span>
@@ -510,16 +729,16 @@ body {
         </a>
 
         <!-- ④ TASKS & SUBMISSIONS -->
-        <a class="hub-card" id="cardTasks" href="../student/student-assignments.html?dept=science" aria-label="Tasks and Submissions">
+        <a class="hub-card" id="cardTasks" href="../student/student-assignments.html?dept=english" aria-label="Tasks and Submissions">
           <div class="hub-card-top">
             <div class="hub-card-icon">
-              <span class="material-symbols-outlined">assignment_turned_in</span>
+              <span class="material-symbols-outlined">assignment</span>
             </div>
-            <span class="hub-card-badge badge-due" id="badgeTasks">2 Due This Week</span>
+            <span class="hub-card-badge badge-due" id="badgeTasks">1 Due This Week</span>
           </div>
           <div class="hub-card-body">
             <h2 class="hub-card-title">Tasks &amp; Submissions</h2>
-            <p class="hub-card-desc" id="descTasks">12 total coursework tasks assigned, with 10 completed and graded to date.</p>
+            <p class="hub-card-desc" id="descTasks">Comparative Literature Essay #3 due Friday 17:00.</p>
           </div>
           <div class="hub-card-footer">
             <span class="hub-card-action">View assignments</span>
@@ -528,16 +747,16 @@ body {
         </a>
 
         <!-- ⑤ EXAMS & TESTS -->
-        <a class="hub-card" id="cardExams" href="exams.html?dept=science" aria-label="Exams and Tests">
+        <a class="hub-card" id="cardExams" href="../student/student-exams.html?dept=english" aria-label="Exams and Tests">
           <div class="hub-card-top">
             <div class="hub-card-icon">
-              <span class="material-symbols-outlined">calendar_month</span>
+              <span class="material-symbols-outlined">edit_note</span>
             </div>
-            <span class="hub-card-badge" id="badgeExams">2 Scheduled</span>
+            <span class="hub-card-badge" id="badgeExams">1 Scheduled</span>
           </div>
           <div class="hub-card-body">
             <h2 class="hub-card-title">Exams &amp; Tests</h2>
-            <p class="hub-card-desc" id="descExams">Midterm timetable, hall allocations, and final examination schedules.</p>
+            <p class="hub-card-desc" id="descExams">Midterm reading &amp; writing assessment in Cambridge Hall.</p>
           </div>
           <div class="hub-card-footer">
             <span class="hub-card-action">View exam timetable</span>
@@ -546,16 +765,16 @@ body {
         </a>
 
         <!-- ⑥ CLASS TIMETABLE -->
-        <a class="hub-card" id="cardTimetable" href="../student/student-timetable.html?dept=science" aria-label="Class Timetable">
+        <a class="hub-card" id="cardTimetable" href="../student/student-timetable.html?dept=english" aria-label="Class Timetable">
           <div class="hub-card-top">
             <div class="hub-card-icon">
-              <span class="material-symbols-outlined">schedule</span>
+              <span class="material-symbols-outlined">calendar_view_week</span>
             </div>
-            <span class="hub-card-badge" id="badgeTimetable">Mon – Fri</span>
+            <span class="hub-card-badge" id="badgeTimetable">Mon – Thu</span>
           </div>
           <div class="hub-card-body">
             <h2 class="hub-card-title">Class Timetable</h2>
-            <p class="hub-card-desc" id="descTimetable">Daily lecture schedule from 08:00 to 15:30 with room and laboratory numbers.</p>
+            <p class="hub-card-desc" id="descTimetable">Literature &amp; Language lectures in Academic Wing Room 302.</p>
           </div>
           <div class="hub-card-footer">
             <span class="hub-card-action">Open full schedule</span>
@@ -564,6 +783,31 @@ body {
         </a>
 
       </div><!-- /hub-grid -->
+
+      <!-- ════════════════════════════════════════════════════════
+           DEPARTMENT FACULTY ADVISOR STRIP
+           ════════════════════════════════════════════════════════ -->
+      <section class="hub-advisor-strip" aria-label="Department Advisory">
+        <div class="hub-advisor-info">
+          <div class="hub-advisor-avatar" id="advisorAvatar">
+            <span class="material-symbols-outlined">school</span>
+          </div>
+          <div class="hub-advisor-meta">
+            <h4 id="advisorName">Dr. Eleanor Vance · Department Head</h4>
+            <p id="advisorDetails">Academic Wing Room 302 · Office Hours: Mon &amp; Wed 14:00–16:00 · eleanor.vance@ngis.edu.kh</p>
+          </div>
+        </div>
+        <div class="hub-advisor-actions">
+          <button type="button" onclick="contactAdvisor()" class="hub-advisor-btn hub-advisor-btn-primary">
+            <span class="material-symbols-outlined text-[15px]">mail</span>
+            <span>Contact Advisor</span>
+          </button>
+          <button type="button" onclick="downloadSyllabus()" class="hub-advisor-btn">
+            <span class="material-symbols-outlined text-[15px]">download</span>
+            <span>Course Syllabus</span>
+          </button>
+        </div>
+      </section>
 
     </div><!-- /hub-content-container -->
   </div><!-- /page -->
@@ -578,50 +822,27 @@ body {
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
   var p = new URLSearchParams(window.location.search);
-  var role = (p.get('portal') || p.get('role') || localStorage.getItem('ngis_active_portal') || (saved && saved.role) || 'student').toLowerCase();
-  if (role === 'teacher') {
-    window.location.href = '../teacher/teacher-departments.html';
-    return;
-  }
-  if (role === 'admin' || role === 'principal') {
-    window.location.href = '../admin/admin-departments.html';
-    return;
-  }
+  var role = (p.get('portal') || p.get('role') || 'student').toLowerCase();
 
   var DEPTS = {
     all: {
       title: 'Student Portal Hub',
-      eyebrow: 'ACADEMIC OVERVIEW',
-      desc: 'Central access for your attendance records, coursework materials, examinations, and official evaluations.',
-      badgeAtt: '96% Present',
-      descAtt: '96% term average with 2 excused absences and 1 late arrival recorded.',
-      badgeRep: '3 Reports',
-      descRep: 'Official teacher grade evaluations, progress notes, and verified transcripts.',
-      badgeLes: '34 Files',
-      descLes: 'Course lecture slides, syllabus guidelines, and supplementary study worksheets.',
-      badgeTsk: '2 Due This Week',
-      descTsk: '12 total coursework tasks assigned, with 10 completed and graded to date.',
-      badgeExm: '2 Scheduled',
-      descExm: 'Midterm timetable, hall allocations, and final examination schedules.',
+      eyebrow: 'ACADEMIC OVERVIEW · ALL DISCIPLINES',
+      desc: 'Central access for all academic streams, coursework materials, examinations, and official evaluations.',
+      badgeAtt: '97% Overall',
+      descAtt: 'Term average across all courses with 2 excused absences and 1 late arrival recorded.',
+      badgeRep: '6 Reports',
+      descRep: 'Official teacher evaluations, semester grade cards, and verified transcripts.',
+      badgeLes: '124 Files',
+      descLes: 'Course lecture slides, syllabus guidelines, and supplementary study worksheets across subjects.',
+      badgeTsk: '3 Due This Week',
+      descTsk: 'Coursework submissions across Sciences, Languages, and Mathematics.',
+      badgeExm: '3 Scheduled',
+      descExm: 'Midterm examinations, room allocations, and hall entry timetable.',
       badgeTmt: 'Mon – Fri',
-      descTmt: 'Daily lecture schedule from 08:00 to 15:30 with room and laboratory numbers.'
-    },
-    science: {
-      title: 'Science Department Hub',
-      eyebrow: 'ACADEMIC OVERVIEW · SCIENCE STREAM',
-      desc: 'Central access for physics, chemistry, biology laboratories, coursework materials, and evaluations.',
-      badgeAtt: '96% Present',
-      descAtt: 'Senior secondary STEM attendance · 2 excused lab absences and 1 late recorded.',
-      badgeRep: '3 Reports',
-      descRep: 'Quarterly physics, chemistry, and biology progress evaluations.',
-      badgeLes: '34 Files',
-      descLes: 'Cell division lecture slides, organic chemistry notes, and lab protocols.',
-      badgeTsk: '2 Due This Week',
-      descTsk: 'Physics Lab Report 04 and Biology Taxonomy Draft due Thursday.',
-      badgeExm: '2 Scheduled',
-      descExm: 'STEM midterm examination hall allocations and practical schedules.',
-      badgeTmt: 'Mon – Fri',
-      descTmt: 'Daily science laboratory and lecture hours from 08:00 to 15:30.'
+      descTmt: 'Daily curriculum hours from 08:00 to 15:30 across all academic wings.',
+      advisorName: 'Academic Affairs Office · Dean of Curriculum',
+      advisorDetails: 'Central Administration Block · Office Hours: Mon–Fri 08:00–17:00 · academic@ngis.edu.kh'
     },
     english: {
       title: 'English Department Hub',
@@ -638,7 +859,9 @@ body {
       badgeExm: '1 Scheduled',
       descExm: 'Midterm reading & writing assessment in Cambridge Hall.',
       badgeTmt: 'Mon – Thu',
-      descTmt: 'Literature & Language lectures in Academic Wing Room 302.'
+      descTmt: 'Literature & Language lectures in Academic Wing Room 302.',
+      advisorName: 'Dr. Eleanor Vance · Department Head',
+      advisorDetails: 'Academic Wing Room 302 · Office Hours: Mon & Wed 14:00–16:00 · eleanor.vance@ngis.edu.kh'
     },
     khmer: {
       title: 'Khmer Department Hub',
@@ -650,12 +873,14 @@ body {
       descRep: 'Grammar analysis, essay composition, and term transcript summaries.',
       badgeLes: '29 Files',
       descLes: 'Classic literature texts, prose study worksheets, and historical archives.',
-      badgeTsk: '3 Due This Week',
+      badgeTsk: '2 Due This Week',
       descTsk: 'Prose analysis workbook and history essay due Wednesday.',
       badgeExm: '2 Scheduled',
       descExm: 'National curriculum midterm tests & written examination halls.',
       badgeTmt: 'Mon – Fri',
-      descTmt: 'Morning national curriculum sessions from 08:00 to 11:30 in Wing B.'
+      descTmt: 'Morning national curriculum sessions from 08:00 to 11:30 in Wing B.',
+      advisorName: 'Lokru Sokha Mean · Department Lead',
+      advisorDetails: 'Khmer Studies Wing Room 104 · Office Hours: Tue & Thu 09:00–11:00 · sokha.mean@ngis.edu.kh'
     },
     chinese: {
       title: 'Chinese Department Hub',
@@ -672,7 +897,28 @@ body {
       badgeExm: '1 Scheduled',
       descExm: 'Standardized HSK mock exam and oral examination interview.',
       badgeTmt: 'Tue – Fri',
-      descTmt: 'Language audio lab and classroom sessions in Wing C (Room 105).'
+      descTmt: 'Language audio lab and classroom sessions in Wing C (Room 105).',
+      advisorName: 'Prof. Lin Wei · Language Coordinator',
+      advisorDetails: 'Confucius Language Center Room 201 · Office Hours: Mon & Thu 13:00–15:00 · lin.wei@ngis.edu.kh'
+    },
+    science: {
+      title: 'Science & STEM Department Hub',
+      eyebrow: 'ACADEMIC OVERVIEW · STEM STREAM',
+      desc: 'Central access for physics, chemistry, biology laboratories, coursework materials, and evaluations.',
+      badgeAtt: '96% Present',
+      descAtt: 'Senior secondary STEM attendance · 2 excused lab absences and 1 late recorded.',
+      badgeRep: '3 Reports',
+      descRep: 'Quarterly physics, chemistry, and biology progress evaluations.',
+      badgeLes: '34 Files',
+      descLes: 'Cell division lecture slides, organic chemistry notes, and lab protocols.',
+      badgeTsk: '2 Due This Week',
+      descTsk: 'Physics Lab Report 04 and Biology Taxonomy Draft due Thursday.',
+      badgeExm: '2 Scheduled',
+      descExm: 'STEM midterm examination hall allocations and practical schedules.',
+      badgeTmt: 'Mon – Fri',
+      descTmt: 'Daily science laboratory and lecture hours from 08:00 to 15:30.',
+      advisorName: 'Dr. Sarah Jenkins · STEM Faculty Chair',
+      advisorDetails: 'Science Wing Lab 304 · Office Hours: Wed & Fri 14:00–16:00 · sarah.jenkins@ngis.edu.kh'
     },
     math: {
       title: 'Mathematics Department Hub',
@@ -689,7 +935,9 @@ body {
       badgeExm: '3 Scheduled',
       descExm: 'Quarterly calculus exam and Math Olympiad qualifier timetables.',
       badgeTmt: 'Mon – Fri',
-      descTmt: 'Morning and afternoon lecture series in STEM Hall 204.'
+      descTmt: 'Morning and afternoon lecture series in STEM Hall 204.',
+      advisorName: 'Dr. Robert Thorne · Head of Mathematics',
+      advisorDetails: 'STEM Complex Room 204 · Office Hours: Mon & Fri 10:00–12:00 · robert.thorne@ngis.edu.kh'
     },
     social: {
       title: 'Social Studies & Humanities Hub',
@@ -706,27 +954,35 @@ body {
       badgeExm: '2 Scheduled',
       descExm: 'Social Studies midterm evaluations and presentation schedule.',
       badgeTmt: 'Mon – Thu',
-      descTmt: 'Humanities lecture hall and seminar sessions in Wing D.'
+      descTmt: 'Humanities lecture hall and seminar sessions in Wing D.',
+      advisorName: 'Ms. Clara Dupont · Humanities Chair',
+      advisorDetails: 'Humanities Hall Room 102 · Office Hours: Tue & Fri 13:00–15:00 · clara.dupont@ngis.edu.kh'
     }
   };
 
   // Get department from URL
   var params = new URLSearchParams(window.location.search);
-  var deptId = (params.get('id') || 'all').toLowerCase();
-  if (!DEPTS[deptId]) deptId = 'all';
+  var deptId = (params.get('id') || 'english').toLowerCase();
+  if (!DEPTS[deptId]) deptId = 'english';
 
   function applyDepartment(id) {
-    var d = DEPTS[id] || DEPTS.all;
+    var d = DEPTS[id] || DEPTS.english;
 
     // Update Header
     var titleEl = document.getElementById('hubTitle');
     var subEl = document.getElementById('hubSubtitle');
-    var eyeEl = document.getElementById('hubEyebrow');
+    var eyeText = document.getElementById('hubEyebrowText');
     if (titleEl) titleEl.textContent = d.title;
     if (subEl) subEl.textContent = d.desc;
-    if (eyeEl) {
-      eyeEl.innerHTML = '<span class="hub-eyebrow-dot"></span><span>' + d.eyebrow + '</span>';
-    }
+    if (eyeText) eyeText.textContent = d.eyebrow;
+
+        // Update Hero Banner title & subtitle dynamically if present
+    var heroTitleEl = document.querySelector('.hero-title');
+    if (heroTitleEl) heroTitleEl.textContent = d.title;
+    var heroGreetingEl = document.querySelector('.hero-greeting');
+    if (heroGreetingEl) heroGreetingEl.textContent = d.desc;
+    var heroBcEl = document.querySelector('.htb-bc-item:last-child');
+    if (heroBcEl) heroBcEl.textContent = d.title.replace(' Hub', '');
 
     // Update Badges & Descriptions
     var bAtt = document.getElementById('badgeAttendance');
@@ -755,8 +1011,14 @@ body {
     if (bTmt) bTmt.textContent = d.badgeTmt;
     if (dTmt) dTmt.textContent = d.descTmt;
 
+    // Update Advisor Info
+    var advName = document.getElementById('advisorName');
+    var advDetails = document.getElementById('advisorDetails');
+    if (advName) advName.textContent = d.advisorName;
+    if (advDetails) advDetails.textContent = d.advisorDetails;
+
     // Update Links
-    var targetParam = id === 'all' ? 'science' : id;
+    var targetParam = id;
     var cAtt = document.getElementById('cardAttendance');
     var cRep = document.getElementById('cardReports');
     var cLes = document.getElementById('cardLessons');
@@ -768,12 +1030,14 @@ body {
     if (cRep) cRep.href = '../student/student-grades.html?dept=' + targetParam;
     if (cLes) cLes.href = 'lessons.html?dept=' + targetParam;
     if (cTsk) cTsk.href = '../student/student-assignments.html?dept=' + targetParam;
-    if (cExm) cExm.href = 'exams.html?dept=' + targetParam;
+    if (cExm) cExm.href = '../student/student-exams.html?dept=' + targetParam;
     if (cTmt) cTmt.href = '../student/student-timetable.html?dept=' + targetParam;
 
     // Update Switcher Tab highlight
     document.querySelectorAll('.dept-tab').forEach(function (tab) {
-      tab.classList.toggle('active', tab.getAttribute('data-dept') === id);
+      var isCur = tab.getAttribute('data-dept') === id;
+      tab.classList.toggle('active', isCur);
+      tab.setAttribute('aria-selected', isCur ? 'true' : 'false');
     });
 
     // Update Document Title
@@ -786,7 +1050,7 @@ body {
       var selected = this.getAttribute('data-dept');
       applyDepartment(selected);
       var newUrl = new URL(window.location.href);
-      if (selected === 'all') newUrl.searchParams.delete('id');
+      if (selected === 'english') newUrl.searchParams.delete('id');
       else newUrl.searchParams.set('id', selected);
       window.history.replaceState({}, '', newUrl.toString());
     });
@@ -794,36 +1058,72 @@ body {
 
   applyDepartment(deptId);
 
-  window.PAGE = { role: role, active: 'departments' };
+  window.contactAdvisor = function() {
+    var d = DEPTS[new URLSearchParams(window.location.search).get('id') || 'english'] || DEPTS.english;
+    var name = d.advisorName.split('·')[0].trim();
+    if (window.toast) {
+      window.toast('Consultation consultation request logged for ' + name + '. An email notification has been dispatched.', 'success');
+    } else {
+      alert('Consultation request sent to ' + name + '.');
+    }
+  };
+
+  window.downloadSyllabus = function() {
+    var d = DEPTS[new URLSearchParams(window.location.search).get('id') || 'english'] || DEPTS.english;
+    if (window.toast) {
+      window.toast('Downloading ' + d.title.replace(' Hub','') + ' 2025–2026 Syllabus (PDF)...', 'info');
+    } else {
+      alert('Downloading syllabus for ' + d.title);
+    }
+  };
+
+  window.PAGE = { role: 'student', active: 'departments' };
   if (saved) window.CURRENT_USER = saved;
   document.body.classList.add('ready');
 })();
 </script>
 
 <script>
-window.HERO_CONFIG = {
-  name: 'Nrinphouneta Hok',
-  id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: '../student/student-profile.html',
-  notifLink: '../student/student-notifications.html',
-  chatLink: 'chat.html',
-  notifCount: 3,
-  ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A' },
-    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
-    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
-  ],
-  title: 'Department Hub',
-  greeting: 'Access all department coursework, evaluations, syllabus materials, and exam schedules.',
-  breadcrumbs: [{ label: 'Departments', href: 'departments.html' }, { label: 'Department Hub' }]
-};
+(function() {
+  var p = new URLSearchParams(window.location.search);
+  var currentId = (p.get('id') || 'english').toLowerCase();
+  var dNames = {
+    english: { title: 'English Department Hub', desc: 'English literature syllabi, essay coursework submissions, IGCSE past papers, and evaluations.' },
+    khmer: { title: 'Khmer Department Hub', desc: 'Khmer literature, grammar textbooks, national examination roadmaps, and term performance reports.' },
+    chinese: { title: 'Chinese Department Hub', desc: 'HSK 4 & 5 preparation materials, listening laboratory drills, stroke order guides, and grades.' },
+    science: { title: 'Science & STEM Department Hub', desc: 'Central access for physics, chemistry, biology laboratories, coursework materials, and evaluations.' },
+    math: { title: 'Mathematics Department Hub', desc: 'Calculus, advanced trigonometry problems, mathematical formula archives, and competition resources.' },
+    social: { title: 'Social Studies & Humanities Hub', desc: 'World history, geography archives, civic engagement modules, and research evaluations.' },
+    all: { title: 'Student Portal Hub', desc: 'Central access for all academic streams, coursework materials, examinations, and official evaluations.' }
+  };
+  var curD = dNames[currentId] || dNames.english;
+
+  window.HERO_CONFIG = {
+    name: 'Nrinphouneta Hok',
+    id: 'Student ID: 2026-STD-0142',
+    grade: 'Grade 10',
+    avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+    avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+    homeLink: '../../index.html',
+    signOutLink: '../../index.html',
+    profileLink: '../student/student-profile.html',
+    notifLink: '../student/student-notifications.html',
+    notifCount: 3,
+    ddRows: [
+      { icon: 'school', text: 'Grade 10 — Science Stream' },
+      { icon: 'class', text: 'Class 10A' },
+      { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+      { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+      { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+    ],
+    title: curD.title,
+    greeting: curD.desc,
+    breadcrumbs: [
+      { label: 'Departments', href: 'departments.html' },
+      { label: curD.title.replace(' Hub', '') }
+    ]
+  };
+})();
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>

@@ -83,17 +83,23 @@ async def run_tests():
             assert updated_drawer_student == "Nrinphouneta Hok", f"Expected Nrinphouneta Hok, got {updated_drawer_student}"
 
             # Select row 1 (Sophea Chan) again
+            await page.evaluate("() => { if (window.closeScoringDrawer) window.closeScoringDrawer(); }")
+            await page.wait_for_timeout(200)
             await page.locator("#submissionsTableBody tr:first-child button:has-text('Review')").click()
             await page.wait_for_timeout(200)
 
-            # 4. Rubric Live Calculation & Save & Publish
-            # Change Mathematical Accuracy input
-            crit1_input = page.locator("#rubricCrit1")
-            await crit1_input.fill("40")
+            # 4. Score Live Calculation & Save & Publish
+            # Change Score input
+            score_input = page.locator("#drawerScoreInput")
+            if await score_input.count() > 0 and await score_input.is_visible():
+                await score_input.fill("92")
+            else:
+                crit1_input = page.locator("#rubricCrit1")
+                await crit1_input.fill("40")
             await page.wait_for_timeout(200)
             score_disp = await page.locator("#drawerFinalScoreDisplay").inner_text()
-            print(f"Computed final score with crit1=40: {score_disp}")
-            # Rubric: 40 + 34 + 18 = 92 - 5 penalty = 87
+            print(f"Computed final score with score=92: {score_disp}")
+            # Score: 92 - 5 penalty = 87
             assert score_disp == "87", f"Expected calculated score 87, got {score_disp}"
 
             # Save & Publish Mark

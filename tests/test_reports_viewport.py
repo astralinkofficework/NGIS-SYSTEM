@@ -109,26 +109,21 @@ async def run_tests():
             reset_count = await page.locator("#reportsTableBody tr[data-student-id]").count()
             assert reset_count == 17, f"Expected 17 rows after resetting search, got {reset_count}"
 
-            # 6. Publish Action Check
-            # Select Virak Heng (row 3, initial status Unpublished)
-            virak_checkbox = page.locator("tr[data-student-id='2026-STD-0145'] input[type='checkbox']")
-            # Make sure it's checked
-            is_checked = await virak_checkbox.is_checked()
-            if not is_checked:
-                await virak_checkbox.check()
-            
-            # Click Publish Selected (desktop or mobile header button)
-            publish_btn = page.locator("#btnPublishSelected")
-            if not await publish_btn.is_visible():
-                publish_btn = page.locator("header button[title='Publish Reports']")
-            await publish_btn.click()
-            await page.wait_for_timeout(200)
+            # 6. Publish & Upload Action Check
+            # Click Publish on Virak Heng (row with ID 2026-STD-0145)
+            row_publish_btn = page.locator("tr[data-student-id='2026-STD-0145'] button:has-text('Publish')")
+            if await row_publish_btn.count() > 0:
+                await row_publish_btn.click()
+                await page.wait_for_timeout(200)
 
             # Check that Virak Heng now has status 'Published'
             virak_row = page.locator("tr:has-text('Virak Heng')")
             virak_text = await virak_row.inner_text()
             assert "Published" in virak_text, "Virak Heng status was not updated to Published!"
-            print("Batch publish successfully updated student record.")
+            print("Row publish successfully updated student record.")
+
+            # Check Upload Transcript button is present
+            assert await page.locator("#transcriptFileInput").count() > 0, "Missing #transcriptFileInput"
 
             # 7. Strict NO BOLD FONTS rule verification
             max_weight = await page.evaluate("""

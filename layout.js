@@ -19,69 +19,47 @@
      ------------------------------------------------------------------ */
   const NAV = {
     admin: {
-      brand: "Admin", meta: "New Gateway International School",
+      brand: "Admin", meta: "Institutional Suite · 2025–26",
       groups: [
-        { label:"Main", icon:"home", links:[
+        { label:"Overview", links:[
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/admin/admin.html" },
           { id:"lifecycle", label:"Student Lifecycle & MoEYS", icon:"account_tree", href:"pages/admin/admin-lifecycle.html" },
         ]},
-        { id:"users", label:"User Management", icon:"group", collapsible:true, links:[
-          { id:"students",   label:"Students",   icon:"school",             href:"pages/admin/admin-users.html?role=students" },
-          { id:"teachers",   label:"Teachers",   icon:"co_present",         href:"pages/admin/admin-users.html?role=teachers" },
-          { id:"parents",    label:"Parents",    icon:"family_restroom",    href:"pages/admin/admin-users.html?role=parents" },
-          { id:"admins",     label:"Admins",     icon:"admin_panel_settings", href:"pages/admin/admin-users.html?role=admins" },
-          { id:"principals", label:"Principals", icon:"military_tech",      href:"pages/admin/admin-users.html?role=principals" },
+        { id:"users-grp", label:"USER MANAGEMENT", icon:"group", links:[
+          { id:"users", label:"User Directory", icon:"manage_accounts", href:"pages/admin/admin-users.html" },
         ]},
-        { id:"academic", label:"Academic", icon:"apartment", collapsible:true, links:[
+        { id:"academic", label:"ACADEMIC STRUCTURE", icon:"apartment", links:[
           { id:"departments", label:"Departments", icon:"apartment",          href:"pages/admin/admin-departments.html" },
           { id:"campuses",    label:"Campuses",    icon:"location_city",      href:"pages/admin/admin-campuses.html" },
           { id:"classes",     label:"Classes",     icon:"school",             href:"pages/admin/admin-classes.html" },
-          { id:"timetables",  label:"Timetable",   icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
+          { id:"timetables",  label:"Timetables",  icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
         ]},
-        { id:"learning", label:"Learning", icon:"menu_book", collapsible:true, links:[
+        { id:"learning", label:"CURRICULUM & LEARNING", icon:"menu_book", links:[
           { id:"lessons",     label:"Lessons",     icon:"menu_book",  href:"pages/admin/admin-lessons.html" },
           { id:"assignments", label:"Assignments", icon:"assignment", href:"pages/admin/admin-assignments.html" },
           { id:"exams",       label:"Exams",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
           { id:"grades",      label:"Grades",      icon:"grade",      href:"pages/admin/admin-grades.html" },
         ]},
-        { id:"records", label:"Student Records", icon:"folder_shared", collapsible:true, links:[
-          { id:"services",    label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
-          { id:"profiles",    label:"Student Profiles", icon:"badge",      href:"pages/admin/admin-users.html?role=students" },
-          { id:"reports",     label:"Reports",         icon:"assessment", href:"pages/admin/admin-reports.html" },
+        { id:"records", label:"INSTITUTIONAL RECORDS", icon:"folder_shared", links:[
+          { id:"services", label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
+          { id:"reports",  label:"Academic Reports", icon:"assessment", href:"pages/admin/admin-reports.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
-          { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"2" },
-          { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html" },
-          { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"4" },
-          { id:"department-channels", label:"Department Channels", icon:"apartment", href:"pages/messaging/department-channels.html" },
-          { id:"campus-announcements", label:"Campus Announcements", icon:"campaign", href:"pages/messaging/campus-announcements.html" },
-          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
-          { id:"message-requests",    label:"Message Requests", icon:"mail", href:"pages/messaging/message-requests.html", badge:"3" },
-          { id:"archived",            label:"Archived", icon:"archive", href:"pages/messaging/archived.html" },
-          { id:"pinned",              label:"Pinned Messages", icon:"push_pin", href:"pages/messaging/pinned.html" },
+        { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
+          { id:"announcements", label:"School Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=admin" },
+          { id:"news",          label:"News CMS",             icon:"newspaper", href:"pages/admin/admin-news.html" },
         ]},
-        { id:"comms", label:"Communication Tools", icon:"campaign", collapsible:true, links:[
-          { id:"news",           label:"News CMS",       icon:"newspaper", href:"pages/admin/admin-news.html" },
-          { id:"notifications",  label:"Notifications", icon:"notifications", href:"pages/admin/admin-logs.html" },
+        { id:"system", label:"SYSTEM & SECURITY", icon:"admin_panel_settings", links:[
+          { id:"logs",     label:"Audit Logs",      icon:"history",  href:"pages/admin/admin-logs.html" },
+          { id:"settings", label:"System Settings", icon:"settings", href:"pages/admin/admin-settings.html" },
         ]},
-        { id:"administration", label:"Administration", icon:"admin_panel_settings", collapsible:true, links:[
-          { id:"logs",        label:"Audit Logs",         icon:"history",     href:"pages/admin/admin-logs.html" },
-          { id:"messaging-admin", label:"Messaging Administration", icon:"forum", href:"pages/messaging/messaging-admin.html" },
-          { id:"telegram-config", label:"Telegram Configuration", icon:"smart_toy", href:"pages/messaging/telegram-config.html" },
-          { id:"messaging-audit", label:"Messaging Audit Logs", icon:"receipt_long", href:"pages/messaging/audit-logs.html" },
-          { id:"roles",       label:"Roles & Permissions", icon:"shield_person", href:"pages/admin/admin-settings.html?tab=roles" },
-          { id:"settings",    label:"System Settings",    icon:"settings",    href:"pages/admin/admin-settings.html" },
-          { id:"backup",      label:"Backup & Restore",   icon:"backup",      href:"pages/admin/admin-settings.html?tab=backup" },
-        ]},
-        { id:"account", label:"Account", icon:"person", collapsible:true, links:[
-          { id:"profile",     label:"My Profile", icon:"person",  href:"pages/admin/admin-settings.html" },
-          { id:"preferences", label:"Preferences", icon:"tune",   href:"pages/admin/admin-settings.html?tab=notifications" },
-          { id:"logout",      label:"Logout",     icon:"logout",  href:"index.html" },
+        { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
+          { id:"profile", label:"Admin Profile", icon:"person", href:"pages/admin/admin-settings.html" },
+          { id:"logout",  label:"Log out",       icon:"logout", href:"index.html" },
         ]},
       ],
     },
     teacher: {
-      brand: "Teacher", meta: "Academic Year 2025–26",
+      brand: "Teacher", meta: "Faculty Portal · 2025–26",
       groups: [
         { label:"Overview", links:[
           { id:"dashboard",  label:"Home",                       icon:"home",           href:"pages/teacher/teacher.html", chevron:false },
@@ -96,16 +74,10 @@
         ]},
         { id:"assessment", label:"ASSESSMENT", icon:"grading", links:[
           { id:"submissions", label:"Assignments & Student Work", icon:"description",  href:"pages/teacher/teacher-submissions.html" },
-          { id:"exams",       label:"Exam Timetable",             icon:"edit_note",    href:"pages/teacher/teacher-exams.html" },
-          { id:"gradebook",   label:"Exam Grades / Gradebook",    icon:"grade",        href:"pages/teacher/teacher-gradebook.html" },
+          { id:"reports",     label:"Official Academic Reports",  icon:"assessment",   href:"pages/teacher/teacher-reports.html" },
         ]},
-        { id:"reports-grp", label:"REPORTS", icon:"query_stats", links:[
-          { id:"reports",    label:"Official Reports",           icon:"analytics",      href:"pages/teacher/teacher-reports.html" },
-        ]},
-        { id:"communication", label:"COMMUNICATION", icon:"forum", collapsible:true, links:[
-          { id:"announcements", label:"Class Announcements",      icon:"campaign",      href:"pages/shared/announcements.html?portal=teacher" },
-          { id:"class-chats",   label:"Class Chat",               icon:"chat",          href:"pages/messaging/class-chats.html" },
-          { id:"chat",          label:"Student Feedback",         icon:"person_search", href:"pages/shared/chat.html?portal=teacher" },
+        { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
+          { id:"announcements", label:"Class Announcements",      icon:"campaign",      href:"pages/teacher/teacher-announcements.html" },
         ]},
         { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
           { id:"profile",       label:"Settings & Profile",       icon:"settings",      href:"pages/teacher/teacher-profile.html" },
@@ -114,83 +86,65 @@
       ],
     },
     student: {
-      brand: "Student", meta: "Grade 11 · Section A · 2025–26",
+      brand: "Student", meta: "Student Portal · 2025–26",
       groups: [
-        { label:"Main", icon:"home", links:[
+        { label:"Main", links:[
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/student/student.html" },
         ]},
-        { label:"Learning", icon:"school", links:[
-          { id:"departments", label:"Departments", icon:"apartment", href:"pages/shared/departments.html" },
-          { id:"calendar",    label:"Calendar", icon:"calendar_month", href:"pages/student/student-calendar.html" },
-          { id:"services",    label:"Services Hub", icon:"grid_view", href:"pages/student/student-services.html" },
-          { id:"clubs",       label:"Clubs & Activities", icon:"diversity_3", href:"pages/student/student-clubs.html" },
-          { id:"lost-found",  label:"Lost & Found", icon:"inventory_2", href:"pages/student/student-lost-found.html" },
+        { id:"academics", label:"ACADEMICS", icon:"school", links:[
+          { id:"departments", label:"Academic Departments", icon:"apartment", href:"pages/shared/departments.html?portal=student" },
+          { id:"calendar",    label:"Class Timetable",      icon:"calendar_month", href:"pages/student/student-calendar.html" },
+          { id:"student-id",  label:"Digital Student ID",    icon:"badge", href:"pages/student/student-id.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
-          { id:"chat",                label:"Direct Messages", icon:"mail", href:"pages/shared/chat.html", badge:"3" },
-          { id:"class-chats",         label:"Class Chats", icon:"school", href:"pages/messaging/class-chats.html", badge:"3" },
-          { id:"group-chat",          label:"Group Chats", icon:"groups", href:"pages/shared/group-chat.html", badge:"2" },
-          { id:"department-channels", label:"Department Channels", icon:"apartment", href:"pages/messaging/department-channels.html" },
-          { id:"teacher-chat",        label:"Teacher Chat", icon:"chat", href:"pages/student/student-chat.html", badge:"3" },
-          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
+        { id:"campus-life", label:"CAMPUS LIFE", icon:"local_activity", links:[
+          { id:"services",   label:"Services Hub",       icon:"grid_view", href:"pages/student/student-services.html" },
+          { id:"clubs",      label:"Clubs & Activities", icon:"diversity_3", href:"pages/student/student-clubs.html" },
+          { id:"lost-found", label:"Lost & Found",       icon:"inventory_2", href:"pages/student/student-lost-found.html" },
         ]},
-        { label:"Account", icon:"person", links:[
+        { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
+          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/student/student-announcements.html" },
+        ]},
+        { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
           { id:"notifications", label:"Notifications", icon:"notifications", href:"pages/student/student-notifications.html", badge:"5" },
           { id:"profile",       label:"My Profile",    icon:"person",        href:"pages/student/student-profile.html" },
+          { id:"logout",        label:"Log out",       icon:"logout",        href:"index.html" },
         ]},
       ],
     },
     principal: {
       brand: "Principal", meta: "Executive Leadership · 2025–26",
       groups: [
-        { label:"Overview", icon:"dashboard", links:[
+        { label:"Overview", links:[
           { id:"dashboard", label:"Executive Dashboard", icon:"dashboard", href:"pages/principal/principal.html" },
-          { id:"approvals", label:"Executive Approvals", icon:"verified",  href:"pages/principal/principal-approvals.html" },
         ]},
-        { id:"academic-oversight", label:"Academic Leadership", icon:"school", collapsible:true, links:[
-          { id:"reports",     label:"Academic Reports",  icon:"assessment", href:"pages/principal/principal-reports.html" },
-          { id:"classes",     label:"Classes & Cohorts", icon:"school",     href:"pages/admin/admin-classes.html" },
-          { id:"departments", label:"Departments",        icon:"apartment",  href:"pages/admin/admin-departments.html" },
-          { id:"campuses",    label:"Campuses",           icon:"location_city", href:"pages/admin/admin-campuses.html" },
-          { id:"grades",      label:"Academic Grades",    icon:"grade",      href:"pages/admin/admin-grades.html" },
-          { id:"exams",       label:"Examinations",       icon:"edit_note",  href:"pages/admin/admin-exams.html" },
+        { id:"leadership", label:"LEADERSHIP & GOVERNANCE", icon:"shield_person", links:[
+          { id:"approvals", label:"Executive Approvals", icon:"verified", href:"pages/principal/principal-approvals.html" },
+          { id:"reports",   label:"Academic & Cohort Reports", icon:"assessment", href:"pages/principal/principal-reports.html" },
         ]},
-        { id:"faculty-students", label:"Faculty & Students", icon:"group", collapsible:true, links:[
-          { id:"teachers",   label:"Teacher Oversight",  icon:"co_present", href:"pages/admin/admin-users.html?role=teachers" },
-          { id:"students",   label:"Student Records",    icon:"school",     href:"pages/admin/admin-users.html?role=students" },
-          { id:"attendance", label:"Attendance Summary", icon:"how_to_reg",  href:"pages/admin/admin-attendance.html" },
+        { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
+          { id:"announcements", label:"School Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=principal" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
-          { id:"campus-announcements", label:"Campus Announcements", icon:"campaign", href:"pages/messaging/campus-announcements.html" },
-          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"3" },
-          { id:"chat",                label:"Direct Messages",      icon:"mail",      href:"pages/shared/chat.html", badge:"2" },
-          { id:"group-chat",          label:"Leadership Forum",     icon:"groups",    href:"pages/shared/group-chat.html", badge:"3" },
-        ]},
-        { label:"Account", icon:"person", links:[
-          { id:"profile",       label:"Executive Profile", icon:"person", href:"pages/principal/principal-profile.html" },
+        { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
+          { id:"profile", label:"Executive Profile", icon:"person", href:"pages/principal/principal-profile.html" },
+          { id:"logout",  label:"Log out",           icon:"logout", href:"index.html" },
         ]},
       ],
     },
     staff: {
       brand: "Staff", meta: "Campus Operations · 2025–26",
       groups: [
-        { label:"Main", icon:"home", links:[
+        { label:"Overview", links:[
           { id:"dashboard", label:"Operations Dashboard", icon:"dashboard", href:"pages/staff/staff.html" },
         ]},
-        { id:"operations", label:"Services & Operations", icon:"room_service", collapsible:true, links:[
-          { id:"services",    label:"Service Requests",     icon:"assignment",        href:"pages/staff/staff-services.html" },
-          { id:"timetables",  label:"Facility Schedules",   icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
-          { id:"classes",     label:"Class Directory",      icon:"school",             href:"pages/admin/admin-classes.html" },
+        { id:"operations", label:"OPERATIONS & LOGISTICS", icon:"room_service", links:[
+          { id:"services", label:"Service Requests & Tickets", icon:"assignment", href:"pages/staff/staff-services.html" },
         ]},
-        { id:"messaging", label:"Messaging", icon:"forum", links:[
-          { id:"campus-announcements", label:"Campus Announcements", icon:"campaign",  href:"pages/messaging/campus-announcements.html" },
-          { id:"announcements",       label:"School Announcements", icon:"newspaper", href:"pages/shared/announcements.html", badge:"2" },
-          { id:"department-channels", label:"Department Channels",  icon:"apartment", href:"pages/messaging/department-channels.html" },
-          { id:"chat",                label:"Direct Messages",      icon:"mail",       href:"pages/shared/chat.html", badge:"1" },
-          { id:"group-chat",          label:"Staff Forum",          icon:"groups",     href:"pages/shared/group-chat.html", badge:"2" },
+        { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
+          { id:"announcements", label:"School Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=staff" },
         ]},
-        { label:"Account", icon:"person", links:[
-          { id:"profile",       label:"Staff Profile", icon:"person", href:"pages/staff/staff-profile.html" },
+        { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
+          { id:"profile", label:"Staff Profile", icon:"person", href:"pages/staff/staff-profile.html" },
+          { id:"logout",  label:"Log out",       icon:"logout", href:"index.html" },
         ]},
       ],
     },
@@ -200,7 +154,7 @@
      since these modules now live inside each department. */
   const DEPT_CHILD = ["attendance","assignments","grades","exams","timetable","lessons","department"];
 
-  /* Mobile bottom-nav: four primary destinations per role + central quick-chat action */
+  /* Mobile bottom-nav: primary destinations per role */
   const BOTTOM = {
     admin: [
       { id:"dashboard",  label:"Home",       icon:"home",      href:"pages/admin/admin.html" },
@@ -212,19 +166,18 @@
       { id: "home", label: "Home", icon: "ph ph-house", href: "pages/teacher/teacher.html" },
       { id: "classes", label: "Classes", icon: "ph ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
       { id: "submissions", label: "Work", icon: "ph ph-file-text", href: "pages/teacher/teacher-submissions.html" },
-      { id: "gradebook", label: "Grades", icon: "ph ph-chart-bar", href: "pages/teacher/teacher-gradebook.html" },
       { id: "profile", label: "Profile", icon: "ph ph-user", href: "pages/teacher/teacher-profile.html" },
     ],
     student: [
-      { id:"dashboard",    label:"Home",       icon:"home",      href:"pages/student/student.html" },
-      { id:"departments",  label:"Department", icon:"apartment", href:"pages/shared/departments.html" },
-      { id:"announcements",label:"Alerts",     icon:"campaign",  href:"pages/shared/announcements.html", badge:"3" },
-      { id:"profile",      label:"Profile",    icon:"person",    href:"pages/student/student-profile.html" },
+      { id:"dashboard",    label:"Home",        icon:"home",           href:"pages/student/student.html" },
+      { id:"departments",  label:"Department",  icon:"apartment",      href:"pages/shared/departments.html" },
+      { id:"calendar",     label:"Schedule",    icon:"calendar_month", href:"pages/student/student-calendar.html" },
+      { id:"profile",      label:"Profile",     icon:"person",         href:"pages/student/student-profile.html" },
     ],
     principal: [
       { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/principal/principal.html" },
-      { id:"reports",    label:"Reports",    icon:"assessment",     href:"pages/principal/principal-reports.html" },
       { id:"approvals",  label:"Approvals",  icon:"verified",       href:"pages/principal/principal-approvals.html" },
+      { id:"reports",    label:"Reports",    icon:"assessment",     href:"pages/principal/principal-reports.html" },
       { id:"profile",    label:"Profile",    icon:"person",         href:"pages/principal/principal-profile.html" },
     ],
     staff: [
@@ -235,18 +188,11 @@
     ],
   };
 
-  /* Central quick-chat action shown between the left and right dock items */
-  const CHAT = {
-    admin:     { label:"Group Chat", href:"pages/shared/group-chat.html", badge:"4" },
-    teacher:   { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
-    student:   { label:"Chat",       href:"pages/shared/chat.html", badge:"3" },
-    principal: { label:"Forum",      href:"pages/shared/group-chat.html", badge:"3" },
-    staff:     { label:"Chat",       href:"pages/shared/chat.html", badge:"1" },
-  };
+  
 
   const DEFAULT_USER = {
     admin:     { name:"Sok Panha Heng",  role:"Super Administrator",  initials:"SH" },
-    teacher:   { name:"Oudom Seila", role:"Teacher", initials:"OS" },
+    teacher:   { name:"Dr. Sarah Jenkins", role:"Head of Senior Faculty", initials:"SJ" },
     student:   { name:"Nrinphouneta Hok", role:"Student · Grade 11-A", initials:"NH" },
     principal: { name:"Dr. Ly Bunheng",  role:"Campus Principal",     initials:"LB" },
     staff:     { name:"Ms. Sreymom Lim", role:"Operations Coordinator", initials:"SL" },
@@ -264,25 +210,30 @@
   function readStoredUser(key) {
     try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
   }
-  function normalizeRole(role) { return role === "super_admin" ? "admin" : role; }
+  function normalizeRole(role) {
+    if (!role) return "student";
+    role = String(role).toLowerCase();
+    if (role === "super_admin" || role === "superadmin") return "admin";
+    return role;
+  }
   function getSessionRole() {
     const authRole = window.NGISAuth && typeof window.NGISAuth.getRole === "function" ? window.NGISAuth.getRole() : null;
-    const user = readStoredUser("ngis_user") || readStoredUser("ngis_chat_user");
+    const user = readStoredUser("ngis_user");
     return normalizeRole(authRole || (user && user.role));
   }
   function resolvePortalRole(pageRole) {
-    const path = window.location.pathname || "";
+    const path = (window.location.pathname || "").replace(/\\/g, "/");
     const match = path.match(/\/pages\/(admin|teacher|student|parent|staff|principal)\//);
     const pathRole = match ? match[1] : null;
-    const sessionRole = getSessionRole();
 
-    // Priority 1: Explicit non-student portal directory path
-    if (pathRole && pathRole !== "student") {
-      try { localStorage.setItem("ngis_active_portal", pathRole); } catch (e) {}
-      return pathRole;
+    // Priority 1: Explicit role directory path (e.g. /pages/admin/, /pages/teacher/, /pages/student/, etc.)
+    if (pathRole) {
+      const normalizedPathRole = normalizeRole(pathRole);
+      try { localStorage.setItem("ngis_active_portal", normalizedPathRole); } catch (e) {}
+      return normalizedPathRole;
     }
 
-    // Priority 2: Explicit URL query param
+    // Priority 2: Explicit URL query param (?portal=... or ?role=...)
     const params = new URLSearchParams(window.location.search || "");
     const queryRole = (params.get("portal") || params.get("role") || "").toLowerCase();
     if (["admin", "teacher", "student", "staff", "principal"].includes(queryRole)) {
@@ -290,25 +241,26 @@
       return queryRole;
     }
 
-    // Priority 3: Visiting student directory — respect active staff/teacher/admin/principal session
-    if (pathRole === "student") {
-      if (sessionRole && sessionRole !== "student") {
-        return sessionRole;
+    // Priority 3: Explicit pageRole configured on window.PAGE
+    if (pageRole) {
+      const normalizedPageRole = normalizeRole(pageRole);
+      if (["admin", "teacher", "student", "staff", "principal"].includes(normalizedPageRole)) {
+        try { localStorage.setItem("ngis_active_portal", normalizedPageRole); } catch (e) {}
+        return normalizedPageRole;
       }
-      try { localStorage.setItem("ngis_active_portal", "student"); } catch (e) {}
-      return "student";
     }
 
-    // Priority 4: Stored portal preference
+    // Priority 4: Stored portal preference or active session role
+    const sessionRole = getSessionRole();
+    if (sessionRole && ["admin", "teacher", "student", "staff", "principal"].includes(sessionRole)) {
+      return sessionRole;
+    }
     const storedPortal = localStorage.getItem("ngis_active_portal");
     if (storedPortal && ["admin", "teacher", "student", "staff", "principal"].includes(storedPortal)) {
-      if (sessionRole && storedPortal === "student" && sessionRole !== "student") {
-        return sessionRole;
-      }
       return storedPortal;
     }
 
-    return normalizeRole(pageRole) || sessionRole || "student";
+    return "student";
   }
 
   /* Path prefix — resolves root-relative hrefs from any depth.
@@ -332,9 +284,7 @@
     document.documentElement.setAttribute("data-theme", "light");
     if (document.body) document.body.setAttribute("data-theme", "light");
     const btn = document.getElementById("themeToggle");
-    if (btn) {
-      btn.style.display = "none";
-    }
+    if (btn) btn.remove();
   }
 
   function buildSidebar(cfg, active, user) {
@@ -443,32 +393,20 @@
               <span class="side-brand-school">New Gateway International School</span>
             </div>
           </a>
-${role === 'teacher' ? '' : `          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
+          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
             <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
               <line x1="6" y1="5" x2="6" y2="19"></line>
               <polyline points="16 7 10 12 16 17"></polyline>
             </svg>
-          </button>`}
+          </button>
         </header>
-
-${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCard" data-purpose="user-profile-card">
-          <div class="side-user-avatar">
-            <span class="material-symbols-outlined side-user-icon">person</span>
-            <span class="side-user-status" title="Online"></span>
-          </div>
-          <div class="side-user-info">
-            <div class="side-user-name">${esc(currentUser.name)}</div>
-            <div class="side-user-role">${esc(currentUser.role)}</div>
-          </div>
-          <span class="material-symbols-outlined side-user-caret">expand_more</span>
-        </div>`}
 
         <nav class="side-nav custom-scrollbar" aria-label="Main Navigation">
           ${groups}
         </nav>
 
         <footer class="side-foot">
-          <a class="nav-link side-foot-help" href="${_P}pages/teacher/teacher-profile.html?tab=help">
+          <a class="nav-link side-foot-help" href="${_P}${role === 'student' ? 'pages/student/student-services.html' : role === 'teacher' ? 'pages/teacher/teacher-profile.html?tab=help' : 'pages/shared/announcements.html'}">
             <span class="material-symbols-outlined nav-link-icon">help_outline</span>
             <span class="nav-link-label">Help &amp; Support</span>
           </a>
@@ -483,7 +421,7 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
   function buildTopbar(user) {
     return el(`
       <header class="topbar" role="banner">
-        <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+        <button class="icon-btn menu-btn hamburger-btn mobile-hamburger-btn" id="menuBtn" data-action="toggle-sidebar" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false" title="Open navigation">
           <span class="material-symbols-outlined">menu</span>
         </button>
         <div class="search" role="search">
@@ -496,9 +434,7 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
             <span class="material-symbols-outlined" style="font-size:18px">language</span>
             <span>EN</span>
           </button>
-          <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode" style="display:none !important">
-            <span class="material-symbols-outlined">dark_mode</span>
-          </button>
+
           <a class="icon-btn" href="${_P}${PORTAL_HOME[document.body.dataset.role]||'index.html'}" aria-label="Notifications">
             <span class="material-symbols-outlined">notifications</span>
             <span class="dot"></span>
@@ -517,35 +453,30 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     student: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/student/student.html" },
       { id: "department", label: "Departments", icon: "ph-bold ph-buildings", href: "pages/shared/departments.html" },
-      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/student/student-chat.html", isCenter: true },
-      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/student/student-notifications.html", hasDot: true },
+      { id: "schedule", label: "Schedule", icon: "ph-bold ph-calendar", href: "pages/student/student-calendar.html" },
       { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/student/student-profile.html" },
     ],
     teacher: [
       { id: "home", label: "Home", icon: "ph ph-house", href: "pages/teacher/teacher.html" },
       { id: "classes", label: "Classes", icon: "ph ph-chalkboard-teacher", href: "pages/teacher/teacher-classes.html" },
       { id: "submissions", label: "Work", icon: "ph ph-file-text", href: "pages/teacher/teacher-submissions.html" },
-      { id: "gradebook", label: "Grades", icon: "ph ph-chart-bar", href: "pages/teacher/teacher-gradebook.html" },
       { id: "profile", label: "Profile", icon: "ph ph-user", href: "pages/teacher/teacher-profile.html" },
     ],
     admin: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/admin/admin.html" },
       { id: "users", label: "Users", icon: "ph-bold ph-users-four", href: "pages/admin/admin-users.html" },
-      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/group-chat.html", isCenter: true },
-      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/admin/admin-logs.html", hasDot: true },
+      { id: "reports", label: "Reports", icon: "ph-bold ph-chart-line-up", href: "pages/admin/admin-reports.html" },
       { id: "settings", label: "Settings", icon: "ph-bold ph-gear", href: "pages/admin/admin-settings.html" },
     ],
     principal: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/principal/principal.html" },
-      { id: "reports", label: "Reports", icon: "ph-bold ph-chart-line-up", href: "pages/admin/admin-reports.html" },
-      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/group-chat.html", isCenter: true },
-      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/admin/admin-logs.html", hasDot: true },
-      { id: "settings", label: "Settings", icon: "ph-bold ph-gear", href: "pages/admin/admin-settings.html" },
+      { id: "approvals", label: "Approvals", icon: "ph-bold ph-check-circle", href: "pages/principal/principal-approvals.html" },
+      { id: "reports", label: "Reports", icon: "ph-bold ph-chart-line-up", href: "pages/principal/principal-reports.html" },
+      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/principal/principal-profile.html" },
     ],
     staff: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/staff/staff.html" },
-      { id: "services", label: "Services", icon: "ph-bold ph-stack", href: "pages/admin/admin-services.html" },
-      { id: "chat", label: "Chat", icon: "ph-fill ph-chat-circle-dots", href: "pages/shared/chat.html", isCenter: true },
+      { id: "services", label: "Services", icon: "ph-bold ph-stack", href: "pages/staff/staff-services.html" },
       { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/shared/announcements.html", hasDot: true },
       { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/staff/staff-profile.html" },
     ],
@@ -555,7 +486,7 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     const path = (window.location.pathname || '').toLowerCase();
     const file = (path.split('/').pop() || '').toLowerCase();
     if (file === `${role}.html` || (active === 'dashboard' && file.indexOf(`${role}-`) === -1)) return 'home';
-    if (file.indexOf('chat') !== -1 || active === 'chat' || active === 'teacher-chat' || active === 'group-chat' || active === 'class-chats') return 'chat';
+    
     if (file.indexOf('notification') !== -1 || file.indexOf('announcement') !== -1 || file.indexOf('log') !== -1 || active === 'notifications' || active === 'announcements' || active === 'alerts' || active === 'logs') return 'alerts';
     if (file.indexOf('profile') !== -1 || file.indexOf('setting') !== -1 || active === 'profile' || active === 'settings' || active === 'preferences') {
       return (role === 'admin' || role === 'principal') ? 'settings' : 'profile';
@@ -568,10 +499,32 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
       if (file.indexOf('profile') !== -1 || active === 'profile') return 'profile';
       return 'home';
     }
-    if (role === 'admin' && (file.indexOf('user') !== -1 || active === 'users' || active === 'admins' || active === 'teachers' || active === 'students' || active === 'parents')) return 'users';
-    if (role === 'principal' && (file.indexOf('report') !== -1 || active === 'reports')) return 'reports';
-    if (role === 'staff' && (file.indexOf('service') !== -1 || active === 'services')) return 'services';
-    if (role === 'student' && (file.indexOf('department') !== -1 || active === 'departments')) return 'department';
+    if (role === 'admin') {
+      if (file.indexOf('user') !== -1 || active === 'users' || active === 'admins' || active === 'teachers' || active === 'students' || active === 'parents') return 'users';
+      if (file.indexOf('report') !== -1 || active === 'reports') return 'reports';
+      if (file.indexOf('setting') !== -1 || active === 'settings') return 'settings';
+    }
+    if (role === 'principal') {
+      if (file === 'principal.html' || active === 'dashboard') return 'home';
+      if (file.indexOf('approval') !== -1 || active === 'approvals') return 'approvals';
+      if (file.indexOf('report') !== -1 || active === 'reports') return 'reports';
+      if (file.indexOf('profile') !== -1 || active === 'profile') return 'profile';
+      return 'home';
+    }
+    if (role === 'staff') {
+      if (file === 'staff.html' || active === 'dashboard') return 'home';
+      if (file.indexOf('service') !== -1 || active === 'services') return 'services';
+      if (file.indexOf('announcement') !== -1 || active === 'announcements') return 'alerts';
+      if (file.indexOf('profile') !== -1 || active === 'profile') return 'profile';
+      return 'home';
+    }
+    if (role === 'student') {
+      if (file === 'student.html' || active === 'dashboard') return 'home';
+      if (file.indexOf('department') !== -1 || active === 'departments') return 'department';
+      if (file.indexOf('calendar') !== -1 || file.indexOf('timetable') !== -1 || active === 'calendar' || active === 'timetable') return 'schedule';
+      if (file.indexOf('profile') !== -1 || active === 'profile') return 'profile';
+      return 'home';
+    }
     return 'home';
   }
 
@@ -580,16 +533,7 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     const curTab = getRoleActiveTab(role, active);
     const itemsHtml = tabs.map(tab => {
       const isActive = tab.id === curTab;
-      if (tab.isCenter) {
-        return `
-          <a href="${_P}${tab.href}" class="mob-bn-item mob-bn-chat ${isActive ? 'is-active' : ''}" data-tab="${tab.id}" aria-label="${esc(tab.label)}"${isActive ? ' aria-current="page"' : ''}>
-            <span class="mob-bn-icon-row">
-              <span class="mob-bn-chat-core">
-                <i class="${tab.icon}"></i>
-              </span>
-            </span>
-          </a>`;
-      }
+
       if (tab.isMore) {
         return `
           <button type="button" class="mob-bn-item" data-tab="more" data-action="toggle-more-sheet" aria-label="More teacher pages">
@@ -763,13 +707,7 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
 
     // Department-centric portals: keep "Departments" lit on its sub-pages.
     let active = PAGE.active;
-    const ALIAS_MAP = {
-      'class-chat': 'class-chats',
-      'archived-conversations': 'archived',
-      'pinned-messages': 'pinned',
-      'audit-logs': 'messaging-audit',
-      'audit': 'messaging-audit'
-    };
+    const ALIAS_MAP = {};
     if (ALIAS_MAP[active]) active = ALIAS_MAP[active];
     if (PAGE.role === "student" && DEPT_CHILD.includes(active)) {
       active = "departments";
@@ -978,7 +916,7 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
 
     /* ── Sidebar collapse / expand (desktop) ── */
     let collapseBtn = sidebar.querySelector('#sidebarCollapseBtn');
-    if (!collapseBtn && portalRole !== 'teacher') {
+    if (!collapseBtn) {
       collapseBtn = el(`
         <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
           <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -1004,7 +942,7 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
       sidebar.appendChild(expandBtn);
     }
 
-    const COLLAPSED_KEY = 'ngis-sidebar-collapsed';
+    const COLLAPSED_KEY = 'ngis-' + (portalRole || PAGE.role || 'user') + '-sidebar-collapsed';
     function setSidebarCollapsed(collapsed) {
       const brandLogo = sidebar.querySelector('.side-brand-crest') || sidebar.querySelector('.side-brand-logo-img');
       if (collapsed) {
@@ -1012,8 +950,8 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
         main.classList.add('sidebar-collapsed');
         document.body.classList.add('sidebar-collapsed');
         expandBtn.classList.add('visible');
-        expandBtn.setAttribute('title', 'Open sidebar');
-        expandBtn.setAttribute('aria-label', 'Open navigation');
+        expandBtn.setAttribute('title', 'Expand sidebar');
+        expandBtn.setAttribute('aria-label', 'Expand navigation');
         if (brandLogo && brandLogo.classList.contains('side-brand-logo-img')) {
           if (!brandLogo.dataset.origSrc) brandLogo.dataset.origSrc = brandLogo.src;
           brandLogo.src = _P + 'assets/images/moeys-sis-logo.png';
@@ -1041,6 +979,8 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     const savedCollapsed = store.get(COLLAPSED_KEY);
     if (savedCollapsed === '1' || (savedCollapsed === null && PAGE.role === 'admin')) {
       setSidebarCollapsed(true);
+    } else {
+      setSidebarCollapsed(false);
     }
 
     const sideBrand = sidebar.querySelector('.side-brand');
@@ -1098,12 +1038,6 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     /* Theme: enforce light mode */
     store.set("ngis-theme", "light");
     applyTheme("light");
-    const themeToggle = document.getElementById("themeToggle");
-    if (themeToggle) themeToggle.addEventListener("click", () => {
-      const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      store.set("ngis-theme", next);
-      applyTheme(next);
-    });
 
     /* Language toggle */
     const langBtn = document.getElementById("langBtn");
@@ -1147,12 +1081,13 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     };
 
     const toggleNav = () => {
-      if (window.innerWidth > 1024) {
-        const isCollapsed = sidebar.classList.contains("collapsed");
-        setSidebarCollapsed(!isCollapsed);
-      } else {
+      const isDrawerMode = window.innerWidth <= 1024;
+      if (isDrawerMode) {
         if (sidebar.classList.contains("open")) closeNav();
         else openNav();
+      } else {
+        const isCollapsed = sidebar.classList.contains("collapsed");
+        setSidebarCollapsed(!isCollapsed);
       }
     };
 
@@ -1161,6 +1096,21 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     window.toggleSidebar = toggleNav;
 
     const wireButtons = () => {
+      if (!document.querySelector("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']")) {
+        const target = document.querySelector(".htb-left, .hero-topbar, .topbar, .header, header");
+        if (target) {
+          const hb = el(`
+            <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+              <span class="material-symbols-outlined">menu</span>
+            </button>
+          `);
+          if (target.classList.contains("htb-left")) {
+            target.insertBefore(hb, target.firstChild);
+          } else {
+            target.prepend(hb);
+          }
+        }
+      }
       document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => {
         if (btn.id === 'sidebarCollapseBtn' || btn.id === 'sidebarExpandBtn') return;
         if (btn.dataset.sidebarBound) return;
@@ -1272,10 +1222,27 @@ ${role === 'teacher' ? '' : `        <div class="side-user-card" id="sideUserCar
     const s = document.createElement("script");
     s.src = _P + "assets/js/app.js";
     document.body.appendChild(s);
+
+    /* UI States Master Engine */
+    if (!document.querySelector('link[href*="ui-states.css"]')) {
+      const lu = document.createElement("link");
+      lu.rel = "stylesheet";
+      lu.href = _P + "assets/css/ui-states.css";
+      document.head.appendChild(lu);
+    }
+    if (!window.NGISUI) {
+      const su = document.createElement("script");
+      su.src = _P + "assets/js/ui-states.js";
+      document.body.appendChild(su);
+    }
   }
 
-  window.toast = function(msg, kind) {
+  window.toast = function(msg, kind, detail, options) {
     kind = kind || "info";
+    if (window.NGISUI && window.NGISUI.toast) {
+      const fn = window.NGISUI.toast[kind] || window.NGISUI.toast.info;
+      return fn.call(window.NGISUI.toast, msg, detail || "", options || {});
+    }
     const wrap = document.getElementById("toasts");
     if (!wrap) return;
     const icons = { success:"check_circle", error:"error", warning:"warning", info:"info" };

@@ -8,7 +8,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- Phosphor Icons for Mobile Hamburger Menu (AGENTS.md Critical Rule) -->
@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
 
 <!-- Tailwind CSS CDN with Forms & Container Plugins -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -92,10 +93,7 @@ tailwind.config = {
     background: #94a3b8;
   }
 
-  @media (max-width: 1023px) {
-    #heroBanner, .hero, .hero-topbar, .hero-main, .hero-subpage {
-      display: none !important;
-    }
+  
   }
 
   /* Print Stylesheet */
@@ -130,45 +128,12 @@ try {
 <main class="main flex-1 flex flex-col min-w-0">
 
   <!-- Desktop Hero Banner -->
-  <div id="heroBanner" class="hidden lg:block no-print"></div>
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE)
-       Visible on screen width <= 1024px (lg:hidden) with accessible hamburger button
-       ═══════════════════════════════════════════════════════════════════ -->
-  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
-    <div class="flex items-center gap-3 min-w-0">
-      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
-        <i class="ph-bold ph-list text-xl"></i>
-      </button>
-      <div class="min-w-0 truncate">
-        <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Class Attendance Matrix</h1>
-        <p class="text-[11px] text-slate-500 leading-none mt-0.5 truncate">Grade 10A • Week 4</p>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-2 flex-shrink-0">
-      <!-- Mobile View Switcher (Sheet vs Cards) -->
-      <div class="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 text-xs">
-        <button type="button" id="btnViewGridMob" onclick="setViewMode('grid')" class="px-2.5 py-1 rounded-md text-[11px] font-medium transition bg-white text-brand-900 shadow-xs">
-          Sheet
-        </button>
-        <button type="button" id="btnViewCardsMob" onclick="setViewMode('cards')" class="px-2.5 py-1 rounded-md text-[11px] font-medium transition text-slate-600 hover:text-slate-900">
-          Cards
-        </button>
-      </div>
-
-      <button type="button" onclick="saveAttendanceMatrix()" class="px-3 py-1.5 rounded-lg bg-brand-900 text-white font-medium text-xs shadow-xs active:scale-95 transition flex items-center gap-1.5" title="Save Matrix">
-        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-        <span class="hidden xs:inline">Save</span>
-      </button>
-    </div>
-  </header>
+  <div id="heroBanner"></div>
 
   <!-- ═══════════════════════════════════════════════════════════════════
        ACADEMIC GLOBAL CONTEXT HEADER (Desktop Command Bar)
        ═══════════════════════════════════════════════════════════════════ -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 lg:static z-20 shadow-[0_1px_3px_rgba(0,0,0,0.02)] no-print" data-purpose="primary-navbar">
+  <div class="bg-white border-b border-slate-200 sticky top-0 lg:static z-20 shadow-[0_1px_3px_rgba(0,0,0,0.02)] no-print" data-purpose="primary-navbar">
     <div class="px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
       <!-- Class & Academic Term Dropdowns -->
       <div class="flex items-center flex-wrap gap-2.5 sm:gap-3">
@@ -232,54 +197,6 @@ try {
        ATTENDANCE WEEK CONTROL & QUICK KPIS STRIP
        ═══════════════════════════════════════════════════════════════════ -->
   <section class="p-4 sm:p-6 pb-2 space-y-4" data-purpose="metrics-and-week-controls">
-    <!-- Week Navigator + Quick Status Legend Bar -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
-      <!-- Date Navigator -->
-      <div class="flex items-center flex-wrap gap-3">
-        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden bg-white shadow-xs">
-          <button type="button" onclick="navigateWeek(-1)" class="p-2 hover:bg-slate-100 text-slate-600 transition-colors" title="Previous Week">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          </button>
-          <div class="px-4 py-1.5 text-xs font-medium text-slate-800 flex items-center gap-2 border-x border-slate-200 bg-slate-50/60">
-            <svg class="w-4 h-4 text-brand-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-            <span id="weekDisplayLabel">Week 4: Oct 19 &ndash; Oct 23, 2026</span>
-          </div>
-          <button type="button" onclick="navigateWeek(1)" class="p-2 hover:bg-slate-100 text-slate-600 transition-colors" title="Next Week">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-          </button>
-        </div>
-
-        <!-- Active Day Indicator Badge -->
-        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
-          <span>TODAY: FRI, OCT 23</span>
-        </span>
-      </div>
-
-      <!-- Excel-Like Quick Status Legend & Hotkey Tip -->
-      <div class="flex items-center flex-wrap gap-3 sm:gap-4 text-xs font-medium text-slate-600">
-        <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Legend &amp; Keys:</span>
-        <div class="inline-flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-200">
-          <span class="w-5 h-5 rounded bg-emerald-600 text-white font-medium text-[11px] flex items-center justify-center">P</span>
-          <span class="font-medium text-slate-800">Present</span>
-        </div>
-        <div class="inline-flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-200">
-          <span class="w-5 h-5 rounded bg-amber-500 text-white font-medium text-[11px] flex items-center justify-center">L</span>
-          <span class="font-medium text-slate-800">Late</span>
-        </div>
-        <div class="inline-flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-200">
-          <span class="w-5 h-5 rounded bg-rose-600 text-white font-medium text-[11px] flex items-center justify-center">A</span>
-          <span class="font-medium text-slate-800">Absent</span>
-        </div>
-        <div class="inline-flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-200">
-          <span class="w-5 h-5 rounded bg-slate-500 text-white font-medium text-[11px] flex items-center justify-center">E</span>
-          <span class="font-medium text-slate-800">Excused</span>
-        </div>
-        <span class="hidden xl:inline text-[11px] text-slate-400 border-l border-slate-200 pl-3">
-          Press <kbd class="px-1 py-0.5 bg-slate-200 rounded text-slate-800 text-[10px] font-mono">P</kbd>, <kbd class="px-1 py-0.5 bg-slate-200 rounded text-slate-800 text-[10px] font-mono">L</kbd>, <kbd class="px-1 py-0.5 bg-slate-200 rounded text-slate-800 text-[10px] font-mono">A</kbd> or <kbd class="px-1 py-0.5 bg-slate-200 rounded text-slate-800 text-[10px] font-mono">E</kbd> on any cell
-        </span>
-      </div>
-    </div>
 
     <!-- Metric KPI Cards Bar -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5" data-purpose="attendance-summary-cards">
@@ -511,6 +428,18 @@ window.HERO_CONFIG = {
     const tbody = document.getElementById('attendanceSpreadsheetBody');
     if (!tbody) return;
 
+    if (!rosterData || rosterData.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="12" class="p-0 border-0">
+        <div class="ngis-state-card" style="margin:28px auto; max-width:440px;">
+          <div class="ngis-state-icon neutral"><i class="ph ph-users"></i></div>
+          <h3 class="ngis-state-title">No Students in Roster</h3>
+          <p class="ngis-state-desc">There are currently no students enrolled in Grade 10A for attendance logging.</p>
+          <a href="teacher-roster.html" class="ngis-btn-primary"><i class="ph ph-user-plus"></i><span>View Class Roster</span></a>
+        </div>
+      </td></tr>`;
+      return;
+    }
+
     tbody.innerHTML = rosterData.map((s, sIdx) => {
       const stats = calculateStudentStats(s.days);
       const isAbsentRow = s.days[2] === 'A';
@@ -519,7 +448,7 @@ window.HERO_CONFIG = {
 
       return `
         <tr class="hover:bg-slate-50/80 transition-colors group ${rowBg}">
-          <td class="excel-cell py-2.5 px-2 text-center text-slate-400 font-mono text-[11px] group-hover:bg-slate-100/60">${String(sIdx + 1).padStart(2, '0')}</td>
+          <td class="excel-cell py-2.5 px-2 text-center text-slate-400 font-mono text-[11px] ">${String(sIdx + 1).padStart(2, '0')}</td>
           <td class="excel-cell py-2.5 px-3 font-mono text-[11px] font-medium text-slate-600 bg-slate-50/40">${s.id}</td>
           <td class="excel-cell py-2.5 px-4 font-medium text-slate-900">
             <div class="flex items-center gap-2.5">
@@ -782,11 +711,35 @@ window.HERO_CONFIG = {
     if (window.toast) window.toast('Exported Grade 10A Attendance Matrix to CSV', 'success');
   };
 
-  window.saveAttendanceMatrix = function() {
-    try {
-      localStorage.setItem('ngis_attendance_matrix_cache', JSON.stringify(rosterData));
-    } catch(e) {}
-    if (window.toast) window.toast('Attendance matrix successfully saved & synced', 'success');
+  window.saveAttendanceMatrix = async function(btn) {
+    const saveBtn = btn || document.querySelector('[onclick*="saveAttendanceMatrix"]');
+    
+    const saveOperation = async () => {
+      // Check offline
+      if (!navigator.onLine && window.NGISUI) {
+        NGISUI.toast.warning("Saved Locally", "Offline mode active. Attendance entries saved to browser storage and will sync when reconnected.");
+        return;
+      }
+
+      try {
+        localStorage.setItem('ngis_attendance_matrix_cache', JSON.stringify(rosterData));
+      } catch(e) {}
+
+      if (window.NGISUI) {
+        NGISUI.toast.success("Attendance Synchronized", `Successfully recorded weekly attendance for ${rosterData.length} students in Grade 10A.`, {
+          actionText: "Export CSV",
+          onAction: () => window.exportAttendanceCSV()
+        });
+      } else if (window.toast) {
+        window.toast('Attendance matrix successfully saved & synced', 'success');
+      }
+    };
+
+    if (window.NGISUI && saveBtn) {
+      await NGISUI.guardSubmit(saveBtn, saveOperation);
+    } else {
+      await saveOperation();
+    }
   };
 
   window.setViewMode = function(mode) {

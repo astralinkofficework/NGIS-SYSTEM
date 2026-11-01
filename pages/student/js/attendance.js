@@ -1,10 +1,12 @@
-﻿/* ══════════════════════════════════════
+/* ══════════════════════════════════════
    ATTENDANCE — Chart.js Donut Chart
    Requires: chart.js loaded before this file
    ══════════════════════════════════════ */
 
 (function () {
-  const ctx = document.getElementById('attChart').getContext('2d');
+  const canvas = document.getElementById('attChart');
+  if (!canvas || typeof Chart === 'undefined') return;
+  const ctx = canvas.getContext('2d');
 
   new Chart(ctx, {
     type: 'doughnut',
@@ -27,7 +29,7 @@
           backgroundColor: '#1e3a8a',
           padding: 8,
           cornerRadius: 8,
-          titleFont: { size: 11, weight: '700', family: 'Inter' },
+          titleFont: { size: 11, weight: '500', family: 'Inter' },
           bodyFont:  { size: 11, family: 'Inter' },
         }
       },

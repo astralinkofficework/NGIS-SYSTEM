@@ -71,12 +71,12 @@
     const qRole = (params.get("portal") || params.get("role") || "").toLowerCase();
     if (DEMO_USERS[qRole]) return qRole;
 
-    const stored = (localStorage.getItem("ngis_active_portal") || "").toLowerCase();
-    if (DEMO_USERS[stored]) return stored;
-
     if (window.PAGE && window.PAGE.role && DEMO_USERS[window.PAGE.role]) {
       return window.PAGE.role;
     }
+
+    const stored = (localStorage.getItem("ngis_active_portal") || "").toLowerCase();
+    if (DEMO_USERS[stored]) return stored;
 
     return "student";
   }
@@ -91,12 +91,7 @@
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         if (user && user.role) {
           localStorage.setItem("ngis_active_portal", user.role);
-          localStorage.setItem("ngis_chat_user", JSON.stringify({
-            id: user.id,
-            name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
-            role: user.role,
-            avatar: user.avatar || ""
-          }));
+
         }
       } catch (e) {}
     },

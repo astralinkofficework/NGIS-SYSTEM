@@ -41,21 +41,40 @@ for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
         assert "pages/student/" not in role_block, f"Found leak of pages/student/ in NAV.{non_student} ({layout_path})"
         assert "student-lost-found.html" not in role_block, f"Found leak of student-lost-found.html in NAV.{non_student} ({layout_path})"
 
-for retired_file in (
+# Verify complete removal of chat and messaging files
+for removed_chat_file in (
+    "pages/shared/chat.html",
+    "pages/shared/group-chat.html",
+    "pages/student/student-chat.html",
+    "assets/css/chat.css",
+    "assets/css/group-chat.css",
+    "assets/css/messaging.css",
+    "assets/css/department-channels.css",
+    "assets/js/chat.js",
+    "assets/js/group-chat.js",
+    "assets/js/messaging-data.js",
     "pages/messaging/messaging-dashboard.html",
     "pages/messaging/saved.html",
     "pages/messaging/attachments.html",
     "pages/messaging/notification-preferences.html",
     "pages/messaging/search.html",
+    "pages/messaging/class-chats.html",
+    "pages/messaging/department-channels.html",
+    "pages/messaging/message-requests.html",
+    "pages/messaging/messaging-admin.html",
+    "pages/messaging/pinned.html",
+    "pages/messaging/archived.html",
+    "pages/messaging/audit-logs.html",
+    "pages/messaging/campus-announcements.html",
+    "pages/messaging/telegram-config.html",
 ):
-    assert not (ROOT / retired_file).exists(), retired_file
+    assert not (ROOT / removed_chat_file).exists(), f"{removed_chat_file} must be removed"
 
-messaging_data = (ROOT / "assets/js/messaging-data.js").read_text(encoding="utf-8")
-for retired_symbol in (
-    "SAVED", "ATTACHMENTS", "NOTIF_CATEGORIES", "SEARCH_INDEX",
-    "saved:", "attachments:", "notifCategories:", "searchIndex:",
-):
-    assert retired_symbol not in messaging_data, retired_symbol
+# Verify no chat routes exist in layout.js
+for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
+    l_text = layout_path.read_text(encoding="utf-8")
+    for chat_route in ("chat.html", "group-chat.html", "student-chat.html", "pages/messaging/"):
+        assert chat_route not in l_text, f"Found leak of {chat_route} in {layout_path}" 
 
 # Verify teacher-departments.html file exists and has proper attributes
 teacher_dept_file = ROOT / "pages/teacher/teacher-departments.html"

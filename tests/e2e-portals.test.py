@@ -35,7 +35,7 @@ class TestNgisRolePortals(unittest.TestCase):
             "pages/teacher/teacher.html",
             "pages/teacher/teacher-classes.html",
             "pages/teacher/teacher-attendance.html",
-            "pages/teacher/teacher-assignments.html",
+            "pages/teacher/teacher-submissions.html",
             "pages/teacher/teacher-lessons.html",
             "pages/teacher/teacher-departments.html",
             "pages/teacher/teacher-grades.html",
@@ -64,7 +64,7 @@ class TestNgisRolePortals(unittest.TestCase):
             "pages/staff/_auth-bootstrap.js",
             # Shared
             "pages/shared/access-denied.html",
-            "pages/shared/chat.html",
+            "pages/shared/announcements.html",
             "pages/shared/departments.html"
         ]
         for f in expected_files:

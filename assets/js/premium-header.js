@@ -93,10 +93,8 @@ const PremiumHeader = (() => {
     // Initialize SVG curve
     updateCurve();
 
-    // Detect system color scheme changes
-    if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', onThemeChange);
-    }
+    // Light theme only
+    state.currentTheme = 'light';
 
     state.isInitialized = true;
   }
@@ -158,10 +156,6 @@ const PremiumHeader = (() => {
     if (elements.backButton) {
       elements.backButton.removeEventListener('click', onBackClick);
       elements.backButton.removeEventListener('keydown', onBackKeydown);
-    }
-
-    if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').removeEventListener('change', onThemeChange);
     }
   }
 
@@ -234,8 +228,8 @@ const PremiumHeader = (() => {
   /**
    * Handle system theme change
    */
-  function onThemeChange(e) {
-    state.currentTheme = e.matches ? 'dark' : 'light';
+  function onThemeChange() {
+    state.currentTheme = 'light';
   }
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -307,17 +301,7 @@ const PremiumHeader = (() => {
    * Detect current theme from system or DOM
    */
   function detectTheme() {
-    const htmlTheme = document.documentElement.getAttribute('data-theme');
-    if (htmlTheme) {
-      state.currentTheme = htmlTheme;
-      return;
-    }
-
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      state.currentTheme = 'dark';
-    } else {
-      state.currentTheme = 'light';
-    }
+    state.currentTheme = 'light';
   }
 
   // ────────────────────────────────────────────────────────────────────────────

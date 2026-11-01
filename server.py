@@ -738,7 +738,7 @@ def create_lost_found_item():
         'privateDetails': data.get('privateDetails', '').strip(),
         'custodyLocation': data.get('custodyLocation', 'With Reporter' if type_ == 'lost' else 'School Reception'),
         'handedToStaff': bool(data.get('handedToStaff', False)),
-        'contactMethod': data.get('contactMethod', 'chat'),
+        'contactMethod': data.get('contactMethod', 'email'),
         'reporterId': reporter_id,
         'reporterName': reporter_name,
         'reporterRole': reporter_role,
@@ -814,7 +814,7 @@ def claim_lost_found_item(item_id):
         'claimantGrade': data.get('claimantGrade', 'Student'),
         'proofDescription': proof_desc,
         'status': 'under_review',
-        'contactMethod': data.get('contactMethod', 'chat'),
+        'contactMethod': data.get('contactMethod', 'email'),
         'submittedAt': now_iso,
         'staffNotes': ''
     }
@@ -1614,6 +1614,227 @@ def academic_report_cards():
 def academic_grades_for_report(student_id, period_id):
     rows = ACADEMIC.query('''SELECT g.*, a.title AS assessment_title, a.max_score, a.class_id, a.subject_id, a.grading_period_id, a.category FROM grades g JOIN assessments a ON a.id=g.assessment_id WHERE g.student_id=? AND a.grading_period_id=? ORDER BY a.subject_id, a.title''', (student_id, period_id))
     return [_academic_grade_row(r) for r in rows]
+
+# ── ACADEMIC TRANSCRIPTS (PERSISTENT FILE & RECORD STORE) ─────────
+TRANSCRIPTS_FILE = os.path.join(ROOT, 'data', 'transcripts.json')
+TRANSCRIPTS_UPLOAD_DIR = os.path.join(ROOT, 'assets', 'uploads', 'transcripts')
+os.makedirs(TRANSCRIPTS_UPLOAD_DIR, exist_ok=True)
+
+def load_transcripts():
+    if not os.path.exists(TRANSCRIPTS_FILE):
+        return []
+    try:
+        with open(TRANSCRIPTS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading transcripts.json: {e}")
+        return []
+
+def save_transcripts(items):
+    try:
+        os.makedirs(os.path.dirname(TRANSCRIPTS_FILE), exist_ok=True)
+        with open(TRANSCRIPTS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(items, f, indent=2, ensure_ascii=False)
+        return True
+    except Exception as e:
+        print(f"Error saving transcripts.json: {e}")
+        return False
+
+def _format_bytes(num_bytes):
+    if num_bytes < 1024:
+        return f"{num_bytes} B"
+    elif num_bytes < 1024 * 1024:
+        return f"{num_bytes / 1024:.1f} KB"
+    else:
+        return f"{num_bytes / (1024 * 1024):.2f} MB"
+
+def _resolve_transcript_user():
+    user = _academic_user()
+    if user:
+        return user
+    token = request.headers.get('X-Auth-Token') or request.form.get('authToken') or request.args.get('token')
+    if token:
+        for role, email in {
+            'admin': 'admin@ngis.edu.kh', 'principal': 'principal@ngis.edu.kh',
+            'teacher': 'teacher@ngis.edu.kh', 'student': 'student@ngis.edu.kh',
+            'parent': 'parent@ngis.edu.kh', 'staff': 'staff@ngis.edu.kh'
+        }.items():
+            if token == f'mock-jwt-token-{role}':
+                u = dict(AUTH_USERS[email])
+                if role == 'student': u['id'] = '2026-STD-0142'
+                return u
+    referer = request.headers.get('Referer', '').lower()
+    if '/teacher/' in referer:
+        return dict(AUTH_USERS['teacher@ngis.edu.kh'])
+    if '/student/' in referer:
+        u = dict(AUTH_USERS['student@ngis.edu.kh'])
+        u['id'] = '2026-STD-0142'
+        return u
+    return None
+
+@app.route('/api/academic/transcripts/upload', methods=['POST'])
+def upload_academic_transcript():
+    user = _resolve_transcript_user()
+    if not user:
+        return jsonify({'error': {'code': 'UNAUTHORIZED', 'message': 'Authentication required to upload transcripts'}}), 401
+    if user.get('role') not in ('teacher', 'admin', 'principal'):
+        return jsonify({'error': {'code': 'FORBIDDEN', 'message': 'Only teachers and administrators are permitted to upload and assign transcripts'}}), 403
+
+    if 'file' not in request.files:
+        return jsonify({'error': {'code': 'MISSING_FILE', 'message': 'No file was provided in the upload request'}}), 400
+
+    file = request.files['file']
+    if not file or file.filename == '':
+        return jsonify({'error': {'code': 'EMPTY_FILE', 'message': 'Please select a valid file to upload'}}), 400
+
+    orig_name = os.path.basename(file.filename)
+    ext = orig_name.rsplit('.', 1)[-1].lower() if '.' in orig_name else ''
+    allowed_exts = {'pdf', 'png', 'jpg', 'jpeg', 'webp'}
+    if ext not in allowed_exts:
+        return jsonify({'error': {'code': 'INVALID_FILE_TYPE', 'message': f'File format .{ext} is not allowed. Only PDF and image formats (.png, .jpg, .webp) are accepted.'}}), 400
+
+    file_bytes = file.read()
+    size_bytes = len(file_bytes)
+    max_size = 15 * 1024 * 1024
+    if size_bytes > max_size:
+        return jsonify({'error': {'code': 'FILE_TOO_LARGE', 'message': f'File size ({_format_bytes(size_bytes)}) exceeds the maximum allowed limit of 15 MB'}}), 400
+    if size_bytes == 0:
+        return jsonify({'error': {'code': 'EMPTY_FILE', 'message': 'The uploaded file is empty (0 bytes)'}}), 400
+
+    student_id = request.form.get('studentId', '').strip()
+    if not student_id:
+        return jsonify({'error': {'code': 'MISSING_STUDENT', 'message': 'Student ID is required to assign this transcript'}}), 400
+
+    student_name = request.form.get('studentName', '').strip()
+    if not student_name:
+        st_obj = _student(student_id)
+        student_name = st_obj.get('name') if st_obj else student_id
+
+    term = request.form.get('term', 'Semester 1 (2025–26)').strip()
+    class_grade = request.form.get('classGrade', 'Grade 10A').strip()
+    notes = request.form.get('notes', '').strip()
+
+    mime = 'application/pdf' if ext == 'pdf' else f'image/{ext if ext != "jpg" else "jpeg"}'
+
+    timestamp = int(datetime.now().timestamp())
+    clean_student_id = re.sub(r'[^a-zA-Z0-9_\-]', '', student_id)
+    clean_base = re.sub(r'[^a-zA-Z0-9_\-\.]', '_', orig_name)
+    stored_filename = f"tr_{timestamp}_{clean_student_id}_{clean_base}"
+    stored_path = os.path.join(TRANSCRIPTS_UPLOAD_DIR, stored_filename)
+
+    with open(stored_path, 'wb') as f:
+        f.write(file_bytes)
+
+    transcripts = load_transcripts()
+    new_id = f"tr_{timestamp}_{uuid.uuid4().hex[:6]}"
+    uploader_name = user.get('name') or f"{user.get('firstName', '')} {user.get('lastName', '')}".strip() or "Dr. Sarah Jenkins"
+
+    record = {
+        'id': new_id,
+        'studentId': student_id,
+        'studentName': student_name,
+        'classGrade': class_grade,
+        'term': term,
+        'fileName': orig_name,
+        'storedFileName': stored_filename,
+        'fileUrl': f"/assets/uploads/transcripts/{stored_filename}",
+        'fileType': mime,
+        'fileSize': _format_bytes(size_bytes),
+        'fileSizeBytes': size_bytes,
+        'uploadedBy': uploader_name,
+        'uploadedByRole': user.get('role', 'teacher'),
+        'uploadedAt': datetime.now().isoformat(),
+        'status': 'Official Released',
+        'verified': True,
+        'notes': notes
+    }
+
+    updated = [t for t in transcripts if not (t.get('studentId') == student_id and t.get('term') == term)]
+    updated.insert(0, record)
+    save_transcripts(updated)
+
+    return jsonify({
+        'success': True,
+        'data': record,
+        'message': f"Official transcript uploaded and assigned to {student_name} ({student_id}) successfully."
+    }), 201
+
+@app.route('/api/academic/transcripts', methods=['GET'])
+def get_academic_transcripts():
+    user = _resolve_transcript_user()
+    transcripts = load_transcripts()
+    student_id = request.args.get('studentId')
+    term = request.args.get('term')
+
+    if user and user.get('role') == 'student':
+        student_id = user.get('id', '2026-STD-0142')
+
+    if student_id:
+        transcripts = [t for t in transcripts if t.get('studentId') == student_id]
+    if term:
+        transcripts = [t for t in transcripts if t.get('term') == term]
+
+    return jsonify({'success': True, 'data': transcripts, 'total': len(transcripts)})
+
+@app.route('/api/academic/transcripts/<student_id>', methods=['GET'])
+def get_student_transcript(student_id):
+    user = _resolve_transcript_user()
+    if student_id == 'STU-2024-089' or student_id == 'me':
+        student_id = '2026-STD-0142'
+    if user and user.get('role') == 'student':
+        student_id = user.get('id', '2026-STD-0142')
+
+    transcripts = load_transcripts()
+    matching = [t for t in transcripts if t.get('studentId') == student_id]
+    if not matching:
+        return jsonify({'success': False, 'data': None, 'message': f'No official transcript found for student {student_id}'}), 404
+
+    return jsonify({'success': True, 'data': matching[0]})
+
+@app.route('/api/academic/transcripts/<transcript_id>', methods=['DELETE'])
+def delete_academic_transcript(transcript_id):
+    user = _resolve_transcript_user()
+    if not user:
+        return jsonify({'error': {'code': 'UNAUTHORIZED', 'message': 'Authentication required'}}), 401
+    if user.get('role') not in ('teacher', 'admin', 'principal'):
+        return jsonify({'error': {'code': 'FORBIDDEN', 'message': 'Only teachers and administrators can delete transcripts'}}), 403
+
+    transcripts = load_transcripts()
+    target = next((t for t in transcripts if t.get('id') == transcript_id), None)
+    if not target:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Transcript record not found'}}), 404
+
+    stored_file = target.get('storedFileName')
+    if stored_file:
+        file_path = os.path.join(TRANSCRIPTS_UPLOAD_DIR, stored_file)
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                print(f"Error removing file {file_path}: {e}")
+
+    remaining = [t for t in transcripts if t.get('id') != transcript_id]
+    save_transcripts(remaining)
+    return jsonify({'success': True, 'message': 'Transcript removed successfully'})
+
+@app.route('/api/academic/transcripts/download/<transcript_id>', methods=['GET'])
+def download_academic_transcript(transcript_id):
+    transcripts = load_transcripts()
+    target = next((t for t in transcripts if t.get('id') == transcript_id), None)
+    if not target:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Transcript not found'}}), 404
+
+    user = _resolve_transcript_user()
+    if user and user.get('role') == 'student' and user.get('id') != target.get('studentId'):
+        return jsonify({'error': {'code': 'FORBIDDEN', 'message': 'Unauthorized to download this transcript'}}), 403
+
+    stored_file = target.get('storedFileName')
+    file_path = os.path.join(TRANSCRIPTS_UPLOAD_DIR, stored_file)
+    if not os.path.exists(file_path):
+        return jsonify({'error': {'code': 'FILE_NOT_FOUND', 'message': 'Transcript file is missing from storage'}}), 404
+
+    return send_from_directory(TRANSCRIPTS_UPLOAD_DIR, stored_file, as_attachment=True, download_name=target.get('fileName', stored_file))
+
 
 @app.route('/api/academic/audit', methods=['GET'])
 def academic_audit():

@@ -47,9 +47,6 @@
       .attend-row.present-row { background: #f0fdf4; }
       .attend-row.late-row    { background: #fffbeb; }
       .attend-row.absent-row  { background: #fef2f2; }
-      [data-theme="dark"] .attend-row.present-row { background: rgba(34,197,94,.07); }
-      [data-theme="dark"] .attend-row.late-row    { background: rgba(234,179, 8,.07); }
-      [data-theme="dark"] .attend-row.absent-row  { background: rgba(239, 68,68,.07); }
     `;
     document.head.appendChild(s);
   }
