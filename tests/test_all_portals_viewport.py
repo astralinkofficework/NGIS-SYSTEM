@@ -8,7 +8,6 @@ TEST_PAGES = [
     ("Admin Classes", "admin", "http://localhost:3000/pages/admin/admin-classes.html"),
     ("Teacher Dashboard", "teacher", "http://localhost:3000/pages/teacher/teacher.html"),
     ("Principal Dashboard", "principal", "http://localhost:3000/pages/principal/principal.html"),
-    ("Staff Dashboard", "staff", "http://localhost:3000/pages/staff/staff.html"),
     ("Shared News", "teacher", "http://localhost:3000/pages/shared/news.html"),
     ("Landing Index", "guest", "http://localhost:3000/index.html"),
 ]

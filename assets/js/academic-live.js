@@ -11,7 +11,7 @@
     var att = student && student.attendance != null ? Number(student.attendance).toFixed(1) : (model.attendance != null ? Number(model.attendance).toFixed(1) : '—');
     var label = r === 'student' ? 'Your authoritative academic record' : 'Authoritative academic overview';
     var el = document.createElement('section'); el.id = 'academicLiveSummary'; el.className = 'card anim-up';
-    el.style.cssText = 'margin:0 0 16px;border-left:4px solid #13829b;';
+    el.style.cssText = 'margin:0 0 16px;border-left:4px solid #202F63;';
     el.innerHTML = '<div class="card-head"><div><h3 style="margin:0">Live academic data</h3><div class="sub">' + esc(label) + ' · synced from NGIS Academic Records</div></div><span class="badge green">LIVE</span></div>' +
       '<div class="card-pad" style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">' +
       '<div><div class="faint" style="font-size:11px;text-transform:uppercase">GPA</div><strong style="font-size:24px">' + esc(gpa) + '</strong><span class="faint"> / 4.00</span></div>' +
@@ -30,7 +30,7 @@
     } catch (e) {
       var page = document.querySelector('.page');
       if (page && !document.getElementById('academicLiveSummary')) {
-        var el = document.createElement('div'); el.id = 'academicLiveSummary'; el.className = 'card'; el.style.cssText = 'margin:0 0 16px;border-left:4px solid #dc2626'; el.innerHTML = '<div class="card-pad" style="font-size:13px;color:#991b1b">Academic records are temporarily unavailable. No local fallback data was shown.</div>'; page.insertBefore(el, page.firstChild);
+        var el = document.createElement('div'); el.id = 'academicLiveSummary'; el.className = 'card'; el.style.cssText = 'margin:0 0 16px;border-left:4px solid #92243D'; el.innerHTML = '<div class="card-pad" style="font-size:13px;color:#92243D">Academic records are temporarily unavailable. No local fallback data was shown.</div>'; page.insertBefore(el, page.firstChild);
       }
     }
   }

@@ -3,7 +3,7 @@
    ══════════════════════════════════════ */
 
 const classes = [
-  { icon: 'calculate', name: 'Calculus',                 cohort: 'Grade 11-A · 32 Students', room: 'Room 302', pct: 78, color: '#13829b', bg: '#e0f2fe' },
+  { icon: 'calculate', name: 'Calculus',                 cohort: 'Grade 11-A · 32 Students', room: 'Room 302', pct: 78, color: '#2455D6', bg: '#e0f2fe' },
   { icon: 'analytics', name: 'Statistics & Probability', cohort: 'Grade 10-C · 28 Students', room: 'Room 305', pct: 85, color: '#059669', bg: '#f0fdf4' },
   { icon: 'functions', name: 'Pure Mathematics',         cohort: 'Grade 12-B · 24 Students', room: 'Room 304', pct: 65, color: '#2563eb', bg: '#eff6ff' },
   { icon: 'square_foot', name: 'Advanced Geometry',      cohort: 'Grade 10-A · 30 Students', room: 'Room 301', pct: 92, color: '#7c3aed', bg: '#faf5ff' },

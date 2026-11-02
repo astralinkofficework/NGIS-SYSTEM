@@ -47,7 +47,7 @@ for p in pages:
             issues_found.append(f"[{p_norm}] Found banned pattern: {label}")
 
     # 2. Check for duplicate hero-body in subpages
-    is_subpage = not any(p_norm.endswith(root) for root in ['admin.html', 'teacher.html', 'student.html', 'staff.html', 'principal.html', 'index.html'])
+    is_subpage = not any(p_norm.endswith(root) for root in ['admin.html', 'teacher.html', 'student.html', 'principal.html', 'index.html'])
     if is_subpage and 'class="hero-body"' in content:
         issues_found.append(f"[{p_norm}] Found hardcoded hero-body in subpage")
 

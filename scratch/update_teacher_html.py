@@ -1,93 +1,91 @@
-import re
-
 with open('pages/teacher/teacher.html', 'r', encoding='utf-8') as f:
-    content = f.read()
+    text = f.read()
 
-# 1. Add bottom-nav.css and tailwindcss in head
-if 'bottom-nav.css' not in content:
-    content = content.replace('<link rel="stylesheet" href="../../assets/css/design-system.css">', 
-                              '<link rel="stylesheet" href="../../assets/css/design-system.css">\n<link rel="stylesheet" href="../../assets/css/bottom-nav.css">')
+# 1. Desktop Quick Actions
+target_desktop = """        <a class="ql-item" href="teacher-profile.html">
+          <div class="ql-icon-wrap" style="background:#F3F3F5"><span class="mi" style="color:#202F63">account_circle</span></div>
+          <span class="ql-label">My Profile</span>
+        </a>"""
 
-if 'cdn.tailwindcss.com' not in content:
-    tailwind_script = '''<!-- Phosphor Icons for mobile UI glyphs -->
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
-<!-- Tailwind CSS with preflight disabled to protect desktop styles -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    corePlugins: {
-      preflight: false
-    }
-  };
-</script>'''
-    content = content.replace('<script src="https://unpkg.com/@phosphor-icons/web"></script>', tailwind_script)
+replacement_desktop = """        <a class="ql-item" href="teacher-services.html">
+          <div class="ql-icon-wrap" style="background:#F3F3F5"><span class="mi" style="color:#202F63">room_service</span></div>
+          <span class="ql-label">Services Hub</span>
+        </a>
+        <a class="ql-item" href="teacher-lost-found.html">
+          <div class="ql-icon-wrap" style="background:#F3F3F5"><span class="mi" style="color:#202F63">inventory_2</span></div>
+          <span class="ql-label">Lost &amp; Found</span>
+        </a>
+        <a class="ql-item" href="teacher-profile.html">
+          <div class="ql-icon-wrap" style="background:#F3F3F5"><span class="mi" style="color:#202F63">account_circle</span></div>
+          <span class="ql-label">My Profile</span>
+        </a>"""
 
-# 2. Replace 2-row grid override with clean 3-column deck
-old_style = '''/* Ensure 2-row grid on desktop matching reference layout */
-@media (min-width: 992px) {
-  .dash-overlap {
-    display: grid !important;
-    grid-template-columns: 240px minmax(0, 1fr) 260px !important;
-    grid-template-rows: auto auto !important;
-    gap: 16px !important;
-  }
-  .ov-profile {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-  }
-  .ov-upcoming {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-  }
-  .ov-deadlines {
-    grid-column: 3 !important;
-    grid-row: 1 / span 2 !important;
-  }
-  .dash-overlap .promo-slideshow {
-    grid-column: 1 / span 2 !important;
-    grid-row: 2 !important;
-    margin-top: 0 !important;
-  }
-}'''
+# 2. Mobile Quick Actions
+target_mobile = """          <!-- Classes -->
+          <div onclick="window.location.href='teacher-classes.html'" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#F3F3F5] hover:bg-[#E5E5E8] active:scale-95 transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-white/90 text-[#333333] flex items-center justify-center mb-1.5 shadow-xs">
+              <i class="ph-bold ph-chalkboard-teacher text-lg"></i>
+            </div>
+            <span class="text-[11px] font-normal text-[#333333] text-center leading-tight">Classes</span>
+          </div>
+        </div>
+      </section>"""
 
-new_style = '''/* Clean 3-column deck on desktop matching original reference layout */
-@media (min-width: 992px) {
-  .dash-overlap {
-    display: grid !important;
-    grid-template-columns: 240px minmax(0, 1fr) 270px !important;
-    gap: 18px !important;
-    max-width: 1280px !important;
-    margin: -48px auto 0 !important;
-    padding: 0 24px !important;
-    align-items: stretch !important;
-  }
-  .ov-profile, .ov-upcoming, .ov-deadlines {
-    grid-column: auto !important;
-    grid-row: 1 !important;
-    height: 100% !important;
-  }
-}'''
+replacement_mobile = """          <!-- Classes -->
+          <div onclick="window.location.href='teacher-classes.html'" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#F3F3F5] hover:bg-[#E5E5E8] active:scale-95 transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-white/90 text-[#333333] flex items-center justify-center mb-1.5 shadow-xs">
+              <i class="ph-bold ph-chalkboard-teacher text-lg"></i>
+            </div>
+            <span class="text-[11px] font-normal text-[#333333] text-center leading-tight">Classes</span>
+          </div>
+        </div>
+      </section>
 
-if old_style in content:
-    content = content.replace(old_style, new_style)
+      <!-- Campus & Faculty Services -->
+      <section data-purpose="faculty-services" class="mt-3">
+        <h3 class="text-xs font-normal uppercase tracking-wider text-slate-600 mb-2 px-0.5">Faculty Services &amp; Campus</h3>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div onclick="window.location.href='teacher-services.html'" class="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/90 hover:bg-[#F3F3F5] active:scale-95 transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[20px]">room_service</span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-[#000000] leading-tight truncate">Services Hub</p>
+              <p class="text-[10px] text-[#555555] truncate">IT, AV &amp; repairs</p>
+            </div>
+          </div>
+          <div onclick="window.location.href='teacher-lost-found.html'" class="flex items-center gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/90 hover:bg-[#F3F3F5] active:scale-95 transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+            </div>
+            <div class="min-w-0">
+              <p class="text-xs font-medium text-[#000000] leading-tight truncate">Lost &amp; Found</p>
+              <p class="text-[10px] text-[#555555] truncate">Classroom items</p>
+            </div>
+          </div>
+        </div>
+      </section>"""
 
-# 3. Move promo-slideshow out of dash-overlap
-promo_marker = '<!-- Row 2, Col 1+2: Promo Slideshow (Priority Tasks spans both rows) -->'
-if promo_marker in content:
-    idx_promo = content.find(promo_marker)
-    idx_close_overlap = content.find('</div><!-- /.dash-overlap -->', idx_promo)
-    promo_html = content[idx_promo:idx_close_overlap].strip()
-    
-    banner_section = f'''</div><!-- /.dash-overlap -->
+text_norm = text.replace('\r\n', '\n')
+target_desktop_norm = target_desktop.replace('\r\n', '\n')
+target_mobile_norm = target_mobile.replace('\r\n', '\n')
 
-<!-- ═══════════════ TEACHER BANNER SECTION ═══════════════ -->
-<div class="dash-banner-section">
-{promo_html}
-</div>'''
-    content = content[:idx_promo] + banner_section + content[idx_close_overlap + len('</div><!-- /.dash-overlap -->'):]
+updated = False
+if target_desktop_norm in text_norm:
+    text_norm = text_norm.replace(target_desktop_norm, replacement_desktop.replace('\r\n', '\n'), 1)
+    updated = True
+    print("Desktop quick actions updated!")
+else:
+    print("Target desktop not found!")
 
-with open('pages/teacher/teacher.html', 'w', encoding='utf-8') as f:
-    f.write(content)
+if target_mobile_norm in text_norm:
+    text_norm = text_norm.replace(target_mobile_norm, replacement_mobile.replace('\r\n', '\n'), 1)
+    updated = True
+    print("Mobile quick actions updated!")
+else:
+    print("Target mobile not found!")
 
-print('Updated teacher.html successfully!')
-
+if updated:
+    with open('pages/teacher/teacher.html', 'w', encoding='utf-8') as f:
+        f.write(text_norm.replace('\n', '\r\n'))
+    print("SUCCESS: Updated teacher.html!")

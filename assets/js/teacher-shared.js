@@ -267,7 +267,7 @@
 
       container.innerHTML = `
         <div class="tp-error-state">
-          <div class="tp-state-icon" style="background:#fef2f2;color:#b42332;">
+          <div class="tp-state-icon" style="background:#F3F3F5;color:#92243D;">
             <span class="material-symbols-outlined">error_outline</span>
           </div>
           <h3 class="tp-state-title">${esc(title)}</h3>

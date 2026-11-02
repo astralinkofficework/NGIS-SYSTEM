@@ -26,7 +26,7 @@
                 now.getDate() + ', ' + now.getFullYear();
 
   /* ── Role & Path Resolution ── */
-  var VALID_ROLES = ['admin', 'teacher', 'student', 'principal', 'staff'];
+  var VALID_ROLES = ['admin', 'teacher', 'student', 'principal'];
   var pathname = (window.location.pathname || '').toLowerCase();
   var params = new URLSearchParams(window.location.search || '');
   var queryRole = (params.get('portal') || params.get('role') || '').toLowerCase();
@@ -34,7 +34,6 @@
   if (pathname.indexOf('/pages/admin/') !== -1 || pathname.indexOf('/admin') !== -1) pathRole = 'admin';
   else if (pathname.indexOf('/pages/teacher/') !== -1 || pathname.indexOf('/teacher') !== -1) pathRole = 'teacher';
   else if (pathname.indexOf('/pages/principal/') !== -1 || pathname.indexOf('/principal') !== -1) pathRole = 'principal';
-  else if (pathname.indexOf('/pages/staff/') !== -1 || pathname.indexOf('/staff') !== -1) pathRole = 'staff';
   else if (pathname.indexOf('/pages/student/') !== -1 || pathname.indexOf('/student') !== -1) pathRole = 'student';
 
   var storedRole = '';
@@ -113,21 +112,6 @@
         { icon: 'assessment', text: 'Cambridge & MoEYS' }
       ]
     },
-    staff: {
-      brandSub: 'OPERATIONS PORTAL',
-      name: 'Dara Sok',
-      roleMeta: 'Campus Operations Coordinator',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=80',
-      id: 'Staff ID: STF-2026-014',
-      calendar: 'staff-services.html',
-      profile: 'staff-profile.html',
-      home: 'staff.html',
-      ddRows: [
-        { icon: 'engineering', text: 'Facilities & Logistics Lead' },
-        { icon: 'assignment_turned_in', text: 'Operational Support' },
-        { icon: 'verified_user', text: 'All Wings Authorized' }
-      ]
-    },
     student: {
       brandSub: 'STUDENT PORTAL',
       name: 'Nrinphouneta Hok',
@@ -201,7 +185,6 @@
     filename === 'teacher.html' ||
     filename === 'admin.html' ||
     filename === 'principal.html' ||
-    filename === 'staff.html' ||
     filename === 'index.html' ||
     filename === ''
   );
@@ -245,7 +228,7 @@
           (activeRole === 'student' ?
           '<a href="' + (C.chatLink || resolveRoleUrl('student', 'student-notifications.html')) + '" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
             '<span class="mi">mail</span>' +
-            '<span class="htb-ctrl-badge" style="background:#e11d48">11</span>' +
+            '<span class="htb-ctrl-badge" style="background:#92243D">11</span>' +
           '</a>' : '') +
 
 
@@ -309,7 +292,6 @@
           '<a href="' + resolveRoleUrl('teacher', 'teacher.html') + '" class="htb-dd-demo-item' + (activeRole==='teacher'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'teacher\')">Teacher</a>' +
           '<a href="' + resolveRoleUrl('admin', 'admin.html') + '" class="htb-dd-demo-item' + (activeRole==='admin'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'admin\')">Admin</a>' +
           '<a href="' + resolveRoleUrl('principal', 'principal.html') + '" class="htb-dd-demo-item' + (activeRole==='principal'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'principal\')">Principal</a>' +
-          '<a href="' + resolveRoleUrl('staff', 'staff.html') + '" class="htb-dd-demo-item' + (activeRole==='staff'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'staff\')">Staff</a>' +
         '</div>' +
       '</div>' +
       '<div class="htb-dd-divider"></div>' +
@@ -428,43 +410,43 @@
   var s = document.createElement('style');
   s.textContent =
     '.htb-notif-btn{background:none;border:none;padding:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:rgba(255,255,255,.88);line-height:1;}' +
-    '.hpd{position:fixed;z-index:9100;width:320px;max-width:calc(100vw - 20px);background:var(--surface,#fff);border:1px solid var(--border,#e2e8f0);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.13);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .18s,transform .2s cubic-bezier(.22,1,.36,1);}' +
+    '.hpd{position:fixed;z-index:9100;width:320px;max-width:calc(100vw - 20px);background:var(--surface,#fff);border:1px solid var(--border,#E5E5E8);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.13);overflow:hidden;opacity:0;pointer-events:none;transform:translateY(6px);transition:opacity .18s,transform .2s cubic-bezier(.22,1,.36,1);}' +
     '.hpd.open{opacity:1;pointer-events:all;transform:translateY(0);}' +
-    '.hpd-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--border,#e2e8f0);}' +
-    '.hpd-head-title{font-size:13px;font-weight: 400;color:var(--text,#0f172a);}' +
-    '.hpd-head-action{font-size:11px;color:var(--accent,#1995AD);font-weight: 400;cursor:pointer;background:none;border:none;padding:0;}' +
-    '.hpd-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;text-decoration:none;color:inherit;border-bottom:1px solid var(--surface-2,#f8fafc);transition:background .12s;}' +
-    '.hpd-item:hover{background:var(--surface-2,#f8fafc);}' +
+    '.hpd-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--border,#E5E5E8);}' +
+    '.hpd-head-title{font-size:13px;font-weight: 400;color:var(--text,#000000);}' +
+    '.hpd-head-action{font-size:11px;color:var(--accent,#202F63);font-weight: 400;cursor:pointer;background:none;border:none;padding:0;}' +
+    '.hpd-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;text-decoration:none;color:inherit;border-bottom:1px solid var(--surface-2,#F3F3F5);transition:background .12s;}' +
+    '.hpd-item:hover{background:var(--surface-2,#F3F3F5);}' +
     '.hpd-notif-ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
     '.hpd-notif-ico .mi{font-size:17px;}' +
     '.hpd-notif-body{flex:1;min-width:0;}' +
-    '.hpd-notif-title{font-size:12px;font-weight: 400;color:var(--text,#0f172a);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
-    '.hpd-notif-meta{font-size:11px;color:var(--muted,#94a3b8);margin-top:2px;}' +
-    '.hpd-unread-dot{width:7px;height:7px;border-radius:50%;background:var(--accent,#1995AD);flex-shrink:0;margin-top:5px;}' +
-    '.hpd-section{font-size:10px;font-weight: 400;text-transform:uppercase;letter-spacing:.6px;color:var(--muted,#94a3b8);padding:7px 14px 5px;background:var(--surface-2,#f8fafc);border-top:1px solid var(--border,#e2e8f0);}' +
+    '.hpd-notif-title{font-size:12px;font-weight: 400;color:var(--text,#000000);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+    '.hpd-notif-meta{font-size:11px;color:var(--muted,#77777F);margin-top:2px;}' +
+    '.hpd-unread-dot{width:7px;height:7px;border-radius:50%;background:var(--accent,#202F63);flex-shrink:0;margin-top:5px;}' +
+    '.hpd-section{font-size:10px;font-weight: 400;text-transform:uppercase;letter-spacing:.6px;color:var(--muted,#77777F);padding:7px 14px 5px;background:var(--surface-2,#F3F3F5);border-top:1px solid var(--border,#E5E5E8);}' +
     '.hpd-mail-init{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight: 400;color:#fff;}' +
     '.hpd-mail-group-ico{width:34px;height:34px;border-radius:50%;background:var(--primary-soft,rgba(25,149,173,.1));display:flex;align-items:center;justify-content:center;flex-shrink:0;}' +
-    '.hpd-mail-group-ico .mi{font-size:18px;color:var(--primary,#1995AD);}' +
+    '.hpd-mail-group-ico .mi{font-size:18px;color:var(--primary,#202F63);}' +
     '.hpd-mail-body{flex:1;min-width:0;}' +
-    '.hpd-mail-name{font-size:12px;font-weight: 400;color:var(--text,#0f172a);}' +
-    '.hpd-mail-msg{font-size:11px;color:var(--muted,#64748b);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}' +
-    '.hpd-mail-time{font-size:10px;color:var(--muted,#94a3b8);margin-top:2px;}' +
-    '.hpd-mail-badge{min-width:18px;height:18px;border-radius:99px;background:var(--accent,#1995AD);color:#fff;font-size:10px;font-weight: 400;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;}' +
-    '.hpd-footer{padding:10px 14px;border-top:1px solid var(--border,#e2e8f0);display:flex;gap:8px;}' +
-    '.hpd-footer-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 10px;border-radius:7px;font-size:11px;font-weight: 400;text-decoration:none;background:var(--surface-2,#f8fafc);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);transition:background .12s;}' +
-    '.hpd-footer-btn:hover{background:var(--border,#e2e8f0);}' +
+    '.hpd-mail-name{font-size:12px;font-weight: 400;color:var(--text,#000000);}' +
+    '.hpd-mail-msg{font-size:11px;color:var(--muted,#555555);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;}' +
+    '.hpd-mail-time{font-size:10px;color:var(--muted,#77777F);margin-top:2px;}' +
+    '.hpd-mail-badge{min-width:18px;height:18px;border-radius:99px;background:var(--accent,#202F63);color:#fff;font-size:10px;font-weight: 400;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0;}' +
+    '.hpd-footer{padding:10px 14px;border-top:1px solid var(--border,#E5E5E8);display:flex;gap:8px;}' +
+    '.hpd-footer-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px 10px;border-radius:7px;font-size:11px;font-weight: 400;text-decoration:none;background:var(--surface-2,#F3F3F5);color:var(--text,#000000);border:1px solid var(--border,#E5E5E8);transition:background .12s;}' +
+    '.hpd-footer-btn:hover{background:var(--border,#E5E5E8);}' +
     '.hpd-footer-btn .mi{font-size:14px;}' +
     '.hpd-search{width:360px;max-height:70vh;overflow-y:auto;}' +
-    '.hpd-search-input-wrap{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border,#e2e8f0);position:sticky;top:0;background:var(--surface,#fff);}' +
-    '.hpd-search-input{flex:1;border:none;outline:none;background:none;font-size:13px;color:var(--text,#0f172a);font-family:inherit;}' +
-    '.hpd-empty{padding:20px 14px;font-size:12px;color:var(--muted,#94a3b8);text-align:center;line-height:1.5;}';
+    '.hpd-search-input-wrap{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border,#E5E5E8);position:sticky;top:0;background:var(--surface,#fff);}' +
+    '.hpd-search-input{flex:1;border:none;outline:none;background:none;font-size:13px;color:var(--text,#000000);font-family:inherit;}' +
+    '.hpd-empty{padding:20px 14px;font-size:12px;color:var(--muted,#77777F);text-align:center;line-height:1.5;}';
   document.head.appendChild(s);
 
   /* ── Notification dropdown ── */
   var notifData = [
-    { icon: 'assignment', color: '#2563eb', bg: '#eff6ff', title: 'Physics Essay Draft posted',    meta: 'Mr. Sophea \xb7 12m ago',   unread: true  },
-    { icon: 'grade',      color: '#16a34a', bg: '#f0fdf4', title: 'Chemistry graded: 88%',          meta: 'Ms. Kiry \xb7 2h ago',      unread: true  },
-    { icon: 'campaign',   color: '#1995AD', bg: 'rgba(25,149,173,.08)', title: 'Science Fair registration open', meta: 'School \xb7 Yesterday', unread: false }
+    { icon: 'assignment', color: '#202F63', bg: '#F3F3F5', title: 'Physics Essay Draft posted',    meta: 'Mr. Sophea \xb7 12m ago',   unread: true  },
+    { icon: 'grade',      color: '#000000', bg: '#F3F3F5', title: 'Chemistry graded: 88%',          meta: 'Ms. Kiry \xb7 2h ago',      unread: true  },
+    { icon: 'campaign',   color: '#202F63', bg: 'rgba(25,149,173,.08)', title: 'Science Fair registration open', meta: 'School \xb7 Yesterday', unread: false }
   ];
 
   var notifItemsHtml = '';
@@ -572,7 +554,7 @@
     searchPanelEl.innerHTML =
       '<div class="hpd hpd-search" id="htbSearchPanel">' +
         '<div class="hpd-search-input-wrap">' +
-          '<span class="mi" style="font-size:18px;color:var(--muted,#94a3b8)">search</span>' +
+          '<span class="mi" style="font-size:18px;color:var(--muted,#77777F)">search</span>' +
           '<input type="search" id="hpdSearchInput" class="hpd-search-input" placeholder="Search students, teachers, campuses…" aria-label="Search everything">' +
         '</div>' +
         '<div id="htbSearchResults"></div>' +
@@ -605,7 +587,7 @@
         html +=
           '<a href="' + m.href + '" class="hpd-item">' +
             '<div class="hpd-notif-ico" style="background:var(--primary-soft,rgba(31,107,58,.09))">' +
-              '<span class="mi" style="color:var(--primary,#1F6B3A)">' + m.icon + '</span>' +
+              '<span class="mi" style="color:var(--primary,#000000)">' + m.icon + '</span>' +
             '</div>' +
             '<div class="hpd-notif-body">' +
               '<div class="hpd-notif-title">' + m.name + '</div>' +

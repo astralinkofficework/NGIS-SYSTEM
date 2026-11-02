@@ -73,11 +73,6 @@ const DB = {
     { id: "2026-PAR-0001", name: "Mr. Hok Sophea", email: "hok.sophea@example.com", phone: "+855 98 765 432", address: "Phnom Penh, Cambodia", relationship: "Father", linkedStudents: ["2026-STD-0142"], status: "active", emergencyContact: true },
   ],
 
-  /* ── Staff ── */
-  staff: [
-    { id: "2026-STF-0001", name: "Ms. Nary Chan", role: "Administrator", email: "nary.chan@ngis.edu.kh", phone: "+855 98 765 432", department: "Administration", status: "active", joinDate: "2022-01-15" },
-  ],
-
   /* ── Classes ── */
   classes: [
     { id: "cls-10A", name: "Grade 10A", grade: "Grade 10", academicYear: "2025-26", homeroomTeacher: "2026-TCH-0001", assistantTeacher: null, capacity: 35, currentEnrollment: 32, subjects: ["subj-001", "subj-002"], status: "active", house: "Angkor" },

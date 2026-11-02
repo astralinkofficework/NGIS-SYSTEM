@@ -4,7 +4,7 @@
 > **CRITICAL RULE**: All mobile responsive views and layouts MUST have a hamburger menu button to open the navigation sidebar.
 
 ### 1. Mandatory Hamburger Menu on Mobile
-- Every mobile view (`*-mobile-view`, mobile app bar, or screen width <= 768px/1024px) across all portals (**Student**, **Teacher**, **Parent**, **Staff**, **Principal**, **Admin**, and **Shared**) MUST include an accessible, visible hamburger menu button.
+- Every mobile view (`*-mobile-view`, mobile app bar, or screen width <= 768px/1024px) across all portals (**Student**, **Teacher**, **Parent**, **Principal**, **Admin**, and **Shared**) MUST include an accessible, visible hamburger menu button.
 - When clicked/tapped, this button opens the mobile sidebar drawer.
 
 ### 2. Standard Attributes & Selectors

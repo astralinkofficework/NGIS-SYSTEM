@@ -117,9 +117,25 @@
         { label:"Overview", links:[
           { id:"dashboard", label:"Executive Dashboard", icon:"dashboard", href:"pages/principal/principal.html" },
         ]},
-        { id:"leadership", label:"LEADERSHIP & GOVERNANCE", icon:"shield_person", links:[
+        { id:"approvals-grp", label:"PENDING APPROVALS", icon:"verified", links:[
           { id:"approvals", label:"Executive Approvals", icon:"verified", href:"pages/principal/principal-approvals.html" },
+          { id:"requests", label:"Requests & Submissions", icon:"inbox", href:"pages/principal/principal-approvals.html?category=requests" },
+        ]},
+        { id:"students-grp", label:"STUDENT MANAGEMENT", icon:"school", links:[
+          { id:"students", label:"Student Records", icon:"person_search", href:"pages/principal/principal-students.html" },
+        ]},
+        { id:"teachers-grp", label:"TEACHER MANAGEMENT", icon:"co_present", links:[
+          { id:"teachers", label:"Faculty Oversight", icon:"manage_accounts", href:"pages/principal/principal-teachers.html" },
+        ]},
+        { id:"roster-grp", label:"ROSTER & PROFILES", icon:"badge", links:[
+          { id:"roster", label:"Roster & Profiles", icon:"badge", href:"pages/principal/principal-roster.html" },
+        ]},
+        { id:"academics-grp", label:"ACADEMIC MANAGEMENT", icon:"assessment", links:[
           { id:"reports",   label:"Academic & Cohort Reports", icon:"assessment", href:"pages/principal/principal-reports.html" },
+          { id:"documents", label:"Official Documents", icon:"description", href:"pages/principal/principal-documents.html" },
+        ]},
+        { id:"history-grp", label:"ACTIVITY HISTORY", icon:"history", links:[
+          { id:"activity", label:"Management Action Log", icon:"receipt_long", href:"pages/principal/principal-activity.html" },
         ]},
         { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
           { id:"announcements", label:"School Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=principal" },
@@ -127,24 +143,6 @@
         { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
           { id:"profile", label:"Executive Profile", icon:"person", href:"pages/principal/principal-profile.html" },
           { id:"logout",  label:"Log out",           icon:"logout", href:"index.html" },
-        ]},
-      ],
-    },
-    staff: {
-      brand: "Staff", meta: "Campus Operations · 2025–26",
-      groups: [
-        { label:"Overview", links:[
-          { id:"dashboard", label:"Operations Dashboard", icon:"dashboard", href:"pages/staff/staff.html" },
-        ]},
-        { id:"operations", label:"OPERATIONS & LOGISTICS", icon:"room_service", links:[
-          { id:"services", label:"Service Requests & Tickets", icon:"assignment", href:"pages/staff/staff-services.html" },
-        ]},
-        { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
-          { id:"announcements", label:"School Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=staff" },
-        ]},
-        { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
-          { id:"profile", label:"Staff Profile", icon:"person", href:"pages/staff/staff-profile.html" },
-          { id:"logout",  label:"Log out",       icon:"logout", href:"index.html" },
         ]},
       ],
     },
@@ -177,14 +175,9 @@
     principal: [
       { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/principal/principal.html" },
       { id:"approvals",  label:"Approvals",  icon:"verified",       href:"pages/principal/principal-approvals.html" },
+      { id:"students",   label:"Students",   icon:"school",         href:"pages/principal/principal-students.html" },
       { id:"reports",    label:"Reports",    icon:"assessment",     href:"pages/principal/principal-reports.html" },
       { id:"profile",    label:"Profile",    icon:"person",         href:"pages/principal/principal-profile.html" },
-    ],
-    staff: [
-      { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/staff/staff.html" },
-      { id:"services",   label:"Services",   icon:"assignment",     href:"pages/staff/staff-services.html" },
-      { id:"announcements",label:"Alerts",   icon:"campaign",       href:"pages/shared/announcements.html", badge:"2" },
-      { id:"profile",    label:"Profile",    icon:"person",         href:"pages/staff/staff-profile.html" },
     ],
   };
 
@@ -195,15 +188,13 @@
     teacher:   { name:"Dr. Sarah Jenkins", role:"Head of Senior Faculty", initials:"SJ" },
     student:   { name:"Nrinphouneta Hok", role:"Student · Grade 11-A", initials:"NH" },
     principal: { name:"Dr. Ly Bunheng",  role:"Campus Principal",     initials:"LB" },
-    staff:     { name:"Ms. Sreymom Lim", role:"Operations Coordinator", initials:"SL" },
   };
 
   const PORTAL_HOME = {
     admin: "pages/admin/admin.html",
     teacher: "pages/teacher/teacher.html",
     student: "pages/student/student.html",
-    principal: "pages/principal/principal.html",
-    staff: "pages/staff/staff.html"
+    principal: "pages/principal/principal.html"
   };
 
   /* Resolve the portal from the authenticated session and scoped URL. */
@@ -223,7 +214,7 @@
   }
   function resolvePortalRole(pageRole) {
     const path = (window.location.pathname || "").replace(/\\/g, "/");
-    const match = path.match(/\/pages\/(admin|teacher|student|parent|staff|principal)\//);
+    const match = path.match(/\/pages\/(admin|teacher|student|parent|principal)\//);
     const pathRole = match ? match[1] : null;
 
     // Priority 1: Explicit role directory path (e.g. /pages/admin/, /pages/teacher/, /pages/student/, etc.)
@@ -236,7 +227,7 @@
     // Priority 2: Explicit URL query param (?portal=... or ?role=...)
     const params = new URLSearchParams(window.location.search || "");
     const queryRole = (params.get("portal") || params.get("role") || "").toLowerCase();
-    if (["admin", "teacher", "student", "staff", "principal"].includes(queryRole)) {
+    if (["admin", "teacher", "student", "principal"].includes(queryRole)) {
       try { localStorage.setItem("ngis_active_portal", queryRole); } catch (e) {}
       return queryRole;
     }
@@ -244,7 +235,7 @@
     // Priority 3: Explicit pageRole configured on window.PAGE
     if (pageRole) {
       const normalizedPageRole = normalizeRole(pageRole);
-      if (["admin", "teacher", "student", "staff", "principal"].includes(normalizedPageRole)) {
+      if (["admin", "teacher", "student", "principal"].includes(normalizedPageRole)) {
         try { localStorage.setItem("ngis_active_portal", normalizedPageRole); } catch (e) {}
         return normalizedPageRole;
       }
@@ -252,11 +243,11 @@
 
     // Priority 4: Stored portal preference or active session role
     const sessionRole = getSessionRole();
-    if (sessionRole && ["admin", "teacher", "student", "staff", "principal"].includes(sessionRole)) {
+    if (sessionRole && ["admin", "teacher", "student", "principal"].includes(sessionRole)) {
       return sessionRole;
     }
     const storedPortal = localStorage.getItem("ngis_active_portal");
-    if (storedPortal && ["admin", "teacher", "student", "staff", "principal"].includes(storedPortal)) {
+    if (storedPortal && ["admin", "teacher", "student", "principal"].includes(storedPortal)) {
       return storedPortal;
     }
 
@@ -385,7 +376,7 @@
 
     return el(`
       <aside class="sidebar custom-scrollbar" id="sidebar" role="navigation" aria-label="Main navigation" data-purpose="primary-sidebar">
-        <header class="side-brand">
+        <div class="side-brand">
           <a class="side-brand-info" href="${homeHref}" aria-label="New Gateway International School">
             <img class="side-brand-crest" src="${_P}assets/images/ngis-seal.svg" alt="NGIS Crest" onerror="this.onerror=null;this.src='${_P}pages/student/LOGO%20NGIS%20(2).png'">
             <div class="side-brand-titles">
@@ -399,7 +390,10 @@
               <polyline points="16 7 10 12 16 17"></polyline>
             </svg>
           </button>
-        </header>
+          <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Close navigation" aria-label="Close navigation" type="button">
+            <i class="ph ph-x text-lg" aria-hidden="true"></i>
+          </button>
+        </div>
 
         <nav class="side-nav custom-scrollbar" aria-label="Main Navigation">
           ${groups}
@@ -422,7 +416,8 @@
     return el(`
       <header class="topbar" role="banner">
         <button class="icon-btn menu-btn hamburger-btn mobile-hamburger-btn" id="menuBtn" data-action="toggle-sidebar" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false" title="Open navigation">
-          <span class="material-symbols-outlined">menu</span>
+          <i class="ph ph-list text-xl" aria-hidden="true"></i>
+          <span class="material-symbols-outlined" style="display:none">menu</span>
         </button>
         <div class="search" role="search">
           <span class="material-symbols-outlined">search</span>
@@ -471,14 +466,9 @@
     principal: [
       { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/principal/principal.html" },
       { id: "approvals", label: "Approvals", icon: "ph-bold ph-check-circle", href: "pages/principal/principal-approvals.html" },
+      { id: "students", label: "Students", icon: "ph-bold ph-school", href: "pages/principal/principal-students.html" },
       { id: "reports", label: "Reports", icon: "ph-bold ph-chart-line-up", href: "pages/principal/principal-reports.html" },
       { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/principal/principal-profile.html" },
-    ],
-    staff: [
-      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/staff/staff.html" },
-      { id: "services", label: "Services", icon: "ph-bold ph-stack", href: "pages/staff/staff-services.html" },
-      { id: "alerts", label: "Alerts", icon: "ph-bold ph-bell", href: "pages/shared/announcements.html", hasDot: true },
-      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/staff/staff-profile.html" },
     ],
   };
 
@@ -506,15 +496,9 @@
     }
     if (role === 'principal') {
       if (file === 'principal.html' || active === 'dashboard') return 'home';
-      if (file.indexOf('approval') !== -1 || active === 'approvals') return 'approvals';
-      if (file.indexOf('report') !== -1 || active === 'reports') return 'reports';
-      if (file.indexOf('profile') !== -1 || active === 'profile') return 'profile';
-      return 'home';
-    }
-    if (role === 'staff') {
-      if (file === 'staff.html' || active === 'dashboard') return 'home';
-      if (file.indexOf('service') !== -1 || active === 'services') return 'services';
-      if (file.indexOf('announcement') !== -1 || active === 'announcements') return 'alerts';
+      if (file.indexOf('approval') !== -1 || active === 'approvals' || active === 'requests') return 'approvals';
+      if (file.indexOf('student') !== -1 || active === 'students') return 'students';
+      if (file.indexOf('report') !== -1 || file.indexOf('teacher') !== -1 || file.indexOf('document') !== -1 || file.indexOf('activity') !== -1 || active === 'reports' || active === 'teachers' || active === 'documents' || active === 'activity') return 'reports';
       if (file.indexOf('profile') !== -1 || active === 'profile') return 'profile';
       return 'home';
     }
@@ -1096,22 +1080,28 @@
     window.toggleSidebar = toggleNav;
 
     const wireButtons = () => {
-      if (!document.querySelector("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']")) {
-        const target = document.querySelector(".htb-left, .hero-topbar, .topbar, .header, header");
-        if (target) {
-          const hb = el(`
-            <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
-              <span class="material-symbols-outlined">menu</span>
-            </button>
-          `);
-          if (target.classList.contains("htb-left")) {
-            target.insertBefore(hb, target.firstChild);
-          } else {
-            target.prepend(hb);
-          }
+      let existing = document.querySelector("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']");
+      const target = document.querySelector(".htb-left, .hero-topbar, .topbar, .header, header, .lh-inner, .dir-header-inner");
+      if (!existing && target) {
+        const hb = el(`
+          <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn icon-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+            <i class="ph ph-list text-xl"></i>
+            <span class="material-symbols-outlined" style="display:none">menu</span>
+          </button>
+        `);
+        if (target.classList.contains("htb-left")) {
+          target.insertBefore(hb, target.firstChild);
+        } else {
+          target.prepend(hb);
         }
+        existing = hb;
       }
       document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => {
+        if (btn.id === 'sidebarCollapseBtn' || btn.id === 'sidebarExpandBtn') return;
+        // Always ensure hamburger button is placed to the far left of its parent container
+        if (btn.parentElement && btn.parentElement.firstElementChild !== btn) {
+          btn.parentElement.insertBefore(btn, btn.parentElement.firstElementChild);
+        }
         if (btn.id === 'sidebarCollapseBtn' || btn.id === 'sidebarExpandBtn') return;
         if (btn.dataset.sidebarBound) return;
         btn.dataset.sidebarBound = "true";
@@ -1140,6 +1130,26 @@
       e.stopImmediatePropagation();
       toggleNav();
     });
+
+    const closeBtn = sidebar.querySelector('#sidebarCloseBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeNav();
+      });
+    }
+
+    // Touch swipe left to close drawer
+    let touchStartX = 0;
+    sidebar.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    sidebar.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      if (touchStartX - touchEndX > 50) {
+        closeNav();
+      }
+    }, { passive: true });
 
     scrim.addEventListener("click", closeNav);
     sidebar.querySelectorAll(".nav-link").forEach(a => a.addEventListener("click", closeNav));

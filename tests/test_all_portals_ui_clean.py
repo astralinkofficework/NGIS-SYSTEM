@@ -15,7 +15,6 @@ PAGES_TO_AUDIT = [
     ("Student Dashboard", "pages/student/student.html", "student"),
     ("Student Services", "pages/student/student-services.html", "student"),
     ("Principal Dashboard", "pages/principal/principal.html", "principal"),
-    ("Staff Dashboard", "pages/staff/staff.html", "staff"),
     ("Student Assignments", "pages/student/student-assignments.html", "student"),
     ("Teacher Submissions", "pages/teacher/teacher-submissions.html", "teacher")
 ]
@@ -30,8 +29,7 @@ USER_PROFILES = {
     "admin": {"id": "admin-1", "name": "Sok Panha Heng", "role": "admin", "email": "admin@ngis.edu"},
     "teacher": {"id": "teacher-jenkins", "name": "Dr. Sarah Jenkins", "role": "teacher", "email": "jenkins@ngis.edu"},
     "student": {"id": "student-1", "name": "Vannak Meas", "role": "student", "email": "vannak@student.ngis.edu"},
-    "principal": {"id": "princ-1", "name": "H.E. Dr. Chhem Kieth", "role": "principal", "email": "principal@ngis.edu"},
-    "staff": {"id": "staff-1", "name": "Chan Sothea", "role": "staff", "email": "sothea@ngis.edu"}
+    "principal": {"id": "princ-1", "name": "H.E. Dr. Chhem Kieth", "role": "principal", "email": "principal@ngis.edu"}
 }
 
 async def run_audit():

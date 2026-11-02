@@ -2,7 +2,7 @@
 """
 E2E Integration & Connected Workflow Test for NGIS ERP Role Portals
 Verifies role separation, layout integrity, API contracts, and cross-portal workflows:
-Admin -> Teacher -> Student -> Parent -> Staff -> Principal
+Admin -> Teacher -> Student -> Parent -> Principal
 """
 import os
 import sys
@@ -57,11 +57,6 @@ class TestNgisRolePortals(unittest.TestCase):
             "pages/principal/principal-approvals.html",
             "pages/principal/principal-profile.html",
             "pages/principal/_auth-bootstrap.js",
-            # Staff
-            "pages/staff/staff.html",
-            "pages/staff/staff-services.html",
-            "pages/staff/staff-profile.html",
-            "pages/staff/_auth-bootstrap.js",
             # Shared
             "pages/shared/access-denied.html",
             "pages/shared/announcements.html",
@@ -72,34 +67,33 @@ class TestNgisRolePortals(unittest.TestCase):
             self.assertTrue(p.exists(), f"Missing expected file: {f}")
 
     def test_02_layout_synchronization_and_roles(self):
-        """Verify layout.js and assets/js/layout.js are in sync and support all 6 roles."""
+        """Verify layout.js and assets/js/layout.js are in sync and support all active roles."""
         layout_main = (ROOT / "layout.js").read_text(encoding="utf-8")
         layout_mirror = (ROOT / "assets/js/layout.js").read_text(encoding="utf-8")
         self.assertEqual(layout_main, layout_mirror, "assets/js/layout.js must match layout.js exactly")
 
-        for role in ["admin", "teacher", "student", "principal", "staff"]:
+        for role in ["admin", "teacher", "student", "principal"]:
             self.assertIn(f"{role}:", layout_main, f"Role {role} missing in NAV/BOTTOM/PORTAL_HOME")
 
-        # Verify access-denied.html includes all 5 roles
+        # Verify access-denied.html includes all portal roles
         access_denied = (ROOT / "pages/shared/access-denied.html").read_text(encoding="utf-8")
-        for role in ["admin", "teacher", "student", "staff", "principal"]:
+        for role in ["admin", "teacher", "student", "principal"]:
             self.assertIn(f"{role}:", access_denied, f"Role {role} missing in access-denied homeMap")
 
     def test_03_clean_route_shortcuts(self):
         """Verify clean portal route shortcuts in server.py."""
-        shortcuts = ["/admin", "/teacher", "/student", "/staff", "/principal"]
+        shortcuts = ["/admin", "/teacher", "/student", "/principal"]
         for sc in shortcuts:
             resp = self.client.get(sc, follow_redirects=True)
             self.assertEqual(resp.status_code, 200, f"Route {sc} returned status {resp.status_code}")
             resp.close()
 
     def test_04_authentication_all_roles(self):
-        """Verify login and session resolution for all 6 roles."""
+        """Verify login and session resolution for all roles."""
         credentials = [
             ("admin@ngis.edu.kh", "password123", "admin"),
             ("principal@ngis.edu.kh", "password123", "principal"),
             ("teacher@ngis.edu.kh", "password123", "teacher"),
-            ("staff@ngis.edu.kh", "password123", "staff"),
             ("student@ngis.edu.kh", "password123", "student"),
             ("parent@ngis.edu.kh", "password123", "parent"),
         ]
@@ -171,26 +165,20 @@ class TestNgisRolePortals(unittest.TestCase):
         self.assertEqual(sub["feedback"], "Outstanding mathematical rigor and lucid physical explanations!")
         self.assertEqual(sub["status"], "graded")
 
-    def test_06_staff_and_principal_endpoints(self):
-        """Verify Staff and Principal stats and operational task endpoints."""
-        prn_resp = self.client.get("/api/principal/stats")
+    def test_06_principal_endpoints(self):
+        """Verify Principal stats endpoint is auth-guarded and returns real numbers."""
+        # Backend-enforced permission: unauthenticated request must be rejected
+        anon = self.client.get("/api/principal/stats")
+        self.assertEqual(anon.status_code, 401)
+        # Authorized principal call returns the derived stats payload
+        prn_resp = self.client.get(
+            "/api/principal/stats",
+            headers={"Authorization": "Bearer mock-jwt-token-principal"},
+        )
         self.assertEqual(prn_resp.status_code, 200)
         prn_data = prn_resp.get_json()["data"]
         self.assertIn("totalStudents", prn_data)
         self.assertIn("totalTeachers", prn_data)
-
-        stf_resp = self.client.get("/api/staff/stats")
-        self.assertEqual(stf_resp.status_code, 200)
-        stf_data = stf_resp.get_json()["data"]
-        self.assertIn("openRequests", stf_data)
-
-        # Staff creates a task
-        task_resp = self.client.post("/api/staff/tasks", json={
-            "title": "Inspect Emergency Exit Alarms (Building A)",
-            "area": "Facilities",
-            "priority": "high"
-        })
-        self.assertEqual(task_resp.status_code, 201)
 
     def test_07_student_portal_preserved_intact(self):
         """Verify Student Portal files exist and contain student-specific PAGE metadata."""
@@ -269,12 +257,12 @@ class TestNgisRolePortals(unittest.TestCase):
             self.assertIn("pages/student/student-calendar.html", nav_block)
 
             # Verify non-student portals do NOT contain student page links
-            for role in ["teacher", "admin", "principal", "staff"]:
+            for role in ["teacher", "admin", "principal"]:
                 start = nav_block.find(f"    {role}:")
                 self.assertNotEqual(start, -1, f"Missing {role} in NAV")
                 next_indices = [
                     nav_block.find(f"    {other}:", start + 1)
-                    for other in ("admin", "teacher", "student", "principal", "staff")
+                    for other in ("admin", "teacher", "student", "principal")
                     if nav_block.find(f"    {other}:", start + 1) != -1
                 ]
                 end = min(next_indices) if next_indices else len(nav_block)

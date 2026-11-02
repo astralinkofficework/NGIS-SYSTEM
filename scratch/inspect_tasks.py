@@ -1,0 +1,9 @@
+with open('assets/css/portal-dashboard.css', 'r', encoding='utf-8') as f:
+    text = f.read()
+
+import re
+matches = re.findall(r'([^{}]*ov-task[^{}]*\{[^}]*\})', text)
+for m in matches:
+    cleaned = m.strip().encode('ascii', errors='replace').decode('ascii')
+    print(cleaned[:120].replace('\n', ' '))
+

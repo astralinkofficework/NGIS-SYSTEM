@@ -3,40 +3,172 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Executive Approvals & Governance</title>
+<title>NGIS — Executive Clearance & Approvals Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
 
 <!-- Phosphor Icons for Mobile Hamburger -->
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
-<!-- Tailwind CSS for mobile styling -->
+<!-- Tailwind CSS for modern responsive layout -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          navy: { DEFAULT: '#202F63', 50: '#F4F6FA', 100: '#E8ECF5', 700: '#192550', 900: '#111A38' },
+          burgundy: { DEFAULT: '#92243D', 50: '#FDF2F4', 100: '#FCE7EB', 700: '#7A1D32', 900: '#5C1425' },
+          softgray: '#F3F3F5',
+        },
+        fontFamily: {
+          sans: ['Manrope', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          khmer: ['"Kantumruy Pro"', 'sans-serif'],
+        }
+      }
+    }
+  };
+</script>
 
 <style>
 /* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
 *, h1, h2, h3, h4, h5, h6, b, strong, th, td {
   font-weight: 400 !important;
 }
-.font-medium, .badge, th {
+.font-medium, .badge, th, .item-title, .status-pill, .kpi-num, .tab-pill {
   font-weight: 500 !important;
 }
+h1, h2, .section-title {
+  font-weight: 600 !important;
+}
 
-.approval-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:20px; box-shadow:var(--sh-1); margin-top:14px; }
-.approval-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
-.approval-meta { display:flex; gap:16px; margin-top:12px; font-size:13px; color:var(--muted); flex-wrap:wrap; }
-.approval-meta span { display:inline-flex; align-items:center; gap:5px; }
+/* 5-Color System Variables */
+:root {
+  --navy: #202F63;
+  --burgundy: #92243D;
+  --white: #FFFFFF;
+  --black: #000000;
+  --soft-gray: #F3F3F5;
+  --border-subtle: #E5E5E8;
+}
 
-.diff-box { background:var(--surface-2); border:1px dashed var(--border); border-radius:8px; padding:12px 16px; margin-top:14px; font-size:13.5px; }
-.diff-old { color:#ef4444; text-decoration:line-through; margin-right:8px; }
-.diff-new { color:#10b981; font-weight:500 !important; }
+body {
+  background-color: var(--soft-gray);
+  color: var(--black);
+  font-family: 'Manrope', 'Plus Jakarta Sans', sans-serif;
+}
 
-.actions-group { display:flex; gap:10px; margin-top:16px; }
+/* Standard Primary Button */
+.btn-primary-burgundy {
+  background-color: #92243D;
+  color: #FFFFFF;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+}
+.btn-primary-burgundy:hover {
+  background-color: #7A1D32;
+  color: #FFFFFF;
+}
+.btn-primary-burgundy:active {
+  transform: scale(0.98);
+}
+
+/* Secondary Button */
+.btn-secondary-neutral {
+  background-color: #FFFFFF;
+  color: #202F63;
+  border: 1px solid #E5E5E8;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  text-decoration: none;
+}
+.btn-secondary-neutral:hover {
+  background-color: #F3F3F5;
+  border-color: #D1D1D6;
+  color: #111A38;
+}
+
+/* Tab Pills */
+.tab-pill {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+.tab-pill.active {
+  background-color: #202F63;
+  color: #FFFFFF;
+}
+.tab-pill:not(.active) {
+  background-color: transparent;
+  color: #555555;
+}
+.tab-pill:not(.active):hover {
+  background-color: #F3F3F5;
+  color: #111A38;
+}
+
+/* Feedback Modal Backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(32, 47, 99, 0.35);
+  backdrop-filter: blur(2px);
+  display: none;
+  z-index: 950;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-backdrop.open {
+  display: flex;
+}
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #202F63;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: none;
+  z-index: 1200;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
 </style>
 
 <script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
@@ -44,129 +176,224 @@
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
 </head>
+
 <body data-role="principal" data-portal="principal">
 <main class="main">
   <div id="heroBanner"></div>
 
-  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
-  <div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
-    <div class="flex items-center gap-2.5">
-      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+  <!-- Mandatory Mobile App Bar Header with Hamburger (AGENTS.md rule) -->
+  <header class="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E5E5E8] px-4 py-3 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-3">
+      <button type="button" class="mobile-hamburger-btn hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-[#F3F3F5] active:scale-95 transition-all" aria-label="Open menu" aria-expanded="false" data-action="toggle-sidebar" title="Open navigation">
         <i class="ph ph-list text-xl"></i>
       </button>
-      <span class="text-sm font-medium text-forest-800">Executive Approvals</span>
+      <div class="flex flex-col">
+        <span class="text-xs text-slate-400 uppercase tracking-wide">Executive Clearance</span>
+        <span class="text-sm font-medium text-[#202F63] leading-tight">Clearance &amp; Approvals</span>
+      </div>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="authorizeAllPending()">Authorize All</button>
-  </div>
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded-full bg-[#FDF2F4] text-[#92243D] text-[11px] font-medium border border-[#FCE7EB] flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#92243D] animate-pulse"></span>
+        <span id="mobUrgentCount">2</span>
+      </span>
+    </div>
+  </header>
 
   <div class="page">
+    <div class="w-full max-w-[1600px] mx-auto py-4 space-y-6">
 
-    <div class="flex between center mt16 anim-up">
-      <div>
-        <h3>Executive Authorizations</h3>
-        <p class="muted" style="font-size:13.5px">Official academic authorizations required before changes take effect in official student and parent records.</p>
-      </div>
-      <span class="badge amber" id="pendingCounter">Loading pending items…</span>
-    </div>
-
-    <!-- Live Academic Grades Submissions Approval Card -->
-    <div class="approval-card anim-up-2 border-forest-600/30" id="liveGradesCard">
-      <div class="approval-header">
-        <div>
-          <span class="badge blue mb8">Gradebook Submission Clearance</span>
-          <h4 style="font-size:16px;" class="font-medium">Faculty Grade Submissions &middot; Semester 1 Midterm</h4>
-          <p class="muted mt4" style="font-size:13.5px">Submitted by <span class="font-medium">High School Academic Faculty</span></p>
+    <!-- BEGIN: Executive Context Header -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      <div class="space-y-1.5">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">verified_user</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl text-[#202F63] tracking-tight">Executive Clearance &amp; Approvals Console</h1>
+          <span class="bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] px-2.5 py-0.5 rounded-full text-xs font-medium tracking-wide">Academic Term 2026</span>
         </div>
-        <div class="actions-group">
-          <button class="btn btn-sm btn-ghost" onclick="rejectLiveGrades()">Return for Review</button>
-          <button class="btn btn-sm btn-primary" onclick="authorizeLiveGrades()">
-            <span class="material-symbols-outlined" style="font-size:16px">verified</span> Authorize &amp; Publish to Portals
+        <p class="text-xs sm:text-sm text-slate-600 max-w-2xl">
+          Review, authorize, or return faculty gradebook amendments, leave petitions, and curriculum exceptions.
+        </p>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex flex-wrap items-center gap-3 shrink-0 lg:self-center">
+        <div class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-[#FDF2F4] border border-[#FCE7EB] text-[#92243D] text-xs font-medium">
+          <span class="w-2 h-2 rounded-full bg-[#92243D] animate-pulse"></span>
+          <span><strong id="urgentQueuesCount">2</strong> urgent clearance queues</span>
+        </div>
+
+        <button id="authAllBtn" onclick="authorizeAllPending()" class="btn-primary-burgundy" type="button">
+          <span class="material-symbols-outlined text-[17px]">done_all</span>
+          <span id="authAllBtnLabel">Authorize All Pending (2)</span>
+        </button>
+      </div>
+    </div>
+    <!-- END: Executive Context Header -->
+
+    <!-- BEGIN: Telemetry Stats Ribbon -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Total Submissions -->
+      <div class="bg-white border border-[#E5E5E8] p-4.5 rounded-xl shadow-xs flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Total Submissions</p>
+          <p class="text-2xl text-slate-900 mt-1 tabular-nums font-medium" id="statTotal">8</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">inbox</span>
+        </div>
+      </div>
+
+      <!-- Awaiting Decision -->
+      <div class="bg-white border border-[#E5E5E8] p-4.5 rounded-xl shadow-xs flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Awaiting Decision</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-2xl font-medium text-[#92243D] tabular-nums" id="statPending">2</span>
+            <span class="text-[11px] font-medium text-[#92243D] bg-[#FDF2F4] border border-[#FCE7EB] px-1.5 py-0.5 rounded">Priority SLA</span>
+          </div>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-[#FDF2F4] text-[#92243D] border border-[#FCE7EB] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">pending_actions</span>
+        </div>
+      </div>
+
+      <!-- Revision Flagged -->
+      <div class="bg-white border border-[#E5E5E8] p-4.5 rounded-xl shadow-xs flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Revision Flagged</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-2xl font-medium text-slate-800 tabular-nums" id="statRevision">1</span>
+            <span class="text-[11px] font-medium text-slate-600 bg-[#F3F3F5] border border-[#E5E5E8] px-1.5 py-0.5 rounded">Needs Attention</span>
+          </div>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-[#F3F3F5] text-slate-700 border border-[#E5E5E8] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">rate_review</span>
+        </div>
+      </div>
+
+      <!-- Avg Approval Latency -->
+      <div class="bg-white border border-[#E5E5E8] p-4.5 rounded-xl shadow-xs flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Avg Clearance Latency</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="text-2xl font-medium text-slate-900 tabular-nums">4.2</span>
+            <span class="text-xs text-slate-500">hrs</span>
+            <span class="text-[11px] font-medium text-[#202F63] bg-[#F3F3F5] border border-[#E5E5E8] px-1.5 py-0.5 rounded">-0.8h target</span>
+          </div>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">timer</span>
+        </div>
+      </div>
+    </div>
+    <!-- END: Telemetry Stats Ribbon -->
+
+    <!-- BEGIN: Approvals Console Card -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl shadow-xs overflow-hidden flex flex-col">
+      <!-- Toolbar & Filter Bar -->
+      <div class="p-4 sm:p-5 border-b border-[#E5E5E8] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <!-- Tab Pills -->
+        <div class="flex flex-wrap items-center gap-1.5 bg-[#F3F3F5] border border-[#E5E5E8] p-1 rounded-lg">
+          <button onclick="setTabFilter('all')" class="tab-pill active" data-tab="all">
+            <span>All Submissions</span>
+            <span class="px-1.5 py-0.2 rounded text-[11px] bg-white/20 text-white font-medium tabular-nums" id="tabCountAll">8</span>
+          </button>
+          <button onclick="setTabFilter('pending')" class="tab-pill" data-tab="pending">
+            <span>Pending Review</span>
+            <span class="px-1.5 py-0.2 rounded text-[11px] bg-white border border-[#E5E5E8] text-slate-700 font-medium tabular-nums" id="tabCountPending">2</span>
+          </button>
+          <button onclick="setTabFilter('needs_correction')" class="tab-pill" data-tab="needs_correction">
+            <span>Needs Revision</span>
+            <span class="px-1.5 py-0.2 rounded text-[11px] bg-white border border-[#E5E5E8] text-slate-700 font-medium tabular-nums" id="tabCountRevision">1</span>
+          </button>
+          <button onclick="setTabFilter('approved')" class="tab-pill" data-tab="approved">
+            <span>Authorized</span>
+            <span class="px-1.5 py-0.2 rounded text-[11px] bg-white border border-[#E5E5E8] text-slate-700 font-medium tabular-nums" id="tabCountApproved">5</span>
+          </button>
+        </div>
+
+        <!-- Search, Select & Export Tools -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <select id="typeFilterSelect" onchange="applyApprovalsFilter()" class="bg-[#F3F3F5] border border-[#E5E5E8] text-xs text-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:border-[#202F63] focus:bg-white transition-all">
+            <option value="all">All Request Types</option>
+            <option value="Student Self-Service Request">Student Self-Service</option>
+            <option value="Academic Document Service">Academic Document</option>
+            <option value="Faculty Evaluation Adjustment">Faculty Adjustment</option>
+            <option value="Academic Attendance Clearance">Attendance Clearance</option>
+          </select>
+
+          <div class="relative flex-1 sm:w-64">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+            <input id="searchInput" oninput="applyApprovalsFilter()" type="text" placeholder="Search by student, faculty or ID..." class="w-full bg-[#F3F3F5] border border-[#E5E5E8] pl-9 pr-3 py-2 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[#202F63] focus:bg-white transition-all">
+          </div>
+
+          <button onclick="exportCSV()" class="btn-secondary-neutral" title="Export CSV Summary">
+            <span class="material-symbols-outlined text-[17px]">download</span>
+            <span class="hidden sm:inline">Export CSV</span>
           </button>
         </div>
       </div>
 
-      <div class="diff-box">
-        <div><span class="font-medium">Scope:</span> Grade 10-A, 11-A, 11-B, 11-C assessments and gradebooks</div>
-        <div class="mt4"><span class="font-medium">Status:</span> <span id="liveGradesStatus" class="font-medium text-forest-800">Checking pending teacher submissions…</span></div>
-        <div class="mt8 muted" style="font-size:12.5px"><span class="font-medium">Executive Note:</span> Authorizing this batch immediately publishes verified grades and GPA calculation to the student and parent portals.</div>
-      </div>
-    </div>
-
-    <!-- Approval Item 1: Grade Amendment -->
-    <div class="approval-card anim-up-3" id="apprItem1">
-      <div class="approval-header">
-        <div>
-          <span class="badge blue mb8">Grade Amendment Request</span>
-          <h4 style="font-size:16px;" class="font-medium">Calculus Midterm Assessment Rescore</h4>
-          <p class="muted mt4" style="font-size:13.5px">Requested by <span class="font-medium">Dr. Sarah Jenkins</span> (Lead Mathematics Teacher)</p>
+      <!-- Batch Action Bar (Appears on selection) -->
+      <div id="batchBar" class="hidden bg-[#202F63] text-white px-5 py-2.5 flex items-center justify-between text-xs transition-all animate-fadeIn">
+        <div class="flex items-center gap-2.5 font-medium">
+          <span class="w-2 h-2 rounded-full bg-[#92243D]"></span>
+          <span id="batchCount">0 submissions selected</span>
         </div>
-        <div class="actions-group">
-          <button class="btn btn-sm btn-ghost" onclick="rejectItem('apprItem1')">Reject</button>
-          <button class="btn btn-sm btn-primary" onclick="confirmApproval('apprItem1')">
-            <span class="material-symbols-outlined" style="font-size:16px">check</span> Authorize Update
+        <div class="flex items-center gap-2">
+          <button onclick="executeBatchAuthorize()" class="bg-[#92243D] hover:bg-[#7A1D32] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors shadow-xs">
+            Authorize Selected
+          </button>
+          <button onclick="toast('Batch note dialog opened')" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">
+            Request Notes
           </button>
         </div>
       </div>
 
-      <div class="diff-box">
-        <div><span class="font-medium">Student:</span> Nrinphouneta Hok (Grade 11-A · STU-089)</div>
-        <div class="mt4"><span class="font-medium">Assessment:</span> Q3 Calculus Derivatives Test</div>
-        <div class="mt4">
-          <span class="font-medium">Adjustment:</span> 
-          <span class="diff-old">88 / 100 (Grade B+)</span> 
-          → 
-          <span class="diff-new">92 / 100 (Grade A)</span>
-        </div>
-        <div class="mt8 muted" style="font-size:12.5px"><span class="font-medium">Teacher Rationale:</span> "Question 4 part b rubric clarification acknowledged; student method verified mathematically valid."</div>
+      <!-- Main Interactive Table -->
+      <div class="overflow-x-auto w-full">
+        <table class="w-full text-left border-collapse text-xs sm:text-sm">
+          <thead>
+            <tr class="bg-[#F3F3F5] text-slate-600 text-[11px] uppercase tracking-wider border-b border-[#E5E5E8]">
+              <th class="py-3 px-3 w-10 text-center">
+                <input id="selectAllCheckbox" class="rounded border-slate-300 text-[#202F63] focus:ring-0 cursor-pointer w-4 h-4" type="checkbox"/>
+              </th>
+              <th class="py-3 px-4 font-medium">Submission Details</th>
+              <th class="py-3 px-4 font-medium">Initiator &amp; Timestamp</th>
+              <th class="py-3 px-4 font-medium">Proposed Delta / Scope</th>
+              <th class="py-3 px-4 font-medium">Status</th>
+              <th class="py-3 px-4 font-medium text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#E5E5E8]" id="approvalsTableBody">
+            <!-- Dynamic rows rendered by JavaScript -->
+          </tbody>
+        </table>
       </div>
-    </div>
 
-    <!-- Approval Item 2: Syllabus Change -->
-    <div class="approval-card anim-up-4" id="apprItem2">
-      <div class="approval-header">
+      <!-- Pagination Footer -->
+      <div class="p-4 bg-[#F3F3F5]/60 border-t border-[#E5E5E8] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
         <div>
-          <span class="badge purple mb8">Curriculum &amp; Syllabus Update</span>
-          <h4 style="font-size:16px;" class="font-medium">Grade 11 AP Physics Lab Sequence Revision</h4>
-          <p class="muted mt4" style="font-size:13.5px">Requested by <span class="font-medium">Mr. Robert Fox</span> (Head of Science Department)</p>
+          Showing <span class="font-medium text-slate-700" id="showingCount">1 to 5</span> of <span class="font-medium text-slate-700" id="totalCountFooter">8</span> entries
         </div>
-        <div class="actions-group">
-          <button class="btn btn-sm btn-ghost" onclick="rejectItem('apprItem2')">Reject</button>
-          <button class="btn btn-sm btn-primary" onclick="confirmApproval('apprItem2')">
-            <span class="material-symbols-outlined" style="font-size:16px">check</span> Authorize Syllabus
+        <div class="flex items-center gap-1">
+          <button class="px-2.5 py-1 rounded bg-white border border-[#E5E5E8] text-slate-400 cursor-not-allowed flex items-center gap-1" disabled>
+            <span class="material-symbols-outlined text-[15px]">chevron_left</span> Previous
+          </button>
+          <button class="px-2.5 py-1 rounded bg-[#202F63] text-white font-medium">1</button>
+          <button class="px-2.5 py-1 rounded bg-white border border-[#E5E5E8] text-slate-700 hover:bg-[#F3F3F5]">2</button>
+          <button class="px-2.5 py-1 rounded bg-white border border-[#E5E5E8] text-slate-700 hover:bg-[#F3F3F5] flex items-center gap-1">
+            Next <span class="material-symbols-outlined text-[15px]">chevron_right</span>
           </button>
         </div>
       </div>
-
-      <div class="diff-box">
-        <div><span class="font-medium">Department:</span> Natural Sciences</div>
-        <div class="mt4"><span class="font-medium">Change Summary:</span> Swapping Unit 4 Optics Lab with Unit 5 Electromagnetism to align with upcoming inter-school science symposium.</div>
-        <div class="mt8 muted" style="font-size:12.5px"><span class="font-medium">Impact:</span> 56 students across Grade 11-A and 11-B. Lab materials already procured.</div>
-      </div>
     </div>
+    <!-- END: Approvals Console Card -->
 
-    <!-- Approval Item 3: School Notice Clearance -->
-    <div class="approval-card anim-up-4" id="apprItem3">
-      <div class="approval-header">
-        <div>
-          <span class="badge green mb8">Official Communication Clearance</span>
-          <h4 style="font-size:16px;" class="font-medium">Cambodia National Science &amp; Tech Fair Announcement</h4>
-          <p class="muted mt4" style="font-size:13.5px">Submitted by <span class="font-medium">School Administration Office</span></p>
-        </div>
-        <div class="actions-group">
-          <button class="btn btn-sm btn-ghost" onclick="rejectItem('apprItem3')">Reject</button>
-          <button class="btn btn-sm btn-primary" onclick="confirmApproval('apprItem3')">
-            <span class="material-symbols-outlined" style="font-size:16px">check</span> Authorize Broadcast
-          </button>
-        </div>
-      </div>
-
-      <div class="diff-box">
-        <div><span class="font-medium">Target Audience:</span> All Secondary Students, Teachers, and Parents</div>
-        <div class="mt4"><span class="font-medium">Channel:</span> School Announcements &amp; Parent Portal Broadcast</div>
-        <div class="mt8 muted" style="font-size:12.5px"><span class="font-medium">Content:</span> Registration timeline, team guidelines, and campus faculty mentors.</div>
-      </div>
     </div>
-
   </div>
 </main>
 
@@ -177,125 +404,492 @@ window.HERO_CONFIG = {
   active: 'approvals',
   isDashboard: false,
   name: 'Dr. Ly Bunheng',
-  id: 'PRN-2024-001',
+  id: 'PRN-2024-002',
   grade: 'Executive Governance',
   avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html',
   signOutLink: '../../index.html',
   profileLink: 'principal-profile.html',
-  notifLink: '../messaging/campus-announcements.html',
-  notifCount: 1,
-  title: 'Executive Approvals & Governance',
-  greeting: 'Authorize curriculum changes, grade adjustments, and official broadcasts.',
+  notifLink: 'principal-approvals.html',
+  notifCount: 2,
+  title: 'Executive Clearance & Approvals Console',
   ddRows: []
 };
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 
+
+<!-- Modal for Feedback / Note -->
+<div id="feedbackModal" class="modal-backdrop">
+  <div class="w-full max-w-md bg-white border border-[#E5E5E8] rounded-xl p-5 sm:p-6 shadow-xl space-y-4">
+    <div>
+      <h3 class="text-base text-[#202F63] font-semibold" id="feedbackModalTitle">Return for Faculty Revision</h3>
+      <p class="text-xs text-slate-500 mt-0.5" id="feedbackModalSubtitle">Please provide detailed rationale for the instructor or student.</p>
+    </div>
+
+    <input type="hidden" id="modalItemId" value=""/>
+    <input type="hidden" id="modalActionType" value=""/>
+
+    <div class="space-y-1.5">
+      <label class="text-[11px] uppercase tracking-wide text-slate-500 font-medium block">Executive Note / Directive</label>
+      <textarea id="modalNoteInput" rows="3" class="w-full bg-[#F3F3F5] border border-[#E5E5E8] rounded-lg p-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-[#202F63] focus:bg-white transition-all" placeholder="Specify instructions, rubric points, or corrections..."></textarea>
+    </div>
+
+    <div class="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E5E8]">
+      <button onclick="closeFeedbackModal()" class="btn-secondary-neutral">Cancel</button>
+      <button onclick="submitFeedbackAction()" class="btn-primary-burgundy">Submit Decision</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast">Notification</div>
+
 <script>
-let count = 4;
+let approvalsData = [
+  {
+    id: 'REQ-2026-091',
+    title: 'Address Update',
+    category: 'Student Self-Service Request',
+    icon: 'home_pin',
+    initiatorName: 'Kosal Rith Mony',
+    initiatorId: '2026-STD-0143',
+    date: 'Jul 6, 2026',
+    scope: 'Change of residential address.',
+    deltaOld: 'pending',
+    deltaNew: 'Approved & fulfilled by office',
+    status: 'pending',
+    statusLabel: 'Pending Review'
+  },
+  {
+    id: 'REQ-2026-088',
+    title: 'Official Transcript',
+    category: 'Academic Document Service',
+    icon: 'history_edu',
+    initiatorName: 'Nrinphouneta Hok',
+    initiatorId: '2026-STD-0142',
+    date: 'Jul 7, 2026',
+    scope: 'Need transcript for university application.',
+    deltaOld: 'open',
+    deltaNew: 'Approved & fulfilled by office',
+    status: 'pending',
+    statusLabel: 'Pending Review'
+  },
+  {
+    id: 'APV-2026-042',
+    title: 'Gradebook Re-evaluation',
+    category: 'Faculty Evaluation Adjustment',
+    icon: 'calculate',
+    initiatorName: 'Dr. Sarah Jenkins',
+    initiatorId: 'TCH-2026-089',
+    date: 'Jul 5, 2026',
+    scope: 'Discrepancy correction in mid-term rubric.',
+    deltaOld: 'Term 1 score moderation',
+    deltaNew: 'for 3 students',
+    status: 'needs_correction',
+    statusLabel: 'Needs Revision',
+    decisionNote: 'Missing syllabus approval documentation. Please re-attach.'
+  },
+  {
+    id: 'CLR-2026-104',
+    title: 'Medical Absence Leave',
+    category: 'Academic Attendance Clearance',
+    icon: 'medical_services',
+    initiatorName: 'Sophea Chan',
+    initiatorId: '2026-STD-0144',
+    date: 'Jul 4, 2026',
+    scope: 'Medical certificate submitted and verified by clinic.',
+    deltaOld: 'Excused absence record',
+    deltaNew: 'for July 2-4',
+    status: 'approved',
+    statusLabel: 'Authorized',
+    decidedBy: 'Dr. Ly Bunheng',
+    decidedAt: 'Jul 4, 2026'
+  },
+  {
+    id: 'DOC-2026-055',
+    title: 'Certified Grade Verification',
+    category: 'Academic Document Service',
+    icon: 'workspace_premium',
+    initiatorName: 'Sreylin Vuth',
+    initiatorId: '2026-STD-0151',
+    date: 'Jul 3, 2026',
+    scope: 'Exchange program documentation.',
+    deltaOld: 'Issue sealed embassy',
+    deltaNew: 'duplicate',
+    status: 'approved',
+    statusLabel: 'Authorized',
+    decidedBy: 'Dr. Ly Bunheng',
+    decidedAt: 'Jul 3, 2026'
+  }
+];
 
-async function checkPendingAcademicRecords() {
-  try {
-    const res = await NGISAuth.api('/api/academic/admin/oversight');
-    const data = res.data || {};
-    const pending = data.pendingGrades || 0;
-    const published = data.publishedGrades || 0;
-    const statusEl = document.getElementById('liveGradesStatus');
-    if (statusEl) {
-      if (pending > 0) {
-        statusEl.innerHTML = `<span class="badge amber">${pending} grades awaiting executive sign-off</span> (${published} already published)`;
-      } else {
-        statusEl.innerHTML = `<span class="badge green">All grades authorized (${published} published)</span>`;
-        const card = document.getElementById('liveGradesCard');
-        if (card) {
-          card.querySelector('.actions-group').innerHTML = `
-            <span class="status-pill status-approved" style="padding:6px 14px;font-size:13px">
-              <span class="material-symbols-outlined" style="font-size:16px">verified</span> Official Records Published
-            </span>
-          `;
-          card.style.borderColor = '#10b981';
-        }
-        count = Math.max(0, count - 1);
-      }
+let activeTab = 'all';
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.style.display = 'none', 2600);
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function updateTelemetryCounts() {
+  const pending = approvalsData.filter(d => d.status === 'pending').length;
+  const revision = approvalsData.filter(d => d.status === 'needs_correction').length;
+  const approved = approvalsData.filter(d => d.status === 'approved').length;
+  const total = approvalsData.length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statPending').textContent = pending;
+  document.getElementById('statRevision').textContent = revision;
+  document.getElementById('urgentQueuesCount').textContent = pending;
+  const mobUrg = document.getElementById('mobUrgentCount');
+  if (mobUrg) mobUrg.textContent = pending;
+  document.getElementById('authAllBtnLabel').textContent = `Authorize All Pending (${pending})`;
+
+  document.getElementById('tabCountAll').textContent = total;
+  document.getElementById('tabCountPending').textContent = pending;
+  document.getElementById('tabCountRevision').textContent = revision;
+  document.getElementById('tabCountApproved').textContent = approved;
+  document.getElementById('totalCountFooter').textContent = total;
+}
+
+function renderApprovalsTable() {
+  const tbody = document.getElementById('approvalsTableBody');
+  const typeFilter = document.getElementById('typeFilterSelect').value;
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+
+  let filtered = approvalsData.filter(item => {
+    if (activeTab === 'pending' && item.status !== 'pending') return false;
+    if (activeTab === 'needs_correction' && item.status !== 'needs_correction') return false;
+    if (activeTab === 'approved' && item.status !== 'approved') return false;
+
+    if (typeFilter !== 'all' && item.category !== typeFilter) return false;
+
+    if (search) {
+      const match = item.title.toLowerCase().includes(search) ||
+                    item.category.toLowerCase().includes(search) ||
+                    item.initiatorName.toLowerCase().includes(search) ||
+                    item.initiatorId.toLowerCase().includes(search) ||
+                    item.id.toLowerCase().includes(search);
+      if (!match) return false;
     }
-  } catch (err) {
-    console.error('Failed to fetch oversight:', err);
+    return true;
+  });
+
+  document.getElementById('showingCount').textContent = filtered.length > 0 ? `1 to ${filtered.length}` : '0';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="py-10 text-center text-slate-500">
+          <span class="material-symbols-outlined text-3xl text-slate-300 block mb-1">done_all</span>
+          No submissions match this view.
+        </td>
+      </tr>
+    `;
+    return;
   }
-  updateCounter();
+
+  tbody.innerHTML = filtered.map(item => {
+    let statusPill = '';
+    if (item.status === 'pending') {
+      statusPill = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FDF2F4] text-[#92243D] border border-[#FCE7EB] text-xs font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#92243D] animate-pulse"></span>
+        Pending Review
+      </span>`;
+    } else if (item.status === 'needs_correction') {
+      statusPill = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F3F3F5] text-slate-700 border border-[#E5E5E8] text-xs font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+        Needs Revision
+      </span>`;
+    } else {
+      statusPill = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] text-xs font-medium">
+        <span class="material-symbols-outlined text-[14px]">check_circle</span>
+        Authorized
+      </span>`;
+    }
+
+    const isPending = item.status === 'pending';
+    const isRevision = item.status === 'needs_correction';
+
+    return `
+      <tr class="hover:bg-[#F3F3F5]/60 transition-colors group">
+        <td class="py-3 px-3 text-center">
+          <input class="row-checkbox rounded border-slate-300 text-[#202F63] focus:ring-0 cursor-pointer w-4 h-4" type="checkbox" value="${esc(item.id)}"/>
+        </td>
+        <td class="py-3 px-4 min-w-[260px]">
+          <div class="flex items-start gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0 mt-0.5">
+              <span class="material-symbols-outlined text-[18px]">${esc(item.icon || 'description')}</span>
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span class="text-xs sm:text-sm text-slate-900 font-medium truncate">${esc(item.title)}</span>
+              <span class="text-[11px] text-slate-500 mt-0.5">${esc(item.category)}</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3 px-4 min-w-[180px]">
+          <div class="flex flex-col">
+            <span class="text-xs sm:text-sm text-slate-900 font-medium">${esc(item.initiatorName)}</span>
+            <div class="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
+              <span class="font-mono">${esc(item.initiatorId)}</span>
+              <span>•</span>
+              <span>${esc(item.date)}</span>
+            </div>
+          </div>
+        </td>
+        <td class="py-3 px-4 min-w-[220px]">
+          <div class="flex flex-col text-xs text-slate-600">
+            ${item.deltaOld ? `
+              <div class="flex items-center gap-1.5 font-mono text-[11px] text-slate-700">
+                <span class="text-slate-500">${esc(item.deltaOld)}</span>
+                <span class="material-symbols-outlined text-[12px] text-slate-400">arrow_forward</span>
+                <span class="text-[#202F63] font-medium">${esc(item.deltaNew)}</span>
+              </div>
+            ` : ''}
+            <span class="text-[11px] text-slate-500 mt-0.5 italic">“${esc(item.scope)}”</span>
+            ${item.decisionNote ? `<span class="text-[11px] text-[#92243D] mt-0.5">Note: ${esc(item.decisionNote)}</span>` : ''}
+          </div>
+        </td>
+        <td class="py-3 px-4 whitespace-nowrap">
+          ${statusPill}
+        </td>
+        <td class="py-3 px-4 whitespace-nowrap text-right">
+          <div class="flex items-center justify-end gap-1.5">
+            ${isPending ? `
+              <button onclick="authorizeItem('${esc(item.id)}')" class="px-2.5 py-1 rounded bg-[#92243D] text-white hover:bg-[#7A1D32] text-xs font-medium transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">check</span> Authorize
+              </button>
+              <button onclick="openFeedbackModal('${esc(item.id)}', 'needs_correction')" class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-[#F3F3F5] transition-colors" title="Request Revision">
+                <span class="material-symbols-outlined text-[18px]">edit_note</span>
+              </button>
+            ` : isRevision ? `
+              <button onclick="openFeedbackModal('${esc(item.id)}', 'view_notes')" class="px-2.5 py-1 rounded bg-[#F3F3F5] hover:bg-slate-200 text-slate-700 border border-[#E5E5E8] text-xs font-medium transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">comment</span> View Notes
+              </button>
+              <button onclick="authorizeItem('${esc(item.id)}')" class="p-1.5 rounded-lg text-slate-500 hover:text-[#92243D] hover:bg-[#FDF2F4] transition-colors" title="Authorize">
+                <span class="material-symbols-outlined text-[18px]">check</span>
+              </button>
+            ` : `
+              <button onclick="viewRecord('${esc(item.id)}')" class="px-2.5 py-1 rounded bg-[#F3F3F5] hover:bg-slate-200 text-slate-700 border border-[#E5E5E8] text-xs font-medium transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">visibility</span> View Record
+              </button>
+              <button onclick="undoItem('${esc(item.id)}')" class="p-1.5 rounded-lg text-slate-400 hover:text-[#92243D] hover:bg-[#FDF2F4] transition-colors" title="Undo / Reopen">
+                <span class="material-symbols-outlined text-[18px]">undo</span>
+              </button>
+            `}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  bindCheckboxes();
 }
 
-async function authorizeLiveGrades() {
-  try {
-    await NGISAuth.api('/api/academic/admin/publish-grades', {
-      method: 'POST',
-      body: JSON.stringify({ reason: 'Principal executive authorization and release to student/parent portals' })
-    });
-    if (window.toast) window.toast('Official grades approved and published to all portals', 'success');
-    confirmApproval('liveGradesCard');
-    checkPendingAcademicRecords();
-  } catch (err) {
-    if (window.toast) window.toast(err.message || 'Approval failed', 'error');
+function bindCheckboxes() {
+  const selectAll = document.getElementById('selectAllCheckbox');
+  const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+  const batchBar = document.getElementById('batchBar');
+  const batchCount = document.getElementById('batchCount');
+
+  function updateBatchState() {
+    const checked = Array.from(rowCheckboxes).filter(cb => cb.checked);
+    if (checked.length > 0) {
+      batchBar.classList.remove('hidden');
+      batchCount.textContent = `${checked.length} submission${checked.length > 1 ? 's' : ''} selected`;
+    } else {
+      batchBar.classList.add('hidden');
+    }
+    if (selectAll) {
+      selectAll.checked = checked.length === rowCheckboxes.length && rowCheckboxes.length > 0;
+    }
   }
+
+  if (selectAll) {
+    selectAll.onchange = function() {
+      rowCheckboxes.forEach(cb => cb.checked = selectAll.checked);
+      updateBatchState();
+    };
+  }
+
+  rowCheckboxes.forEach(cb => {
+    cb.onchange = updateBatchState;
+  });
 }
 
-function rejectLiveGrades() {
-  rejectItem('liveGradesCard');
-  if (window.toast) window.toast('Returned gradebook submission to department head with notes', 'info');
+function setTabFilter(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab-pill').forEach(btn => {
+    const isTarget = btn.getAttribute('data-tab') === tab;
+    btn.classList.toggle('active', isTarget);
+    const badge = btn.querySelector('span:last-child');
+    if (badge) {
+      badge.className = isTarget
+        ? 'px-1.5 py-0.2 rounded text-[11px] bg-white/20 text-white font-medium tabular-nums'
+        : 'px-1.5 py-0.2 rounded text-[11px] bg-white border border-[#E5E5E8] text-slate-700 font-medium tabular-nums';
+    }
+  });
+  renderApprovalsTable();
 }
 
-function confirmApproval(id) {
-  const card = document.getElementById(id);
-  if (!card) return;
-  const actions = card.querySelector('.actions-group');
-  actions.innerHTML = `
-    <span class="status-pill status-approved" style="padding:6px 14px;font-size:13px">
-      <span class="material-symbols-outlined" style="font-size:16px">verified</span> Authorized by Principal
-    </span>
-  `;
-  card.style.borderColor = '#10b981';
-  decrement();
+function applyApprovalsFilter() {
+  renderApprovalsTable();
 }
 
-function rejectItem(id) {
-  const card = document.getElementById(id);
-  if (!card) return;
-  const actions = card.querySelector('.actions-group');
-  actions.innerHTML = `
-    <span class="status-pill" style="padding:6px 14px;font-size:13px;background:rgba(239,68,68,0.12);color:#ef4444">
-      <span class="material-symbols-outlined" style="font-size:16px">close</span> Returned for Revisions
-    </span>
-  `;
-  card.style.borderColor = '#ef4444';
-  decrement();
+function authorizeItem(id) {
+  const item = approvalsData.find(x => x.id === id);
+  if (item) {
+    item.status = 'approved';
+    item.statusLabel = 'Authorized';
+    item.decidedBy = 'Dr. Ly Bunheng';
+    item.decidedAt = 'Today';
+  }
+  updateTelemetryCounts();
+  renderApprovalsTable();
+  toast(`Authorized and published: ${item ? item.title : id}`);
 }
 
-function decrement() {
-  count = Math.max(0, count - 1);
-  updateCounter();
+function undoItem(id) {
+  const item = approvalsData.find(x => x.id === id);
+  if (item) {
+    item.status = 'pending';
+    item.statusLabel = 'Pending Review';
+  }
+  updateTelemetryCounts();
+  renderApprovalsTable();
+  toast(`Returned to Pending Review: ${item ? item.title : id}`);
 }
 
-function updateCounter() {
-  const el = document.getElementById('pendingCounter');
-  if (el) el.textContent = count > 0 ? `${count} Pending Reviews` : 'All Authorizations Complete';
+function viewRecord(id) {
+  const item = approvalsData.find(x => x.id === id);
+  toast(`Viewing sealed record #${id}`);
 }
 
 function authorizeAllPending() {
-  ['liveGradesCard', 'apprItem1', 'apprItem2', 'apprItem3'].forEach(id => {
-    confirmApproval(id);
-  });
-  NGISAuth.api('/api/academic/admin/publish-grades', {
-    method: 'POST',
-    body: JSON.stringify({ reason: 'Executive mass authorization by Principal' })
-  }).catch(() => {});
-  if (window.toast) window.toast('All pending executive approvals authorized', 'success');
+  const pending = approvalsData.filter(d => d.status === 'pending');
+  if (pending.length === 0) {
+    toast('No pending submissions waiting for clearance.');
+    return;
+  }
+  const btn = document.getElementById('authAllBtn');
+  btn.innerHTML = '<span class="material-symbols-outlined text-[17px] animate-spin">refresh</span><span>Processing Clearance...</span>';
+  setTimeout(() => {
+    pending.forEach(item => {
+      item.status = 'approved';
+      item.statusLabel = 'Authorized';
+      item.decidedBy = 'Dr. Ly Bunheng';
+      item.decidedAt = 'Today';
+    });
+    btn.innerHTML = '<span class="material-symbols-outlined text-[17px]">verified</span><span>All Queued Authorized!</span>';
+    updateTelemetryCounts();
+    renderApprovalsTable();
+    toast(`All ${pending.length} submissions authorized and published.`);
+  }, 600);
 }
 
-document.addEventListener('DOMContentLoaded', checkPendingAcademicRecords);
-checkPendingAcademicRecords();
+function executeBatchAuthorize() {
+  const checked = Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => cb.value);
+  if (checked.length === 0) return;
+  checked.forEach(id => {
+    const item = approvalsData.find(x => x.id === id);
+    if (item) {
+      item.status = 'approved';
+      item.statusLabel = 'Authorized';
+    }
+  });
+  document.getElementById('batchBar').classList.add('hidden');
+  updateTelemetryCounts();
+  renderApprovalsTable();
+  toast(`Batch cleared: ${checked.length} records authorized.`);
+}
+
+function exportCSV() {
+  toast('Exporting Clearance Summary to CSV...');
+}
+
+function openFeedbackModal(id, actionType) {
+  const item = approvalsData.find(x => x.id === id);
+  document.getElementById('modalItemId').value = id;
+  document.getElementById('modalActionType').value = actionType;
+  const titleEl = document.getElementById('feedbackModalTitle');
+  const subEl = document.getElementById('feedbackModalSubtitle');
+  const noteEl = document.getElementById('modalNoteInput');
+  noteEl.value = item?.decisionNote || '';
+
+  if (actionType === 'view_notes') {
+    titleEl.textContent = 'Revision Feedback';
+    subEl.textContent = `Notes for ${item?.title || id}`;
+  } else {
+    titleEl.textContent = 'Return for Faculty Revision';
+    subEl.textContent = `Provide directive for ${item?.initiatorName || 'Submitter'}`;
+  }
+
+  document.getElementById('feedbackModal').classList.add('open');
+}
+
+function closeFeedbackModal() {
+  document.getElementById('feedbackModal').classList.remove('open');
+}
+
+function submitFeedbackAction() {
+  const id = document.getElementById('modalItemId').value;
+  const note = document.getElementById('modalNoteInput').value.trim();
+  const item = approvalsData.find(x => x.id === id);
+  if (item) {
+    item.status = 'needs_correction';
+    item.statusLabel = 'Needs Revision';
+    item.decisionNote = note || 'Revision requested by Principal';
+  }
+  closeFeedbackModal();
+  updateTelemetryCounts();
+  renderApprovalsTable();
+  toast(`Directive sent to submitter for ${item ? item.title : id}`);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // If backend API is reachable, merge backend records
+  if (window.NGISAuth) {
+    NGISAuth.api('/api/principal/approvals').then(res => {
+      if (res && res.data && res.data.length > 0) {
+        res.data.forEach(srvItem => {
+          if (!approvalsData.some(x => x.id === srvItem.id)) {
+            approvalsData.push({
+              id: srvItem.id,
+              title: srvItem.title,
+              category: srvItem.category || 'Administrative Approval',
+              icon: srvItem.category === 'grades' ? 'calculate' : 'description',
+              initiatorName: srvItem.submittedBy || 'Faculty',
+              initiatorId: srvItem.submittedRole || 'TCH',
+              date: srvItem.submittedAt ? srvItem.submittedAt.slice(0, 10) : '2026-07-01',
+              scope: srvItem.details || srvItem.scope || 'Review item',
+              deltaOld: srvItem.diffOld || '',
+              deltaNew: srvItem.diffNew || '',
+              status: srvItem.status || 'pending',
+              statusLabel: srvItem.status === 'approved' ? 'Authorized' : (srvItem.status === 'needs_correction' ? 'Needs Revision' : 'Pending Review'),
+              decisionNote: srvItem.decisionNote || ''
+            });
+          }
+        });
+      }
+      updateTelemetryCounts();
+      renderApprovalsTable();
+    }).catch(() => {
+      updateTelemetryCounts();
+      renderApprovalsTable();
+    });
+  } else {
+    updateTelemetryCounts();
+    renderApprovalsTable();
+  }
+});
 </script>
-<script src="../../assets/js/academic-live.js"></script>
 </body>
 </html>

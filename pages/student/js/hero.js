@@ -318,7 +318,7 @@
   var notifData = [
     { icon: 'assignment', color: '#2563eb', bg: '#eff6ff', title: 'Physics Essay Draft posted',    meta: 'Mr. Sophea · 12m ago',   unread: true  },
     { icon: 'grade',      color: '#16a34a', bg: '#f0fdf4', title: 'Chemistry graded: 88%',          meta: 'Ms. Kiry · 2h ago',      unread: true  },
-    { icon: 'campaign',   color: '#2f4550', bg: 'rgba(47,69,80,0.1)', title: 'Science Fair registration open', meta: 'School · Yesterday', unread: false }
+    { icon: 'campaign',   color: '#2455D6', bg: 'rgba(36,85,214,0.1)', title: 'Science Fair registration open', meta: 'School · Yesterday', unread: false }
   ];
 
   var notifItemsHtml = '';

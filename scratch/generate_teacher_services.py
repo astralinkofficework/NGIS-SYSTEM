@@ -1,0 +1,1027 @@
+import os
+
+html_content = """<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Faculty Services Hub</title>
+
+<!-- Fonts: Inter, Manrope, Plus Jakarta Sans & Material Symbols -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Kantumruy+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+
+<!-- Phosphor Icons for Mobile Hamburger -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#202F63",
+        "secondary": "#202F63",
+        "accent": "#92243D",
+        "surface": "#FFFFFF",
+        "surface-container": "#F3F3F5",
+        "surface-container-high": "#FFFFFF",
+        "surface-container-low": "#F3F3F5",
+        "surface-container-highest": "#E5E5E8",
+        "on-surface": "#000000",
+        "on-surface-variant": "#555555",
+        "outline": "#77777F",
+        "outline-variant": "#E5E5E8",
+        "error": "#92243D"
+      },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
+
+<style>
+/* CRITICAL RULE: NO BOLD FONTS across page (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td, [class*="font-bold"], [class*="font-semibold"] {
+  font-weight: 400 !important;
+}
+.font-medium, .stat-val, .badge, th, h1, h2, h3, .heading-md {
+  font-weight: 500 !important;
+}
+
+body {
+  background-color: #F3F3F5;
+  color: #000000;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F3F3F5;
+}
+::-webkit-scrollbar-thumb {
+  background: #E5E5E8;
+  border-radius: 9999px;
+}
+
+/* Modal animation & backdrop */
+.srv-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.srv-modal-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+.srv-modal-panel {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E5E8;
+  width: 100%;
+  max-width: 620px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+.srv-modal-backdrop.show .srv-modal-panel {
+  transform: translateY(0) scale(1);
+}
+
+.service-cat-card {
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.service-cat-card:hover {
+  transform: translateY(-2px);
+  border-color: #202F63;
+  box-shadow: 0 6px 16px rgba(32, 47, 99, 0.06);
+}
+
+.req-card {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.req-card:hover {
+  border-color: #202F63;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+</style>
+</head>
+
+<body class="bg-[#F3F3F5] text-[#000000] min-h-screen">
+
+  <script>
+    window.PAGE = {
+      role: 'teacher',
+      active: 'services'
+    };
+    window.HERO_CONFIG = {
+      title: 'Faculty Services & Operations Hub',
+      greeting: 'Classroom AV & IT assistance, facility repairs, academic stationery & lab requisitions, and room bookings',
+      name: 'Dr. Sarah Jenkins',
+      id: 'Teacher ID: TCH-2024-042',
+      grade: 'Mathematics Department',
+      avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
+      avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
+      homeLink: 'teacher.html'
+    };
+  </script>
+
+  <!-- Main Content Wrap -->
+  <main class="app-main w-full min-h-screen pb-16">
+    <!-- Topbar & Layout Injected by layout.js -->
+
+    <!-- Page Content Container -->
+    <div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+      <!-- Breadcrumbs & Quick Header -->
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div class="flex items-center gap-2 text-xs text-[#555555]">
+          <a href="teacher.html" class="hover:text-[#202F63] transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">home</span> Home
+          </a>
+          <span>/</span>
+          <span class="text-[#000000] font-medium">Campus Services</span>
+          <span>/</span>
+          <span class="text-[#202F63] font-medium">Faculty Services Hub</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[#202F63] text-white">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span>
+            IT &amp; Facilities Helpdesk Active
+          </span>
+          <button onclick="refreshRequests()" class="p-1.5 text-[#555555] hover:text-[#202F63] hover:bg-white rounded-lg border border-transparent hover:border-[#E5E5E8] transition-all" title="Refresh requests">
+            <span class="material-symbols-outlined text-[18px]">refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Hero Header Section -->
+      <div class="bg-white border border-[#E5E5E8] rounded-2xl p-5 sm:p-6 mb-6 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="material-symbols-outlined text-[#202F63] text-2xl">room_service</span>
+              <h1 class="text-xl sm:text-2xl font-medium text-[#202F63]">Faculty Services &amp; Support Hub</h1>
+            </div>
+            <p class="text-sm text-[#555555] max-w-2xl">
+              Submit immediate classroom technology repair requests, schedule facility maintenance, requisition exam stationery or lab supplies, and book campus presentation spaces.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2.5">
+            <button onclick="openNewRequestModal()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#92243D] text-white text-sm font-medium hover:bg-[#7a1e33] active:scale-95 transition-all shadow-sm">
+              <span class="material-symbols-outlined text-[18px]">add_task</span>
+              <span>Submit Service Request</span>
+            </button>
+            <a href="teacher-lost-found.html" class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] text-sm font-medium hover:bg-white active:scale-95 transition-all">
+              <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+              <span>Lost &amp; Found Desk</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-6 pt-6 border-t border-[#E5E5E8]">
+          <div class="bg-[#F3F3F5] rounded-xl p-3.5 sm:p-4 border border-[#E5E5E8]">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-[#555555]">Active Requisitions</span>
+              <span class="material-symbols-outlined text-sm text-[#202F63]">pending</span>
+            </div>
+            <div id="statActive" class="text-xl sm:text-2xl font-medium text-[#202F63]">--</div>
+            <span class="text-[11px] text-[#555555]">Open or in-progress</span>
+          </div>
+
+          <div class="bg-[#F3F3F5] rounded-xl p-3.5 sm:p-4 border border-[#E5E5E8]">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-[#555555]">IT &amp; AV Repairs</span>
+              <span class="material-symbols-outlined text-sm text-[#202F63]">display_settings</span>
+            </div>
+            <div id="statIt" class="text-xl sm:text-2xl font-medium text-[#202F63]">--</div>
+            <span class="text-[11px] text-[#555555]">Classroom hardware</span>
+          </div>
+
+          <div class="bg-[#F3F3F5] rounded-xl p-3.5 sm:p-4 border border-[#E5E5E8]">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-[#555555]">Space Bookings</span>
+              <span class="material-symbols-outlined text-sm text-[#92243D]">event_available</span>
+            </div>
+            <div id="statSpace" class="text-xl sm:text-2xl font-medium text-[#92243D]">--</div>
+            <span class="text-[11px] text-[#555555]">Halls &amp; Science Labs</span>
+          </div>
+
+          <div class="bg-[#F3F3F5] rounded-xl p-3.5 sm:p-4 border border-[#E5E5E8]">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-[#555555]">Resolved This Term</span>
+              <span class="material-symbols-outlined text-sm text-[#000000]">task_alt</span>
+            </div>
+            <div id="statCompleted" class="text-xl sm:text-2xl font-medium text-[#000000]">--</div>
+            <span class="text-[11px] text-[#555555]">Completed orders</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Category Shortcuts -->
+      <div class="mb-6">
+        <h2 class="text-sm font-medium text-[#000000] mb-3 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[#202F63] text-[18px]">category</span>
+          <span>Quick Department Categories</span>
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div onclick="openCategoryQuick('it_support')" class="service-cat-card cursor-pointer bg-white border border-[#E5E5E8] rounded-xl p-3.5 text-center flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-xl">cast_connected</span>
+            </div>
+            <span class="text-xs font-medium text-[#000000] mb-0.5">IT &amp; Smart AV</span>
+            <span class="text-[10px] text-[#555555]">Projectors, Wi-Fi, PCs</span>
+          </div>
+
+          <div onclick="openCategoryQuick('facilities')" class="service-cat-card cursor-pointer bg-white border border-[#E5E5E8] rounded-xl p-3.5 text-center flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-xl">home_repair_service</span>
+            </div>
+            <span class="text-xs font-medium text-[#000000] mb-0.5">Facilities &amp; AC</span>
+            <span class="text-[10px] text-[#555555]">Lighting, AC, Furniture</span>
+          </div>
+
+          <div onclick="openCategoryQuick('supplies')" class="service-cat-card cursor-pointer bg-white border border-[#E5E5E8] rounded-xl p-3.5 text-center flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-xl">inventory</span>
+            </div>
+            <span class="text-xs font-medium text-[#000000] mb-0.5">Exam &amp; Stationery</span>
+            <span class="text-[10px] text-[#555555]">Papers, Markers, Reagents</span>
+          </div>
+
+          <div onclick="openCategoryQuick('booking')" class="service-cat-card cursor-pointer bg-white border border-[#E5E5E8] rounded-xl p-3.5 text-center flex flex-col items-center justify-center">
+            <div class="w-10 h-10 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-xl">meeting_room</span>
+            </div>
+            <span class="text-xs font-medium text-[#000000] mb-0.5">Room &amp; Lab Booking</span>
+            <span class="text-[10px] text-[#555555]">Hall B, Science Lab B</span>
+          </div>
+
+          <div onclick="openCategoryQuick('admin_hr')" class="service-cat-card cursor-pointer bg-white border border-[#E5E5E8] rounded-xl p-3.5 text-center flex flex-col items-center justify-center col-span-2 sm:col-span-1">
+            <div class="w-10 h-10 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined text-xl">badge</span>
+            </div>
+            <span class="text-xs font-medium text-[#000000] mb-0.5">Faculty Admin &amp; HR</span>
+            <span class="text-[10px] text-[#555555]">Letters, Parking, Timetable</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls: Status Tabs, Search, Priority Filters -->
+      <div class="bg-white border border-[#E5E5E8] rounded-2xl p-4 mb-6 shadow-sm">
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pb-3 border-b border-[#E5E5E8]">
+          <!-- Filter Tabs -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button onclick="setStatusTab('all')" id="tab-all" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#202F63] text-white transition-colors">
+              All My Requests
+            </button>
+            <button onclick="setStatusTab('in_progress')" id="tab-in_progress" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F3F3F5] text-[#555555] hover:text-[#000000] transition-colors flex items-center gap-1.5">
+              <span>In Progress</span>
+              <span id="tabProgressBadge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-[#202F63] text-white">0</span>
+            </button>
+            <button onclick="setStatusTab('open')" id="tab-open" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F3F3F5] text-[#555555] hover:text-[#000000] transition-colors">
+              Open / Queued
+            </button>
+            <button onclick="setStatusTab('completed')" id="tab-completed" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F3F3F5] text-[#555555] hover:text-[#000000] transition-colors">
+              Completed
+            </button>
+          </div>
+
+          <!-- Search Input -->
+          <div class="relative w-full lg:w-72">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-[#77777F]">search</span>
+            <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search requests, rooms, IDs..." class="w-full pl-9 pr-8 py-1.5 text-xs rounded-xl border border-[#E5E5E8] bg-[#F3F3F5] focus:bg-white focus:outline-none focus:border-[#202F63] text-[#000000]">
+            <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-[#77777F] hover:text-[#000000]">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Dropdowns -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3">
+          <div>
+            <label class="block text-[11px] font-medium text-[#555555] mb-1">Category</label>
+            <select id="filterCategory" onchange="applyFilters()" class="w-full text-xs rounded-lg border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] py-1.5 px-2.5 focus:border-[#202F63]">
+              <option value="all">All Categories</option>
+              <option value="it_support">IT &amp; AV Support</option>
+              <option value="facilities">Facilities &amp; Maintenance</option>
+              <option value="supplies">Teaching &amp; Exam Supplies</option>
+              <option value="booking">Space &amp; Lab Booking</option>
+              <option value="admin_hr">Faculty Admin &amp; HR</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-medium text-[#555555] mb-1">Priority Level</label>
+            <select id="filterPriority" onchange="applyFilters()" class="w-full text-xs rounded-lg border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] py-1.5 px-2.5 focus:border-[#202F63]">
+              <option value="all">All Priorities</option>
+              <option value="urgent">Urgent</option>
+              <option value="high">High</option>
+              <option value="normal">Normal</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-medium text-[#555555] mb-1">Location Context</label>
+            <select id="filterLocation" onchange="applyFilters()" class="w-full text-xs rounded-lg border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] py-1.5 px-2.5 focus:border-[#202F63]">
+              <option value="all">All Locations</option>
+              <option value="Room 302">Academic Wing B (Room 302)</option>
+              <option value="Room 305">Academic Wing B (Room 305)</option>
+              <option value="Science Lab B">Science Wing (Lab B)</option>
+              <option value="Auditorium">Main Campus Auditorium</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests Cards Container -->
+      <div id="requestsContainer" class="space-y-3">
+        <!-- Rendered by JavaScript -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden bg-white border border-[#E5E5E8] rounded-2xl p-12 text-center">
+        <div class="w-12 h-12 rounded-full bg-[#F3F3F5] text-[#202F63] flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-2xl">assignment_late</span>
+        </div>
+        <h3 class="text-base font-medium text-[#000000] mb-1">No service requests found</h3>
+        <p class="text-xs text-[#555555] max-w-sm mx-auto mb-4">No matching requests match the current filters. Click below to submit a new inquiry or reset filters.</p>
+        <div class="flex items-center justify-center gap-2">
+          <button onclick="resetFilters()" class="px-3.5 py-1.5 bg-[#F3F3F5] text-[#000000] text-xs font-medium rounded-lg hover:bg-[#E5E5E8] transition-colors">
+            Reset Filters
+          </button>
+          <button onclick="openNewRequestModal()" class="px-3.5 py-1.5 bg-[#92243D] text-white text-xs font-medium rounded-lg hover:bg-[#7a1e33] transition-colors">
+            New Request
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ============================================================
+       MODAL: NEW FACULTY SERVICE REQUEST
+       ============================================================ -->
+  <div id="newRequestModal" class="srv-modal-backdrop" onclick="if(event.target===this) closeNewRequestModal()">
+    <div class="srv-modal-panel p-5 sm:p-6">
+      <div class="flex items-center justify-between pb-4 border-b border-[#E5E5E8] mb-4">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[#202F63] text-xl">post_add</span>
+          <h2 class="text-base font-medium text-[#000000]">New Faculty Service Request</h2>
+        </div>
+        <button onclick="closeNewRequestModal()" class="text-[#77777F] hover:text-[#000000] p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form id="newRequestForm" onsubmit="handleNewRequestSubmit(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Service Category *</label>
+          <select id="reqCategory" onchange="handleCategoryChange(this.value)" required class="w-full text-xs rounded-xl border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] p-2.5 focus:border-[#202F63]">
+            <option value="it_support">Classroom IT &amp; Smart Equipment Support</option>
+            <option value="facilities">Facilities &amp; Air Conditioning Maintenance</option>
+            <option value="supplies">Academic Stationery, Exam Booklets &amp; Lab Consumables</option>
+            <option value="booking">Campus Space &amp; Science Lab Reservation</option>
+            <option value="admin_hr">Faculty Administration &amp; Teaching Schedule Inquiries</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Specific Item / Request Type *</label>
+          <select id="reqType" required class="w-full text-xs rounded-xl border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] p-2.5 focus:border-[#202F63]">
+            <!-- Populated dynamically based on category -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Subject / Summary *</label>
+          <input type="text" id="reqTitle" required placeholder="Brief description of the issue or requirement" class="w-full text-xs rounded-xl border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] p-2.5 focus:border-[#202F63]">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-[#000000] mb-1">Classroom / Location *</label>
+            <input type="text" id="reqLocation" required value="Room 302 (Academic Wing B)" class="w-full text-xs rounded-xl border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] p-2.5 focus:border-[#202F63]">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-[#000000] mb-1">Urgency Priority *</label>
+            <select id="reqPriority" required class="w-full text-xs rounded-xl border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] p-2.5 focus:border-[#202F63]">
+              <option value="normal">Normal (Within 24-48 Hours)</option>
+              <option value="high">High (Required for Next Teaching Period)</option>
+              <option value="urgent">Urgent (Immediate Lecture Interruption)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Detailed Notes &amp; Specifications</label>
+          <textarea id="reqDesc" rows="3" placeholder="Provide details such as error symptoms, quantity needed, or specific time slot required..." class="w-full text-xs rounded-xl border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] p-2.5 focus:border-[#202F63]"></textarea>
+        </div>
+
+        <div class="p-3 bg-[#F3F3F5] rounded-xl text-xs flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#202F63] text-base">badge</span>
+            <span class="text-[#555555]">Submitting as: <strong class="text-[#000000]">Dr. Sarah Jenkins</strong> (Faculty TCH-2024-042)</span>
+          </div>
+          <span class="text-[11px] text-[#202F63]">Sensok Campus</span>
+        </div>
+
+        <div class="pt-3 border-t border-[#E5E5E8] flex items-center justify-end gap-2">
+          <button type="button" onclick="closeNewRequestModal()" class="px-4 py-2 text-xs font-medium text-[#555555] hover:text-[#000000] rounded-xl hover:bg-[#F3F3F5] transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 text-xs font-medium bg-[#92243D] text-white rounded-xl hover:bg-[#7a1e33] active:scale-95 transition-all shadow-sm flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">send</span>
+            <span>Submit Requisition</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       MODAL: REQUEST DETAILS & COMMENTS THREAD
+       ============================================================ -->
+  <div id="detailsModal" class="srv-modal-backdrop" onclick="if(event.target===this) closeDetailsModal()">
+    <div class="srv-modal-panel p-5 sm:p-6 max-w-[620px]">
+      <div class="flex items-start justify-between pb-4 border-b border-[#E5E5E8] mb-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="dtlStatusBadge" class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-[#202F63] text-white">Status</span>
+            <span id="dtlPriorityBadge" class="inline-block px-2 py-0.5 rounded text-[11px] font-medium bg-[#F3F3F5] text-[#000000] border border-[#E5E5E8]">Priority</span>
+          </div>
+          <h2 id="dtlTitle" class="text-base sm:text-lg font-medium text-[#000000]">Request Title</h2>
+          <span id="dtlId" class="text-xs text-[#555555]">Reference ID</span>
+        </div>
+        <button onclick="closeDetailsModal()" class="text-[#77777F] hover:text-[#000000] p-1 rounded-lg">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-3 p-3 bg-[#F3F3F5] rounded-xl text-xs">
+          <div>
+            <span class="text-[#555555] block">Category:</span>
+            <span id="dtlCategory" class="font-medium text-[#000000]">--</span>
+          </div>
+          <div>
+            <span class="text-[#555555] block">Assigned Dept:</span>
+            <span id="dtlAssignee" class="font-medium text-[#202F63]">--</span>
+          </div>
+          <div>
+            <span class="text-[#555555] block">Date Submitted:</span>
+            <span id="dtlDate" class="font-medium text-[#000000]">--</span>
+          </div>
+          <div>
+            <span class="text-[#555555] block">Campus / Room:</span>
+            <span id="dtlLocation" class="font-medium text-[#000000]">--</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-medium text-[#555555] mb-1">Description &amp; Specifications</h4>
+          <p id="dtlDesc" class="text-xs text-[#000000] leading-relaxed bg-white border border-[#E5E5E8] rounded-xl p-3">--</p>
+        </div>
+
+        <!-- Activity & Comments Stream -->
+        <div>
+          <h4 class="text-xs font-medium text-[#000000] mb-2 flex items-center justify-between">
+            <span>Updates &amp; Department Comments</span>
+            <span class="text-[11px] text-[#555555]">Chronological log</span>
+          </h4>
+          <div id="dtlCommentsList" class="space-y-2 mb-3 max-h-48 overflow-y-auto">
+            <!-- Comments rendered here -->
+          </div>
+
+          <!-- Add Note Form -->
+          <div class="flex items-center gap-2 pt-2">
+            <input type="text" id="newCommentInput" placeholder="Add note or update on this request..." class="flex-1 text-xs rounded-xl border-[#E5E5E8] bg-[#F3F3F5] text-[#000000] p-2 focus:border-[#202F63]">
+            <button onclick="submitComment()" class="px-3.5 py-2 bg-[#202F63] text-white text-xs font-medium rounded-xl hover:bg-[#18234D] transition-colors">
+              Send Note
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-[#E5E5E8] mt-5 flex items-center justify-end">
+        <button onclick="closeDetailsModal()" class="px-4 py-2 text-xs font-medium text-[#555555] hover:text-[#000000] rounded-xl bg-[#F3F3F5]">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared App JS & Layout -->
+  <script src="../../assets/js/layout.js"></script>
+
+  <!-- Faculty Services Script Logic -->
+  <script>
+    const API_ENDPOINT = '/api/service-requests';
+    let allRequests = [];
+    let currentStatusTab = 'all';
+    let currentCategory = 'all';
+    let currentPriority = 'all';
+    let currentLocation = 'all';
+    let searchQuery = '';
+    let selectedRequestId = null;
+
+    const TEACHER_PROFILE = {
+      id: 'TCH-2024-042',
+      name: 'Dr. Sarah Jenkins',
+      role: 'teacher',
+      department: 'Mathematics Department'
+    };
+
+    const SUB_TYPE_OPTIONS = {
+      it_support: [
+        { val: 'projector_av', label: 'Ceiling Laser Projector & Smart Display' },
+        { val: 'wifi_lan', label: 'Classroom High-Density Wi-Fi / Exam Access' },
+        { val: 'teacher_pc', label: 'Faculty Laptop & HDMI Interface Support' },
+        { val: 'audio_mic', label: 'Hall Audio & Wireless Microphone System' }
+      ],
+      facilities: [
+        { val: 'ac_thermostat', label: 'Air Conditioning & Temperature Regulation' },
+        { val: 'lighting', label: 'Classroom Lighting & Automated Blinds' },
+        { val: 'furniture', label: 'Lectern, Teacher Desk & Chair Ergonomics' },
+        { val: 'whiteboard', label: 'Whiteboard Resurfacing / Replacement' }
+      ],
+      supplies: [
+        { val: 'exam_stationery', label: 'Examination Answer Booklets & Formula Tables' },
+        { val: 'marker_recharge', label: 'Whiteboard Marker Refill Packs & Erasers' },
+        { val: 'lab_materials', label: 'Science Lab Glassware & Reagent Refills' },
+        { val: 'print_quota', label: 'Exam Printing Paper Ream Quota Extension' }
+      ],
+      booking: [
+        { val: 'space_booking', label: 'Science Lab B (After-School Physics Practical)' },
+        { val: 'auditorium', label: 'Main Campus Auditorium (Math Olympiad)' },
+        { val: 'conference', label: 'Faculty Wing Conference Room (Dept Meeting)' }
+      ],
+      admin_hr: [
+        { val: 'employment_letter', label: 'Official Faculty Employment & Visa Letter' },
+        { val: 'parking_permit', label: 'Staff Bay Parking Permit Renewal' },
+        { val: 'schedule_adjust', label: 'Lecture Room Exchange & Timetable Inquiry' }
+      ]
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      handleCategoryChange('it_support');
+      loadRequests();
+    });
+
+    function handleCategoryChange(cat) {
+      const typeSelect = document.getElementById('reqType');
+      if (!typeSelect) return;
+      const options = SUB_TYPE_OPTIONS[cat] || SUB_TYPE_OPTIONS.it_support;
+      typeSelect.innerHTML = options.map(o => `<option value="${o.val}">${o.label}</option>`).join('');
+    }
+
+    async function loadRequests() {
+      try {
+        const res = await fetch(`${API_ENDPOINT}?role=teacher`);
+        if (res.ok) {
+          const json = await res.json();
+          allRequests = Array.isArray(json) ? json : (json.data || []);
+          renderDashboard();
+        } else {
+          loadFallback();
+        }
+      } catch (e) {
+        console.warn('API error, loading local dataset', e);
+        loadFallback();
+      }
+    }
+
+    async function loadFallback() {
+      try {
+        const fallbackRes = await fetch('../../data/service_requests.json');
+        if (fallbackRes.ok) {
+          const json = await fallbackRes.json();
+          const items = Array.isArray(json) ? json : (json.data || []);
+          allRequests = items.filter(r => r.role === 'teacher' || (r.studentId && r.studentId.startsWith('TCH')));
+          renderDashboard();
+        }
+      } catch (err) {
+        console.error('Failed to load fallback service requests', err);
+      }
+    }
+
+    function refreshRequests() {
+      loadRequests();
+    }
+
+    function renderDashboard() {
+      updateStats();
+      renderRequests();
+    }
+
+    function updateStats() {
+      const active = allRequests.filter(r => r.status === 'open' || r.status === 'in_progress').length;
+      const it = allRequests.filter(r => r.category === 'it_support').length;
+      const space = allRequests.filter(r => r.category === 'booking' || r.type === 'space_booking' || r.type === 'auditorium').length;
+      const completed = allRequests.filter(r => r.status === 'completed' || r.status === 'resolved').length;
+
+      document.getElementById('statActive').innerText = active;
+      document.getElementById('statIt').innerText = it;
+      document.getElementById('statSpace').innerText = space;
+      document.getElementById('statCompleted').innerText = completed;
+
+      const progressCount = allRequests.filter(r => r.status === 'in_progress').length;
+      const pBadge = document.getElementById('tabProgressBadge');
+      if (pBadge) {
+        if (progressCount > 0) {
+          pBadge.innerText = progressCount;
+          pBadge.classList.remove('hidden');
+        } else {
+          pBadge.classList.add('hidden');
+        }
+      }
+    }
+
+    function setStatusTab(tab) {
+      currentStatusTab = tab;
+      const tabs = ['all', 'in_progress', 'open', 'completed'];
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (!el) return;
+        if (t === tab) {
+          el.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-[#202F63] text-white transition-colors';
+        } else {
+          el.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F3F3F5] text-[#555555] hover:text-[#000000] transition-colors';
+        }
+      });
+      renderRequests();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.trim().toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', searchQuery === '');
+      }
+      renderRequests();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      searchQuery = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      renderRequests();
+    }
+
+    function applyFilters() {
+      currentCategory = document.getElementById('filterCategory').value;
+      currentPriority = document.getElementById('filterPriority').value;
+      currentLocation = document.getElementById('filterLocation').value;
+      renderRequests();
+    }
+
+    function resetFilters() {
+      document.getElementById('filterCategory').value = 'all';
+      document.getElementById('filterPriority').value = 'all';
+      document.getElementById('filterLocation').value = 'all';
+      currentCategory = 'all';
+      currentPriority = 'all';
+      currentLocation = 'all';
+      clearSearch();
+      setStatusTab('all');
+    }
+
+    function openCategoryQuick(cat) {
+      document.getElementById('filterCategory').value = cat;
+      currentCategory = cat;
+      renderRequests();
+    }
+
+    function filterRequest(req) {
+      // Tab status filter
+      if (currentStatusTab === 'in_progress') {
+        if (req.status !== 'in_progress') return false;
+      } else if (currentStatusTab === 'open') {
+        if (req.status !== 'open') return false;
+      } else if (currentStatusTab === 'completed') {
+        if (req.status !== 'completed' && req.status !== 'resolved') return false;
+      }
+
+      // Search query
+      if (searchQuery) {
+        const s = `${req.title} ${req.id} ${req.description || ''} ${req.assignee || ''} ${req.category || ''}`.toLowerCase();
+        if (!s.includes(searchQuery)) return false;
+      }
+
+      // Category
+      if (currentCategory !== 'all') {
+        if (req.category !== currentCategory) return false;
+      }
+
+      // Priority
+      if (currentPriority !== 'all') {
+        if (req.priority !== currentPriority) return false;
+      }
+
+      // Location
+      if (currentLocation !== 'all') {
+        const loc = `${req.description || ''} ${req.title || ''}`.toLowerCase();
+        if (!loc.includes(currentLocation.toLowerCase())) return false;
+      }
+
+      return true;
+    }
+
+    function renderRequests() {
+      const container = document.getElementById('requestsContainer');
+      const emptyState = document.getElementById('emptyState');
+      if (!container) return;
+
+      const filtered = allRequests.filter(filterRequest);
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(req => {
+        const isCompleted = req.status === 'completed' || req.status === 'resolved';
+        const isInProgress = req.status === 'in_progress';
+        const isUrgent = req.priority === 'urgent' || req.priority === 'high';
+
+        let statusBadge = '';
+        if (isCompleted) {
+          statusBadge = '<span class="px-2.5 py-0.5 rounded text-[11px] font-medium bg-[#F3F3F5] text-[#000000] border border-[#E5E5E8]">Completed</span>';
+        } else if (isInProgress) {
+          statusBadge = '<span class="px-2.5 py-0.5 rounded text-[11px] font-medium bg-[#202F63] text-white">In Progress</span>';
+        } else {
+          statusBadge = '<span class="px-2.5 py-0.5 rounded text-[11px] font-medium bg-[#F3F3F5] text-[#202F63] border border-[#202F63]/25">Queued</span>';
+        }
+
+        let priorityBadge = '';
+        if (isUrgent) {
+          priorityBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#92243D] text-white">High Priority</span>';
+        } else {
+          priorityBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-[#F3F3F5] text-[#555555]">Normal</span>';
+        }
+
+        const categoryIcons = {
+          it_support: 'cast_connected',
+          facilities: 'home_repair_service',
+          supplies: 'inventory',
+          booking: 'meeting_room',
+          admin_hr: 'badge'
+        };
+        const icon = categoryIcons[req.category] || 'support_agent';
+
+        return `
+          <div class="req-card bg-white border border-[#E5E5E8] rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#F3F3F5] text-[#202F63] flex items-center justify-center shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-[20px]">${icon}</span>
+              </div>
+
+              <div>
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <span class="text-xs font-medium text-[#202F63]">${req.id}</span>
+                  ${statusBadge}
+                  ${priorityBadge}
+                  <span class="text-[11px] text-[#77777F]">• ${req.date}</span>
+                </div>
+
+                <h3 class="text-sm font-medium text-[#000000] mb-1">${escapeHtml(req.title)}</h3>
+                <p class="text-xs text-[#555555] line-clamp-1 mb-2 max-w-xl">${escapeHtml(req.description || 'No detailed specifications added.')}</p>
+
+                <div class="flex flex-wrap items-center gap-3 text-[11px] text-[#555555]">
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] text-[#202F63]">assignment_ind</span>
+                    <span>${escapeHtml(req.assignee || 'Operations & Facilities')}</span>
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] text-[#77777F]">forum</span>
+                    <span>${(req.comments || []).length} update(s)</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 border-[#E5E5E8]">
+              <button onclick="openDetailsModal('${req.id}')" class="px-3.5 py-1.5 text-xs font-medium text-[#202F63] bg-[#F3F3F5] hover:bg-[#E5E5E8] rounded-xl transition-colors flex items-center gap-1">
+                <span>View Timeline</span>
+                <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openNewRequestModal() {
+      const modal = document.getElementById('newRequestModal');
+      if (modal) modal.classList.add('show');
+    }
+
+    function closeNewRequestModal() {
+      const modal = document.getElementById('newRequestModal');
+      if (modal) modal.classList.remove('show');
+    }
+
+    async function handleNewRequestSubmit(e) {
+      e.preventDefault();
+      const category = document.getElementById('reqCategory').value;
+      const type = document.getElementById('reqType').value;
+      const title = document.getElementById('reqTitle').value.trim();
+      const location = document.getElementById('reqLocation').value.trim();
+      const priority = document.getElementById('reqPriority').value;
+      const desc = document.getElementById('reqDesc').value.trim();
+
+      const newId = `SR-${1000 + allRequests.length + 1}`;
+      const fullDesc = `${desc ? desc + ' • ' : ''}Location: ${location}`;
+
+      const payload = {
+        id: newId,
+        studentId: TEACHER_PROFILE.id,
+        studentName: TEACHER_PROFILE.name,
+        role: 'teacher',
+        category: category,
+        type: type,
+        title: title,
+        description: fullDesc,
+        priority: priority,
+        campus: 'Sensok',
+        status: 'open',
+        assignee: 'Operations & Facilities Desk',
+        date: new Date().toISOString().split('T')[0],
+        updatedAt: new Date().toISOString().split('T')[0],
+        comments: [
+          {
+            by: TEACHER_PROFILE.name,
+            text: `Submitted faculty requisition for ${title} (${location}).`,
+            date: new Date().toISOString().split('T')[0]
+          }
+        ]
+      };
+
+      try {
+        const res = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const json = await res.json();
+          allRequests.unshift(json.data || payload);
+        } else {
+          allRequests.unshift(payload);
+        }
+      } catch (err) {
+        allRequests.unshift(payload);
+      }
+
+      closeNewRequestModal();
+      document.getElementById('newRequestForm').reset();
+      renderDashboard();
+      if (window.toast) {
+        window.toast(`Service request ${newId} submitted!`, 'success');
+      }
+    }
+
+    function openDetailsModal(id) {
+      const req = allRequests.find(r => r.id === id);
+      if (!req) return;
+      selectedRequestId = id;
+
+      document.getElementById('dtlTitle').innerText = req.title;
+      document.getElementById('dtlId').innerText = `Ref: ${req.id} • Registered on ${req.date}`;
+      document.getElementById('dtlCategory').innerText = req.category ? req.category.toUpperCase().replace('_', ' ') : 'General Support';
+      document.getElementById('dtlAssignee').innerText = req.assignee || 'Operations & Facilities Desk';
+      document.getElementById('dtlDate').innerText = req.date;
+      document.getElementById('dtlLocation').innerText = req.campus || 'Sensok Campus';
+      document.getElementById('dtlDesc').innerText = req.description || 'No detailed specifications noted.';
+
+      // Badges
+      const sBadge = document.getElementById('dtlStatusBadge');
+      sBadge.innerText = req.status.replace('_', ' ').toUpperCase();
+      sBadge.className = `inline-block px-2.5 py-0.5 rounded text-[11px] font-medium ${req.status === 'completed' ? 'bg-[#000000] text-white' : 'bg-[#202F63] text-white'}`;
+
+      const pBadge = document.getElementById('dtlPriorityBadge');
+      pBadge.innerText = `Priority: ${req.priority ? req.priority.toUpperCase() : 'NORMAL'}`;
+      pBadge.className = `inline-block px-2 py-0.5 rounded text-[11px] font-medium ${req.priority === 'urgent' || req.priority === 'high' ? 'bg-[#92243D] text-white' : 'bg-[#F3F3F5] text-[#000000] border border-[#E5E5E8]'}`;
+
+      // Comments List
+      renderCommentsList(req);
+
+      document.getElementById('detailsModal').classList.add('show');
+    }
+
+    function closeDetailsModal() {
+      const modal = document.getElementById('detailsModal');
+      if (modal) modal.classList.remove('show');
+    }
+
+    function renderCommentsList(req) {
+      const list = document.getElementById('dtlCommentsList');
+      const comments = req.comments || [];
+
+      if (comments.length === 0) {
+        list.innerHTML = '<p class="text-xs text-[#555555] italic">No updates posted yet.</p>';
+        return;
+      }
+
+      list.innerHTML = comments.map(c => `
+        <div class="p-3 bg-[#F3F3F5] rounded-xl border border-[#E5E5E8] text-xs">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-medium text-[#000000]">${escapeHtml(c.by || 'Staff')}</span>
+            <span class="text-[10px] text-[#77777F]">${c.date || ''}</span>
+          </div>
+          <p class="text-[#555555]">${escapeHtml(c.text)}</p>
+        </div>
+      `).join('');
+    }
+
+    async function submitComment() {
+      const input = document.getElementById('newCommentInput');
+      const text = input.value.trim();
+      if (!text || !selectedRequestId) return;
+
+      const req = allRequests.find(r => r.id === selectedRequestId);
+      if (!req) return;
+
+      const newComment = {
+        by: TEACHER_PROFILE.name,
+        text: text,
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      req.comments = req.comments || [];
+      req.comments.push(newComment);
+
+      try {
+        await fetch(`${API_ENDPOINT}/${req.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            comment: text,
+            commentBy: TEACHER_PROFILE.name
+          })
+        });
+      } catch(e){}
+
+      input.value = '';
+      renderCommentsList(req);
+      renderDashboard();
+      if (window.toast) {
+        window.toast(`Note added to ${req.id}`, 'info');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+
+</body>
+</html>
+"""
+
+with open('pages/teacher/teacher-services.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("Created pages/teacher/teacher-services.html successfully! File size:", len(html_content))
+

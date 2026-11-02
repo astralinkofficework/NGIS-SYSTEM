@@ -145,7 +145,7 @@
         const items = [];
         for (let i = 0; i < count; i++) {
           items.push(`
-            <div class="ngis-skeleton-pulse" style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-bottom:1px solid #f1f5f9;">
+            <div class="ngis-skeleton-pulse" style="display:flex; align-items:center; gap:14px; padding:12px 16px; border-bottom:1px solid #F3F3F5;">
               <div class="ngis-skeleton-circle" style="width:36px; height:36px;"></div>
               <div style="flex:1;">
                 <div class="ngis-skeleton-line" style="width:45%;"></div>
@@ -228,7 +228,7 @@
             <span class="ngis-offline-badge"><i class="ph ph-wifi-slash"></i> Offline</span>
             <span>You are currently offline. Changes are saved locally and will sync when connection returns.</span>
           </div>
-          <button type="button" onclick="window.NGISUI.checkConnection()" class="ngis-btn-secondary" style="padding:4px 10px; font-size:11.5px; border-color:#fcd34d;">
+          <button type="button" onclick="window.NGISUI.checkConnection()" class="ngis-btn-secondary" style="padding:4px 10px; font-size:11.5px; border-color:#E5E5E8;">
             <i class="ph ph-arrows-clockwise"></i> Check
           </button>
         `;
@@ -410,7 +410,7 @@
         <div class="ngis-state-icon permission">
           <i class="ph ph-shield-warning"></i>
         </div>
-        <div class="ngis-badge-danger" style="margin-bottom:8px; display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#ef4444; background:rgba(239,68,68,0.08); padding:3px 10px; border-radius:999px;">
+        <div class="ngis-badge-danger" style="margin-bottom:8px; display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#92243D; background:rgba(239,68,68,0.08); padding:3px 10px; border-radius:999px;">
           <i class="ph ph-lock-key"></i> Restricted Access
         </div>
         <h3 class="ngis-state-title">${title}</h3>

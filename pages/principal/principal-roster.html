@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Roster & Profiles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+.font-medium, .badge, th { font-weight: 500 !important; }
+:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+body { background:var(--soft-gray); color:var(--black); }
+.mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; margin-top:14px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip.ok { color:var(--navy); border-color:var(--navy); }
+.status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
+.btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral { background:var(--soft-gray); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral:hover { background:#EAEAEF; }
+
+/* Tabs */
+.tab-row { display:inline-flex; gap:4px; background:var(--white); border:1px solid var(--border-subtle); border-radius:12px; padding:4px; }
+.tab-btn { border:0; background:transparent; color:#555555; font-size:13px; padding:7px 16px; border-radius:9px; cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition:background .18s ease, color .18s ease; }
+.tab-btn.active { background:var(--navy); color:var(--white); }
+.tab-btn:not(.active):hover { background:var(--soft-gray); }
+.tab-count { font-size:11px; opacity:.75; }
+
+/* Person grid + cards */
+.person-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; margin-top:16px; }
+.person-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:16px 18px; cursor:pointer; transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.person-card:hover { border-color:var(--navy); box-shadow:0 8px 22px rgba(32,47,99,.08); transform:translateY(-2px); }
+.avatar { width:46px; height:46px; border-radius:12px; object-fit:cover; background:var(--navy); flex:0 0 auto; }
+.sub-chip { font-size:11px; color:#555555; background:var(--soft-gray); border:1px solid var(--border-subtle); border-radius:999px; padding:2px 9px; display:inline-flex; align-items:center; gap:4px; }
+.metric { padding:9px 10px; border-radius:10px; background:var(--soft-gray); border:1px solid var(--border-subtle); }
+.metric .num { font-size:16px; color:var(--navy); }
+.metric .num.warn { color:var(--burgundy); }
+.metric .lbl { font-size:11px; color:#66666E; margin-top:2px; }
+
+/* Detail drawer */
+#rosterScrim { position:fixed; inset:0; background:rgba(15,20,40,.42); opacity:0; pointer-events:none; transition:opacity .24s ease; z-index:1000; }
+#rosterScrim.open { opacity:1; pointer-events:auto; }
+#rosterDrawer { position:fixed; top:0; right:0; height:100%; width:min(460px,92vw); background:var(--white); border-left:1px solid var(--border-subtle); box-shadow:-14px 0 40px rgba(0,0,0,.10); transform:translateX(102%); transition:transform .28s cubic-bezier(.4,0,.2,1); z-index:1100; display:flex; flex-direction:column; }
+#rosterDrawer.open { transform:translateX(0); }
+.drawer-head { padding:20px 22px; border-bottom:1px solid var(--border-subtle); display:flex; gap:14px; align-items:center; }
+.drawer-body { padding:18px 22px 30px; overflow-y:auto; flex:1; }
+.drawer-foot { padding:14px 22px; border-top:1px solid var(--border-subtle); display:flex; gap:8px; flex-wrap:wrap; }
+.field-row { display:flex; justify-content:space-between; gap:14px; padding:9px 0; border-bottom:1px dashed var(--border-subtle); font-size:13px; }
+.field-row .k { color:#66666E; }
+.field-row .v { color:var(--black); text-align:right; }
+.sect-title { font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--navy); margin:16px 0 6px; }
+.linked-student { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 12px; border:1px solid var(--border-subtle); border-radius:10px; background:var(--soft-gray); margin-top:8px; font-size:12.5px; }
+.close-x { margin-left:auto; border:0; background:transparent; font-size:22px; color:#88888F; cursor:pointer; line-height:1; }
+#toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--navy); color:var(--white); padding:10px 18px; border-radius:10px; font-size:13px; display:none; z-index:1300; }
+.empty-state { text-align:center; color:#8a8a92; padding:44px 10px; font-size:14px; }
+</style>
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center gap-2.5 sticky top-0 z-30 shadow-xs">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <i class="ph ph-list text-xl"></i>
+    </button>
+    <span class="text-sm font-medium text-[#202F63]">Roster &amp; Profiles</span>
+  </div>
+
+  <div class="page" style="max-width:1240px;margin:0 auto;padding:24px 20px 48px">
+    <div class="flex between center flex-wrap gap-4 anim-up">
+      <div>
+        <h2 style="font-size:22px;color:var(--navy);margin:0 0 4px">Roster &amp; Profiles</h2>
+        <p style="font-size:13.5px;color:#555555;margin:0">A single directory of your faculty and parent/guardian community — open any card for the full contact profile.</p>
+      </div>
+      <div class="tab-row" role="tablist" aria-label="Roster sections">
+        <button class="tab-btn active" id="tabFaculty" role="tab" aria-selected="true" onclick="switchTab('faculty')">
+          <span class="material-symbols-outlined" style="font-size:17px">co_present</span> Faculty <span class="tab-count" id="countFaculty"></span>
+        </button>
+        <button class="tab-btn" id="tabParents" role="tab" aria-selected="false" onclick="switchTab('parents')">
+          <span class="material-symbols-outlined" style="font-size:17px">family_restroom</span> Parents &amp; Guardians <span class="tab-count" id="countParents"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mgr-card anim-up-2">
+      <div class="flex items-center gap-2 flex-wrap">
+        <input id="searchInput" type="search" placeholder="Search by name, class, email…" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] flex-1 min-w-[220px] outline-none focus:border-[#202F63]" oninput="render()">
+        <select id="filterSelect" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] outline-none focus:border-[#202F63] bg-white" onchange="render()"></select>
+        <button class="btn-neutral text-xs" onclick="reload()"><span class="material-symbols-outlined" style="font-size:15px">refresh</span> Reload</button>
+      </div>
+      <div class="person-grid" id="personGrid">
+        <div class="text-slate-400 text-sm p-4">Loading roster profiles…</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Detail drawer -->
+<div id="rosterScrim" onclick="closeDrawer()"></div>
+<aside id="rosterDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerName">
+  <div class="drawer-head">
+    <img id="drawerAvatar" class="avatar" src="" alt=""/>
+    <div>
+      <div id="drawerName" style="font-size:16px;color:var(--navy)" class="font-medium">—</div>
+      <div id="drawerSub" class="text-xs text-slate-500 mt-0.5">—</div>
+    </div>
+    <button class="close-x" onclick="closeDrawer()" aria-label="Close profile">×</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<div id="toast"></div>
+
+<script>window.PAGE={"role":"principal","active":"roster"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'principal', active: 'roster', isDashboard: false,
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
+  title: 'Roster & Profiles',
+  greeting: 'Every teacher and parent contact, one directory away.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+let faculty = [], parents = [];
+let currentTab = 'faculty';
+let loaded = { faculty: false, parents: false };
+
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2400); }
+
+async function ensure(tab) {
+  if (loaded[tab]) return;
+  const grid = document.getElementById('personGrid');
+  grid.innerHTML = '<div class="text-slate-400 text-sm p-4">Loading roster profiles…</div>';
+  try {
+    if (tab === 'faculty') {
+      const res = await NGISAuth.api('/api/principal/roster/teachers');
+      faculty = res.data || [];
+    } else {
+      const res = await NGISAuth.api('/api/principal/roster/parents');
+      parents = res.data || [];
+    }
+    loaded[tab] = true;
+    buildFilterOptions();
+    render();
+  } catch (err) {
+    grid.innerHTML = `<div style="color:#92243D" class="p-4 text-sm">Could not load roster: ${esc(err.message)}</div>`;
+  }
+}
+
+function reload() { loaded[currentTab] = false; ensure(currentTab); }
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabFaculty').classList.toggle('active', tab === 'faculty');
+  document.getElementById('tabParents').classList.toggle('active', tab === 'parents');
+  document.getElementById('tabFaculty').setAttribute('aria-selected', String(tab === 'faculty'));
+  document.getElementById('tabParents').setAttribute('aria-selected', String(tab === 'parents'));
+  document.getElementById('searchInput').value = '';
+  buildFilterOptions();
+  ensure(tab);
+}
+
+function buildFilterOptions() {
+  const sel = document.getElementById('filterSelect');
+  sel.innerHTML = '';
+  if (currentTab === 'faculty') {
+    const depts = [...new Set(faculty.map(t => t.department).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="all">All departments</option>' + depts.map(d => `<option value="${esc(d)}">${esc(d)}</option>`).join('');
+  } else {
+    const grades = [...new Set(parents.flatMap(p => (p.linkedStudents || []).map(s => s.grade)).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="all">All grades</option>' + grades.map(g => `<option value="${esc(g)}">${esc(g)}</option>`).join('');
+  }
+  updateCounts();
+}
+
+function updateCounts() {
+  document.getElementById('countFaculty').textContent = loaded.faculty ? `(${faculty.length})` : '';
+  document.getElementById('countParents').textContent = loaded.parents ? `(${parents.length})` : '';
+}
+
+function metricBox(num, lbl, warn) {
+  return `<div class="metric"><div class="num ${warn ? 'warn' : ''}">${num}</div><div class="lbl">${lbl}</div></div>`;
+}
+
+function render() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const filter = document.getElementById('filterSelect').value || 'all';
+  const grid = document.getElementById('personGrid');
+  let rows;
+  if (currentTab === 'faculty') {
+    rows = faculty.filter(t => (filter === 'all' || t.department === filter) &&
+      (!q || [t.name, t.subject, t.email, t.id, t.department].join(' ').toLowerCase().includes(q)));
+    if (!rows.length) { grid.innerHTML = '<div class="empty-state">No faculty match this search.</div>'; return; }
+    grid.innerHTML = rows.map(t => {
+      const pending = t.pendingGradeRecords || 0;
+      return `
+      <div class="person-card" onclick="openFaculty('${esc(t.id)}')">
+        <div class="flex items-center gap-3">
+          <img class="avatar" src="${esc(t.avatarUrl)}" alt="" loading="lazy"/>
+          <div style="min-width:0;flex:1">
+            <div style="font-size:15px;color:var(--navy)" class="font-medium truncate">${esc(t.name)}</div>
+            <div class="text-xs text-slate-500 mt-0.5 truncate">${esc(t.subject || 'General')} · ${esc(t.department || '—')}</div>
+          </div>
+          <span class="status-chip ${t.status === 'active' ? 'ok' : 'warn'}">${esc(t.status || 'active')}</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5 mt-3">
+          <span class="sub-chip"><span class="material-symbols-outlined" style="font-size:13px">mail</span>${esc(t.email || '—')}</span>
+          <span class="sub-chip"><span class="material-symbols-outlined" style="font-size:13px">call</span>${esc(t.phone || '—')}</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 mt-3">
+          ${metricBox((t.classesTaught && t.classesTaught.length) || t.classesAssigned || 0, 'Classes')}
+          ${metricBox(t.adviseeCount || 0, 'Advisees')}
+          ${metricBox(pending, 'Pending', pending > 0)}
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    rows = parents.filter(p => {
+      const gradeMatch = filter === 'all' || (p.linkedStudents || []).some(s => s.grade === filter);
+      const qMatch = !q || [p.name, p.relation, p.email, p.occupation, p.district, p.id,
+        ...(p.linkedStudents || []).map(s => (s.name || '') + ' ' + (s.class || ''))].join(' ').toLowerCase().includes(q);
+      return gradeMatch && qMatch;
+    });
+    if (!rows.length) { grid.innerHTML = '<div class="empty-state">No parent/guardian records match this search.</div>'; return; }
+    grid.innerHTML = rows.map(p => {
+      const ls = (p.linkedStudents || [])[0] || {};
+      return `
+      <div class="person-card" onclick="openParent('${esc(p.id)}')">
+        <div class="flex items-center gap-3">
+          <img class="avatar" src="${esc(p.avatarUrl)}" alt="" loading="lazy"/>
+          <div style="min-width:0;flex:1">
+            <div style="font-size:15px;color:var(--navy)" class="font-medium truncate">${esc(p.name)}</div>
+            <div class="text-xs text-slate-500 mt-0.5 truncate">Parent of ${esc(ls.name || '—')} · ${esc(ls.class || '—')}</div>
+          </div>
+          <span class="status-chip ${p.consentOnFile ? 'ok' : 'warn'}">${p.consentOnFile ? 'Consent on file' : 'No consent'}</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5 mt-3">
+          <span class="sub-chip">${esc(p.relation || 'Guardian')}</span>
+          <span class="sub-chip"><span class="material-symbols-outlined" style="font-size:13px">call</span>${esc(p.phone || '—')}</span>
+          <span class="sub-chip"><span class="material-symbols-outlined" style="font-size:13px">location_on</span>${esc(p.district || '—')}</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 mt-3">
+          ${metricBox((p.linkedStudents || []).length, 'Children')}
+          ${metricBox(p.meetingsAttended || 0, 'Meetings')}
+          ${metricBox(esc((p.preferredLanguage || '—').slice(0, 6)), 'Speaks')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function openDrawer() { document.getElementById('rosterScrim').classList.add('open'); document.getElementById('rosterDrawer').classList.add('open'); }
+function closeDrawer() { document.getElementById('rosterScrim').classList.remove('open'); document.getElementById('rosterDrawer').classList.remove('open'); }
+
+function field(k, v) { return `<div class="field-row"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></div>`; }
+
+function openFaculty(id) {
+  const t = faculty.find(x => x.id === id); if (!t) return;
+  document.getElementById('drawerAvatar').src = t.avatarUrl;
+  document.getElementById('drawerName').textContent = t.name;
+  document.getElementById('drawerSub').textContent = `${t.subject || 'Faculty'} · ${t.department || ''}`;
+  document.getElementById('drawerBody').innerHTML = `
+    <div class="flex items-center gap-2 mb-1"><span class="status-chip ${t.status === 'active' ? 'ok' : 'warn'}">${esc(t.status)}</span><span class="sub-chip">${esc(t.yearsAtSchool || 0)} yrs at NGIS</span></div>
+    <div class="sect-title">Contact</div>
+    ${field('Email', t.email)}${field('Phone', t.phone)}${field('Preferred language', (t.languages || []).join(', '))}
+    <div class="sect-title">Assignment</div>
+    ${field('Department', t.department)}${field('Homeroom', t.homeroom)}
+    ${field('Classes taught', (t.classesTaught || []).join(', ') || '—')}${field('Advisee count', t.adviseeCount)}
+    <div class="sect-title">Employment</div>
+    ${field('Type', t.employmentType)}${field('Contract ends', t.contractEnd)}
+    <div style="margin-top:10px"><div class="text-xs text-slate-500">Certifications</div>
+      <div class="flex flex-wrap gap-1.5 mt-1.5">${(t.certifications || []).map(c => `<span class="sub-chip">${esc(c)}</span>`).join('') || '<span class="text-xs text-slate-400">None on file</span>'}</div></div>
+    <div class="grid grid-cols-2 gap-2 mt-4">
+      ${metricBox(t.publishedGradeRecords || 0, 'Published records')}
+      ${metricBox(t.pendingGradeRecords || 0, 'Awaiting clearance', (t.pendingGradeRecords || 0) > 0)}
+    </div>`;
+  document.getElementById('drawerFoot').innerHTML = `
+    <a class="btn-neutral" href="mailto:${esc(t.email)}"><span class="material-symbols-outlined" style="font-size:15px">mail</span> Email</a>
+    <a class="btn-neutral" href="principal-activity.html?actor=${encodeURIComponent(t.id)}"><span class="material-symbols-outlined" style="font-size:15px">history</span> Action history</a>
+    ${(t.pendingGradeRecords || 0) ? `<a class="btn-burgundy" href="principal-approvals.html?category=grades">Review submissions</a>` : ''}`;
+  openDrawer();
+}
+
+function openParent(id) {
+  const p = parents.find(x => x.id === id); if (!p) return;
+  document.getElementById('drawerAvatar').src = p.avatarUrl;
+  document.getElementById('drawerName').textContent = p.name;
+  document.getElementById('drawerSub').textContent = `${p.relation || 'Guardian'} · ${p.occupation || ''}`;
+  document.getElementById('drawerBody').innerHTML = `
+    <div class="flex items-center gap-2 mb-1"><span class="status-chip ${p.consentOnFile ? 'ok' : 'warn'}">${p.consentOnFile ? 'Consent on file' : 'Consent missing'}</span><span class="sub-chip">Speaks ${esc(p.preferredLanguage || '—')}</span></div>
+    <div class="sect-title">Contact</div>
+    ${field('Email', p.email)}${field('Phone', p.phone)}${field('District', p.district)}${field('Occupation', p.occupation)}
+    <div class="sect-title">Engagement</div>
+    ${field('Meetings attended', p.meetingsAttended)}${field('Last contact', p.lastContact)}
+    <div class="sect-title">Linked Students</div>
+    ${(p.linkedStudents || []).map(s => `
+      <div class="linked-student">
+        <div><div style="color:var(--navy)" class="font-medium">${esc(s.name)}</div>
+          <div class="text-slate-500">${esc(s.class || '')} · ${esc(s.grade || '')}</div></div>
+        <div style="text-align:right">
+          <div>GPA ${s.gpa != null ? Number(s.gpa).toFixed(2) : '—'}</div>
+          <div class="text-slate-500">${s.attendancePct != null ? s.attendancePct + '% attend.' : '—'}</div>
+        </div>
+      </div>`).join('') || '<div class="text-xs text-slate-400 mt-1">No linked students.</div>'}`;
+  const firstStudent = (p.linkedStudents || [])[0];
+  document.getElementById('drawerFoot').innerHTML = `
+    <a class="btn-neutral" href="mailto:${esc(p.email)}"><span class="material-symbols-outlined" style="font-size:15px">mail</span> Email</a>
+    <a class="btn-neutral" href="tel:${esc((p.phone || '').replace(/\s/g, ''))}"><span class="material-symbols-outlined" style="font-size:15px">call</span> Call</a>
+    ${firstStudent ? `<a class="btn-burgundy" href="principal-students.html?student=${encodeURIComponent(firstStudent.id)}">View student record</a>` : ''}`;
+  openDrawer();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+document.addEventListener('DOMContentLoaded', () => { ensure('faculty'); });
+</script>
+</body>
+</html>

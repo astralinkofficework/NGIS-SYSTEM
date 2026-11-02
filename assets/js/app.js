@@ -44,9 +44,9 @@
         background:var(--surface); color:var(--text); outline:none; }
       .grade-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
       .attend-row { transition: background .15s; }
-      .attend-row.present-row { background: #f0fdf4; }
-      .attend-row.late-row    { background: #fffbeb; }
-      .attend-row.absent-row  { background: #fef2f2; }
+      .attend-row.present-row { background: #F3F3F5; }
+      .attend-row.late-row    { background: #F3F3F5; }
+      .attend-row.absent-row  { background: #F3F3F5; }
     `;
     document.head.appendChild(s);
   }
@@ -394,15 +394,16 @@
      notification/announcement cards so dark mode works.
      ══════════════════════════════════════════════════ */
   const COLOR_MAP = [
-    { test: ["#dbeafe", "#bfdbfe", "#93c5fd"], cls: "notif-blue"   },
-    { test: ["#fef3c7", "#fde68a", "#fcd34d"], cls: "notif-amber"  },
-    { test: ["#dcfce7", "#bbf7d0", "#86efac"], cls: "notif-green"  },
-    { test: ["#fee2e2", "#fecaca", "#fca5a5"], cls: "notif-red"    },
-    { test: ["#ede9fe", "#ddd6fe", "#c4b5fd"], cls: "notif-purple" },
+    { test: ["#F3F3F5", "#F3F3F5", "#F3F3F5"], cls: "notif-blue"   },
+    { test: ["#F3F3F5", "#E5E5E8", "#E5E5E8"], cls: "notif-amber"  },
+    { test: ["#F3F3F5", "#F3F3F5", "#E5E5E8"], cls: "notif-green"  },
+    { test: ["#F3F3F5", "#92243D", "#92243D"], cls: "notif-red"    },
+    { test: ["#F3F3F5", "#E5E5E8", "#E5E5E8"], cls: "notif-purple" },
   ];
 
   function fixInlineColors() {
-    document.querySelectorAll("[style]").forEach(el => {
+    /* Only target legacy notification items, never overlap decks or modern components */
+    document.querySelectorAll(".notifications-feed .notif-item-raw[style]").forEach(el => {
       const raw = el.getAttribute("style") || "";
       if (!raw.includes("#")) return;
 
@@ -419,7 +420,7 @@
           el.classList.add("notif-card", cls);
 
           /* Replace hardcoded unread dot colors too */
-          el.querySelectorAll("[style*='background:#3b82f6'],[style*='background:#d97706'],[style*='background:#22c55e']").forEach(dot => {
+          el.querySelectorAll("[style*='background:#202F63'],[style*='background:#000000'],[style*='background:#000000']").forEach(dot => {
             if (dot.style.width === "8px" || dot.style.borderRadius === "50%") {
               dot.style.background = "";
               dot.classList.add("unread-dot");

@@ -12,21 +12,21 @@
   const TODAY = 1;
 
   const dots = {
-    1:  ['#13829b', '#059669', '#7c3aed'],
-    2:  ['#13829b', '#2563eb'],
+    1:  ['#2455D6', '#059669', '#7c3aed'],
+    2:  ['#2455D6', '#2563eb'],
     4:  ['#059669'],
     8:  ['#7c3aed', '#ea580c'],
-    12: ['#13829b'],
+    12: ['#2455D6'],
     15: ['#059669', '#2563eb'],
     19: ['#ea580c'],
-    22: ['#13829b', '#7c3aed'],
+    22: ['#2455D6', '#7c3aed'],
     25: ['#2563eb'],
     28: ['#059669']
   };
 
   const events = {
     1: [
-      { name: 'Grade 11-A · Calculus',      time: '08:00 AM – 10:00 AM · Room 302', color: '#13829b' },
+      { name: 'Grade 11-A · Calculus',      time: '08:00 AM – 10:00 AM · Room 302', color: '#2455D6' },
       { name: 'Grade 10-C · Statistics',    time: '10:15 AM – 12:00 PM · Room 305', color: '#059669' },
       { name: 'Grade 12-B · Pure Math',     time: '01:30 PM – 03:00 PM · Room 304', color: '#2563eb' },
       { name: 'Office Hours & Mentoring',   time: '03:15 PM – 04:30 PM · Room 302', color: '#7c3aed' },
@@ -39,11 +39,11 @@
       { name: 'Dept Coordination Meeting', time: '03:30 PM – 04:45 PM · Room B',   color: '#059669' },
     ],
     8: [
-      { name: 'Grade 11-A Assessment Quiz', time: '08:00 AM – 09:30 AM · Room 302', color: '#13829b' },
+      { name: 'Grade 11-A Assessment Quiz', time: '08:00 AM – 09:30 AM · Room 302', color: '#2455D6' },
       { name: 'Math Olympiad Practice',    time: '04:30 PM – 05:45 PM · Hall A',   color: '#ea580c' },
     ],
     12: [
-      { name: 'Faculty Senate Session',     time: '02:00 PM – 03:30 PM · Main Hall', color: '#13829b' },
+      { name: 'Faculty Senate Session',     time: '02:00 PM – 03:30 PM · Main Hall', color: '#2455D6' },
     ],
     15: [
       { name: 'Calculus Mid-Term Revision', time: '08:00 AM – 10:00 AM · Room 302', color: '#059669' },

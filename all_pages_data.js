@@ -6,8 +6,7 @@ const ALL_PAGES = [
     "category": "Academic Oversight",
     "roles": [
       "admin",
-      "principal",
-      "staff"
+      "principal"
     ],
     "description": "Subject department administration. Configure Khmer, English, Mathematics, Science, and Language departments, assigning Heads of Department and syllabi.",
     "tags": [
@@ -25,8 +24,7 @@ const ALL_PAGES = [
       "student",
       "teacher",
       "admin",
-      "principal",
-      "staff"
+      "principal"
     ],
     "description": "Overview directory of all academic departments (Khmer, English, Math, Science, Humanities). Lists faculty members, subject offerings, and syllabi.",
     "tags": [
@@ -41,10 +39,9 @@ const ALL_PAGES = [
     "title": "Class & Cohort Management",
     "category": "Academic Oversight",
     "roles": [
-      "admin",
-      "staff"
+      "admin"
     ],
-    "description": "Class creation and allocation portal. Configures grade cohorts (Grades 10\u201312), section letters, homeroom teachers, and classroom room assignments.",
+    "description": "Class creation and allocation portal. Configures grade cohorts (Grades 10–12), section letters, homeroom teachers, and classroom room assignments.",
     "tags": [
       "Sections",
       "Cohorts",
@@ -57,8 +54,7 @@ const ALL_PAGES = [
     "title": "Curriculum & Lesson Plan Management",
     "category": "Academic Oversight",
     "roles": [
-      "admin",
-      "staff"
+      "admin"
     ],
     "description": "Administrative repository of digital courseware and lesson plans. Ensures instructional alignment with national curriculum and Cambridge standards.",
     "tags": [
@@ -74,8 +70,7 @@ const ALL_PAGES = [
     "category": "Academic Oversight",
     "roles": [
       "student",
-      "teacher",
-      "staff"
+      "teacher"
     ],
     "description": "Department portal for a specific subject area. Access digital textbooks, syllabus outlines, teacher contacts, exam prep, and department announcements.",
     "tags": [
@@ -91,8 +86,7 @@ const ALL_PAGES = [
     "category": "Academic Oversight",
     "roles": [
       "student",
-      "teacher",
-      "staff"
+      "teacher"
     ],
     "description": "Subject digital library offering structured curriculum units, interactive lesson slides, reference formulas, and practice worksheets.",
     "tags": [
@@ -107,8 +101,7 @@ const ALL_PAGES = [
     "title": "Master Schedule & Timetable Engine",
     "category": "Academic Oversight",
     "roles": [
-      "admin",
-      "staff"
+      "admin"
     ],
     "description": "Institutional timetable schedule engine. Build and resolve scheduling conflicts across classroom periods, teacher allocations, and lab availability.",
     "tags": [
@@ -308,8 +301,7 @@ const ALL_PAGES = [
       "student",
       "teacher",
       "admin",
-      "principal",
-      "staff"
+      "principal"
     ],
     "description": "The central school landing page and role-based portal selector. Directs administrators, teachers, students, and parents to their respective authenticated spaces.",
     "tags": [
@@ -359,8 +351,7 @@ const ALL_PAGES = [
       "student",
       "teacher",
       "admin",
-      "principal",
-      "staff"
+      "principal"
     ],
     "description": "Curated school magazine and news stories covering academic competitions, sports victories, cultural galas, and student spotlights.",
     "tags": [
@@ -390,8 +381,7 @@ const ALL_PAGES = [
     "title": "Newsroom CMS & Media Publisher",
     "category": "Communications",
     "roles": [
-      "admin",
-      "staff"
+      "admin"
     ],
     "description": "School publishing console. Draft, review, schedule, and publish rich multimedia articles, achievements, and notices to the public portal and newsroom.",
     "tags": [
@@ -409,8 +399,7 @@ const ALL_PAGES = [
       "student",
       "teacher",
       "admin",
-      "principal",
-      "staff"
+      "principal"
     ],
     "description": "All-school public newsroom. Features breaking banners, category filters, important alerts, downloadable circulars, and bookmarking.",
     "tags": [
@@ -548,8 +537,7 @@ const ALL_PAGES = [
     "category": "Examinations & Grading",
     "roles": [
       "admin",
-      "principal",
-      "staff"
+      "principal"
     ],
     "description": "Central examination authority. Schedules semester finals, coordinates exam hall seating, manages proctor rosters, and enforces exam security.",
     "tags": [
@@ -595,8 +583,7 @@ const ALL_PAGES = [
     "category": "Examinations & Grading",
     "roles": [
       "student",
-      "teacher",
-      "staff"
+      "teacher"
     ],
     "description": "Comprehensive exam schedule view showing dates, venue halls, seat numbers, subject codes, rules, and downloadable hall seating diagrams.",
     "tags": [
@@ -691,8 +678,7 @@ const ALL_PAGES = [
       "student",
       "teacher",
       "admin",
-      "principal",
-      "staff"
+      "principal"
     ],
     "description": "Security intercept page displayed when a user attempts to access an unauthorized route. Explains role restrictions with recovery options.",
     "tags": [
@@ -770,8 +756,7 @@ const ALL_PAGES = [
     "category": "Student Life",
     "roles": [
       "student",
-      "teacher",
-      "staff"
+      "teacher"
     ],
     "description": "Interactive lost property registry. Browse photographs of found items (calculators, water bottles, keys), file lost item reports, and claim items.",
     "tags": [
@@ -816,8 +801,7 @@ const ALL_PAGES = [
     "title": "Student Services Operations Admin",
     "category": "Student Services",
     "roles": [
-      "admin",
-      "staff"
+      "admin"
     ],
     "description": "Back-office management for auxiliary student services: locker rentals, school uniform inventory, cafeteria smartcard balances, and transport routes.",
     "tags": [
@@ -902,5 +886,41 @@ const ALL_PAGES = [
       "Emergency Contact",
       "Account Preferences"
     ]
+  },
+  {
+    "path": "pages/teacher/teacher-lost-found.html",
+    "name": "teacher-lost-found.html",
+    "title": "Faculty Lost & Found Desk",
+    "category": "Faculty & Operations",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Classroom-discovered property registry and custody management. Log found student articles, process ownership verifications, and hand over custody to the campus front desk.",
+    "tags": [
+      "Classroom Found",
+      "Faculty Custody",
+      "Claim Verification",
+      "Desk Handover"
+    ]
+  },
+  {
+    "path": "pages/teacher/teacher-services.html",
+    "name": "teacher-services.html",
+    "title": "Faculty Services & Support Hub",
+    "category": "Faculty & Operations",
+    "roles": [
+      "teacher"
+    ],
+    "description": "Central requisition and maintenance ticketing for faculty. Submit classroom projector and AV repairs, air conditioning service, exam answer booklets, and campus space reservations.",
+    "tags": [
+      "IT & AV Support",
+      "Facilities Maintenance",
+      "Exam Stationery",
+      "Space Booking"
+    ]
   }
 ];
+
+if (typeof window !== 'undefined') {
+  window.NGIS_PAGES = ALL_PAGES;
+}

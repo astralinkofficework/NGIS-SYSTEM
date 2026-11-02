@@ -26,7 +26,7 @@
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#13829b',
+          backgroundColor: '#2455D6',
           padding: 8,
           cornerRadius: 8,
           titleFont: { size: 11, weight: '500', family: 'Inter' },

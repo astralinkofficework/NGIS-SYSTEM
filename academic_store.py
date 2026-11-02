@@ -2,7 +2,7 @@
 
 Provides one authoritative, transactional SQLite source of truth for the academic
 domain (grades, grading periods, attendance, calculations, audit events) across
-Student, Teacher, Parent, Admin, Principal, and Staff portals.
+Student, Teacher, Parent, Admin, and Principal portals.
 """
 from __future__ import annotations
 

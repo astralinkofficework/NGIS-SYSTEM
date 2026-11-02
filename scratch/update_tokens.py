@@ -1,0 +1,231 @@
+import os
+
+tokens_css = """/* ============================================================
+   NGIS Master Design Tokens — Single Source of Truth
+   Global 5-Color System:
+   - Navy:      #202F63 (Primary Color: main navigation, sidebar, primary headings, structural elements)
+   - Burgundy:  #92243D (The ONLY Accent Color: primary action buttons, key highlights, small visual emphasis)
+   - White:     #FFFFFF (Main Surface: page backgrounds, cards, panels, forms, tables, modals)
+   - Black:     #000000 (Text & Contrast: body text, strong contrast, important labels, crisp icons)
+   - Soft Gray: #F3F3F5 (Secondary Surface: subtle canvas, table separators, input surfaces)
+
+   Strict Rules:
+   - Burgundy is the ONLY accent color. Zero additional colors (no blue, green, orange, purple, yellow, cyan).
+   - All portals follow the identical visual identity.
+   - Neutral status indicators (Soft Gray #F3F3F5 + Black #000000); Burgundy #92243D for critical emphasis only.
+   - NO colored hover overlays or background shifts; neutral/transparent hovers only.
+   - NO bold fonts (weights 400 and 500 only per AGENTS.md).
+   - Mobile hamburger menu on far left.
+   - Transparent topbar.
+   ============================================================ */
+
+:root {
+  /* ── 1. The Strict 5-Color Primitives ──────────────────────── */
+  --color-navy:      #202F63;
+  --color-burgundy:  #92243D;
+  --color-white:     #FFFFFF;
+  --color-black:     #000000;
+  --color-soft-gray: #F3F3F5;
+
+  /* Aliases & Semantic Shades derived strictly from the 5 colors */
+  --color-burgundy-hover: #7E1E34;
+  --color-hairline:       #E5E5E8; /* Subtle hairline derived from soft gray */
+  --color-text-secondary: #333333; /* High-contrast neutral text */
+  --color-text-muted:     #555555; /* Readable secondary metadata (WCAG AAA >= 7:1 on white) */
+
+  /* Application Canvas & Transparent Topbar */
+  --token-topbar-bg:           transparent; /* 100% Transparent / Non-color */
+  --token-topbar-border:       transparent;
+  --topbar-bg:                 transparent;
+  --token-canvas:              #F3F3F5; /* Soft Gray: Subtle page background */
+  --token-surface:             #FFFFFF; /* White: Main surface (cards, panels, forms) */
+  --token-surface-subtle:      #F3F3F5; /* Soft Gray: Secondary surface */
+  --token-surface-hover:       #FFFFFF; /* Cards MUST NOT change bg on hover */
+  --token-surface-selected:    #F3F3F5; /* Soft Gray: Selected rows */
+  --token-surface-translucent: rgba(255, 255, 255, 0.96);
+
+  /* Hairline Borders & Dividers (1px) */
+  --token-border:        #E5E5E8;        /* Soft Gray Hairline */
+  --token-border-subtle: #F3F3F5;        /* Soft Gray Inner Separators */
+  --token-border-hover:  #202F63;        /* Navy border on focus/hover */
+  --token-border-focus:  #202F63;        /* Navy focus border */
+
+  /* Typography Colors (High-Contrast & WCAG Compliant) */
+  --token-text-primary:   #000000;       /* Black: Main body text & strong contrast */
+  --token-text-secondary: #333333;       /* High-contrast secondary labels */
+  --token-text-muted:     #555555;       /* Subdued metadata and icons */
+  --token-text-faint:     #77777F;       /* Placeholders / disabled */
+  --token-text-inverse:   #FFFFFF;       /* Pure White on Navy or Burgundy */
+  --token-text-heading:   #202F63;       /* Navy: Primary headings & important elements */
+
+  /* Primary Brand (Navy #202F63) */
+  --token-primary:        #202F63;
+  --token-primary-hover:  #18234D;
+  --token-primary-text:   #FFFFFF;
+
+  /* Accent Color (Burgundy #92243D — The ONLY accent color) */
+  --token-accent:         #92243D;       /* Burgundy */
+  --token-accent-hover:   #7E1E34;       /* Deep Burgundy */
+  --token-accent-pressed: #681729;
+  --token-accent-soft:    #F3F3F5;       /* Neutral Soft Gray container */
+  --token-accent-border:  #92243D;       /* Burgundy border */
+  --token-accent-text:    #FFFFFF;       /* White text on Burgundy */
+  --token-focus-ring:     rgba(146, 36, 61, 0.25);
+
+  /* Semantic Status Indicators (Neutral Styling; Burgundy for urgent emphasis only) */
+  --token-status-neutral-bg:     #F3F3F5;
+  --token-status-neutral-text:   #000000;
+  --token-status-neutral-border: #E5E5E8;
+
+  --token-status-success:        #000000;
+  --token-status-success-bg:     #F3F3F5;
+  --token-status-success-border: #E5E5E8;
+
+  --token-status-warning:        #000000;
+  --token-status-warning-bg:     #F3F3F5;
+  --token-status-warning-border: #E5E5E8;
+
+  --token-status-danger:         #92243D; /* Burgundy for critical alerts */
+  --token-status-danger-bg:      #F3F3F5;
+  --token-status-danger-border:  #92243D;
+
+  --token-status-info:           #202F63; /* Navy */
+  --token-status-info-bg:        #F3F3F5;
+  --token-status-info-border:    #E5E5E8;
+
+  /* Legacy variable mappings to prevent breaking any component */
+  --color-royal-blue: #202F63; /* Mapped to Navy */
+  --color-deep-blue:  #18234D;
+  --color-light-blue: #F3F3F5;
+  --color-ice-blue:   #F3F3F5;
+  --color-pure-white: #FFFFFF;
+  --color-soft-gray:  #F3F3F5;
+  --color-slate:      #555555;
+  --color-dark-navy:  #202F63;
+  --color-primary:    #202F63;
+  --color-accent:     #92243D;
+
+  /* ── 2. Typography System (NO BOLD: Max 500) ──────────────── */
+  --token-font-family: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --token-font-khmer:  'Kantumruy Pro', 'Manrope', sans-serif;
+  --token-font-mono:   'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Strict Two Weights: 400 (regular) and 500 (medium) */
+  --token-weight-normal: 400;
+  --token-weight-medium: 500;
+
+  /* Size Scale & Line Heights */
+  --token-text-xs:   11px; --token-lh-xs:   16px;
+  --token-text-sm:   12px; --token-lh-sm:   16px;
+  --token-text-base: 14px; --token-lh-base: 20px;
+  --token-text-md:   16px; --token-lh-md:   24px;
+  --token-text-lg:   20px; --token-lh-lg:   28px;
+  --token-text-xl:   24px; --token-lh-xl:   32px;
+  --token-text-2xl:  28px; --token-lh-2xl:  36px;
+
+  /* ── 3. Spacing Scale (Let it breathe) ─────────────────────── */
+  --token-space-1: 4px;
+  --token-space-2: 8px;
+  --token-space-3: 12px;
+  --token-space-4: 16px;
+  --token-space-5: 20px;
+  --token-space-6: 24px;
+  --token-space-8: 32px;
+  --token-space-10: 40px;
+  --token-space-12: 48px;
+  --token-space-16: 64px;
+
+  /* Ergonomic Touch Targets */
+  --token-target-min: 44px;
+  --token-row-min:    56px;
+
+  /* ── 4. Shape & Hairline Borders (One Edge) ────────────────── */
+  --token-radius-sm:   8px;
+  --token-radius-md:   12px;
+  --token-radius-lg:   16px;
+  --token-radius-card: 16px;
+  --token-radius-pill: 9999px;
+
+  --token-border-hairline: 1px solid var(--token-border);
+
+  /* Very Soft Shadows (Subtle, Clean, Non-Muddy) */
+  --token-shadow-none:  none;
+  --token-shadow-card:  0 1px 3px 0 rgba(0, 0, 0, 0.04);
+  --token-shadow-float: 0 8px 24px -4px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+
+  /* ── 5. Layout Dimensions ─────────────────────────────────── */
+  --token-max-width:        1440px;
+  --token-sidebar-width:    260px;
+  --token-topbar-height:    64px;
+  --token-bottomnav-height: 60px;
+
+  --token-page-pad-mobile:  16px;
+  --token-page-pad-tablet:  24px;
+  --token-page-pad-desktop: 32px;
+
+  /* ── 6. Motion & Visual Stability ─────────────────────────── */
+  --token-transition-fast:   border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+  --token-transition-smooth: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+  --token-transition-color:  border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+/* ── Dark Theme Overrides (Navy-Black-Soft Gray) ─────────────── */
+[data-theme="dark"],
+html[data-theme="dark"] {
+  --token-canvas:              #0D1322;
+  --token-surface:             #141D33;
+  --token-surface-subtle:      #0D1322;
+  --token-surface-hover:       #141D33;
+  --token-surface-selected:    #1F2B49;
+  --token-surface-translucent: rgba(20, 29, 51, 0.94);
+
+  --token-border:        rgba(243, 243, 245, 0.14);
+  --token-border-subtle: rgba(243, 243, 245, 0.08);
+  --token-border-hover:  #202F63;
+
+  --token-text-primary:   #FFFFFF;
+  --token-text-secondary: #E5E5E8;
+  --token-text-muted:     #A5A5AA;
+  --token-text-faint:     #77777F;
+
+  --token-accent:         #92243D;
+  --token-accent-hover:   #A92C48;
+  --token-accent-pressed: #7E1E34;
+  --token-accent-soft:    #1F2B49;
+  --token-accent-border:  #92243D;
+
+  --token-status-neutral-bg:     #1F2B49;
+  --token-status-neutral-text:   #FFFFFF;
+  --token-status-neutral-border: rgba(243, 243, 245, 0.2);
+
+  --token-status-success-bg:     #1F2B49;
+  --token-status-success:        #FFFFFF;
+  --token-status-success-border: rgba(243, 243, 245, 0.2);
+
+  --token-status-warning-bg:     #1F2B49;
+  --token-status-warning:        #FFFFFF;
+  --token-status-warning-border: rgba(243, 243, 245, 0.2);
+
+  --token-status-danger-bg:      #2A141A;
+  --token-status-danger:         #FFFFFF;
+  --token-status-danger-border:  #92243D;
+
+  --token-shadow-card:  0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  --token-shadow-float: 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+}
+
+/* ── Accessibility: Reduced Motion ───────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+"""
+
+with open("assets/css/design-tokens.css", "w", encoding="utf-8") as f:
+    f.write(tokens_css)
+print("Updated assets/css/design-tokens.css successfully!")
+

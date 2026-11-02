@@ -40,16 +40,6 @@
       title: "Mathematics Dept. Head",
       avatar: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80"
     },
-    staff: {
-      id: "STF-2024-015",
-      firstName: "Ms. Sreymom",
-      lastName: "Lim",
-      role: "staff",
-      portal: "staff",
-      email: "staff@ngis.edu.kh",
-      title: "Operations Coordinator",
-      avatar: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=80"
-    },
     student: {
       id: "STU-2024-089",
       firstName: "Nrinphouneta",
@@ -64,7 +54,7 @@
 
   function detectContextRole() {
     const path = (window.location.pathname || "").toLowerCase();
-    const match = path.match(/\/pages\/(admin|teacher|student|staff|principal)\//);
+    const match = path.match(/\/pages\/(admin|teacher|student|principal)\//);
     if (match && DEMO_USERS[match[1]]) return match[1];
 
     const params = new URLSearchParams(window.location.search || "");
@@ -112,8 +102,7 @@
         admin: rootPrefix + "pages/admin/admin.html",
         teacher: rootPrefix + "pages/teacher/teacher.html",
         student: rootPrefix + "pages/student/student.html",
-        principal: rootPrefix + "pages/principal/principal.html",
-        staff: rootPrefix + "pages/staff/staff.html"
+        principal: rootPrefix + "pages/principal/principal.html"
       };
       window.location.href = redirectUrl || homeUrls[role] || (rootPrefix + "index.html");
     },
