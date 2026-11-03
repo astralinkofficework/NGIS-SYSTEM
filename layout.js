@@ -121,8 +121,17 @@
           { id:"approvals", label:"Executive Approvals", icon:"verified", href:"pages/principal/principal-approvals.html" },
           { id:"requests", label:"Requests & Submissions", icon:"inbox", href:"pages/principal/principal-approvals.html?category=requests" },
         ]},
+        { id:"academic-ops", label:"ACADEMIC OPERATIONS", icon:"school", links:[
+          { id:"classes", label:"Classes", icon:"school", href:"pages/principal/principal-classes.html" },
+          { id:"departments", label:"Departments", icon:"apartment", href:"pages/principal/principal-departments.html" },
+          { id:"assignments", label:"Assignments & Submissions", icon:"assignment", href:"pages/principal/principal-assignments.html" },
+          { id:"timetables", label:"Timetables", icon:"calendar_view_week", href:"pages/principal/principal-timetables.html" },
+          { id:"attendance", label:"Attendance", icon:"how_to_reg", href:"pages/principal/principal-attendance.html" },
+        ]},
         { id:"students-grp", label:"STUDENT MANAGEMENT", icon:"school", links:[
           { id:"students", label:"Student Records", icon:"person_search", href:"pages/principal/principal-students.html" },
+          { id:"services", label:"Student Services", icon:"assignment_turned_in", href:"pages/principal/principal-services.html" },
+          { id:"lost-found", label:"Lost and Found", icon:"inventory_2", href:"pages/principal/principal-lost-found.html" },
         ]},
         { id:"teachers-grp", label:"TEACHER MANAGEMENT", icon:"co_present", links:[
           { id:"teachers", label:"Faculty Oversight", icon:"manage_accounts", href:"pages/principal/principal-teachers.html" },
@@ -130,12 +139,12 @@
         { id:"roster-grp", label:"ROSTER & PROFILES", icon:"badge", links:[
           { id:"roster", label:"Roster & Profiles", icon:"badge", href:"pages/principal/principal-roster.html" },
         ]},
-        { id:"academics-grp", label:"ACADEMIC MANAGEMENT", icon:"assessment", links:[
+        { id:"academics-grp", label:"REPORTS & DOCUMENTS", icon:"assessment", links:[
           { id:"reports",   label:"Academic & Cohort Reports", icon:"assessment", href:"pages/principal/principal-reports.html" },
           { id:"documents", label:"Official Documents", icon:"description", href:"pages/principal/principal-documents.html" },
         ]},
         { id:"history-grp", label:"ACTIVITY HISTORY", icon:"history", links:[
-          { id:"activity", label:"Management Action Log", icon:"receipt_long", href:"pages/principal/principal-activity.html" },
+          { id:"activity", label:"Change History", icon:"receipt_long", href:"pages/principal/principal-activity.html" },
         ]},
         { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
           { id:"announcements", label:"School Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=principal" },

@@ -1526,9 +1526,17 @@ def create_lost_found_item():
 
 
 
-@app.route('/api/lost-found/<int:item_id>', methods=['PUT'])
+@app.route('/api/lost-found/<int:item_id>', methods=['PUT', 'DELETE'])
+def update_or_delete_lost_found_item(item_id):
+    if request.method == 'DELETE':
+        items = load_lost_found_items()
+        idx = next((i for i, item in enumerate(items) if item.get('id') == item_id), None)
+        if idx is None:
+            return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Item not found'}}), 404
+        deleted = items.pop(idx)
+        save_lost_found_items(items)
+        return jsonify({'data': deleted, 'message': 'Item deleted successfully'})
 
-def update_lost_found_item(item_id):
 
     data = request.get_json() or {}
 
@@ -4312,7 +4320,7 @@ def academic_admin_override_attendance():
 
     data = request.get_json(silent=True) or {}
 
-    att_id = data.get('attendanceId')
+    att_id = data.get('attendanceId') or data.get('attendance_id')
 
     status = (data.get('status') or '').strip().lower()
 
@@ -5659,8 +5667,22 @@ def submit_assignment(asgn_id):
 @app.route('/api/classes', methods=['GET'])
 
 def get_classes():
-
     return jsonify({'data': DB['classes'], 'meta': {'total': len(DB['classes'])}})
+
+@app.route('/api/classes/<class_id>', methods=['GET', 'PUT'])
+def handle_single_class(class_id):
+    c = next((item for item in DB['classes'] if item['id'] == class_id), None)
+    if not c:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Class not found'}}), 404
+    if request.method == 'GET':
+        return jsonify({'data': c})
+    # PUT
+    data = request.get_json(silent=True) or {}
+    for field in ['name', 'grade', 'section', 'room', 'homeroomTeacher', 'campus', 'studentCount']:
+        if field in data:
+            c[field] = data[field]
+    return jsonify({'data': c, 'message': 'Class updated successfully'})
+
 
 
 
@@ -5872,7 +5894,7 @@ def handle_grades():
 
 # accounts. Flip to False to reconnect the layer to the live store.
 
-PRINCIPAL_DEMO_MODE = True
+PRINCIPAL_DEMO_MODE = False
 
 
 

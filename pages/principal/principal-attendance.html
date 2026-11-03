@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Attendance Oversight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+.font-medium, .badge, th { font-weight: 500 !important; }
+:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+body { background:var(--soft-gray); color:var(--black); }
+.mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip.ok { color:var(--navy); border-color:var(--navy); }
+.status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
+.btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral { background:var(--white); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral:hover { background:var(--soft-gray); }
+#toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--navy); color:var(--white); padding:10px 18px; border-radius:10px; font-size:13px; display:none; z-index:1200; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+
+/* Modal */
+#correctModalScrim { position:fixed; inset:0; background:rgba(15,20,40,.42); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:1000; }
+#correctModalScrim.open { opacity:1; pointer-events:auto; }
+#correctModal { position:fixed; top:50%; left:50%; transform:translate(-50%, -50%) scale(0.95); width:min(520px, 92vw); background:white; border-radius:16px; border:1px solid var(--border-subtle); box-shadow:0 12px 36px rgba(0,0,0,0.18); z-index:1001; opacity:0; pointer-events:none; transition:all .2s ease; }
+#correctModal.open { opacity:1; pointer-events:auto; transform:translate(-50%, -50%) scale(1); }
+</style>
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-[#202F63]">Attendance</span>
+    </div>
+    <span class="text-xs px-2.5 py-1 bg-slate-100 rounded-md text-slate-600">Daily Register</span>
+  </div>
+
+  <div class="page" style="max-width:1400px;margin:0 auto;padding:20px 20px 48px">
+    <!-- Header -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">how_to_reg</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl text-[#202F63] tracking-tight">Attendance</h1>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+          Monitor student and teacher attendance, review historical registers, and correct records with an audited reason.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="status-chip ok" id="attRateBadge">96.8% Average Attendance</span>
+        <button class="btn-neutral text-xs" onclick="loadAttendance()"><span class="material-symbols-outlined text-sm">refresh</span> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="mgr-card mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 flex-1 min-w-[240px]">
+        <span class="material-symbols-outlined text-slate-400">search</span>
+        <input id="searchInput" type="search" placeholder="Search student name, student ID or class…" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] flex-1 outline-none focus:border-[#202F63]">
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="classFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Classes</option>
+          <option value="10A">Grade 10A</option>
+          <option value="10B">Grade 10B</option>
+          <option value="11A">Grade 11A</option>
+          <option value="11B">Grade 11B</option>
+          <option value="11C">Grade 11C</option>
+        </select>
+        <select id="statusFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Statuses</option>
+          <option value="present">Present</option>
+          <option value="tardy">Late</option>
+          <option value="excused">Excused Absence</option>
+          <option value="absent">Unexcused</option>
+        </select>
+        <input id="dateFilter" type="date" value="2026-10-12" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+      </div>
+    </div>
+
+    <!-- Attendance Table -->
+    <div class="mgr-card mt-4 p-0 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[#F3F3F5] text-slate-500 uppercase tracking-wider text-[11px] border-b border-[#E5E5E8]">
+            <tr>
+              <th class="p-3.5">Student</th>
+              <th class="p-3.5">Class</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5">Note</th>
+              <th class="p-3.5">Audited By</th>
+              <th class="p-3.5 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="attTableBody" class="divide-y divide-[#E5E5E8] text-slate-700">
+            <tr>
+              <td colspan="7" class="p-6 text-center text-slate-400">Loading attendance records…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal for Correcting Attendance Record -->
+<div id="correctModalScrim" onclick="closeCorrectModal()"></div>
+<div id="correctModal">
+  <div class="p-5 border-b border-[#E5E5E8] flex items-center justify-between bg-[#F3F3F5] rounded-t-16">
+    <div>
+      <h2 class="text-base font-medium text-[#202F63]">Correct Attendance Record</h2>
+      <p id="modalStudentSub" class="text-xs text-slate-500">Principal Record Correction</p>
+    </div>
+    <button class="btn-neutral p-1 text-slate-600 rounded-lg hover:bg-slate-200" onclick="closeCorrectModal()">
+      <span class="material-symbols-outlined text-base">close</span>
+    </button>
+  </div>
+  <div class="p-6 space-y-4 text-xs">
+    <div>
+      <label class="block text-slate-500 mb-1">New Attendance Status</label>
+      <select id="modalNewStatus" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs bg-white outline-none">
+        <option value="present">Present</option>
+        <option value="excused">Excused Absence</option>
+        <option value="tardy">Late</option>
+        <option value="absent">Unexcused Absence</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-slate-500 mb-1">Reason for Change (Required)</label>
+      <textarea id="modalReason" rows="3" placeholder="Provide reason for correcting this official record…" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs outline-none focus:border-[#202F63]"></textarea>
+    </div>
+    <div class="flex justify-end gap-2 pt-2">
+      <button class="btn-neutral text-xs" onclick="closeCorrectModal()">Cancel</button>
+      <button class="btn-burgundy text-xs" onclick="saveCorrection()">
+        <span class="material-symbols-outlined text-sm">save</span> Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>window.PAGE={"role":"principal","active":"attendance"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'principal', active: 'attendance', isDashboard: false,
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
+  title: 'Attendance',
+  greeting: 'Oversee school-wide attendance, inspect attendance records, and authorize corrections.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+let attendanceList = [];
+let currentRecord = null;
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+}
+
+async function loadAttendance() {
+  try {
+    const res = await fetch('/api/academic/attendance');
+    const json = await res.json();
+    attendanceList = json.data || [];
+    renderTable();
+  } catch (err) {
+    document.getElementById('attTableBody').innerHTML = `<tr><td colspan="7" class="p-4 text-center text-[#92243D]">Failed to load attendance: ${err.message}</td></tr>`;
+  }
+}
+
+function renderTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const classVal = document.getElementById('classFilter').value;
+  const statusVal = document.getElementById('statusFilter').value;
+  const dateVal = document.getElementById('dateFilter').value;
+
+  const filtered = attendanceList.filter(a => {
+    if (statusVal !== 'all' && a.status !== statusVal) return false;
+    if (classVal !== 'all' && a.class_id && !a.class_id.toLowerCase().includes(classVal.toLowerCase())) return false;
+    if (dateVal && a.attendance_date !== dateVal) return false;
+    if (q) {
+      const match = (a.student_name && a.student_name.toLowerCase().includes(q)) ||
+                    (a.student_id && a.student_id.toLowerCase().includes(q)) ||
+                    (a.class_id && a.class_id.toLowerCase().includes(q));
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  const tbody = document.getElementById('attTableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No attendance records match your filter.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(a => `
+    <tr class="hover:bg-slate-50 transition-colors">
+      <td class="p-3.5">
+        <div class="font-medium text-[#202F63] text-sm">${a.student_name || 'Student'}</div>
+        <div class="text-[11px] text-slate-400">${a.student_id}</div>
+      </td>
+      <td class="p-3.5">
+        <span class="font-medium">${a.class_id || 'Class'}</span>
+      </td>
+      <td class="p-3.5">
+        <span class="text-slate-600">${a.attendance_date}</span>
+      </td>
+      <td class="p-3.5">
+        <span class="status-chip ${a.status === 'present' ? 'ok' : 'warn'}">${a.status}</span>
+      </td>
+      <td class="p-3.5">
+        <span class="text-slate-500">${a.note || '—'}</span>
+      </td>
+      <td class="p-3.5">
+        <span class="text-slate-400 text-[11px]">${a.recorded_by || 'Teacher'}</span>
+      </td>
+      <td class="p-3.5 text-right">
+        <button class="btn-burgundy text-xs py-1 px-3" onclick="openCorrectModal('${a.id}')">
+          <span class="material-symbols-outlined text-sm">edit</span> Edit
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openCorrectModal(id) {
+  currentRecord = attendanceList.find(a => a.id === id);
+  if (!currentRecord) return;
+
+  document.getElementById('modalStudentSub').textContent = `${currentRecord.student_name} (${currentRecord.student_id}) • Date: ${currentRecord.attendance_date}`;
+  document.getElementById('modalNewStatus').value = currentRecord.status;
+  document.getElementById('modalReason').value = '';
+
+  document.getElementById('correctModalScrim').classList.add('open');
+  document.getElementById('correctModal').classList.add('open');
+}
+
+function closeCorrectModal() {
+  document.getElementById('correctModalScrim').classList.remove('open');
+  document.getElementById('correctModal').classList.remove('open');
+}
+
+async function saveCorrection() {
+  if (!currentRecord) return;
+  const newStatus = document.getElementById('modalNewStatus').value;
+  const reason = document.getElementById('modalReason').value.trim();
+
+  if (!reason) {
+    toast('Please enter a reason for this record correction');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/academic/admin/override-attendance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer mock-jwt-token-principal'
+      },
+      body: JSON.stringify({
+        attendanceId: currentRecord.id,
+        status: newStatus,
+        reason: reason
+      })
+    });
+    if (!res.ok) throw new Error('Update failed');
+    toast('Attendance record corrected and audited');
+    currentRecord.status = newStatus;
+    currentRecord.note = `Corrected by Principal: ${reason}`;
+    closeCorrectModal();
+    renderTable();
+  } catch (err) {
+    toast(`Error: ${err.message}`);
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('classFilter').addEventListener('change', renderTable);
+document.getElementById('statusFilter').addEventListener('change', renderTable);
+document.getElementById('dateFilter').addEventListener('change', renderTable);
+document.addEventListener('DOMContentLoaded', loadAttendance);
+</script>
+</body>
+</html>

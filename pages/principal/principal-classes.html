@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Class Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+.font-medium, .badge, th { font-weight: 500 !important; }
+:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+body { background:var(--soft-gray); color:var(--black); }
+.mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip.ok { color:var(--navy); border-color:var(--navy); }
+.status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
+.btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral { background:var(--white); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral:hover { background:var(--soft-gray); }
+.class-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:16px; }
+.sub-chip { font-size:11px; color:#555555; background:var(--soft-gray); border:1px solid var(--border-subtle); border-radius:999px; padding:2px 9px; display:inline-flex; align-items:center; }
+#toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--navy); color:var(--white); padding:10px 18px; border-radius:10px; font-size:13px; display:none; z-index:1200; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+
+/* Drawer */
+#classDrawerScrim { position:fixed; inset:0; background:rgba(15,20,40,.42); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:1000; }
+#classDrawerScrim.open { opacity:1; pointer-events:auto; }
+#classDrawer { position:fixed; top:0; right:0; width:min(580px,94vw); height:100vh; background:var(--white); transform:translateX(100%); transition:transform .24s cubic-bezier(0.16, 1, 0.3, 1); z-index:1001; display:flex; flex-direction:column; box-shadow:-8px 0 28px rgba(0,0,0,.15); }
+#classDrawer.open { transform:translateX(0); }
+</style>
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-[#202F63]">Classes</span>
+    </div>
+    <span id="mobileClassCount" class="text-xs px-2.5 py-1 bg-slate-100 rounded-md text-slate-600">5 Classes</span>
+  </div>
+
+  <div class="page" style="max-width:1400px;margin:0 auto;padding:20px 20px 48px">
+    <!-- Header -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">school</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl text-[#202F63] tracking-tight">Classes</h1>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+          Review all school classes, view assigned students, adjust rooms and homeroom teachers, and monitor class activities.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="status-chip ok" id="classCountChip">5 Active Classes</span>
+        <button class="btn-neutral text-xs" onclick="loadClasses()"><span class="material-symbols-outlined text-sm">refresh</span> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="mgr-card mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 flex-1 min-w-[240px]">
+        <span class="material-symbols-outlined text-slate-400">search</span>
+        <input id="searchInput" type="search" placeholder="Search class name, grade, room or teacher…" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] flex-1 outline-none focus:border-[#202F63]">
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="campusFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Campuses</option>
+          <option value="Sensok">Sensok Campus</option>
+          <option value="TK">TK Campus</option>
+        </select>
+        <select id="gradeFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Grades</option>
+          <option value="10">Grade 10</option>
+          <option value="11">Grade 11</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Classes Grid -->
+    <div class="class-grid" id="classesGrid">
+      <div class="text-slate-400 text-sm p-4">Loading classes…</div>
+    </div>
+  </div>
+</main>
+
+<!-- Drawer for Viewing and Editing Class Details -->
+<div id="classDrawerScrim" onclick="closeClassDrawer()"></div>
+<div id="classDrawer">
+  <div class="p-5 border-b border-[#E5E5E8] flex items-center justify-between bg-[#F3F3F5]">
+    <div>
+      <h2 id="drawerClassName" class="text-lg font-medium text-[#202F63]">Class Details</h2>
+      <p id="drawerClassSub" class="text-xs text-slate-500">Edit class details and review assigned students</p>
+    </div>
+    <button class="btn-neutral p-1 text-slate-600 rounded-lg hover:bg-slate-200" onclick="closeClassDrawer()">
+      <span class="material-symbols-outlined text-base">close</span>
+    </button>
+  </div>
+  <div class="p-6 overflow-y-auto flex-1 space-y-6">
+    <!-- Edit Form -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white space-y-4">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium">Class Information</h3>
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div>
+          <label class="block text-slate-500 mb-1">Class Name</label>
+          <input id="editClassName" type="text" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1">Room</label>
+          <input id="editClassRoom" type="text" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1">Homeroom Teacher</label>
+          <input id="editHomeroomTeacher" type="text" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1">Student Capacity / Count</label>
+          <input id="editStudentCount" type="number" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs">
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button class="btn-burgundy text-xs" onclick="saveClassDetails()">
+          <span class="material-symbols-outlined text-sm">save</span> Save
+        </button>
+      </div>
+    </div>
+
+    <!-- Assigned Students Section -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium">Assigned Students</h3>
+        <span id="studentRosterBadge" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600">0 Students</span>
+      </div>
+      <div id="drawerStudentList" class="space-y-2 text-xs divide-y divide-slate-100 max-h-[300px] overflow-y-auto">
+        <div class="text-slate-400 p-2">Loading students…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>window.PAGE={"role":"principal","active":"classes"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'principal', active: 'classes', isDashboard: false,
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
+  title: 'Classes',
+  greeting: 'Oversee school classes, teachers, student allocations, and class activities.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+let allClasses = [];
+let allStudents = [];
+let currentClass = null;
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+}
+
+async function loadClasses() {
+  try {
+    const [cRes, sRes] = await Promise.all([
+      fetch('/api/classes').then(r => r.json()),
+      fetch('/api/students').then(r => r.json())
+    ]);
+    allClasses = cRes.data || [];
+    allStudents = sRes.data || [];
+    document.getElementById('classCountChip').textContent = `${allClasses.length} Active Classes`;
+    const mobCount = document.getElementById('mobileClassCount');
+    if (mobCount) mobCount.textContent = `${allClasses.length} Classes`;
+    renderClasses();
+  } catch (err) {
+    document.getElementById('classesGrid').innerHTML = `<div class="p-4 text-sm text-[#92243D]">Failed to load classes: ${err.message}</div>`;
+  }
+}
+
+function renderClasses() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const campus = document.getElementById('campusFilter').value;
+  const grade = document.getElementById('gradeFilter').value;
+
+  const filtered = allClasses.filter(c => {
+    if (campus !== 'all' && c.campus !== campus) return false;
+    if (grade !== 'all' && String(c.grade) !== grade) return false;
+    if (q) {
+      const match = c.name.toLowerCase().includes(q) ||
+                    (c.room && c.room.toLowerCase().includes(q)) ||
+                    (c.homeroomTeacher && c.homeroomTeacher.toLowerCase().includes(q));
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  const grid = document.getElementById('classesGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="text-slate-400 p-6 text-sm">No classes match your filter.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(c => {
+    // Count students matching this class
+    const enrolled = allStudents.filter(s => {
+      const sc = (s.class || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cid = (c.id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cname = (c.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      return sc.includes(cid) || sc.includes(cname) || cname.includes(sc);
+    }).length;
+
+    return `
+    <div class="mgr-card flex flex-col justify-between" data-id="${c.id}">
+      <div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs uppercase tracking-wider text-slate-400 font-medium">Grade ${c.grade} • Section ${c.section}</span>
+          <span class="status-chip ok">${c.campus || 'Main Campus'}</span>
+        </div>
+        <h3 class="text-lg font-medium text-[#202F63] mt-1">${c.name}</h3>
+        <div class="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px] text-slate-400">person</span>
+          ${c.homeroomTeacher || 'No Teacher Assigned'}
+        </div>
+        <div class="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px] text-slate-400">meeting_room</span>
+          ${c.room || 'Unassigned'}
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#E5E5E8] flex items-center justify-between text-xs">
+        <div class="text-slate-600">
+          <span class="font-medium text-[#202F63] text-sm">${enrolled || c.studentCount || 0}</span> students enrolled
+        </div>
+        <button class="btn-burgundy text-xs py-1 px-3" onclick="openClassDrawer('${c.id}')">
+          <span class="material-symbols-outlined text-sm">edit</span> Manage
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openClassDrawer(classId) {
+  currentClass = allClasses.find(c => c.id === classId);
+  if (!currentClass) return;
+
+  document.getElementById('drawerClassName').textContent = currentClass.name;
+  document.getElementById('drawerClassSub').textContent = `${currentClass.campus} Campus • Room ${currentClass.room}`;
+  document.getElementById('editClassName').value = currentClass.name || '';
+  document.getElementById('editClassRoom').value = currentClass.room || '';
+  document.getElementById('editHomeroomTeacher').value = currentClass.homeroomTeacher || '';
+  document.getElementById('editStudentCount').value = currentClass.studentCount || 30;
+
+  // Filter students for this class
+  const classStudents = allStudents.filter(s => {
+    const sc = (s.class || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cid = (currentClass.id || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cname = (currentClass.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return sc.includes(cid) || sc.includes(cname) || cname.includes(sc);
+  });
+
+  document.getElementById('studentRosterBadge').textContent = `${classStudents.length} Students`;
+  const listEl = document.getElementById('drawerStudentList');
+  if (!classStudents.length) {
+    listEl.innerHTML = '<div class="text-slate-400 p-2">No students enrolled directly in this class.</div>';
+  } else {
+    listEl.innerHTML = classStudents.map(s => `
+      <div class="py-2 flex items-center justify-between">
+        <div>
+          <div class="font-medium text-[#202F63]">${s.name || (s.firstName + ' ' + s.lastName)}</div>
+          <div class="text-slate-400 text-[11px]">${s.id || s.studentId} • GPA: ${s.gpa || '3.5'}</div>
+        </div>
+        <a href="principal-students.html?id=${s.id || s.studentId}" class="btn-neutral text-[11px] py-0.5 px-2">View</a>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('classDrawerScrim').classList.add('open');
+  document.getElementById('classDrawer').classList.add('open');
+}
+
+function closeClassDrawer() {
+  document.getElementById('classDrawerScrim').classList.remove('open');
+  document.getElementById('classDrawer').classList.remove('open');
+}
+
+async function saveClassDetails() {
+  if (!currentClass) return;
+  const name = document.getElementById('editClassName').value.trim();
+  const room = document.getElementById('editClassRoom').value.trim();
+  const homeroomTeacher = document.getElementById('editHomeroomTeacher').value.trim();
+  const studentCount = parseInt(document.getElementById('editStudentCount').value, 10) || 30;
+
+  try {
+    const res = await fetch(`/api/classes/${currentClass.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, room, homeroomTeacher, studentCount })
+    });
+    if (!res.ok) throw new Error('Save failed');
+    toast('Class information updated');
+    currentClass.name = name;
+    currentClass.room = room;
+    currentClass.homeroomTeacher = homeroomTeacher;
+    currentClass.studentCount = studentCount;
+    closeClassDrawer();
+    renderClasses();
+  } catch (err) {
+    toast(`Error: ${err.message}`);
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', renderClasses);
+document.getElementById('campusFilter').addEventListener('change', renderClasses);
+document.getElementById('gradeFilter').addEventListener('change', renderClasses);
+document.addEventListener('DOMContentLoaded', loadClasses);
+</script>
+</body>
+</html>
