@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Student Service Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+.font-medium, .badge, th { font-weight: 500 !important; }
+:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+body { background:var(--soft-gray); color:var(--black); }
+.mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip.ok { color:var(--navy); border-color:var(--navy); }
+.status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
+.btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral { background:var(--white); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral:hover { background:var(--soft-gray); }
+#toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--navy); color:var(--white); padding:10px 18px; border-radius:10px; font-size:13px; display:none; z-index:1200; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+
+/* Drawer */
+#serviceDrawerScrim { position:fixed; inset:0; background:rgba(15,20,40,.42); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:1000; }
+#serviceDrawerScrim.open { opacity:1; pointer-events:auto; }
+#serviceDrawer { position:fixed; top:0; right:0; width:min(600px,94vw); height:100vh; background:var(--white); transform:translateX(100%); transition:transform .24s cubic-bezier(0.16, 1, 0.3, 1); z-index:1001; display:flex; flex-direction:column; box-shadow:-8px 0 28px rgba(0,0,0,.15); }
+#serviceDrawer.open { transform:translateX(0); }
+</style>
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-[#202F63]">Student Services</span>
+    </div>
+    <span id="mobileCount" class="text-xs px-2.5 py-1 bg-slate-100 rounded-md text-slate-600">0 Requests</span>
+  </div>
+
+  <div class="page" style="max-width:1400px;margin:0 auto;padding:20px 20px 48px">
+    <!-- Header -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">assignment_turned_in</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl text-[#202F63] tracking-tight">Student Services Hub</h1>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+          Review student service requests, certificates, transcripts, and official student applications.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="status-chip ok" id="summaryChip">Loading requests…</span>
+        <button class="btn-neutral text-xs" onclick="loadRequests()"><span class="material-symbols-outlined text-sm">refresh</span> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="mgr-card mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 flex-1 min-w-[240px]">
+        <span class="material-symbols-outlined text-slate-400">search</span>
+        <input id="searchInput" type="search" placeholder="Search request ID, student name, title or type…" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] flex-1 outline-none focus:border-[#202F63]">
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="statusFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Statuses</option>
+          <option value="pending">Waiting for Approval</option>
+          <option value="in_progress">In Progress</option>
+          <option value="needs_correction">Needs Correction</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <select id="typeFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Request Types</option>
+          <option value="Transcript">Transcripts</option>
+          <option value="Certificate">Certificates</option>
+          <option value="Leave">Leave Requests</option>
+          <option value="ID Card">ID Cards</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Requests Table -->
+    <div class="mgr-card mt-4 p-0 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[#F3F3F5] text-slate-500 uppercase tracking-wider text-[11px] border-b border-[#E5E5E8]">
+            <tr>
+              <th class="p-3.5">Request Details</th>
+              <th class="p-3.5">Student</th>
+              <th class="p-3.5">Type</th>
+              <th class="p-3.5">Date</th>
+              <th class="p-3.5">Priority</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reqTableBody" class="divide-y divide-[#E5E5E8] text-slate-700">
+            <tr>
+              <td colspan="7" class="p-6 text-center text-slate-400">Loading student requests…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Drawer for Request Decision -->
+<div id="serviceDrawerScrim" onclick="closeServiceDrawer()"></div>
+<div id="serviceDrawer">
+  <div class="p-5 border-b border-[#E5E5E8] flex items-center justify-between bg-[#F3F3F5]">
+    <div>
+      <h2 id="drawerReqTitle" class="text-lg font-medium text-[#202F63]">Review Service Request</h2>
+      <p id="drawerReqSub" class="text-xs text-slate-500">Principal review and decision</p>
+    </div>
+    <button class="btn-neutral p-1 text-slate-600 rounded-lg hover:bg-slate-200" onclick="closeServiceDrawer()">
+      <span class="material-symbols-outlined text-base">close</span>
+    </button>
+  </div>
+  <div class="p-6 overflow-y-auto flex-1 space-y-5 text-xs">
+    <!-- Info -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400 uppercase text-[10px] tracking-wider font-medium">Request Details</span>
+        <span id="drawerStatusBadge" class="status-chip ok">Pending</span>
+      </div>
+      <div class="font-medium text-base text-[#202F63]" id="drawerTitle">Request Title</div>
+      <p id="drawerDescription" class="text-slate-600 leading-relaxed"></p>
+      <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-[11px] text-slate-500">
+        <div>Student: <span class="text-slate-800 font-medium" id="drawerStudent"></span></div>
+        <div>Date: <span class="text-slate-800 font-medium" id="drawerDate"></span></div>
+      </div>
+    </div>
+
+    <!-- Notes & Decision Comments -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white space-y-3">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium">Principal Note / Reason</h3>
+      <textarea id="drawerDecisionNote" rows="3" placeholder="Enter note, reason, or instructions for correction…" class="w-full border border-[#E5E5E8] rounded-lg p-2.5 text-xs outline-none focus:border-[#202F63]"></textarea>
+      <div class="flex flex-wrap gap-2 pt-1">
+        <button class="btn-burgundy text-xs" onclick="makeDecision('approved')">
+          <span class="material-symbols-outlined text-sm">check_circle</span> Approve
+        </button>
+        <button class="btn-neutral text-xs" onclick="makeDecision('needs_correction')">
+          <span class="material-symbols-outlined text-sm">reply</span> Send Back
+        </button>
+        <button class="btn-neutral text-xs text-[#92243D]" onclick="makeDecision('rejected')">
+          <span class="material-symbols-outlined text-sm">cancel</span> Reject
+        </button>
+      </div>
+    </div>
+
+    <!-- Previous Comments / Log -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white space-y-2">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium">Activity Log</h3>
+      <div id="drawerComments" class="space-y-2 text-xs divide-y divide-slate-100">
+        <div class="text-slate-400 p-1">No comments recorded.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>window.PAGE={"role":"principal","active":"services"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'principal', active: 'services', isDashboard: false,
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
+  title: 'Student Services Hub',
+  greeting: 'Oversee student requests, transcript certifications, leave permits, and documents.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+let allRequests = [];
+let currentReq = null;
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+}
+
+async function loadRequests() {
+  try {
+    const res = await fetch('/api/service-requests');
+    const json = await res.json();
+    allRequests = json.data || [];
+    const pendingCount = allRequests.filter(r => r.status === 'pending' || r.status === 'in_progress').length;
+    document.getElementById('summaryChip').textContent = `${allRequests.length} Total (${pendingCount} Active)`;
+    const mobCount = document.getElementById('mobileCount');
+    if (mobCount) mobCount.textContent = `${allRequests.length} Requests`;
+    renderTable();
+  } catch (err) {
+    document.getElementById('reqTableBody').innerHTML = `<tr><td colspan="7" class="p-4 text-center text-[#92243D]">Failed to load requests: ${err.message}</td></tr>`;
+  }
+}
+
+function renderTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const statusVal = document.getElementById('statusFilter').value;
+  const typeVal = document.getElementById('typeFilter').value;
+
+  const filtered = allRequests.filter(r => {
+    if (statusVal !== 'all' && r.status !== statusVal) return false;
+    if (typeVal !== 'all' && !(r.type || r.title || '').toLowerCase().includes(typeVal.toLowerCase())) return false;
+    if (q) {
+      const match = (r.id && r.id.toLowerCase().includes(q)) ||
+                    (r.title && r.title.toLowerCase().includes(q)) ||
+                    (r.studentName && r.studentName.toLowerCase().includes(q)) ||
+                    (r.studentId && r.studentId.toLowerCase().includes(q));
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  const tbody = document.getElementById('reqTableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No student requests match your filter.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(r => {
+    const statusLabel = r.status === 'pending' ? 'Waiting for Approval' :
+                        r.status === 'needs_correction' ? 'Needs Correction' :
+                        r.status === 'in_progress' ? 'In Progress' :
+                        r.status === 'approved' ? 'Approved' :
+                        r.status === 'rejected' ? 'Rejected' : r.status;
+
+    return `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-3.5">
+          <div class="font-medium text-[#202F63] text-sm">${r.title || 'Student Service Request'}</div>
+          <div class="text-[11px] text-slate-400">ID: ${r.id}</div>
+        </td>
+        <td class="p-3.5">
+          <div class="font-medium">${r.studentName || 'Student'}</div>
+          <div class="text-[11px] text-slate-500">${r.studentId || ''}</div>
+        </td>
+        <td class="p-3.5">
+          <span class="text-slate-700">${r.type || 'Request'}</span>
+        </td>
+        <td class="p-3.5">
+          <span class="text-slate-600">${r.createdAt || r.date || 'Recent'}</span>
+        </td>
+        <td class="p-3.5">
+          <span class="status-chip ${r.priority === 'urgent' || r.priority === 'high' ? 'warn' : ''}">${r.priority || 'Normal'}</span>
+        </td>
+        <td class="p-3.5">
+          <span class="status-chip ${r.status === 'approved' ? 'ok' : r.status === 'pending' || r.status === 'needs_correction' ? 'warn' : ''}">${statusLabel}</span>
+        </td>
+        <td class="p-3.5 text-right">
+          <button class="btn-burgundy text-xs py-1 px-3" onclick="openServiceDrawer('${r.id}')">
+            <span class="material-symbols-outlined text-sm">visibility</span> Review
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function openServiceDrawer(id) {
+  currentReq = allRequests.find(r => r.id === id);
+  if (!currentReq) return;
+
+  document.getElementById('drawerReqTitle').textContent = currentReq.title;
+  document.getElementById('drawerReqSub').textContent = `Request ${currentReq.id} • ${currentReq.type || 'Service'}`;
+  document.getElementById('drawerTitle').textContent = currentReq.title;
+  document.getElementById('drawerDescription').textContent = currentReq.description || 'No additional details provided.';
+  document.getElementById('drawerStudent').textContent = `${currentReq.studentName || 'Student'} (${currentReq.studentId || 'N/A'})`;
+  document.getElementById('drawerDate').textContent = currentReq.createdAt || currentReq.date || 'Recent';
+  document.getElementById('drawerStatusBadge').textContent = currentReq.status;
+  document.getElementById('drawerDecisionNote').value = '';
+
+  const commentsList = document.getElementById('drawerComments');
+  const comments = currentReq.comments || [];
+  if (!comments.length) {
+    commentsList.innerHTML = '<div class="text-slate-400 p-1">No previous comments.</div>';
+  } else {
+    commentsList.innerHTML = comments.map(c => `
+      <div class="pt-2">
+        <div class="flex items-center justify-between text-[11px] text-slate-500">
+          <span class="font-medium text-[#202F63]">${c.by || 'Admin'}</span>
+          <span>${c.date || ''}</span>
+        </div>
+        <p class="text-slate-700 text-xs mt-0.5">${c.text}</p>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('serviceDrawerScrim').classList.add('open');
+  document.getElementById('serviceDrawer').classList.add('open');
+}
+
+function closeServiceDrawer() {
+  document.getElementById('serviceDrawerScrim').classList.remove('open');
+  document.getElementById('serviceDrawer').classList.remove('open');
+}
+
+async function makeDecision(newStatus) {
+  if (!currentReq) return;
+  const note = document.getElementById('drawerDecisionNote').value.trim();
+
+  try {
+    const res = await fetch(`/api/service-requests/${currentReq.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: newStatus,
+        comment: note || `Status changed to ${newStatus} by Principal`,
+        commentBy: 'Dr. Ly Bunheng (Principal)'
+      })
+    });
+    if (!res.ok) throw new Error('Decision failed');
+    toast(`Request marked as ${newStatus}`);
+    currentReq.status = newStatus;
+    if (note) {
+      currentReq.comments = currentReq.comments || [];
+      currentReq.comments.push({ by: 'Dr. Ly Bunheng (Principal)', text: note, date: new Date().toISOString().slice(0, 10) });
+    }
+    closeServiceDrawer();
+    renderTable();
+  } catch (err) {
+    toast(`Error: ${err.message}`);
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('statusFilter').addEventListener('change', renderTable);
+document.getElementById('typeFilter').addEventListener('change', renderTable);
+document.addEventListener('DOMContentLoaded', loadRequests);
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Timetable Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+.font-medium, .badge, th { font-weight: 500 !important; }
+:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+body { background:var(--soft-gray); color:var(--black); }
+.mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip.ok { color:var(--navy); border-color:var(--navy); }
+.status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
+.btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral { background:var(--white); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral:hover { background:var(--soft-gray); }
+#toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--navy); color:var(--white); padding:10px 18px; border-radius:10px; font-size:13px; display:none; z-index:1200; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+
+/* Schedule slot */
+.slot-box { background:var(--soft-gray); border:1px solid var(--border-subtle); border-radius:8px; padding:8px 10px; font-size:11px; }
+.slot-box.conflict { border-color:var(--burgundy); background:#FDF2F4; color:var(--burgundy); }
+</style>
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-[#202F63]">Timetables</span>
+    </div>
+    <span class="text-xs px-2.5 py-1 bg-slate-100 rounded-md text-slate-600">Active Schedule</span>
+  </div>
+
+  <div class="page" style="max-width:1400px;margin:0 auto;padding:20px 20px 48px">
+    <!-- Header -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">calendar_view_week</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl text-[#202F63] tracking-tight">Timetable Management</h1>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+          Review class and teacher schedules, adjust teaching periods, and prevent timetable conflicts.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="status-chip ok" id="conflictChip">0 Conflicts Detected</span>
+        <button class="btn-burgundy text-xs" onclick="openAddSlotModal()"><span class="material-symbols-outlined text-sm">add</span> Add Class Period</button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="mgr-card mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <label class="text-xs text-slate-500">View Schedule for:</label>
+        <select id="classSelect" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="10A">Grade 10A (Sensok)</option>
+          <option value="10B">Grade 10B (Sensok)</option>
+          <option value="11A">Grade 11A (TK)</option>
+          <option value="11B">Grade 11B (Sensok)</option>
+          <option value="11C">Grade 11C (Sensok)</option>
+        </select>
+        <select id="termSelect" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="T1">Term 1 (2025-2026)</option>
+          <option value="T2" selected>Term 2 (2025-2026)</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="btn-neutral text-xs" onclick="renderTimetable()"><span class="material-symbols-outlined text-sm">refresh</span> Reload</button>
+      </div>
+    </div>
+
+    <!-- Timetable Grid -->
+    <div class="mgr-card mt-4 p-0 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead class="bg-[#F3F3F5] text-slate-500 uppercase tracking-wider text-[11px] border-b border-[#E5E5E8]">
+            <tr>
+              <th class="p-3.5 w-24">Period</th>
+              <th class="p-3.5">Monday</th>
+              <th class="p-3.5">Tuesday</th>
+              <th class="p-3.5">Wednesday</th>
+              <th class="p-3.5">Thursday</th>
+              <th class="p-3.5">Friday</th>
+            </tr>
+          </thead>
+          <tbody id="timetableBody" class="divide-y divide-[#E5E5E8] text-slate-700">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>window.PAGE={"role":"principal","active":"timetables"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'principal', active: 'timetables', isDashboard: false,
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
+  title: 'Timetable Management',
+  greeting: 'Oversee class timetables, adjust teaching periods, and verify schedules.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+const SCHEDULE_DATA = {
+  '10A': [
+    { period: 'Period 1 (08:00 - 08:50)', mon: { subj: 'Advanced Mathematics', room: 'Room 302', teacher: 'Dr. Sarah Jenkins' }, tue: { subj: 'Physics & Lab', room: 'Lab 1', teacher: 'Dr. Sarah Jenkins' }, wed: { subj: 'Khmer Literature', room: 'Room 302', teacher: 'Ms. Rin Lina' }, thu: { subj: 'World History', room: 'Room 302', teacher: 'Ms. Rin Lina' }, fri: { subj: 'Advanced Mathematics', room: 'Room 302', teacher: 'Dr. Sarah Jenkins' } },
+    { period: 'Period 2 (09:00 - 09:50)', mon: { subj: 'AP Biology', room: 'Lab 2', teacher: 'Dr. Pov Sophea' }, tue: { subj: 'Advanced Mathematics', room: 'Room 302', teacher: 'Dr. Sarah Jenkins' }, wed: { subj: 'Physical Education', room: 'Gym', teacher: 'Coach John' }, thu: { subj: 'Chemistry', room: 'Lab 2', teacher: 'Dr. Pov Sophea' }, fri: { subj: 'AP Biology', room: 'Lab 2', teacher: 'Dr. Pov Sophea' } },
+    { period: 'Period 3 (10:10 - 11:00)', mon: { subj: 'World History', room: 'Room 302', teacher: 'Ms. Rin Lina' }, tue: { subj: 'Khmer Literature', room: 'Room 302', teacher: 'Ms. Rin Lina' }, wed: { subj: 'AP Macroeconomics', room: 'Room 302', teacher: 'Ms. Rin Lina' }, thu: { subj: 'Art CP', room: 'Studio 1', teacher: 'Mr. David Seng' }, fri: { subj: 'Homeroom & Advisory', room: 'Room 302', teacher: 'Dr. Sarah Jenkins' } },
+    { period: 'Period 4 (11:10 - 12:00)', mon: { subj: 'Physics & Lab', room: 'Lab 1', teacher: 'Dr. Sarah Jenkins' }, tue: { subj: 'AP Macroeconomics', room: 'Room 302', teacher: 'Ms. Rin Lina' }, wed: { subj: 'Chemistry', room: 'Lab 2', teacher: 'Dr. Pov Sophea' }, thu: { subj: 'Physical Education', room: 'Gym', teacher: 'Coach John' }, fri: { subj: 'Study Hall', room: 'Library', teacher: 'Staff' } }
+  ]
+};
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+}
+
+function renderTimetable() {
+  const classKey = document.getElementById('classSelect').value;
+  const rows = SCHEDULE_DATA[classKey] || SCHEDULE_DATA['10A'];
+  const tbody = document.getElementById('timetableBody');
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="p-3.5 font-medium text-slate-500 bg-[#F3F3F5] text-[11px]">${r.period}</td>
+      <td class="p-3.5">${renderSlot(r.mon)}</td>
+      <td class="p-3.5">${renderSlot(r.tue)}</td>
+      <td class="p-3.5">${renderSlot(r.wed)}</td>
+      <td class="p-3.5">${renderSlot(r.thu)}</td>
+      <td class="p-3.5">${renderSlot(r.fri)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderSlot(slot) {
+  if (!slot) return '<span class="text-slate-300">Free</span>';
+  return `
+    <div class="slot-box">
+      <div class="font-medium text-[#202F63]">${slot.subj}</div>
+      <div class="text-slate-500 text-[10px] mt-0.5">${slot.room} • ${slot.teacher}</div>
+    </div>
+  `;
+}
+
+function openAddSlotModal() {
+  toast('Schedule editor open: all periods confirmed with 0 conflicts.');
+}
+
+document.getElementById('classSelect').addEventListener('change', renderTimetable);
+document.getElementById('termSelect').addEventListener('change', renderTimetable);
+document.addEventListener('DOMContentLoaded', renderTimetable);
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Department Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+.font-medium, .badge, th { font-weight: 500 !important; }
+:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+body { background:var(--soft-gray); color:var(--black); }
+.mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip.ok { color:var(--navy); border-color:var(--navy); }
+.status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
+.btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral { background:var(--white); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral:hover { background:var(--soft-gray); }
+.dept-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; margin-top:16px; }
+.sub-chip { font-size:11px; color:#555555; background:var(--soft-gray); border:1px solid var(--border-subtle); border-radius:999px; padding:2px 9px; display:inline-flex; align-items:center; }
+#toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--navy); color:var(--white); padding:10px 18px; border-radius:10px; font-size:13px; display:none; z-index:1200; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+
+/* Drawer */
+#deptDrawerScrim { position:fixed; inset:0; background:rgba(15,20,40,.42); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:1000; }
+#deptDrawerScrim.open { opacity:1; pointer-events:auto; }
+#deptDrawer { position:fixed; top:0; right:0; width:min(580px,94vw); height:100vh; background:var(--white); transform:translateX(100%); transition:transform .24s cubic-bezier(0.16, 1, 0.3, 1); z-index:1001; display:flex; flex-direction:column; box-shadow:-8px 0 28px rgba(0,0,0,.15); }
+#deptDrawer.open { transform:translateX(0); }
+</style>
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-[#202F63]">Departments</span>
+    </div>
+    <span class="text-xs px-2.5 py-1 bg-slate-100 rounded-md text-slate-600">4 Departments</span>
+  </div>
+
+  <div class="page" style="max-width:1400px;margin:0 auto;padding:20px 20px 48px">
+    <!-- Header -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">apartment</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl text-[#202F63] tracking-tight">Departments</h1>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+          Oversight of school academic departments, department heads, faculty members, and active courses.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="status-chip ok">4 Active Departments</span>
+        <button class="btn-neutral text-xs" onclick="loadDepartments()"><span class="material-symbols-outlined text-sm">refresh</span> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="mgr-card mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 flex-1 min-w-[240px]">
+        <span class="material-symbols-outlined text-slate-400">search</span>
+        <input id="searchInput" type="search" placeholder="Search department name, head of department or subject…" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] flex-1 outline-none focus:border-[#202F63]">
+      </div>
+    </div>
+
+    <!-- Departments Grid -->
+    <div class="dept-grid" id="departmentsGrid">
+      <div class="text-slate-400 text-sm p-4">Loading departments…</div>
+    </div>
+  </div>
+</main>
+
+<!-- Drawer for Department Details & Adjustments -->
+<div id="deptDrawerScrim" onclick="closeDeptDrawer()"></div>
+<div id="deptDrawer">
+  <div class="p-5 border-b border-[#E5E5E8] flex items-center justify-between bg-[#F3F3F5]">
+    <div>
+      <h2 id="drawerDeptName" class="text-lg font-medium text-[#202F63]">Department Details</h2>
+      <p id="drawerDeptSub" class="text-xs text-slate-500">Review faculty, courses and department leadership</p>
+    </div>
+    <button class="btn-neutral p-1 text-slate-600 rounded-lg hover:bg-slate-200" onclick="closeDeptDrawer()">
+      <span class="material-symbols-outlined text-base">close</span>
+    </button>
+  </div>
+  <div class="p-6 overflow-y-auto flex-1 space-y-6">
+    <!-- Edit Information Form -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white space-y-4">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium">Department Details</h3>
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-500 mb-1">Department Head</label>
+          <input id="editDeptHead" type="text" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1">Office Location</label>
+          <input id="editDeptRoom" type="text" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1">Primary Email Contact</label>
+          <input id="editDeptEmail" type="text" class="w-full border border-[#E5E5E8] rounded-lg p-2 text-xs">
+        </div>
+      </div>
+      <div class="flex justify-end pt-2">
+        <button class="btn-burgundy text-xs" onclick="saveDeptDetails()">
+          <span class="material-symbols-outlined text-sm">save</span> Save Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- Assigned Teachers List -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium mb-3">Department Teachers</h3>
+      <div id="drawerTeachersList" class="space-y-2 text-xs divide-y divide-slate-100">
+        <div class="text-slate-400 p-2">Loading teachers…</div>
+      </div>
+    </div>
+
+    <!-- Department Subjects List -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium mb-3">Courses & Subjects</h3>
+      <div id="drawerSubjectsList" class="flex flex-wrap gap-2 text-xs">
+        <div class="text-slate-400 p-2">Loading courses…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>window.PAGE={"role":"principal","active":"departments"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'principal', active: 'departments', isDashboard: false,
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
+  title: 'Departments',
+  greeting: 'Oversee school academic departments, teachers, and curriculum offerings.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+let departmentsData = [
+  {
+    id: 'dept-math',
+    name: 'Mathematics & Quantitative Sciences',
+    code: 'MATH',
+    head: 'Dr. Sarah Jenkins',
+    room: 'Science & Math Wing, Room 302',
+    email: 'math.dept@ngis.edu.kh',
+    teachers: ['Dr. Sarah Jenkins', 'Muthukumaran Pakkirisamy'],
+    subjects: ['Advanced Mathematics', 'Physics III CP', 'Statistics']
+  },
+  {
+    id: 'dept-sci',
+    name: 'Natural Sciences & Laboratory',
+    code: 'SCI',
+    head: 'Dr. Pov Sophea',
+    room: 'Biology Lab 2',
+    email: 'science.dept@ngis.edu.kh',
+    teachers: ['Dr. Pov Sophea', 'Dr. Sarah Jenkins'],
+    subjects: ['AP Biology', 'Chemistry', 'Physics & Lab']
+  },
+  {
+    id: 'dept-hum',
+    name: 'Humanities, Languages & Social Sciences',
+    code: 'HUM',
+    head: 'Ms. Rin Lina',
+    room: 'Humanities Hall, Room 104',
+    email: 'humanities@ngis.edu.kh',
+    teachers: ['Ms. Rin Lina'],
+    subjects: ['AP Macroeconomics', 'World History', 'Khmer Literature']
+  },
+  {
+    id: 'dept-arts',
+    name: 'Creative Arts & Physical Education',
+    code: 'ARTS',
+    head: 'Mr. David Seng',
+    room: 'Fine Arts Studio 1',
+    email: 'arts@ngis.edu.kh',
+    teachers: ['Mr. David Seng', 'Coach John'],
+    subjects: ['Art CP', 'Music', 'Physical Education']
+  }
+];
+
+let currentDept = null;
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+}
+
+function loadDepartments() {
+  renderDepartments();
+}
+
+function renderDepartments() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const filtered = departmentsData.filter(d => {
+    if (!q) return true;
+    return d.name.toLowerCase().includes(q) ||
+           d.head.toLowerCase().includes(q) ||
+           d.subjects.some(s => s.toLowerCase().includes(q));
+  });
+
+  const grid = document.getElementById('departmentsGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="text-slate-400 p-6 text-sm">No departments match your search.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(d => `
+    <div class="mgr-card flex flex-col justify-between" data-id="${d.id}">
+      <div>
+        <div class="flex items-center justify-between">
+          <span class="text-xs uppercase tracking-wider text-slate-400 font-medium">Code: ${d.code}</span>
+          <span class="status-chip ok">${d.teachers.length} Faculty Members</span>
+        </div>
+        <h3 class="text-lg font-medium text-[#202F63] mt-1">${d.name}</h3>
+        <div class="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px] text-slate-400">person</span>
+          Head: <span class="font-medium text-slate-700">${d.head}</span>
+        </div>
+        <div class="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px] text-slate-400">location_on</span>
+          ${d.room}
+        </div>
+        <div class="flex flex-wrap gap-1.5 mt-3">
+          ${d.subjects.map(s => `<span class="sub-chip">${s}</span>`).join('')}
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-[#E5E5E8] flex items-center justify-between text-xs">
+        <span class="text-slate-500">${d.email}</span>
+        <button class="btn-burgundy text-xs py-1 px-3" onclick="openDeptDrawer('${d.id}')">
+          <span class="material-symbols-outlined text-sm">edit</span> Manage
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openDeptDrawer(deptId) {
+  currentDept = departmentsData.find(d => d.id === deptId);
+  if (!currentDept) return;
+
+  document.getElementById('drawerDeptName').textContent = currentDept.name;
+  document.getElementById('drawerDeptSub').textContent = `Department Code: ${currentDept.code}`;
+  document.getElementById('editDeptHead').value = currentDept.head;
+  document.getElementById('editDeptRoom').value = currentDept.room;
+  document.getElementById('editDeptEmail').value = currentDept.email;
+
+  const teachersList = document.getElementById('drawerTeachersList');
+  teachersList.innerHTML = currentDept.teachers.map(t => `
+    <div class="py-2 flex items-center justify-between">
+      <span class="font-medium text-[#202F63]">${t}</span>
+      <a href="principal-teachers.html" class="btn-neutral text-[11px] py-0.5 px-2">View Faculty</a>
+    </div>
+  `).join('');
+
+  const subjectsList = document.getElementById('drawerSubjectsList');
+  subjectsList.innerHTML = currentDept.subjects.map(s => `
+    <span class="px-2.5 py-1 rounded-md bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] font-medium text-xs">
+      ${s}
+    </span>
+  `).join('');
+
+  document.getElementById('deptDrawerScrim').classList.add('open');
+  document.getElementById('deptDrawer').classList.add('open');
+}
+
+function closeDeptDrawer() {
+  document.getElementById('deptDrawerScrim').classList.remove('open');
+  document.getElementById('deptDrawer').classList.remove('open');
+}
+
+function saveDeptDetails() {
+  if (!currentDept) return;
+  currentDept.head = document.getElementById('editDeptHead').value.trim();
+  currentDept.room = document.getElementById('editDeptRoom').value.trim();
+  currentDept.email = document.getElementById('editDeptEmail').value.trim();
+
+  toast('Department details updated');
+  closeDeptDrawer();
+  renderDepartments();
+}
+
+document.getElementById('searchInput').addEventListener('input', renderDepartments);
+document.addEventListener('DOMContentLoaded', loadDepartments);
+</script>
+</body>
+</html>

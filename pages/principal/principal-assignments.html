@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Assignments &amp; Student Submissions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+/* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+.font-medium, .badge, th { font-weight: 500 !important; }
+:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+body { background:var(--soft-gray); color:var(--black); }
+.mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip.ok { color:var(--navy); border-color:var(--navy); }
+.status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
+.btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral { background:var(--white); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.btn-neutral:hover { background:var(--soft-gray); }
+#toast { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); background:var(--navy); color:var(--white); padding:10px 18px; border-radius:10px; font-size:13px; display:none; z-index:1200; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
+
+/* Drawer */
+#asgnDrawerScrim { position:fixed; inset:0; background:rgba(15,20,40,.42); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:1000; }
+#asgnDrawerScrim.open { opacity:1; pointer-events:auto; }
+#asgnDrawer { position:fixed; top:0; right:0; width:min(620px,94vw); height:100vh; background:var(--white); transform:translateX(100%); transition:transform .24s cubic-bezier(0.16, 1, 0.3, 1); z-index:1001; display:flex; flex-direction:column; box-shadow:-8px 0 28px rgba(0,0,0,.15); }
+#asgnDrawer.open { transform:translateX(0); }
+</style>
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <div id="heroBanner"></div>
+
+  <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
+  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-[#202F63]">Assignments</span>
+    </div>
+    <span id="mobileAsgnCount" class="text-xs px-2.5 py-1 bg-slate-100 rounded-md text-slate-600">0 Items</span>
+  </div>
+
+  <div class="page" style="max-width:1400px;margin:0 auto;padding:20px 20px 48px">
+    <!-- Header -->
+    <div class="bg-white border border-[#E5E5E8] rounded-xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-[#F3F3F5] text-[#202F63] border border-[#E5E5E8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">assignment</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl text-[#202F63] tracking-tight">Assignments &amp; Submissions</h1>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-600 mt-1">
+          Review teacher assignments, inspect student work, adjust grades, and monitor coursework completion.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="status-chip ok" id="asgnSummaryChip">Loading…</span>
+        <button class="btn-neutral text-xs" onclick="loadAssignments()"><span class="material-symbols-outlined text-sm">refresh</span> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="mgr-card mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3 flex-1 min-w-[240px]">
+        <span class="material-symbols-outlined text-slate-400">search</span>
+        <input id="searchInput" type="search" placeholder="Search assignment title, subject, teacher or class…" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] flex-1 outline-none focus:border-[#202F63]">
+      </div>
+      <div class="flex items-center gap-2">
+        <select id="classFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Classes</option>
+          <option value="cls-10a">Grade 10A</option>
+          <option value="cls-10b">Grade 10B</option>
+          <option value="cls-11a">Grade 11A</option>
+          <option value="cls-11b">Grade 11B</option>
+          <option value="cls-11c">Grade 11C</option>
+        </select>
+        <select id="statusFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white outline-none">
+          <option value="all">All Statuses</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Assignments Table / List -->
+    <div class="mgr-card mt-4 p-0 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[#F3F3F5] text-slate-500 uppercase tracking-wider text-[11px] border-b border-[#E5E5E8]">
+            <tr>
+              <th class="p-3.5">Assignment</th>
+              <th class="p-3.5">Class &amp; Subject</th>
+              <th class="p-3.5">Teacher</th>
+              <th class="p-3.5">Due Date</th>
+              <th class="p-3.5">Submissions</th>
+              <th class="p-3.5">Status</th>
+              <th class="p-3.5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="asgnTableBody" class="divide-y divide-[#E5E5E8] text-slate-700">
+            <tr>
+              <td colspan="7" class="p-6 text-center text-slate-400">Loading assignments…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Drawer for Submissions & Assignment Detail -->
+<div id="asgnDrawerScrim" onclick="closeAsgnDrawer()"></div>
+<div id="asgnDrawer">
+  <div class="p-5 border-b border-[#E5E5E8] flex items-center justify-between bg-[#F3F3F5]">
+    <div>
+      <h2 id="drawerAsgnTitle" class="text-lg font-medium text-[#202F63]">Assignment Overview</h2>
+      <p id="drawerAsgnSub" class="text-xs text-slate-500">Student submissions and grade oversight</p>
+    </div>
+    <button class="btn-neutral p-1 text-slate-600 rounded-lg hover:bg-slate-200" onclick="closeAsgnDrawer()">
+      <span class="material-symbols-outlined text-base">close</span>
+    </button>
+  </div>
+  <div class="p-6 overflow-y-auto flex-1 space-y-6">
+    <!-- Assignment Info -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white space-y-2 text-xs">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400 uppercase text-[11px] tracking-wider font-medium">Assignment Details</span>
+        <span id="drawerMaxScore" class="status-chip ok">Max Score: 100</span>
+      </div>
+      <p id="drawerDesc" class="text-slate-600 text-xs mt-1 leading-relaxed"></p>
+    </div>
+
+    <!-- Student Submissions -->
+    <div class="border border-[#E5E5E8] rounded-xl p-4 bg-white space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs uppercase tracking-wider text-slate-400 font-medium">Student Submissions</h3>
+        <span id="drawerSubCount" class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600">0 Submissions</span>
+      </div>
+      <div id="drawerSubmissionsList" class="space-y-3 divide-y divide-slate-100 text-xs">
+        <div class="text-slate-400 p-2">Loading submissions…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>window.PAGE={"role":"principal","active":"assignments"};</script>
+<script>
+window.HERO_CONFIG = {
+  role: 'principal', active: 'assignments', isDashboard: false,
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html', signOutLink: '../../index.html',
+  profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
+  title: 'Assignments & Submissions',
+  greeting: 'Oversee school academic assignments, student submissions, and teacher grading.',
+  ddRows: []
+};
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+let allAssignments = [];
+let currentAsgn = null;
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 2600);
+}
+
+async function loadAssignments() {
+  try {
+    const res = await fetch('/api/assignments');
+    const json = await res.json();
+    allAssignments = json.data || [];
+    document.getElementById('asgnSummaryChip').textContent = `${allAssignments.length} Assignments`;
+    const mobCount = document.getElementById('mobileAsgnCount');
+    if (mobCount) mobCount.textContent = `${allAssignments.length} Items`;
+    renderTable();
+  } catch (err) {
+    document.getElementById('asgnTableBody').innerHTML = `<tr><td colspan="7" class="p-4 text-center text-[#92243D]">Failed to load assignments: ${err.message}</td></tr>`;
+  }
+}
+
+function renderTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const classId = document.getElementById('classFilter').value;
+  const status = document.getElementById('statusFilter').value;
+
+  const filtered = allAssignments.filter(a => {
+    if (classId !== 'all' && a.classId !== classId) return false;
+    if (status !== 'all' && a.status !== status) return false;
+    if (q) {
+      const match = (a.title && a.title.toLowerCase().includes(q)) ||
+                    (a.subject_name && a.subject_name.toLowerCase().includes(q)) ||
+                    (a.teacher_name && a.teacher_name.toLowerCase().includes(q)) ||
+                    (a.class_name && a.class_name.toLowerCase().includes(q));
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  const tbody = document.getElementById('asgnTableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400">No assignments match your filter.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(a => {
+    const subs = a.submissions || [];
+    const graded = subs.filter(s => s.status === 'graded').length;
+    return `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-3.5">
+          <div class="font-medium text-[#202F63] text-sm">${a.title}</div>
+          <div class="text-[11px] text-slate-400">ID: ${a.id}</div>
+        </td>
+        <td class="p-3.5">
+          <div class="font-medium">${a.class_name || a.classId}</div>
+          <div class="text-[11px] text-slate-500">${a.subject_name || 'Subject'}</div>
+        </td>
+        <td class="p-3.5">
+          <div class="text-slate-700">${a.teacher_name || 'Teacher'}</div>
+        </td>
+        <td class="p-3.5">
+          <span class="text-slate-600">${a.dueDate || a.due_date || 'N/A'}</span>
+        </td>
+        <td class="p-3.5">
+          <span class="status-chip ${subs.length ? 'ok' : ''}">${subs.length} submitted (${graded} graded)</span>
+        </td>
+        <td class="p-3.5">
+          <span class="status-chip ${a.status === 'published' ? 'ok' : 'warn'}">${a.status || 'published'}</span>
+        </td>
+        <td class="p-3.5 text-right">
+          <button class="btn-burgundy text-xs py-1 px-3" onclick="openAsgnDrawer('${a.id}')">
+            <span class="material-symbols-outlined text-sm">visibility</span> View
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function openAsgnDrawer(id) {
+  currentAsgn = allAssignments.find(a => String(a.id) === String(id));
+  if (!currentAsgn) return;
+
+  document.getElementById('drawerAsgnTitle').textContent = currentAsgn.title;
+  document.getElementById('drawerAsgnSub').textContent = `${currentAsgn.class_name} • ${currentAsgn.subject_name} • Due: ${currentAsgn.dueDate || currentAsgn.due_date}`;
+  document.getElementById('drawerMaxScore').textContent = `Max Score: ${currentAsgn.maxScore || currentAsgn.max_score || 100}`;
+  document.getElementById('drawerDesc').textContent = currentAsgn.description || 'No description provided.';
+
+  const subs = currentAsgn.submissions || [];
+  document.getElementById('drawerSubCount').textContent = `${subs.length} Submissions`;
+
+  const listEl = document.getElementById('drawerSubmissionsList');
+  if (!subs.length) {
+    listEl.innerHTML = '<div class="text-slate-400 p-2">No student submissions recorded yet.</div>';
+  } else {
+    listEl.innerHTML = subs.map(s => `
+      <div class="pt-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="font-medium text-[#202F63] text-sm">${s.studentName || 'Student'}</span>
+            <span class="text-slate-400 text-[11px] ml-1.5">(${s.studentId})</span>
+          </div>
+          <span class="status-chip ${s.status === 'graded' ? 'ok' : 'warn'}">${s.status || 'submitted'}</span>
+        </div>
+        <div class="mt-2 grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <label class="block text-slate-400 text-[10px] uppercase">Score</label>
+            <input type="number" min="0" max="${currentAsgn.maxScore || 100}" id="score-${s.studentId}" value="${s.score != null ? s.score : ''}" class="w-full border border-[#E5E5E8] rounded p-1.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-slate-400 text-[10px] uppercase">Feedback</label>
+            <input type="text" id="feedback-${s.studentId}" value="${s.feedback || ''}" class="w-full border border-[#E5E5E8] rounded p-1.5 text-xs">
+          </div>
+        </div>
+        <div class="flex justify-end mt-2">
+          <button class="btn-burgundy text-[11px] py-1 px-3" onclick="saveGrade('${s.studentId}')">
+            Save
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('asgnDrawerScrim').classList.add('open');
+  document.getElementById('asgnDrawer').classList.add('open');
+}
+
+function closeAsgnDrawer() {
+  document.getElementById('asgnDrawerScrim').classList.remove('open');
+  document.getElementById('asgnDrawer').classList.remove('open');
+}
+
+async function saveGrade(studentId) {
+  if (!currentAsgn) return;
+  const scoreInput = document.getElementById(`score-${studentId}`);
+  const feedbackInput = document.getElementById(`feedback-${studentId}`);
+  const score = parseFloat(scoreInput.value) || 0;
+  const feedback = feedbackInput.value.trim();
+
+  try {
+    const res = await fetch(`/api/assignments/${currentAsgn.id}/grade`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentId, score, feedback })
+    });
+    if (!res.ok) throw new Error('Failed to update grade');
+    toast('Grade and feedback saved');
+    // Update local data
+    let sub = (currentAsgn.submissions || []).find(s => s.studentId === studentId);
+    if (sub) {
+      sub.score = score;
+      sub.feedback = feedback;
+      sub.status = 'graded';
+    }
+    renderTable();
+  } catch (err) {
+    toast(`Error: ${err.message}`);
+  }
+}
+
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('classFilter').addEventListener('change', renderTable);
+document.getElementById('statusFilter').addEventListener('change', renderTable);
+document.addEventListener('DOMContentLoaded', loadAssignments);
+</script>
+</body>
+</html>
