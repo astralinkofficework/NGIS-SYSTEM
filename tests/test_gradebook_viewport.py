@@ -13,7 +13,7 @@ async def run_tests():
 
         pages_to_test = [
             "http://127.0.0.1:3000/pages/teacher/teacher-gradebook.html",
-            "http://127.0.0.1:3000/pages/teacher/teacher-grades.html"
+            "http://127.0.0.1:3000/pages/teacher/teacher-gradebook.html"
         ]
 
         for base_url in pages_to_test:

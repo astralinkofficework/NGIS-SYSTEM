@@ -1,16 +1,16 @@
 /* ============================================================
    NGIS Master Shared Component Library
    Global 5-Color System:
-   - Navy:      #202F63 (Primary Color: main navigation, sidebar, primary headings, structural elements)
-   - Burgundy:  #92243D (The ONLY Accent Color: primary action buttons, key highlights, small visual emphasis)
+   - Navy:      #176B45 (Primary Color: main navigation, sidebar, primary headings, structural elements)
+   - Burgundy:  #176B45 (The ONLY Accent Color: primary action buttons, key highlights, small visual emphasis)
    - White:     #FFFFFF (Main Surface: page backgrounds, cards, panels, forms, tables, modals)
    - Black:     #000000 (Text & Contrast: body text, strong contrast, important labels, crisp icons)
-   - Soft Gray: #F3F3F5 (Secondary Surface: subtle canvas, table separators, input surfaces)
+   - Soft Gray: #F7F9F7 (Secondary Surface: subtle canvas, table separators, input surfaces)
 
    Strict Rules:
    - Burgundy is the ONLY accent color. Zero additional colors.
    - All portals follow the identical visual identity.
-   - Neutral status indicators (Soft Gray #F3F3F5 + Black #000000); Burgundy #92243D for critical emphasis.
+   - Neutral status indicators (Soft Gray #F7F9F7 + Black #000000); Burgundy #176B45 for critical emphasis.
    - NO colored hover overlays or background shifts; neutral/transparent hovers only.
    - NO bold fonts (weights 400 and 500 only per AGENTS.md).
    - Mobile hamburger menu on far left.
@@ -27,7 +27,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: var(--token-canvas); /* Soft Gray #F3F3F5 */
+  background-color: var(--token-canvas); /* Soft Gray #F7F9F7 */
   color: var(--token-text-primary);       /* Black #000000 */
   font-family: var(--token-font-family);
   font-size: var(--token-text-base);
@@ -91,7 +91,7 @@ textarea:focus-visible {
   box-shadow: 0 0 0 2px var(--token-surface), 0 0 0 4px var(--token-focus-ring) !important;
 }
 
-/* Primary Button (Burgundy #92243D — The ONLY Accent) */
+/* Primary Button (Burgundy #176B45 — The ONLY Accent) */
 .btn-primary,
 .ngis-btn-primary {
   background-color: var(--color-burgundy) !important;
@@ -543,7 +543,7 @@ table th,
 .tbl th {
   height: 44px;
   padding: 0 var(--token-space-4);
-  background-color: var(--color-soft-gray);       /* Soft Gray #F3F3F5 */
+  background-color: var(--color-soft-gray);       /* Soft Gray #F7F9F7 */
   color: var(--color-black);                     /* Black #000000 */
   font-size: var(--token-text-xs);
   font-weight: var(--token-weight-medium);
@@ -569,10 +569,7 @@ table tbody tr:last-child td,
   border-bottom: none;
 }
 
-table tbody tr:hover td,
-.data-table tbody tr:hover td {
-  background-color: var(--color-soft-gray);      /* Neutral Soft Gray hover */
-}
+table tbody tr:hover td, .data-table tbody tr:hover td { background-color: transparent; }
 
 /* Numeric columns right-aligned */
 table th.num,
@@ -595,10 +592,7 @@ table td.num,
   text-align: left;
   transition: background-color 0.15s ease;
 }
-.list-row:hover,
-.ngis-list-row:hover {
-  background-color: var(--color-soft-gray);
-}
+.list-row:hover, .ngis-list-row:hover { background-color: transparent; }
 
 /* ── 7. Tabs & Breadcrumbs ──────────────────────────────────── */
 .tabs,
@@ -671,24 +665,26 @@ table td.num,
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
+  background-color: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--token-space-4);
+  padding: 1rem;
 }
 
 .modal,
 .modal-dialog,
+.modal-card,
 .ngis-modal {
-  background-color: var(--token-surface);
-  border: 1px solid var(--token-border);
-  border-radius: var(--token-radius-card);
-  box-shadow: var(--token-shadow-float);
+  background-color: var(--token-surface, #FFFFFF);
+  border: 1px solid var(--token-border, #E1E9E3);
+  border-radius: 1rem;
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.22);
   width: 100%;
-  max-width: 560px;
+  max-width: 640px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -831,15 +827,20 @@ table td.num,
   }
 }
 
-/* Mobile Fullscreen Modals */
+/* Mobile Responsive Modern Sheet Modals */
 @media (max-width: 639px) {
+  .modal-backdrop,
+  .drawer-backdrop {
+    padding: 0.75rem !important;
+    align-items: flex-end !important;
+  }
   .modal-dialog,
-  .modal {
+  .modal,
+  .modal-card {
     max-width: 100% !important;
-    height: 100% !important;
-    max-height: 100vh !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
+    max-height: 92vh !important;
+    border-radius: 1.25rem !important;
+    margin: 0 auto !important;
   }
 }
 
@@ -996,7 +997,7 @@ header.topbar::after {
   justify-content: space-between !important;
   gap: 12px !important;
   background: var(--token-surface, #ffffff) !important;
-  border-bottom: 1px solid var(--token-border, #E5E5E8) !important;
+  border-bottom: 1px solid var(--token-border, #E1E9E3) !important;
 }
 
 .side-brand-info,
@@ -1019,7 +1020,7 @@ header.topbar::after {
   flex-shrink: 0 !important;
   object-fit: cover !important;
   display: block !important;
-  border: 1px solid var(--token-border, #E5E5E8) !important;
+  border: 1px solid var(--token-border, #E1E9E3) !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
 }
 
@@ -1037,9 +1038,9 @@ header.topbar::after {
 .sidebar .side-brand-name {
   font-size: 17px !important;
   font-weight: 500 !important;
-  color: var(--color-navy, #202F63) !important;
+  color: var(--color-navy, #176B45) !important;
   letter-spacing: -0.01em !important;
-  font-family: var(--token-font-family, 'Inter', -apple-system, sans-serif) !important;
+  font-family: var(--token-font-family, 'Plus Jakarta Sans', sans-serif) !important;
 }
 
 .side-brand-school,
@@ -1065,7 +1066,7 @@ header.topbar::after {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  border: 1px solid var(--token-border, #E5E5E8) !important;
+  border: 1px solid var(--token-border, #E1E9E3) !important;
   border-radius: 8px !important;
   background: var(--token-surface, #ffffff) !important;
   color: var(--color-black, #000000) !important;
@@ -1078,9 +1079,9 @@ header.topbar::after {
 #sidebarCollapseBtn:hover,
 #sidebar .sidebar-collapse-btn:hover,
 .sidebar .sidebar-collapse-btn:hover {
-  background: var(--color-soft-gray, #F3F3F5) !important;
-  border-color: var(--color-navy, #202F63) !important;
-  color: var(--color-navy, #202F63) !important;
+  background: var(--color-soft-gray, #F7F9F7) !important;
+  border-color: var(--color-navy, #176B45) !important;
+  color: var(--color-navy, #176B45) !important;
   box-shadow: none !important;
   transform: none !important;
 }
@@ -1109,8 +1110,8 @@ header.topbar::after {
   gap: 12px !important;
   padding: 10px 14px !important;
   margin: 12px 14px 4px 14px !important;
-  background: var(--token-surface-subtle, #F3F3F5) !important;
-  border: 1px solid var(--token-border, #E5E5E8) !important;
+  background: var(--token-surface-subtle, #F7F9F7) !important;
+  border: 1px solid var(--token-border, #E1E9E3) !important;
   border-radius: 12px !important;
   cursor: pointer !important;
   transition: background 0.2s ease, border-color 0.2s ease !important;
@@ -1120,7 +1121,7 @@ header.topbar::after {
 #sidebar .side-user-card:hover,
 .sidebar .side-user-card:hover {
   background: #FFFFFF !important;
-  border-color: var(--color-navy, #202F63) !important;
+  border-color: var(--color-navy, #176B45) !important;
 }
 
 .side-user-name,
@@ -1142,9 +1143,9 @@ header.topbar::after {
 .side-user-avatar,
 #sidebar .side-user-avatar,
 .sidebar .side-user-avatar {
-  background: var(--color-navy, #202F63) !important;
+  background: var(--color-navy, #176B45) !important;
   color: #FFFFFF !important;
-  border: 1px solid var(--color-navy, #202F63) !important;
+  border: 1px solid var(--color-navy, #176B45) !important;
 }
 
 /* Dark Theme Overrides for Sidebar Brand */
@@ -1169,9 +1170,9 @@ header.topbar::after {
 }
 [data-theme="dark"] .sidebar-collapse-btn:hover,
 [data-theme="dark"] #sidebarCollapseBtn:hover {
-  background: #202F63 !important;
+  background: #176B45 !important;
   color: #FFFFFF !important;
-  border-color: #202F63 !important;
+  border-color: #176B45 !important;
 }
 [data-theme="dark"] .side-user-card,
 [data-theme="dark"] #sidebar .side-user-card {

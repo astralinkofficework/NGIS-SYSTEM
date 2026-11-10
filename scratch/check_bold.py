@@ -1,17 +1,27 @@
-import glob, re
+import re
 
-bold_patterns = [r'font-bold', r'font-extrabold', r'font-black', r'font-weight:\s*700', r'font-weight:\s*800', r'font-weight:\s*900']
-
-for f in sorted(glob.glob('pages/student/*.html')):
-    with open(f, 'r', encoding='utf-8', errors='ignore') as fp:
-        c = fp.read()
-    found = []
+def check_bold(filepath):
+    content = open(filepath, 'r', encoding='utf-8').read()
+    bold_patterns = [
+        r'\bfont-bold\b',
+        r'\bfont-semibold\b',
+        r'\bfont-extrabold\b',
+        r'\bfont-black\b',
+        r'font-weight\s*:\s*[6-9]\d\d',
+        r'fontWeight\s*:\s*["\'][6-9]\d\d["\']'
+    ]
+    issues = []
     for pat in bold_patterns:
-        matches = re.findall(pat, c, flags=re.IGNORECASE)
+        matches = re.findall(pat, content)
         if matches:
-            found.append(f"{pat} ({len(matches)})")
-    if found:
-        print(f"{f}: {', '.join(found)}")
-    else:
-        print(f"{f}: CLEAN (No heavy bold fonts found)")
+            issues.append((pat, len(matches)))
+    return issues
 
+files_to_check = [
+    'pages/principal/principal-timetables.html',
+    'pages/admin/admin-timetables.html'
+]
+
+for f in files_to_check:
+    res = check_bold(f)
+    print(f, "Issues:", res)

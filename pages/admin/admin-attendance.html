@@ -6,12 +6,13 @@
 <title>NGIS — Attendance Management</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
 
 <!-- Phosphor Icons for Mobile Hamburger -->
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -32,13 +33,17 @@
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="../admin/_auth-bootstrap.js"></script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
 </head>
 <body data-role="admin" data-portal="admin">
 <main class="main">
-<div id="heroBanner"></div>
+<header id="heroBanner" role="banner"></header>
 
 <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
-<div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+<header class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
   <div class="flex items-center gap-2.5">
     <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
       <i class="ph ph-list text-xl"></i>
@@ -46,9 +51,9 @@
     <span class="text-sm font-medium text-forest-800">Attendance Oversight</span>
   </div>
   <button class="btn btn-primary btn-sm" data-open-drawer="addAttendanceDrawer">
-    <span class="material-symbols-outlined" style="font-size:16px">add</span> Add
+    <span data-ngis-icon="add" style="font-size:16px"></span> Add
   </button>
-</div>
+</header>
 
 <div class="page">
 
@@ -106,10 +111,10 @@
         </select>
         <input class="input" id="dateFilter" type="date" style="width:auto" onchange="applyFilters()">
         <button class="btn btn-ghost btn-sm" onclick="exportAttendanceCsv()">
-          <span class="material-symbols-outlined">download</span>Export CSV
+          <span data-ngis-icon="download"></span>Export CSV
         </button>
         <button class="btn btn-primary btn-sm" data-open-drawer="addAttendanceDrawer">
-          <span class="material-symbols-outlined">add</span>Add Record
+          <span data-ngis-icon="add"></span>Add Record
         </button>
       </div>
     </div>
@@ -154,7 +159,7 @@
         <p class="text-xs text-ink-muted">Mandatory administrative audit logging</p>
       </div>
       <button onclick="closeOverrideModal()" class="text-ink-muted hover:text-ink-main p-1 rounded-lg">
-        <span class="material-symbols-outlined">close</span>
+        <span data-ngis-icon="close"></span>
       </button>
     </div>
     <div class="p-6 space-y-4">
@@ -194,7 +199,7 @@
         <h3 id="addAttendanceTitle">Record Student Attendance</h3>
         <div class="sub">Add an authoritative daily attendance entry</div>
       </div>
-      <button class="icon-btn" data-close-drawer aria-label="Close"><span class="material-symbols-outlined">close</span></button>
+      <button class="icon-btn" data-close-drawer aria-label="Close"><span data-ngis-icon="close"></span></button>
     </div>
     <div class="drawer-body">
       <form id="addAttendanceForm" onsubmit="return false">
@@ -379,15 +384,18 @@ window.HERO_CONFIG = {
         '<td>' + getStatusBadge(r.status) + '</td>' +
         '<td><span class="text-xs text-ink-muted">' + (r.notes || r.note || '—') + '</span></td>' +
         '<td><span class="text-xs text-ink-muted">' + (r.recorded_by || 'Teacher') + '</span></td>' +
-        '<td style="text-align:right">' +
-          '<button class="btn btn-ghost btn-xs text-forest-800 flex items-center gap-1 inline-flex" onclick="openOverrideModal(\'' + safeId + '\')">' +
-            '<span class="material-symbols-outlined" style="font-size:15px">edit_note</span> Correct' +
-          '</button>' +
+        '<td class="table-actions" style="text-align:right">' +
+          '<div class="action-group">' +
+            '<button type="button" class="action-icon-btn" onclick="openOverrideModal(\'' + safeId + '\')" title="Correct Attendance Record" aria-label="Correct Attendance Record">' +
+              '<span data-ngis-icon="edit"></span>' +
+            '</button>' +
+          '</div>' +
         '</td>' +
       '</tr>';
     }).join('');
 
     tbody.innerHTML = html;
+    if (window.NGIS) window.NGIS.hydrate(tbody);
     var end = Math.min(start + pageSize, filteredRecords.length);
     document.getElementById('paginationLabel').textContent = 'Showing ' + (start + 1) + '–' + end + ' of ' + filteredRecords.length + ' records';
     document.getElementById('pageNumberBtn').textContent = currentPage;

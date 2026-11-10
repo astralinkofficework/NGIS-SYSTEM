@@ -6,7 +6,7 @@
 <title>NGIS — Student Timetable</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
 <link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
@@ -17,40 +17,39 @@
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/ui-states.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
-<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script>try{var t=localStorage.getItem('ngis-theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <style>
   .tt-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px; }
   .tt-chip {
     display:inline-flex; align-items:center; gap:5px;
-    padding:3px 9px; border-radius:99px;
-    font-size:11px; font-weight: 400; letter-spacing:.3px;
-    background:rgba(25,149,173,.08); color:#202F63;
+    padding:4px 10px; border-radius:99px;
+    font-size:12px; font-weight: 500; letter-spacing:.2px;
+    background:rgba(23,107,69,.08); color:var(--text, #29352E);
+    border:1px solid rgba(23,107,69,.15);
   }
   .tt-chip.green {
-    background:rgba(22,163,74,.08); color:#000000;
+    background:#E8F3ED; color:#176B45; border-color:#BEE1CE;
   }
-  .tt-chip .material-symbols-outlined { font-size:13px; }
+  .tt-chip.warn {
+    background:#FEF3C7; color:#B45309; border-color:#FDE68A;
+  }
+  .tt-chip .material-symbols-outlined { font-size:14px; }
 
   /* Interactive Matrix Styles */
   .grid-card {
     background:#ffffff;
-    border-radius:20px;
-    border:1px solid var(--bdr);
+    border-radius:18px;
+    border:1px solid var(--bdr, #E1E9E3);
     box-shadow:0 4px 16px rgba(0, 0, 0, 0.02);
     overflow:hidden;
     margin-top:16px;
   }
   .tt-slot-active {
     position:relative;
-    border:2px solid #000000 !important;
-    background:rgba(16,185,129,0.06) !important;
-    animation:pulseBorder 2s infinite alternate;
-  }
-  @keyframes pulseBorder {
-    from { box-shadow: 0 0 2px rgba(16,185,129,0.4); }
-    to { box-shadow: 0 0 10px rgba(16,185,129,0.8); }
+    border:2px solid #176B45 !important;
+    background:rgba(23,107,69,0.08) !important;
+    box-shadow:0 0 0 3px rgba(23,107,69,0.2);
   }
 
   .slot-btn {
@@ -62,10 +61,48 @@
     cursor:pointer;
     font-family:inherit;
   }
+  .lesson-card {
+    padding:8px 10px;
+    border-radius:8px;
+    transition:transform .12s ease, box-shadow .12s ease;
+    border-left:3px solid #176B45;
+  }
+  .lesson-card:hover {
+    transform:translateY(-1px);
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  .lesson-sub {
+    font-size:12.5px;
+    font-weight:500;
+    color:var(--text, #1c2620);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:4px;
+  }
+  .lesson-tch {
+    font-size:11px;
+    color:#5C6B61;
+    margin-top:2px;
+  }
+  .lesson-rm {
+    font-size:10.5px;
+    color:#8FA095;
+    margin-top:1px;
+  }
+  .slot-empty {
+    padding:14px 6px;
+    text-align:center;
+    font-size:11.5px;
+    color:#8FA095;
+    background:#FAFCFA;
+    border-radius:6px;
+    border:1px dashed #E1E9E3;
+  }
 
   /* Live Period Ticker */
   .ticker-bar {
-    background:linear-gradient(135deg, #000000 0%, #000000 100%);
+    background:#176B45;
     border-radius:16px;
     padding:16px 20px;
     color:#fff;
@@ -76,191 +113,93 @@
     gap:16px;
     margin-top:16px;
   }
+  .shift-divider td {
+    background:#F2F6F3;
+    padding:8px 14px;
+    font-size:11.5px;
+    font-weight:500;
+    color:#415247;
+    text-align:center;
+    letter-spacing:.5px;
+  }
+  .break-row td {
+    background:#FAFBF9;
+    padding:6px 12px;
+    font-size:11px;
+    color:#738479;
+    text-align:center;
+  }
+  .class-select-box {
+    padding:5px 12px;
+    border-radius:8px;
+    border:1px solid #C9D9CE;
+    font-size:12.5px;
+    font-weight:500;
+    background:#fff;
+    color:#29352E;
+    outline:none;
+  }
+  .class-select-box:focus {
+    border-color:#176B45;
+    box-shadow:0 0 0 2px rgba(23,107,69,0.2);
+  }
 </style>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-<link rel="stylesheet" href="../../assets/css/design-system.css">
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
+<script src="../../assets/js/khmer-suite-data.js"></script>
 </head>
-<body data-page="student" data-role="student" class="student-dashboard data-role="student"">
+<body data-page="student" data-role="student" class="student-dashboard">
 <main class="main">
-  <div id="heroBanner"></div>
+  <header id="heroBanner" role="banner"></header>
   <div class="subpage-container">
 
     <!-- Live Period Ticker -->
     <div class="ticker-bar anim-up">
       <div style="display:flex;align-items:center;gap:12px;">
-        <span class="mi" style="color:#000000;font-size:28px;">schedule</span>
+        <span class="material-symbols-outlined" style="color:#E8F3ED;font-size:28px;">schedule</span>
         <div>
-          <span style="font-size:11px;font-weight: 400;text-transform:uppercase;color:#77777F;letter-spacing:0.5px">Active Session Tracker</span>
-          <h4 style="margin:2px 0 0 0;font-size:14px;color:#fff;" id="tickerText">Loading schedule tracker…</h4>
+          <span style="font-size:11px;font-weight:500;text-transform:uppercase;color:#BEE1CE;letter-spacing:0.5px">Active Session Tracker</span>
+          <h4 style="margin:2px 0 0 0;font-size:14px;font-weight:500;color:#fff;" id="tickerText">Checking schedule status…</h4>
         </div>
       </div>
-      <div style="display:flex;gap:10px;">
-        <button class="btn btn-sm btn-ghost" onclick="exportICSFile()" style="color:#fff;border-color:rgba(255,255,255,0.25);">
-          <span class="mi">calendar_today</span>Export (.ICS) Calendar
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-sm btn-ghost" onclick="exportICSFile()" style="color:#fff;border-color:rgba(255,255,255,0.3);font-weight:500">
+          <span class="material-symbols-outlined" style="font-size:15px;margin-right:4px">calendar_today</span>Export (.ICS) Calendar
         </button>
       </div>
     </div>
 
     <!-- Weekly Schedule Matrix -->
     <div class="grid-card anim-up-2">
-      <div class="card-head">
+      <div class="card-head" style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bdr, #E1E9E3);flex-wrap:wrap;gap:12px;">
         <div>
-          <h3>Weekly Timetable Grid</h3>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <h3 style="margin:0;font-size:16px;font-weight:500;">Weekly Class Timetable</h3>
+            <span id="publishBadge" class="tt-chip green"><span class="material-symbols-outlined">verified</span> Published</span>
+          </div>
           <div class="tt-meta">
-            <span class="sub">Academic Year 2025–26</span>
-            <span class="tt-chip"><span class="mi">school</span>Grade 10 — Class 10A</span>
+            <span class="sub" style="font-size:12px;color:#5C6B61;">Academic Year 2026–2027</span>
+            <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#5C6B61;">
+              Select Class:
+              <select id="classSelector" class="class-select-box"></select>
+            </label>
+            <span class="tt-chip" id="roomChip"><span class="material-symbols-outlined">meeting_room</span> Room 101</span>
+            <span class="tt-chip" id="shiftChip"><span class="material-symbols-outlined">schedule</span> Morning Shift</span>
           </div>
         </div>
-        <button class="btn btn-sm btn-ghost" onclick="window.print()">
-          <span class="mi">print</span>Print Schedule
-        </button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm btn-ghost" onclick="window.print()" style="font-weight:500">
+            <span class="material-symbols-outlined" style="font-size:15px;margin-right:4px">print</span>Print Timetable
+          </button>
+        </div>
       </div>
       
       <div class="card-pad" style="overflow-x:auto; padding:20px;">
-        <table class="tbl" style="min-width:800px; border-collapse:collapse;">
-          <thead>
-            <tr>
-              <th style="width:100px">Time Slot</th>
-              <th>Monday</th>
-              <th>Tuesday</th>
-              <th>Wednesday</th>
-              <th>Thursday</th>
-              <th>Friday</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="faint mono" style="font-size:12px">08:00–10:00</td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
-                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Adv. Math</span>
-                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
-                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Physics</span>
-                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
-                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Adv. Math</span>
-                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('English Literature', 'Ms. Rin', 'Room 108', 'Syllabus: Shakespeare Studies')">
-                  <div id="activePeriodSlot" class="tt-slot-active" style="border-left:3px solid #000000;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">English Lit <span style="font-size:9px;background:#000000;color:#fff;padding:1px 3px;border-radius:3px;margin-left:4px">Active Now</span></span>
-                    <div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Computer Science', 'Dr. Lim', 'Computer Lab 2', 'Syllabus: Sorting Algorithms')">
-                  <div style="background:rgba(245,158,11,.07);border-left:3px solid #000000;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">CS</span>
-                    <div class="faint" style="font-size:11px">Dr. Lim · Lab 02</div>
-                  </div>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td class="faint mono" style="font-size:12px">10:00–10:20</td>
-              <td colspan="5" style="text-align:center"><span class="faint" style="font-size:12.5px;letter-spacing:1px">RECREATIONAL BREAK</span></td>
-            </tr>
-            <tr>
-              <td class="faint mono" style="font-size:12px">10:20–12:00</td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
-                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Physics</span>
-                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
-                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Adv. Math</span>
-                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Khmer Literature', 'Mr. Chan', 'Room 112', 'Syllabus: Mid-term review')">
-                  <div style="background:rgba(16,185,129,.07);border-left:3px solid #000000;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Khmer</span>
-                    <div class="faint" style="font-size:11px">Mr. Chan · Rm 112</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
-                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Physics</span>
-                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('English Literature', 'Ms. Rin', 'Room 108', 'Syllabus: Shakespeare Studies')">
-                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">English Lit</span>
-                    <div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div>
-                  </div>
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td class="faint mono" style="font-size:12px">12:00–13:00</td>
-              <td colspan="5" style="text-align:center"><span class="faint" style="font-size:12.5px;letter-spacing:1px">LUNCH REPAST</span></td>
-            </tr>
-            <tr>
-              <td class="faint mono" style="font-size:12px">13:00–15:00</td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('English Literature', 'Ms. Rin', 'Room 108', 'Syllabus: Shakespeare Studies')">
-                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">English Lit</span>
-                    <div class="faint" style="font-size:11px">Ms. Rin · Rm 108</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Computer Science', 'Dr. Lim', 'Computer Lab 2', 'Syllabus: Sorting Algorithms')">
-                  <div style="background:rgba(245,158,11,.07);border-left:3px solid #000000;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">CS</span>
-                    <div class="faint" style="font-size:11px">Dr. Lim · Lab 02</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Physics Mechanics', 'Dr. Pov', 'Physics Lab 4', 'Syllabus: Light Wave Optics')">
-                  <div style="background:rgba(139,92,246,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Physics</span>
-                    <div class="faint" style="font-size:11px">Dr. Pov · Lab 04</div>
-                  </div>
-                </button>
-              </td>
-              <td>
-                <button class="slot-btn" onclick="openClassDetail('Advanced Math', 'Dr. Jenkins', 'Room 302', 'Syllabus: Integration Applications (v2)')">
-                  <div style="background:rgba(25,149,173,.07);border-left:3px solid #202F63;padding:8px 10px;border-radius:6px">
-                    <span style="font-size:12px">Adv. Math</span>
-                    <div class="faint" style="font-size:11px">Dr. Jenkins · Rm 302</div>
-                  </div>
-                </button>
-              </td>
-              <td style="color:var(--faint);text-align:center;font-size:12px;background:#F3F3F5">Free Study Period</td>
-            </tr>
-          </tbody>
-        </table>
+        <div id="timetableContainer">
+          <div style="text-align:center;padding:40px;color:#738479;">Loading timetable data…</div>
+        </div>
       </div>
     </div>
 
@@ -269,75 +208,443 @@
 
 <script>
 (function () {
-  // Mock tracker dates
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  
-  function updateTicker() {
-    const ticker = document.getElementById('tickerText');
-    const now = new Date();
-    const dayName = days[now.getDay()];
-    
-    // Simulate schedule matches
-    if (dayName === "Saturday" || dayName === "Sunday") {
-      ticker.textContent = "Current Period: Free Study Period (Weekend). Stay rested!";
-    } else {
-      ticker.textContent = "Current: English Lit (10:20 - 12:00) • Ms. Rin (Rm 108). Next: Lunch Repast (12:00).";
+  'use strict';
+
+  var DAYS = ['ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+  var DAY_LABELS = {
+    'ច័ន្ទ': 'Monday',
+    'អង្គារ': 'Tuesday',
+    'ពុធ': 'Wednesday',
+    'ព្រហស្បតិ៍': 'Thursday',
+    'សុក្រ': 'Friday',
+    'សៅរ៍': 'Saturday'
+  };
+  var DAY_OF_WEEK_MAP = { 1: 'ច័ន្ទ', 2: 'អង្គារ', 3: 'ពុធ', 4: 'ព្រហស្បតិ៍', 5: 'សុក្រ', 6: 'សៅរ៍' };
+
+  var MORNING_PERIODS = [
+    { p: 1, time: '07:00–07:50', label: 'Period 1' },
+    { p: 2, time: '07:55–08:45', label: 'Period 2' },
+    { break: true, time: '08:45–09:05', label: 'RECREATIONAL BREAK' },
+    { p: 3, time: '09:05–09:55', label: 'Period 3' },
+    { p: 4, time: '10:00–10:50', label: 'Period 4' },
+    { p: 5, time: '10:55–11:45', label: 'Period 5' }
+  ];
+
+  var AFTERNOON_PERIODS = [
+    { p: 1, time: '13:00–13:50', label: 'Period 1' },
+    { p: 2, time: '13:55–14:45', label: 'Period 2' },
+    { break: true, time: '14:45–15:05', label: 'AFTERNOON BREAK' },
+    { p: 3, time: '15:05–15:55', label: 'Period 3' },
+    { p: 4, time: '16:00–16:50', label: 'Period 4' },
+    { p: 5, time: '16:55–17:45', label: 'Period 5' }
+  ];
+
+  var state = {
+    classId: 'class_10A',
+    classes: [],
+    classInfo: null,
+    lessons: [],
+    isPublished: true,
+    version: 1
+  };
+
+  function parseQueryParams() {
+    var params = new URLSearchParams(window.location.search);
+    var c = params.get('class');
+    if (c) {
+      if (!c.startsWith('class_') && !isNaN(parseInt(c, 10))) {
+        state.classId = 'class_' + c;
+      } else {
+        state.classId = c;
+      }
     }
   }
 
-  // Client-Side Offline ICS Export (RFC 5545)
-  window.exportICSFile = function() {
-    let icsContent = 
-      "BEGIN:VCALENDAR\n" +
-      "VERSION:2.0\n" +
-      "PRODID:-//NGIS School//ERP Calendar//EN\n" +
-      "CALSCALE:GREGORIAN\n" +
-      "METHOD:PUBLISH\n" +
-      "BEGIN:VEVENT\n" +
-      "UID:ngis-math-10a@school.com\n" +
-      "DTSTAMP:20260706T120000Z\n" +
-      "DTSTART:20260706T080000\n" +
-      "DTEND:20260706T100000\n" +
-      "SUMMARY:Advanced Mathematics\n" +
-      "DESCRIPTION:Adviser: Dr. Sarah Jenkins. Class 10A.\n" +
-      "LOCATION:Room 302\n" +
-      "END:VEVENT\n" +
-      "BEGIN:VEVENT\n" +
-      "UID:ngis-physics-10a@school.com\n" +
-      "DTSTAMP:20260706T120000Z\n" +
-      "DTSTART:20260706T102000\n" +
-      "DTEND:20260706T120000\n" +
-      "SUMMARY:Physics Mechanics\n" +
-      "DESCRIPTION:Adviser: Dr. Pov. Lab 04.\n" +
-      "LOCATION:Physics Lab 4\n" +
-      "END:VEVENT\n" +
-      "END:VCALENDAR";
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
-    var blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  async function loadClasses() {
+    try {
+      var res = await fetch('/api/timetable/state');
+      if (res.ok) {
+        var d = await res.json();
+        state.classes = d.classes || [];
+        populateClassSelector();
+      }
+    } catch (e) {
+      console.warn('Failed to load classes catalog:', e);
+    }
+  }
+
+  function populateClassSelector() {
+    var sel = document.getElementById('classSelector');
+    if (!sel) return;
+    sel.innerHTML = '';
+    (state.classes.length ? state.classes : [
+      { id: 'class_10A', display: '10A' },
+      { id: 'class_10B', display: '10B' },
+      { id: 'class_11A', display: '11A' },
+      { id: 'class_12A', display: '12A' }
+    ]).forEach(function (c) {
+      var opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = 'Class ' + (c.display || c.id);
+      if (c.id === state.classId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    sel.onchange = function () {
+      state.classId = sel.value;
+      loadTimetable();
+    };
+  }
+
+  async function loadTimetable() {
+    var container = document.getElementById('timetableContainer');
+    if (container) container.innerHTML = '<div style="text-align:center;padding:40px;color:#738479;">Loading timetable data…</div>';
+
+    try {
+      var res = await fetch('/api/timetable/published/class/' + encodeURIComponent(state.classId));
+      if (res.ok) {
+        var data = await res.json();
+        state.classInfo = data.class;
+        state.lessons = data.lessons || [];
+        state.isPublished = true;
+        state.version = data.version || 1;
+      } else {
+        // Fallback to active state
+        var sRes = await fetch('/api/timetable/state');
+        if (sRes.ok) {
+          var sData = await sRes.json();
+          var cls = (sData.classes || []).find(function (c) { return c.id === state.classId; });
+          state.classInfo = cls || { id: state.classId, display: state.classId.replace('class_', ''), room: 'Room 101', shift: 'ព្រឹក' };
+          var placed = sData.placed || {};
+          var sMap = {}; (sData.subjects || []).forEach(function (s) { sMap[s.id] = s; });
+          var tMap = {}; (sData.teachers || []).forEach(function (t) { tMap[t.id] = t; });
+          var lList = [];
+          Object.keys(placed).forEach(function (k) {
+            var parts = k.split('|');
+            if (parts.length >= 4 && parts[3] === state.classId) {
+              var pVal = placed[k];
+              var sub = sMap[pVal.subject_id] || {};
+              var tch = tMap[pVal.teacher_id] || {};
+              lList.push({
+                key: k,
+                day: parts[0],
+                shift: parts[1],
+                period: parseInt(parts[2], 10),
+                class_id: state.classId,
+                class_display: state.classInfo.display || '',
+                subject_id: sub.id,
+                subject_name: sub.name_kh || sub.name_en || '',
+                subject_code: sub.code || '',
+                color: sub.color || '#176B45',
+                teacher_id: tch.id,
+                teacher_code: tch.code || '',
+                teacher_name: tch.name_kh || tch.name_en || '',
+                room: state.classInfo.room || 'Room 101'
+              });
+            }
+          });
+          state.lessons = lList;
+          state.isPublished = false;
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching timetable:', e);
+    }
+
+    renderTimetable();
+    updateTicker();
+  }
+
+  function renderTimetable() {
+    var container = document.getElementById('timetableContainer');
+    if (!container) return;
+
+    // Update meta chips
+    var pBadge = document.getElementById('publishBadge');
+    if (pBadge) {
+      if (state.isPublished) {
+        pBadge.className = 'tt-chip green';
+        pBadge.innerHTML = '<span class="material-symbols-outlined">verified</span> Published (v' + state.version + ')';
+      } else {
+        pBadge.className = 'tt-chip warn';
+        pBadge.innerHTML = '<span class="material-symbols-outlined">pending</span> Draft Timetable';
+      }
+    }
+
+    var rChip = document.getElementById('roomChip');
+    if (rChip) {
+      var rName = state.classInfo && state.classInfo.room ? (window.KSData ? window.KSData.toEnRoom(state.classInfo.room) : state.classInfo.room) : 'Room 101';
+      rChip.innerHTML = '<span class="material-symbols-outlined">meeting_room</span> ' + esc(rName);
+    }
+
+    var sChip = document.getElementById('shiftChip');
+    if (sChip) var shName = state.classInfo ? (window.KSData ? window.KSData.toEnShift(state.classInfo.shift) : state.classInfo.shift) : 'Morning';
+    sChip.innerHTML = '<span class="material-symbols-outlined">schedule</span> ' + esc(shName) + ' Shift';
+
+    // Index lessons by key: day|shift|period
+    var lMap = {};
+    state.lessons.forEach(function (l) {
+      var k = l.day + '|' + l.shift + '|' + l.period;
+      lMap[k] = l;
+    });
+
+    // Check if afternoon has lessons
+    var hasAfternoon = state.lessons.some(function (l) { return l.shift === 'រសៀល'; }) || (state.classInfo && state.classInfo.shift === 'រសៀល');
+
+    var html = '<table class="tbl" style="min-width:880px; border-collapse:collapse; width:100%;">' +
+      '<thead>' +
+        '<tr>' +
+          '<th style="width:120px;text-align:left;padding:10px 12px;">Time / Shift</th>';
+
+    DAYS.forEach(function (d) {
+      html += '<th style="text-align:left;padding:10px 12px;">' + DAY_LABELS[d] + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    // Morning Header
+    html += '<tr class="shift-divider"><td colspan="7">Morning Shift (MORNING SHIFT · 07:00 – 11:45)</td></tr>';
+
+    MORNING_PERIODS.forEach(function (item) {
+      if (item.break) {
+        html += '<tr class="break-row"><td class="faint mono" style="font-size:11.5px;padding:6px 12px;">' + item.time + '</td>' +
+          '<td colspan="6">' + item.label + '</td></tr>';
+        return;
+      }
+      html += '<tr>' +
+        '<td class="faint mono" style="font-size:11.5px;padding:8px 12px;">' +
+          '<div style="font-weight:500;color:var(--text);">' + item.label + '</div>' +
+          '<div style="font-size:10.5px;color:#8FA095;">' + item.time + '</div>' +
+        '</td>';
+
+      DAYS.forEach(function (d) {
+        var key = d + '|ព្រឹក|' + item.p;
+        var lesson = lMap[key];
+        html += '<td style="padding:6px;vertical-align:top;">';
+        if (lesson) {
+          var bg = lesson.color + '15';
+          html += '<button class="slot-btn" onclick="openClassDetail(\'' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '\', \'' + DAY_LABELS[d] + ' Morning ' + item.label + ' (' + item.time + ')\')">' +
+            '<div class="lesson-card" data-slot="' + d + '|ព្រឹក|' + item.p + '" style="background:' + bg + ';border-left-color:' + lesson.color + '">' +
+              '<div class="lesson-sub">' +
+                '<span>' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '</span>' +
+                '<span style="font-size:10px;padding:1px 5px;border-radius:4px;background:' + lesson.color + '25;color:' + lesson.color + ';">' + esc(lesson.subject_code) + '</span>' +
+              '</div>' +
+              '<div class="lesson-tch">' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '</div>' +
+              '<div class="lesson-rm">' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '</div>' +
+            '</div></button>';
+        } else {
+          html += '<div class="slot-empty">Free</div>';
+        }
+        html += '</td>';
+      });
+      html += '</tr>';
+    });
+
+    // Lunch row
+    html += '<tr class="break-row" style="background:#EDF3F0;"><td class="faint mono" style="font-size:11.5px;padding:8px 12px;">11:45–13:00</td>' +
+      '<td colspan="6" style="font-weight:500;color:#29352E;">LUNCH REPAST (11:45 – 13:00)</td></tr>';
+
+    // Afternoon Header
+    if (hasAfternoon) {
+      html += '<tr class="shift-divider"><td colspan="7">AFTERNOON SHIFT (13:00 – 17:45)</td></tr>';
+
+      AFTERNOON_PERIODS.forEach(function (item) {
+        if (item.break) {
+          html += '<tr class="break-row"><td class="faint mono" style="font-size:11.5px;padding:6px 12px;">' + item.time + '</td>' +
+            '<td colspan="6">' + item.label + '</td></tr>';
+          return;
+        }
+        html += '<tr>' +
+          '<td class="faint mono" style="font-size:11.5px;padding:8px 12px;">' +
+            '<div style="font-weight:500;color:var(--text);">' + item.label + '</div>' +
+            '<div style="font-size:10.5px;color:#8FA095;">' + item.time + '</div>' +
+          '</td>';
+
+        DAYS.forEach(function (d) {
+          var key = d + '|រសៀល|' + item.p;
+          var lesson = lMap[key];
+          html += '<td style="padding:6px;vertical-align:top;">';
+          if (lesson) {
+            var bg = lesson.color + '15';
+            html += '<button class="slot-btn" onclick="openClassDetail(\'' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '\', \'' + DAY_LABELS[d] + ' Afternoon ' + item.label + ' (' + item.time + ')\')">' +
+              '<div class="lesson-card" data-slot="' + d + '|រសៀល|' + item.p + '" style="background:' + bg + ';border-left-color:' + lesson.color + '">' +
+                '<div class="lesson-sub">' +
+                  '<span>' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '</span>' +
+                  '<span style="font-size:10px;padding:1px 5px;border-radius:4px;background:' + lesson.color + '25;color:' + lesson.color + ';">' + esc(lesson.subject_code) + '</span>' +
+                '</div>' +
+                '<div class="lesson-tch">' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '</div>' +
+                '<div class="lesson-rm">' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '</div>' +
+              '</div></button>';
+          } else {
+            html += '<div class="slot-empty">Free</div>';
+          }
+          html += '</td>';
+        });
+        html += '</tr>';
+      });
+    }
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  function updateTicker() {
+    var ticker = document.getElementById('tickerText');
+    if (!ticker) return;
+
+    var now = new Date();
+    var dayIdx = now.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+    var khmerDay = DAY_OF_WEEK_MAP[dayIdx];
+
+    // Clear active highlights
+    document.querySelectorAll('.lesson-card.tt-slot-active').forEach(function (el) {
+      el.classList.remove('tt-slot-active');
+    });
+
+    if (!khmerDay) {
+      ticker.textContent = 'Sunday (Weekend) · No classes scheduled today. Enjoy your rest!';
+      return;
+    }
+
+    var curMinutes = now.getHours() * 60 + now.getMinutes();
+
+    function toMin(str) {
+      var parts = str.split(':');
+      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+    }
+
+    var activeShift = null;
+    var activePeriod = null;
+    var activePeriodDef = null;
+
+    // Check morning periods
+    MORNING_PERIODS.forEach(function (item) {
+      if (item.break) return;
+      var times = item.time.split('–');
+      var start = toMin(times[0]), end = toMin(times[1]);
+      if (curMinutes >= start && curMinutes < end) {
+        activeShift = 'ព្រឹក';
+        activePeriod = item.p;
+        activePeriodDef = item;
+      }
+    });
+
+    // Check afternoon periods
+    if (!activeShift) {
+      AFTERNOON_PERIODS.forEach(function (item) {
+        if (item.break) return;
+        var times = item.time.split('–');
+        var start = toMin(times[0]), end = toMin(times[1]);
+        if (curMinutes >= start && curMinutes < end) {
+          activeShift = 'រសៀល';
+          activePeriod = item.p;
+          activePeriodDef = item;
+        }
+      });
+    }
+
+    if (activeShift && activePeriod) {
+      var activeKey = khmerDay + '|' + activeShift + '|' + activePeriod;
+      var lesson = state.lessons.find(function (l) {
+        return l.day === khmerDay && l.shift === activeShift && l.period === activePeriod;
+      });
+
+      var activeCard = document.querySelector('.lesson-card[data-slot="' + activeKey + '"]');
+      if (activeCard) activeCard.classList.add('tt-slot-active');
+
+      if (lesson) {
+        var sName = window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name;
+        var tName = window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name;
+        var rName = window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room;
+        ticker.textContent = 'Current Period: ' + sName + ' (' + activePeriodDef.time + ') • Instructor: ' + tName + ' • ' + rName;
+      } else {
+        ticker.textContent = 'Current Period: Free Study Period (' + activePeriodDef.time + ')';
+      }
+    } else {
+      var todayLessons = state.lessons.filter(function (l) { return l.day === khmerDay; });
+      if (todayLessons.length && curMinutes < toMin('17:45')) {
+        ticker.textContent = 'Outside Class Hours · Today has ' + todayLessons.length + ' scheduled periods (' + DAY_LABELS[khmerDay] + ')';
+      } else {
+        ticker.textContent = 'Outside Class Hours · Official Published Timetable';
+      }
+    }
+  }
+
+  // Dynamic RFC 5545 ICS Export
+  window.exportICSFile = function () {
+    if (!state.lessons.length) {
+      if (window.toast) window.toast('No scheduled lessons available for export', 'info');
+      return;
+    }
+
+    var lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//NGIS Cambodian School ERP//Class Timetable//KM',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:NGIS ' + (state.classInfo ? state.classInfo.display : 'Class') + ' Timetable'
+    ];
+
+    var dayOffsetMap = { 'ច័ន្ទ': 0, 'អង្គារ': 1, 'ពុធ': 2, 'ព្រហស្បតិ៍': 3, 'សុក្រ': 4, 'សៅរ៍': 5 };
+
+    state.lessons.forEach(function (l, idx) {
+      var pDef = (l.shift === 'ព្រឹក' ? MORNING_PERIODS : AFTERNOON_PERIODS).find(function (item) { return item.p === l.period; });
+      var timeStr = pDef ? pDef.time : '07:00–07:50';
+      var times = timeStr.split('–');
+      var sParts = times[0].split(':'), eParts = times[1].split(':');
+
+      var off = dayOffsetMap[l.day] || 0;
+      var dateDay = 7 + off;
+      var dateStr = '202609' + (dateDay < 10 ? '0' + dateDay : dateDay);
+
+      var dtStart = dateStr + 'T' + sParts[0] + sParts[1] + '00';
+      var dtEnd = dateStr + 'T' + eParts[0] + eParts[1] + '00';
+
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:ngis-class-' + state.classId + '-' + idx + '@ngis.edu.kh');
+      lines.push('DTSTAMP:20260901T000000Z');
+      lines.push('DTSTART:' + dtStart);
+      lines.push('DTEND:' + dtEnd);
+      lines.push('RRULE:FREQ=WEEKLY;COUNT=20');
+      lines.push('SUMMARY:' + l.subject_name + ' (' + l.subject_code + ')');
+      lines.push('DESCRIPTION:Instructor: ' + (window.KSData ? window.KSData.toEnTeacher(l.teacher_name) : l.teacher_name) + ' | Class: ' + (state.classInfo ? state.classInfo.display : state.classId));
+      lines.push('LOCATION:' + l.room);
+      lines.push('END:VEVENT');
+    });
+
+    lines.push('END:VCALENDAR');
+
+    var blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'NGIS_Class10A_Timetable.ics';
+    a.download = 'NGIS_Class_' + (state.classInfo ? state.classInfo.display : state.classId) + '_Timetable.ics';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    window.toast('ICS Calendar Exported!', 'success');
+    if (window.toast) window.toast('Class timetable (.ICS) exported successfully!', 'success');
   };
 
-  window.openClassDetail = function(subject, teacher, location, syllabus) {
-    window.toast(`${subject} Detail: ${teacher} | Location: ${location} | ${syllabus}`, 'info');
+  window.openClassDetail = function (subject, teacher, location, timeInfo) {
+    var msg = subject + ' · Instructor: ' + teacher + ' · Room: ' + location + ' (' + timeInfo + ')';
+    if (window.toast) window.toast(msg, 'info');
+    else alert(msg);
   };
 
-  updateTicker();
+  parseQueryParams();
+  loadClasses().then(loadTimetable);
   setInterval(updateTicker, 60000);
 
 })();
 </script>
-<script>window.PAGE={"role":"student","active":"timetable"};</script>
-<script>window.PAGE = {"role":"student","active":"timetable"};
+<script>window.PAGE={role:"student",active:"timetable"};</script>
+<script>
 window.HERO_CONFIG = {
   title: 'Weekly Class Timetable',
   greeting: 'Academic schedule, course periods, classroom locations, and instructors',
-
   name: 'Nrinphouneta Hok',
   id: 'Student ID: 2026-STD-0142',
   grade: 'Grade 10',
@@ -358,7 +665,8 @@ window.HERO_CONFIG = {
     { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
     { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
   ]
-};</script>
+};
+</script>
 <script src="js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 </body>

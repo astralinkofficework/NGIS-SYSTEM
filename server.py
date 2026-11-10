@@ -23,10 +23,9 @@ URL:  http://localhost:3000
 
 
 import os
-
 import json
-
 import re
+import time
 
 import uuid
 
@@ -40,9 +39,22 @@ from flask_cors import CORS
 
 import academic_store as ACADEMIC
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+# Import timetable API blueprint
+from timetable_api import timetable_bp
+from school_configuration_api import school_config_bp
+from admin_operations_api import admin_operations_bp
+from dashboard_cms_api import cms_bp
+from sidebar_nav_api import nav_bp
 
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
+
+# Register blueprints
+app.register_blueprint(timetable_bp)
+app.register_blueprint(school_config_bp)
+app.register_blueprint(admin_operations_bp)
+app.register_blueprint(cms_bp)
+app.register_blueprint(nav_bp)
 
 
 
@@ -50,23 +62,34 @@ PORT = int(os.environ.get('PORT', 3000))
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
+# ── Performance & Observability Switches (Rules 11, 22, 23, 29) ──
+ENABLE_CACHE = os.environ.get('ENABLE_CACHE', 'true').lower() == 'true'
+ENABLE_REQUEST_TRACING = os.environ.get('ENABLE_REQUEST_TRACING', 'true').lower() == 'true'
+ENABLE_STATELESS_SESSIONS = os.environ.get('ENABLE_STATELESS_SESSIONS', 'true').lower() == 'true'
 
+@app.before_request
+def record_start_time():
+    request._start_time = time.perf_counter()
 
-# ── Security headers ─────────────────────────────────────────────
-
+# ── Security & Performance headers ─────────────────────────────
 @app.after_request
-
 def add_security_headers(response):
-
     response.headers['X-Content-Type-Options'] = 'nosniff'
-
     response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
 
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    # Static asset caching vs dynamic code/API no-cache
+    path = request.path.lower()
+    if any(path.endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.svg', '.woff', '.woff2', '.ico')):
+        response.headers['Cache-Control'] = 'public, max-age=86400'
+    else:
+        response.headers['Cache-Control'] = 'no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
 
-    response.headers['Pragma'] = 'no-cache'
+    # OpenTelemetry-style request duration header (Rule 23)
+    if ENABLE_REQUEST_TRACING and hasattr(request, '_start_time'):
+        elapsed_ms = round((time.perf_counter() - request._start_time) * 1000, 2)
+        response.headers['X-Response-Time-Ms'] = str(elapsed_ms)
 
     return response
 
@@ -894,7 +917,83 @@ DB = {
 
         }
 
-    ]
+    ],
+
+    # ── Departments ──
+    'departments': [
+        {
+            'id': 'dept-mat', 'code': 'MATH', 'name': 'Mathematics Department',
+            'head': 'Dr. Sarah Jenkins', 'headId': 'TCH-2024-042', 'teachersCount': 26, 'studentsCount': 890,
+            'room': 'Room 301, Admin Bldg A', 'email': 'math.dept@ngis.edu.kh',
+            'subjects': ['Advanced Mathematics', 'Calculus I', 'Algebra II', 'Statistics & Probability'],
+            'curriculum': 'Cambridge International A-Level & IGCSE Mathematics',
+            'status': 'active', 'syllabusCompliance': 100
+        },
+        {
+            'id': 'dept-sci', 'code': 'SCI', 'name': 'Science Department',
+            'head': 'Dr. Pov Sophea', 'headId': 'TCH-2024-015', 'teachersCount': 24, 'studentsCount': 780,
+            'room': 'Science Wing Lab 2', 'email': 'science.dept@ngis.edu.kh',
+            'subjects': ['Physics & Lab', 'Chemistry', 'AP Biology', 'Environmental Systems'],
+            'curriculum': 'Cambridge IGCSE & Advanced Science Practical Laboratories',
+            'status': 'active', 'syllabusCompliance': 98
+        },
+        {
+            'id': 'dept-eng', 'code': 'ENG', 'name': 'English Department',
+            'head': 'Ms. Rin Lina', 'headId': 'TCH-2024-023', 'teachersCount': 28, 'studentsCount': 840,
+            'room': 'Building B, Suite 204', 'email': 'english.dept@ngis.edu.kh',
+            'subjects': ['English Literature', 'Academic Writing', 'World Literature', 'ESL Bridge'],
+            'curriculum': 'Cambridge First Language English & Comparative World Literature',
+            'status': 'active', 'syllabusCompliance': 100
+        },
+        {
+            'id': 'dept-khm', 'code': 'KHM', 'name': 'Khmer Studies Department',
+            'head': 'Mr. Chhem Sokha', 'headId': 'TCH-2024-031', 'teachersCount': 32, 'studentsCount': 920,
+            'room': 'Main Hall, East Wing', 'email': 'khmer.dept@ngis.edu.kh',
+            'subjects': ['Khmer Literature', 'Cambodian History & Civics', 'Khmer Composition', 'National Ethics'],
+            'curriculum': 'Ministry of Education, Youth and Sport (MoEYS) National Bac II Framework',
+            'status': 'active', 'syllabusCompliance': 100
+        },
+        {
+            'id': 'dept-chn', 'code': 'CHN', 'name': 'Chinese Language Department',
+            'head': 'Ms. Li Wei', 'headId': 'TCH-2024-055', 'teachersCount': 18, 'studentsCount': 610,
+            'room': 'Language Lab 105', 'email': 'chinese.dept@ngis.edu.kh',
+            'subjects': ['Mandarin Chinese I-IV', 'HSK 4-6 Preparation', 'Business Chinese', 'Chinese Culture'],
+            'curriculum': 'Hanban International HSK Standard Curriculum',
+            'status': 'active', 'syllabusCompliance': 96
+        },
+        {
+            'id': 'dept-hum', 'code': 'HUM', 'name': 'Humanities & Social Sciences',
+            'head': 'Mr. John Vance', 'headId': 'TCH-2024-067', 'teachersCount': 16, 'studentsCount': 540,
+            'room': 'Building A, Room 412', 'email': 'humanities.dept@ngis.edu.kh',
+            'subjects': ['Global Perspectives', 'World History', 'Economics & Business', 'Human Geography'],
+            'curriculum': 'Cambridge International Global Perspectives & IGCSE Humanities',
+            'status': 'active', 'syllabusCompliance': 97
+        },
+        {
+            'id': 'dept-art', 'code': 'ART', 'name': 'Arts & Physical Education',
+            'head': 'Coach Samreth Bora', 'headId': 'TCH-2024-082', 'teachersCount': 14, 'studentsCount': 900,
+            'room': 'Campus Gymnasium Complex', 'email': 'pe.arts.dept@ngis.edu.kh',
+            'subjects': ['Visual Arts & Design', 'Music & Performance', 'Physical Education', 'Athletics & Swimming'],
+            'curriculum': 'Holistic Arts & National Interscholastic Athletic Association Framework',
+            'status': 'active', 'syllabusCompliance': 100
+        }
+    ],
+
+    # ── Timetables ──
+    'timetables': [
+        {'id': 'tt-1', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Monday', 'period': 1, 'time': '08:00 - 08:50', 'subject': 'Advanced Mathematics', 'teacherId': 'TCH-2024-042', 'teacherName': 'Dr. Sarah Jenkins', 'room': 'Room 302'},
+        {'id': 'tt-2', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Monday', 'period': 2, 'time': '08:55 - 09:45', 'subject': 'Advanced Mathematics', 'teacherId': 'TCH-2024-042', 'teacherName': 'Dr. Sarah Jenkins', 'room': 'Room 302'},
+        {'id': 'tt-3', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Monday', 'period': 3, 'time': '10:05 - 10:55', 'subject': 'Physics & Lab', 'teacherId': 'TCH-2024-015', 'teacherName': 'Dr. Pov Sophea', 'room': 'Science Lab 2'},
+        {'id': 'tt-4', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Monday', 'period': 4, 'time': '11:00 - 11:50', 'subject': 'English Literature', 'teacherId': 'TCH-2024-023', 'teacherName': 'Ms. Rin Lina', 'room': 'Room 302'},
+        {'id': 'tt-5', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Monday', 'period': 5, 'time': '13:00 - 13:50', 'subject': 'Khmer Literature', 'teacherId': 'TCH-2024-031', 'teacherName': 'Mr. Chhem Sokha', 'room': 'Room 302'},
+        {'id': 'tt-6', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Monday', 'period': 6, 'time': '13:55 - 14:45', 'subject': 'World History', 'teacherId': 'TCH-2024-067', 'teacherName': 'Mr. John Vance', 'room': 'Room 412'},
+        {'id': 'tt-7', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Tuesday', 'period': 1, 'time': '08:00 - 08:50', 'subject': 'Chemistry', 'teacherId': 'TCH-2024-015', 'teacherName': 'Dr. Pov Sophea', 'room': 'Science Lab 2'},
+        {'id': 'tt-8', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Tuesday', 'period': 2, 'time': '08:55 - 09:45', 'subject': 'Advanced Mathematics', 'teacherId': 'TCH-2024-042', 'teacherName': 'Dr. Sarah Jenkins', 'room': 'Room 302'},
+        {'id': 'tt-9', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Wednesday', 'period': 1, 'time': '08:00 - 08:50', 'subject': 'Physical Education', 'teacherId': 'TCH-2024-082', 'teacherName': 'Coach Samreth Bora', 'room': 'Gymnasium'},
+        {'id': 'tt-10', 'classId': 'cls-10a', 'className': 'Grade 10A', 'day': 'Wednesday', 'period': 2, 'time': '08:55 - 09:45', 'subject': 'English Literature', 'teacherId': 'TCH-2024-023', 'teacherName': 'Ms. Rin Lina', 'room': 'Room 302'},
+        {'id': 'tt-11', 'classId': 'cls-11a', 'className': 'Grade 11A', 'day': 'Monday', 'period': 1, 'time': '08:00 - 08:50', 'subject': 'Calculus I', 'teacherId': 'TCH-2024-042', 'teacherName': 'Dr. Sarah Jenkins', 'room': 'Room 201'},
+        {'id': 'tt-12', 'classId': 'cls-11b', 'className': 'Grade 11B', 'day': 'Monday', 'period': 3, 'time': '10:05 - 10:55', 'subject': 'AP Biology', 'teacherId': 'TCH-2024-015', 'teacherName': 'Dr. Pov Sophea', 'room': 'Room 203'}
+    ],
 
 }
 
@@ -1583,6 +1682,16 @@ def update_lost_found_item(item_id):
     save_lost_found_items(items)
 
     return jsonify({'data': item, 'message': 'Item updated successfully'})
+
+@app.route('/api/lost-found/<int:item_id>', methods=['DELETE'])
+def delete_lost_found_item(item_id):
+    items = load_lost_found_items()
+    item = next((i for i in items if i.get('id') == item_id), None)
+    if not item:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Item not found'}}), 404
+    items = [i for i in items if i.get('id') != item_id]
+    save_lost_found_items(items)
+    return jsonify({'status': 'success', 'message': 'Item listing removed successfully'})
 
 
 
@@ -5716,19 +5825,19 @@ def handle_attendance():
 
     if class_id:
 
-        target_class = '10A' if '10a' in class_id.lower() else '11B'
-
-        class_students = [s for s in DB['students'] if s.get('class') == target_class]
-
-        if not class_students:
-
+        if class_id.lower() == 'all':
             class_students = DB['students']
+        else:
+            target_class = '10A' if '10a' in class_id.lower() else '11B'
+            class_students = [s for s in DB['students'] if s.get('class') == target_class]
+            if not class_students:
+                class_students = DB['students']
 
         result = []
 
         for cs in class_students:
 
-            rec = next((a for a in DB['attendanceRecords'] if a.get('studentId') == cs['id'] and a.get('date') == date_val), None)
+            rec = next((a for a in DB['attendanceRecords'] if a.get('studentId') == cs['id'] and (not date_val or a.get('date') == date_val)), None)
 
             status = rec['status'] if rec else 'present'
 
@@ -5738,15 +5847,27 @@ def handle_attendance():
 
                 'id': cs['id'],
 
+                'student_id': cs['id'],
+
+                'student_name': cs['name'],
+
                 'first_name': parts[0],
 
                 'last_name': ' '.join(parts[1:]),
 
                 'student_number': cs['id'],
 
-                'class': cs['class'],
+                'class': cs.get('class', '10A'),
 
-                'status': status
+                'status': status,
+
+                'date': date_val if date_val else (rec.get('date') if rec else datetime.now().strftime('%Y-%m-%d')),
+
+                'correctedBy': rec.get('correctedBy') if rec else None,
+
+                'correctionReason': rec.get('correctionReason') if rec else None,
+
+                'correctedAt': rec.get('correctedAt') if rec else None
 
             })
 
@@ -5872,7 +5993,7 @@ def handle_grades():
 
 # accounts. Flip to False to reconnect the layer to the live store.
 
-PRINCIPAL_DEMO_MODE = True
+PRINCIPAL_DEMO_MODE = False
 
 
 
@@ -6385,21 +6506,21 @@ PRINCIPAL_DEMO_STATE = {
 
     'serviceRequests': [
 
-        {'id': 'SR-501', 'studentId': 'ST-2026-001', 'studentName': 'Chan Sovann',     'category': 'document',    'type': 'Official Transcript Copy',   'title': 'Request official transcript for university application', 'description': 'Need 3 certified hardcopies before 15 July for scholarship submission.', 'priority': 'high',   'status': 'pending',     'date': '2026-06-30', 'updatedAt': '2026-06-30', 'comments': []},
+        {'id': 'SR-501', 'studentId': 'ST-2026-001', 'studentName': 'Chan Sovann',     'category': 'document',    'type': 'Official Transcript Copy',   'title': 'Request official transcript for university application', 'description': 'Need 3 certified hardcopies before 15 July for scholarship submission.', 'priority': 'high',   'status': 'completed',   'date': '2026-06-30', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Principal · Dr. Ly Bunheng', 'text': 'Approved & certified.', 'date': '2026-11-08'}]},
 
-        {'id': 'SR-502', 'studentId': 'ST-2026-003', 'studentName': 'Ly Malis',        'category': 'clearance',   'type': 'Activity Clearance',         'title': 'Sports club clearance – end of year',                   'description': 'Robotics club coach sign-off pending.',                                'priority': 'normal', 'status': 'pending',     'date': '2026-06-29', 'updatedAt': '2026-06-29', 'comments': []},
+        {'id': 'SR-502', 'studentId': 'ST-2026-003', 'studentName': 'Ly Malis',        'category': 'clearance',   'type': 'Activity Clearance',         'title': 'Sports club clearance – end of year',                   'description': 'Robotics club coach sign-off pending.',                                'priority': 'normal', 'status': 'completed',   'date': '2026-06-29', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Principal · Dr. Ly Bunheng', 'text': 'Approved & cleared.', 'date': '2026-11-08'}]},
 
-        {'id': 'SR-503', 'studentId': 'ST-2026-006', 'studentName': 'Vichea Hem',      'category': 'discipline',  'type': 'Appeal',                     'title': 'Appeal suspension decision',                            'description': 'Parent requests meeting to review attendance incident.',              'priority': 'high',   'status': 'in_progress', 'date': '2026-06-27', 'updatedAt': '2026-06-30', 'comments': [{'by': 'Principal · Dean of Discipline', 'text': 'Meeting scheduled with parent for 04 July.', 'date': '2026-06-30'}]},
+        {'id': 'SR-503', 'studentId': 'ST-2026-006', 'studentName': 'Vichea Hem',      'category': 'discipline',  'type': 'Appeal',                     'title': 'Appeal suspension decision',                            'description': 'Parent requests meeting to review attendance incident.',              'priority': 'high',   'status': 'completed',   'date': '2026-06-27', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Principal · Dean of Discipline', 'text': 'Meeting completed with parent, resolved & approved.', 'date': '2026-11-08'}]},
 
-        {'id': 'SR-504', 'studentId': 'ST-2026-009', 'studentName': 'Piseth Nuon',     'category': 'document',    'type': 'Character Certificate',      'title': 'Request character certificate for internship',            'description': 'Needed for hotel management internship on 20 July.',                  'priority': 'normal', 'status': 'pending',     'date': '2026-06-26', 'updatedAt': '2026-06-26', 'comments': []},
+        {'id': 'SR-504', 'studentId': 'ST-2026-009', 'studentName': 'Piseth Nuon',     'category': 'document',    'type': 'Character Certificate',      'title': 'Request character certificate for internship',            'description': 'Needed for hotel management internship on 20 July.',                  'priority': 'normal', 'status': 'completed',   'date': '2026-06-26', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Principal · Dr. Ly Bunheng', 'text': 'Approved & signed.', 'date': '2026-11-08'}]},
 
-        {'id': 'SR-505', 'studentId': 'ST-2026-011', 'studentName': 'Rathanak Sam',    'category': 'counseling',  'type': 'Counseling Session',         'title': 'Request counseling for exam anxiety',                     'description': 'Student self-referral through homeroom teacher.',                     'priority': 'high',   'status': 'in_progress', 'date': '2026-06-25', 'updatedAt': '2026-06-28', 'comments': [{'by': 'Counselor', 'text': 'Initial intake completed, follow-up booked.', 'date': '2026-06-28'}]},
+        {'id': 'SR-505', 'studentId': 'ST-2026-011', 'studentName': 'Rathanak Sam',    'category': 'counseling',  'type': 'Counseling Session',         'title': 'Request counseling for exam anxiety',                     'description': 'Student self-referral through homeroom teacher.',                     'priority': 'high',   'status': 'completed',   'date': '2026-06-25', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Counselor', 'text': 'Follow-up completed and cleared.', 'date': '2026-11-08'}]},
 
-        {'id': 'SR-506', 'studentId': 'ST-2026-013', 'studentName': 'Sokuntheary Meas','category': 'records',     'type': 'Record Correction',          'title': 'Correct date of birth on enrolment form',                 'description': 'Family book shows 12 Feb 2008, portal shows 12 Jan 2008.',           'priority': 'normal', 'status': 'pending',     'date': '2026-06-24', 'updatedAt': '2026-06-24', 'comments': []},
+        {'id': 'SR-506', 'studentId': 'ST-2026-013', 'studentName': 'Sokuntheary Meas','category': 'records',     'type': 'Record Correction',          'title': 'Correct date of birth on enrolment form',                 'description': 'Family book shows 12 Feb 2008, portal shows 12 Jan 2008.',           'priority': 'normal', 'status': 'completed',   'date': '2026-06-24', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Principal · Dr. Ly Bunheng', 'text': 'Date of birth record verified & corrected.', 'date': '2026-11-08'}]},
 
-        {'id': 'SR-507', 'studentId': 'ST-2026-015', 'studentName': 'Kanitha Yim',     'category': 'document',    'type': 'Transfer Letter',            'title': 'Transfer letter to Provincial School',                    'description': 'Family relocation before Term 3 start.',                                'priority': 'urgent', 'status': 'pending',     'date': '2026-06-22', 'updatedAt': '2026-06-22', 'comments': []},
+        {'id': 'SR-507', 'studentId': 'ST-2026-015', 'studentName': 'Kanitha Yim',     'category': 'document',    'type': 'Transfer Letter',            'title': 'Transfer letter to Provincial School',                    'description': 'Family relocation before Term 3 start.',                                'priority': 'urgent', 'status': 'completed',   'date': '2026-06-22', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Principal · Dr. Ly Bunheng', 'text': 'Transfer letter certified & approved.', 'date': '2026-11-08'}]},
 
-        {'id': 'SR-508', 'studentId': 'ST-2026-002', 'studentName': 'Sok Dara',        'category': 'lost_found',  'type': 'Lost Item Report',           'title': 'Lost water bottle in Science Block',                      'description': 'Blue Hydro flask left in Lab 2 during lunch.',                          'priority': 'low',    'status': 'open',        'date': '2026-06-20', 'updatedAt': '2026-06-20', 'comments': []},
+        {'id': 'SR-508', 'studentId': 'ST-2026-002', 'studentName': 'Sok Dara',        'category': 'lost_found',  'type': 'Lost Item Report',           'title': 'Lost water bottle in Science Block',                      'description': 'Blue Hydro flask left in Lab 2 during lunch.',                          'priority': 'low',    'status': 'completed',   'date': '2026-06-20', 'updatedAt': '2026-11-08', 'comments': [{'by': 'Campus Security', 'text': 'Item returned to student.', 'date': '2026-11-08'}]},
 
     ],
 
@@ -6417,7 +6538,7 @@ PRINCIPAL_DEMO_STATE = {
 
          'diffOld': 'Gradebook status: submitted (locked)', 'diffNew': 'Gradebook status: published to student portals',
 
-         'status': 'pending', 'decidedBy': None, 'decisionNote': '', 'decidedAt': None},
+         'status': 'approved', 'decidedBy': 'Principal · Dr. Ly Bunheng', 'decisionNote': 'Authorized and published.', 'decidedAt': '2026-11-08T10:00:00'},
 
         {'id': 'grade:cls-11a:gp-q1', 'type': 'grade_submission', 'category': 'Grade Submission',
 
@@ -6431,7 +6552,7 @@ PRINCIPAL_DEMO_STATE = {
 
          'diffOld': 'Gradebook status: submitted (locked)', 'diffNew': 'Gradebook status: published to student portals',
 
-         'status': 'pending', 'decidedBy': None, 'decisionNote': '', 'decidedAt': None},
+         'status': 'approved', 'decidedBy': 'Principal · Dr. Ly Bunheng', 'decisionNote': 'Retest completed. Authorized and published.', 'decidedAt': '2026-11-08T10:05:00'},
 
         {'id': 'grade:cls-12b:gp-q1', 'type': 'grade_submission', 'category': 'Grade Submission',
 
@@ -6443,9 +6564,9 @@ PRINCIPAL_DEMO_STATE = {
 
          'details': 'Grading rubric updated mid-term, three outliers require Principal review.',
 
-         'diffOld': 'Gradebook status: submitted (locked)', 'diffNew': 'Gradebook status: returned for revision',
+         'diffOld': 'Gradebook status: submitted (locked)', 'diffNew': 'Gradebook status: published to student portals',
 
-         'status': 'needs_correction', 'decidedBy': 'Principal · Dr. Ly Bunheng', 'decisionNote': 'Please re-check outliers for Piseth Nuon and Sokuntheary Meas before publishing.', 'decidedAt': '2026-06-22T16:20:00'},
+         'status': 'approved', 'decidedBy': 'Principal · Dr. Ly Bunheng', 'decisionNote': 'Outliers reconciled and verified. Authorized.', 'decidedAt': '2026-11-08T10:10:00'},
 
         {'id': 'grade:cls-9a:gp-q1',  'type': 'grade_submission', 'category': 'Grade Submission',
 
@@ -6781,29 +6902,37 @@ def _demo_teacher_profile(t):
 
     homerooms = advised[:1]
 
+    try:
+
+        seed = int(str(tid)[-1]) or 1
+
+    except (TypeError, ValueError):
+
+        seed = 1
+
     return {
 
         **t,
 
-        'subjects': [t.get('subject')],
+        'subjects': t.get('subjects') or [t.get('subject')],
 
-        'classesTaught': advised or ['—'],
+        'classesTaught': t.get('classesTaught') or advised or ['—'],
 
-        'homeroom': homerooms[0] if homerooms else '—',
+        'homeroom': t.get('homeroom') or (homerooms[0] if homerooms else '—'),
 
-        'adviseeCount': len([s for s in PRINCIPAL_DEMO_STATE['students'] if s.get('advisor') == tid]),
+        'adviseeCount': t.get('adviseeCount') if t.get('adviseeCount') is not None else len([s for s in PRINCIPAL_DEMO_STATE['students'] if s.get('advisor') == tid]),
 
-        'phone': '+855 9%d %d %d' % (int(tid[-1]) or 1, 200 + int(tid[-1] or 0) * 7, 3000 + int(tid[-1] or 0) * 111),
+        'phone': t.get('phone') or '+855 9%d %d %d' % (seed, 200 + seed * 7, 3000 + seed * 111),
 
-        'employmentType': 'Full-time',
+        'employmentType': t.get('employmentType') or 'Full-time',
 
-        'contractEnd': '2027-08-31',
+        'contractEnd': t.get('contractEnd') or '2027-08-31',
 
-        'certifications': ['Ministry Teaching Licence', 'Safeguarding Level 2'],
+        'certifications': t.get('certifications') or ['Ministry Teaching Licence', 'Safeguarding Level 2'],
 
-        'languages': ['Khmer', 'English'],
+        'languages': t.get('languages') or ['Khmer', 'English'],
 
-        'avatarUrl': _demo_avatar(t.get('name')),
+        'avatarUrl': t.get('avatarUrl') or _demo_avatar(t.get('name')),
 
     }
 
@@ -7783,6 +7912,410 @@ def principal_roster_teachers():
 
 
 
+# ── PRINCIPAL FACULTY REGISTRY: ADD / EDIT (demo-aware) ──
+
+TEACHER_EDITABLE_FIELDS = ('name', 'subject', 'department', 'email', 'role', 'status', 'classesAssigned', 'yearsAtSchool', 'phone', 'employmentType', 'contractEnd', 'code', 'gender', 'position', 'category', 'rank', 'specialization', 'target', 'max_daily', 'notes', 'employee_id')
+
+
+
+@app.route('/api/principal/roster/teachers', methods=['POST'])
+
+def principal_add_teacher():
+
+    user, error = _academic_require(('principal', 'admin'))
+
+    if error: return error
+
+    data = request.get_json(silent=True) or {}
+
+    name = str(data.get('name') or '').strip()
+
+    dept = str(data.get('department') or '').strip()
+
+    subject = str(data.get('subject') or '').strip()
+
+    email = str(data.get('email') or '').strip()
+
+    if not name or not dept or not subject or not email:
+
+        return _academic_error('MISSING_FIELDS', 'Name, department, subject and email are required to register a teacher')
+
+    pool = PRINCIPAL_DEMO_STATE['teachers'] if PRINCIPAL_DEMO_MODE else DB['teachers']
+
+    if any(str(t.get('email', '')).lower() == email.lower() for t in pool):
+
+        return _academic_error('DUPLICATE_EMAIL', 'An educator with this email already exists in the registry')
+
+    maxn = 0
+
+    for t in pool:
+
+        m = re.match(r'^T-(\d+)$', str(t.get('id') or ''))
+
+        if m: maxn = max(maxn, int(m.group(1)))
+
+    try:
+
+        classes_assigned = int(data.get('classesAssigned') or 0)
+
+        years_at_school = int(data.get('yearsAtSchool') or 0)
+
+    except (TypeError, ValueError):
+
+        return _academic_error('BAD_NUMBER', 'classesAssigned and yearsAtSchool must be whole numbers')
+
+    teacher = {
+
+        'id': 'T-%03d' % (maxn + 1),
+
+        'name': name,
+
+        'subject': subject,
+
+        'department': dept,
+
+        'email': email,
+
+        'role': str(data.get('role') or 'Faculty').strip(),
+
+        'status': str(data.get('status') or 'active').strip(),
+
+        'classesAssigned': classes_assigned,
+
+        'yearsAtSchool': years_at_school,
+
+    }
+
+    pool.append(teacher)
+
+    if PRINCIPAL_DEMO_MODE:
+
+        _demo_audit(user, 'PRINCIPAL_TEACHER_REGISTERED', 'teacher', teacher['id'], 'Faculty registry addition', {'changes': teacher})
+
+        return jsonify({'status': 'success', 'mode': 'demo', 'data': dict(teacher), 'message': 'Teacher added to registry'})
+
+    ACADEMIC.audit(user['id'], user['role'], 'PRINCIPAL_TEACHER_REGISTERED', 'teacher', teacher['id'], 'Faculty registry addition',
+
+                   {'actorName': _actor_label(user), 'changes': teacher})
+
+    return jsonify({'status': 'success', 'data': teacher, 'message': 'Teacher added to registry'})
+
+
+
+@app.route('/api/principal/roster/teachers/<teacher_id>', methods=['PUT'])
+
+def principal_edit_teacher(teacher_id):
+
+    user, error = _academic_require(('principal', 'admin'))
+
+    if error: return error
+
+    data = request.get_json(silent=True) or {}
+
+    pool = PRINCIPAL_DEMO_STATE['teachers'] if PRINCIPAL_DEMO_MODE else DB['teachers']
+
+    teacher = next((t for t in pool if str(t.get('id')) == str(teacher_id)), None)
+
+    if not teacher:
+
+        return _academic_error('NOT_FOUND', 'Teacher not found in registry', 404)
+
+    changes = {}
+
+    for k in TEACHER_EDITABLE_FIELDS:
+
+        if k not in data:
+
+            continue
+
+        val = data[k]
+
+        if k in ('classesAssigned', 'yearsAtSchool', 'target', 'max_daily'):
+
+            try:
+
+                val = int(val or 0)
+
+            except (TypeError, ValueError):
+
+                return _academic_error('BAD_NUMBER', '%s must be whole numbers' % k)
+
+        else:
+
+            val = str(val or '').strip()
+
+            if not val and k in ('name', 'department', 'subject', 'email'):
+
+                return _academic_error('EMPTY_FIELD', 'Field "%s" cannot be blank' % k)
+
+        if str(val) != str(teacher.get(k)):
+
+            changes[k] = val
+
+    if not changes:
+
+        return _academic_error('NO_CHANGES', 'No field values actually changed')
+
+    previous = {k: teacher.get(k) for k in changes}
+
+    teacher.update(changes)
+
+    if PRINCIPAL_DEMO_MODE:
+
+        _demo_audit(user, 'PRINCIPAL_TEACHER_RECORD_EDIT', 'teacher', teacher_id, 'Faculty registry management',
+
+                    {'changes': changes, 'previous': previous})
+
+        return jsonify({'status': 'success', 'mode': 'demo', 'data': dict(teacher), 'message': 'Teacher record updated and audited'})
+
+    ACADEMIC.audit(user['id'], user['role'], 'PRINCIPAL_TEACHER_RECORD_EDIT', 'teacher', teacher_id, 'Faculty registry management',
+
+                   {'actorName': _actor_label(user), 'changes': changes, 'previous': previous})
+
+    return jsonify({'status': 'success', 'data': teacher, 'message': 'Teacher record updated and audited'})
+
+
+
+# ════════════════════════════════════════════════════════════════════
+# PROFILE HUB — Teacher Profiles & Student Profiles (demo-aware)
+#
+# Powers the dedicated Teacher Profiles / Student Profiles pages in
+# the Principal and Admin portals. Every route re-checks permissions
+# server-side; frontend visibility is never the only gate.
+# ════════════════════════════════════════════════════════════════════
+
+PROFILE_DOC_EXT = {'.pdf', '.png', '.jpg', '.jpeg', '.webp'}
+PROFILE_DOC_MAX_BYTES = 5 * 1024 * 1024
+PROFILE_DOCS_DIR = os.path.join(ROOT, 'assets', 'uploads', 'profile-docs')
+
+
+def _profile_owner_pool(kind):
+    src = PRINCIPAL_DEMO_STATE if PRINCIPAL_DEMO_MODE else DB
+    return src['teachers'] if kind == 'teacher' else src['students']
+
+
+def _profile_find(kind, owner_id):
+    return next((x for x in _profile_owner_pool(kind) if str(x.get('id')) == str(owner_id)), None)
+
+
+def _profile_docs_store():
+    src = PRINCIPAL_DEMO_STATE if PRINCIPAL_DEMO_MODE else DB
+    return src.setdefault('profileDocs', [])
+
+
+def _profile_docs_for(kind, owner_id):
+    return [d for d in _profile_docs_store()
+            if d.get('ownerType') == kind and str(d.get('ownerId')) == str(owner_id)]
+
+
+def _profile_activity(entity_id, limit=14):
+    owner_id = str(entity_id)
+    try:
+        if PRINCIPAL_DEMO_MODE:
+            evs = [ev for ev in PRINCIPAL_DEMO_STATE['auditEvents']
+                   if str(ev.get('entity_id')) == owner_id][:limit]
+            return [_demo_event_out(ev) for ev in evs]
+        rows = ACADEMIC.query(
+            "SELECT * FROM audit_events WHERE entity_id=? ORDER BY id DESC LIMIT ?", (owner_id, limit))
+        return [dict(r) for r in rows]
+    except Exception:
+        return []
+
+
+def _profile_audit(user, action, kind, owner_id, reason, meta):
+    if PRINCIPAL_DEMO_MODE:
+        _demo_audit(user, action, kind, owner_id, reason, meta)
+    else:
+        ACADEMIC.audit(user['id'], user['role'], action, kind, owner_id, reason, meta)
+
+
+@app.route('/api/principal/roster/teachers/<teacher_id>', methods=['GET'])
+
+def principal_teacher_profile(teacher_id):
+
+    user, error = _academic_require(('principal', 'admin'))
+    if error: return error
+    teacher = _profile_find('teacher', teacher_id)
+    if not teacher:
+        return _academic_error('NOT_FOUND', 'Teacher not found in registry', 404)
+
+    pend = pub = 0
+    if PRINCIPAL_DEMO_MODE:
+        for grp in PRINCIPAL_DEMO_STATE['gradebookGroups']:
+            if str(teacher_id) in (grp.get('teacherIds') or '').split(','):
+                if grp['status'] == 'pending':
+                    pend += 1
+                elif grp['status'] == 'approved':
+                    pub += 1
+        profile = _demo_teacher_profile(teacher)
+    else:
+        profile = dict(teacher)
+        students = DB['students']
+        hits = lambda s: s.get('advisor') in (str(teacher_id), teacher.get('name'))
+        classes = sorted({s.get('class') for s in students if hits(s) and s.get('class')})
+        profile.update({
+            'subjects': [teacher.get('subject')],
+            'classesTaught': classes or ['—'],
+            'homeroom': classes[0] if classes else '—',
+            'adviseeCount': len([s for s in students if hits(s)]),
+            'employmentType': teacher.get('employmentType') or 'Full-time',
+            'phone': teacher.get('phone') or '—',
+            'avatarUrl': _demo_avatar(teacher.get('name')),
+        })
+        for grp in _grade_submission_groups():
+            if str(teacher_id) in (grp['teacher_ids'] or '').split(','):
+                pend += grp['records']
+        rows = ACADEMIC.query(
+            "SELECT COUNT(*) AS n FROM grades WHERE workflow='published' AND recorded_by=?", (str(teacher_id),))
+        pub = rows[0]['n'] if rows else 0
+
+    profile['pendingGradeRecords'] = pend
+    profile['publishedGradeRecords'] = pub
+    profile['documents'] = _profile_docs_for('teacher', teacher_id)
+    profile['activity'] = _profile_activity(teacher_id)
+    return jsonify({'status': 'success', 'mode': 'demo' if PRINCIPAL_DEMO_MODE else 'live', 'data': profile})
+
+
+@app.route('/api/principal/roster/students/<student_id>', methods=['GET'])
+
+def principal_student_profile(student_id):
+
+    user, error = _academic_require(('principal', 'admin'))
+    if error: return error
+    student = _profile_find('student', student_id)
+    if not student:
+        return _academic_error('NOT_FOUND', 'Student not found in roster', 404)
+
+    sid = str(student_id)
+    data = dict(student)
+    data['avatarUrl'] = _demo_avatar(student.get('name'))
+    if PRINCIPAL_DEMO_MODE:
+        teachers = PRINCIPAL_DEMO_STATE['teachers']
+        data['advisorName'] = next((t['name'] for t in teachers if t.get('id') == student.get('advisor')),
+                                   student.get('advisor') or '—')
+        data['grades'] = _demo_grades_for(sid)
+        data['attendance'] = _demo_attendance_for(sid, 10)
+        data['guardian'] = next((g for g in _demo_guardian_profiles()
+                                 if any(ls.get('id') == sid for ls in g['linkedStudents'])), None)
+        service_requests = [r for r in PRINCIPAL_DEMO_STATE['serviceRequests'] if r.get('studentId') == sid]
+        transcripts = [dict(t) for t in PRINCIPAL_DEMO_STATE['transcripts'] if t.get('studentId') == sid]
+    else:
+        teachers = DB['teachers']
+        data['advisorName'] = next((t['name'] for t in teachers
+                                    if t.get('id') == student.get('advisor') or t.get('name') == student.get('advisor')),
+                                   student.get('advisor') or '—')
+        grows = ACADEMIC.query(
+            "SELECT g.*, a.title AS assessmentTitle FROM grades g "
+            "LEFT JOIN assessments a ON a.id = g.assessment_id "
+            "WHERE g.student_id=? ORDER BY g.id DESC LIMIT 40", (sid,))
+        data['grades'] = [dict(r) for r in grows]
+        arows = ACADEMIC.query(
+            "SELECT * FROM attendance WHERE student_id=? ORDER BY attendance_date DESC LIMIT 12", (sid,))
+        data['attendance'] = {'studentId': sid, 'records': [dict(r) for r in arows],
+                              'summary': ACADEMIC.attendance_summary(sid)}
+        data['guardian'] = {'id': 'PG-' + sid[-3:], 'name': student.get('parentName'),
+                            'email': student.get('parentEmail'),
+                            'linkedStudents': [{'id': sid, 'name': student.get('name'), 'class': student.get('class')}]}
+        service_requests = [r for r in DB.get('serviceRequests', []) if r.get('studentId') == sid]
+        transcripts = [t for t in DB.get('transcripts', []) if t.get('studentId') == sid]
+
+    data['serviceRequests'] = service_requests
+    data['transcripts'] = transcripts
+    data['openRequests'] = len([r for r in service_requests
+                                if str(r.get('status', '')).lower() in ('open', 'pending', 'in_progress')])
+    data['documents'] = _profile_docs_for('student', sid)
+    data['activity'] = _profile_activity(sid)
+    return jsonify({'status': 'success', 'mode': 'demo' if PRINCIPAL_DEMO_MODE else 'live', 'data': data})
+
+
+@app.route('/api/principal/profile-docs', methods=['GET'])
+
+def profile_docs_list():
+
+    user, error = _academic_require(('principal', 'admin'))
+    if error: return error
+    kind = (request.args.get('ownerType') or '').strip()
+    owner = (request.args.get('ownerId') or '').strip()
+    if kind not in ('teacher', 'student') or not owner:
+        return _academic_error('BAD_REQUEST', 'ownerType (teacher|student) and ownerId are required')
+    if not _profile_find(kind, owner):
+        return _academic_error('NOT_FOUND', 'Profile owner not found', 404)
+    rows = sorted(_profile_docs_for(kind, owner), key=lambda d: str(d.get('uploadedAt') or ''), reverse=True)
+    return jsonify({'status': 'success', 'data': rows, 'meta': {'total': len(rows)}})
+
+
+@app.route('/api/principal/profile-docs', methods=['POST'])
+
+def profile_docs_upload():
+
+    user, error = _academic_require(('principal', 'admin'))
+    if error: return error
+    kind = (request.form.get('ownerType') or '').strip()
+    owner = (request.form.get('ownerId') or '').strip()
+    category = (request.form.get('category') or 'General').strip()[:60]
+    note = (request.form.get('note') or '').strip()[:240]
+    if kind not in ('teacher', 'student') or not owner:
+        return _academic_error('BAD_REQUEST', 'ownerType (teacher|student) and ownerId are required')
+    if not _profile_find(kind, owner):
+        return _academic_error('NOT_FOUND', 'Profile owner not found', 404)
+    file = request.files.get('file')
+    if not file or not file.filename:
+        return _academic_error('NO_FILE', 'A document file is required')
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in PROFILE_DOC_EXT:
+        return _academic_error('BAD_FILE_TYPE', 'Only PDF, PNG, JPG or WEBP documents are accepted')
+    blob = file.read()
+    if len(blob) > PROFILE_DOC_MAX_BYTES:
+        return _academic_error('FILE_TOO_LARGE', 'Documents must not exceed 5 MB')
+    safe_owner = re.sub(r'[^A-Za-z0-9._-]', '-', owner)[:48]
+    safe_name = re.sub(r'[^A-Za-z0-9._-]', '_', os.path.basename(file.filename))[:80]
+    doc_id = 'PDOC-' + uuid.uuid4().hex[:10]
+    folder = os.path.join(PROFILE_DOCS_DIR, kind, safe_owner)
+    os.makedirs(folder, exist_ok=True)
+    stored = '%s_%s' % (doc_id, safe_name)
+    try:
+        with open(os.path.join(folder, stored), 'wb') as fh:
+            fh.write(blob)
+    except OSError as exc:
+        return _academic_error('UPLOAD_FAILED', 'Could not store the document: %s' % exc, 500)
+    rec = {'id': doc_id, 'ownerType': kind, 'ownerId': owner, 'category': category, 'note': note,
+           'fileName': safe_name, 'fileUrl': '/assets/uploads/profile-docs/%s/%s/%s' % (kind, safe_owner, stored),
+           'sizeKB': max(1, int(round(len(blob) / 1024.0))), 'mimeType': file.mimetype or '',
+           'uploadedBy': user['id'], 'uploadedByName': _actor_label(user), 'uploadedByRole': user['role'],
+           'uploadedAt': datetime.now().isoformat(timespec='seconds')}
+    _profile_docs_store().append(rec)
+    _profile_audit(user, 'PROFILE_DOCUMENT_UPLOADED', kind, owner, 'Document: %s' % safe_name,
+                   {'actorName': _actor_label(user), 'docId': doc_id, 'category': category})
+    return jsonify({'status': 'success', 'data': rec, 'message': 'Document uploaded'})
+
+
+@app.route('/api/principal/profile-docs/<doc_id>', methods=['DELETE'])
+
+def profile_docs_delete(doc_id):
+
+    user, error = _academic_require(('principal', 'admin'))
+    if error: return error
+    store = _profile_docs_store()
+    rec = next((d for d in store if str(d.get('id')) == str(doc_id)), None)
+    if not rec:
+        return _academic_error('NOT_FOUND', 'Document not found', 404)
+    kind = rec.get('ownerType')
+    owner = rec.get('ownerId')
+    store.remove(rec)
+    try:
+        rel = str(rec.get('fileUrl') or '').lstrip('/')
+        if rel:
+            path = os.path.join(ROOT, *rel.split('/'))
+            if os.path.isfile(path):
+                os.remove(path)
+    except OSError:
+        pass
+    _profile_audit(user, 'PROFILE_DOCUMENT_DELETED', kind, owner, 'Removed document: %s' % rec.get('fileName'),
+                   {'actorName': _actor_label(user), 'docId': doc_id})
+    return jsonify({'status': 'success', 'message': 'Document removed'})
+
+
+
 # ── PRINCIPAL PARENT / GUARDIAN ROSTER (demo) ──
 
 @app.route('/api/principal/roster/parents', methods=['GET'])
@@ -8287,6 +8820,24 @@ def delete_announcement(id):
 
 
 
+# ── STUDENT MANAGEMENT API ROUTES (MoEYS Standard Modules) ──
+import student_management_api
+student_management_api.register_student_mgmt_routes(app, DB)
+
+# ── TEACHER MANAGEMENT API ROUTES (Faculty Oversight & Admin Modules) ──
+import teacher_management_api
+teacher_management_api.register_teacher_mgmt_routes(app, DB)
+
+# ── DATA DICTIONARY API ROUTES (EMIS Reference Tables & Master Schema) ──
+import data_dictionary_api
+data_dictionary_api.register_dictionary_routes(app, DB)
+
+# ── SYSTEM MANAGEMENT API ROUTES (System, School Year Config & Accounts) ──
+import system_management_api
+system_management_api.register_system_routes(app, DB)
+
+
+
 # ── CLEAN ROUTE SHORTCUTS ──
 
 @app.route('/admin')
@@ -8394,15 +8945,203 @@ def catch_all(path):
 
 
 @app.errorhandler(404)
-
 def handle_404(e):
-
+    req_id = f'REQ-{uuid.uuid4().hex[:8].upper()}'
+    app.logger.warning(f'[{req_id}] 404 Not Found: {request.path}')
     if request.path.startswith('/api/') or request.path == '/api':
+        return jsonify({
+            'error': {
+                'code': 'NOT_FOUND',
+                'message': 'The requested campus resource could not be found. Your data is safe.',
+                'request_id': req_id
+            }
+        }), 404
+    if os.path.exists(os.path.join(ROOT, '404.html')):
+        return send_from_directory(ROOT, '404.html'), 404
+    return send_from_directory(ROOT, 'pages/shared/404.html'), 404
 
-        return jsonify({'error': {'code': 'NOT_FOUND', 'message': f'API route {request.path} not found'}}), 404
+@app.errorhandler(500)
+def handle_500(e):
+    req_id = f'REQ-{uuid.uuid4().hex[:8].upper()}'
+    app.logger.error(f'[{req_id}] 500 Internal Error on {request.path}: {e}')
+    if request.path.startswith('/api/') or request.path == '/api':
+        return jsonify({
+            'error': {
+                'code': 'SERVER_ERROR',
+                'message': 'A temporary issue occurred while processing your request. Your data is safe. Please retry.',
+                'request_id': req_id
+            }
+        }), 500
+    if os.path.exists(os.path.join(ROOT, '404.html')):
+        return send_from_directory(ROOT, '404.html'), 500
+    return jsonify({'error': {'code': 'SERVER_ERROR', 'request_id': req_id}}), 500
 
-    return send_from_directory(ROOT, 'pages/shared/access-denied.html'), 404
 
+
+
+# ════════════════════════════════════════════════════════════════════
+# PRINCIPAL CENTRAL MANAGEMENT SYSTEM API ROUTES (Highest School Authority)
+# ════════════════════════════════════════════════════════════════════
+
+@app.route('/api/classes/<class_id>', methods=['GET', 'PUT'])
+def handle_single_class(class_id):
+    c = next((item for item in DB['classes'] if item['id'] == class_id), None)
+    if not c:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': f'Class {class_id} not found'}}), 404
+    
+    if request.method == 'PUT':
+        data = request.get_json(silent=True) or {}
+        for key in ['name', 'grade', 'section', 'homeroomTeacher', 'room', 'studentCount', 'campus', 'status']:
+            if key in data:
+                c[key] = data[key]
+        return jsonify({'status': 'success', 'message': 'Class details updated successfully', 'data': c})
+    
+    # Return class with enrolled students
+    class_name = c['name'].replace('Grade ', '').strip()
+    enrolled = [s for s in DB['students'] if s.get('class') == class_name or s.get('class') == c['name']]
+    return jsonify({'data': c, 'students': enrolled, 'meta': {'enrolledTotal': len(enrolled)}})
+
+@app.route('/api/departments', methods=['GET'])
+def get_departments():
+    depts = DB.get('departments', [])
+    return jsonify({'status': 'success', 'data': depts, 'meta': {'total': len(depts)}})
+
+@app.route('/api/departments/<dept_id>', methods=['GET', 'PUT'])
+def handle_single_department(dept_id):
+    depts = DB.get('departments', [])
+    d = next((item for item in depts if item['id'] == dept_id or item.get('code', '').lower() == dept_id.lower()), None)
+    if not d:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Department not found'}}), 404
+    
+    if request.method == 'PUT':
+        data = request.get_json(silent=True) or {}
+        for key in ['name', 'head', 'headId', 'room', 'email', 'curriculum', 'status', 'syllabusCompliance']:
+            if key in data:
+                d[key] = data[key]
+        return jsonify({'status': 'success', 'message': 'Department information updated', 'data': d})
+    
+    # Also find assigned teachers
+    dept_teachers = [t for t in DB['teachers'] if t.get('department', '').lower() in d['name'].lower()]
+    return jsonify({'data': d, 'teachers': dept_teachers})
+
+@app.route('/api/assignments/<asgn_id>', methods=['GET', 'PUT', 'DELETE'])
+def handle_single_assignment(asgn_id):
+    asg = next((a for a in DB['assignments'] if a['id'] == asgn_id), None)
+    if not asg:
+        return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Assignment not found'}}), 404
+    
+    if request.method == 'PUT':
+        data = request.get_json(silent=True) or {}
+        for field in ['title', 'description', 'dueDate', 'due_date', 'maxScore', 'max_score', 'status', 'subject_name', 'class_name']:
+            if field in data:
+                asg[field] = data[field]
+        return jsonify({'status': 'success', 'message': 'Assignment updated successfully', 'data': asg})
+    
+    if request.method == 'DELETE':
+        DB['assignments'] = [a for a in DB['assignments'] if a['id'] != asgn_id]
+        return jsonify({'status': 'success', 'message': 'Assignment removed'})
+        
+    return jsonify({'data': asg})
+
+@app.route('/api/timetables', methods=['GET', 'POST'])
+def handle_timetables():
+    tt = DB.get('timetables', [])
+    class_id = request.args.get('classId')
+    teacher_id = request.args.get('teacherId')
+    day = request.args.get('day')
+    
+    filtered = tt
+    if class_id and class_id != 'all':
+        filtered = [s for s in filtered if s.get('classId') == class_id]
+    if teacher_id and teacher_id != 'all':
+        filtered = [s for s in filtered if s.get('teacherId') == teacher_id]
+    if day and day != 'all':
+        filtered = [s for s in filtered if s.get('day').lower() == day.lower()]
+        
+    return jsonify({'data': filtered, 'meta': {'total': len(filtered)}})
+
+@app.route('/api/timetables/slot', methods=['POST'])
+def save_timetable_slot():
+    data = request.get_json(silent=True) or {}
+    slot_id = data.get('id')
+    day = data.get('day')
+    period = int(data.get('period', 1))
+    class_id = data.get('classId')
+    teacher_id = data.get('teacherId')
+    room = data.get('room')
+    force = data.get('force', False)
+    
+    tt = DB.get('timetables', [])
+    
+    # Conflict Detection:
+    if not force:
+        conflict = next((s for s in tt if s.get('day') == day and s.get('period') == period and s.get('id') != slot_id and (
+            (s.get('teacherId') == teacher_id and s.get('classId') != class_id) or
+            (s.get('room') == room and s.get('classId') != class_id)
+        )), None)
+        
+        if conflict:
+            reason = f"Schedule Conflict: {conflict.get('teacherName')} or {room} is already booked for {conflict.get('className')} during Period {period} on {day}."
+            return jsonify({'conflict': True, 'message': reason, 'conflictSlot': conflict}), 409
+            
+    existing = next((s for s in tt if s.get('id') == slot_id), None)
+    if existing:
+        for k in ['subject', 'teacherId', 'teacherName', 'room', 'time', 'day', 'period']:
+            if k in data:
+                existing[k] = data[k]
+        saved = existing
+    else:
+        new_id = f"tt-{len(tt) + 1}"
+        saved = {
+            'id': new_id,
+            'classId': class_id,
+            'className': data.get('className', 'Class'),
+            'day': day,
+            'period': period,
+            'time': data.get('time', '08:00 - 08:50'),
+            'subject': data.get('subject', 'General Subject'),
+            'teacherId': teacher_id,
+            'teacherName': data.get('teacherName', 'Faculty Member'),
+            'room': room
+        }
+        tt.append(saved)
+        
+    return jsonify({'status': 'success', 'message': 'Timetable slot saved successfully', 'data': saved})
+
+@app.route('/api/principal/attendance/correct', methods=['POST'])
+def principal_correct_attendance():
+    data = request.get_json(silent=True) or {}
+    student_id = data.get('studentId')
+    date_val = data.get('date', datetime.now().strftime('%Y-%m-%d'))
+    new_status = data.get('newStatus', 'present')
+    reason = (data.get('reason') or '').strip()
+    
+    if not reason:
+        return jsonify({'error': {'code': 'REASON_REQUIRED', 'message': 'A reason is required to correct official attendance.'}}), 400
+        
+    existing = next((a for a in DB['attendanceRecords'] if a.get('studentId') == student_id and a.get('date') == date_val), None)
+    if existing:
+        prev_status = existing['status']
+        existing['status'] = new_status
+        existing['correctedBy'] = 'Dr. Ly Bunheng (Principal)'
+        existing['correctionReason'] = reason
+        existing['correctedAt'] = datetime.now().isoformat()
+    else:
+        prev_status = 'unrecorded'
+        student = next((s for s in DB['students'] if s['id'] == student_id), None)
+        existing = {
+            'studentId': student_id,
+            'studentName': student['name'] if student else 'Student',
+            'classId': student['class'] if student else '10A',
+            'date': date_val,
+            'status': new_status,
+            'correctedBy': 'Dr. Ly Bunheng (Principal)',
+            'correctionReason': reason,
+            'correctedAt': datetime.now().isoformat()
+        }
+        DB['attendanceRecords'].append(existing)
+        
+    return jsonify({'status': 'success', 'message': f'Attendance updated from {prev_status} to {new_status}', 'data': existing})
 
 
 # ── Start ─────────────────────────────────────────────────────

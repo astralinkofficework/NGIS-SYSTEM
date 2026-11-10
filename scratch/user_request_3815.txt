@@ -1,0 +1,416 @@
+<USER_REQUEST>
+# NGIS-SYSTEM — MASTER UI/UX REDESIGN PROMPT
+## Transform Teacher Data Entry Table into a Modern Responsive Row-Based Editor
+
+### OBJECTIVE
+
+Redesign the existing **Data Entry & Records → Teachers (Excel)** interface from a traditional wide spreadsheet table into a clean, modern, responsive, row-based teacher management interface.
+
+Use the two provided screenshots as references to understand the current layout, data fields, and existing NGIS design language.
+
+This is a frontend UI/UX redesign with full functional preservation, not a new disconnected teacher management system.
+
+## 1. AUDIT BEFORE MODIFYING
+
+Inspect the existing:
+
+- Data Entry & Records page.
+- Teacher Profiles page.
+- Teacher import/export functionality.
+- Existing teacher API and database.
+- Teacher form validation.
+- Teacher assignment integration.
+- Excel clipboard functionality.
+- Responsive CSS and shared components.
+
+Preserve all working functionality.
+
+Use existing HTML, CSS, vanilla JavaScript, and backend architecture.
+
+Do not introduce React, TypeScript, JSX, or a new UI framework.
+
+Do not replace real teacher data with hardcoded sample records.
+
+---
+
+## 2. NEW PAGE STRUCTURE
+
+Keep the existing NGIS sidebar and header.
+
+The content area should follow this structure:
+
+**A. Page header**
+
+- Title: Data Entry & Records.
+- Short description: Manage teacher and academic setup records.
+- Existing workflow navigation.
+- Current active tab: Teachers.
+
+**B. Teacher management toolbar**
+
+- Search teachers by name, ID, code, or subject.
+- Filter by department.
+- Filter by teacher status.
+- Teacher count.
+- Add Teacher.
+- Paste from Excel.
+- Import Excel.
+- Save Changes.
+
+**C. Teacher rows**
+
+Replace the large spreadsheet with individual full-width teacher rows.
+
+Each row should show:
+
+- Teacher avatar or initials.
+- Full name.
+- Teacher code.
+- Department or specialization.
+- Position.
+- Weekly workload target.
+- Record status.
+- Edit action.
+- Expand/collapse control.
+
+**D. Expanded teacher details**
+
+Clicking a row opens an inline editor directly underneath it.
+
+Do not navigate away unnecessarily.
+
+---
+
+## 3. ROW DESIGN
+
+Each teacher must appear as a clean horizontal record.
+
+Example layout:
+
+Teacher avatar | Name & ID | Subject | Teacher Code | Target Hours | Status | Actions
+
+Use:
+
+- White surfaces.
+- Subtle borders.
+- Comfortable spacing.
+- Consistent alignment.
+- Small, meaningful SVG icons.
+- Neutral hover effects.
+- Clear typography.
+- Minimal visual decoration.
+
+Do not use oversized cards for every teacher.
+
+Do not introduce unnecessary shadows or gradients.
+
+Do not make the row look like a spreadsheet.
+
+Rows should be visually separated with subtle dividers.
+
+### Desktop layout
+
+Show the main teacher details in one horizontal row.
+
+### Tablet layout
+
+Prioritize name, code, subject, workload, and actions.
+
+Move secondary information into the expanded editor.
+
+### Mobile layout
+
+Use a compact stacked row:
+
+Teacher name and avatar at the top.
+
+Subject and teacher code underneath.
+
+Status and actions aligned below.
+
+No horizontal page overflow.
+
+---
+
+## 4. EXPANDABLE INLINE EDITOR
+
+When a teacher row is clicked, smoothly expand a details section beneath that row.
+
+Use a responsive form layout.
+
+### Section A — Basic Information
+
+- Full name.
+- Gender.
+- Phone.
+- Employee ID.
+
+### Section B — Employment
+
+- Position.
+- Employment category.
+- Rank.
+- Employment start year.
+
+### Section C — Academic Information
+
+- Specialization.
+- Department.
+- Teacher code or codes.
+- Qualified subjects.
+
+### Section D — Scheduling Configuration
+
+- Weekly workload target.
+- Maximum periods per day.
+- Teacher availability.
+- Scheduling notes.
+
+### Section E — Additional Information
+
+- Notes.
+- Existing record status.
+
+Use two or three columns on desktop and one column on mobile.
+
+Keep the fields clearly labeled.
+
+Provide:
+
+- Save Changes.
+- Cancel.
+- Reset Unsaved Changes.
+
+Do not use a giant modal for ordinary editing.
+
+---
+
+## 5. EXCEL IMPORT MUST STILL WORK
+
+The current page supports direct Excel/Google Sheets copy and paste.
+
+Do not remove this functionality.
+
+Instead, separate bulk import from ordinary teacher editing.
+
+### Paste from Excel
+
+Clicking Paste from Excel opens a dedicated bulk import panel.
+
+This panel should support:
+
+- Pasting tabular clipboard data.
+- Mapping spreadsheet columns.
+- Previewing imported records.
+- Validating invalid cells.
+- Detecting existing teachers.
+- Showing new and updated record counts.
+- Confirming bulk import.
+
+Keep the existing import logic wherever possible.
+
+Do not force users to paste into individual teacher rows.
+
+### Import safety
+
+Match existing teachers using stable IDs or verified unique identifiers.
+
+Do not use teacher names alone as unique identifiers.
+
+Preserve existing values when imported cells are empty unless the user explicitly requests otherwise.
+
+---
+
+## 6. INLINE ROW ACTIONS
+
+Each row should support:
+
+- Expand Details.
+- Edit.
+- Save.
+- Cancel.
+- View Full Profile.
+- More Options.
+
+The More Options menu may contain appropriate existing actions such as deactivate or archive.
+
+Do not create fake action buttons.
+
+Do not make the entire row trigger an edit when the user clicks a checkbox, button, input, or menu.
+
+All actions must use the correct teacher record ID.
+
+---
+
+## 7. SEARCH, FILTER, AND SORT
+
+Implement functional search and filtering.
+
+Search fields:
+
+- Teacher name.
+- Teacher ID.
+- Employee ID.
+- Teacher code.
+- Subject.
+- Department.
+
+Filters:
+
+- Department.
+- Employment status.
+- Position.
+
+Sort:
+
+- Name A–Z.
+- Name Z–A.
+- Teacher code.
+- Workload.
+- Recently updated.
+
+Only expose sorting options supported by real fields.
+
+Display the filtered result count.
+
+Add a Reset Filters action.
+
+Support pagination or incremental loading for large teacher directories.
+
+---
+
+## 8. DESIGN SYSTEM
+
+Use the current NGIS design system.
+
+Colors:
+
+- Forest Green: #176B45.
+- White: #FFFFFF.
+- Warm Orange: #F28C28.
+- Soft Mint: #E8F3ED.
+- Off White: #F7F9F7.
+- Dark Charcoal: #29352E.
+- Border: #E1E9E3.
+- Secondary Text: #64746A.
+
+Typography:
+
+- Manrope.
+- Plus Jakarta Sans.
+- Khmer-compatible font fallback where required.
+
+Do not copy the old spreadsheet's dense visual structure.
+
+Avoid:
+
+- Gradients.
+- Excessive shadows.
+- Colored hover overlays.
+- Hover scaling.
+- Oversized rounded cards.
+- Decorative animations.
+- Duplicate headings.
+- Unnecessary descriptions.
+- Emojis as icons.
+
+Use the existing SVG icon system.
+
+Preserve accessible focus states.
+
+---
+
+## 9. PRESERVE DATA INTEGRATION
+
+The redesigned interface must use the existing teacher database.
+
+Editing a teacher must update the same record used by:
+
+- Teacher Profiles.
+- Teacher Assignment.
+- Timetable Builder.
+- Curriculum and Subject Management.
+- Teacher Portal, where applicable.
+
+Do not create separate teacher data stores.
+
+After a teacher record is saved, the relevant pages must reflect the updated data through the existing data-loading mechanism.
+
+Do not silently overwrite another user's changes.
+
+---
+
+## 10. RESPONSIVE REQUIREMENTS
+
+Test the following widths:
+
+- 1440px desktop.
+- 1024px laptop/tablet.
+- 768px tablet.
+- 390px mobile.
+- 320px narrow mobile.
+
+Ensure:
+
+- No clipped actions.
+- No horizontal page overflow.
+- No overlapping fields.
+- No broken teacher rows.
+- No oversized forms.
+- No hidden save buttons.
+- No unusable dropdowns.
+- No broken Khmer text.
+
+Use CSS Grid and Flexbox appropriately.
+
+---
+
+## 11. ACCEPTANCE TESTS
+
+1. Existing teachers load as rows.
+2. Teacher data remains accurate.
+3. Clicking a row expands the correct teacher.
+4. Editing a field updates the correct record.
+5. Save persists changes after refresh.
+6. Cancel discards unsaved changes.
+7. Search works.
+8. Filters work together.
+9. Sorting works.
+10. Adding a teacher works.
+11. Excel paste/import still works.
+12. Duplicate detection works.
+13. Validation messages are understandable.
+14. Teacher Profiles shows updated information.
+15. Teacher Assignment receives updated teacher data.
+16. No unrelated portal functionality is broken.
+17. The page is responsive on desktop, tablet, and mobile.
+
+---
+
+## 12. FINAL IMPLEMENTATION RULE
+
+Do not simply wrap each spreadsheet row in a card.
+
+Redesign the actual information hierarchy.
+
+The default row should display only the most important teacher information.
+
+Secondary information should appear inside the expandable editor.
+
+The result should feel like a professional school ERP management interface rather than an Excel spreadsheet.
+
+Keep the original Excel functionality available through a dedicated bulk import workflow.
+
+Implement the redesign directly inside the existing NGIS-SYSTEM project.
+
+Create shared components or new files only when necessary.
+
+Preserve the existing sidebar, routes, backend, database, authentication, permissions, and timetable integration.
+
+Finish with a report of modified files, preserved functionality, and completed tests.
+
+turn the principal-teacher-profiles.html from table to row line for me 
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-11-09T14:35:08+07:00.
+</ADDITIONAL_METADATA>

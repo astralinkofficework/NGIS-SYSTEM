@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="shell-type" content="web_dashboard">
+  <title>NGIS — Dashboard Content Manager | System Admin</title>
+
+  <!-- Fonts: Inter & Kantumruy Pro & Plus Jakarta Sans & Manrope (400/500 only) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Kantumruy+Pro:wght@400;500&family=Manrope:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#edf6f1', 100: '#d7ecdf', 200: '#b6dcc6',
+              500: '#176B45', 600: '#145939', 700: '#0f422b',
+              800: '#0b301f', 900: '#0F5132', 950: '#0a3622'
+            },
+            primary: '#29352E',
+            surface: '#F7F9F7',
+            outline: '#E1E9E3'
+          },
+          fontFamily: {
+            sans: ['"Inter"', '"Plus Jakarta Sans"', 'Manrope', '"Kantumruy Pro"', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          fontWeight: { normal: '400', medium: '500' }
+        }
+      }
+    }
+  </script>
+
+  <!-- NGIS Core Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+  <link rel="stylesheet" href="../../assets/css/hero.css?v=3.2">
+  <link rel="stylesheet" href="../../assets/css/interactions.css?v=3.2">
+  <link rel="stylesheet" href="../../assets/css/admin-view.css?v=3.2">
+  <link rel="stylesheet" href="../../assets/css/admin-dashboard-cms.css">
+  <script>try{var t=localStorage.getItem('ngis-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}</script>
+
+  <style>
+    /* ── Integrate the CMS workspace into the standard NGIS app shell ── */
+    .page .cms-shell { max-width: none; padding: 0; margin: 0; gap: 18px; }
+    .page { padding-top: 6px; }
+    .cms-preview-panel { top: 20px; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .preview-canvas-shadow { box-shadow: 0 10px 25px -5px rgba(15,23,42,.08), 0 8px 10px -6px rgba(15,23,42,.05); }
+    .token-chip:hover { transform: translateY(-1px); }
+  </style>
+</head>
+
+<body data-role="admin" data-portal="admin" data-page="dashboard-content" class="cms-root bg-[#F7F9F7] text-[#29352E]">
+
+  <main class="main">
+
+    <!-- Authoritative NGIS Responsive Hero Banner & Top Navbar -->
+    <header id="heroBanner" role="banner"></header>
+
+    <div class="page">
+
+      <div class="cms-shell">
+
+        <!-- ── Control Bar (Scopes + Lifecycle Actions) ── -->
+        <header class="cms-topbar" aria-label="Content control bar">
+          <div class="cms-topbar-left">
+            <!-- Portal Target Selector -->
+            <div class="cms-select-group">
+              <span class="cms-select-label">Portal:</span>
+              <select id="cmsPortalSelect" class="cms-select font-medium" aria-label="Select Portal">
+                <option value="student">Student Portal</option>
+                <option value="teacher">Teacher Portal</option>
+                <option value="principal">Principal Portal</option>
+                <option value="admin">Admin Portal</option>
+              </select>
+            </div>
+
+            <!-- Campus Target Selector -->
+            <div class="cms-select-group">
+              <span class="cms-select-label">Campus:</span>
+              <select id="cmsCampusSelect" class="cms-select" aria-label="Select Campus">
+                <option value="all">All Campuses</option>
+                <option value="main">Main Campus</option>
+                <option value="toul_kork">Toul Kork</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cms-topbar-controls">
+            <!-- Status Badge -->
+            <div id="cmsStatusBadge" class="cms-status-pill cms-status-published font-medium">
+              <span class="material-symbols-outlined" style="font-size:14px">check_circle</span>
+              <span>Published (Live)</span>
+            </div>
+
+            <!-- Visual Edit Mode Button -->
+            <button type="button" id="cmsBtnVisualMode" class="cms-btn cms-btn-secondary" title="Toggle Visual Edit Mode">
+              <span class="material-symbols-outlined" style="font-size:16px">draw</span>
+              <span>Edit on Preview</span>
+            </button>
+
+            <!-- Save Draft Button -->
+            <button type="button" id="cmsBtnSaveDraft" class="cms-btn cms-btn-secondary font-medium">
+              <span class="material-symbols-outlined" style="font-size:16px">save</span>
+              <span>Save Draft</span>
+            </button>
+
+            <!-- Publish Button -->
+            <button type="button" id="cmsBtnPublish" class="cms-btn cms-btn-primary font-medium">
+              <span class="material-symbols-outlined" style="font-size:16px">publish</span>
+              <span>Publish to Live</span>
+            </button>
+
+            <!-- Schedule Button -->
+            <button type="button" id="cmsBtnSchedule" class="cms-btn cms-btn-secondary" title="Schedule Future Publish">
+              <span class="material-symbols-outlined" style="font-size:16px">event_upcoming</span>
+            </button>
+
+            <!-- Versions & Rollback Button -->
+            <button type="button" id="cmsBtnVersions" class="cms-btn cms-btn-secondary" title="Version History & Rollback">
+              <span class="material-symbols-outlined" style="font-size:16px">history</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- ── Three-Region CMS Workspace: internal sidebar · editor · live preview ── -->
+        <section class="cms-workspace" aria-label="Dashboard content workspace">
+
+          <!-- ── Internal CMS Navigation Sidebar (second-level, scoped to this workspace only) ── -->
+          <aside id="cmsNav" class="cms-nav" aria-label="CMS content navigation">
+            <div class="cms-nav-head">
+              <span class="cms-nav-heading">Content</span>
+              <button type="button" id="cmsNavCollapse" class="cms-icon-btn" aria-label="Collapse navigation" aria-expanded="true" title="Collapse navigation">
+                <span class="material-symbols-outlined" style="font-size:18px">chevron_left</span>
+              </button>
+            </div>
+
+            <nav class="cms-nav-list" role="tablist" aria-orientation="vertical" aria-label="Content sections">
+              <button type="button" class="cms-nav-item" data-panel="panelOverview" role="tab" aria-selected="false" aria-controls="panelOverview" title="Overview">
+                <span class="material-symbols-outlined cms-nav-icon" aria-hidden="true">space_dashboard</span>
+                <span class="cms-nav-label">Overview</span>
+              </button>
+              <button type="button" class="cms-nav-item active" data-panel="tabSections" role="tab" aria-selected="true" aria-controls="tabSections" title="Global Sidebar Manager">
+                <span class="material-symbols-outlined cms-nav-icon" aria-hidden="true">menu_open</span>
+                <span class="cms-nav-label">Sidebar Manager</span>
+              </button>
+              <button type="button" class="cms-nav-item" data-panel="tabHero" role="tab" aria-selected="false" aria-controls="tabHero" title="Hero Content">
+                <span class="material-symbols-outlined cms-nav-icon" aria-hidden="true">featured_play_list</span>
+                <span class="cms-nav-label">Hero Content</span>
+              </button>
+              <button type="button" class="cms-nav-item" data-panel="tabBanners" role="tab" aria-selected="false" aria-controls="tabBanners" title="Dashboard Banners">
+                <span class="material-symbols-outlined cms-nav-icon" aria-hidden="true">view_carousel</span>
+                <span class="cms-nav-label">Dashboard Banners</span>
+              </button>
+              <button type="button" class="cms-nav-item" data-panel="tabMedia" role="tab" aria-selected="false" aria-controls="tabMedia" title="Media Library">
+                <span class="material-symbols-outlined cms-nav-icon" aria-hidden="true">perm_media</span>
+                <span class="cms-nav-label">Media Library</span>
+              </button>
+              <button type="button" class="cms-nav-item" data-panel="panelPublishing" role="tab" aria-selected="false" aria-controls="panelPublishing" title="Publishing &amp; Visibility">
+                <span class="material-symbols-outlined cms-nav-icon" aria-hidden="true">publish</span>
+                <span class="cms-nav-label">Publishing &amp; Visibility</span>
+              </button>
+              <button type="button" class="cms-nav-item" data-panel="panelActivity" role="tab" aria-selected="false" aria-controls="panelActivity" title="Activity History">
+                <span class="material-symbols-outlined cms-nav-icon" aria-hidden="true">history</span>
+                <span class="cms-nav-label">Activity History</span>
+              </button>
+            </nav>
+          </aside>
+
+          <!-- Backdrop for the mobile slide-out drawer -->
+          <div id="cmsNavBackdrop" class="cms-nav-backdrop" hidden></div>
+
+          <!-- ── Main Editor Workspace ── -->
+          <div class="cms-editor-panel" aria-label="Content Management Workspace">
+
+            <div class="cms-workspace-head">
+              <button type="button" id="cmsNavToggle" class="cms-nav-toggle" aria-label="Open content navigation" aria-expanded="false" aria-controls="cmsNav">
+                <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+                <span class="cms-nav-toggle-label" id="cmsNavToggleLabel">Global Sidebar Manager</span>
+              </button>
+              <div class="cms-panel-head">
+                <h2 class="cms-panel-title" id="cmsPanelTitle">Global Sidebar Manager</h2>
+                <p class="cms-panel-sub" id="cmsPanelSub">Configure, preview, and publish sidebar navigation across school portals.</p>
+              </div>
+            </div>
+
+            <!-- PANEL: OVERVIEW (rendered from live CMS data) -->
+            <div id="panelOverview" class="cms-tab-content" role="tabpanel" aria-label="Overview" tabindex="0">
+              <div id="cmsOverviewBody">
+                <div class="cms-loading"><span class="cms-spinner" aria-hidden="true"></span><span>Loading overview…</span></div>
+              </div>
+              <div class="cms-quick-actions">
+                <button type="button" class="cms-btn cms-btn-secondary" data-goto="tabHero">Edit hero content</button>
+                <button type="button" class="cms-btn cms-btn-secondary" data-goto="tabBanners">Manage banners</button>
+                <button type="button" class="cms-btn cms-btn-secondary" data-goto="tabSections">Sidebar manager</button>
+                <button type="button" class="cms-btn cms-btn-secondary" data-goto="panelPublishing">Publishing settings</button>
+              </div>
+            </div>
+
+            <!-- PANEL: HERO CONTENT -->
+            <div id="tabHero" class="cms-tab-content" role="tabpanel" aria-label="Hero content" tabindex="0">
+              <div class="cms-form-group">
+                <label class="cms-label font-medium" for="cmsHeroTitle">Main Heading Title</label>
+                <input type="text" id="cmsHeroTitle" class="cms-input" placeholder="e.g. Welcome to your dashboard">
+                <div class="cms-hint">Displayed in the header hero of the selected portal.</div>
+              </div>
+
+              <div class="cms-form-group">
+                <label class="cms-label font-medium" for="cmsHeroDescription">Supporting Description</label>
+                <textarea id="cmsHeroDescription" class="cms-textarea" placeholder="e.g. Explore learning, track deadlines, and reach beyond your limits."></textarea>
+              </div>
+
+              <div class="cms-form-group">
+                <label class="cms-label font-medium" for="cmsHeroGreeting">Personalized Greeting Template</label>
+                <input type="text" id="cmsHeroGreeting" class="cms-input font-medium" placeholder="e.g. Hello, {first_name}! Ready to learn today?">
+                <div class="cms-hint">Click tokens below to insert dynamic authenticated parameters:</div>
+                <div class="cms-token-chips">
+                  <span class="cms-token-chip" data-token="{first_name}">+ {first_name}</span>
+                  <span class="cms-token-chip" data-token="{full_name}">+ {full_name}</span>
+                  <span class="cms-token-chip" data-token="{role}">+ {role}</span>
+                  <span class="cms-token-chip" data-token="{school_name}">+ {school_name}</span>
+                  <span class="cms-token-chip" data-token="{campus_name}">+ {campus_name}</span>
+                  <span class="cms-token-chip" data-token="{academic_year}">+ {academic_year}</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="cms-form-group mb-0">
+                  <label class="cms-label font-medium" for="cmsHeroDateFormat">Dynamic Date Format</label>
+                  <select id="cmsHeroDateFormat" class="cms-form-select">
+                    <option value="full">Full (Monday, Nov 9, 2026)</option>
+                    <option value="short">Short (Nov 9, 2026)</option>
+                    <option value="iso">ISO (2026-11-09)</option>
+                  </select>
+                </div>
+                <div class="cms-form-group mb-0">
+                  <label class="cms-label font-medium" for="cmsHeroAlignment">Content Alignment</label>
+                  <select id="cmsHeroAlignment" class="cms-form-select">
+                    <option value="left">Left Aligned</option>
+                    <option value="center">Centered</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 pt-2 border-t border-[#E1E9E3]">
+                <input type="checkbox" id="cmsHeroDateVisible" checked class="rounded border-slate-300">
+                <label for="cmsHeroDateVisible" class="text-xs text-slate-700 cursor-pointer">Display live dynamic date badge in hero</label>
+              </div>
+            </div>
+
+            <!-- PANEL: DASHBOARD BANNERS -->
+            <div id="tabBanners" class="cms-tab-content" role="tabpanel" aria-label="Dashboard banners" tabindex="0">
+              <div class="flex items-center justify-between mb-3">
+                <div class="text-xs font-medium text-slate-700">Configured Banner Slides</div>
+                <button type="button" id="cmsBtnAddNewBanner" class="cms-btn cms-btn-secondary" style="padding:4px 10px; font-size:11.5px">
+                  <span class="material-symbols-outlined" style="font-size:15px">add</span>
+                  <span>Add Slide</span>
+                </button>
+              </div>
+
+              <!-- Banner Library List -->
+              <div id="cmsBannerList" class="cms-banner-list">
+                <!-- Rendered by JS -->
+              </div>
+
+              <!-- Banner Edit Form -->
+              <div class="p-3.5 border border-[#E1E9E3] rounded-xl bg-[#F7F9F7] space-y-3">
+                <div class="text-xs font-medium text-slate-800 pb-1 border-b border-[#E1E9E3] flex items-center justify-between">
+                  <span>Edit Selected Slide</span>
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer text-[11px]">
+                    <input type="checkbox" id="cmsBannerActive" checked>
+                    <span>Active in Carousel</span>
+                  </label>
+                </div>
+
+                <div class="cms-form-group mb-2">
+                  <label class="cms-label font-medium" for="cmsBannerName">Internal Slide Name</label>
+                  <input type="text" id="cmsBannerName" class="cms-input" placeholder="e.g. Empowering Future Leaders">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="cms-form-group mb-2">
+                    <label class="cms-label font-medium" for="cmsBannerHeading">Slide Heading</label>
+                    <input type="text" id="cmsBannerHeading" class="cms-input" placeholder="e.g. Empowering Future Leaders">
+                  </div>
+                  <div class="cms-form-group mb-2">
+                    <label class="cms-label font-medium" for="cmsBannerSubtitle">Slide Subtitle</label>
+                    <input type="text" id="cmsBannerSubtitle" class="cms-input" placeholder="e.g. Explore learning, grow beyond limits">
+                  </div>
+                </div>
+
+                <div class="cms-form-group mb-2">
+                  <label class="cms-label font-medium" for="cmsBannerImageUrl">Background Image URL</label>
+                  <div class="flex gap-2">
+                    <input type="text" id="cmsBannerImageUrl" class="cms-input flex-1" placeholder="assets/uploads/banners/... or https://...">
+                    <button type="button" id="cmsBtnBrowseMedia" class="cms-btn cms-btn-secondary shrink-0">Browse</button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="cms-form-group mb-2">
+                    <label class="cms-label font-medium" for="cmsBannerBtnLabel">Button Label (Optional)</label>
+                    <input type="text" id="cmsBannerBtnLabel" class="cms-input" placeholder="e.g. Explore Programs">
+                  </div>
+                  <div class="cms-form-group mb-2">
+                    <label class="cms-label font-medium" for="cmsBannerBtnUrl">Button Destination Link</label>
+                    <input type="text" id="cmsBannerBtnUrl" class="cms-input" placeholder="e.g. pages/student/student-subjects.html">
+                  </div>
+                </div>
+
+                <div class="cms-form-group mb-0">
+                  <label class="cms-label font-medium" for="cmsBannerAltText">Accessibility Alt Text</label>
+                  <input type="text" id="cmsBannerAltText" class="cms-input" placeholder="Describe the image content for screen readers">
+                </div>
+              </div>
+
+              <!-- Carousel Timing Settings -->
+              <div class="mt-4 pt-3 border-t border-[#E1E9E3]">
+                <div class="text-xs font-medium text-slate-800 mb-2">Carousel Playback Options</div>
+                <div class="grid grid-cols-2 gap-2">
+                  <label class="inline-flex items-center gap-2 text-xs text-slate-700">
+                    <input type="checkbox" id="cmsCarouselAutoplay" checked>
+                    <span>Autoplay Slides</span>
+                  </label>
+                  <div class="flex items-center gap-1.5 text-xs text-slate-700">
+                    <span>Interval:</span>
+                    <input type="number" id="cmsCarouselInterval" class="w-14 p-1 text-xs border border-slate-300 rounded" value="6" min="2" max="30">
+                    <span>sec</span>
+                  </div>
+                  <label class="inline-flex items-center gap-2 text-xs text-slate-700">
+                    <input type="checkbox" id="cmsCarouselArrows" checked>
+                    <span>Navigation Arrows</span>
+                  </label>
+                  <label class="inline-flex items-center gap-2 text-xs text-slate-700">
+                    <input type="checkbox" id="cmsCarouselDots" checked>
+                    <span>Pagination Dots</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- PANEL: GLOBAL SIDEBAR MANAGER -->
+            <div id="tabSections" class="cms-tab-content active" role="tabpanel" aria-label="Global Sidebar Manager" tabindex="0">
+
+              <!-- Manager command bar -->
+              <div class="sgm-toolbar">
+                <div class="sgm-toolbar-left">
+                  <div class="cms-select-group">
+                    <span class="cms-select-label">Sidebar:</span>
+                    <select id="sgmPortalSelect" class="cms-select font-medium" aria-label="Select portal sidebar"></select>
+                  </div>
+                  <span id="sgmStatusChip" class="cms-pill cms-pill-on">Published</span>
+                  <div class="sgm-search">
+                    <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                    <input type="search" id="sgmSearch" class="sgm-search-input" placeholder="Search items…" aria-label="Search navigation items">
+                  </div>
+                </div>
+                <div class="sgm-toolbar-right">
+                  <button type="button" id="sgmBtnUndo" class="cms-btn cms-btn-secondary" title="Undo last uncommitted change" disabled>
+                    <span class="material-symbols-outlined" style="font-size:15px">undo</span><span>Undo</span>
+                  </button>
+                  <button type="button" id="sgmBtnHealth" class="cms-btn cms-btn-secondary" title="Run navigation health audit">
+                    <span class="material-symbols-outlined" style="font-size:15px">monitor_heart</span><span>Health</span>
+                  </button>
+                  <button type="button" id="sgmBtnValidate" class="cms-btn cms-btn-secondary" title="Validate draft navigation">
+                    <span class="material-symbols-outlined" style="font-size:15px">fact_check</span><span>Validate</span>
+                  </button>
+                  <button type="button" id="sgmBtnVersions" class="cms-btn cms-btn-secondary" title="Version history and rollback">
+                    <span class="material-symbols-outlined" style="font-size:15px">history</span><span>Versions</span>
+                  </button>
+                  <button type="button" id="sgmBtnDefaults" class="cms-btn cms-btn-secondary" title="Restore factory navigation">
+                    <span class="material-symbols-outlined" style="font-size:15px">settings_backup_restore</span><span>Reset</span>
+                  </button>
+                  <button type="button" id="sgmBtnSave" class="cms-btn cms-btn-secondary" title="Save navigation draft">
+                    <span class="material-symbols-outlined" style="font-size:15px">save</span><span>Save Draft</span>
+                  </button>
+                  <button type="button" id="sgmBtnPublish" class="cms-btn cms-btn-primary" title="Validate and publish to live">
+                    <span class="material-symbols-outlined" style="font-size:15px">publish</span><span>Publish</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Three-region manager workspace -->
+              <div class="sgm-grid">
+
+                <!-- Column 1: Navigation items tree -->
+                <section class="sgm-col sgm-col-tree" aria-label="Navigation items">
+                  <div class="sgm-col-head">
+                    <span class="sgm-col-title">Navigation Items</span>
+                    <div class="sgm-col-actions">
+                      <button type="button" id="sgmBtnAddGroup" class="sgm-mini-btn" title="Add navigation group">
+                        <span class="material-symbols-outlined" style="font-size:15px">create_new_folder</span><span>Group</span>
+                      </button>
+                      <button type="button" id="sgmBtnAddItem" class="sgm-mini-btn" title="Add navigation item">
+                        <span class="material-symbols-outlined" style="font-size:15px">add</span><span>Item</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div id="sgmTree" class="sgm-tree custom-scrollbar" role="tree" aria-label="Navigation hierarchy">
+                    <div class="cms-loading"><span class="cms-spinner" aria-hidden="true"></span><span>Loading navigation…</span></div>
+                  </div>
+                </section>
+
+                <!-- Column 2: Live sidebar preview -->
+                <section class="sgm-col sgm-col-preview" aria-label="Sidebar live preview">
+                  <div class="sgm-col-head">
+                    <span class="sgm-col-title">Sidebar Live Preview</span>
+                    <div class="cms-viewport-switch">
+                      <button type="button" class="cms-viewport-btn active font-medium" data-sgm-viewport="desktop" title="Desktop">
+                        <span class="material-symbols-outlined" style="font-size:15px">desktop_windows</span>
+                      </button>
+                      <button type="button" class="cms-viewport-btn font-medium" data-sgm-viewport="tablet" title="Tablet">
+                        <span class="material-symbols-outlined" style="font-size:15px">tablet_mac</span>
+                      </button>
+                      <button type="button" class="cms-viewport-btn font-medium" data-sgm-viewport="mobile" title="Mobile">
+                        <span class="material-symbols-outlined" style="font-size:15px">phone_iphone</span>
+                      </button>
+                      <button type="button" class="cms-viewport-btn font-medium" id="sgmPreviewCollapse" aria-pressed="false" title="Toggle collapsed sidebar">
+                        <span class="material-symbols-outlined" style="font-size:15px">left_panel_close</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="sgm-preview-stage">
+                    <div id="sgmPreview" class="sgm-preview mode-desktop"><!-- Rendered by JS --></div>
+                  </div>
+                </section>
+
+                <!-- Column 3: Item settings -->
+                <section class="sgm-col sgm-col-settings" aria-label="Item settings">
+                  <div class="sgm-col-head">
+                    <span class="sgm-col-title">Item Settings</span>
+                    <button type="button" id="sgmBtnAddFromSettings" class="sgm-mini-btn" title="Add a navigation item">
+                      <span class="material-symbols-outlined" style="font-size:15px">add</span><span>Add</span>
+                    </button>
+                  </div>
+                  <div id="sgmSettings" class="sgm-settings custom-scrollbar">
+                    <div class="cms-empty">Select an item in the navigation tree to edit its label, icon, destination, and visibility.</div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- Validation / health findings -->
+              <div id="sgmHealth" class="sgm-health" hidden aria-live="polite"></div>
+            </div>
+
+            <!-- PANEL: MEDIA LIBRARY -->
+            <div id="tabMedia" class="cms-tab-content" role="tabpanel" aria-label="Media library" tabindex="0">
+              <!-- Dropzone -->
+              <div id="cmsMediaDropzone" class="cms-dropzone mb-4">
+                <span class="material-symbols-outlined text-3xl text-emerald-700 mb-1">cloud_upload</span>
+                <div class="text-xs font-medium text-slate-800">Drag & drop banner image here, or click to browse</div>
+                <div class="text-[11px] text-slate-500 mt-1">Supports JPG, PNG, WebP up to 5 MB (Server validates true image headers)</div>
+                <input type="file" id="cmsMediaFileInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+              </div>
+
+              <!-- Grid -->
+              <div class="text-xs font-medium text-slate-700 mb-2">Uploaded Media Assets</div>
+              <div id="cmsMediaGrid" class="cms-media-grid">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
+            <!-- PANEL: PUBLISHING & VISIBILITY -->
+            <div id="panelPublishing" class="cms-tab-content" role="tabpanel" aria-label="Publishing and visibility" tabindex="0">
+              <div class="cms-block-title">Publication status</div>
+              <div id="cmsPublishStatus" class="cms-kv-list">
+                <div class="cms-loading"><span class="cms-spinner" aria-hidden="true"></span><span>Loading publication status…</span></div>
+              </div>
+
+              <div class="cms-block-title" style="margin-top:20px">Lifecycle actions</div>
+              <div class="cms-inline-actions">
+                <button type="button" class="cms-btn cms-btn-secondary" data-action="save-draft">
+                  <span class="material-symbols-outlined" style="font-size:15px">save</span><span>Save draft</span>
+                </button>
+                <button type="button" class="cms-btn cms-btn-primary" data-action="publish">
+                  <span class="material-symbols-outlined" style="font-size:15px">publish</span><span>Publish to live</span>
+                </button>
+                <button type="button" class="cms-btn cms-btn-secondary" data-action="schedule">
+                  <span class="material-symbols-outlined" style="font-size:15px">event_upcoming</span><span>Schedule publication</span>
+                </button>
+                <button type="button" class="cms-btn cms-btn-secondary" data-action="versions">
+                  <span class="material-symbols-outlined" style="font-size:15px">history</span><span>Version history</span>
+                </button>
+              </div>
+
+              <div class="cms-block-title" style="margin-top:20px">Visibility summary</div>
+              <div id="cmsVisibilityList" class="cms-visibility-list"></div>
+            </div>
+
+            <!-- PANEL: ACTIVITY HISTORY -->
+            <div id="panelActivity" class="cms-tab-content" role="tabpanel" aria-label="Activity history" tabindex="0">
+              <div class="cms-activity-toolbar">
+                <span class="cms-block-title" style="margin:0">Recent activity</span>
+                <div class="cms-inline-actions">
+                  <button type="button" class="cms-btn cms-btn-secondary" id="cmsBtnRefreshActivity">
+                    <span class="material-symbols-outlined" style="font-size:15px">refresh</span><span>Refresh</span>
+                  </button>
+                  <button type="button" class="cms-btn cms-btn-secondary" id="cmsBtnOpenVersions">
+                    <span class="material-symbols-outlined" style="font-size:15px">history</span><span>Versions</span>
+                  </button>
+                </div>
+              </div>
+              <div id="cmsActivityList" class="cms-activity-list">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ── Right Panel: Authentic Live Dashboard Preview ── -->
+          <div class="cms-preview-panel" aria-label="Live Dashboard Preview Frame">
+
+            <!-- Frame Topbar -->
+            <div class="cms-preview-header">
+              <div class="cms-preview-title">
+                <span class="material-symbols-outlined" style="font-size:16px; color:var(--cms-forest-green)">visibility</span>
+                <span class="font-medium">Live Dashboard Preview</span>
+                <span class="text-[11px] text-slate-400">· Real-time reactive draft</span>
+              </div>
+
+              <div class="cms-viewport-switch">
+                <button type="button" class="cms-viewport-btn active font-medium" data-viewport="desktop" title="Desktop 1440px">
+                  <span class="material-symbols-outlined" style="font-size:15px">desktop_windows</span>
+                </button>
+                <button type="button" class="cms-viewport-btn font-medium" data-viewport="tablet" title="Tablet 768px">
+                  <span class="material-symbols-outlined" style="font-size:15px">tablet_mac</span>
+                </button>
+                <button type="button" class="cms-viewport-btn font-medium" data-viewport="mobile" title="Mobile 390px">
+                  <span class="material-symbols-outlined" style="font-size:15px">phone_iphone</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Stage Container -->
+            <div class="cms-preview-stage">
+              <div id="cmsPreviewViewport" class="cms-preview-viewport mode-desktop">
+
+                <!-- Simulated Header Bar -->
+                <div class="pv-header-bar">
+                  <div class="flex items-center gap-2">
+                    <img src="../../assets/images/logo.png" alt="NGIS" style="height:24px" onerror="this.style.display='none'">
+                    <span class="text-xs font-medium text-white tracking-wide">NEW GATEWAY INT'L SCHOOL</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-white/90">
+                    <span class="material-symbols-outlined" style="font-size:16px">search</span>
+                    <span class="material-symbols-outlined" style="font-size:16px">notifications</span>
+                    <span class="material-symbols-outlined" style="font-size:16px">account_circle</span>
+                  </div>
+                </div>
+
+                <!-- Simulated Hero Section (Editable Block) -->
+                <div id="pvHero" class="pv-hero cms-editable-block" title="Hero Welcome Banner">
+                  <div id="pvHeroDate" class="pv-hero-date">Monday, November 9, 2026</div>
+                  <h2 id="pvHeroTitle" class="pv-hero-title font-medium">Welcome to your dashboard</h2>
+                  <p id="pvHeroGreeting" class="pv-hero-greeting font-medium">Hello, Nrinphouneta! Ready to learn today?</p>
+                </div>
+
+                <!-- Simulated Banner Section (Editable Block) -->
+                <div id="pvBannerBlock" class="pv-banner-wrap cms-editable-block" title="Dashboard Banner Carousel">
+                  <div class="pv-promo-slideshow">
+                    <img id="pvPromoImg" class="pv-promo-img" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=320&fit=crop" alt="Banner Preview">
+                    <div class="pv-promo-tint"></div>
+                    <div class="pv-promo-content">
+                      <div id="pvPromoHeading" class="pv-promo-heading font-medium">Empowering Future<br>Leaders</div>
+                      <div id="pvPromoSub" class="pv-promo-sub">Explore learning, grow beyond limits</div>
+                      <a id="pvPromoBtn" href="#" class="pv-promo-btn font-medium" onclick="return false;">
+                        <span>Explore Programs</span>
+                        <span class="material-symbols-outlined" style="font-size:13px">arrow_forward</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Simulated Lower Dashboard Content Stub -->
+                <div class="p-5 grid grid-cols-2 gap-3 opacity-60 pointer-events-none">
+                  <div class="p-3 border border-slate-200 rounded-lg bg-slate-50">
+                    <div class="h-3 w-24 bg-slate-200 rounded mb-2"></div>
+                    <div class="h-6 w-16 bg-slate-300 rounded"></div>
+                  </div>
+                  <div class="p-3 border border-slate-200 rounded-lg bg-slate-50">
+                    <div class="h-3 w-28 bg-slate-200 rounded mb-2"></div>
+                    <div class="h-6 w-20 bg-slate-300 rounded"></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ── Generic Modal Dialog (Versions / Schedule / Media Picker) ── -->
+  <div id="cmsModalBackdrop" class="cms-modal-backdrop" role="dialog" aria-modal="true">
+    <div class="cms-modal-box">
+      <div class="cms-modal-header">
+        <h3 id="cmsModalTitle" class="text-sm font-medium text-slate-800 m-0">Modal Title</h3>
+        <button type="button" id="cmsModalCloseBtn" class="cms-icon-btn" aria-label="Close modal">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div id="cmsModalBody" class="cms-modal-body">
+        <!-- Injected dynamically -->
+      </div>
+      <div id="cmsModalFooter" class="cms-modal-footer">
+        <button type="button" class="cms-btn cms-btn-secondary" onclick="CMS.closeModal()">Cancel</button>
+        <button type="button" id="cmsModalConfirmBtn" class="cms-btn cms-btn-primary font-medium">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── In-App Notification Toast ── -->
+  <div id="cmsToast" class="fixed bottom-6 right-6 bg-[#29352E] text-white text-xs px-4 py-2.5 rounded-lg shadow-lg opacity-0 transform translate-y-3 transition-all duration-300 pointer-events-none z-50"></div>
+
+  <!-- ── Page Configuration for the Shared App Shell ── -->
+  <script>
+    window.PAGE = { role: 'admin', active: 'dashboard-content' };
+
+    window.HERO_CONFIG = {
+      role: 'admin', active: 'dashboard-content', isDashboard: false,
+      name: 'Sok Panha Heng', id: 'ADM-2024-001', roleMeta: 'Super Administrator',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face',
+      homeLink: 'admin.html', signOutLink: '../../index.html',
+      profileLink: 'admin-settings.html', notifLink: 'admin-logs.html', notifCount: 4,
+      title: 'Dashboard Content Manager',
+      greeting: 'Manage dashboard banners, welcome sections, images, and published content across school portals.',
+      breadcrumbs: [
+        { label: 'Administration', href: 'admin.html' },
+        { label: 'Dashboard Content' }
+      ],
+      ddRows: [
+        { icon: 'badge', text: 'Admin ID: ADM-2024-001' },
+        { icon: 'verified_user', text: 'Role: Super Administrator' },
+        { icon: 'business', text: 'Central Administration' }
+      ]
+    };
+  </script>
+
+  <!-- ── Shared App Shell & CMS Controller ── -->
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/protect.js"></script>
+  <script>Protect.require(['admin', 'principal', 'editor']);</script>
+  <script src="../../assets/js/hero.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+  <script src="../../assets/js/admin-dashboard-cms.js"></script>
+  <script src="../../assets/js/admin-sidebar-manager.js"></script>
+</body>
+</html>

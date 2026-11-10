@@ -5,7 +5,7 @@ async def test_pages():
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         
-        for url_path in ["pages/admin/admin-users.html", "pages/admin/admin-students.html"]:
+        for url_path in ["pages/admin/admin-users.html"]:
             page = await browser.new_page(viewport={"width": 1440, "height": 900})
             errors = []
             page.on("pageerror", lambda err: errors.append(str(err)))

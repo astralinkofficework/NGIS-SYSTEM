@@ -33,12 +33,12 @@ class TestNgisRolePortals(unittest.TestCase):
             "pages/student/student-lost-found.html",
             # Teacher
             "pages/teacher/teacher.html",
-            "pages/teacher/teacher-classes.html",
+            "pages/teacher/teacher-roster.html",
             "pages/teacher/teacher-attendance.html",
             "pages/teacher/teacher-submissions.html",
             "pages/teacher/teacher-lessons.html",
             "pages/teacher/teacher-departments.html",
-            "pages/teacher/teacher-grades.html",
+            "pages/teacher/teacher-gradebook.html",
             "pages/teacher/teacher-calendar.html",
             "pages/teacher/teacher-profile.html",
             # Admin
@@ -54,7 +54,6 @@ class TestNgisRolePortals(unittest.TestCase):
             # Principal
             "pages/principal/principal.html",
             "pages/principal/principal-reports.html",
-            "pages/principal/principal-approvals.html",
             "pages/principal/principal-profile.html",
             "pages/principal/_auth-bootstrap.js",
             # Shared

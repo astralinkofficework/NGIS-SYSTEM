@@ -3,126 +3,310 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS � Calendar</title>
+<title>NGIS — Teacher Timetable & Calendar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script>try{var t=localStorage.getItem('ngis-theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
+<script src="../../assets/js/khmer-suite-data.js"></script>
+<style>
+  .tt-tab-btn {
+    padding:8px 16px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:500;
+    border:1px solid #C9D9CE;
+    background:#F7F9F7;
+    color:#29352E;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:all .15s ease;
+  }
+  .tt-tab-btn.active {
+    background:#176B45;
+    border-color:#176B45;
+    color:#ffffff;
+  }
+  .tt-chip {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 10px; border-radius:99px;
+    font-size:11.5px; font-weight: 500; letter-spacing:.2px;
+    background:rgba(23,107,69,.08); color:var(--text, #29352E);
+    border:1px solid rgba(23,107,69,.15);
+  }
+  .tt-chip.green {
+    background:#E8F3ED; color:#176B45; border-color:#BEE1CE;
+  }
+  .tt-chip.warn {
+    background:#FEF3C7; color:#B45309; border-color:#FDE68A;
+  }
+  .tt-grid-card {
+    background:#ffffff;
+    border-radius:18px;
+    border:1px solid var(--bdr, #E1E9E3);
+    box-shadow:0 4px 16px rgba(0, 0, 0, 0.02);
+    overflow:hidden;
+    margin-top:12px;
+  }
+  .teacher-lesson-card {
+    padding:8px 10px;
+    border-radius:8px;
+    border-left:3px solid #176B45;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .teacher-lesson-card:hover {
+    transform:translateY(-1px);
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  .slot-unavail {
+    padding:14px 6px;
+    text-align:center;
+    font-size:11px;
+    color:#DC2626;
+    background:repeating-linear-gradient(45deg, #FEF2F2, #FEF2F2 6px, #FFF5F5 6px, #FFF5F5 12px);
+    border-radius:6px;
+    border:1px dashed #FCA5A5;
+  }
+  .slot-free {
+    padding:14px 6px;
+    text-align:center;
+    font-size:11px;
+    color:#8FA095;
+    background:#FAFCFA;
+    border-radius:6px;
+    border:1px dashed #E1E9E3;
+  }
+  .shift-divider td {
+    background:#F2F6F3;
+    padding:8px 14px;
+    font-size:11.5px;
+    font-weight:500;
+    color:#415247;
+    text-align:center;
+    letter-spacing:.5px;
+  }
+  .break-row td {
+    background:#FAFBF9;
+    padding:6px 12px;
+    font-size:11px;
+    color:#738479;
+    text-align:center;
+  }
+  .ks-select {
+    padding:6px 12px;
+    border-radius:8px;
+    border:1px solid #C9D9CE;
+    font-size:13px;
+    font-weight:500;
+    background:#fff;
+    color:#29352E;
+    outline:none;
+  }
+  .ks-select:focus {
+    border-color:#176B45;
+    box-shadow:0 0 0 2px rgba(23,107,69,0.2);
+  }
+  @media print {
+    .ks-no-print { display:none !important; }
+    .page { padding:0 !important; }
+    .tt-grid-card { border:1px solid #ccc !important; box-shadow:none !important; }
+  }
+</style>
 </head>
-<body>
+<body data-page="teacher" data-role="teacher">
 <main class="main">
-<div id="heroBanner"></div>
+<header id="heroBanner" role="banner"></header>
 <div class="page">
 
-  <div class="col-main mt4 anim-up">
-    <div class="stack" style="flex:2">
-      <div class="card">
-        <div class="card-head">
-          <div><h3>January 2026</h3></div>
-          <div class="flex gap4">
-            <button class="icon-btn" onclick="window.toast('Previous month','info')"><span class="material-symbols-outlined">chevron_left</span></button>
-            <button class="btn btn-ghost btn-sm">Today</button>
-            <button class="icon-btn" onclick="window.toast('Next month','info')"><span class="material-symbols-outlined">chevron_right</span></button>
+  <!-- Top View Switcher -->
+  <div class="ks-no-print" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+    <div style="display:flex;gap:8px;">
+      <button id="viewWeeklyBtn" class="tt-tab-btn active" onclick="switchTeacherView('weekly')">
+        <span class="material-symbols-outlined" style="font-size:17px;">calendar_view_week</span>
+        Weekly Timetable
+      </button>
+      <button id="viewMonthlyBtn" class="tt-tab-btn" onclick="switchTeacherView('monthly')">
+        <span class="material-symbols-outlined" style="font-size:17px;">calendar_month</span>
+        Monthly Calendar
+      </button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <label style="font-size:12px;color:#5C6B61;font-weight:500;">
+        Select Teacher:
+        <select id="teacherSelector" class="ks-select"></select>
+      </label>
+      <button class="btn btn-sm btn-ghost" onclick="exportTeacherICS()" style="font-weight:500">
+        <span class="material-symbols-outlined" style="font-size:15px;margin-right:4px;">calendar_today</span>Export (.ICS)
+      </button>
+      <button class="btn btn-sm btn-ghost" onclick="window.print()" style="font-weight:500">
+        <span class="material-symbols-outlined" style="font-size:15px;margin-right:4px;">print</span>Print Timetable
+      </button>
+    </div>
+  </div>
+
+  <!-- VIEW 1: WEEKLY TEACHER TIMETABLE -->
+  <div id="teacherWeeklyView">
+    <!-- Teacher Summary Banner -->
+    <div class="card" style="padding:16px 20px;border-radius:16px;margin-bottom:16px;border:1px solid #E1E9E3;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:#E8F3ED;display:flex;align-items:center;justify-content:center;color:#176B45;font-size:22px;">
+            <span class="material-symbols-outlined">person</span>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <h3 style="margin:0;font-size:16px;font-weight:500;" id="teacherNameDisplay">Sok Dara</h3>
+              <span id="teacherCodeBadge" class="tt-chip green">K1</span>
+              <span id="teacherPublishBadge" class="tt-chip green"><span class="material-symbols-outlined">verified</span> Published</span>
+            </div>
+            <div style="display:flex;gap:12px;font-size:12px;color:#5C6B61;margin-top:4px;flex-wrap:wrap;">
+              <span id="teacherRoleDisplay">Teacher</span>
+              <span>·</span>
+              <span id="teacherEmpDisplay">EMP-2001</span>
+              <span>·</span>
+              <span id="teacherSpecDisplay">Specialization: Khmer Literature</span>
+              <span>·</span>
+              <span id="teacherMaxDaily">Max 5 periods/day</span>
+            </div>
           </div>
         </div>
-        <div class="card-pad">
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:4px;margin-bottom:4px">
-            <div style="font-size:11px;font-weight: 400;color:var(--muted);padding:6px">Sun</div>
-            <div style="font-size:11px;font-weight: 400;color:var(--muted);padding:6px">Mon</div>
-            <div style="font-size:11px;font-weight: 400;color:var(--muted);padding:6px">Tue</div>
-            <div style="font-size:11px;font-weight: 400;color:var(--muted);padding:6px">Wed</div>
-            <div style="font-size:11px;font-weight: 400;color:var(--muted);padding:6px">Thu</div>
-            <div style="font-size:11px;font-weight: 400;color:var(--muted);padding:6px">Fri</div>
-            <div style="font-size:11px;font-weight: 400;color:var(--muted);padding:6px">Sat</div>
+
+        <!-- Workload Target KPI -->
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="text-align:right;background:#F7F9F7;padding:10px 16px;border-radius:12px;border:1px solid #E1E9E3;">
+            <div style="font-size:11px;color:#738479;font-weight:500;">Workload / Target</div>
+            <div style="font-size:18px;font-weight:500;color:#176B45;" id="teacherWorkloadKpi">14 / 14 hrs</div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
-            <!-- Empty days -->
-            <div></div><div></div><div></div>
-            <!-- Jan 1�31 -->
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative" onclick="window.toast('Jan 1 � New Year','info')">1</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px" onclick="window.toast('Jan 2','info')">2</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">3</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">4</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">5</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">6</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">7</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">8</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">9</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">10</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">11</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">12</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">13</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative" onclick="window.toast('Exam schedule published','info')">14<div style="width:4px;height:4px;border-radius:50%;background:var(--accent);position:absolute;bottom:4px"></div></div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">15</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">16</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">17</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">18</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">19</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">20</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">21</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative" onclick="window.toast('Attendance taken','info')">22<div style="width:4px;height:4px;border-radius:50%;background:var(--success);position:absolute;bottom:4px"></div></div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">23</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative">24<div style="width:4px;height:4px;border-radius:50%;background:var(--accent);position:absolute;bottom:4px"></div></div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">25</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">26</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-weight: 400;font-size:13px;background:var(--accent);color:#fff">27</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative">28<div style="width:4px;height:4px;border-radius:50%;background:var(--danger);position:absolute;bottom:4px"></div></div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">29</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">30</div>
-            <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">31</div>
-          </div>
-        </div>
-        <div class="card-pad" style="border-top:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap">
-          <div class="flex center gap6" style="font-size:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></div>Class event</div>
-          <div class="flex center gap6" style="font-size:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--danger)"></div>Deadline</div>
-          <div class="flex center gap6" style="font-size:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div>Completed</div>
         </div>
       </div>
     </div>
 
-    <div class="stack">
-      <div class="card">
-        <div class="card-head"><h3>Upcoming</h3></div>
-        <div class="card-pad">
-          <div class="row-item">
-            <div class="row-ico t-red" style="flex-direction:column;line-height:1.1">
-              <span style="font-size:9px;font-weight: 400;text-transform:uppercase">JAN</span>
-              <span style="font-size:18px;font-weight: 400">28</span>
+    <!-- Timetable Grid Card -->
+    <div class="tt-grid-card anim-up">
+      <div style="overflow-x:auto;padding:20px;">
+        <div id="teacherTimetableContainer">
+          <div style="text-align:center;padding:40px;color:#738479;">Loading teacher schedule…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class Breakdown Summary -->
+    <div class="card" style="padding:16px 20px;border-radius:16px;margin-top:16px;border:1px solid #E1E9E3;">
+      <h4 style="margin:0 0 10px 0;font-size:13.5px;font-weight:500;color:#29352E;">Teaching Hours by Class</h4>
+      <div id="classBreakdownStrip" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
+    </div>
+  </div>
+
+  <!-- VIEW 2: MONTHLY CALENDAR -->
+  <div id="teacherMonthlyView" style="display:none;">
+    <div class="col-main mt4 anim-up">
+      <div class="stack" style="flex:2">
+        <div class="card">
+          <div class="card-head">
+            <div><h3>January 2026</h3></div>
+            <div class="flex gap4">
+              <button class="icon-btn" onclick="window.toast('Previous month','info')" aria-label="Previous month" title="Previous month"><span data-ngis-icon="chevronLeft"></span></button>
+              <button class="btn btn-ghost btn-sm">Today</button>
+              <button class="icon-btn" onclick="window.toast('Next month','info')" aria-label="Next month" title="Next month"><span data-ngis-icon="chevronRight"></span></button>
             </div>
-            <div class="row-body"><span>Assignment Due</span><small>Integration Problems � 11-A</small></div>
           </div>
-          <div class="row-item">
-            <div class="row-ico t-blue" style="flex-direction:column;line-height:1.1">
-              <span style="font-size:9px;font-weight: 400;text-transform:uppercase">FEB</span>
-              <span style="font-size:18px;font-weight: 400">1</span>
+          <div class="card-pad">
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:4px;margin-bottom:4px">
+              <div style="font-size:11px;font-weight:400;color:var(--muted);padding:6px">Sun</div>
+              <div style="font-size:11px;font-weight:400;color:var(--muted);padding:6px">Mon</div>
+              <div style="font-size:11px;font-weight:400;color:var(--muted);padding:6px">Tue</div>
+              <div style="font-size:11px;font-weight:400;color:var(--muted);padding:6px">Wed</div>
+              <div style="font-size:11px;font-weight:400;color:var(--muted);padding:6px">Thu</div>
+              <div style="font-size:11px;font-weight:400;color:var(--muted);padding:6px">Fri</div>
+              <div style="font-size:11px;font-weight:400;color:var(--muted);padding:6px">Sat</div>
             </div>
-            <div class="row-body"><span>Staff Meeting</span><small>3 PM � Conference Room A</small></div>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+              <div></div><div></div><div></div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px" onclick="window.toast('Jan 1 — New Year','info')">1</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px" onclick="window.toast('Jan 2','info')">2</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">3</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">4</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">5</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">6</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">7</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">8</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">9</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">10</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">11</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">12</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">13</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative" onclick="window.toast('Exam schedule published','info')">14<div style="width:4px;height:4px;border-radius:50%;background:var(--accent);position:absolute;bottom:4px"></div></div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">15</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">16</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">17</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">18</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">19</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">20</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">21</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative" onclick="window.toast('Attendance taken','info')">22<div style="width:4px;height:4px;border-radius:50%;background:var(--success);position:absolute;bottom:4px"></div></div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">23</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative">24<div style="width:4px;height:4px;border-radius:50%;background:var(--accent);position:absolute;bottom:4px"></div></div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">25</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">26</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-weight:400;font-size:13px;background:var(--accent);color:#fff">27</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;border-radius:8px;cursor:pointer;font-size:13px;position:relative">28<div style="width:4px;height:4px;border-radius:50%;background:var(--danger);position:absolute;bottom:4px"></div></div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">29</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">30</div>
+              <div style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px">31</div>
+            </div>
           </div>
-          <div class="row-item">
-            <div class="row-ico t-green" style="flex-direction:column;line-height:1.1">
-              <span style="font-size:9px;font-weight: 400;text-transform:uppercase">FEB</span>
-              <span style="font-size:18px;font-weight: 400">7</span>
-            </div>
-            <div class="row-body"><span>Sports Day</span><small>All-day � School grounds</small></div>
+          <div class="card-pad" style="border-top:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap">
+            <div class="flex center gap6" style="font-size:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></div>Class event</div>
+            <div class="flex center gap6" style="font-size:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--danger)"></div>Deadline</div>
+            <div class="flex center gap6" style="font-size:12px"><div style="width:8px;height:8px;border-radius:50%;background:var(--success)"></div>Completed</div>
           </div>
-          <div class="row-item">
-            <div class="row-ico t-amber" style="flex-direction:column;line-height:1.1">
-              <span style="font-size:9px;font-weight: 400;text-transform:uppercase">FEB</span>
-              <span style="font-size:18px;font-weight: 400">14</span>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <div class="card-head"><h3>Upcoming</h3></div>
+          <div class="card-pad">
+            <div class="row-item">
+              <div class="row-ico t-red" style="flex-direction:column;line-height:1.1">
+                <span style="font-size:9px;font-weight:400;text-transform:uppercase">JAN</span>
+                <span style="font-size:18px;font-weight:400">28</span>
+              </div>
+              <div class="row-body"><span>Assignment Due</span><small>Integration Problems · 11-A</small></div>
             </div>
-            <div class="row-body"><span>Final Exams Begin</span><small>Submit grades by Feb 22</small></div>
-          </div>
-          <div class="row-item" style="border:none">
-            <div class="row-ico t-purple" style="flex-direction:column;line-height:1.1">
-              <span style="font-size:9px;font-weight: 400;text-transform:uppercase">FEB</span>
-              <span style="font-size:18px;font-weight: 400">20</span>
+            <div class="row-item">
+              <div class="row-ico t-blue" style="flex-direction:column;line-height:1.1">
+                <span style="font-size:9px;font-weight:400;text-transform:uppercase">FEB</span>
+                <span style="font-size:18px;font-weight:400">1</span>
+              </div>
+              <div class="row-body"><span>Staff Meeting</span><small>3 PM · Conference Room A</small></div>
             </div>
-            <div class="row-body"><span>Parent�Teacher Conference</span><small>Virtual � Book your slot</small></div>
+            <div class="row-item">
+              <div class="row-ico t-green" style="flex-direction:column;line-height:1.1">
+                <span style="font-size:9px;font-weight:400;text-transform:uppercase">FEB</span>
+                <span style="font-size:18px;font-weight:400">7</span>
+              </div>
+              <div class="row-body"><span>Sports Day</span><small>All-day · School grounds</small></div>
+            </div>
+            <div class="row-item">
+              <div class="row-ico t-amber" style="flex-direction:column;line-height:1.1">
+                <span style="font-size:9px;font-weight:400;text-transform:uppercase">FEB</span>
+                <span style="font-size:18px;font-weight:400">14</span>
+              </div>
+              <div class="row-body"><span>Final Exams Begin</span><small>Submit grades by Feb 22</small></div>
+            </div>
           </div>
         </div>
       </div>
@@ -131,6 +315,407 @@
 
 </div>
 </main>
+
+<script>
+(function () {
+  'use strict';
+
+  var DAYS = ['ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+  var DAY_LABELS = {
+    'ច័ន្ទ': 'Monday',
+    'អង្គារ': 'Tuesday',
+    'ពុធ': 'Wednesday',
+    'ព្រហស្បតិ៍': 'Thursday',
+    'សុក្រ': 'Friday',
+    'សៅរ៍': 'Saturday'
+  };
+
+  var MORNING_PERIODS = [
+    { p: 1, time: '07:00–07:50', label: 'Period 1' },
+    { p: 2, time: '07:55–08:45', label: 'Period 2' },
+    { break: true, time: '08:45–09:05', label: 'RECREATIONAL BREAK' },
+    { p: 3, time: '09:05–09:55', label: 'Period 3' },
+    { p: 4, time: '10:00–10:50', label: 'Period 4' },
+    { p: 5, time: '10:55–11:45', label: 'Period 5' }
+  ];
+
+  var AFTERNOON_PERIODS = [
+    { p: 1, time: '13:00–13:50', label: 'Period 1' },
+    { p: 2, time: '13:55–14:45', label: 'Period 2' },
+    { break: true, time: '14:45–15:05', label: 'AFTERNOON BREAK' },
+    { p: 3, time: '15:05–15:55', label: 'Period 3' },
+    { p: 4, time: '16:00–16:50', label: 'Period 4' },
+    { p: 5, time: '16:55–17:45', label: 'Period 5' }
+  ];
+
+  var state = {
+    teacherId: 't_K1',
+    teachers: [],
+    teacherInfo: null,
+    lessons: [],
+    isPublished: true,
+    version: 1
+  };
+
+  function esc(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  window.switchTeacherView = function (mode) {
+    var wView = document.getElementById('teacherWeeklyView');
+    var mView = document.getElementById('teacherMonthlyView');
+    var wBtn = document.getElementById('viewWeeklyBtn');
+    var mBtn = document.getElementById('viewMonthlyBtn');
+
+    if (mode === 'weekly') {
+      wView.style.display = 'block';
+      mView.style.display = 'none';
+      wBtn.className = 'tt-tab-btn active';
+      mBtn.className = 'tt-tab-btn';
+    } else {
+      wView.style.display = 'none';
+      mView.style.display = 'block';
+      wBtn.className = 'tt-tab-btn';
+      mBtn.className = 'tt-tab-btn active';
+    }
+  };
+
+  async function loadTeachers() {
+    try {
+      var res = await fetch('/api/timetable/state');
+      if (res.ok) {
+        var d = await res.json();
+        state.teachers = d.teachers || [];
+        populateTeacherSelector();
+      }
+    } catch (e) {
+      console.warn('Failed to load teachers catalog:', e);
+    }
+  }
+
+  function populateTeacherSelector() {
+    var sel = document.getElementById('teacherSelector');
+    if (!sel) return;
+    sel.innerHTML = '';
+
+    var params = new URLSearchParams(window.location.search);
+    var tParam = params.get('teacher');
+    if (tParam) state.teacherId = tParam;
+
+    state.teachers.forEach(function (t) {
+      var opt = document.createElement('option');
+      opt.value = t.id;
+      var tOptName = t.name_en || (window.KSData ? window.KSData.toEnTeacher(t.name_kh) : t.name_kh) || t.id;
+      opt.textContent = tOptName + ' (' + (t.code || (t.codes && t.codes[0]) || '') + ')';
+      if (t.id === state.teacherId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    sel.onchange = function () {
+      state.teacherId = sel.value;
+      loadTeacherTimetable();
+    };
+  }
+
+  async function loadTeacherTimetable() {
+    var container = document.getElementById('teacherTimetableContainer');
+    if (container) container.innerHTML = '<div style="text-align:center;padding:40px;color:#738479;">Loading teacher schedule…</div>';
+
+    try {
+      var res = await fetch('/api/timetable/published/teacher/' + encodeURIComponent(state.teacherId));
+      if (res.ok) {
+        var data = await res.json();
+        state.teacherInfo = data.teacher;
+        state.lessons = data.lessons || [];
+        state.isPublished = true;
+        state.version = data.version || 1;
+      } else {
+        // Fallback to active state
+        var sRes = await fetch('/api/timetable/state');
+        if (sRes.ok) {
+          var sData = await sRes.json();
+          var tch = (sData.teachers || []).find(function (t) { return t.id === state.teacherId; });
+          state.teacherInfo = tch || { id: state.teacherId, name_kh: 'Teacher', code: 'T1', target: 17, max_daily: 5 };
+          var placed = sData.placed || {};
+          var sMap = {}; (sData.subjects || []).forEach(function (s) { sMap[s.id] = s; });
+          var cMap = {}; (sData.classes || []).forEach(function (c) { cMap[c.id] = c; });
+          var lList = [];
+          Object.keys(placed).forEach(function (k) {
+            var parts = k.split('|');
+            var pVal = placed[k];
+            if (pVal.teacher_id === state.teacherId) {
+              var sub = sMap[pVal.subject_id] || {};
+              var cls = cMap[parts[3]] || {};
+              lList.push({
+                key: k,
+                day: parts[0],
+                shift: parts[1],
+                period: parseInt(parts[2], 10),
+                class_id: parts[3],
+                class_display: cls.display || parts[3],
+                subject_id: sub.id,
+                subject_name: sub.name_kh || sub.name_en || '',
+                subject_code: sub.code || '',
+                color: sub.color || '#176B45',
+                teacher_id: state.teacherId,
+                teacher_code: state.teacherInfo.code || '',
+                teacher_name: state.teacherInfo.name_kh || '',
+                room: cls.room || 'Room 101'
+              });
+            }
+          });
+          state.lessons = lList;
+          state.isPublished = false;
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching teacher timetable:', e);
+    }
+
+    renderTeacherTimetable();
+  }
+
+  function renderTeacherTimetable() {
+    var container = document.getElementById('teacherTimetableContainer');
+    if (!container) return;
+
+    var t = state.teacherInfo || {};
+
+    // Update banner
+    var nameEl = document.getElementById('teacherNameDisplay');
+    var tNameEn = t.name_en || (window.KSData ? window.KSData.toEnTeacher(t.name_kh) : t.name_kh) || 'Teacher';
+    if (nameEl) nameEl.textContent = tNameEn;
+
+    var codeEl = document.getElementById('teacherCodeBadge');
+    if (codeEl) codeEl.textContent = t.code || (t.codes && t.codes.join(', ')) || 'T';
+
+    var pubBadge = document.getElementById('teacherPublishBadge');
+    if (pubBadge) {
+      if (state.isPublished) {
+        pubBadge.className = 'tt-chip green';
+        pubBadge.innerHTML = '<span class="material-symbols-outlined">verified</span> Published (v' + state.version + ')';
+      } else {
+        pubBadge.className = 'tt-chip warn';
+        pubBadge.innerHTML = '<span class="material-symbols-outlined">pending</span> Draft Timetable';
+      }
+    }
+
+    var roleEl = document.getElementById('teacherRoleDisplay');
+    var tPosEn = window.KSData ? window.KSData.toEnPosition(t.position) : (t.position || 'Teacher');
+    if (roleEl) roleEl.textContent = tPosEn;
+
+    var empEl = document.getElementById('teacherEmpDisplay');
+    if (empEl) empEl.textContent = t.employee_id || 'ID: ' + t.id;
+
+    var specEl = document.getElementById('teacherSpecDisplay');
+    if (specEl) specEl.textContent = 'Specialization: ' + ((window.KSData ? window.KSData.toEnSubject(t.specialization) : t.specialization) || 'General');
+
+    var maxDailyEl = document.getElementById('teacherMaxDaily');
+    if (maxDailyEl) maxDailyEl.textContent = 'Max ' + (t.max_daily || 5) + ' periods/day';
+
+    var targetVal = t.target || 17;
+    var assignedVal = state.lessons.length;
+    var pct = Math.round((assignedVal / (targetVal || 1)) * 100);
+    var kpiEl = document.getElementById('teacherWorkloadKpi');
+    if (kpiEl) kpiEl.textContent = assignedVal + ' / ' + targetVal + ' hrs (' + pct + '%)';
+
+    // Index lessons
+    var lMap = {};
+    var classCounts = {};
+    state.lessons.forEach(function (l) {
+      var k = l.day + '|' + l.shift + '|' + l.period;
+      lMap[k] = l;
+      var cName = l.class_display || l.class_id;
+      classCounts[cName] = (classCounts[cName] || 0) + 1;
+    });
+
+    // Unavailability set
+    var unavailSet = {};
+    (t.unavailable_slots || []).forEach(function (u) {
+      unavailSet[u] = true;
+    });
+
+    // Class Breakdown Strip
+    var bdStrip = document.getElementById('classBreakdownStrip');
+    if (bdStrip) {
+      var bHtml = '';
+      var cKeys = Object.keys(classCounts);
+      if (cKeys.length) {
+        cKeys.sort().forEach(function (ck) {
+          bHtml += '<div style="background:#F7F9F7;padding:6px 12px;border-radius:8px;border:1px solid #E1E9E3;font-size:12px;">' +
+            '<span style="font-weight:500;color:#176B45;">Class ' + esc(ck) + ':</span> ' + classCounts[ck] + ' hrs</div>';
+        });
+      } else {
+        bHtml = '<span style="font-size:12px;color:#8FA095;">No teaching hours currently assigned</span>';
+      }
+      bdStrip.innerHTML = bHtml;
+    }
+
+    var hasAfternoon = state.lessons.some(function (l) { return l.shift === 'រសៀល'; });
+
+    var html = '<table class="tbl" style="min-width:880px; border-collapse:collapse; width:100%;">' +
+      '<thead>' +
+        '<tr>' +
+          '<th style="width:120px;text-align:left;padding:10px 12px;">Time / Shift</th>';
+
+    DAYS.forEach(function (d) {
+      html += '<th style="text-align:left;padding:10px 12px;">' + DAY_LABELS[d] + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    // Morning Shift
+    html += '<tr class="shift-divider"><td colspan="7">MORNING SHIFT (07:00 – 11:45)</td></tr>';
+
+    MORNING_PERIODS.forEach(function (item) {
+      if (item.break) {
+        html += '<tr class="break-row"><td class="faint mono" style="font-size:11.5px;padding:6px 12px;">' + item.time + '</td>' +
+          '<td colspan="6">' + item.label + '</td></tr>';
+        return;
+      }
+
+      html += '<tr>' +
+        '<td class="faint mono" style="font-size:11.5px;padding:8px 12px;">' +
+          '<div style="font-weight:500;color:var(--text);">' + item.label + '</div>' +
+          '<div style="font-size:10.5px;color:#8FA095;">' + item.time + '</div>' +
+        '</td>';
+
+      DAYS.forEach(function (d) {
+        var key = d + '|ព្រឹក|' + item.p;
+        var lesson = lMap[key];
+        var isUnavail = !!unavailSet[key];
+
+        html += '<td style="padding:6px;vertical-align:top;">';
+        if (lesson) {
+          var bg = lesson.color + '15';
+          html += '<div class="teacher-lesson-card" style="background:' + bg + ';border-left-color:' + lesson.color + '">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+              '<span style="font-size:12px;font-weight:500;color:#1c2620;">Class ' + esc(lesson.class_display) + '</span>' +
+              '<span style="font-size:10px;padding:1px 5px;border-radius:4px;background:' + lesson.color + '25;color:' + lesson.color + ';">' + esc(lesson.subject_code) + '</span>' +
+            '</div>' +
+            '<div style="font-size:11.5px;color:#29352E;margin-top:2px;">' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '</div>' +
+            '<div style="font-size:10.5px;color:#8FA095;margin-top:2px;">' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '</div>' +
+          '</div>';
+        } else if (isUnavail) {
+          html += '<div class="slot-unavail">Unavailable</div>';
+        } else {
+          html += '<div class="slot-free">Free</div>';
+        }
+        html += '</td>';
+      });
+      html += '</tr>';
+    });
+
+    // Lunch row
+    html += '<tr class="break-row" style="background:#EDF3F0;"><td class="faint mono" style="font-size:11.5px;padding:8px 12px;">11:45–13:00</td>' +
+      '<td colspan="6" style="font-weight:500;color:#29352E;">LUNCH REPAST (11:45 – 13:00)</td></tr>';
+
+    // Afternoon Shift
+    if (hasAfternoon) {
+      html += '<tr class="shift-divider"><td colspan="7">AFTERNOON SHIFT (13:00 – 17:45)</td></tr>';
+
+      AFTERNOON_PERIODS.forEach(function (item) {
+        if (item.break) {
+          html += '<tr class="break-row"><td class="faint mono" style="font-size:11.5px;padding:6px 12px;">' + item.time + '</td>' +
+            '<td colspan="6">' + item.label + '</td></tr>';
+          return;
+        }
+
+        html += '<tr>' +
+          '<td class="faint mono" style="font-size:11.5px;padding:8px 12px;">' +
+            '<div style="font-weight:500;color:var(--text);">' + item.label + '</div>' +
+            '<div style="font-size:10.5px;color:#8FA095;">' + item.time + '</div>' +
+          '</td>';
+
+        DAYS.forEach(function (d) {
+          var key = d + '|រសៀល|' + item.p;
+          var lesson = lMap[key];
+          var isUnavail = !!unavailSet[key];
+
+          html += '<td style="padding:6px;vertical-align:top;">';
+          if (lesson) {
+            var bg = lesson.color + '15';
+            html += '<div class="teacher-lesson-card" style="background:' + bg + ';border-left-color:' + lesson.color + '">' +
+              '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+                '<span style="font-size:12px;font-weight:500;color:#1c2620;">Class ' + esc(lesson.class_display) + '</span>' +
+                '<span style="font-size:10px;padding:1px 5px;border-radius:4px;background:' + lesson.color + '25;color:' + lesson.color + ';">' + esc(lesson.subject_code) + '</span>' +
+              '</div>' +
+              '<div style="font-size:11.5px;color:#29352E;margin-top:2px;">' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '</div>' +
+              '<div style="font-size:10.5px;color:#8FA095;margin-top:2px;">' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '</div>' +
+            '</div>';
+          } else if (isUnavail) {
+            html += '<div class="slot-unavail">Unavailable</div>';
+          } else {
+            html += '<div class="slot-free">Free</div>';
+          }
+          html += '</td>';
+        });
+        html += '</tr>';
+      });
+    }
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  // Dynamic RFC 5545 ICS Export for Teacher
+  window.exportTeacherICS = function () {
+    if (!state.lessons.length) {
+      if (window.toast) window.toast('No teaching hours available for export', 'info');
+      return;
+    }
+
+    var lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//NGIS Cambodian School ERP//Teacher Timetable//KM',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:NGIS ' + (state.teacherInfo ? state.teacherInfo.name_kh : 'Teacher') + ' Schedule'
+    ];
+
+    var dayOffsetMap = { 'ច័ន្ទ': 0, 'អង្គារ': 1, 'ពុធ': 2, 'ព្រហស្បតិ៍': 3, 'សុក្រ': 4, 'សៅរ៍': 5 };
+
+    state.lessons.forEach(function (l, idx) {
+      var pDef = (l.shift === 'ព្រឹក' ? MORNING_PERIODS : AFTERNOON_PERIODS).find(function (item) { return item.p === l.period; });
+      var timeStr = pDef ? pDef.time : '07:00–07:50';
+      var times = timeStr.split('–');
+      var sParts = times[0].split(':'), eParts = times[1].split(':');
+
+      var off = dayOffsetMap[l.day] || 0;
+      var dateDay = 7 + off;
+      var dateStr = '202609' + (dateDay < 10 ? '0' + dateDay : dateDay);
+
+      var dtStart = dateStr + 'T' + sParts[0] + sParts[1] + '00';
+      var dtEnd = dateStr + 'T' + eParts[0] + eParts[1] + '00';
+
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:ngis-teacher-' + state.teacherId + '-' + idx + '@ngis.edu.kh');
+      lines.push('DTSTAMP:20260901T000000Z');
+      lines.push('DTSTART:' + dtStart);
+      lines.push('DTEND:' + dtEnd);
+      lines.push('RRULE:FREQ=WEEKLY;COUNT=20');
+      lines.push('SUMMARY:Class ' + l.class_display + ' — ' + (window.KSData ? window.KSData.toEnSubject(l.subject_name) : l.subject_name) + ' (' + l.subject_code + ')');
+      lines.push('DESCRIPTION:NGIS School Schedule | Instructor: ' + (state.teacherInfo ? (state.teacherInfo.name_en || (window.KSData ? window.KSData.toEnTeacher(state.teacherInfo.name_kh) : state.teacherInfo.name_kh)) : state.teacherId));
+      lines.push('LOCATION:' + l.room);
+      lines.push('END:VEVENT');
+    });
+
+    lines.push('END:VCALENDAR');
+
+    var blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'NGIS_Teacher_' + (state.teacherInfo ? (state.teacherInfo.code || state.teacherInfo.id) : state.teacherId) + '_Schedule.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    if (window.toast) window.toast('Teacher schedule (.ICS) exported successfully!', 'success');
+  };
+
+  loadTeachers().then(loadTeacherTimetable);
+
+})();
+</script>
 <script>window.HERO_CONFIG = {
   name: 'Dr. Sarah Jenkins',
   id: 'Teacher ID: TCH-2026-088',
@@ -142,9 +727,9 @@
   profileLink: 'teacher-profile.html',
   notifLink: 'teacher-notifications.html',
   notifCount: 2,
-  title: 'Calendar',
+  title: 'Calendar & Timetable',
   greeting: 'Your teaching schedule and upcoming school events.',
-  breadcrumbs: [{ label: 'Calendar' }],
+  breadcrumbs: [{ label: 'Timetable' }],
   ddRows: [
     { icon: 'work', text: 'Mathematics Department' },
     { icon: 'class', text: 'Grade 11-A, 10-C, 12-B' },
@@ -154,7 +739,7 @@
   ]
 };</script>
 <script src="../../assets/js/hero.js"></script>
-<script>window.PAGE={"role":"teacher","active":"calendar"};</script>
+<script>window.PAGE={role:"teacher",active:"calendar"};</script>
 <script src="../../assets/js/layout.js"></script>
 </body>
 </html>

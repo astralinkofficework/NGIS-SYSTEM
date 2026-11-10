@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Academic Departments Management | Principal Central</title>
+
+<!-- Fonts: Manrope for Headings, Plus Jakarta Sans for Body (AGENTS.md & Typography System) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+
+<!-- Phosphor Icons for Mobile Hamburger Navigation (AGENTS.md Critical Rule) -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS CDN with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: ["class", '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        brand: { 50: '#f0f7f3', 100: '#E8F3ED', 500: '#176B45', 600: '#176B45', 700: '#125638', 800: '#125638', 900: '#29352E' },
+        primary: { DEFAULT: '#176B45', dark: '#29352E', light: '#E8F3ED' },
+        surface: '#F7F9F7',
+        card: '#ffffff'
+      },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        body: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+      }
+    }
+  }
+};
+</script>
+
+<style data-purpose="base-typography">
+  /* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+  *, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+  .font-medium, .badge, th, button, .btn { font-weight: 500 !important; }
+
+  :root {
+    --navy: #29352E;
+    --burgundy: #176B45;
+    --white: #FFFFFF;
+    --soft-gray: #F7F9F7;
+    --border-subtle: #E1E9E3;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    background-color: #F7F9F7;
+    color: #1e293b;
+  }
+
+  /* Table row stationary rule matching classes page */
+  .classes-table tr {
+    background-color: transparent !important;
+  }
+  .classes-table tr:hover {
+    background-color: transparent !important;
+  }
+
+  /* Fix search bar input icon clearance */
+  #deptSearchInput {
+    padding-left: 44px !important;
+  }
+
+  /* KPI card neutrality — calm ERP feel, no lift */
+  .telemetry-card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    transform: none !important;
+    transition: box-shadow .18s ease;
+  }
+  .telemetry-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    transform: none !important;
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+  #ngisToast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--navy);
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    display: none;
+    z-index: 1200;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+</style>
+
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
+</head>
+
+<body data-role="principal" data-portal="principal" class="bg-[#F7F9F7] text-slate-800 antialiased min-h-screen flex flex-col font-sans selection:bg-[#E8F3ED] selection:text-[#29352E]">
+<main class="main flex-1 flex flex-col min-w-0 bg-[#F7F9F7]">
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- Mandatory Mobile Navigation Bar (AGENTS.md Critical Rule) -->
+  <header class="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E1E9E3] px-4 py-2.5 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-3">
+      <button type="button" class="mobile-hamburger-btn hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <div class="flex flex-col">
+        <span class="text-xs text-slate-400 uppercase tracking-wide font-normal">Academic Departments</span>
+        <span class="text-sm font-medium text-[#29352E] leading-tight">Department Management</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200" id="mobileDeptBadge">
+        7 Departments
+      </span>
+    </div>
+  </header>
+
+  <!-- Workspace Container -->
+  <div class="flex-1 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 space-y-6 max-w-[1600px] w-full mx-auto" data-purpose="workspace-content">
+
+    <!-- Section 1: Header Page Title & Top Actions -->
+    <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">
+      <div>
+        <h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight" style="font-family: 'Manrope', sans-serif;">
+          Academic Departments
+        </h1>
+      </div>
+      <div class="flex items-center flex-wrap gap-2.5 shrink-0">
+        <!-- Sync / Reload -->
+        <button onclick="loadDepartments()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200/90 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs cursor-pointer min-h-[40px]" type="button" title="Refresh departments">
+          <span data-ngis-icon="refresh" class="w-3.5 h-3.5 text-slate-400"></span>
+          <span>Refresh</span>
+        </button>
+
+        <!-- Export CSV -->
+        <button onclick="exportDepartmentsCSV()" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200/90 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs cursor-pointer min-h-[40px]" type="button" title="Export as CSV">
+          <span data-ngis-icon="download" class="w-3.5 h-3.5 text-slate-400"></span>
+          <span>Export (CSV)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Section 2: Summary KPI Cards -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="metrics-summary">
+      <!-- Card 1: Total Departments -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Departments</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-[#29352E]" id="kpiTotalDepts">7</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">account_balance</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Assigned Faculty -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Teachers</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-[#29352E]" id="kpiTotalFaculty">158</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">groups</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Syllabus Compliance with Two-Tone Bar -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Curriculum Completed</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-[#29352E]" id="kpiCompliance">98.7%</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">verified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Active Subjects -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Active Courses</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-[#29352E]" id="kpiTotalSubjects">28<span class="text-lg font-normal text-slate-400"> courses</span></span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">menu_book</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Search & Filter Bar (Fully Responsive & Modern) -->
+    <section class="bg-white rounded-xl border border-[#E1E9E3] p-3 sm:p-4 shadow-2xs" data-purpose="filtering-controls">
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <!-- Search Input -->
+        <div class="relative flex-1 min-w-0 w-full max-w-xl">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10 flex items-center">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+          </span>
+          <input id="deptSearchInput" style="padding-left: 44px !important;" class="w-full pl-11 pr-9 py-2 bg-white border border-[#E1E9E3] rounded-lg text-xs placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all min-h-[40px]" placeholder="Search department name, head of department, or subjects..." type="text">
+          <button class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#176B45] cursor-pointer" id="clearDeptSearch" type="button" aria-label="Clear search">
+            <span data-ngis-icon="close" class="w-4 h-4"></span>
+          </button>
+        </div>
+
+        <!-- Filter Dropdowns, View Switcher & Reset: Clean horizontal row, wraps fluidly on mobile -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full lg:w-auto lg:shrink-0">
+          <!-- Status Filter -->
+          <div class="relative flex-1 sm:flex-initial min-w-[130px]">
+            <select id="statusFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors">
+              <option value="all">All Statuses</option>
+              <option value="active" selected>Active Only</option>
+              <option value="review">Under Review</option>
+            </select>
+            <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </span>
+          </div>
+
+          <!-- Compliance Filter -->
+          <div class="relative flex-1 sm:flex-initial min-w-[140px] sm:min-w-[150px]">
+            <select id="complianceFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors">
+              <option value="all">All Compliance Rates</option>
+              <option value="100">100% Fully Compliant</option>
+              <option value="95">Above 95% Target</option>
+              <option value="90">Below 95%</option>
+            </select>
+            <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </span>
+          </div>
+
+          <!-- Reset Button -->
+          <button type="button" onclick="resetFilters()" class="px-3.5 py-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs cursor-pointer min-h-[40px] flex items-center justify-center gap-1.5 shrink-0">
+            <span data-ngis-icon="refresh" class="w-3.5 h-3.5 text-slate-400"></span>
+            <span>Reset</span>
+          </button>
+
+          <!-- Status Count Badge -->
+          <div class="flex items-center gap-1.5 pl-0 sm:pl-2 shrink-0 ml-auto sm:ml-0">
+            <span class="text-xs text-slate-300 hidden sm:inline">|</span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200/80 text-xs font-medium text-slate-600 whitespace-nowrap" id="deptFilterBadge">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#176B45]"></span>
+              <span id="deptFilterCount">7 departments</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Modern Straight-Line Data Table (Strictly No Cards/Boxes) -->
+    <div id="departmentsTableWrap" class="bg-white rounded-xl border border-slate-200/80 overflow-hidden shadow-xs" data-purpose="department-roster-table">
+      <div class="overflow-x-auto w-full">
+        <table class="w-full text-left text-xs whitespace-nowrap min-w-[960px] classes-table">
+          <thead>
+            <tr class="border-b border-slate-200/80 bg-slate-50/60 text-slate-500 font-medium tracking-wider text-[11px] uppercase">
+              <th class="py-3.5 px-4 font-medium" scope="col">Department &amp; Code</th>
+              <th class="py-3.5 px-4 font-medium" scope="col">Head of Department</th>
+              <th class="py-3.5 px-4 font-medium" scope="col">Location / Wing</th>
+              <th class="py-3.5 px-4 text-center font-medium" scope="col">Teachers</th>
+              <th class="py-3.5 px-4 text-center font-medium" scope="col">Students</th>
+              <th class="py-3.5 px-4 min-w-[140px] font-medium" scope="col">Curriculum Completed</th>
+              <th class="py-3.5 px-4 font-medium" scope="col">Core Subjects</th>
+              <th class="py-3.5 pr-4 pl-4 text-right font-medium whitespace-nowrap" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 font-normal text-slate-700 bg-white" id="departmentsTableBody"></tbody>
+        </table>
+      </div>
+      <!-- Pagination -->
+      <div class="py-3 px-4 border-t border-slate-200/80 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div class="flex items-center gap-2">
+          <span id="deptPagerInfo">Showing <span class="font-medium text-slate-800">1</span> to <span class="font-medium text-slate-800">7</span> of <span class="font-medium text-slate-800">7</span> departments</span>
+        </div>
+        <div class="flex items-center gap-1" id="deptPagerControls"></div>
+      </div>
+    </div>
+
+    <!-- Section 5: Departments Grid Container -->
+    <div id="departmentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 hidden"></div>
+  </div>
+</main>
+
+<!-- Modern View Department Faculty & Syllabi Modal Dialog -->
+<div id="facultyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" role="dialog" aria-modal="true" aria-labelledby="facultyModalTitle">
+  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[88vh] flex flex-col relative animate-fade-in">
+    <!-- Header -->
+    <div class="px-6 sm:px-7 pt-6 pb-5 border-b border-slate-100 flex items-start justify-between bg-slate-50/50">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">account_balance</span>
+        </div>
+        <div>
+          <h3 id="facultyModalTitle" class="text-base font-medium text-slate-900" style="font-family: 'Manrope', sans-serif;">Department Overview</h3>
+          <p id="facultyModalSubtitle" class="text-xs text-slate-500 mt-0.5">Department teachers, courses, and student enrollment</p>
+        </div>
+      </div>
+      <button type="button" onclick="closeFacultyModal()" class="text-slate-400 hover:text-slate-600 rounded-lg p-1.5 hover:bg-slate-100 transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center" aria-label="Close modal">
+        <span data-ngis-icon="close" class="w-5 h-5"></span>
+      </button>
+    </div>
+
+    <!-- Department Info Grid -->
+    <div class="px-6 sm:px-7 py-4 border-b border-slate-100 bg-slate-50/30">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <div>
+          <p class="text-slate-400 text-[10px] uppercase font-medium mb-0.5">Code</p>
+          <p class="font-medium text-slate-900" id="fmDeptCode">—</p>
+        </div>
+        <div>
+          <p class="text-slate-400 text-[10px] uppercase font-medium mb-0.5">Head of Dept</p>
+          <p class="font-medium text-slate-900" id="fmDeptHead">—</p>
+        </div>
+        <div>
+          <p class="text-slate-400 text-[10px] uppercase font-medium mb-0.5">Location</p>
+          <p class="font-medium text-slate-900" id="fmDeptRoom">—</p>
+        </div>
+        <div>
+          <p class="text-slate-400 text-[10px] uppercase font-medium mb-0.5">Progress</p>
+          <p class="font-medium text-emerald-700" id="fmDeptCompliance">—</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Syllabi / Subjects List -->
+    <div class="flex-1 overflow-y-auto px-6 sm:px-7 py-5 space-y-4">
+      <div>
+        <h4 class="text-xs uppercase tracking-wider text-slate-500 font-medium mb-2.5">Active Courses &amp; Curriculum</h4>
+        <div id="fmSubjectsList" class="flex flex-wrap gap-2"></div>
+      </div>
+      <div class="pt-3 border-t border-slate-100">
+        <h4 class="text-xs uppercase tracking-wider text-slate-500 font-medium mb-2">Curriculum Framework</h4>
+        <p class="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200/80 leading-relaxed" id="fmCurriculumText">
+          Standardized under Cambridge Assessment International Education and Cambodia MoEYS frameworks.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 sm:px-7 py-4 border-t border-slate-100 bg-slate-50/40 flex items-center justify-between">
+      <span class="text-xs text-slate-500" id="fmStatsSummary">Active academic department</span>
+      <button type="button" onclick="closeFacultyModal()" class="px-4 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-all cursor-pointer min-h-[38px]">
+        Done
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT / ADD DEPARTMENT MODAL (Modern Clean Responsive Dialog) -->
+<div id="editDeptModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" role="dialog" aria-modal="true" aria-labelledby="editDeptModalTitle">
+  <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[90vh] flex flex-col relative animate-fade-in">
+    <!-- Header -->
+    <div class="px-6 sm:px-7 pt-6 pb-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#176B45] text-[20px]">edit_note</span>
+        <h3 class="text-base font-medium text-slate-900" id="editDeptModalTitle" style="font-family: 'Manrope', sans-serif;">Edit Department</h3>
+      </div>
+      <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 rounded-lg p-1.5 hover:bg-slate-100 transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center" aria-label="Close modal">
+        <span data-ngis-icon="close" class="w-5 h-5"></span>
+      </button>
+    </div>
+
+    <!-- Form Content -->
+    <form id="editDeptForm" onsubmit="event.preventDefault(); saveDepartmentChanges();" class="p-6 overflow-y-auto space-y-4">
+      <input type="hidden" id="editDeptId">
+      <div>
+        <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptName">Department Name</label>
+        <input id="editDeptName" type="text" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px]">
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptCode">Department Code</label>
+          <input id="editDeptCode" type="text" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px]">
+        </div>
+        <div>
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptStatus">Status</label>
+          <select id="editDeptStatus" class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px] bg-white cursor-pointer">
+            <option value="active">Active</option>
+            <option value="review">Under Review</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptHead">Head of Department</label>
+        <input id="editDeptHead" type="text" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px]">
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptRoom">Assigned Room</label>
+          <input id="editDeptRoom" type="text" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px]">
+        </div>
+        <div>
+          <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptCompliance">Curriculum Completed (%)</label>
+          <input id="editDeptCompliance" type="number" min="0" max="100" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px]">
+        </div>
+      </div>
+      <div>
+        <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptEmail">Contact Email</label>
+        <input id="editDeptEmail" type="email" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px]">
+      </div>
+      <div>
+        <label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="editDeptSubjects">Core Subjects (Comma separated)</label>
+        <input id="editDeptSubjects" type="text" class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] min-h-[40px]" placeholder="e.g. Advanced Math, Calculus I, Statistics">
+      </div>
+      <!-- Footer -->
+      <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+        <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-xs font-medium text-slate-700 bg-white border border-[#E1E9E3] rounded-lg hover:bg-[#F7F9F7] transition-all cursor-pointer min-h-[40px]">Cancel</button>
+        <button type="submit" id="saveDeptBtn" class="px-4 py-2 text-xs font-medium text-white bg-[#176B45] hover:bg-[#125638] rounded-lg shadow-xs active:scale-95 transition-all cursor-pointer min-h-[40px] flex items-center justify-center gap-2">
+          <span data-ngis-icon="check" class="text-[16px]"></span><span>Save Changes</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="ngisToast"></div>
+
+<script>
+window.PAGE = { role: "principal", active: "departments" };
+window.HERO_CONFIG = {
+  title: "Academic Departments",
+  subtitle: "Manage academic departments, teacher assignments, and course curriculum.",
+  role: "principal",
+  isDashboard: false,
+  breadcrumb: [
+    { label: "Dashboard", href: "principal.html" },
+    { label: "Departments", href: "#", current: true }
+  ]
+};
+
+let allDepartments = [];
+let filteredList = [];
+let viewMode = 'table';
+let currentPage = 1;
+const PAGE_SIZE = 8;
+
+const sampleDepartments = [
+  { id: "dept-mat", name: "Mathematics Department", code: "MATH", head: "Dr. Sarah Jenkins", room: "Room 301, Admin Bldg A", teachersCount: 26, studentsCount: 890, syllabusCompliance: 100, subjects: ["Advanced Math", "Calculus I", "Algebra II", "Statistics"], status: "active", email: "math.dept@ngis.edu.kh" },
+  { id: "dept-sci", name: "Science Department", code: "SCI", head: "Dr. Pov Sophea", room: "Science Wing Lab 2", teachersCount: 24, studentsCount: 780, syllabusCompliance: 98, subjects: ["Physics & Lab", "Chemistry", "AP Biology", "Environmental Science"], status: "active", email: "science.dept@ngis.edu.kh" },
+  { id: "dept-eng", name: "English Department", code: "ENG", head: "Ms. Rin Lina", room: "Building B, Suite 204", teachersCount: 28, studentsCount: 840, syllabusCompliance: 100, subjects: ["English Literature", "Academic Writing", "World Literature", "ESL Bridge"], status: "active", email: "english.dept@ngis.edu.kh" },
+  { id: "dept-khm", name: "Khmer Studies Department", code: "KHM", head: "Mr. Chhem Sokha", room: "Main Hall, East Wing", teachersCount: 32, studentsCount: 920, syllabusCompliance: 100, subjects: ["Khmer Literature", "Cambodian History & Civics", "Khmer Composition", "National Ethics"], status: "active", email: "khmer.dept@ngis.edu.kh" },
+  { id: "dept-chn", name: "Chinese Language Department", code: "CHN", head: "Ms. Li Wei", room: "Language Lab 105", teachersCount: 18, studentsCount: 610, syllabusCompliance: 96, subjects: ["Mandarin Chinese I-IV", "HSK 4-6 Preparation", "Business Chinese", "Chinese Culture"], status: "active", email: "chinese.dept@ngis.edu.kh" },
+  { id: "dept-hum", name: "Humanities & Social Sciences", code: "HUM", head: "Mr. John Vance", room: "Building A, Room 412", teachersCount: 16, studentsCount: 540, syllabusCompliance: 97, subjects: ["Global Perspectives", "World History", "Economics & Business", "Human Geography"], status: "active", email: "humanities.dept@ngis.edu.kh" },
+  { id: "dept-art", name: "Arts & Physical Education", code: "ART", head: "Coach Samreth Bora", room: "Campus Gymnasium Complex", teachersCount: 14, studentsCount: 900, syllabusCompliance: 100, subjects: ["Visual Arts & Design", "Music & Performance", "Physical Education", "Athletics & Swimming"], status: "active", email: "pe.arts.dept@ngis.edu.kh" }
+];
+
+async function loadDepartments() {
+  try {
+    const res = await fetch('/api/departments');
+    if (res.ok) {
+      const json = await res.json();
+      allDepartments = (json && json.data && json.data.length) ? json.data : [...sampleDepartments];
+    } else {
+      allDepartments = [...sampleDepartments];
+    }
+  } catch(e) {
+    allDepartments = [...sampleDepartments];
+  }
+  currentPage = 1;
+  filterDepartments();
+  updateKpis();
+}
+
+function updateKpis() {
+  const total = allDepartments.length;
+  document.getElementById("kpiTotalDepts").textContent = total;
+  const faculty = allDepartments.reduce((acc, d) => acc + (d.teachersCount || 0), 0);
+  document.getElementById("kpiTotalFaculty").textContent = faculty;
+  const avgCompliance = total ? (allDepartments.reduce((acc, d) => acc + (d.syllabusCompliance || 0), 0) / total).toFixed(1) : "98.7";
+  document.getElementById("kpiCompliance").textContent = `${avgCompliance}%`;
+  const compBar = document.getElementById("complianceBar");
+  if (compBar) compBar.style.width = `${avgCompliance}%`;
+  const subjectsCount = allDepartments.reduce((acc, d) => acc + (d.subjects ? d.subjects.length : 0), 0);
+  document.getElementById("kpiTotalSubjects").innerHTML = `${subjectsCount}<span class="text-lg font-normal text-slate-400"> courses</span>`;
+  const mb = document.getElementById("mobileDeptBadge");
+  if (mb) mb.textContent = total + " Departments";
+}
+
+function renderDepartments(list) {
+  filteredList = list;
+  const wrap = document.getElementById("departmentsTableWrap");
+  const grid = document.getElementById("departmentsGrid");
+  const badgeText = document.getElementById("deptFilterCount");
+  if (badgeText) badgeText.textContent = `${list.length} departments`;
+
+  if (viewMode === "table") {
+    wrap.classList.remove("hidden");
+    grid.classList.add("hidden");
+    renderTable(list);
+  } else {
+    wrap.classList.add("hidden");
+    grid.classList.remove("hidden");
+    renderGrid(list);
+  }
+}
+
+function renderGrid(list) {
+  const container = document.getElementById("departmentsGrid");
+  if (!list.length) {
+    container.innerHTML = `<div class="col-span-full"><div class="p-12 text-center text-slate-500 font-medium">No departments match your current search or filter criteria.</div></div>`;
+    return;
+  }
+  container.innerHTML = list.map(d => {
+    const compliance = d.syllabusCompliance || 95;
+    const subjects = d.subjects || [];
+    const met = compliance >= 95;
+    return `
+      <div class="bg-white border border-[#E1E9E3] rounded-xl p-5 shadow-xs flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">${d.code || 'DEPT'}</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full font-medium ${d.status === 'active' ? 'bg-[#E8F3ED] text-[#204F3A] border border-[#c4dece]' : 'bg-rose-50 text-rose-700 border border-rose-200'}">${d.status === 'active' ? 'Active' : 'Under Review'}</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] text-slate-400 uppercase font-medium block">Room</span>
+              <span class="text-xs font-medium text-slate-800">${d.room || 'Admin Bldg'}</span>
+            </div>
+          </div>
+          <h2 class="text-base font-medium text-slate-900 mb-1" style="font-family: 'Manrope', sans-serif;">${d.name}</h2>
+          <div class="text-xs text-slate-500 mb-4">Head: <span class="text-slate-800 font-medium">${d.head || 'Assigned Lead'}</span></div>
+          
+          <div class="grid grid-cols-3 gap-2 p-3 rounded-xl bg-slate-50 border border-slate-100 mb-4 text-center">
+            <div><div class="text-[10px] text-slate-400 uppercase font-medium">Teachers</div><div class="text-sm font-medium text-slate-900 mt-0.5">${d.teachersCount || 0}</div></div>
+            <div><div class="text-[10px] text-slate-400 uppercase font-medium">Students</div><div class="text-sm font-medium text-slate-900 mt-0.5">${d.studentsCount || 0}</div></div>
+            <div><div class="text-[10px] text-slate-400 uppercase font-medium">Progress</div><div class="text-sm font-medium ${met ? 'text-emerald-700' : 'text-rose-700'} mt-0.5">${compliance}%</div></div>
+          </div>
+
+          <div class="mb-4">
+            <div class="flex justify-between text-xs text-slate-500 mb-1.5">
+              <span class="font-normal">Curriculum Completed</span>
+              <span class="font-medium text-slate-800">${compliance}%</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div class="h-full ${met ? 'bg-[#176B45]' : 'bg-rose-500'} rounded-full transition-all duration-500" style="width: ${compliance}%"></div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium mb-1.5">Core Courses</div>
+            <div class="flex flex-wrap gap-1.5">
+              ${subjects.slice(0, 3).map(s => `<span class="text-[11px] px-2 py-0.5 bg-slate-50 border border-slate-200/80 rounded text-slate-700">${s}</span>`).join("")}
+              ${subjects.length > 3 ? `<span class="text-[11px] px-2 py-0.5 bg-slate-100 rounded text-slate-500">+${subjects.length - 3} more</span>` : ''}
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-4 border-t border-slate-100 mt-2">
+          <button type="button" class="flex-1 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px] flex items-center justify-center gap-1.5" onclick="viewDepartmentFaculty('${d.id}')">
+            <span data-ngis-icon="book" class="text-[16px]"></span><span>View Courses</span>
+          </button>
+          <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px] flex items-center justify-center gap-1.5" onclick="openEditDepartmentModal('${d.id}')">
+            <span data-ngis-icon="edit" class="text-[16px]"></span><span>Edit</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderTable(list) {
+  const tbody = document.getElementById("departmentsTableBody");
+  const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  if (currentPage > pages) currentPage = pages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageRows = list.slice(start, start + PAGE_SIZE);
+
+  if (!pageRows.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-400 text-xs">No departments match your current search or filter criteria.<button type="button" onclick="resetFilters()" class="text-[#176B45] hover:underline cursor-pointer ml-2 font-medium">Reset Filters</button></td></tr>`;
+  } else {
+    tbody.innerHTML = pageRows.map(d => {
+      const compliance = d.syllabusCompliance || 95;
+      const subjects = d.subjects || [];
+      const met = compliance >= 95;
+      return `
+      <tr class="transition-colors group" id="dept-row-${d.id}">
+        <td class="py-3.5 px-4 align-middle">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[18px]">account_balance</span>
+            </div>
+            <div>
+              <div class="font-medium text-sm text-slate-900 leading-tight">${d.name}</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">${d.code || 'DEPT'} · ${d.status === 'active' ? 'Active' : 'Under Review'}</div>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-4 align-middle">
+          <div class="font-medium text-slate-900 leading-tight">${d.head || 'Assigned Lead'}</div>
+          <div class="text-[11px] text-slate-400">${d.email || 'lead@ngis.edu.kh'}</div>
+        </td>
+        <td class="py-3.5 px-4 align-middle">
+          <span class="font-medium text-slate-800">${d.room || 'Admin Bldg'}</span>
+          <span class="text-slate-400 text-[11px] block">Main Campus</span>
+        </td>
+        <td class="py-3.5 px-4 text-center align-middle">
+          <span class="font-medium text-slate-900">${d.teachersCount || 0}</span>
+          <span class="text-[11px] text-slate-400 block">teachers</span>
+        </td>
+        <td class="py-3.5 px-4 text-center align-middle">
+          <span class="font-medium text-slate-900">${(d.studentsCount || 0).toLocaleString()}</span>
+          <span class="text-[11px] text-slate-400 block">enrolled</span>
+        </td>
+        <td class="py-3.5 px-4 align-middle">
+          <div class="flex items-center justify-between text-xs mb-1">
+            <span class="font-medium ${met ? 'text-emerald-700' : 'text-rose-700'}">${compliance}%</span>
+            <span class="text-[11px] text-slate-400">${met ? 'Target Met' : 'Below 95%'}</span>
+          </div>
+          <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+            <div class="h-full ${met ? 'bg-[#176B45]' : 'bg-rose-500'} rounded-full transition-all duration-500" style="width: ${compliance}%"></div>
+          </div>
+        </td>
+        <td class="py-3.5 px-4 max-w-[200px] text-slate-600 text-xs align-middle truncate">
+          <span>${subjects.slice(0, 3).join(', ')}${subjects.length > 3 ? ' +' + (subjects.length - 3) + ' more' : ''}</span>
+        </td>
+        <td class="py-3.5 pr-4 pl-4 text-right align-middle table-actions">
+          <div class="action-group">
+            <button type="button" onclick="viewDepartmentFaculty('${d.id}')" class="action-icon-btn" title="View Courses &amp; Teachers" aria-label="View Courses &amp; Teachers">
+              <span data-ngis-icon="book"></span>
+            </button>
+            <button type="button" onclick="openEditDepartmentModal('${d.id}')" class="action-icon-btn primary" title="Edit Department" aria-label="Edit Department">
+              <span data-ngis-icon="edit"></span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+    }).join("");
+  }
+  if (window.NGIS && window.NGIS.hydrate) window.NGIS.hydrate(tbody);
+  renderPager(list.length, pages, start, pageRows.length);
+}
+
+function renderPager(total, pages, start, shown) {
+  const info = document.getElementById("deptPagerInfo");
+  info.innerHTML = total
+    ? `Showing <span class="font-medium text-slate-800">${start + 1}</span> to <span class="font-medium text-slate-800">${start + shown}</span> of <span class="font-medium text-slate-800">${total}</span> active departments`
+    : "No departments to display";
+  const ctrl = document.getElementById("deptPagerControls");
+  const prevDis = currentPage <= 1;
+  const nextDis = currentPage >= pages;
+  const navCls = (dis) => dis
+    ? "px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 text-xs font-medium cursor-not-allowed disabled:opacity-40"
+    : "px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 hover:border-slate-300 transition-all cursor-pointer";
+  
+  let nums = "";
+  for (let p = 1; p <= pages; p++) {
+    nums += p === currentPage
+      ? `<button type="button" aria-current="page" class="w-8 h-8 rounded-lg font-medium text-sm flex items-center justify-center transition-all cursor-pointer bg-[#176B45] text-white">${p}</button>`
+      : `<button type="button" onclick="gotoPage(${p})" class="w-8 h-8 rounded-lg font-medium text-sm flex items-center justify-center transition-all cursor-pointer bg-white border border-[#E1E9E3] text-slate-700 hover:bg-[#F7F9F7]">${p}</button>`;
+  }
+  ctrl.innerHTML = `<button type="button" class="${navCls(prevDis)}" ${prevDis ? 'disabled' : `onclick="gotoPage(${currentPage - 1})"`}><span data-ngis-icon="chevronLeft" class="text-[16px] text-slate-400"></span><span class="hidden sm:inline">Previous</span></button>${nums}<button type="button" class="${navCls(nextDis)}" ${nextDis ? 'disabled' : `onclick="gotoPage(${currentPage + 1})"`}><span class="hidden sm:inline">Next</span><span data-ngis-icon="chevronRight" class="text-[16px] text-slate-400"></span></button>`;
+}
+
+function gotoPage(p) { currentPage = p; renderDepartments(filteredList); }
+
+function setViewMode(mode) {
+  viewMode = mode;
+  currentPage = 1;
+  const bg = document.getElementById("btnViewGrid");
+  const bt = document.getElementById("btnViewTable");
+  const base = "px-2.5 py-1.5 text-xs font-medium rounded-md flex items-center gap-1 transition-all cursor-pointer min-h-[34px] ";
+  const active = "text-[#176B45] bg-white shadow-2xs";
+  const idle = "text-slate-600 hover:text-[#29352E]";
+  if (bg && bt) {
+    bg.className = base + (mode === "grid" ? active : idle);
+    bt.className = base + (mode === "table" ? active : idle);
+    bg.setAttribute("aria-pressed", String(mode === "grid"));
+    bt.setAttribute("aria-pressed", String(mode === "table"));
+  }
+  renderDepartments(filteredList);
+}
+
+function exportDepartmentsCSV() {
+  const headers = ["Department", "Code", "Head of Department", "Location", "Teachers", "Students", "Syllabus Compliance %", "Status", "Subjects"];
+  const esc = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+  const rows = filteredList.map(d => [d.name, d.code, d.head, d.room, d.teachersCount, d.studentsCount, d.syllabusCompliance, d.status, (d.subjects || []).join("; ")].map(esc).join(","));
+  const csv = [headers.map(esc).join(","), ...rows].join("\r\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ngis-academic-departments.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("Department list exported to CSV");
+}
+
+function toast(msg) {
+  const t = document.getElementById("ngisToast");
+  if (t) { t.textContent = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 3000); }
+}
+
+document.getElementById("deptSearchInput").addEventListener("input", filterDepartments);
+document.getElementById("statusFilter").addEventListener("change", filterDepartments);
+document.getElementById("complianceFilter").addEventListener("change", filterDepartments);
+document.getElementById("clearDeptSearch").addEventListener("click", function () {
+  document.getElementById("deptSearchInput").value = "";
+  document.getElementById("clearDeptSearch").classList.add("hidden");
+  filterDepartments();
+});
+
+function filterDepartments() {
+  const query = document.getElementById("deptSearchInput").value.trim().toLowerCase();
+  const status = document.getElementById("statusFilter").value;
+  const complianceMin = document.getElementById("complianceFilter").value;
+  document.getElementById("clearDeptSearch").classList.toggle("hidden", !query);
+  const filtered = allDepartments.filter(d => {
+    const matchesQuery = !query ||
+      (d.name && d.name.toLowerCase().includes(query)) ||
+      (d.head && d.head.toLowerCase().includes(query)) ||
+      (d.code && d.code.toLowerCase().includes(query)) ||
+      (d.subjects && d.subjects.some(s => s.toLowerCase().includes(query)));
+    const matchesStatus = status === 'all' || d.status === status;
+    let matchesCompliance = true;
+    if (complianceMin === '100') matchesCompliance = (d.syllabusCompliance || 0) >= 100;
+    else if (complianceMin === '95') matchesCompliance = (d.syllabusCompliance || 0) >= 95;
+    else if (complianceMin === '90') matchesCompliance = (d.syllabusCompliance || 0) < 95;
+    return matchesQuery && matchesStatus && matchesCompliance;
+  });
+  currentPage = 1;
+  renderDepartments(filtered);
+}
+
+function resetFilters() {
+  document.getElementById("deptSearchInput").value = "";
+  document.getElementById("statusFilter").value = "all";
+  document.getElementById("complianceFilter").value = "all";
+  document.getElementById("clearDeptSearch").classList.add("hidden");
+  currentPage = 1;
+  renderDepartments(allDepartments);
+}
+
+function viewDepartmentFaculty(id) {
+  const dept = allDepartments.find(d => d.id === id);
+  if (!dept) return;
+  document.getElementById("facultyModalTitle").textContent = dept.name;
+  document.getElementById("fmDeptCode").textContent = dept.code || "DEPT";
+  document.getElementById("fmDeptHead").textContent = dept.head || "Assigned Lead";
+  document.getElementById("fmDeptRoom").textContent = dept.room || "Admin Bldg";
+  document.getElementById("fmDeptCompliance").textContent = `${dept.syllabusCompliance || 95}% Verified`;
+  
+  const subjectsList = document.getElementById("fmSubjectsList");
+  const subjects = dept.subjects || [];
+  subjectsList.innerHTML = subjects.map(s => `
+    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-[#176B45] border border-emerald-200/80 text-xs font-medium">
+      <span class="material-symbols-outlined text-[14px]">menu_book</span>
+      <span>${s}</span>
+    </span>
+  `).join("");
+
+  document.getElementById("fmCurriculumText").textContent = dept.curriculum || "Standardized under Cambridge Assessment International Education and Cambodia MoEYS frameworks.";
+  document.getElementById("fmStatsSummary").textContent = `${dept.teachersCount || 0} Teachers · ${(dept.studentsCount || 0).toLocaleString()} Enrolled Students`;
+  document.getElementById("facultyModal").classList.remove("hidden");
+}
+
+function closeFacultyModal() {
+  document.getElementById("facultyModal").classList.add("hidden");
+}
+
+function openEditDepartmentModal(id) {
+  const dept = allDepartments.find(d => d.id === id);
+  if (!dept) return;
+  document.getElementById("editDeptModalTitle").textContent = `Edit ${dept.name}`;
+  document.getElementById("editDeptId").value = dept.id;
+  document.getElementById("editDeptName").value = dept.name;
+  document.getElementById("editDeptCode").value = dept.code || "";
+  document.getElementById("editDeptStatus").value = dept.status || "active";
+  document.getElementById("editDeptHead").value = dept.head || "";
+  document.getElementById("editDeptRoom").value = dept.room || "";
+  document.getElementById("editDeptCompliance").value = dept.syllabusCompliance || 95;
+  document.getElementById("editDeptEmail").value = dept.email || "dept@ngis.edu.kh";
+  document.getElementById("editDeptSubjects").value = (dept.subjects || []).join(", ");
+  document.getElementById("editDeptModal").classList.remove("hidden");
+}
+
+function openAddDepartmentModal() {
+  document.getElementById("editDeptModalTitle").textContent = "Add New Department";
+  document.getElementById("editDeptId").value = `dept-new-${Date.now()}`;
+  document.getElementById("editDeptName").value = "";
+  document.getElementById("editDeptCode").value = "";
+  document.getElementById("editDeptStatus").value = "active";
+  document.getElementById("editDeptHead").value = "";
+  document.getElementById("editDeptRoom").value = "Admin Bldg";
+  document.getElementById("editDeptCompliance").value = 100;
+  document.getElementById("editDeptEmail").value = "dept@ngis.edu.kh";
+  document.getElementById("editDeptSubjects").value = "";
+  document.getElementById("editDeptModal").classList.remove("hidden");
+}
+
+function closeEditModal() { document.getElementById("editDeptModal").classList.add("hidden"); }
+
+async function saveDepartmentChanges() {
+  const id = document.getElementById("editDeptId").value;
+  const subjectsRaw = document.getElementById("editDeptSubjects").value;
+  const subjects = subjectsRaw.split(",").map(s => s.trim()).filter(Boolean);
+  const payload = {
+    name: document.getElementById("editDeptName").value.trim(),
+    code: document.getElementById("editDeptCode").value.trim().toUpperCase(),
+    status: document.getElementById("editDeptStatus").value,
+    head: document.getElementById("editDeptHead").value.trim(),
+    room: document.getElementById("editDeptRoom").value.trim(),
+    syllabusCompliance: parseInt(document.getElementById("editDeptCompliance").value) || 0,
+    email: document.getElementById("editDeptEmail").value.trim(),
+    subjects: subjects
+  };
+  try {
+    const isNew = id.startsWith("dept-new-");
+    const res = await fetch(`/api/departments${isNew ? '' : '/' + id}`, {
+      method: isNew ? 'POST' : 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error("Could not save department");
+    closeEditModal();
+    toast(isNew ? 'Department created successfully' : 'Department details updated successfully');
+    loadDepartments();
+  } catch (err) {
+    alert("Could not save department");
+  }
+}
+
+// Escape key to close modals
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    closeEditModal();
+    closeFacultyModal();
+  }
+});
+
+document.addEventListener("DOMContentLoaded", loadDepartments);
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+</body>
+</html>

@@ -16,7 +16,7 @@ const classes = [
   if (!container) return;
 
   container.innerHTML = classes.map(c => `
-    <div class="subj-item" onclick="window.location.href='teacher-classes.html'" style="cursor:pointer" title="Manage ${c.name}">
+    <div class="subj-item" onclick="window.location.href='teacher-roster.html'" style="cursor:pointer" title="Manage ${c.name}">
       <div class="subj-ico" style="background:${c.bg}">
         <span class="mi" style="color:${c.color}">${c.icon}</span>
       </div>

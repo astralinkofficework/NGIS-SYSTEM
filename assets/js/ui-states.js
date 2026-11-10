@@ -78,7 +78,7 @@
     /* ══════════════════════════════════════════════════════════
        2. LOADING STATE (SKELETON LOADERS)
        ══════════════════════════════════════════════════════════ */
-    showSkeleton(container, type = "table", count = 5) {
+    showSkeleton(container, type = "list", count = 5) {
       if (typeof container === "string") container = document.querySelector(container);
       if (!container) return;
 
@@ -87,6 +87,11 @@
       // Save previous content in dataset if not already saved
       if (!container.dataset.ngisPrevContent) {
         container.dataset.ngisPrevContent = container.innerHTML || "";
+      }
+
+      if (window.NGISSkeleton && window.NGISSkeleton.templates && window.NGISSkeleton.templates[type]) {
+        container.innerHTML = window.NGISSkeleton.templates[type](count);
+        return;
       }
 
       let skeletonHtml = "";
@@ -181,6 +186,11 @@
     renderErrorState(container, options = {}) {
       if (typeof container === "string") container = document.querySelector(container);
       if (!container) return;
+
+      if (window.NGISErrorState && typeof window.NGISErrorState.render === "function") {
+        window.NGISErrorState.render(container, options);
+        return;
+      }
 
       const {
         title = "Unable to Load Data",
@@ -727,6 +737,23 @@
         return this.show("info", title, detail, options);
       }
     },
+
+    /* Rule 2: Honest 1-Tap Confirmation Dialog */
+    confirmAction(options = {}) {
+      if (window.NGISCancelDialog) {
+        return window.NGISCancelDialog.open(options);
+      }
+      const proceed = window.confirm((options.title || "Confirm Action") + "\n\n" + (options.description || "") + "\n\nWhat happens next: " + (options.consequence || "Changes will be updated safely."));
+      if (proceed && typeof options.onConfirm === "function") options.onConfirm();
+      else if (!proceed && typeof options.onCancel === "function") options.onCancel();
+    },
+
+    /* Rule 1: Dedicated Screen Skeletons */
+    showDashboardSkeleton(container) { return this.showSkeleton(container, "dashboard"); },
+    showFeedSkeleton(container, count = 3) { return this.showSkeleton(container, "feed", count); },
+    showListSkeleton(container, count = 6) { return this.showSkeleton(container, "list", count); },
+    showDetailSkeleton(container) { return this.showSkeleton(container, "detail"); },
+    showProfileSkeleton(container) { return this.showSkeleton(container, "profile"); },
 
     /* Global Initialization */
     init() {

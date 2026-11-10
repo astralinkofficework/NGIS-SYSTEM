@@ -1,0 +1,539 @@
+<USER_REQUEST>
+# MASTER MVP PROMPT — VISUAL DRAG-AND-DROP TIMETABLE SCHEDULER
+
+## PROJECT: NGIS-SYSTEM
+### Module: Timetable Builder & Scheduling Workspace
+### Primary Users: Admin and Principal
+### Reference: Attached Timetable Screenshot
+
+## 1. MAIN OBJECTIVE
+
+Redesign and implement the existing NGIS timetable scheduling workspace using the attached screenshot as the main reference for its layout, structure, and drag-and-drop behavior.
+
+The timetable should work like a professional interactive scheduling board.
+
+Users must be able to select a teacher, view their assigned lessons, and drag those lessons directly onto a weekly timetable grid.
+
+The entire workflow must feel immediate, predictable, and efficient.
+
+**IMPORTANT: Follow the screenshot's layout and interaction model, not its colors, fonts, branding, or watermark.**
+
+Preserve the NGIS-SYSTEM architecture and existing functionality.
+
+## 2. AUDIT BEFORE IMPLEMENTATION
+
+Inspect the existing repository, including:
+
+- Timetable Builder and Timetable Matrix
+- Teacher Assignment
+- Data Entry & Records
+- Curriculum Subjects
+- School Information & Settings
+- Teacher Profiles
+- Class Management
+- Principal and Admin permissions
+- Existing timetable APIs and database models
+
+Identify the current scheduling logic and reuse it wherever possible.
+
+Do not rewrite the entire timetable module blindly.
+
+Use HTML, CSS, vanilla JavaScript, and the existing backend stack. Do not introduce React, TypeScript, or JSX.
+
+Do not create fake teachers, classes, subjects, or schedules.
+
+## 3. PAGE LAYOUT — FOLLOW SCREENSHOT
+
+Create the following structure inside the existing Timetable Builder page.
+
+### A. Top toolbar
+
+At the top of the timetable workspace, display:
+
+- View selector: Class / Teacher / Overview
+- Teacher selection dropdown
+- Class selection dropdown where applicable
+- Academic year and campus context
+- Undo and Redo
+- Save Draft
+- Check Conflicts
+- Publish Timetable
+
+Keep controls compact and aligned.
+
+### B. Teacher lesson strip
+
+Directly below the toolbar, create a full-width lesson strip like the screenshot.
+
+This strip shows the selected teacher's remaining lesson assignments.
+
+Each chip contains:
+
+- Class code
+- Subject short name
+- Teacher code
+- Remaining lesson count
+
+Example:
+
+`7A · Khmer · K1 ×5`
+
+`9A · Khmer · K1 ×6`
+
+`11B · Khmer · K1 ×5`
+
+These chips are draggable.
+
+Use a horizontal wrapping layout, not a large table.
+
+Display a heading such as:
+
+**Remaining Lessons (16)**
+
+The count must update immediately after scheduling or removing a lesson.
+
+### C. Main scheduling workspace
+
+Use a two-column layout:
+
+**Left — Weekly Timetable Grid (approximately 75%)**
+
+**Right — Remaining Lessons & Scheduling Information (approximately 25%)**
+
+Both sections should sit inside separate clean white panels.
+
+On smaller screens, stack the panels or use an accessible drawer.
+
+## 4. WEEKLY TIMETABLE GRID
+
+Create a grid matching the screenshot's structure.
+
+Columns:
+
+- Period / Time
+- Monday
+- Tuesday
+- Wednesday
+- Thursday
+- Friday
+- Saturday, only when enabled in School Information
+
+Rows:
+
+- Morning periods
+- Breaks
+- Afternoon periods
+
+Example:
+
+| Time | Mon | Tue | Wed | Thu | Fri |
+|---|---|---|---|---|---|
+| 07:00–07:50 | | | | | |
+| 07:50–08:40 | | | | | |
+| 08:40–09:30 | | | | | |
+| 09:30–10:20 | | | | | |
+| 10:20–11:10 | | | | | |
+| 13:00–13:50 | | | | | |
+| 13:50–14:40 | | | | | |
+
+Times above are illustrative. The actual grid must load from the school's saved bell schedule.
+
+Each cell must have a consistent height and width.
+
+Use thin grid borders, readable period labels, and clear separation between morning and afternoon sessions.
+
+The timetable grid must support sticky day headers and a sticky time column where practical.
+
+## 5. DRAG-AND-DROP INTERACTION — MOST IMPORTANT
+
+Implement real drag-and-drop scheduling.
+
+### Interaction A — Place a lesson
+
+1. User selects a teacher.
+2. The system loads that teacher's assigned classes and remaining periods.
+3. User clicks and holds a lesson chip.
+4. User drags the chip over the timetable.
+5. Valid timetable cells become visibly highlighted.
+6. The hovered cell displays a preview of the lesson.
+7. User releases the chip.
+8. The lesson is placed in that cell.
+9. Remaining lesson count decreases immediately.
+10. The action is added to Undo history.
+
+### Interaction B — Move a scheduled lesson
+
+1. User drags an existing timetable lesson.
+2. The original cell becomes temporarily available.
+3. Valid destination cells are highlighted.
+4. User drops the lesson into another cell.
+5. The system validates the move.
+6. The original cell becomes empty.
+7. The destination displays the lesson.
+8. Teacher workload and remaining counts stay consistent.
+
+### Interaction C — Swap lessons
+
+If the destination cell already contains a lesson:
+
+- Show a clear Swap option.
+- Validate both resulting placements.
+- Swap only if both placements are valid.
+- Otherwise show the conflict and preserve the original schedule.
+
+Never silently replace or delete a scheduled lesson.
+
+### Interaction D — Remove a lesson
+
+Allow users to:
+
+- Select a scheduled lesson.
+- Click Remove.
+- Return the lesson to the remaining lesson pool.
+- Update counts.
+- Undo the removal.
+
+### Interaction E — Cancel dragging
+
+Support:
+
+- Escape key
+- Dropping outside a valid area
+- Cancel action
+
+The original lesson must remain unchanged after cancellation.
+
+## 6. LIVE DRAG PREVIEW
+
+Recreate the useful drag feedback visible in the screenshot.
+
+While dragging:
+
+- Show a floating preview containing subject, class, teacher, and period.
+- Highlight the current destination cell.
+- Show valid cells with a subtle positive state.
+- Show invalid cells with a clear warning state.
+- Display the reason a cell is unavailable.
+- Keep the drag preview from obscuring the destination unnecessarily.
+
+The preview must follow pointer movement smoothly.
+
+Use the existing NGIS palette for visual states.
+
+Do not copy the reference screenshot's purple or yellow styling unless those colors already serve a meaningful purpose in NGIS.
+
+## 7. RIGHT PANEL — REMAINING LESSONS
+
+Recreate the vertically scrollable lesson list from the screenshot.
+
+Each item should show:
+
+- Class name
+- Subject
+- Teacher
+- Remaining periods
+- Assignment status
+
+Example:
+
+**7A — Khmer**  
+Sok Dara · K1  
+5 periods remaining
+
+Actions:
+
+- Select Lesson
+- Find Available Slot
+- View Assignment
+
+The panel should update live after each scheduling action.
+
+Clicking a lesson should highlight suitable timetable cells.
+
+The right panel must scroll independently on desktop when necessary.
+
+Do not display misleading remaining counts.
+
+## 8. TEACHER VIEW AND CLASS VIEW
+
+Provide two fully functional scheduling perspectives.
+
+### Teacher View
+
+Shows the selected teacher's weekly timetable.
+
+A teacher must not be assigned to two classes at the same time.
+
+The remaining lesson strip shows that teacher's unscheduled assignments.
+
+### Class View
+
+Shows the selected class's weekly timetable.
+
+A class must not have two lessons in the same period.
+
+The remaining lesson list shows subjects and teachers that still need scheduling for that class.
+
+### Overview
+
+Provide a compact overview of scheduling completion and unresolved conflicts across authorized classes.
+
+All views must use the same underlying timetable records.
+
+Switching views must not create duplicate schedules.
+
+## 9. CONFLICT VALIDATION
+
+Validate every placement and move.
+
+Detect:
+
+- Teacher double-booking
+- Class double-booking
+- Room double-booking
+- Teacher unavailable
+- Teacher exceeding configured workload
+- Lesson exceeding required weekly periods
+- Scheduling during breaks
+- Scheduling outside school hours
+- Scheduling on school closure days
+- Scheduling during locked periods
+- Cross-campus scheduling conflicts where travel or availability rules apply
+
+If a move is invalid:
+
+1. Do not commit it.
+2. Restore the previous state.
+3. Display the exact conflict.
+4. Highlight the affected cells.
+5. Offer a valid alternative if one can be calculated reliably.
+
+Never allow the frontend to bypass backend conflict validation.
+
+## 10. QUICK LESSON EDITOR
+
+Clicking a scheduled lesson should open a compact popover or side panel.
+
+Display:
+
+- Subject
+- Class
+- Teacher
+- Teacher code
+- Day
+- Period
+- Room
+- Duration
+
+Actions:
+
+- Move
+- Change Teacher
+- Change Room
+- Lock/Unlock
+- Remove
+
+Changes must respect Teacher Assignment records and role permissions.
+
+Use a clean interface without unnecessary nested modals.
+
+## 11. UNDO AND REDO
+
+Implement functional Undo and Redo.
+
+Supported actions:
+
+- Place lesson
+- Move lesson
+- Swap lessons
+- Remove lesson
+- Change room
+- Change teacher
+- Lock/unlock lesson
+
+Shortcuts:
+
+- Ctrl+Z — Undo
+- Ctrl+Y or Ctrl+Shift+Z — Redo
+- Escape — Cancel current interaction
+
+Undo/redo must operate on the current draft without changing published timetable versions.
+
+Clear or rebase history safely when a conflicting server update occurs.
+
+## 12. DRAFT SAVING AND PUBLISHING
+
+Use database-backed timetable drafts.
+
+Support:
+
+- Save Draft
+- Last Saved timestamp
+- Unsaved Changes indicator
+- Conflict Check
+- Publication Preview
+- Publish Timetable
+- Published Version History
+
+Only authorized users may publish.
+
+Publishing must check the complete timetable, not just the currently visible teacher or class.
+
+Published schedules must automatically become available in:
+
+**Teacher Portal:** each teacher's own schedule.
+
+**Student Portal:** each student's enrolled class schedule.
+
+Do not publish incomplete or conflicting timetables without an explicit, authorized exception policy.
+
+Do not require printing.
+
+## 13. MOBILE AND TABLET RESPONSIVENESS
+
+Desktop:
+
+- Full weekly timetable
+- Teacher lesson strip
+- Right remaining-lessons panel
+
+Tablet:
+
+- Scrollable timetable area
+- Collapsible right panel
+- Compact toolbar
+
+Mobile:
+
+- Day selector
+- Single-day timetable
+- Bottom lesson drawer
+- Tap lesson, then tap available cell
+- Tap scheduled lesson to move or remove
+
+Do not rely on HTML native drag-and-drop alone if it fails on touch devices.
+
+Support mouse, touch, and keyboard interactions.
+
+## 14. DESIGN RULES
+
+Follow the attached screenshot's:
+
+- Toolbar organization
+- Lesson chip structure
+- Weekly grid proportions
+- Time-column layout
+- Right-side lesson list
+- Drag preview behavior
+- Compact scheduling density
+- Clear separation between sections
+
+Use the existing NGIS branding:
+
+- Forest Green #176B45
+- White #FFFFFF
+- Warm Orange #F28C28
+- Soft Mint #E8F3ED
+- Off White #F7F9F7
+- Dark Charcoal #29352E
+
+Use the project's existing Manrope and Plus Jakarta Sans typography.
+
+Do not change the global sidebar design.
+
+Avoid gradients, excessive shadows, hover animations, decorative overlays, and unnecessary charts.
+
+Use SVG icons instead of emojis.
+
+## 15. BACKEND & DATA INTEGRATION
+
+Reuse existing entities and APIs wherever possible.
+
+The timetable must reference actual:
+
+- Teacher IDs
+- Class IDs
+- Subject IDs
+- Campus IDs
+- Academic year IDs
+- Teacher assignment IDs
+- Period IDs
+- Room IDs, where available
+
+Ensure placement and move operations are transactional.
+
+Use server-side conflict checks.
+
+Prevent concurrent edits from silently overwriting one another.
+
+Preserve historical published timetable records.
+
+Never identify teachers or classes solely by their display names.
+
+## 16. TESTING REQUIREMENTS
+
+Verify:
+
+1. Drag from lesson strip to empty cell.
+2. Drag from right panel to empty cell.
+3. Move a lesson between days.
+4. Move a lesson between periods.
+5. Swap two compatible lessons.
+6. Reject an invalid swap.
+7. Cancel a drag.
+8. Remove a lesson.
+9. Undo and redo.
+10. Update remaining counts correctly.
+11. Prevent teacher double-booking.
+12. Prevent class double-booking.
+13. Respect configured school days.
+14. Respect breaks and school hours.
+15. Save draft and reload.
+16. Switch Teacher View and Class View.
+17. Handle concurrent editors safely.
+18. Publish and verify Teacher Portal.
+19. Publish and verify Student Portal.
+20. Test desktop, tablet, mobile, keyboard, and touch interactions.
+
+## 17. IMPLEMENTATION PHASES
+
+Phase 1 — Audit existing timetable architecture.
+
+Phase 2 — Implement or repair scheduling data and validation services.
+
+Phase 3 — Build the screenshot-inspired scheduling layout.
+
+Phase 4 — Implement drag-and-drop and live previews.
+
+Phase 5 — Implement conflict detection and undo/redo.
+
+Phase 6 — Integrate draft saving and publishing.
+
+Phase 7 — Connect Teacher and Student Portals.
+
+Phase 8 — Perform full functional and responsive testing.
+
+## FINAL ACCEPTANCE CRITERIA
+
+The implementation is complete when an authorized Admin or Principal can:
+
+- Select a teacher.
+- See their remaining lesson assignments.
+- Drag a lesson into the weekly grid.
+- See immediate visual placement feedback.
+- Move or remove a scheduled lesson.
+- Resolve scheduling conflicts.
+- Undo and redo changes.
+- Save a timetable draft.
+- Publish a valid timetable.
+- See the correct published timetable in Teacher and Student Portals.
+
+**FINAL INSTRUCTION:**
+
+Use the attached screenshot as the structural and interaction reference. Build a polished, responsive, database-connected drag-and-drop timetable scheduler inside the existing NGIS-SYSTEM.
+
+Preserve all working functionality, respect existing permissions, avoid duplicated modules, and test the entire workflow before marking the task complete.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-11-09T15:47:39+07:00.
+</ADDITIONAL_METADATA>

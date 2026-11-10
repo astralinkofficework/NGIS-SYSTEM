@@ -1,0 +1,11 @@
+with open(r'c:\Users\oudom\OneDrive\Desktop\NGIS-SYSTEM\assets\js\ngis-profiles.js', 'r', encoding='utf-8') as f:
+    text = f.read()
+
+idx_start = text.find("  function mountModals() {")
+idx_end = text.find("  function boot() {")
+
+print(f"mountModals to boot length: {idx_end - idx_start}")
+print(text[idx_start:idx_start+250])
+print("...")
+print(text[idx_end-250:idx_end])
+

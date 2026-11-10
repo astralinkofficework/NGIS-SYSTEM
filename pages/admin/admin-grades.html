@@ -6,13 +6,14 @@
 <title>NGIS — Grade Management &amp; Oversight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
 
 <style>
 /* Rule: NO BOLD FONTS. Maximum weight 500 */
@@ -28,13 +29,17 @@
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="../admin/_auth-bootstrap.js"></script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
 </head>
 <body data-role="admin" data-portal="admin">
 <main class="main">
-<div id="heroBanner"></div>
+<header id="heroBanner" role="banner"></header>
 
 <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
-<div class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
+<header class="lg:hidden bg-white border-b border-surface-border px-4 py-2.5 flex items-center justify-between shadow-xs sticky top-0 z-30">
   <div class="flex items-center gap-2.5">
     <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-surface-subtle active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
       <i class="ph ph-list text-xl"></i>
@@ -42,7 +47,7 @@
     <span class="text-sm font-medium text-forest-800">Grade Management</span>
   </div>
   <button class="btn btn-primary btn-sm" onclick="bulkPublish()">Publish All</button>
-</div>
+</header>
 
 <div class="page">
 
@@ -95,11 +100,11 @@
           <option value="draft">Draft</option>
         </select>
         <button class="btn btn-ghost btn-sm" onclick="bulkPublish()">
-          <span class="material-symbols-outlined text-[16px]">verified</span>
+          <span data-ngis-icon="check" class="text-[16px]"></span>
           <span>Approve &amp; Publish All</span>
         </button>
         <button class="btn btn-primary btn-sm" onclick="openOverrideModal('', '', '')">
-          <span class="material-symbols-outlined text-[16px]">edit_note</span>
+          <span data-ngis-icon="edit" class="text-[16px]"></span>
           <span>Authorized Override</span>
         </button>
       </div>
@@ -127,8 +132,8 @@
     <div class="card-pad flex between center" style="border-top:1px solid var(--border)">
       <span class="faint" style="font-size:13px" id="recordCountText">Showing records</span>
       <div class="flex gap4">
-        <a href="admin-audit.html" class="btn btn-ghost btn-sm">
-          <span class="material-symbols-outlined text-[15px]">history</span>
+        <a href="admin-logs.html" class="btn btn-ghost btn-sm">
+          <span data-ngis-icon="clock" class="text-[15px]"></span>
           <span>View Academic Audit Log</span>
         </a>
       </div>
@@ -144,7 +149,7 @@
     <div class="flex items-center justify-between border-b border-surface-border pb-3">
       <h3 class="text-base font-medium text-forest-800">Authorized Grade Override</h3>
       <button type="button" class="text-ink-muted hover:text-ink-main" onclick="closeOverrideModal()">
-        <span class="material-symbols-outlined text-[20px]">close</span>
+        <span data-ngis-icon="close" class="text-[20px]"></span>
       </button>
     </div>
     <form id="overrideForm" class="space-y-3 text-xs">
@@ -176,7 +181,7 @@ window.HERO_CONFIG = {
   avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face',
   avatarSm: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&fit=crop&crop=face',
   homeLink: '../../index.html',
-  profileLink: 'admin-student-profile.html', notifLink: 'admin-logs.html',
+  profileLink: 'admin-settings.html', notifLink: 'admin-logs.html',
   notifCount: 0, title: 'Academic Grade Oversight', greeting: 'Review, approve, and audit school-wide grades.',
   breadcrumbs: [{ label: 'Grade Management' }], ddRows: []
 };
@@ -213,7 +218,7 @@ window.HERO_CONFIG = {
       allGrades = res.data || [];
       renderGrades();
     } catch(e) {
-      tbody.innerHTML = '<tr><td colspan="9" class="py-6 text-center text-[#92243D]">Failed loading grades: ' + esc(e.message) + '</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="py-6 text-center text-[#F77442]">Failed loading grades: ' + esc(e.message) + '</td></tr>';
     }
   }
 
@@ -262,15 +267,18 @@ window.HERO_CONFIG = {
         '<td class="text-center faint">' + pctStr + '</td>' +
         '<td class="text-center font-medium">' + esc(g.letter_grade || '—') + '</td>' +
         '<td class="text-center">' + wfBadge + '</td>' +
-        '<td class="text-right whitespace-nowrap">' +
-          '<button class="btn btn-ghost btn-xs" onclick="openOverrideModal(\'' + esc(g.id) + '\', \'' + (g.score || '') + '\', \'' + esc(g.student_name) + '\')" title="Authorized Override">' +
-            '<span class="material-symbols-outlined text-[14px]">edit</span> Override' +
-          '</button>' +
+        '<td class="table-actions text-right whitespace-nowrap">' +
+          '<div class="action-group">' +
+            '<button type="button" class="action-icon-btn" onclick="openOverrideModal(\'' + esc(g.id) + '\', \'' + (g.score || '') + '\', \'' + esc(g.student_name) + '\')" title="Authorized Grade Override for ' + esc(g.student_name) + '" aria-label="Authorized Grade Override for ' + esc(g.student_name) + '">' +
+              '<span data-ngis-icon="edit"></span>' +
+            '</button>' +
+          '</div>' +
         '</td>' +
       '</tr>';
     });
 
     tbody.innerHTML = html;
+    if (window.NGIS) window.NGIS.hydrate(tbody);
   }
 
   window.openOverrideModal = function(gradeId, score, studentName) {

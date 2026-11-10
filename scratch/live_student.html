@@ -1,0 +1,1580 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#29352E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>NGIS — Student Dashboard</title>
+
+<!-- Framework -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+
+<!-- Third-party -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- Page styles (load order matters — base first, responsive last) -->
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="css/profile.css">
+<link rel="stylesheet" href="css/upcoming.css">
+<link rel="stylesheet" href="css/subjects.css">
+<link rel="stylesheet" href="css/calendar.css">
+<link rel="stylesheet" href="css/announcements.css">
+<link rel="stylesheet" href="css/attendance.css">
+<link rel="stylesheet" href="css/quicklinks.css">
+<link rel="stylesheet" href="css/overlap.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="css/student-inline.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/ui-states.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+
+<!-- Phosphor Icons for mobile UI glyphs -->
+<!-- Phosphor Icons for mobile UI glyphs -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/regular/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/thin/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/light/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/duotone/style.css">
+<!-- Tailwind CSS with preflight disabled to protect desktop styles -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    corePlugins: {
+      preflight: false
+    }
+  };
+</script>
+
+<style>
+/* Standard responsive sidebar integration */
+
+/* Clean, compact 3-column deck on desktop matching user-drawn reference */
+@media (min-width: 992px) {
+  .dash-overlap {
+    display: grid !important;
+    grid-template-columns: 240px minmax(0, 1fr) 280px !important;
+    gap: 16px !important;
+    max-width: 1280px !important;
+    margin: -48px auto 0 !important;
+    padding: 0 24px !important;
+    align-items: stretch !important;
+  }
+  .ov-profile, .ov-upcoming, .ov-deadlines {
+    grid-column: auto !important;
+    grid-row: 1 !important;
+    height: 335px !important;
+    max-height: 335px !important;
+  }
+}
+
+  .student-mobile-view {
+    display: none;
+  }
+  @media (max-width: 991px) {
+    .student-desktop-view {
+      display: none !important;
+    }
+    .student-mobile-view {
+      display: flex !important;
+      flex-direction: column !important;
+      min-height: 100vh;
+    }
+  }
+
+
+  /* Keep all inner panels completely transparent with no border lines */
+  .ov-inner-panel,
+  .ov-deadline-panel,
+  .ov-panel-feed {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  .ov-inner-head,
+  .ov-deadline-head {
+    border-bottom: none !important;
+    border-top: none !important;
+    border: none !important;
+  }
+
+  .ov-inner-item,
+  .ov-deadline-item {
+    border-bottom: none !important;
+    border-top: none !important;
+    border: none !important;
+  }
+</style>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer=""></script>
+<style>*, ::before, ::after {--tw-border-spacing-x: 0;--tw-border-spacing-y: 0;--tw-translate-x: 0;--tw-translate-y: 0;--tw-rotate: 0;--tw-skew-x: 0;--tw-skew-y: 0;--tw-scale-x: 1;--tw-scale-y: 1;--tw-pan-x:  ;--tw-pan-y:  ;--tw-pinch-zoom:  ;--tw-scroll-snap-strictness: proximity;--tw-gradient-from-position:  ;--tw-gradient-via-position:  ;--tw-gradient-to-position:  ;--tw-ordinal:  ;--tw-slashed-zero:  ;--tw-numeric-figure:  ;--tw-numeric-spacing:  ;--tw-numeric-fraction:  ;--tw-ring-inset:  ;--tw-ring-offset-width: 0px;--tw-ring-offset-color: #fff;--tw-ring-color: rgb(59 130 246 / 0.5);--tw-ring-offset-shadow: 0 0 #0000;--tw-ring-shadow: 0 0 #0000;--tw-shadow: 0 0 #0000;--tw-shadow-colored: 0 0 #0000;--tw-blur:  ;--tw-brightness:  ;--tw-contrast:  ;--tw-grayscale:  ;--tw-hue-rotate:  ;--tw-invert:  ;--tw-saturate:  ;--tw-sepia:  ;--tw-drop-shadow:  ;--tw-backdrop-blur:  ;--tw-backdrop-brightness:  ;--tw-backdrop-contrast:  ;--tw-backdrop-grayscale:  ;--tw-backdrop-hue-rotate:  ;--tw-backdrop-invert:  ;--tw-backdrop-opacity:  ;--tw-backdrop-saturate:  ;--tw-backdrop-sepia:  ;--tw-contain-size:  ;--tw-contain-layout:  ;--tw-contain-paint:  ;--tw-contain-style:  
+}::backdrop {--tw-border-spacing-x: 0;--tw-border-spacing-y: 0;--tw-translate-x: 0;--tw-translate-y: 0;--tw-rotate: 0;--tw-skew-x: 0;--tw-skew-y: 0;--tw-scale-x: 1;--tw-scale-y: 1;--tw-pan-x:  ;--tw-pan-y:  ;--tw-pinch-zoom:  ;--tw-scroll-snap-strictness: proximity;--tw-gradient-from-position:  ;--tw-gradient-via-position:  ;--tw-gradient-to-position:  ;--tw-ordinal:  ;--tw-slashed-zero:  ;--tw-numeric-figure:  ;--tw-numeric-spacing:  ;--tw-numeric-fraction:  ;--tw-ring-inset:  ;--tw-ring-offset-width: 0px;--tw-ring-offset-color: #fff;--tw-ring-color: rgb(59 130 246 / 0.5);--tw-ring-offset-shadow: 0 0 #0000;--tw-ring-shadow: 0 0 #0000;--tw-shadow: 0 0 #0000;--tw-shadow-colored: 0 0 #0000;--tw-blur:  ;--tw-brightness:  ;--tw-contrast:  ;--tw-grayscale:  ;--tw-hue-rotate:  ;--tw-invert:  ;--tw-saturate:  ;--tw-sepia:  ;--tw-drop-shadow:  ;--tw-backdrop-blur:  ;--tw-backdrop-brightness:  ;--tw-backdrop-contrast:  ;--tw-backdrop-grayscale:  ;--tw-backdrop-hue-rotate:  ;--tw-backdrop-invert:  ;--tw-backdrop-opacity:  ;--tw-backdrop-saturate:  ;--tw-backdrop-sepia:  ;--tw-contain-size:  ;--tw-contain-layout:  ;--tw-contain-paint:  ;--tw-contain-style:  
+}.absolute {position: absolute
+}.relative {position: relative
+}.-bottom-0\.5 {bottom: -0.125rem
+}.-right-0\.5 {right: -0.125rem
+}.right-2 {right: 0.5rem
+}.top-2 {top: 0.5rem
+}.mx-auto {margin-left: auto;margin-right: auto
+}.mb-1 {margin-bottom: 0.25rem
+}.mb-1\.5 {margin-bottom: 0.375rem
+}.mb-2 {margin-bottom: 0.5rem
+}.mb-4 {margin-bottom: 1rem
+}.ml-1 {margin-left: 0.25rem
+}.ml-2 {margin-left: 0.5rem
+}.mt-0\.5 {margin-top: 0.125rem
+}.flex {display: flex
+}.grid {display: grid
+}.hidden {display: none
+}.h-10 {height: 2.5rem
+}.h-11 {height: 2.75rem
+}.h-16 {height: 4rem
+}.h-2 {height: 0.5rem
+}.h-4 {height: 1rem
+}.h-7 {height: 1.75rem
+}.h-8 {height: 2rem
+}.h-9 {height: 2.25rem
+}.min-h-screen {min-height: 100vh
+}.w-10 {width: 2.5rem
+}.w-11 {width: 2.75rem
+}.w-16 {width: 4rem
+}.w-2 {width: 0.5rem
+}.w-4 {width: 1rem
+}.w-7 {width: 1.75rem
+}.w-8 {width: 2rem
+}.w-9 {width: 2.25rem
+}.w-full {width: 100%
+}.min-w-0 {min-width: 0px
+}.max-w-3xl {max-width: 48rem
+}.flex-1 {flex: 1 1 0%
+}.shrink-0 {flex-shrink: 0
+}.-rotate-90 {--tw-rotate: -90deg;transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}.transform {transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}.cursor-pointer {cursor: pointer
+}.grid-cols-2 {grid-template-columns: repeat(2, minmax(0, 1fr))
+}.grid-cols-4 {grid-template-columns: repeat(4, minmax(0, 1fr))
+}.flex-col {flex-direction: column
+}.items-center {align-items: center
+}.items-baseline {align-items: baseline
+}.justify-center {justify-content: center
+}.justify-between {justify-content: space-between
+}.gap-1\.5 {gap: 0.375rem
+}.gap-2 {gap: 0.5rem
+}.gap-2\.5 {gap: 0.625rem
+}.gap-3 {gap: 0.75rem
+}.gap-4 {gap: 1rem
+}.space-y-1 > :not([hidden]) ~ :not([hidden]) {--tw-space-y-reverse: 0;margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))
+}.space-y-2 > :not([hidden]) ~ :not([hidden]) {--tw-space-y-reverse: 0;margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+}.space-y-3 > :not([hidden]) ~ :not([hidden]) {--tw-space-y-reverse: 0;margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom: calc(0.75rem * var(--tw-space-y-reverse))
+}.space-y-3\.5 > :not([hidden]) ~ :not([hidden]) {--tw-space-y-reverse: 0;margin-top: calc(0.875rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom: calc(0.875rem * var(--tw-space-y-reverse))
+}.overflow-hidden {overflow: hidden
+}.truncate {overflow: hidden;text-overflow: ellipsis;white-space: nowrap
+}.rounded {border-radius: 0.25rem
+}.rounded-2xl {border-radius: 1rem
+}.rounded-\[28px\] {border-radius: 28px
+}.rounded-full {border-radius: 9999px
+}.rounded-lg {border-radius: 0.5rem
+}.rounded-xl {border-radius: 0.75rem
+}.border {border-width: 1px
+}.border-2 {border-width: 2px
+}.border-t {border-top-width: 1px
+}.border-\[\#176B45\] {--tw-border-opacity: 1;border-color: rgb(23 107 69 / var(--tw-border-opacity, 1))
+}.border-\[\#E1E9E3\] {--tw-border-opacity: 1;border-color: rgb(225 233 227 / var(--tw-border-opacity, 1))
+}.border-\[\#E1E9E3\]\/60 {border-color: rgb(225 233 227 / 0.6)
+}.border-slate-100 {--tw-border-opacity: 1;border-color: rgb(241 245 249 / var(--tw-border-opacity, 1))
+}.border-slate-200 {--tw-border-opacity: 1;border-color: rgb(226 232 240 / var(--tw-border-opacity, 1))
+}.border-slate-200\/90 {border-color: rgb(226 232 240 / 0.9)
+}.border-white {--tw-border-opacity: 1;border-color: rgb(255 255 255 / var(--tw-border-opacity, 1))
+}.border-white\/25 {border-color: rgb(255 255 255 / 0.25)
+}.border-white\/80 {border-color: rgb(255 255 255 / 0.8)
+}.bg-\[\#000000\] {--tw-bg-opacity: 1;background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1))
+}.bg-\[\#176B45\] {--tw-bg-opacity: 1;background-color: rgb(23 107 69 / var(--tw-bg-opacity, 1))
+}.bg-\[\#F7F9F7\] {--tw-bg-opacity: 1;background-color: rgb(247 249 247 / var(--tw-bg-opacity, 1))
+}.bg-slate-100 {--tw-bg-opacity: 1;background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1))
+}.bg-slate-50 {--tw-bg-opacity: 1;background-color: rgb(248 250 252 / var(--tw-bg-opacity, 1))
+}.bg-white {--tw-bg-opacity: 1;background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+}.bg-white\/15 {background-color: rgb(255 255 255 / 0.15)
+}.bg-white\/90 {background-color: rgb(255 255 255 / 0.9)
+}.bg-gradient-to-br {background-image: linear-gradient(to bottom right, var(--tw-gradient-stops))
+}.from-\[\#29352E\] {--tw-gradient-from: #29352E var(--tw-gradient-from-position);--tw-gradient-to: rgb(41 53 46 / 0) var(--tw-gradient-to-position);--tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to)
+}.via-\[\#29352E\] {--tw-gradient-to: rgb(41 53 46 / 0)  var(--tw-gradient-to-position);--tw-gradient-stops: var(--tw-gradient-from), #29352E var(--tw-gradient-via-position), var(--tw-gradient-to)
+}.to-\[\#29352E\] {--tw-gradient-to: #29352E var(--tw-gradient-to-position)
+}.object-cover {object-fit: cover
+}.p-2 {padding: 0.5rem
+}.p-3 {padding: 0.75rem
+}.p-4 {padding: 1rem
+}.p-5 {padding: 1.25rem
+}.px-0\.5 {padding-left: 0.125rem;padding-right: 0.125rem
+}.px-1\.5 {padding-left: 0.375rem;padding-right: 0.375rem
+}.px-2 {padding-left: 0.5rem;padding-right: 0.5rem
+}.px-2\.5 {padding-left: 0.625rem;padding-right: 0.625rem
+}.px-3 {padding-left: 0.75rem;padding-right: 0.75rem
+}.px-3\.5 {padding-left: 0.875rem;padding-right: 0.875rem
+}.py-0\.5 {padding-top: 0.125rem;padding-bottom: 0.125rem
+}.py-1 {padding-top: 0.25rem;padding-bottom: 0.25rem
+}.py-1\.5 {padding-top: 0.375rem;padding-bottom: 0.375rem
+}.py-2\.5 {padding-top: 0.625rem;padding-bottom: 0.625rem
+}.pb-2 {padding-bottom: 0.5rem
+}.pb-44 {padding-bottom: 11rem
+}.pt-1 {padding-top: 0.25rem
+}.pt-3 {padding-top: 0.75rem
+}.text-center {text-align: center
+}.font-\[\'Plus_Jakarta_Sans\'\2c sans-serif\] {font-family: 'Plus Jakarta Sans',sans-serif
+}.text-3xl {font-size: 1.875rem;line-height: 2.25rem
+}.text-\[10px\] {font-size: 10px
+}.text-\[11px\] {font-size: 11px
+}.text-\[8px\] {font-size: 8px
+}.text-\[9px\] {font-size: 9px
+}.text-base {font-size: 1rem;line-height: 1.5rem
+}.text-lg {font-size: 1.125rem;line-height: 1.75rem
+}.text-sm {font-size: 0.875rem;line-height: 1.25rem
+}.text-xs {font-size: 0.75rem;line-height: 1rem
+}.font-medium {font-weight: 500
+}.font-normal {font-weight: 400
+}.uppercase {text-transform: uppercase
+}.leading-tight {line-height: 1.25
+}.tracking-tight {letter-spacing: -0.025em
+}.tracking-wide {letter-spacing: 0.025em
+}.tracking-wider {letter-spacing: 0.05em
+}.text-\[\#000000\] {--tw-text-opacity: 1;color: rgb(0 0 0 / var(--tw-text-opacity, 1))
+}.text-\[\#000000\]\/90 {color: rgb(0 0 0 / 0.9)
+}.text-\[\#176B45\] {--tw-text-opacity: 1;color: rgb(23 107 69 / var(--tw-text-opacity, 1))
+}.text-\[\#29352E\] {--tw-text-opacity: 1;color: rgb(41 53 46 / var(--tw-text-opacity, 1))
+}.text-\[\#64746A\] {--tw-text-opacity: 1;color: rgb(100 116 106 / var(--tw-text-opacity, 1))
+}.text-slate-100 {--tw-text-opacity: 1;color: rgb(241 245 249 / var(--tw-text-opacity, 1))
+}.text-slate-400 {--tw-text-opacity: 1;color: rgb(148 163 184 / var(--tw-text-opacity, 1))
+}.text-slate-500 {--tw-text-opacity: 1;color: rgb(100 116 139 / var(--tw-text-opacity, 1))
+}.text-slate-600 {--tw-text-opacity: 1;color: rgb(71 85 105 / var(--tw-text-opacity, 1))
+}.text-slate-700 {--tw-text-opacity: 1;color: rgb(51 65 85 / var(--tw-text-opacity, 1))
+}.text-slate-800 {--tw-text-opacity: 1;color: rgb(30 41 59 / var(--tw-text-opacity, 1))
+}.text-slate-900 {--tw-text-opacity: 1;color: rgb(15 23 42 / var(--tw-text-opacity, 1))
+}.text-white {--tw-text-opacity: 1;color: rgb(255 255 255 / var(--tw-text-opacity, 1))
+}.shadow-\[0_12px_30px_-8px_rgba\(19\2c 130\2c 155\2c 0\.4\)\] {--tw-shadow: 0 12px 30px -8px rgba(19,130,155,0.4);--tw-shadow-colored: 0 12px 30px -8px var(--tw-shadow-color);box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}.shadow-md {--tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);--tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}.shadow-sm {--tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}.ring-2 {--tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
+}.ring-\[\#29352E\] {--tw-ring-opacity: 1;--tw-ring-color: rgb(41 53 46 / var(--tw-ring-opacity, 1))
+}.backdrop-blur-md {--tw-backdrop-blur: blur(12px);-webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)
+}.transition-all {transition-property: all;transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);transition-duration: 150ms
+}.transition-colors {transition-property: color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);transition-duration: 150ms
+}.hover\:bg-\[\#000000\]:hover {--tw-bg-opacity: 1;background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1))
+}.hover\:bg-slate-200:hover {--tw-bg-opacity: 1;background-color: rgb(226 232 240 / var(--tw-bg-opacity, 1))
+}.hover\:bg-white\/25:hover {background-color: rgb(255 255 255 / 0.25)
+}.hover\:underline:hover {-webkit-text-decoration-line: underline;text-decoration-line: underline
+}.active\:scale-95:active {--tw-scale-x: .95;--tw-scale-y: .95;transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}.active\:scale-\[0\.98\]:active {--tw-scale-x: 0.98;--tw-scale-y: 0.98;transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}@media (prefers-color-scheme: dark) {.dark\:border-slate-700\/60 {border-color: rgb(51 65 85 / 0.6)
+    }.dark\:bg-\[\#176B45\]\/60 {background-color: rgb(23 107 69 / 0.6)
+    }.dark\:text-\[\#000000\] {--tw-text-opacity: 1;color: rgb(0 0 0 / var(--tw-text-opacity, 1))
+    }.dark\:text-\[\#29352E\] {--tw-text-opacity: 1;color: rgb(41 53 46 / var(--tw-text-opacity, 1))
+    }.dark\:text-slate-100 {--tw-text-opacity: 1;color: rgb(241 245 249 / var(--tw-text-opacity, 1))
+    }.dark\:text-slate-400 {--tw-text-opacity: 1;color: rgb(148 163 184 / var(--tw-text-opacity, 1))
+    }
+}</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Kantumruy+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap"><style id="ngis-app-css">
+      .row-sel { background: var(--accent-soft) !important; }
+      .tbl tbody tr { cursor: pointer; }
+      .tbl th[data-sort] { cursor: pointer; user-select: none; }
+      .tbl th[data-sort]:hover { color: var(--accent); }
+      .tbl th[data-sort]::after { content: " ↕"; opacity: .35; font-size: .7em; }
+      .tbl th[data-sort].asc::after  { content: " ↑"; opacity: 1; color: var(--accent); }
+      .tbl th[data-sort].desc::after { content: " ↓"; opacity: 1; color: var(--accent); }
+      .grade-input { width:56px; text-align:center; border:1px solid var(--border);
+        border-radius:6px; padding:4px 6px; font-size:13px; font-family:inherit;
+        background:var(--surface); color:var(--text); outline:none; }
+      .grade-input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+      .attend-row { transition: background .15s; }
+      .attend-row.present-row { background: #F3F3F5; }
+      .attend-row.late-row    { background: #F3F3F5; }
+      .attend-row.absent-row  { background: #F3F3F5; }
+    </style></head>
+<body data-page="student" data-role="student" class="student-dashboard ngis-layout-ready" data-portal="student" data-theme="light"><div id="ngisOfflineBanner" class="hidden">
+          <div class="ngis-offline-content">
+            <span class="ngis-offline-badge"><i class="ph ph-wifi-slash"></i> Offline</span>
+            <span>You are currently offline. Changes are saved locally and will sync when connection returns.</span>
+          </div>
+          <button type="button" onclick="window.NGISUI.checkConnection()" class="ngis-btn-secondary" style="padding:4px 10px; font-size:11.5px; border-color:#E5E5E8;">
+            <i class="ph ph-arrows-clockwise"></i> Check
+          </button>
+        </div>
+<div class="shell"><div class="main">
+<div class="student-desktop-view">
+
+<!-- ═══════════════ HERO BANNER ═══════════════ -->
+<!-- Built and injected by js/hero.js -->
+<div class="hero hero-main"><!-- ── Tier 1: Main Header Bar ── --><div class="hero-topbar"><!-- Left: Brand Logo Image --><a href="student.html" class="htb-brand-wrap" aria-label="New Gateway International School"><img class="htb-brand-logo-img" src="LOGO NGIS (2).png" alt="New Gateway International School" onerror="this.onerror=null;this.src='../../assets/images/logo.png'"></a><!-- Center: Global Search Capsule --><div class="htb-search-wrap" role="search"><span class="mi htb-search-icon">search</span><input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses, syllabi, tutors, grades…" aria-label="Search courses, syllabi, tutors, grades"><kbd class="htb-search-kbd">⌘ K</kbd></div><!-- Right: Controls & User Profile --><div class="htb-right-controls"><button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation" data-sidebar-bound="true"><span class="mi">menu</span></button><a href="student-calendar.html" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar"><span class="mi">calendar_today</span></a><button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications"><span class="mi">notifications</span><span class="htb-ctrl-badge">3</span></button><a href="student-notifications.html" class="htb-ctrl-btn" id="htbMsgBtn" title="Messages" aria-label="Messages"><span class="mi">mail</span><span class="htb-ctrl-badge" style="background:#e11d48">11</span></a><div class="htb-ctrl-divider" aria-hidden="true"></div><div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu" aria-haspopup="true" aria-expanded="false"><div class="htb-chip-avatar-wrap"><img class="htb-chip-avatar" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=80" alt="Nrinphouneta Hok"><span class="htb-online-pip" title="Active"></span></div><div class="htb-chip-text"><div class="htb-chip-name-row"><span class="htb-chip-name">Nrinphouneta Hok</span></div><span class="htb-chip-meta">Grade 10</span></div></div></div></div><div class="htb-dd-backdrop" id="htbBackdrop"></div><div class="hero-body"><div class="hero-text"><div class="hero-date">Monday, November 9, 2026</div><h1 class="hero-title">Welcome to your dashboard</h1><p class="hero-greeting">Hello, Nrinphouneta! Ready to learn today?</p></div></div></div>
+
+<!-- ═══════════════ OVERLAPPING GRID ═══════════════ -->
+<div class="dash-overlap">
+
+<!-- Column 1: Profile Summary -->
+<div class="ov-profile">
+  <div class="ov-profile-header">
+    <img class="ov-avatar" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=160" alt="Nrinphouneta Hok">
+    <div class="ov-profile-name">Nrinphouneta Hok</div>
+    <div class="ov-profile-grade">Grade 10 &nbsp;·&nbsp; 2026-STD-0142</div>
+    <span class="ov-profile-badge">Active Student</span>
+  </div>
+  <div class="ov-profile-body">
+    <div class="ov-info-row">
+      <span class="mi">mail</span>nrinphouneta@ngis.edu.kh
+    </div>
+    <div class="ov-info-row">
+      <span class="mi">phone</span>+855 12 345 678
+    </div>
+    <div class="ov-info-row">
+      <span class="mi">location_on</span>Phnom Penh, Cambodia
+    </div>
+  </div>
+  <div class="ov-actions">
+    <button type="button" class="ov-btn-main" id="viewIdBtn"><span class="mi">badge</span>Digital ID Card</button>
+    <button type="button" class="ov-btn-ic" title="Notifications" aria-label="Notifications" onclick="window.location.href='student-notifications.html'"><span class="mi">notifications</span></button>
+    <button type="button" class="ov-btn-ic" title="Timetable" aria-label="Timetable" onclick="window.location.href='student-timetable.html'"><span class="mi">calendar_view_week</span></button>
+  </div>
+</div>
+
+<!-- Column 2: Upcoming -->
+<div class="ov-upcoming">
+  <div class="ov-card-head">
+    <div class="ov-card-title">
+      <span class="mi">event_note</span>Upcoming
+    </div>
+    <a class="ov-card-link" href="student-calendar.html">View All</a>
+  </div>
+  <div class="ov-inner-grid">
+    <!-- Events -->
+    <div class="ov-inner-panel">
+      <div class="ov-inner-head">
+        <span class="mi" style="color:#29352E">celebration</span>Events
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Science Fair 2026</div>
+        <div class="ov-inner-item-s">Jun 27 · 09:00 AM</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Student Council</div>
+        <div class="ov-inner-item-s">Jun 30 · 10:00 AM</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Sports Day</div>
+        <div class="ov-inner-item-s">Jul 4 · 07:30 AM</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Art Exhibition</div>
+        <div class="ov-inner-item-s">Jul 8 · 01:00 PM</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Graduation Prep</div>
+        <div class="ov-inner-item-s">Jul 12 · 02:00 PM</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Cultural Night</div>
+        <div class="ov-inner-item-s">Jul 18 · 06:00 PM</div>
+      </div>
+    </div>
+    <!-- Assignments -->
+    <div class="ov-inner-panel">
+      <div class="ov-inner-head">
+        <span class="mi" style="color:#000000">assignment</span>Assignments
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Physics Essay Draft</div>
+        <div class="ov-inner-item-s">Due: Thu, 26 Jun</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Math Problem Set 4</div>
+        <div class="ov-inner-item-s">Due: Fri, 27 Jun</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Chemistry Lab Report</div>
+        <div class="ov-inner-item-s">Submitted · Graded: 88%</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">History Essay</div>
+        <div class="ov-inner-item-s">Due: Mon, 30 Jun</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">Biology Worksheet</div>
+        <div class="ov-inner-item-s">Due: Tue, 1 Jul</div>
+      </div>
+      <div class="ov-inner-item">
+        <div class="ov-inner-item-t">English Book Review</div>
+        <div class="ov-inner-item-s">Due: Wed, 2 Jul</div>
+      </div>
+    </div>
+    <!-- School Activity Feed -->
+    <div class="ov-inner-panel" style="padding:0;overflow:hidden;display:flex;flex-direction:column;align-self:start">
+      <div class="ov-inner-head" style="padding:8px 10px;border-bottom:1px solid #F7F9F7;margin:0;flex-shrink:0">
+        <span class="mi" style="color:#176B45;flex-shrink:0">rss_feed</span>
+        <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">School Activity Feed</span>
+        <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight: 400;color:#176B45;letter-spacing:.04em">
+          <span style="width:6px;height:6px;border-radius:50%;background:#176B45;animation:feedPulse 1.4s ease-in-out infinite"></span>LIVE
+        </span>
+      </div>
+      <!-- Scrollable feed body — 3 items visible, rest scroll -->
+      <div style="overflow-y:auto;max-height:232px;height:232px">
+        <!-- Assignment -->
+        <div style="display:flex;border-bottom:1px solid #F7F9F7">
+          <div style="width:3px;flex-shrink:0;background:#176B45;border-radius:0"></div>
+          <div style="flex:1;min-width:0;padding:7px 9px">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+              <span style="flex-shrink:0;font-size:9px;font-weight: 400;text-transform:uppercase;letter-spacing:.05em;color:#176B45;background:#F7F9F7;padding:1px 5px;border-radius:3px;white-space:nowrap">Assign</span>
+              <span style="font-size:10px;color:#8FA095;margin-left:auto;flex-shrink:0;white-space:nowrap">12m ago</span>
+            </div>
+            <div style="font-size:11.5px;font-weight: 400;color:#000000;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Physics Essay Draft posted</div>
+            <div style="font-size:10px;color:#8FA095;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Due Thu 26 Jun · Mr. Sophea</div>
+          </div>
+        </div>
+        <!-- Exam -->
+        <div style="display:flex;border-bottom:1px solid #F7F9F7">
+          <div style="width:3px;flex-shrink:0;background:#000000"></div>
+          <div style="flex:1;min-width:0;padding:7px 9px">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+              <span style="flex-shrink:0;font-size:9px;font-weight: 400;text-transform:uppercase;letter-spacing:.05em;color:#176B45;background:#F7F9F7;padding:1px 5px;border-radius:3px;white-space:nowrap">Exam</span>
+              <span style="font-size:10px;color:#8FA095;margin-left:auto;flex-shrink:0;white-space:nowrap">1h ago</span>
+            </div>
+            <div style="font-size:11.5px;font-weight: 400;color:#000000;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Biology Semester 2 announced</div>
+            <div style="font-size:10px;color:#8FA095;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">28 Jun · Hall A · 09:00 AM</div>
+          </div>
+        </div>
+        <!-- Achievement -->
+        <div style="display:flex;border-bottom:1px solid #F7F9F7">
+          <div style="width:3px;flex-shrink:0;background:#000000"></div>
+          <div style="flex:1;min-width:0;padding:7px 9px">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+              <span style="flex-shrink:0;font-size:9px;font-weight: 400;text-transform:uppercase;letter-spacing:.05em;color:#000000;background:#F7F9F7;padding:1px 5px;border-radius:3px;white-space:nowrap">Achievement</span>
+              <span style="font-size:10px;color:#8FA095;margin-left:auto;flex-shrink:0;white-space:nowrap">2h ago</span>
+            </div>
+            <div style="font-size:11.5px;font-weight: 400;color:#000000;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">You scored 88% on Chemistry Lab</div>
+            <div style="font-size:10px;color:#8FA095;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Graded by Ms. Kiry Sokha</div>
+          </div>
+        </div>
+        <!-- Teacher Update -->
+        <div style="display:flex;border-bottom:1px solid #F7F9F7">
+          <div style="width:3px;flex-shrink:0;background:#29352E"></div>
+          <div style="flex:1;min-width:0;padding:7px 9px">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+              <span style="flex-shrink:0;font-size:9px;font-weight: 400;text-transform:uppercase;letter-spacing:.05em;color:#29352E;background:#F7F9F7;padding:1px 5px;border-radius:3px;white-space:nowrap">Update</span>
+              <span style="font-size:10px;color:#8FA095;margin-left:auto;flex-shrink:0;white-space:nowrap">3h ago</span>
+            </div>
+            <div style="font-size:11.5px;font-weight: 400;color:#000000;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">2 new lessons in Mathematics</div>
+            <div style="font-size:10px;color:#8FA095;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Posted by Mr. Chea Sophea</div>
+          </div>
+        </div>
+        <!-- Event -->
+        <div style="display:flex;border-bottom:1px solid #F7F9F7">
+          <div style="width:3px;flex-shrink:0;background:#29352E"></div>
+          <div style="flex:1;min-width:0;padding:7px 9px">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+              <span style="flex-shrink:0;font-size:9px;font-weight: 400;text-transform:uppercase;letter-spacing:.05em;color:#29352E;background:#F7F9F7;padding:1px 5px;border-radius:3px;white-space:nowrap">Event</span>
+              <span style="font-size:10px;color:#8FA095;margin-left:auto;flex-shrink:0;white-space:nowrap">Yesterday</span>
+            </div>
+            <div style="font-size:11.5px;font-weight: 400;color:#000000;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Science Fair — Registration open</div>
+            <div style="font-size:10px;color:#8FA095;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Deadline: 5 Jul · Grade 10–12</div>
+          </div>
+        </div>
+        <!-- Grade -->
+        <div style="display:flex">
+          <div style="width:3px;flex-shrink:0;background:#000000"></div>
+          <div style="flex:1;min-width:0;padding:7px 9px">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+              <span style="flex-shrink:0;font-size:9px;font-weight: 400;text-transform:uppercase;letter-spacing:.05em;color:#000000;background:#F7F9F7;padding:1px 5px;border-radius:3px;white-space:nowrap">Grade</span>
+              <span style="font-size:10px;color:#8FA095;margin-left:auto;flex-shrink:0;white-space:nowrap">2d ago</span>
+            </div>
+            <div style="font-size:11.5px;font-weight: 400;color:#000000;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Semester 1 Report Card published</div>
+            <div style="font-size:10px;color:#8FA095;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Uploaded by Jane Doe</div>
+          </div>
+        </div>
+      </div><!-- /scroll body -->
+    </div>
+  </div>
+</div>
+
+<!-- Column 3: Deadlines -->
+<div class="ov-deadlines">
+  <div class="ov-card-head">
+    <div class="ov-card-title">
+      <span class="mi" style="color:#176B45">schedule</span>Deadlines
+    </div>
+    <a class="ov-card-link" href="student-assignments.html">View All</a>
+  </div>
+  <!-- Assessments -->
+  <div class="ov-deadline-panel">
+    <div class="ov-deadline-head">
+      <span class="mi" style="color:#176B45">assignment</span>Assessments
+    </div>
+    <div class="ov-deadline-item">
+      <div class="ov-deadline-dot" style="background:#176B45"></div>
+      <div class="ov-deadline-info">
+        <div class="ov-deadline-item-t">History Essay</div>
+        <div class="ov-deadline-meta">
+          <span class="ov-deadline-item-s">Due: Jun 27, 11:59 PM</span>
+          <span class="ov-tag ov-tag-red">Urgent</span>
+        </div>
+      </div>
+    </div>
+    <div class="ov-deadline-item">
+      <div class="ov-deadline-dot" style="background:#000000"></div>
+      <div class="ov-deadline-info">
+        <div class="ov-deadline-item-t">Math Problem Set</div>
+        <div class="ov-deadline-meta">
+          <span class="ov-deadline-item-s">Due: Jun 29, 11:59 PM</span>
+          <span class="ov-tag ov-tag-amber">Soon</span>
+        </div>
+      </div>
+    </div>
+    <div class="ov-deadline-item">
+      <div class="ov-deadline-dot" style="background:#000000"></div>
+      <div class="ov-deadline-info">
+        <div class="ov-deadline-item-t">Science Report</div>
+        <div class="ov-deadline-meta">
+          <span class="ov-deadline-item-s">Due: Jul 3</span>
+          <span class="ov-tag ov-tag-green">On track</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Exam & Quizzes -->
+  <div class="ov-deadline-panel">
+    <div class="ov-deadline-head">
+      <span class="mi" style="color:#29352E">quiz</span>Exam &amp; Quizzes
+    </div>
+    <div class="ov-deadline-item">
+      <div class="ov-deadline-dot" style="background:#176B45"></div>
+      <div class="ov-deadline-info">
+        <div class="ov-deadline-item-t">Midterm Exam</div>
+        <div class="ov-deadline-meta">
+          <span class="ov-deadline-item-s">Jul 5 – Jul 9</span>
+          <span class="ov-tag ov-tag-red">Upcoming</span>
+        </div>
+      </div>
+    </div>
+    <div class="ov-deadline-item">
+      <div class="ov-deadline-dot" style="background:#000000"></div>
+      <div class="ov-deadline-info">
+        <div class="ov-deadline-item-t">Science Test</div>
+        <div class="ov-deadline-meta">
+          <span class="ov-deadline-item-s">Jul 12, 09:00 AM</span>
+          <span class="ov-tag ov-tag-amber">Prepare</span>
+        </div>
+      </div>
+    </div>
+    <div class="ov-deadline-item">
+      <div class="ov-deadline-dot" style="background:#000000"></div>
+      <div class="ov-deadline-info">
+        <div class="ov-deadline-item-t">English Oral Quiz</div>
+        <div class="ov-deadline-meta">
+          <span class="ov-deadline-item-s">Jul 16, 10:30 AM</span>
+          <span class="ov-tag ov-tag-green">Scheduled</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.dash-overlap -->
+
+<!-- ═══════════════ DASHBOARD BANNER SECTION ═══════════════ -->
+<div class="dash-banner-section">
+<!-- Row 2, Col 1+2: Promo Slideshow (Deadlines spans both rows) -->
+<div class="promo-slideshow" id="promoSlideshow">
+  <div class="promo-track" id="promoTrack">
+    <div class="promo-slide"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&amp;h=320&amp;fit=crop" alt="School Banner 1"></div>
+    <div class="promo-slide"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&amp;h=320&amp;fit=crop" alt="School Banner 2"></div>
+    <div class="promo-slide"><img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1200&amp;h=320&amp;fit=crop" alt="School Banner 3"></div>
+  </div>
+  <!-- Full-image colour tint -->
+  <div class="promo-left" aria-hidden="true"></div>
+  <!-- Text on top of tint -->
+  <div class="promo-text">
+    <div class="promo-left-title">Empowering Future<br>Leaders</div>
+    <div class="promo-left-sub">Explore learning, grow beyond limits</div>
+  </div>
+  <button type="button" class="promo-arrow promo-prev" id="promoPrev" aria-label="Previous"><span class="mi">chevron_left</span></button>
+  <button type="button" class="promo-arrow promo-next" id="promoNext" aria-label="Next"><span class="mi">chevron_right</span></button>
+  <div class="promo-dots" id="promoDots">
+    <button type="button" class="promo-dot active" data-i="0"></button>
+    <button type="button" class="promo-dot" data-i="1"></button>
+    <button type="button" class="promo-dot" data-i="2"></button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ LOWER DASHBOARD ═══════════════ -->
+<div class="dash">
+
+<!-- ROW 2: MY SUBJECTS + CALENDAR ────────────────── -->
+<div class="row2">
+  <!-- My Subjects -->
+  <div class="subj-card">
+    <div class="sec-head">
+      <div class="sec-head-l">
+        <span class="mi">menu_book</span>
+        <h3>My Subjects</h3>
+        <span class="cnt">(6)</span>
+      </div>
+      <a href="../shared/departments.html" class="sec-link">View All</a>
+    </div>
+    <div class="subj-list">
+      <div class="subj-grid" id="subjGrid">
+  <div class="subj-item">
+    <div class="subj-ico" style="background:#eff6ff">
+      <span class="mi" style="color:#2563eb">calculate</span>
+    </div>
+    <div class="subj-body">
+      <div class="subj-name">Mathematics</div>
+      <div class="subj-teacher">Mr. John Smith</div>
+      <div class="subj-bar-row">
+        <div class="subj-bar">
+          <div class="subj-fill" data-w="88" style="background: rgb(37, 99, 235); width: 88%;"></div>
+        </div>
+        <span class="subj-pct">88%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subj-item">
+    <div class="subj-ico" style="background:#f0fdf4">
+      <span class="mi" style="color:#16a34a">science</span>
+    </div>
+    <div class="subj-body">
+      <div class="subj-name">Science</div>
+      <div class="subj-teacher">Ms. Emily Johnson</div>
+      <div class="subj-bar-row">
+        <div class="subj-bar">
+          <div class="subj-fill" data-w="82" style="background: rgb(22, 163, 74); width: 82%;"></div>
+        </div>
+        <span class="subj-pct">82%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subj-item">
+    <div class="subj-ico" style="background:#eff6ff">
+      <span class="mi" style="color:#2563eb">menu_book</span>
+    </div>
+    <div class="subj-body">
+      <div class="subj-name">English Language Arts</div>
+      <div class="subj-teacher">Mr. David Brown</div>
+      <div class="subj-bar-row">
+        <div class="subj-bar">
+          <div class="subj-fill" data-w="90" style="background: rgb(37, 99, 235); width: 90%;"></div>
+        </div>
+        <span class="subj-pct">90%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subj-item">
+    <div class="subj-ico" style="background:#faf5ff">
+      <span class="mi" style="color:#7c3aed">computer</span>
+    </div>
+    <div class="subj-body">
+      <div class="subj-name">Computer Science</div>
+      <div class="subj-teacher">Mr. Michael Lee</div>
+      <div class="subj-bar-row">
+        <div class="subj-bar">
+          <div class="subj-fill" data-w="85" style="background: rgb(124, 58, 237); width: 85%;"></div>
+        </div>
+        <span class="subj-pct">85%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subj-item">
+    <div class="subj-ico" style="background:#fff7ed">
+      <span class="mi" style="color:#ea580c">public</span>
+    </div>
+    <div class="subj-body">
+      <div class="subj-name">Social Studies</div>
+      <div class="subj-teacher">Ms. Sarah Wilson</div>
+      <div class="subj-bar-row">
+        <div class="subj-bar">
+          <div class="subj-fill" data-w="78" style="background: rgb(234, 88, 12); width: 78%;"></div>
+        </div>
+        <span class="subj-pct">78%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="subj-item">
+    <div class="subj-ico" style="background:#fdf2f8">
+      <span class="mi" style="color:#db2777">translate</span>
+    </div>
+    <div class="subj-body">
+      <div class="subj-name">Khmer Language</div>
+      <div class="subj-teacher">Ms. Chanthou Sok</div>
+      <div class="subj-bar-row">
+        <div class="subj-bar">
+          <div class="subj-fill" data-w="80" style="background: rgb(219, 39, 119); width: 80%;"></div>
+        </div>
+        <span class="subj-pct">80%</span>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+  <!-- Calendar -->
+  <div class="cal-card">
+    <div class="sec-head">
+      <div class="sec-head-l">
+        <span class="mi">calendar_month</span>
+        <h3>Calendar</h3>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button type="button" class="cal-nav-btn"><span class="mi">chevron_left</span></button>
+        <span class="cal-month">November 2026</span>
+        <button type="button" class="cal-nav-btn"><span class="mi">chevron_right</span></button>
+        <a href="student-calendar.html" class="sec-link" style="margin-left:4px">View Full Calendar</a>
+      </div>
+    </div>
+    <div class="cal-inner">
+      <div class="cal-main">
+        <div class="cal-grid" id="calGrid"><div class="cal-dow">Sun</div><div class="cal-dow">Mon</div><div class="cal-dow">Tue</div><div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5<div class="cal-dots"><span class="cal-dot" style="background: rgb(37, 99, 235);"></span></div></div><div class="cal-day">6</div><div class="cal-day">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12<div class="cal-dots"><span class="cal-dot" style="background: rgb(34, 197, 94);"></span></div></div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18<div class="cal-dots"><span class="cal-dot" style="background: rgb(245, 158, 11);"></span><span class="cal-dot" style="background: rgb(239, 68, 68);"></span></div></div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div><div class="cal-day">22<div class="cal-dots"><span class="cal-dot" style="background: rgb(239, 68, 68);"></span></div></div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day today selected">25<div class="cal-dots"><span class="cal-dot" style="background: rgb(37, 99, 235);"></span><span class="cal-dot" style="background: rgb(34, 197, 94);"></span><span class="cal-dot" style="background: rgb(245, 158, 11);"></span></div></div><div class="cal-day">26</div><div class="cal-day">27<div class="cal-dots"><span class="cal-dot" style="background: rgb(245, 158, 11);"></span></div></div><div class="cal-day">28</div><div class="cal-day">29<div class="cal-dots"><span class="cal-dot" style="background: rgb(239, 68, 68);"></span></div></div><div class="cal-day">30</div><div class="cal-day next-mo">1</div><div class="cal-day next-mo">2</div><div class="cal-day next-mo">3</div><div class="cal-day next-mo">4</div><div class="cal-day next-mo">5</div></div>
+      </div>
+      <div class="cal-side" id="calSide">
+        <div class="cal-side-title">Events on Jun 25</div>
+        <!-- JS populates events here -->
+      <div class="cal-ev"><span class="cal-ev-dot" style="background: rgb(37, 99, 235);"></span><div><div class="cal-ev-name">Math Class</div><div class="cal-ev-time">07:30 AM – 08:30 AM</div></div></div><div class="cal-ev"><span class="cal-ev-dot" style="background: rgb(34, 197, 94);"></span><div><div class="cal-ev-name">English Class</div><div class="cal-ev-time">08:45 AM – 09:45 AM</div></div></div><div class="cal-ev"><span class="cal-ev-dot" style="background: rgb(245, 158, 11);"></span><div><div class="cal-ev-name">Computer Lab</div><div class="cal-ev-time">10:10 AM – 11:10 AM</div></div></div><div class="cal-ev"><span class="cal-ev-dot" style="background: rgb(139, 92, 246);"></span><div><div class="cal-ev-name">Physics Class</div><div class="cal-ev-time">01:00 PM – 02:00 PM</div></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: ANNOUNCEMENTS + ATTENDANCE + QUICK LINKS ── -->
+<div class="row3">
+  <!-- Announcements -->
+  <div class="ann-card">
+    <div class="sec-head">
+      <div class="sec-head-l">
+        <span class="mi" style="color:var(--blue-mid)">campaign</span>
+        <h3>Announcements</h3>
+      </div>
+      <a href="student-announcements.html" class="sec-link">View All</a>
+    </div>
+    <div class="ann-list">
+      <div class="ann-item">
+        <img class="ann-thumb" src="https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=120" alt="">
+        <div class="ann-body">
+          <div class="ann-title">Library Update</div>
+          <div class="ann-desc">New digital books and research papers added to library.</div>
+          <div class="ann-time">2 hours ago</div>
+        </div>
+      </div>
+      <div class="ann-item">
+        <img class="ann-thumb" src="https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=120" alt="">
+        <div class="ann-body">
+          <div class="ann-title">Sports Day 2026</div>
+          <div class="ann-desc">Join us for the annual school sports festival this month!</div>
+          <div class="ann-time">1 day ago</div>
+        </div>
+      </div>
+      <div class="ann-item">
+        <img class="ann-thumb" src="https://images.pexels.com/photos/1550337/pexels-photo-1550337.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=120" alt="">
+        <div class="ann-body">
+          <div class="ann-title">School Holiday Notice</div>
+          <div class="ann-desc">Campus will be closed for National Water Festival.</div>
+          <div class="ann-time">2 days ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance Overview -->
+  <div class="att-card">
+    <div class="att-head">
+      <div class="att-head-l">
+        <span class="mi">track_changes</span>
+        <h3>Attendance Overview</h3>
+      </div>
+      <div class="att-filter">
+        This Month <span class="mi">expand_more</span>
+      </div>
+    </div>
+    <div class="att-body">
+      <div class="att-donut-wrap">
+        <canvas id="attChart" width="130" height="130" style="display: block; box-sizing: border-box; height: 130px; width: 130px;"></canvas>
+        <div class="att-donut-center">
+          <div class="att-pct">92%</div>
+          <div class="att-pct-lbl">Present</div>
+        </div>
+      </div>
+      <div class="att-legend">
+        <div class="att-leg-row">
+          <span class="att-leg-dot" style="background:#000000"></span>
+          <span class="att-leg-label">Present</span>
+          <span class="att-leg-val">22</span>
+        </div>
+        <div class="att-leg-row">
+          <span class="att-leg-dot" style="background:#176B45"></span>
+          <span class="att-leg-label">Absent</span>
+          <span class="att-leg-val">2</span>
+        </div>
+        <div class="att-leg-row">
+          <span class="att-leg-dot" style="background:#000000"></span>
+          <span class="att-leg-label">Late</span>
+          <span class="att-leg-val">1</span>
+        </div>
+      </div>
+      <div class="att-total-row">
+        <span>Total Classes</span>
+        <span>25</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="ql-card">
+    <div class="sec-head">
+      <div class="sec-head-l">
+        <span class="mi" style="color:var(--blue-mid)">link</span>
+        <h3>Quick Links</h3>
+      </div>
+    </div>
+    <div class="ql-body">
+      <div class="ql-grid">
+        <a class="ql-item" href="student-assignments.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#29352E">assignment</span></div>
+          <span class="ql-label">Assignments</span>
+        </a>
+        <a class="ql-item" href="student-announcements.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#000000">campaign</span></div>
+          <span class="ql-label">Announcements</span>
+        </a>
+        <a class="ql-item" href="student-timetable.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#000000">calendar_view_week</span></div>
+          <span class="ql-label">Timetable</span>
+        </a>
+        <a class="ql-item" href="student-services.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#29352E">grid_view</span></div>
+          <span class="ql-label">Student Services</span>
+        </a>
+        <a class="ql-item" href="student-grades.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#29352E">bar_chart</span></div>
+          <span class="ql-label">Results</span>
+        </a>
+        <a class="ql-item" href="student-notifications.html" style="position:relative">
+          <div class="ql-icon-wrap" style="background:#F7F9F7">
+            <span class="mi" style="color:#000000">chat</span>
+            <span class="ql-badge" style="background:#29352E">2</span>
+          </div>
+          <span class="ql-label">Notifications</span>
+        </a>
+      </div>
+      <div class="ql-divider"></div>
+      <div class="ql-grid">
+        <a class="ql-item" href="../shared/lessons.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#29352E">menu_book</span></div>
+          <span class="ql-label">E-Learning</span>
+        </a>
+        <a class="ql-item" href="student-calendar.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#000000">calendar_month</span></div>
+          <span class="ql-label">Calendar</span>
+        </a>
+        <a class="ql-item" href="student-id.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7">
+            <span class="mi" style="color:#176B45">badge</span>
+          </div>
+          <span class="ql-label">Digital ID</span>
+        </a>
+        <a class="ql-item" href="student-services.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#29352E">support_agent</span></div>
+          <span class="ql-label">Services Hub</span>
+        </a>
+        <a class="ql-item" href="student-profile.html">
+          <div class="ql-icon-wrap" style="background:#F7F9F7"><span class="mi" style="color:#29352E">account_circle</span></div>
+          <span class="ql-label">My Profile</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /.dash -->
+</div><!-- /.student-desktop-view -->
+
+<!-- ═══════════════ STUDENT MOBILE VIEW ═══════════════ -->
+<div class="student-mobile-view" id="studentMobileView">
+  <div class="mobile-app-shell w-full min-h-screen flex flex-col bg-[#F7F9F7] text-[#000000] font-['Plus_Jakarta_Sans',sans-serif]">
+    
+    <!-- Top Floating Hero Card (Matching Reference Screen 1) -->
+    <div class="pt-safe px-3.5 pt-3 pb-2 shrink-0">
+      <div class="bg-gradient-to-br from-[#29352E] via-[#29352E] to-[#29352E] text-white rounded-[28px] p-5 shadow-[0_12px_30px_-8px_rgba(19,130,155,0.4)] relative overflow-hidden">
+        
+        <!-- Top Row: Menu + Avatar + Greeting + Mail + Notifications -->
+        <header class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <button type="button" class="htb-hamburger hamburger-btn w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 border border-white/25 flex items-center justify-center text-white shrink-0 transition-all" aria-label="Open menu" aria-expanded="false" data-action="toggle-sidebar" title="Open navigation" data-sidebar-bound="true">
+              <i class="ph-bold ph-list text-lg"></i>
+            </button>
+            <div class="relative cursor-pointer shrink-0" onclick="window.location.href='student-profile.html'" title="View profile">
+              <img src="../../assets/images/dashboard-student-portrait.jpg" alt="Nrinphouneta Hok" class="w-11 h-11 rounded-full object-cover border-2 border-white/80 shadow-md">
+              <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#F7F9F7] border border-white flex items-center justify-center text-slate-900 shadow-sm" title="Active">
+                <i class="ph-fill ph-star text-[8px]"></i>
+              </div>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[11px] text-[#000000]/90 font-medium tracking-wide">Good Day!</p>
+              <h2 class="text-base font-medium text-white leading-tight truncate">Nrinphouneta Hok</h2>
+            </div>
+          </div>
+
+          <!-- Mail + Notification Actions -->
+          <div class="flex items-center gap-2 shrink-0">
+            <a href="javascript:void(0)" onclick="if(window.NGISUI)NGISUI.toast('Messaging is currently in maintenance','info');else alert('Messaging is currently in maintenance');" aria-label="Messages" title="Messages" class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 border border-white/25 flex items-center justify-center text-white relative transition-all">
+              <i class="ph-bold ph-envelope text-lg"></i>
+            </a>
+            <button type="button" aria-label="Notifications" onclick="window.location.href='student-notifications.html'" class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 border border-white/25 flex items-center justify-center text-white relative transition-all">
+              <i class="ph-bold ph-bell text-lg"></i>
+              <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#176B45] ring-2 ring-[#29352E]"></span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Academic Standing Eye Metric Row -->
+        <div class="flex items-center justify-between text-[#000000] text-xs font-medium mb-1">
+          <div class="flex items-center gap-1.5">
+            <span class="tracking-wide">Academic Standing</span>
+            <i class="ph-bold ph-eye text-sm text-[#000000]"></i>
+          </div>
+        </div>
+
+        <!-- Large Hero Numbers -->
+        <div class="flex items-baseline gap-2 mb-4">
+          <span class="text-3xl font-normal tracking-tight text-white">3.85</span>
+          <span class="text-sm font-normal text-[#000000]">GPA</span>
+        </div>
+
+        <!-- Two Glassmorphic Pill Buttons Side by Side -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" onclick="window.openDigitalIdModal()" class="w-full py-2.5 px-3 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-[0.98] border border-white/25 text-white font-medium text-xs flex items-center justify-center gap-2 backdrop-blur-md transition-all shadow-sm">
+            <i class="ph-bold ph-arrow-down-left text-base text-[#000000]"></i>
+            <span>Digital ID</span>
+          </button>
+          <button type="button" onclick="window.location.href='student-grades.html'" class="w-full py-2.5 px-3 rounded-2xl bg-white/15 hover:bg-white/25 active:scale-[0.98] border border-white/25 text-white font-medium text-xs flex items-center justify-center gap-2 backdrop-blur-md transition-all shadow-sm">
+            <i class="ph-bold ph-arrow-up-right text-base text-[#000000]"></i>
+            <span>Report Card</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Main Content Container with Natural Document Scroll -->
+    <main class="w-full max-w-3xl mx-auto px-3.5 space-y-3.5 pb-44 flex-1">
+
+      <!-- Notice Banner (Matching Upgrade Banner in Reference) -->
+      <div onclick="window.location.href='student-announcements.html'" class="bg-white border border-slate-200/90 rounded-2xl p-3 flex items-center justify-between shadow-sm  transition-all cursor-pointer">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0 border border-[#E1E9E3]/60 shadow-xs">
+            <i class="ph-bold ph-trophy text-lg"></i>
+          </div>
+          <div class="min-w-0">
+            <h4 class="text-xs font-medium text-slate-800 truncate leading-tight">Annual Sports Carnival 2026</h4>
+            <p class="text-[11px] text-slate-500 truncate mt-0.5">Registration closes this Friday · Hall A</p>
+          </div>
+        </div>
+        <i class="ph-bold ph-caret-right text-slate-400 text-sm shrink-0 ml-2"></i>
+      </div>
+
+      <!-- Quick Actions: 4 Soft Pastel Rounded Square Tiles (Matching Reference) -->
+      <section data-purpose="quick-actions">
+        <h3 class="text-xs font-normal uppercase tracking-wider text-slate-600 mb-2 px-0.5">Quick Actions</h3>
+        <div class="grid grid-cols-4 gap-2.5">
+          <!-- Grades -->
+          <div onclick="window.location.href='student-grades.html'" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#F7F9F7]  transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-white/90 text-[#29352E] flex items-center justify-center mb-1.5 shadow-xs">
+              <i class="ph-bold ph-chart-line-up text-lg"></i>
+            </div>
+            <span class="text-[11px] font-normal text-[#29352E] text-center leading-tight">Grades</span>
+          </div>
+          <!-- Tasks -->
+          <div onclick="window.location.href='student-assignments.html'" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#F7F9F7]  transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-white/90 text-[#000000] flex items-center justify-center mb-1.5 shadow-xs">
+              <i class="ph-bold ph-notebook text-lg"></i>
+            </div>
+            <span class="text-[11px] font-normal text-[#000000] text-center leading-tight">Tasks</span>
+          </div>
+          <!-- Classes -->
+          <div onclick="window.location.href='student-timetable.html'" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#F7F9F7]  transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-white/90 text-[#000000] flex items-center justify-center mb-1.5 shadow-xs">
+              <i class="ph-bold ph-calendar-check text-lg"></i>
+            </div>
+            <span class="text-[11px] font-normal text-[#000000] text-center leading-tight">Classes</span>
+          </div>
+          <!-- Reports -->
+          <div onclick="window.location.href='student-profile.html'" class="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#F7F9F7]  transition-all cursor-pointer">
+            <div class="w-9 h-9 rounded-xl bg-white/90 text-[#64746A] flex items-center justify-center mb-1.5 shadow-xs">
+              <i class="ph-bold ph-file-text text-lg"></i>
+            </div>
+            <span class="text-[11px] font-normal text-[#64746A] text-center leading-tight">Reports</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Attendance & Statistics (Matching Reference Screen 2) -->
+      <section class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-sm space-y-3" data-purpose="attendance-statistics">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#176B45]"></span>
+            <h3 class="text-xs font-normal uppercase tracking-wider text-slate-700">Attendance &amp; Statistics</h3>
+          </div>
+          <span class="text-xs font-normal text-[#29352E] bg-[#F7F9F7] px-2 py-0.5 rounded-full">Term 2</span>
+        </div>
+
+        <!-- Gauge Summary -->
+        <div class="flex items-center gap-4 py-1">
+          <div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+            <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
+              <path class="text-slate-100" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+              <path class="text-[#29352E]" stroke-dasharray="92, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+            </svg>
+            <span class="absolute text-xs font-normal text-slate-800">92%</span>
+          </div>
+          <div class="flex-1 space-y-1 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2 h-2 rounded-full bg-[#176B45]"></span>Present</span>
+              <span class="font-normal text-slate-800">22 days</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2 h-2 rounded-full bg-[#176B45]"></span>Absent</span>
+              <span class="font-normal text-slate-800">2 days</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="flex items-center gap-1.5 text-slate-600"><span class="w-2 h-2 rounded-full bg-[#176B45]"></span>Late</span>
+              <span class="font-normal text-slate-800">1 day</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Breakdown List Items with Chevrons -->
+        <div class="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-700/60">
+          <div onclick="window.location.href='student-attendance.html'" class="flex items-center justify-between p-2 rounded-xl transition-colors cursor-pointer">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-lg bg-[#F7F9F7] dark:bg-[#176B45]/60 text-[#29352E] dark:text-[#000000] flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-check-circle text-base"></i>
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-medium text-slate-800 dark:text-slate-100 leading-tight truncate">Classes Attended</p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">44 of 48 sessions on time</p>
+              </div>
+            </div>
+            <i class="ph-bold ph-caret-right text-slate-400 text-xs shrink-0 ml-1"></i>
+          </div>
+
+          <div onclick="window.location.href='student-timetable.html'" class="flex items-center justify-between p-2 rounded-xl transition-colors cursor-pointer">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-lg bg-slate-50 border-slate-200 dark:bg-[#176B45]/60 text-slate-700 dark:text-[#29352E] flex items-center justify-center shrink-0">
+                <i class="ph-bold ph-calendar-check text-base"></i>
+              </div>
+              <div class="min-w-0">
+                <p class="text-xs font-medium text-slate-800 dark:text-slate-100 leading-tight truncate">Next Class: Physics Lab</p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 truncate">Tomorrow · 09:00 AM · Hall A</p>
+              </div>
+            </div>
+            <i class="ph-bold ph-caret-right text-slate-400 text-xs shrink-0 ml-1"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Deadlines & Tasks (Matching "Recent Transactions" in Reference Screen 1) -->
+      <section data-purpose="recent-tasks">
+        <div class="flex items-center justify-between mb-2 px-0.5">
+          <h3 class="text-xs font-normal uppercase tracking-wider text-slate-600">Recent Deadlines &amp; Tasks</h3>
+          <div class="flex items-center gap-2">
+            <button type="button" aria-label="Filter" onclick="window.location.href='student-assignments.html'" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs transition-colors" title="Filter pending deadlines">
+              <i class="ph-bold ph-funnel text-xs"></i>
+            </button>
+            <a href="student-assignments.html" class="text-xs font-normal text-[#29352E] hover:underline">View All</a>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <!-- Task 1: History Essay (Urgent) -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-xl bg-[#F7F9F7] text-[#176B45] flex items-center justify-center shrink-0 border border-[#176B45]">
+                <i class="ph-bold ph-hourglass-high text-lg"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h4 class="text-xs font-medium text-slate-800 truncate">History Essay Draft</h4>
+                  <span class="text-[9px] font-normal text-[#176B45] bg-[#F7F9F7] px-1.5 py-0.2 rounded">Urgent</span>
+                </div>
+                <p class="text-[11px] text-slate-500 truncate mt-0.5">Due Jun 27, 11:59 PM · Mr. Sophea</p>
+              </div>
+            </div>
+            <button type="button" onclick="window.location.href='student-assignments.html'" class="px-3 py-1.5 bg-[#000000] hover:bg-[#000000] text-white text-xs font-normal rounded-xl shrink-0 transition-colors">
+              Submit
+            </button>
+          </div>
+
+          <!-- Task 2: Math Problem Set (Soon) -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0 border border-[#E1E9E3]">
+                <i class="ph-bold ph-math-operations text-lg"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h4 class="text-xs font-medium text-slate-800 truncate">Math Problem Set 4</h4>
+                  <span class="text-[9px] font-normal text-[#000000] bg-[#F7F9F7] px-1.5 py-0.2 rounded">Soon</span>
+                </div>
+                <p class="text-[11px] text-slate-500 truncate mt-0.5">Due Jun 29, 11:59 PM</p>
+              </div>
+            </div>
+            <button type="button" onclick="window.location.href='student-assignments.html'" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-normal rounded-xl shrink-0 transition-colors">
+              View
+            </button>
+          </div>
+
+          <!-- Task 3: Chemistry Lab Report (Graded) -->
+          <div class="bg-white border border-slate-200/90 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0 border border-[#E1E9E3]">
+                <i class="ph-bold ph-flask text-lg"></i>
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <h4 class="text-xs font-medium text-slate-800 truncate">Chemistry Lab Report</h4>
+                  <span class="text-[9px] font-normal text-[#000000] bg-[#F7F9F7] px-1.5 py-0.2 rounded">Graded</span>
+                </div>
+                <p class="text-[11px] text-slate-500 truncate mt-0.5">Submitted · Ms. Kiry Sokha</p>
+              </div>
+            </div>
+            <span class="text-xs font-normal text-[#000000] bg-[#F7F9F7] border border-[#E1E9E3]/60 px-2.5 py-1 rounded-xl shrink-0">
+              88%
+            </span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Premium Floating Bottom Navigation Dock -->
+    <nav class="mob-bottomnav" id="mobBottomNav" role="navigation" aria-label="Mobile Navigation" data-purpose="bottom-navigation-bar">
+      <div class="mob-bn-glow" aria-hidden="true"></div>
+      <div class="mob-bn-shell">
+        <div class="mob-bn-track">
+          <div class="mob-bn-slider" id="mobBnSlider" aria-hidden="true" style="opacity: 0;"></div>
+          <div class="mob-bn-inner">
+            <a href="student.html" class="mob-bn-item is-active" data-tab="home" aria-label="Home" aria-current="page">
+              <span class="mob-bn-icon-row">
+                <i class="ph-fill ph-house-simple"></i>
+              </span>
+            </a>
+            <a href="../shared/departments.html" class="mob-bn-item" data-tab="department" aria-label="Department">
+              <span class="mob-bn-icon-row">
+                <i class="ph-bold ph-buildings"></i>
+              </span>
+            </a>
+            <a href="javascript:void(0)" onclick="if(window.NGISUI)NGISUI.toast('Messaging is currently in maintenance','info');else alert('Messaging is currently in maintenance');" class="mob-bn-item mob-bn-chat" data-tab="chat" aria-label="Chat">
+              <span class="mob-bn-icon-row">
+                <span class="mob-bn-chat-core">
+                  <i class="ph-fill ph-chat-circle-dots"></i>
+                </span>
+              </span>
+            </a>
+            <a href="student-notifications.html" class="mob-bn-item" data-tab="alerts" aria-label="Alerts">
+              <span class="mob-bn-icon-row">
+                <span class="mob-bn-icon-wrap">
+                  <i class="ph-bold ph-bell"></i>
+                  <span class="mob-bn-dot"></span>
+                </span>
+              </span>
+            </a>
+            <a href="student-profile.html" class="mob-bn-item" data-tab="profile" aria-label="Profile">
+              <span class="mob-bn-icon-row">
+                <i class="ph-bold ph-user"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+  </div>
+</div>
+</div></div>
+
+<div class="id-modal-overlay" id="idModal">
+  <div class="id-modal-container">
+    <div class="id-modal-header">
+      <span class="id-modal-title">Digital Student ID Card</span>
+      <button type="button" class="id-close-btn" id="idCloseBtn" aria-label="Close modal">
+        <span class="mi">close</span>
+      </button>
+    </div>
+    <div class="id-modal-body">
+      <div class="id-card-wrapper" id="idCardWrap">
+        <div class="id-card-inner">
+          <!-- Front Face -->
+          <div class="id-card-face id-card-front">
+            <div class="id-card-logo-area">
+              <span class="id-card-school-name">New Gateway<br>International School</span>
+            </div>
+            <div class="id-card-photo-frame">
+              <img class="id-card-photo" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=160" alt="Student photo">
+            </div>
+            <div class="id-card-name">Nrinphouneta Hok</div>
+            <span class="id-card-title-badge">Student ID</span>
+            <div class="id-card-details-grid">
+              <div>
+                <div class="id-card-label">Grade / Section</div>
+                <div class="id-card-val">Grade 10-A</div>
+              </div>
+              <div>
+                <div class="id-card-label">Student ID</div>
+                <div class="id-card-val">2026-STD-0142</div>
+              </div>
+              <div>
+                <div class="id-card-label">House Color</div>
+                <div class="id-card-val" style="color:#F7F9F7">Yellow Falcon</div>
+              </div>
+              <div>
+                <div class="id-card-label">Status</div>
+                <div class="id-card-val" style="color:#176B45">Active Enrolled</div>
+              </div>
+            </div>
+          </div>
+          <!-- Back Face -->
+          <div class="id-card-face id-card-back">
+            <div class="id-card-back-header">Student Verification Regulations</div>
+            <ul class="id-card-rules">
+              <li>This card remains the property of NGIS and is non-transferable.</li>
+              <li>Loss of card must be reported to the administration immediately.</li>
+              <li>QR code is valid for attendance, gate entry, cafeteria, and library checkouts.</li>
+              <li>Usage is logged and subject to student behavioral policies.</li>
+            </ul>
+            <div class="id-card-qr-area">
+              <!-- SVG Offline QR Code -->
+              <svg class="id-card-qr-svg" viewBox="0 0 21 21" style="image-rendering:pixelated;">
+                <!-- Finder TL -->
+                <rect x="0" y="0" width="7" height="7" fill="#000000"></rect>
+                <rect x="1" y="1" width="5" height="5" fill="white"></rect>
+                <rect x="2" y="2" width="3" height="3" fill="#000000"></rect>
+                <!-- Finder TR -->
+                <rect x="14" y="0" width="7" height="7" fill="#000000"></rect>
+                <rect x="15" y="1" width="5" height="5" fill="white"></rect>
+                <rect x="16" y="2" width="3" height="3" fill="#000000"></rect>
+                <!-- Finder BL -->
+                <rect x="0" y="14" width="7" height="7" fill="#000000"></rect>
+                <rect x="1" y="15" width="5" height="5" fill="white"></rect>
+                <rect x="2" y="16" width="3" height="3" fill="#000000"></rect>
+                <!-- Bottom Right Alignment Marker -->
+                <rect x="14" y="14" width="3" height="3" fill="#000000"></rect>
+                <rect x="15" y="15" width="1" height="1" fill="white"></rect>
+                <!-- Random Offline Data modules -->
+                <rect x="8" y="2" width="2" height="1" fill="#000000"></rect>
+                <rect x="11" y="1" width="1" height="3" fill="#000000"></rect>
+                <rect x="9" y="5" width="3" height="1" fill="#000000"></rect>
+                <rect x="8" y="8" width="1" height="5" fill="#000000"></rect>
+                <rect x="10" y="10" width="4" height="1" fill="#000000"></rect>
+                <rect x="12" y="7" width="2" height="2" fill="#000000"></rect>
+                <rect x="18" y="9" width="2" height="2" fill="#000000"></rect>
+                <rect x="5" y="9" width="2" height="3" fill="#000000"></rect>
+                <rect x="15" y="18" width="3" height="1" fill="#000000"></rect>
+                <rect x="9" y="15" width="1" height="4" fill="#000000"></rect>
+                <rect x="18" y="15" width="1" height="3" fill="#000000"></rect>
+              </svg>
+              <div style="font-size:8.5px;font-weight: 400;color:#176B45;letter-spacing:0.5px">SCAN FOR GATE ACCESS / ATTENDANCE</div>
+            </div>
+            <div class="id-card-barcode-area">
+              <!-- SVG Offline Barcode -->
+              <svg class="id-card-barcode-svg" viewBox="0 0 100 20" preserveAspectRatio="none">
+                <rect x="0" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="3" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="6" y="0" width="3" height="20" fill="#000000"></rect>
+                <rect x="10" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="13" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="17" y="0" width="4" height="20" fill="#000000"></rect>
+                <rect x="22" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="25" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="29" y="0" width="3" height="20" fill="#000000"></rect>
+                <rect x="34" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="36" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="40" y="0" width="4" height="20" fill="#000000"></rect>
+                <rect x="46" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="48" y="0" width="3" height="20" fill="#000000"></rect>
+                <rect x="53" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="57" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="60" y="0" width="4" height="20" fill="#000000"></rect>
+                <rect x="66" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="70" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="73" y="0" width="3" height="20" fill="#000000"></rect>
+                <rect x="78" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="82" y="0" width="4" height="20" fill="#000000"></rect>
+                <rect x="88" y="0" width="1" height="20" fill="#000000"></rect>
+                <rect x="91" y="0" width="3" height="20" fill="#000000"></rect>
+                <rect x="96" y="0" width="2" height="20" fill="#000000"></rect>
+                <rect x="99" y="0" width="1" height="20" fill="#000000"></rect>
+              </svg>
+              <div style="font-size:8px;font-weight: 400;color:#176B45;letter-spacing:1px">2026-STD-0142</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="id-card-flip-prompt">
+        <span class="mi">sync_alt</span>
+        <span>Click card to flip front/back</span>
+      </div>
+    </div>
+    <div class="id-modal-footer">
+      <span class="mi">wifi_off</span>
+      <span>Offline Active (Demo Cached in Browser)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PAGE SCRIPTS ═══════════════ -->
+<script src="js/hero.js"></script><div class="htb-dropdown" id="htbDropdown"><div class="htb-dd-header"><img class="htb-dd-avatar" src="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=160" alt="Nrinphouneta Hok"><div><div class="htb-dd-name">Nrinphouneta Hok</div><div class="htb-dd-id">Student ID: 2026-STD-0142</div></div></div><div class="htb-dd-divider"></div><div class="htb-dd-info"><div class="htb-dd-row"><span class="mi">school</span><span>Grade 10 — Science Stream</span></div><div class="htb-dd-row"><span class="mi">class</span><span>Class 10A</span></div><div class="htb-dd-row"><span class="mi">email</span><span>nrinphouneta@ngis.edu.kh</span></div><div class="htb-dd-row"><span class="mi">calendar_today</span><span>Enrolled: Sep 2024</span></div><div class="htb-dd-row"><span class="mi">emoji_events</span><span>GPA: 3.87 / 4.00</span></div></div><div class="htb-dd-divider"></div><div class="htb-dd-actions"><a href="student-profile.html" class="htb-dd-btn"><span class="mi">manage_accounts</span>My Profile</a><a href="/" class="htb-dd-btn htb-dd-btn-danger"><span class="mi">logout</span>Sign Out</a></div></div><div class="hpd" id="htbNotifPanel"><div class="hpd-head"><span class="hpd-head-title">Notifications</span><button type="button" class="hpd-head-action" id="htbMarkAllRead">Mark all read</button></div><div class="hpd-list"><a href="student-notifications.html" class="hpd-item"><div class="hpd-notif-ico" style="background:#eff6ff"><span class="mi" style="color:#2563eb">assignment</span></div><div class="hpd-notif-body"><div class="hpd-notif-title">Physics Essay Draft posted</div><div class="hpd-notif-meta">Mr. Sophea · 12m ago</div></div><div class="hpd-unread-dot"></div></a><a href="student-notifications.html" class="hpd-item"><div class="hpd-notif-ico" style="background:#f0fdf4"><span class="mi" style="color:#16a34a">grade</span></div><div class="hpd-notif-body"><div class="hpd-notif-title">Chemistry graded: 88%</div><div class="hpd-notif-meta">Ms. Kiry · 2h ago</div></div><div class="hpd-unread-dot"></div></a><a href="student-notifications.html" class="hpd-item"><div class="hpd-notif-ico" style="background:rgba(36,85,214,0.1)"><span class="mi" style="color:#2455D6">campaign</span></div><div class="hpd-notif-body"><div class="hpd-notif-title">Science Fair registration open</div><div class="hpd-notif-meta">School · Yesterday</div></div></a></div><div class="hpd-footer"><a href="student-notifications.html" class="hpd-footer-btn"><span class="mi">notifications</span>View all</a></div></div>
+<script src="js/subjects.js"></script>
+<script src="js/calendar.js"></script><div class="cal-popup-overlay" id="calPopupOverlay" role="dialog" aria-modal="true"><div class="cal-popup"><div class="cal-popup-head"><div class="cal-popup-head-l"><span class="cal-popup-icon mi">calendar_today</span><div><div class="cal-popup-month">June 2025</div><div class="cal-popup-date" id="calPopupDate">June 25</div></div></div><button class="cal-popup-close" id="calPopupClose" aria-label="Close"><span class="mi">close</span></button></div><div class="cal-popup-body" id="calPopupBody"></div></div></div>
+<script src="js/attendance.js"></script>
+<script src="js/student-inline.js"></script>
+
+<!-- Layout engine (must be last) -->
+<script>window.PAGE = {"role":"student","active":"dashboard"};</script>
+<script src="../../assets/js/layout.js?v=3.0"></script>
+
+
+
+<aside class="sidebar custom-scrollbar" id="sidebar" role="navigation" aria-label="Main navigation" data-purpose="primary-sidebar">
+
+        <div class="side-brand">
+
+          <a class="side-brand-info" href="../../pages/student/student.html" aria-label="New Gateway International School">
+
+            <img class="side-brand-crest" src="../../assets/images/ngis-seal.svg" alt="NGIS Crest" onerror="this.onerror=null;this.src='../../pages/student/LOGO%20NGIS%20(2).png'">
+
+            <div class="side-brand-titles">
+
+              <span class="side-brand-name">NGIS</span>
+
+              <span class="side-brand-school">New Gateway International School</span>
+
+            </div>
+
+          </a>
+
+          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
+
+            <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+
+              <line x1="6" y1="5" x2="6" y2="19"></line>
+
+              <polyline points="16 7 10 12 16 17"></polyline>
+
+            </svg>
+
+          </button>
+
+          <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Close navigation" aria-label="Close navigation" type="button">
+
+            <i class="ph ph-x text-lg" aria-hidden="true"></i>
+
+          </button>
+
+        </div>
+
+
+
+        <nav class="side-nav custom-scrollbar" aria-label="Main Navigation">
+
+          
+
+        <div class="nav-group">
+
+          <div class="nav-group-label">
+
+        
+
+        <span class="nav-group-label-text">Main</span>
+
+        <span class="nav-group-label-rule"></span></div>
+
+          <a class="nav-link  active" href="../../pages/student/student.html" aria-current="page" data-id="dashboard">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">dashboard</span>
+
+           <span class="nav-link-label">Dashboard</span>
+
+           
+
+         </a>
+
+        </div>
+
+        <div class="nav-group" data-group-id="academics">
+
+          <div class="nav-group-label">
+
+        <span class="material-symbols-outlined nav-group-icon nav-icon" aria-hidden="true">school</span>
+
+        <span class="nav-group-label-text">ACADEMICS</span>
+
+        <span class="nav-group-label-rule"></span></div>
+
+          <a class="nav-link  " href="../../pages/shared/departments.html?portal=student" data-id="departments">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">apartment</span>
+
+           <span class="nav-link-label">Academic Departments</span>
+
+           
+
+         </a><a class="nav-link  " href="../../pages/student/student-calendar.html" data-id="calendar">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">calendar_month</span>
+
+           <span class="nav-link-label">Class Timetable</span>
+
+           
+
+         </a><a class="nav-link  " href="../../pages/student/student-id.html" data-id="student-id">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">badge</span>
+
+           <span class="nav-link-label">Digital Student ID</span>
+
+           
+
+         </a>
+
+        </div>
+
+        <div class="nav-group" data-group-id="campus-life">
+
+          <div class="nav-group-label">
+
+        <span class="material-symbols-outlined nav-group-icon nav-icon" aria-hidden="true">local_activity</span>
+
+        <span class="nav-group-label-text">CAMPUS LIFE</span>
+
+        <span class="nav-group-label-rule"></span></div>
+
+          <a class="nav-link  " href="../../pages/student/student-services.html" data-id="services">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">grid_view</span>
+
+           <span class="nav-link-label">Services Hub</span>
+
+           
+
+         </a><a class="nav-link  " href="../../pages/student/student-lost-found.html" data-id="lost-found">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">inventory_2</span>
+
+           <span class="nav-link-label">Lost &amp; Found</span>
+
+           
+
+         </a>
+
+        </div>
+
+        <div class="nav-group" data-group-id="communication">
+
+          <div class="nav-group-label">
+
+        <span class="material-symbols-outlined nav-group-icon nav-icon" aria-hidden="true">campaign</span>
+
+        <span class="nav-group-label-text">COMMUNICATION</span>
+
+        <span class="nav-group-label-rule"></span></div>
+
+          <a class="nav-link  " href="../../pages/student/student-announcements.html" data-id="announcements">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">campaign</span>
+
+           <span class="nav-link-label">Announcements</span>
+
+           
+
+         </a>
+
+        </div>
+
+        <div class="nav-group" data-group-id="account-grp">
+
+          <div class="nav-group-label">
+
+        <span class="material-symbols-outlined nav-group-icon nav-icon" aria-hidden="true">person</span>
+
+        <span class="nav-group-label-text">ACCOUNT</span>
+
+        <span class="nav-group-label-rule"></span></div>
+
+          <a class="nav-link  " href="../../pages/student/student-notifications.html" data-id="notifications">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">notifications</span>
+
+           <span class="nav-link-label">Notifications</span>
+
+           <span class="pill">5</span>
+
+         </a><a class="nav-link  " href="../../pages/student/student-profile.html" data-id="profile">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">person</span>
+
+           <span class="nav-link-label">My Profile</span>
+
+           
+
+         </a><a class="nav-link  " href="../../index.html" data-id="logout">
+
+           <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">logout</span>
+
+           <span class="nav-link-label">Log out</span>
+
+           
+
+         </a>
+
+        </div>
+
+        </nav>
+
+
+
+        <footer class="side-foot">
+
+          <a class="nav-link side-foot-help" href="../../pages/student/student-services.html">
+
+            <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">help_outline</span>
+
+            <span class="nav-link-label">Help &amp; Support</span>
+
+          </a>
+
+          <a class="nav-link nav-link-danger side-foot-signout" href="../../index.html" data-purpose="sign-out-button">
+
+            <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">logout</span>
+
+            <span class="nav-link-label">Log out</span>
+
+          </a>
+
+        </footer>
+
+      <button class="sidebar-expand-btn" id="sidebarExpandBtn" title="Collapse sidebar" aria-label="Collapse sidebar" data-action="toggle-sidebar" type="button">
+
+          <svg class="side-expand-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+
+            <polyline points="9 18 15 12 9 6"></polyline>
+
+          </svg>
+
+        </button></aside><div class="scrim" id="scrim"></div><div class="toast-wrap" id="toasts" role="region" aria-live="polite"></div><script src="../../assets/js/app.js"></script><script src="../../assets/js/error-messages.js" defer=""></script><script src="../../assets/js/error-boundary.js" defer=""></script><script src="../../assets/components/skeleton.js" defer=""></script><script src="../../assets/components/error-state.js" defer=""></script><script src="../../assets/components/empty-state.js" defer=""></script><script src="../../assets/components/primary-button.js" defer=""></script><script src="../../assets/components/cancel-dialog.js" defer=""></script><script src="../../assets/components/onboarding-layout.js" defer=""></script><script src="../../assets/js/ui-states.js" defer=""></script><script src="../../assets/js/action-icons.js" defer=""></script></body></html>

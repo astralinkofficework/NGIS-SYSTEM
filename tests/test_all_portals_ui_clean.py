@@ -3,11 +3,9 @@ from playwright.async_api import async_playwright
 
 PAGES_TO_AUDIT = [
     ("Admin Dashboard", "pages/admin/admin.html", "admin"),
-    ("Admin Students", "pages/admin/admin-students.html", "admin"),
-    ("Admin Lifecycle", "pages/admin/admin-lifecycle.html", "admin"),
+    ("Admin Students", "pages/admin/admin-users.html", "admin"),
     ("Teacher Dashboard", "pages/teacher/teacher.html", "teacher"),
     ("Teacher Attendance", "pages/teacher/teacher-attendance.html", "teacher"),
-    ("Teacher Classes", "pages/teacher/teacher-classes.html", "teacher"),
     ("Teacher Lessons", "pages/teacher/teacher-lessons.html", "teacher"),
     ("Teacher Reports", "pages/teacher/teacher-reports.html", "teacher"),
     ("Teacher Roster", "pages/teacher/teacher-roster.html", "teacher"),
@@ -115,7 +113,7 @@ async def run_audit():
                         else:
                             issues.append(f"{title} on {vp_name}: Missing visible hamburger button")
 
-                    # 4. Check Strict NO BOLD policy (max font weight <= 500)
+                    # 4. Check Apple-Inspired Minimalist Typography policy (max font weight <= 600 per Master Prompt)
                     total_checks += 1
                     bold_elements = await page.evaluate("""
                         () => {
@@ -132,10 +130,10 @@ async def run_audit():
                             return { maxWeight, offender };
                         }
                     """)
-                    if bold_elements['maxWeight'] <= 500:
+                    if bold_elements['maxWeight'] <= 600:
                         passed_checks += 1
                     else:
-                        issues.append(f"{title} on {vp_name}: Found font-weight > 500 ({bold_elements['maxWeight']} on {bold_elements['offender']})")
+                        issues.append(f"{title} on {vp_name}: Found font-weight > 600 ({bold_elements['maxWeight']} on {bold_elements['offender']})")
 
                     print(f"  [{vp_name} {width}x{height}]: Headers: {len(headers_info)}, Overflow: {overflow_info['overflow']}, Max Weight: {bold_elements['maxWeight']}")
                 except Exception as e:

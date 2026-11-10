@@ -6,10 +6,13 @@
 <title>NGIS — Student Services Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
 <script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
 <style>
 .admin-services { max-width: 1400px; margin: 0 auto; padding: 16px 24px 40px; display: flex; flex-direction: column; gap: 16px; }
@@ -26,12 +29,12 @@
 .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 400; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
 .status-open { background: var(--accent-soft); color: #000000; }
 .status-pending { background: var(--primary-soft); color: var(--primary); }
-.status-in_progress { background: #F3F3F5; color: #202F63; }
-.status-completed { background: #F3F3F5; color: #000000; }
+.status-in_progress { background: #FBFBFB; color: #1D1D1B; }
+.status-completed { background: #FBFBFB; color: #000000; }
 .status-rejected { background: var(--danger-soft); color: var(--danger); }
 .priority-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 400; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
 .priority-normal { background: var(--surface-3); color: var(--muted); }
-.priority-high { background: #F3F3F5; color: #92243D; }
+.priority-high { background: #FBFBFB; color: #F77442; }
 .priority-urgent { background: var(--danger-soft); color: var(--danger); }
 .modal-overlay { position: fixed; inset: 0; background: rgba(10,34,20,.50); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.show { opacity: 1; pointer-events: auto; }
@@ -48,6 +51,11 @@
 </style>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
 </head>
 <body data-role="admin" data-portal="admin">
 <main class="main">
@@ -91,7 +99,7 @@
       <table class="req-table">
         <thead>
           <tr>
-            <th>ID</th><th>Student</th><th>Category</th><th>Type</th><th>Title</th><th>Campus</th><th>Status</th><th>Priority</th><th>Date</th><th>Actions</th>
+            <th>ID</th><th>Student</th><th>Category</th><th>Type</th><th>Title</th><th>Campus</th><th>Status</th><th>Priority</th><th>Date</th><th style="text-align:right">Actions</th>
           </tr>
         </thead>
         <tbody id="adminTable"></tbody>
@@ -161,9 +169,16 @@ function renderAdmin(items) {
       <td>${badge(r.status)}</td>
       <td>${priorityBadge(r.priority)}</td>
       <td>${r.date}</td>
-      <td><button class="btn btn-sm btn-soft" onclick="openModal('${r.id}')">Review</button></td>
+      <td class="table-actions" style="text-align:right">
+        <div class="action-group" style="justify-content:flex-end">
+          <button type="button" class="action-icon-btn primary" onclick="openModal('${r.id}')" title="Review Service Request #${r.id}" aria-label="Review Service Request #${r.id}">
+            <span data-ngis-icon="view"></span>
+          </button>
+        </div>
+      </td>
     </tr>
   `).join('');
+  if (window.NGIS) window.NGIS.hydrate(tbody);
 }
 
 async function openModal(id) {

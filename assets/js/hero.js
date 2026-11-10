@@ -195,7 +195,7 @@
   var logoSrc = C.logoSrc || (rootPrefix + 'assets/images/logo.png');
 
   var html =
-    '<div class="' + heroClass + '">' +
+    '<header class="' + heroClass + '" role="banner">' +
 
       '<!-- ── Tier 1: Main Header Bar ── -->' +
       '<div class="hero-topbar">' +
@@ -261,7 +261,7 @@
         '</div>' +
       '</div>' : '') +
 
-    '</div>';
+    '</header>';
 
   /* ── Inject hero ── */
   var placeholder = document.getElementById('heroBanner');

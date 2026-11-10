@@ -1,0 +1,422 @@
+/* ============================================================
+   NGIS ERP — Global Action Buttons, Row Actions & SVG Icon System
+   Single source of truth for every action control in the product.
+
+   Actions  : .action-group > .action-icon-btn  (icon-only, compact)
+   Labelled : .action-btn-pill                   (icon + text)
+   Menus    : .action-dropdown > .action-dropdown-menu > .action-dropdown-item
+
+   Palette (official NGIS)
+   - Forest Green : #176B45   primary actions
+   - Pure White   : #FFFFFF
+   - Warm Orange  : #F28C28   attention actions
+   - Soft Mint    : #E8F3ED   selected / subtle surfaces
+   - Off White    : #F7F9F7   hover surface
+   - Dark Charcoal: #29352E   default icon colour
+   - Danger       : #BA1A1A / #FDF2F2
+
+   Interaction rules: no colour circles, no lifting, no scaling,
+   no bouncing — neutral surfaces and a visible keyboard focus ring.
+   ============================================================ */
+
+:root {
+  --ngis-action-fg:             #29352E;
+  --ngis-action-fg-muted:       #64746A;
+  --ngis-action-primary:        #176B45;
+  --ngis-action-primary-strong: #125638;
+  --ngis-action-accent:         #F28C28;
+  --ngis-action-danger:         #BA1A1A;
+  --ngis-action-surface:        #FFFFFF;
+  --ngis-action-hover:          #F7F9F7;
+  --ngis-action-selected:       #E8F3ED;
+  --ngis-action-border:         #E1E9E3;
+  --ngis-action-accent-soft:    #FFF4EB;
+  --ngis-action-danger-soft:    #FDF2F2;
+  --ngis-action-focus:          rgba(23, 107, 69, 0.35);
+}
+
+[data-theme="dark"],
+html[data-theme="dark"] {
+  --ngis-action-fg:          #E8F3ED;
+  --ngis-action-fg-muted:    #8FA095;
+  --ngis-action-surface:     #18231D;
+  --ngis-action-hover:       rgba(255, 255, 255, 0.07);
+  --ngis-action-selected:    #1F2E26;
+  --ngis-action-border:      rgba(225, 233, 227, 0.15);
+  --ngis-action-accent-soft: #2E2218;
+  --ngis-action-danger-soft: rgba(186, 26, 26, 0.16);
+}
+
+/* ── 1. Action Group Container ───────────────────────────────── */
+.action-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+td.table-actions,
+td .action-group,
+th.table-actions {
+  text-align: right;
+}
+
+/* ── 2. Compact Icon Button (icon-only row actions) ──────────── */
+.action-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ngis-action-fg);
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 0;
+  box-shadow: none;
+  transform: none;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  user-select: none;
+  text-decoration: none;
+}
+
+.action-icon-btn:hover {
+  background: var(--ngis-action-hover);
+  border-color: var(--ngis-action-border);
+  color: var(--ngis-action-primary);
+  transform: none;
+  box-shadow: none;
+}
+
+.action-icon-btn:focus-visible {
+  outline: 2px solid var(--ngis-action-primary);
+  outline-offset: 1px;
+  background: var(--ngis-action-hover);
+}
+
+.action-icon-btn:disabled,
+.action-icon-btn[disabled],
+.action-icon-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── 3. Icon Colour Variants (meaning based, not decorative) ─── */
+.action-icon-btn.primary,
+.action-icon-btn.is-primary {
+  color: var(--ngis-action-primary);
+}
+.action-icon-btn.primary:hover,
+.action-icon-btn.is-primary:hover {
+  background: var(--ngis-action-selected);
+  border-color: var(--ngis-action-selected);
+  color: var(--ngis-action-primary-strong);
+}
+
+.action-icon-btn.accent,
+.action-icon-btn.is-accent {
+  color: var(--ngis-action-accent);
+}
+.action-icon-btn.accent:hover,
+.action-icon-btn.is-accent:hover {
+  background: var(--ngis-action-accent-soft);
+  border-color: var(--ngis-action-accent);
+  color: var(--ngis-action-accent);
+}
+
+/* Destructive actions stay clearly distinguishable */
+.action-icon-btn.danger,
+.action-icon-btn.is-danger {
+  color: var(--ngis-action-danger);
+}
+.action-icon-btn.danger:hover,
+.action-icon-btn.is-danger:hover {
+  background: var(--ngis-action-danger-soft);
+  border-color: var(--ngis-action-danger);
+  color: var(--ngis-action-danger);
+}
+
+/* Secondary actions collapse into the More menu on small screens */
+@media (max-width: 767px) {
+  .action-icon-btn.collapse-mobile {
+    display: none;
+  }
+}
+
+/* ── 4. SVG Icon Normalisation ───────────────────────────────── */
+.action-icon-btn svg,
+.action-btn-pill svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.action-dropdown-item svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Icon placeholder before hydration (avoids layout jump) */
+[data-ngis-icon]:empty {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+}
+
+/* Normalised icon-font glyphs (Material/Phosphor -> shared SVG).
+   Sized in em so they inherit the host's original font-size utility,
+   keeping prior visual scale while switching to the outline SVG. */
+.ngis-icon-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  vertical-align: middle;
+}
+.ngis-icon-inline svg {
+  width: 1em;
+  height: 1em;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: block;
+}
+
+/* ── 5. Labelled Action Pill (icon + text) ───────────────────── */
+.action-btn-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: 8px;
+  border: 1px solid var(--ngis-action-border);
+  background: var(--ngis-action-surface);
+  color: var(--ngis-action-fg);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+  user-select: none;
+}
+
+.action-btn-pill:hover {
+  background: var(--ngis-action-hover);
+  border-color: var(--ngis-action-primary);
+  color: var(--ngis-action-primary);
+}
+
+.action-btn-pill:focus-visible {
+  outline: 2px solid var(--ngis-action-primary);
+  outline-offset: 1px;
+}
+
+.action-btn-pill.primary {
+  background: var(--ngis-action-primary);
+  border-color: var(--ngis-action-primary);
+  color: #FFFFFF;
+}
+
+/* ── 5.1. Strict Table Row Actions: Icon-Only Enforcement ──────── */
+td.table-actions .action-btn-pill,
+td .action-group .action-btn-pill,
+.table-actions .action-group .action-btn-pill {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  border-radius: 8px !important;
+}
+
+td.table-actions .action-btn-pill > span:not([data-ngis-icon]):not(.ngis-icon-inline),
+td .action-group .action-btn-pill > span:not([data-ngis-icon]):not(.ngis-icon-inline),
+.table-actions .action-group button > span:not([data-ngis-icon]):not(.ngis-icon-inline) {
+  display: none !important;
+}
+.action-btn-pill.primary:hover {
+  background: var(--ngis-action-primary-strong);
+  border-color: var(--ngis-action-primary-strong);
+  color: #FFFFFF;
+}
+
+.action-btn-pill.danger {
+  background: var(--ngis-action-surface);
+  border-color: var(--ngis-action-danger);
+  color: var(--ngis-action-danger);
+}
+.action-btn-pill.danger:hover {
+  background: var(--ngis-action-danger);
+  border-color: var(--ngis-action-danger);
+  color: #FFFFFF;
+}
+
+.action-btn-pill:disabled,
+.action-btn-pill[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── 6. Action Dropdown Menu (More options) ──────────────────── */
+.action-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.action-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 60;
+  min-width: 184px;
+  padding: 4px;
+  margin: 0;
+  list-style: none;
+  background: var(--ngis-action-surface);
+  border: 1px solid var(--ngis-action-border);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  display: none;
+}
+
+.action-dropdown-menu.show {
+  display: block;
+}
+
+/* When the menu would be clipped by a scroll container, JS pins it
+   to the viewport with fixed positioning. */
+.action-dropdown-menu.is-floating {
+  position: fixed;
+  top: auto;
+  right: auto;
+}
+
+.action-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ngis-action-fg);
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.action-dropdown-item:hover,
+.action-dropdown-item:focus-visible {
+  background: var(--ngis-action-selected);
+  color: var(--ngis-action-primary);
+  outline: none;
+}
+
+.action-dropdown-item.danger {
+  color: var(--ngis-action-danger);
+}
+.action-dropdown-item.danger:hover,
+.action-dropdown-item.danger:focus-visible {
+  background: var(--ngis-action-danger-soft);
+  color: var(--ngis-action-danger);
+}
+
+.action-dropdown-item:disabled,
+.action-dropdown-item[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-dropdown-divider {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--ngis-action-border);
+}
+
+/* ── 7. Accessible Tooltip ───────────────────────────────────── */
+[data-tooltip] {
+  position: relative;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #29352E;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.2;
+    padding: 5px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 70;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ── 8. Responsive Action Columns ────────────────────────────── */
+@media (max-width: 768px) {
+  .action-group {
+    gap: 4px;
+  }
+  .action-icon-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .action-icon-btn,
+  .action-btn-pill,
+  .action-dropdown-item {
+    transition: none;
+  }
+}

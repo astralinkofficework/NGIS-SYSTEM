@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Student Service Hub &amp; Requests | Principal Central</title>
+
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/design-tokens.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/ui-states.css">
+
+<!-- Global Action Icons Engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
+
+<!-- Phosphor Icons & Tailwind CSS -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: ["class", '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+        body: ['"Plus Jakarta Sans"', 'sans-serif'],
+      },
+      colors: {
+        brand: {
+          50: '#f0f7f3',
+          100: '#dbeee2',
+          500: '#176B45',
+          600: '#176B45',
+          700: '#125335',
+          800: '#0e4028',
+          900: '#092a1b'
+        },
+        navy: {
+          DEFAULT: '#29352E',
+          dark: '#29352E',
+          light: '#F7F9F7',
+        },
+        burgundy: {
+          DEFAULT: '#176B45',
+          hover: '#125335',
+        }
+      }
+    }
+  }
+};
+</script>
+
+<style data-purpose="base-typography">
+  /* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+  *, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+  .font-medium, .badge, th, button, .btn, .status-tab { font-weight: 500 !important; }
+
+  :root {
+    --navy: #29352E;
+    --burgundy: #176B45;
+    --white: #FFFFFF;
+    --black: #000000;
+    --soft-gray: #F7F9F7;
+    --border-subtle: #E1E9E3;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    background-color: #F7F9F7;
+    color: #29352E;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    vertical-align: middle;
+    display: inline-block;
+  }
+
+  /* Table styling */
+  #requestsTable tbody tr {
+    transition: background-color 0.15s ease;
+  }
+  #requestsTable tbody tr:hover {
+    background-color: #F7F9F7;
+  }
+
+  /* Toast notification */
+  #toastNotification {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #29352E;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    display: none;
+    z-index: 1200;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+</style>
+
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+</head>
+
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- Mandatory Mobile Navigation Bar (AGENTS.md) -->
+  <div class="lg:hidden bg-white border-b border-[#E1E9E3] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+    <div class="flex items-center gap-2.5">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <span class="text-sm font-medium text-[#29352E]">Student Service Hub</span>
+    </div>
+    <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-[#176B45] border border-emerald-100 font-medium">Principal Console</span>
+  </div>
+
+  <div class="page px-3 sm:px-5 py-4 sm:py-6 max-w-[1400px] mx-auto">
+    <!-- Context Breadcrumb & Top Bar -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-3">
+      <div>
+        <h1 class="text-2xl font-medium text-[#29352E] tracking-tight">Student Service Hub &amp; Requests</h1>
+      </div>
+
+      <!-- Top Action Toolbar -->
+      <div class="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
+        <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-[#E1E9E3] text-[#29352E] text-xs font-medium hover:bg-slate-50 shadow-2xs transition-all active:scale-95 cursor-pointer min-h-[38px]" onclick="exportAuditLog()" type="button" title="Export CSV">
+          <span class="material-symbols-outlined text-[16px] text-slate-500">download</span>
+          <span>Export CSV</span>
+        </button>
+        <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white border border-[#E1E9E3] text-[#29352E] text-xs font-medium hover:bg-slate-50 shadow-2xs transition-all active:scale-95 cursor-pointer min-h-[38px]" id="btnReload" onclick="reloadConsole()" type="button" title="Sync &amp; Reload">
+          <span class="material-symbols-outlined text-[16px] text-slate-500">refresh</span>
+          <span>Reload</span>
+        </button>
+        <button class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125335] shadow-2xs transition-all active:scale-95 cursor-pointer min-h-[38px]" id="btnBatchApprove" onclick="batchApprovePending()" type="button" title="Batch Approve Pending">
+          <span class="material-symbols-outlined text-[16px]">verified</span>
+          <span>Batch Approve</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Metric Telemetry Cards (Clean Standardized 4-Column Bento) -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5" data-purpose="metrics-telemetry">
+      <!-- Card 1: Total Requests -->
+      <div class="telemetry-card bg-white rounded-xl p-4 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Total Requests</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]" id="kpiTotalRequests">8</span>
+            </div>
+          </div>
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px] sm:text-[22px]">folder_open</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Waiting for Decision -->
+      <div class="telemetry-card bg-white rounded-xl p-4 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-24 h-24 bg-rose-500/10 rounded-bl-full pointer-events-none"></div>
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-[#991b1b] block">Waiting for Decision</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#991b1b]" id="kpiPendingApproval">3</span>
+            </div>
+          </div>
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-rose-100/90 text-[#991b1b] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px] sm:text-[22px]">pending_actions</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Cleared & Approved -->
+      <div class="telemetry-card bg-white rounded-xl p-4 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Cleared &amp; Approved</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]" id="kpiApproved">5</span>
+            </div>
+          </div>
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px] sm:text-[22px]">check_circle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Needs Revision -->
+      <div class="telemetry-card bg-white rounded-xl p-4 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Needs Revision</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]" id="kpiCorrection">0</span>
+            </div>
+          </div>
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px] sm:text-[22px]">edit_document</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter & Tab Navigation Section -->
+    <section class="bg-white rounded-xl border border-[#E1E9E3] shadow-2xs mb-6 overflow-hidden" data-purpose="filtering-controls">
+      <!-- Status Tab Row (Fully Responsive with Smooth Touch Scrolling) -->
+      <div class="px-3 sm:px-4 pt-2.5 pb-2 flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-[#E1E9E3]">
+        <div class="overflow-x-auto custom-scrollbar -mx-3 sm:-mx-4 px-3 sm:px-4 py-0.5" style="-webkit-overflow-scrolling: touch;">
+          <div class="flex items-center gap-1.5 w-max shrink-0" role="tablist">
+            <button type="button" role="tab" aria-selected="true" class="status-tab px-3 py-1.5 rounded-lg text-xs font-medium bg-[#176B45] text-white transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[36px]" onclick="filterStatus('all', this)">
+              <span>All Requests</span>
+              <span class="text-[11px] px-1.5 py-0.2 rounded bg-white/20 text-white font-medium" id="tabCountAll">8</span>
+            </button>
+            <button type="button" role="tab" aria-selected="false" class="status-tab px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F7F9F7] text-slate-600 hover:text-[#29352E] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[36px]" onclick="filterStatus('waiting', this)">
+              <span>Waiting Decision</span>
+              <span class="text-[11px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-medium" id="tabCountWaiting">0</span>
+            </button>
+            <button type="button" role="tab" aria-selected="false" class="status-tab px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F7F9F7] text-slate-600 hover:text-[#29352E] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[36px]" onclick="filterStatus('approved', this)">
+              <span>Approved &amp; Released</span>
+              <span class="text-[11px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-medium" id="tabCountApproved">8</span>
+            </button>
+            <button type="button" role="tab" aria-selected="false" class="status-tab px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F7F9F7] text-slate-600 hover:text-[#29352E] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[36px]" onclick="filterStatus('revision', this)">
+              <span>Needs Revision</span>
+              <span class="text-[11px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-medium" id="tabCountRevision">0</span>
+            </button>
+            <button type="button" role="tab" aria-selected="false" class="status-tab px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F7F9F7] text-slate-600 hover:text-[#29352E] transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 min-h-[36px]" onclick="filterStatus('rejected', this)">
+              <span>Rejected</span>
+              <span class="text-[11px] px-1.5 py-0.2 rounded bg-slate-200 text-slate-700 font-medium" id="tabCountRejected">0</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="hidden lg:flex items-center gap-1.5 text-slate-500 text-xs py-1 shrink-0 font-medium">
+          <span class="material-symbols-outlined text-[16px] text-[#176B45]">verified</span>
+          <span>Reviewed by: Dr. Ly Bunheng (Principal)</span>
+        </div>
+      </div>
+
+      <!-- Search & Select Filtering Row -->
+      <div class="p-3 sm:p-3.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-2.5 sm:gap-3 items-center">
+        <!-- Search Input -->
+        <div class="sm:col-span-2 md:col-span-5 relative">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+          <input class="w-full !pl-10 pr-12 py-2 bg-[#F7F9F7] border border-[#E1E9E3] rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all min-h-[40px]" id="searchInput" oninput="handleSearch(this.value)" placeholder="Filter by ID, requester, or keywords... (⌘K)" type="text">
+          <kbd class="hidden sm:inline-block absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-[#E1E9E3] text-slate-500">⌘K</kbd>
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="sm:col-span-1 md:col-span-3">
+          <select class="w-full py-2 px-3 rounded-lg bg-[#F7F9F7] border border-[#E1E9E3] text-slate-700 text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all cursor-pointer min-h-[40px]" id="categorySelect" onchange="filterCategory(this.value)">
+            <option value="all">All Categories</option>
+            <option value="academic">Academic Supplies</option>
+            <option value="it">IT Support &amp; Facilities</option>
+            <option value="registry">Registry &amp; Transcripts</option>
+            <option value="lab">Laboratory Supplies</option>
+            <option value="petitions">Petitions &amp; Counseling</option>
+          </select>
+        </div>
+
+        <!-- Campus Dropdown -->
+        <div class="sm:col-span-1 md:col-span-2">
+          <select class="w-full py-2 px-3 rounded-lg bg-[#F7F9F7] border border-[#E1E9E3] text-slate-700 text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all cursor-pointer min-h-[40px]" id="campusSelect" onchange="filterCampus(this.value)">
+            <option value="all">All Campuses</option>
+            <option value="sensok">Sensok Campus</option>
+            <option value="depo">Depo Campus</option>
+            <option value="baktouk">Bak Touk Campus</option>
+          </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="sm:col-span-2 md:col-span-2 flex justify-end">
+          <button class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#F7F9F7] border border-[#E1E9E3] text-slate-700 text-xs font-medium hover:bg-slate-100 hover:text-slate-900 transition-all min-h-[40px] cursor-pointer" onclick="resetFilters()" type="button">
+            <span class="material-symbols-outlined text-[16px] text-slate-500">filter_alt_off</span>
+            <span>Reset Filters</span>
+          </button>
+        </div>
+      </div>
+          <kbd class="hidden sm:inline-block absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-[#E1E9E3] text-slate-500">⌘K</kbd>
+        </div>
+
+        <!-- Category Dropdown -->
+        <div class="md:col-span-3">
+          <select class="w-full py-2 px-3 rounded-lg bg-[#F7F9F7] border border-[#E1E9E3] text-slate-700 text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all cursor-pointer min-h-[40px]" id="categorySelect" onchange="filterCategory(this.value)">
+            <option value="all">All Categories</option>
+            <option value="academic">Academic Supplies</option>
+            <option value="it">IT Support &amp; Facilities</option>
+            <option value="registry">Registry &amp; Transcripts</option>
+            <option value="lab">Laboratory Supplies</option>
+            <option value="petitions">Petitions &amp; Counseling</option>
+          </select>
+        </div>
+
+        <!-- Campus Dropdown -->
+        <div class="md:col-span-2">
+          <select class="w-full py-2 px-3 rounded-lg bg-[#F7F9F7] border border-[#E1E9E3] text-slate-700 text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all cursor-pointer min-h-[40px]" id="campusSelect" onchange="filterCampus(this.value)">
+            <option value="all">All Campuses</option>
+            <option value="sensok">Sensok Campus</option>
+            <option value="depo">Depo Campus</option>
+            <option value="baktouk">Bak Touk Campus</option>
+          </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="md:col-span-2 flex justify-end">
+          <button class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#F7F9F7] border border-[#E1E9E3] text-slate-700 text-xs font-medium hover:bg-slate-100 hover:text-slate-900 transition-all min-h-[40px] cursor-pointer" onclick="resetFilters()" type="button">
+            <span class="material-symbols-outlined text-[16px] text-slate-500">filter_alt_off</span>
+            <span>Reset Filters</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Requests Adjudication Table View -->
+    <section class="bg-white rounded-xl border border-[#E1E9E3] shadow-2xs overflow-hidden mb-6">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[1020px] text-xs" id="requestsTable">
+          <thead>
+            <tr class="bg-[#F7F9F7] text-slate-600 text-[11px] font-medium uppercase tracking-wider border-b border-[#E1E9E3]">
+              <th class="py-3 px-3.5 w-10 text-center border-r border-[#E1E9E3]/70" scope="col">
+                <input class="rounded border-[#E1E9E3] text-[#176B45] focus:ring-0 cursor-pointer h-4 w-4" id="selectAllCheckbox" onchange="toggleSelectAll(this)" type="checkbox" aria-label="Select all requests">
+              </th>
+              <th class="py-3 px-4 w-80 border-r border-[#E1E9E3]/70 font-medium" scope="col">Request Details &amp; Summary</th>
+              <th class="py-3 px-4 w-48 border-r border-[#E1E9E3]/70 font-medium" scope="col">Category</th>
+              <th class="py-3 px-4 w-48 border-r border-[#E1E9E3]/70 font-medium" scope="col">Requester &amp; Campus</th>
+              <th class="py-3 px-4 w-36 border-r border-[#E1E9E3]/70 font-medium" scope="col">Submission</th>
+              <th class="py-3 px-4 w-44 border-r border-[#E1E9E3]/70 font-medium" scope="col">Decision Status</th>
+              <th class="py-3 px-4 text-right w-48 font-medium" scope="col">Executive Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#E1E9E3] bg-white" id="requestRowsBody">
+            <!-- Dynamically populated by JS from /api/service-requests -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State Container -->
+      <div class="hidden py-16 text-center" id="emptyFilterState">
+        <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-[24px]">rule_folder</span>
+        </div>
+        <h3 class="text-sm font-medium text-[#29352E]">No Matching Requests Found</h3>
+        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+          No student services tickets correspond to your search query or selected criteria.
+        </p>
+        <button class="mt-4 px-3.5 py-1.5 rounded-lg bg-white border border-[#E1E9E3] text-slate-700 text-xs font-medium hover:bg-slate-50 transition-all cursor-pointer" onclick="resetFilters()" type="button">
+          Reset All Filters
+        </button>
+      </div>
+
+      <!-- Table Footer with Compact Pagination -->
+      <div class="px-4 py-3 bg-[#F7F9F7] border-t border-[#E1E9E3] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div class="text-slate-500">
+          Showing <span class="font-medium text-[#29352E]" id="visibleCounter">0</span> of <span class="font-medium text-[#29352E]" id="totalCounter">0</span> requests
+        </div>
+        <nav aria-label="Pagination" class="flex items-center space-x-1" id="paginationNav">
+          <button class="px-2.5 py-1.5 rounded-md bg-white border border-[#E1E9E3] text-slate-500 hover:text-slate-800 text-xs font-medium transition-all disabled:opacity-40 cursor-pointer" disabled type="button">
+            Previous
+          </button>
+          <button class="w-7 h-7 rounded-md bg-[#176B45] text-white text-xs flex items-center justify-center font-medium" type="button">
+            1
+          </button>
+          <button class="px-2.5 py-1.5 rounded-md bg-white border border-[#E1E9E3] text-slate-500 hover:text-slate-800 text-xs font-medium transition-all cursor-pointer" type="button">
+            Next
+          </button>
+        </nav>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- Detail Review & Adjudication Modal Overlay -->
+<div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs hidden flex items-center justify-center p-4" id="detailsModal">
+  <div class="bg-white border border-[#E1E9E3] rounded-2xl max-w-xl w-full p-6 shadow-xl space-y-4 max-h-[92vh] flex flex-col relative animate-fade-in">
+    <!-- Modal Header -->
+    <div class="flex items-start justify-between border-b border-[#E1E9E3] pb-3 shrink-0">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-[#176B45]/10 text-[#176B45] border border-[#176B45]/20" id="modalRef">SR-1007</span>
+          <span class="text-xs px-2.5 py-0.5 rounded-full font-medium" id="modalStatusBadge">Waiting Decision</span>
+        </div>
+        <h2 class="text-base font-medium text-[#29352E]" id="modalTitle">Request Review</h2>
+        <div class="text-xs text-slate-500 mt-0.5" id="modalMeta">Category · Requester</div>
+      </div>
+      <button class="action-icon-btn" onclick="closeDetailsModal()" title="Close dialog" type="button">
+        <span data-ngis-icon="close"></span>
+      </button>
+    </div>
+
+    <!-- Modal Scrollable Content -->
+    <div class="overflow-y-auto space-y-4 pr-1 grow">
+      <!-- Description & Justification -->
+      <div>
+        <label class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block mb-1.5">Description &amp; Justification</label>
+        <div class="p-3 bg-[#F7F9F7] rounded-xl text-xs text-slate-700 border border-[#E1E9E3] leading-relaxed" id="modalDescription">
+          Full details description goes here.
+        </div>
+      </div>
+
+      <!-- Change History / Decision Trail -->
+      <div>
+        <label class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block mb-1.5">Change History &amp; Decision Trail</label>
+        <div class="space-y-2" id="modalCommentsList">
+          <!-- Comments -->
+        </div>
+      </div>
+
+      <!-- Principal Written Note -->
+      <div>
+        <label class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block mb-1.5" for="principalNote">
+          Principal's Notes &amp; Instructions
+        </label>
+        <textarea class="w-full p-3 bg-[#F7F9F7] border border-[#E1E9E3] rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all" id="principalNote" placeholder="Add notes, conditions, or revision instructions..." rows="3"></textarea>
+      </div>
+    </div>
+
+    <!-- Modal Action Buttons -->
+    <div class="flex items-center justify-end gap-2 pt-3 border-t border-[#E1E9E3] shrink-0 flex-wrap">
+      <button class="px-3.5 py-2 rounded-lg bg-white border border-[#E1E9E3] text-slate-700 text-xs font-medium hover:bg-slate-50 transition-all cursor-pointer" onclick="closeDetailsModal()" type="button">
+        Dismiss
+      </button>
+      <button class="action-btn-pill danger" onclick="confirmModalAction('reject')" id="modalBtnReject" type="button">
+        <span data-ngis-icon="close"></span>
+        <span>Reject</span>
+      </button>
+      <button class="action-btn-pill" onclick="confirmModalAction('revision')" id="modalBtnRevision" type="button">
+        <span data-ngis-icon="edit"></span>
+        <span>Request Revision</span>
+      </button>
+      <button class="action-btn-pill primary" onclick="confirmModalAction('approve')" id="modalBtnApprove" type="button">
+        <span data-ngis-icon="check"></span>
+        <span>Sign &amp; Approve</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast element -->
+<div id="toastNotification">Action completed</div>
+
+<script>
+window.PAGE = {
+  role: "principal",
+  active: "services"
+};
+
+window.HERO_CONFIG = {
+  title: "Student Service Hub",
+  subtitle: "Principal authority to review student service applications, grant approvals, and manage requests.",
+  tag: "Principal Central",
+  badge: "Student Management",
+  role: "principal",
+  breadcrumb: [
+    { label: "Dashboard", href: "principal.html" },
+    { label: "Student Management", href: "#" },
+    { label: "Student Service Hub", href: "#", current: true }
+  ]
+};
+</script>
+
+<!-- Shared UI Scripts -->
+<script src="../../assets/components/skeleton.js"></script>
+<script src="../../assets/components/error-state.js"></script>
+<script src="../../assets/components/empty-state.js"></script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<script>
+let allRequests = [];
+let currentFilter = 'all';
+let currentCategory = 'all';
+let currentCampus = 'all';
+let activeModalId = null;
+
+// Initial Data Fallback if server is not reachable
+const DEFAULT_REQUESTS = [
+  {
+    id: "SR-1007",
+    title: "Batch 250 Midterm Exam Booklets & Mathematical Formula Tables",
+    category: "academic",
+    studentName: "Dr. Sarah Jenkins",
+    studentId: "TCH-2024-042",
+    campus: "Sensok",
+    date: "2026-11-01",
+    time: "08:45 AM",
+    status: "open",
+    priority: "high",
+    description: "Request for standard Grade 11 & 12 Advanced Math examination sheets and graphing paper pads.",
+    comments: [{ by: "Dr. Sarah Jenkins", date: "2026-11-01", text: "Needed for Grade 11 & 12 Advanced Math examinations next Monday." }]
+  },
+  {
+    id: "SR-1006",
+    title: "Room 302 Ceiling Projector Calibration & HDMI Sync",
+    category: "it",
+    studentName: "Dr. Sarah Jenkins",
+    studentId: "TCH-2024-042",
+    campus: "Sensok",
+    date: "2026-10-28",
+    time: "02:15 PM",
+    status: "open",
+    priority: "normal",
+    description: "Interactive laser projector in Academic Wing B Room 302 loses HDMI audio during Calculus lectures.",
+    comments: [{ by: "Dr. Sarah Jenkins", date: "2026-10-28", text: "HDMI audio keeps dropping out mid-lecture." }]
+  },
+  {
+    id: "SR-1005",
+    title: "Official Grade 10 Transcripts & Graduation Verification",
+    category: "registry",
+    studentName: "Mr. Chea Sophea",
+    studentId: "FAC-2024-019",
+    campus: "Sensok",
+    date: "2026-10-26",
+    time: "10:04 AM",
+    status: "open",
+    priority: "normal",
+    description: "Student transfer credential packet for overseas university prep and certification endorsement.",
+    comments: [{ by: "Mr. Chea Sophea", date: "2026-10-26", text: "Official transcript packet for student transfer requirement." }]
+  },
+  {
+    id: "SR-1003",
+    title: "Secondary Science Lab Consumables & Reagents Refill",
+    category: "lab",
+    studentName: "Dr. Pov Sophea",
+    studentId: "FAC-2024-008",
+    campus: "Sensok",
+    date: "2026-10-20",
+    time: "11:30 AM",
+    status: "approved",
+    priority: "normal",
+    description: "Standard organic chemistry acids, litmus rolls, and glassware for high school laboratory sessions.",
+    comments: [{ by: "Dr. Ly Bunheng (Principal)", date: "2026-10-21", text: "Approved request under Lab Budget Code #LB-2026-A." }]
+  },
+  {
+    id: "SR-1001",
+    title: "Emergency Student Health Leave Petition & Exam Extension",
+    category: "petitions",
+    studentName: "Student Services Desk",
+    studentId: "SSD-2026-001",
+    campus: "Depo",
+    date: "2026-10-18",
+    time: "09:12 AM",
+    status: "approved",
+    priority: "normal",
+    description: "Official medical documentation filed for 2-week leave; granted reschedule authorization.",
+    comments: [{ by: "Dr. Ly Bunheng (Principal)", date: "2026-10-19", text: "Authorized 2-week leave and exam extension." }]
+  }
+];
+
+async function loadRequests() {
+  const tbody = document.getElementById("requestRowsBody");
+  if (!allRequests.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="py-8 text-center text-xs text-slate-400">
+          <div class="inline-flex items-center gap-2">
+            <span class="w-4 h-4 border-2 border-[#176B45] border-t-transparent rounded-full animate-spin"></span>
+            <span>Loading student service requests...</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  try {
+    const res = await fetch("/api/service-requests");
+    if (!res.ok) throw new Error("Could not load from API");
+    const json = await res.json();
+    const data = json.data || [];
+    if (data.length > 0) {
+      allRequests = data;
+    } else {
+      allRequests = DEFAULT_REQUESTS;
+    }
+  } catch (err) {
+    console.warn("Using default request data:", err);
+    if (!allRequests.length) allRequests = DEFAULT_REQUESTS;
+  }
+
+  updateKpis();
+  applyFilters();
+}
+
+function updateKpis() {
+  const total = allRequests.length;
+  let waiting = 0;
+  let approved = 0;
+  let revision = 0;
+  let rejected = 0;
+
+  allRequests.forEach(r => {
+    const st = (r.status || 'open').toLowerCase();
+    if (st === 'open' || st === 'pending' || st.includes('pending') || st === 'waiting' || st === 'in_review') {
+      waiting++;
+    } else if (st === 'approved' || st === 'resolved' || st === 'completed') {
+      approved++;
+    } else if (st.includes('correction') || st === 'needs_correction' || st === 'revision') {
+      revision++;
+    } else if (st === 'rejected' || st === 'declined') {
+      rejected++;
+    }
+  });
+
+  document.getElementById("kpiTotalRequests").textContent = total;
+  document.getElementById("kpiPendingApproval").textContent = waiting;
+  document.getElementById("kpiApproved").textContent = approved;
+  document.getElementById("kpiCorrection").textContent = revision;
+
+  document.getElementById("tabCountAll").textContent = total;
+  document.getElementById("tabCountWaiting").textContent = waiting;
+  document.getElementById("tabCountApproved").textContent = approved;
+  document.getElementById("tabCountRevision").textContent = revision;
+  document.getElementById("tabCountRejected").textContent = rejected;
+
+  const batchBtn = document.getElementById("btnBatchApprove");
+  if (batchBtn) {
+    batchBtn.innerHTML = `
+      <span class="material-symbols-outlined text-[16px]">verified</span>
+      <span>Batch Authorize (${waiting})</span>
+    `;
+  }
+}
+
+function filterStatus(status, tabElement) {
+  currentFilter = status;
+  document.querySelectorAll('.status-tab').forEach(btn => {
+    btn.classList.remove('bg-[#176B45]', 'text-white');
+    btn.classList.add('bg-[#F7F9F7]', 'text-slate-600');
+    btn.setAttribute('aria-selected', 'false');
+  });
+  tabElement.classList.add('bg-[#176B45]', 'text-white');
+  tabElement.classList.remove('bg-[#F7F9F7]', 'text-slate-600');
+  tabElement.setAttribute('aria-selected', 'true');
+  applyFilters();
+}
+
+function filterCategory(cat) {
+  currentCategory = cat;
+  applyFilters();
+}
+
+function filterCampus(camp) {
+  currentCampus = camp;
+  applyFilters();
+}
+
+function handleSearch(query) {
+  applyFilters();
+}
+
+function normalizeCategory(cat) {
+  const c = (cat || '').toLowerCase();
+  if (c.includes('supplies') || c.includes('academic') || c.includes('stationery')) return { id: 'academic', label: 'Academic Supplies', icon: 'menu_book' };
+  if (c.includes('it') || c.includes('projector') || c.includes('hardware')) return { id: 'it', label: 'IT Support & Facilities', icon: 'videocam' };
+  if (c.includes('registry') || c.includes('transcript') || c.includes('diploma')) return { id: 'registry', label: 'Registry & Transcripts', icon: 'school' };
+  if (c.includes('lab') || c.includes('science')) return { id: 'lab', label: 'Laboratory Supplies', icon: 'science' };
+  if (c.includes('petition') || c.includes('health') || c.includes('counseling')) return { id: 'petitions', label: 'Petitions & Counseling', icon: 'volunteer_activism' };
+  return { id: 'academic', label: cat || 'General Service', icon: 'description' };
+}
+
+function applyFilters() {
+  const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const tbody = document.getElementById('requestRowsBody');
+
+  const filtered = allRequests.filter(r => {
+    const id = (r.id || '').toLowerCase();
+    const title = (r.title || '').toLowerCase();
+    const student = (r.studentName || '').toLowerCase();
+    const studentId = (r.studentId || '').toLowerCase();
+    const desc = (r.description || '').toLowerCase();
+    const campus = (r.campus || '').toLowerCase();
+    const st = (r.status || 'open').toLowerCase();
+    const catObj = normalizeCategory(r.category || r.type);
+
+    // Status matching
+    let matchesStatus = true;
+    if (currentFilter === 'waiting') {
+      matchesStatus = st === 'open' || st === 'pending' || st.includes('pending') || st === 'waiting' || st === 'in_review';
+    } else if (currentFilter === 'approved') {
+      matchesStatus = st === 'approved' || st === 'resolved' || st === 'completed';
+    } else if (currentFilter === 'revision') {
+      matchesStatus = st.includes('correction') || st === 'needs_correction' || st === 'revision';
+    } else if (currentFilter === 'rejected') {
+      matchesStatus = st === 'rejected' || st === 'declined';
+    }
+
+    // Category matching
+    let matchesCategory = true;
+    if (currentCategory !== 'all') {
+      matchesCategory = catObj.id === currentCategory;
+    }
+
+    // Campus matching
+    let matchesCampus = true;
+    if (currentCampus !== 'all') {
+      matchesCampus = campus.includes(currentCampus.toLowerCase());
+    }
+
+    // Search query matching
+    const matchesQuery = !query || id.includes(query) || title.includes(query) || student.includes(query) || studentId.includes(query) || desc.includes(query);
+
+    return matchesStatus && matchesCategory && matchesCampus && matchesQuery;
+  });
+
+  const emptyState = document.getElementById('emptyFilterState');
+  const visibleCounter = document.getElementById('visibleCounter');
+  const totalCounter = document.getElementById('totalCounter');
+
+  totalCounter.textContent = allRequests.length;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.classList.remove('hidden');
+    visibleCounter.textContent = '0';
+    return;
+  }
+
+  emptyState.classList.add('hidden');
+  visibleCounter.textContent = `1 to ${filtered.length}`;
+
+  tbody.innerHTML = filtered.map(r => {
+    const st = (r.status || 'open').toLowerCase();
+    const isPending = st === 'open' || st === 'pending' || st.includes('pending') || st === 'waiting' || st === 'in_review';
+    const isApproved = st === 'approved' || st === 'resolved' || st === 'completed';
+    const isRevision = st.includes('correction') || st === 'needs_correction' || st === 'revision';
+    const isRejected = st === 'rejected' || st === 'declined';
+
+    let statusBadgeHtml = '';
+    if (isApproved) {
+      statusBadgeHtml = `
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-medium">
+          <span class="material-symbols-outlined text-[14px]">check_circle</span>
+          <span>Cleared &amp; Released</span>
+        </div>
+      `;
+    } else if (isRevision) {
+      statusBadgeHtml = `
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium">
+          <span class="material-symbols-outlined text-[14px]">edit_note</span>
+          <span>Needs Revision</span>
+        </div>
+      `;
+    } else if (isRejected) {
+      statusBadgeHtml = `
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-xs font-medium">
+          <span class="material-symbols-outlined text-[14px]">cancel</span>
+          <span>Rejected</span>
+        </div>
+      `;
+    } else {
+      statusBadgeHtml = `
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+          <span>Waiting Decision</span>
+        </div>
+      `;
+    }
+
+    const catObj = normalizeCategory(r.category || r.type);
+    const isHighPriority = (r.priority || '').toLowerCase() === 'high' || (r.priority || '').toLowerCase() === 'urgent';
+
+    let actionsHtml = '';
+    if (isPending) {
+      actionsHtml = `
+        <div class="action-group table-actions justify-end">
+          <button type="button" class="action-icon-btn primary" onclick="adjudicateSingle('${r.id}', 'approve')" title="Approve Request" aria-label="Approve Request">
+            <span data-ngis-icon="check"></span>
+          </button>
+          <button type="button" class="action-icon-btn" onclick="adjudicateSingle('${r.id}', 'revision')" title="Request Revision" aria-label="Request Revision">
+            <span data-ngis-icon="edit"></span>
+          </button>
+          <button type="button" class="action-icon-btn" onclick="openDetailsModal('${r.id}')" title="View Details" aria-label="View Details">
+            <span data-ngis-icon="view"></span>
+          </button>
+        </div>
+      `;
+    } else {
+      actionsHtml = `
+        <div class="action-group table-actions justify-end">
+          <button type="button" class="action-icon-btn" onclick="openDetailsModal('${r.id}')" title="View Details" aria-label="View Details">
+            <span data-ngis-icon="view"></span>
+          </button>
+          <button type="button" class="action-icon-btn" onclick="showAuditNote('${r.id}')" title="View Verification Code" aria-label="View Verification Code">
+            <span data-ngis-icon="shield"></span>
+          </button>
+        </div>
+      `;
+    }
+
+    return `
+      <tr class="hover:bg-[#F7F9F7] transition-colors" data-id="${r.id}">
+        <td class="py-3 px-3.5 text-center align-top border-r border-[#E1E9E3]/70">
+          <input class="row-checkbox rounded border-[#E1E9E3] text-[#176B45] focus:ring-0 cursor-pointer mt-1 h-4 w-4" type="checkbox" value="${r.id}" onchange="updateBatchButtonState()">
+        </td>
+        <td class="py-3 px-4 align-top border-r border-[#E1E9E3]/70">
+          <div class="space-y-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="font-medium text-xs text-[#176B45] px-2 py-0.5 rounded bg-[#176B45]/10 border border-[#176B45]/20 font-mono">${r.id}</span>
+              ${isHighPriority ? '<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium uppercase tracking-wider bg-rose-50 text-rose-700 border border-rose-200">High Priority</span>' : ''}
+            </div>
+            <div class="font-medium text-[#29352E] text-xs leading-snug line-clamp-1 hover:text-[#176B45] cursor-pointer" onclick="openDetailsModal('${r.id}')">
+              ${r.title}
+            </div>
+            <p class="text-[11px] text-slate-500 line-clamp-1 leading-normal m-0">
+              ${r.description || 'No additional summary provided.'}
+            </p>
+          </div>
+        </td>
+        <td class="py-3 px-4 align-top border-r border-[#E1E9E3]/70">
+          <div class="inline-flex items-center gap-1.5 text-slate-700 text-xs font-medium">
+            <span class="material-symbols-outlined text-[16px] text-[#176B45]">${catObj.icon}</span>
+            <span>${catObj.label}</span>
+          </div>
+        </td>
+        <td class="py-3 px-4 align-top border-r border-[#E1E9E3]/70">
+          <div class="space-y-0.5">
+            <div class="text-[#29352E] font-medium text-xs">${r.studentName || 'Requester'}</div>
+            <div class="text-[11px] text-slate-500">${r.studentId || 'N/A'} · ${r.campus || 'Sensok'}</div>
+          </div>
+        </td>
+        <td class="py-3 px-4 align-top border-r border-[#E1E9E3]/70 text-xs">
+          <div class="text-[#29352E] font-medium">${r.date || 'Recent'}</div>
+          <div class="text-[11px] text-slate-500">${r.time || '10:00 AM'}</div>
+        </td>
+        <td class="py-3 px-4 align-top border-r border-[#E1E9E3]/70">
+          ${statusBadgeHtml}
+        </td>
+        <td class="py-3 px-4 align-top text-right">
+          ${actionsHtml}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  // Hydrate SVG icons inside the freshly rendered rows
+  if (window.NGIS && typeof window.NGIS.hydrate === 'function') {
+    window.NGIS.hydrate(tbody);
+  }
+}
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('categorySelect').value = 'all';
+  document.getElementById('campusSelect').value = 'all';
+  currentCategory = 'all';
+  currentCampus = 'all';
+  const allTab = document.querySelector('.status-tab');
+  if (allTab) filterStatus('all', allTab);
+  else applyFilters();
+}
+
+function toggleSelectAll(master) {
+  document.querySelectorAll('.row-checkbox').forEach(cb => {
+    cb.checked = master.checked;
+  });
+  updateBatchButtonState();
+}
+
+function updateBatchButtonState() {
+  const selected = document.querySelectorAll('.row-checkbox:checked').length;
+  const batchBtn = document.getElementById("btnBatchApprove");
+  if (batchBtn) {
+    if (selected > 0) {
+      batchBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[16px]">verified</span>
+        <span>Approve Selected (${selected})</span>
+      `;
+    } else {
+      const waiting = allRequests.filter(r => (r.status || 'open') === 'open' || (r.status || '').includes('pending')).length;
+      batchBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[16px]">verified</span>
+        <span>Batch Approve (${waiting})</span>
+      `;
+    }
+  }
+}
+
+async function adjudicateSingle(reqId, action) {
+  if (action === 'approve') {
+    const confirmed = confirm(`Are you sure you want to approve ${reqId}?`);
+    if (confirmed) {
+      await updateRequestBackend(reqId, 'approved', 'Approved by Principal Dr. Ly Bunheng');
+    }
+  } else if (action === 'revision') {
+    const note = prompt(`Enter notes or changes needed for ${reqId}:`);
+    if (note) {
+      await updateRequestBackend(reqId, 'needs_correction', `Changes requested: ${note}`);
+    }
+  } else if (action === 'reject') {
+    const note = prompt(`Enter reason for rejecting ${reqId}:`);
+    if (note) {
+      await updateRequestBackend(reqId, 'rejected', `Rejected: ${note}`);
+    }
+  }
+}
+
+async function updateRequestBackend(reqId, newStatus, actionNote) {
+  const req = allRequests.find(r => r.id === reqId);
+  if (!req) return;
+
+  const comments = Array.isArray(req.comments) ? [...req.comments] : [];
+  if (actionNote) {
+    comments.push({
+      by: "Dr. Ly Bunheng (Principal)",
+      date: new Date().toISOString().split("T")[0],
+      text: actionNote
+    });
+  }
+
+  const payload = {
+    ...req,
+    status: newStatus,
+    updatedAt: new Date().toISOString().split("T")[0],
+    comments: comments
+  };
+
+  try {
+    const res = await fetch(`/api/service-requests/${reqId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error("API update failed");
+  } catch (err) {
+    console.warn("Direct API call note:", err);
+  }
+
+  // Update in memory
+  req.status = newStatus;
+  req.comments = comments;
+  req.updatedAt = new Date().toISOString().split("T")[0];
+
+  showToast(`Request ${reqId} updated to ${newStatus}`);
+  updateKpis();
+  applyFilters();
+}
+
+async function batchApprovePending() {
+  const checkedBoxes = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+  let targetIds = [];
+
+  if (checkedBoxes.length > 0) {
+    targetIds = checkedBoxes.map(cb => cb.value);
+  } else {
+    targetIds = allRequests
+      .filter(r => (r.status || 'open') === 'open' || (r.status || '').includes('pending') || (r.status || '') === 'waiting')
+      .map(r => r.id);
+  }
+
+  if (targetIds.length === 0) {
+    alert("No pending requests to approve.");
+    return;
+  }
+
+  const confirmed = confirm(`Approve ${targetIds.length} request(s)?`);
+  if (!confirmed) return;
+
+  for (const id of targetIds) {
+    await updateRequestBackend(id, 'approved', 'Batch Approved by Principal');
+  }
+
+  document.getElementById("selectAllCheckbox").checked = false;
+  showToast(`Successfully approved ${targetIds.length} request(s)`);
+}
+
+function openDetailsModal(id) {
+  const req = allRequests.find(r => r.id === id);
+  if (!req) return;
+
+  activeModalId = id;
+  const catObj = normalizeCategory(req.category || req.type);
+
+  document.getElementById('modalRef').textContent = req.id;
+  document.getElementById('modalTitle').textContent = req.title;
+  document.getElementById('modalMeta').textContent = `${catObj.label} · ${req.studentName} (${req.campus || 'Sensok'})`;
+  document.getElementById('modalDescription').textContent = req.description || 'No additional summary provided.';
+  document.getElementById('principalNote').value = '';
+
+  const statusBadge = document.getElementById('modalStatusBadge');
+  const st = (req.status || 'open').toLowerCase();
+  if (st === 'approved' || st === 'resolved' || st === 'completed') {
+    statusBadge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-700 border border-emerald-200';
+    statusBadge.textContent = 'Cleared & Released';
+  } else if (st.includes('correction') || st === 'needs_correction' || st === 'revision') {
+    statusBadge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-amber-50 text-amber-700 border border-amber-200';
+    statusBadge.textContent = 'Needs Revision';
+  } else if (st === 'rejected' || st === 'declined') {
+    statusBadge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-rose-50 text-rose-700 border border-rose-200';
+    statusBadge.textContent = 'Rejected';
+  } else {
+    statusBadge.className = 'text-xs px-2.5 py-0.5 rounded-full font-medium bg-amber-50 text-amber-800 border border-amber-200';
+    statusBadge.textContent = 'Waiting Decision';
+  }
+
+  const commentsList = document.getElementById('modalCommentsList');
+  const comments = req.comments || [];
+  if (comments.length === 0) {
+    commentsList.innerHTML = '<div class="text-[11px] text-slate-400 p-2.5 bg-[#F7F9F7] rounded-lg border border-[#E1E9E3]">No previous decision trail notes recorded.</div>';
+  } else {
+    commentsList.innerHTML = comments.map(c => `
+      <div class="p-2.5 bg-[#F7F9F7] rounded-lg border border-[#E1E9E3] text-xs">
+        <div class="flex items-center justify-between font-medium text-[#29352E] mb-0.5">
+          <span>${c.by || 'Reviewer'}</span>
+          <span class="text-[11px] text-slate-500">${c.date || ''}</span>
+        </div>
+        <div class="text-slate-600">${c.text || ''}</div>
+      </div>
+    `).join('');
+  }
+
+  // Hydrate action icons inside modal
+  const modalEl = document.getElementById('detailsModal');
+  modalEl.classList.remove('hidden');
+  if (window.NGIS && typeof window.NGIS.hydrate === 'function') {
+    window.NGIS.hydrate(modalEl);
+  }
+}
+
+function closeDetailsModal() {
+  document.getElementById('detailsModal').classList.add('hidden');
+  activeModalId = null;
+}
+
+async function confirmModalAction(action) {
+  if (!activeModalId) return;
+  const note = document.getElementById('principalNote').value.trim();
+
+  if (action === 'approve') {
+    closeDetailsModal();
+    await updateRequestBackend(activeModalId, 'approved', note ? `Approved with note: ${note}` : 'Approved by Principal');
+  } else if (action === 'revision') {
+    if (!note) {
+      alert("Please enter notes or instructions for the requester.");
+      return;
+    }
+    closeDetailsModal();
+    await updateRequestBackend(activeModalId, 'needs_correction', `Changes requested: ${note}`);
+  } else if (action === 'reject') {
+    const confirmed = confirm("Are you sure you want to reject this request?");
+    if (!confirmed) return;
+    closeDetailsModal();
+    await updateRequestBackend(activeModalId, 'rejected', note ? `Rejected: ${note}` : 'Rejected by Principal');
+  }
+}
+
+function showAuditNote(id) {
+  alert(`Verification Code: NGIS-${id}\nApproved by Principal Dr. Ly Bunheng.`);
+}
+
+function reloadConsole() {
+  const btn = document.getElementById('btnReload');
+  btn.classList.add('opacity-50');
+  setTimeout(() => {
+    btn.classList.remove('opacity-50');
+    loadRequests();
+    showToast("Console synced with Registry");
+  }, 350);
+}
+
+function exportAuditLog() {
+  let csvContent = "data:text/csv;charset=utf-8,RequestID,Title,Category,Requester,RequesterID,Campus,Date,Status\n";
+  allRequests.forEach(r => {
+    const catObj = normalizeCategory(r.category || r.type);
+    const row = [
+      `"${r.id || ''}"`,
+      `"${(r.title || '').replace(/"/g, '""')}"`,
+      `"${catObj.label}"`,
+      `"${(r.studentName || '').replace(/"/g, '""')}"`,
+      `"${r.studentId || ''}"`,
+      `"${r.campus || 'Sensok'}"`,
+      `"${r.date || ''}"`,
+      `"${r.status || 'open'}"`
+    ].join(',');
+    csvContent += row + "\n";
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `NGIS_StudentServices_AuditLog_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast("CSV Audit Log exported");
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toastNotification");
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = "block";
+  setTimeout(() => {
+    t.style.display = "none";
+  }, 2500);
+}
+
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    const searchBox = document.getElementById('searchInput');
+    if (searchBox) searchBox.focus();
+  }
+  if (e.key === 'Escape') {
+    closeDetailsModal();
+  }
+});
+
+document.addEventListener('DOMContentLoaded', loadRequests);
+</script>
+
+</body>
+</html>

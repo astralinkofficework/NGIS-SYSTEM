@@ -1,5 +1,6 @@
-import io, re
-s = io.open(r'c:\Users\oudom\OneDrive\Desktop\NGIS-SYSTEM\server.py', encoding='utf-8').read().split('\n')
-for i, l in enumerate(s, 1):
-    if '@app.route' in l and ('transcripts' in l or 'service-requests' in l or '/grades' in l or 'attendance-by-day' in l):
-        print(i, l.strip())
+with open('assets/js/khmer-suite-ui.js', 'r', encoding='utf-8') as f:
+    lines = f.readlines()
+
+for i, l in enumerate(lines):
+    if any(k in l for k in ['function recordsHtml', 'function builderHtml', 'function viewerHtml', 'function subjectsAdminHtml']):
+        print(f"Line {i+1}: {l.strip()}")

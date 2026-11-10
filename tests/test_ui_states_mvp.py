@@ -310,7 +310,7 @@ async def run_ui_states_tests():
         # 8. SESSION EXPIRED STATE & AUTOMATIC DRAFT PRESERVATION
         # ---------------------------------------------------------------------
         print("\n--- Test State 8: Session Expired State & Draft Preservation ---")
-        await page.goto(f"{BASE_URL}/pages/admin/admin-students.html", wait_until="networkidle")
+        await page.goto(f"{BASE_URL}/pages/admin/admin-users.html?role=students", wait_until="networkidle")
         session_res = await page.evaluate("""() => {
             // Fill in student form
             const form = document.getElementById('addStudentForm');

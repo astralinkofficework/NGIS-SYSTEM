@@ -202,21 +202,6 @@ const ALL_PAGES = [
     ]
   },
   {
-    "path": "pages/teacher/teacher-classes.html",
-    "name": "teacher-classes.html",
-    "title": "Teacher Class Roster & Section Management",
-    "category": "Academic Oversight",
-    "roles": [
-      "teacher"
-    ],
-    "description": "Interactive class roster console. View student profiles for each class, take student notes, inspect individual performance, and message homeroom groups.",
-    "tags": [
-      "Class Roster",
-      "Student Profiles",
-      "Homeroom Notes"
-    ]
-  },
-  {
     "path": "pages/teacher/teacher-documents.html",
     "name": "teacher-documents.html",
     "title": "Teacher Curriculum Docs & Lesson Materials",
@@ -766,21 +751,6 @@ const ALL_PAGES = [
     ]
   },
   {
-    "path": "pages/student/student-clubs.html",
-    "name": "student-clubs.html",
-    "title": "Student Clubs & Extracurriculars",
-    "category": "Student Life",
-    "roles": [
-      "student"
-    ],
-    "description": "Extracurricular club directory. Browse Robotics, Model UN, Debate, Drama, and Sports clubs, sign up for memberships, and track club events.",
-    "tags": [
-      "Club Signups",
-      "Robotics & Debate",
-      "Student Life"
-    ]
-  },
-  {
     "path": "pages/student/student-services.html",
     "name": "student-services.html",
     "title": "Student Services Hub",
@@ -885,38 +855,6 @@ const ALL_PAGES = [
       "Profile Info",
       "Emergency Contact",
       "Account Preferences"
-    ]
-  },
-  {
-    "path": "pages/teacher/teacher-lost-found.html",
-    "name": "teacher-lost-found.html",
-    "title": "Faculty Lost & Found Desk",
-    "category": "Faculty & Operations",
-    "roles": [
-      "teacher"
-    ],
-    "description": "Classroom-discovered property registry and custody management. Log found student articles, process ownership verifications, and hand over custody to the campus front desk.",
-    "tags": [
-      "Classroom Found",
-      "Faculty Custody",
-      "Claim Verification",
-      "Desk Handover"
-    ]
-  },
-  {
-    "path": "pages/teacher/teacher-services.html",
-    "name": "teacher-services.html",
-    "title": "Faculty Services & Support Hub",
-    "category": "Faculty & Operations",
-    "roles": [
-      "teacher"
-    ],
-    "description": "Central requisition and maintenance ticketing for faculty. Submit classroom projector and AV repairs, air conditioning service, exam answer booklets, and campus space reservations.",
-    "tags": [
-      "IT & AV Support",
-      "Facilities Maintenance",
-      "Exam Stationery",
-      "Space Booking"
     ]
   }
 ];

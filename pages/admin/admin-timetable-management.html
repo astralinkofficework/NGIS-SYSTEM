@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="shell-type" content="web_dashboard">
+<title>NGIS — Timetable Management &amp; Oversight | System Admin</title>
+
+<!-- Fonts: Strictly 400 and 500 weights (NO BOLD FONTS) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500&family=Noto+Sans+Khmer:wght@400;500&family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<!-- Phosphor Icons for Mobile Hamburger Navigation (AGENTS.md Critical Rule) -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: ['selector', '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#edf6f1',
+          100: '#d7ecdf',
+          500: '#176B45',
+          600: '#145939',
+          700: '#0f422b',
+          800: '#0b301f',
+          900: '#061d13'
+        },
+        forest: { 50: '#F0FDF4', 100: '#DCFCE7', 500: '#22C55E', 700: '#15803D', 800: '#176B45', 900: '#14532D' },
+        primary: "#29352E",
+        surface: "#F7F9F7",
+        outline: "#E1E9E3"
+      },
+      fontFamily: {
+        sans: ['"Inter"', '"Plus Jakarta Sans"', 'Manrope', '"Noto Sans Khmer"', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace']
+      },
+      fontWeight: {
+        normal: '400',
+        medium: '500'
+      }
+    }
+  }
+};
+</script>
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css?v=3.2">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
+<script>try{var t=localStorage.getItem('ngis-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}</script>
+<style>
+  html, body { background:var(--color-background,#F7F9F7); }
+  .main { min-height:100vh; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  /* Typography guard: force light & clean weights */
+  body, h1, h2, h3, h4, h5, h6, p, span, button, input, select, textarea {
+    font-weight: 400;
+  }
+  .font-medium, h1, h2, h3, h4, h5, h6, th, dt {
+    font-weight: 500 !important;
+  }
+  b, strong {
+    font-weight: 500 !important;
+  }
+</style>
+</head>
+
+<body data-role="admin" data-portal="admin" data-page="timetable-management">
+<main class="main">
+  <!-- Authoritative NGIS Responsive Hero Banner & Topbar -->
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- Mandatory Mobile Responsive Hamburger Header (AGENTS.md Critical Rule) -->
+  <div class="md:hidden flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur border-b border-[#E1E9E3] sticky top-0 z-30 mb-2">
+    <div class="flex items-center gap-2.5">
+      <button data-action="toggle-sidebar" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition active:scale-95 border border-[#E1E9E3]" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <div>
+        <h1 class="text-sm font-medium text-slate-900 leading-tight">Timetable Oversight</h1>
+        <p class="text-[11px] text-slate-500 font-normal">AY 2026–2027 · Tuol Kork Campus</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button type="button" onclick="TIMETABLE_OVERSIGHT.refresh()" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 border border-[#E1E9E3] transition active:scale-95" title="Refresh Live Status">
+        <span class="material-symbols-outlined text-[18px]">refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Authoritative NGIS .page Responsive Container -->
+  <div class="page px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6 pb-16" style="padding-top: 0.5rem;">
+
+    <!-- Context & Top Operational Control Strip -->
+    <div class="bg-white border border-[#E1E9E3] rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-2xl">monitor_heart</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="text-base font-medium text-slate-900">Timetable Operations Control Center</h2>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>Live Monitoring Active
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 font-normal mt-0.5">
+            Academic Year 2026–2027 · Tuol Kork Main Campus · 12 Classes · 33 Faculty Members
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5 flex-wrap shrink-0">
+        <span class="text-xs text-slate-500 font-normal hidden sm:inline-block">Last synchronized just now</span>
+        <button type="button" id="btnRefresh" onclick="TIMETABLE_OVERSIGHT.refresh()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#E1E9E3] bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-xs">
+          <span class="material-symbols-outlined text-[16px]">refresh</span>
+          <span>Refresh</span>
+        </button>
+        <a href="admin-timetables.html" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#E1E9E3] bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-xs">
+          <span class="material-symbols-outlined text-[16px]">calendar_view_week</span>
+          <span>Master Matrix</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── 1. MAIN WORKFLOW DIAGRAM ── -->
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-medium text-slate-900 flex items-center gap-2">
+            <span>Timetable Workflow &amp; Readiness Pipeline</span>
+            <span class="text-xs text-slate-400 font-normal">(6 Authoritative Stages)</span>
+          </h3>
+          <p class="text-xs text-slate-500 font-normal mt-0.5">Click any stage to view underlying verification checks, responsible staff, and affected records.</p>
+        </div>
+        <span class="text-xs text-emerald-700 font-medium hidden sm:inline-block">Interactive Pipeline</span>
+      </div>
+
+      <div id="workflowStagesContainer" class="flex flex-col lg:flex-row gap-3 items-stretch overflow-x-auto pb-1">
+        <!-- Stages injected by TIMETABLE_OVERSIGHT.renderWorkflowStages() -->
+        <div class="p-8 text-center text-slate-400 text-xs font-normal w-full bg-white rounded-2xl border border-[#E1E9E3]">
+          <span class="material-symbols-outlined text-2xl animate-spin mb-1">sync</span>
+          <p>Evaluating timetable workflow readiness...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2. COMPLETION SUMMARY (4 KPI CARDS) ── -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Card 1: Overall Progress -->
+      <div class="bg-white border border-[#E1E9E3] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium text-slate-600">Overall Progress</span>
+          <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]">timelapse</span>
+          </span>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpiProgressPct" class="text-2xl font-medium text-slate-900">0.0%</span>
+            <span class="text-xs text-slate-500 font-normal">of 408 periods</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-2">
+            <div id="kpiProgressBar" class="bg-emerald-600 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+        <p id="kpiPeriodsDetail" class="text-[11px] text-slate-500 font-normal pt-1 border-t border-slate-100">
+          0 / 408 lessons placed
+        </p>
+      </div>
+
+      <!-- Card 2: Completed Tasks -->
+      <div class="bg-white border border-[#E1E9E3] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium text-slate-600">Completed Tasks</span>
+          <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]">task_alt</span>
+          </span>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpiCompletedTasks" class="text-2xl font-medium text-emerald-700">3</span>
+            <span class="text-xs text-slate-500 font-normal">milestones verified</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-normal mt-2">
+            School setup, faculty registry &amp; teacher allocations 100% complete
+          </p>
+        </div>
+        <p class="text-[11px] text-slate-500 font-normal pt-1 border-t border-slate-100">
+          Authoritative database evidence
+        </p>
+      </div>
+
+      <!-- Card 3: Outstanding Tasks -->
+      <div class="bg-white border border-[#E1E9E3] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium text-slate-600">Outstanding Tasks</span>
+          <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]">pending_actions</span>
+          </span>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpiOutstandingTasks" class="text-2xl font-medium text-amber-700">12</span>
+            <span class="text-xs text-slate-500 font-normal">classes need attention</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-normal mt-2">
+            Weekly timetable schedules awaiting lesson placement
+          </p>
+        </div>
+        <p class="text-[11px] text-slate-500 font-normal pt-1 border-t border-slate-100">
+          Assigned to Principal Dr. Ly Bunheng
+        </p>
+      </div>
+
+      <!-- Card 4: Awaiting Review -->
+      <div class="bg-white border border-[#E1E9E3] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between text-slate-500">
+          <span class="text-xs font-medium text-slate-600">Awaiting Review</span>
+          <span class="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[18px]">rate_review</span>
+          </span>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2">
+            <span id="kpiAwaitingReview" class="text-2xl font-medium text-purple-700">0</span>
+            <span class="text-xs text-slate-500 font-normal">submissions pending</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-normal mt-2">
+            Completed cohort schedules pending academic review
+          </p>
+        </div>
+        <p class="text-[11px] text-slate-500 font-normal pt-1 border-t border-slate-100">
+          Academic Director &amp; Principal
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 3. RESPONSIBILITY & TASK TRACKING (OUTSTANDING WORK) ── -->
+    <div class="bg-white border border-[#E1E9E3] rounded-2xl p-5 shadow-xs space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#E1E9E3]">
+        <div>
+          <h3 class="text-base font-medium text-slate-900 flex items-center gap-2">
+            <span>Outstanding Work &amp; Responsibility Ledger</span>
+          </h3>
+          <p class="text-xs text-slate-500 font-normal mt-0.5">
+            Track incomplete timetable tasks across all cohorts, review responsible staff, and dispatch official reminders.
+          </p>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="flex items-center gap-1.5 p-1 bg-slate-100/80 rounded-xl overflow-x-auto">
+          <button type="button" id="tab_all" onclick="TIMETABLE_OVERSIGHT.setFilter('all')" class="px-3 py-1.5 rounded-xl bg-[#176B45] text-white text-xs font-medium transition shadow-sm flex items-center gap-1.5">
+            <span>All Tasks</span>
+            <span id="tabCountAll" class="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] font-medium">12</span>
+          </button>
+          <button type="button" id="tab_needs_attention" onclick="TIMETABLE_OVERSIGHT.setFilter('needs_attention')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 text-xs font-medium transition flex items-center gap-1.5">
+            <span>Needs Attention</span>
+            <span id="tabCountNeeds" class="px-1.5 py-0.2 rounded-full bg-slate-200 text-[10px] font-medium">12</span>
+          </button>
+          <button type="button" id="tab_in_progress" onclick="TIMETABLE_OVERSIGHT.setFilter('in_progress')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 text-xs font-medium transition flex items-center gap-1.5">
+            <span>In Progress</span>
+            <span id="tabCountInProg" class="px-1.5 py-0.2 rounded-full bg-slate-200 text-[10px] font-medium">0</span>
+          </button>
+          <button type="button" id="tab_awaiting_review" onclick="TIMETABLE_OVERSIGHT.setFilter('awaiting_review')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 text-xs font-medium transition flex items-center gap-1.5">
+            <span>Awaiting Review</span>
+            <span id="tabCountRev" class="px-1.5 py-0.2 rounded-full bg-slate-200 text-[10px] font-medium">0</span>
+          </button>
+          <button type="button" id="tab_completed" onclick="TIMETABLE_OVERSIGHT.setFilter('completed')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:bg-slate-100 text-xs font-medium transition flex items-center gap-1.5">
+            <span>Completed</span>
+            <span id="tabCountComp" class="px-1.5 py-0.2 rounded-full bg-slate-200 text-[10px] font-medium">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search & Select Filter Bar -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- Search bar -->
+        <div class="relative">
+          <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-[18px]">search</span>
+          <input type="text" oninput="TIMETABLE_OVERSIGHT.setSearch(this.value)" placeholder="Search cohort or task..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-[#E1E9E3] bg-white focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-700 font-normal">
+        </div>
+
+        <!-- Grade filter -->
+        <div>
+          <select onchange="TIMETABLE_OVERSIGHT.setGradeFilter(this.value)" class="w-full px-3 py-2 text-xs rounded-xl border border-[#E1E9E3] bg-white focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-700 font-normal">
+            <option value="all">All Grades (7 to 12)</option>
+            <option value="Grade 7">Grade 7 (7A, 7B)</option>
+            <option value="Grade 8">Grade 8 (8A, 8B)</option>
+            <option value="Grade 9">Grade 9 (9A, 9B)</option>
+            <option value="Grade 10">Grade 10 (10A, 10B)</option>
+            <option value="Grade 11">Grade 11 (11A, 11B)</option>
+            <option value="Grade 12">Grade 12 (12A, 12B)</option>
+          </select>
+        </div>
+
+        <!-- Campus filter -->
+        <div>
+          <select class="w-full px-3 py-2 text-xs rounded-xl border border-[#E1E9E3] bg-white focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-700 font-normal">
+            <option value="CMP-01">Tuol Kork Main Campus</option>
+            <option value="CMP-02">Chamkarmon High School Branch</option>
+            <option value="CMP-03">STEM &amp; Robotics Hub</option>
+          </select>
+        </div>
+
+        <!-- Responsible filter -->
+        <div>
+          <select class="w-full px-3 py-2 text-xs rounded-xl border border-[#E1E9E3] bg-white focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-700 font-normal">
+            <option value="all">All Responsible Staff</option>
+            <option value="PRIN-2024-001">Dr. Ly Bunheng (Principal)</option>
+            <option value="ADM-2024-001">Mr. Heng Samnang (Super Admin)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Task rows container -->
+      <div id="outstandingTasksBody" class="space-y-3 pt-2">
+        <!-- Injected by TIMETABLE_OVERSIGHT.renderOutstandingTasks() -->
+        <div class="p-8 text-center text-slate-400 text-xs font-normal">
+          <span class="material-symbols-outlined text-2xl animate-spin mb-1">sync</span>
+          <p>Loading task assignments...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. TIMETABLE PREVIEW (READ ONLY) ── -->
+    <div id="sectionTimetablePreview" class="bg-white border border-[#E1E9E3] rounded-2xl p-5 shadow-xs space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[#E1E9E3]">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-base font-medium text-slate-900">Read-Only Timetable Schedule Preview</h3>
+            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+              <span class="material-symbols-outlined text-[14px]">lock</span>Oversight Mode
+            </span>
+          </div>
+          <p id="previewClassInfo" class="text-xs text-slate-500 font-normal mt-0.5">
+            Inspecting live schedule for selected class. No cell editing or teacher assignment modifications are permitted from this oversight portal.
+          </p>
+        </div>
+
+        <!-- Preview Selectors -->
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <div class="flex items-center gap-1.5">
+            <label for="previewClassSelect" class="text-xs text-slate-500 font-normal">Class:</label>
+            <select id="previewClassSelect" onchange="TIMETABLE_OVERSIGHT.previewClass(this.value)" class="px-3 py-1.5 text-xs rounded-xl border border-[#E1E9E3] bg-white focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-800 font-medium">
+              <option value="class_7A">7A (Morning)</option>
+              <option value="class_7B">7B (Afternoon)</option>
+              <option value="class_8A">8A (Morning)</option>
+              <option value="class_8B">8B (Afternoon)</option>
+              <option value="class_9A">9A (Morning)</option>
+              <option value="class_9B">9B (Afternoon)</option>
+              <option value="class_10A">10A (Morning)</option>
+              <option value="class_10B">10B (Afternoon)</option>
+              <option value="class_11A">11A (Morning)</option>
+              <option value="class_11B">11B (Afternoon)</option>
+              <option value="class_12A">12A (Morning)</option>
+              <option value="class_12B">12B (Afternoon)</option>
+            </select>
+          </div>
+
+          <a href="admin-timetables.html" class="px-3 py-1.5 text-xs rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition font-medium flex items-center gap-1">
+            <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+            <span>Open Master Matrix</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Schedule Grid View -->
+      <div id="timetableGridPreview" class="rounded-xl border border-[#E1E9E3] overflow-hidden">
+        <!-- Rendered by TIMETABLE_OVERSIGHT.renderTimetablePreview() -->
+      </div>
+    </div>
+
+    <!-- ── 5. REVIEW QUEUE, FOLLOW-UP HISTORY & ACTIVITY TIMELINE ── -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Col 1: Review Queue -->
+      <div class="bg-white border border-[#E1E9E3] rounded-2xl p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-[#E1E9E3]">
+          <h3 class="text-sm font-medium text-slate-900 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-emerald-700 text-[18px]">rule</span>
+            <span>Review Queue</span>
+          </h3>
+          <span class="text-[11px] text-slate-400 font-normal">Principal Submissions</span>
+        </div>
+        <p class="text-xs text-slate-500 font-normal">Timetable batches submitted by scheduling staff requiring administrative or academic director approval.</p>
+        <div id="reviewQueueContainer" class="space-y-2.5 pt-1">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Col 2: Follow-up & Reminder History -->
+      <div class="bg-white border border-[#E1E9E3] rounded-2xl p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-[#E1E9E3]">
+          <h3 class="text-sm font-medium text-slate-900 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-amber-600 text-[18px]">forward_to_inbox</span>
+            <span>Follow-up History</span>
+          </h3>
+          <span class="text-[11px] text-slate-400 font-normal">Dispatched Reminders</span>
+        </div>
+        <p class="text-xs text-slate-500 font-normal">Record of reminders sent to the Principal and scheduling staff with delivery and read receipt status.</p>
+        <div id="reminderHistoryContainer" class="space-y-2.5 pt-1">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Col 3: Activity Timeline -->
+      <div class="bg-white border border-[#E1E9E3] rounded-2xl p-5 shadow-xs space-y-3">
+        <div class="flex items-center justify-between pb-2 border-b border-[#E1E9E3]">
+          <h3 class="text-sm font-medium text-slate-900 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-slate-700 text-[18px]">history</span>
+            <span>Activity History</span>
+          </h3>
+          <span class="text-[11px] text-slate-400 font-normal">Timetable Audit</span>
+        </div>
+        <p class="text-xs text-slate-500 font-normal">Live chronological record of timetable modifications, stage transitions, and assignments.</p>
+        <div id="activityTimelineContainer" class="pt-2">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ── SLIDE-OVER STAGE DETAIL DRAWER ── -->
+<div id="stageDrawerBackdrop" onclick="TIMETABLE_OVERSIGHT.closeDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden transition-opacity"></div>
+<div id="stageDrawer" class="fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto p-6 flex flex-col justify-between">
+  <div id="stageDrawerContent">
+    <!-- Rendered dynamically by TIMETABLE_OVERSIGHT.openStageDrawer() -->
+  </div>
+  <div class="pt-4 border-t border-[#E1E9E3] flex items-center justify-end gap-2 mt-6">
+    <button type="button" onclick="TIMETABLE_OVERSIGHT.closeDrawer()" class="px-4 py-2 rounded-xl border border-[#E1E9E3] bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition">
+      Close Panel
+    </button>
+  </div>
+</div>
+
+<!-- ── SEND REMINDER MODAL DIALOG ── -->
+<div id="reminderModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl border border-[#E1E9E3] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-[#E1E9E3] bg-slate-50/70">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center">
+          <span class="material-symbols-outlined text-[18px]">send</span>
+        </span>
+        <div>
+          <h3 class="text-sm font-medium text-slate-900">Send Timetable Action Reminder</h3>
+          <p class="text-[11px] text-slate-500 font-normal">Dispatches an official in-app operational notice</p>
+        </div>
+      </div>
+      <button type="button" onclick="TIMETABLE_OVERSIGHT.closeModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    <!-- Hidden state inputs -->
+    <input type="hidden" id="remindTaskId" value="">
+    <input type="hidden" id="remindTaskName" value="">
+    <input type="hidden" id="remindRecipientId" value="">
+    <input type="hidden" id="remindRecipientName" value="">
+    <input type="hidden" id="remindRecipientRole" value="">
+    <input type="hidden" id="remindRecipientEmail" value="">
+    <input type="hidden" id="remindMissingSummary" value="">
+    <input type="hidden" id="remindAuthorizedUrl" value="">
+    <input type="hidden" id="remindForceDuplicate" value="false">
+
+    <div class="p-6 space-y-4 text-xs">
+      <!-- Task context summary card -->
+      <div class="p-3.5 rounded-xl border border-[#E1E9E3] bg-slate-50/80 space-y-1.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] text-slate-400 font-normal">Target Task</span>
+          <span id="modalCampusDisplay" class="text-[11px] text-slate-500 font-normal">Tuol Kork Campus · 2026–2027</span>
+        </div>
+        <h4 id="modalTaskDisplay" class="text-xs font-medium text-slate-800">Timetable Scheduling</h4>
+        <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-200/70">
+          <span class="text-slate-500 font-normal">Recipient:</span>
+          <span id="modalRecipientDisplay" class="text-emerald-800 font-medium">Dr. Ly Bunheng (Principal)</span>
+        </div>
+        <div class="flex items-center justify-between text-[11px]">
+          <span class="text-slate-500 font-normal">Deficiency:</span>
+          <span id="modalMissingDisplay" class="text-amber-700 font-medium">34 of 34 periods unplaced</span>
+        </div>
+      </div>
+
+      <!-- Cooldown notice (if duplicate) -->
+      <div id="remindCooldownWarning" class="p-3 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 hidden space-y-1">
+        <div class="flex items-center gap-1.5 font-medium text-xs">
+          <span class="material-symbols-outlined text-[16px] text-amber-700">warning</span>
+          <span>Recent Reminder Notice</span>
+        </div>
+        <p id="remindCooldownText" class="text-[11px] font-normal leading-relaxed">
+          A reminder for this task was already dispatched recently. Sending multiple notifications in quick succession may distract staff.
+        </p>
+      </div>
+
+      <!-- Deadline -->
+      <div class="space-y-1">
+        <label for="remindDeadlineInput" class="block font-medium text-slate-700 text-xs">Action Deadline (Optional)</label>
+        <input type="date" id="remindDeadlineInput" class="w-full px-3 py-2 rounded-xl border border-[#E1E9E3] text-xs text-slate-800 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-normal">
+      </div>
+
+      <!-- Message Text -->
+      <div class="space-y-1">
+        <label for="remindMessageText" class="block font-medium text-slate-700 text-xs">Official In-App Message</label>
+        <textarea id="remindMessageText" rows="4" class="w-full p-3 rounded-xl border border-[#E1E9E3] text-xs text-slate-800 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-normal leading-relaxed" placeholder="Type notification instructions..."></textarea>
+      </div>
+    </div>
+
+    <div class="px-6 py-4 bg-slate-50/70 border-t border-[#E1E9E3] flex items-center justify-end gap-2.5">
+      <button type="button" onclick="TIMETABLE_OVERSIGHT.closeModal()" class="px-4 py-2 rounded-xl border border-[#E1E9E3] bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium transition">
+        Cancel
+      </button>
+      <button type="button" id="btnSubmitReminder" onclick="TIMETABLE_OVERSIGHT.submitReminder()" class="px-4 py-2 rounded-xl bg-[#176B45] hover:bg-[#145939] text-white text-xs font-medium transition shadow-sm flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[15px]">send</span>
+        <span>Send In-App Reminder</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script>
+  window.HERO_CONFIG = {
+    role: 'admin', active: 'ks-oversight', isDashboard: false,
+    name: 'Mr. Heng Samnang', id: 'ADM-2024-001', grade: 'Super Administrator',
+    avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+    homeLink: '../../index.html', signOutLink: '../../index.html',
+    profileLink: 'admin-settings.html', notifLink: 'admin-logs.html', notifCount: 4,
+    title: 'Timetable Management',
+    greeting: 'Monitor timetable preparation, review scheduling progress, and follow up on outstanding tasks.',
+    breadcrumbs: [
+      { label: 'Administration', href: 'admin.html' },
+      { label: 'Timetable Oversight' }
+    ],
+    ddRows: [
+      { icon: 'admin_panel_settings', text: 'School Administration' },
+      { icon: 'groups', text: '5,200 active users' },
+      { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+      { icon: 'verified', text: 'Principal Administrator' }
+    ]
+  };
+</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script>Protect.require(['admin', 'principal', 'editor']);</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script src="../../assets/js/timetable-oversight.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.TIMETABLE_OVERSIGHT) {
+      window.TIMETABLE_OVERSIGHT.init();
+    }
+  });
+</script>
+</body>
+</html>
+

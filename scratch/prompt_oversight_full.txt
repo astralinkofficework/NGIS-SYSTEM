@@ -1,0 +1,683 @@
+<USER_REQUEST>
+# MASTER MVP PROMPT — ADMIN TIMETABLE MANAGEMENT OVERSIGHT & WORKFLOW MONITORING
+
+## PROJECT: NGIS-SYSTEM
+### Module: Admin Portal → Timetable Management
+### Goal: Replace Existing Admin Timetable Management with a Central Oversight Dashboard
+
+## 1. MAIN OBJECTIVE
+
+Completely redesign the Admin Portal's Timetable Management section.
+
+The Admin should no longer need to manually create, drag, edit, or arrange timetables from this section.
+
+Instead, create a professional, centralized **Timetable Workflow & Progress Monitoring** page.
+
+The Admin is responsible for monitoring timetable preparation across the school, identifying unfinished work, reviewing the work completed by the Principal, Teacher, or authorized Editor, and notifying responsible staff when something needs attention.
+
+The Admin should be able to answer five questions immediately:
+
+1. Which timetable tasks are completed?
+2. Which timetable tasks are incomplete?
+3. Who is responsible for each task?
+4. What exactly is missing or blocking completion?
+5. Who needs to be notified to finish the work?
+
+This is a real operational oversight system, not a decorative dashboard.
+
+## 2. CRITICAL — AUDIT THE EXISTING SYSTEM FIRST
+
+Before changing any code, inspect:
+
+- Admin Timetable Management pages and sidebar links
+- Principal Timetable Management
+- Teacher Assignment
+- Timetable Builder
+- Timetable Matrix
+- Data Entry & Records
+- School Information and Settings
+- Teacher Profiles
+- Class Management
+- Curriculum Subjects
+- Existing notification infrastructure
+- Existing APIs, database models, and permission checks
+
+Determine which modules currently own each timetable workflow.
+
+Do not duplicate existing data, scheduling engines, or business logic.
+
+Remove the old Admin timetable editing interface from the Admin navigation and replace it with the oversight experience.
+
+**Do not delete underlying timetable data, shared APIs, published schedules, or editing tools used by authorized users in other portals.**
+
+Preserve the existing architecture: HTML, CSS, vanilla JavaScript, and the existing backend.
+
+Do not introduce React, TypeScript, or JSX.
+
+## 3. NEW ADMIN TIMETABLE MANAGEMENT PAGE
+
+Create a single main oversight page, using an existing appropriate route or a new page if necessary.
+
+Suggested name:
+
+`admin-timetable-management.html`
+
+Page title:
+
+**Timetable Management**
+
+Subtitle:
+
+"Monitor timetable preparation, review scheduling progress, and follow up on outstanding tasks."
+
+The page should contain five main areas:
+
+- Workflow overview
+- Completion summary
+- Task responsibility and status
+- Timetable preview
+- Notifications and follow-up history
+
+Avoid unnecessary nested pages.
+
+## 4. MAIN WORKFLOW DIAGRAM
+
+At the top, create a modern horizontal workflow diagram.
+
+This is the primary visual feature.
+
+Use connected workflow steps rather than a large data table.
+
+### Workflow stages
+
+**Step 01 — School Setup**
+
+Checks:
+
+- Academic year configured
+- Campus configured
+- School days configured
+- School start and end times configured
+- Periods and breaks configured
+
+**Step 02 — Academic Data**
+
+Checks:
+
+- Teachers registered
+- Classes created
+- Subjects configured
+- Curriculum hours configured
+- Required teacher information completed
+
+**Step 03 — Teacher Assignment**
+
+Checks:
+
+- Required class-subject combinations assigned to teachers
+- No missing teacher assignments
+- Teacher workloads validated
+- Assignment conflicts reviewed
+
+**Step 04 — Timetable Scheduling**
+
+Checks:
+
+- Required weekly lessons scheduled
+- Classes have their required periods
+- Teachers have no overlapping lessons
+- Scheduling conflicts resolved
+- Draft saved
+
+**Step 05 — Review & Approval**
+
+Checks:
+
+- Timetable submitted for review
+- Principal review completed
+- Required corrections resolved
+- Approval recorded
+
+**Step 06 — Publication**
+
+Checks:
+
+- Timetable published
+- Published version available to Teacher Portal
+- Published version available to Student Portal
+- Publication timestamp recorded
+
+### Workflow diagram example
+
+School Setup → Academic Data → Teacher Assignment → Scheduling → Review → Published
+
+Each stage must display:
+
+- Stage number
+- Stage name
+- Status
+- Responsible role or person
+- Completion details
+- Last updated
+- View Details action
+
+### Statuses
+
+Use clear statuses:
+
+- Not Started
+- In Progress
+- Needs Attention
+- Blocked
+- Awaiting Review
+- Completed
+
+Use actual database evidence to determine completion.
+
+Do not mark a stage Completed merely because someone opened the page or clicked Save.
+
+Stages may be reopened when underlying data changes.
+
+## 5. WORKFLOW INTERACTION
+
+Each workflow stage must be clickable.
+
+When the Admin clicks a stage, open a detail panel.
+
+Example:
+
+**Step 03 — Teacher Assignment**
+
+Status: Needs Attention
+
+Assigned to: Principal / authorized scheduling staff
+
+Details:
+
+- 32 required class-subject assignments
+- 28 completed
+- 4 missing
+- 2 workload warnings
+
+Show the actual affected records, such as:
+
+- Grade 10A — Mathematics — Missing Teacher
+- Grade 11B — Chemistry — Missing Teacher
+
+The numbers above are illustrative only.
+
+In production, all values must come from real records.
+
+Actions:
+
+- View Related Records
+- View Responsible Staff
+- Send Reminder
+- View Activity History
+
+The Admin must be able to investigate the issue without opening an editing workspace.
+
+## 6. COMPLETION SUMMARY
+
+Below the workflow diagram, create four compact summary cards.
+
+**Overall Progress**
+
+Percentage of required timetable work completed.
+
+**Completed Tasks**
+
+Number of completed required workflow tasks.
+
+**Outstanding Tasks**
+
+Number of incomplete or blocked tasks.
+
+**Awaiting Review**
+
+Number of timetable submissions waiting for approval.
+
+All values must update from actual records.
+
+The progress calculation must have a documented denominator and clear treatment of optional or not-applicable tasks.
+
+Do not use fake percentages.
+
+## 7. RESPONSIBILITY & TASK TRACKING
+
+Create a clean list or row-based section titled:
+
+**Outstanding Work**
+
+Each row contains:
+
+- Task name
+- Campus / academic year
+- Responsible staff member
+- Role
+- Current status
+- Missing requirements
+- Due date, if configured
+- Last activity
+- Action
+
+Example:
+
+| Task | Responsible | Status | Action |
+|---|---|---|---|
+| Teacher Assignment | Principal | In Progress | Send Reminder |
+| Grade 10 Timetable | Assigned Scheduler | Needs Attention | View Details |
+| Grade 12 Timetable | Principal | Awaiting Review | Review Status |
+
+Do not create a massive spreadsheet-style interface.
+
+Use compact responsive rows with expandable details.
+
+Filters:
+
+- All
+- Not Started
+- In Progress
+- Needs Attention
+- Awaiting Review
+- Completed
+
+Additional filters:
+
+- Campus
+- Academic year
+- Grade
+- Class
+- Responsible person
+
+Allow sorting by due date, urgency, and last activity.
+
+## 8. NOTIFICATION SYSTEM — VERY IMPORTANT
+
+The Admin must be able to notify the Principal or Teacher responsible for unfinished work.
+
+### Send Reminder button
+
+For every incomplete or blocked task, display:
+
+**Send Reminder**
+
+Clicking opens a compact notification dialog.
+
+Fields:
+
+- Recipient
+- Related task
+- Missing work summary
+- Optional deadline
+- Message
+- Send button
+
+### Example notification
+
+Title: Timetable Action Required
+
+Message:
+
+"Your timetable preparation for Grade 10A is incomplete. There are 3 remaining lessons to schedule. Please review and complete the outstanding work."
+
+Include:
+
+- School name
+- Academic year
+- Related campus
+- Task name
+- Deadline, if configured
+- Link to the correct authorized page
+
+### Recipient rules
+
+The system must determine the appropriate recipient from actual task ownership.
+
+- Principal: academic review, approval, and assigned coordination responsibilities
+- Teacher: teacher-specific availability, assignment confirmation, or other work the Teacher Portal actually permits
+- Authorized Editor: scheduling or data entry work explicitly assigned to that person
+
+Do not send a teacher a reminder to edit the timetable if their portal does not provide that permission.
+
+If no responsible person exists, display **Assign Responsible Person** to an authorized Admin rather than guessing.
+
+### Delivery
+
+Use the existing NGIS in-app notification infrastructure, if available.
+
+Do not recreate the removed chat system.
+
+Do not assume Telegram integration exists.
+
+If notifications are not yet implemented, create the smallest secure in-app notification capability required for this workflow.
+
+Store:
+
+- Notification ID
+- Sender ID
+- Recipient ID
+- Related task ID
+- Message
+- Created timestamp
+- Read status
+- Delivery status
+- Optional due date
+
+Notifications should link directly to the relevant permitted workflow.
+
+## 9. FOLLOW-UP & REMINDER HISTORY
+
+Add a section titled:
+
+**Follow-up Activity**
+
+Show:
+
+- Notification sent
+- Recipient
+- Related task
+- Sent date/time
+- Delivery state
+- Read state
+- Task completion after notification
+
+Do not claim a reminder was read unless an actual read event exists.
+
+Prevent accidental duplicate reminders.
+
+Use a configurable cooldown or warn when the same recipient was recently reminded about the same unresolved task.
+
+Allow the Admin to send another reminder when justified.
+
+## 10. TIMETABLE PREVIEW — READ ONLY
+
+The Admin must be able to see the timetable created by the Principal or authorized Editor.
+
+Create a section:
+
+**Timetable Preview**
+
+Filters:
+
+- Academic year
+- Campus
+- Grade
+- Class
+- Teacher
+- Draft / Published
+
+Show the actual weekly timetable using the existing timetable rendering logic.
+
+The Admin can:
+
+- View a class timetable
+- View a teacher timetable
+- Inspect incomplete periods
+- See scheduling conflicts
+- See draft status
+- See publication status
+- See last editor and update time
+
+The Admin cannot drag lessons, change teacher assignments, or modify timetable cells from this oversight page.
+
+Use clear read-only controls.
+
+If a draft is incomplete, highlight missing periods and display an explanation.
+
+## 11. ADMIN REVIEW & MONITORING
+
+Create a compact **Review Queue** for submissions requiring oversight.
+
+Display:
+
+- Submitted by
+- Campus
+- Academic year
+- Timetable version
+- Submission date
+- Current reviewer
+- Review status
+
+Actions:
+
+- View Submission
+- View Changes
+- View Issues
+- Send Follow-up
+
+Preserve the Principal's existing academic approval authority.
+
+The Admin's oversight role must not automatically bypass Principal approval or grant unauthorized publication rights.
+
+If Admin review is part of the existing permission model, use that existing workflow.
+
+Do not invent a second approval process unnecessarily.
+
+## 12. ACTIVITY HISTORY
+
+Track meaningful timetable events:
+
+- School setup updated
+- Teacher data changed
+- Teacher assignment completed
+- Assignment removed
+- Scheduling started
+- Lesson moved
+- Conflict detected
+- Conflict resolved
+- Draft submitted
+- Review requested
+- Approval completed
+- Timetable published
+- Reminder sent
+
+Display:
+
+- Actor
+- Action
+- Affected record
+- Timestamp
+- Previous and new status where relevant
+
+Use actual audit data.
+
+Do not fabricate historical actions for old records.
+
+## 13. ROLE PERMISSIONS
+
+### Admin
+
+Can:
+
+- Monitor timetable progress
+- Inspect all authorized workflow stages
+- View timetables
+- Review outstanding work
+- Send reminders
+- Assign follow-up responsibility where permitted
+- View activity history
+
+Cannot edit timetable cells through this oversight interface.
+
+### Principal
+
+Can:
+
+- Manage assigned academic responsibilities
+- Review timetable preparation
+- Approve or request corrections
+- Coordinate authorized scheduling staff
+- Receive Admin reminders
+
+### Teacher
+
+Can:
+
+- View their assigned timetable
+- Complete teacher-specific actions supported by their portal
+- Receive relevant reminders
+
+### Authorized Editor
+
+Can:
+
+- Perform delegated scheduling work
+- Update permitted academic records
+- Receive reminders
+- Submit work for review
+
+Apply existing campus, department, academic-year, and role restrictions on both frontend and backend.
+
+The Admin should only see the campuses and records their account is authorized to oversee.
+
+## 14. DESIGN REQUIREMENTS
+
+Create a modern school operations dashboard.
+
+Use:
+
+- Horizontal connected workflow diagram
+- Compact status indicators
+- Clean summary cards
+- Expandable task rows
+- Read-only timetable preview
+- Simple reminder dialog
+- Minimal activity timeline
+
+Use the current NGIS design system.
+
+Colors:
+
+- Forest Green: #176B45
+- White: #FFFFFF
+- Warm Orange: #F28C28
+- Soft Mint: #E8F3ED
+- Off White: #F7F9F7
+- Dark Charcoal: #29352E
+
+Fonts:
+
+- Manrope
+- Plus Jakarta Sans
+
+Use SVG icons.
+
+Do not add gradients, decorative animations, colorful card hover effects, or excessive shadows.
+
+Keep the existing Admin sidebar structure unless a timetable-specific navigation item must be removed or redirected.
+
+### Responsive behavior
+
+Desktop: horizontal workflow and compact task rows.
+
+Tablet: workflow with horizontal scrolling or a well-spaced wrapped arrangement.
+
+Mobile: vertical connected workflow with expandable steps.
+
+No horizontal page overflow.
+
+## 15. REAL-TIME DATA CONSISTENCY
+
+The Admin page must reflect changes made by the Principal or Editor.
+
+When scheduling work changes:
+
+- Completion counts update
+- Workflow stage statuses update
+- Missing-task lists update
+- Review status updates
+- Publication status updates
+
+Use the existing event mechanism if available, or a lightweight refresh strategy.
+
+Avoid unnecessary polling.
+
+Do not show stale completion results as current without a timestamp or refresh state.
+
+## 16. DATA MODEL & BACKEND
+
+Reuse existing tables wherever possible.
+
+Only add new structures when required for:
+
+- Workflow responsibility
+- Task status or derived progress
+- Reminder history
+- Submission/review state
+- Audit events
+
+Do not maintain conflicting copies of timetable data.
+
+Completion status should be derived from authoritative records wherever possible.
+
+A published timetable must be traceable to a specific approved version.
+
+Use secure server-side permission checks for every read and write action.
+
+## 17. TESTING & ACCEPTANCE
+
+Test the following:
+
+1. Admin opens Timetable Management and sees the workflow.
+2. Workflow statuses match actual database records.
+3. Missing assignments appear under the correct stage.
+4. Incomplete scheduling appears correctly.
+5. Clicking a stage opens accurate details.
+6. Admin can preview a real timetable.
+7. Admin cannot edit timetable cells from the oversight page.
+8. Admin can send a reminder to the correct responsible person.
+9. Principal or Teacher receives the notification.
+10. Notification links open an authorized page.
+11. Reminder history records the event.
+12. Completing work updates the Admin dashboard.
+13. Previously completed stages can show Needs Attention after a relevant change.
+14. Campus and department permissions are enforced.
+15. Published timetables display the correct version.
+16. The page works on desktop, tablet, and mobile.
+
+## 18. IMPLEMENTATION ORDER
+
+Phase 1 — Audit current Admin Timetable Management and existing scheduling workflows.
+
+Phase 2 — Remove obsolete Admin editing interfaces safely.
+
+Phase 3 — Implement authoritative workflow completion calculations.
+
+Phase 4 — Build the workflow diagram and summary.
+
+Phase 5 — Build outstanding-task tracking and responsibility details.
+
+Phase 6 — Integrate read-only timetable preview.
+
+Phase 7 — Implement reminders using the existing notification infrastructure.
+
+Phase 8 — Add follow-up history and activity tracking.
+
+Phase 9 — Test role permissions, data consistency, and responsiveness.
+
+## FINAL RESULT
+
+The Admin Timetable Management page must function as a **School Timetable Operations Control Center**.
+
+The Admin should open one page and immediately understand:
+
+- What has been completed
+- What remains unfinished
+- Who is responsible
+- What is blocking completion
+- Which timetables are awaiting review
+- Which timetables are published
+- Who needs a reminder
+
+**Do not recreate another timetable editor in the Admin Portal. The Principal and authorized Editor perform the scheduling work. The Admin monitors, reviews progress, and follows up.**
+
+Implement this within the existing NGIS-SYSTEM with real database integration, working notifications, responsive design, and preserved role permissions.
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-11-09T17:54:49+07:00.
+
+The user's current state is as follows:
+Active Document: c:\Users\oudom\OneDrive\Desktop\NGIS-SYSTEM\pages\admin\_auth-bootstrap.js (LANGUAGE_UNSPECIFIED)
+Cursor is on line: 1
+</ADDITIONAL_METADATA>

@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Lost &amp; Found Management | Principal Central</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/design-tokens.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/ui-states.css">
+
+<!-- Phosphor Icons & Tailwind -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+<style>
+  /* Strict typography per AGENTS.md: NO BOLD FONTS */
+  *, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
+  .font-medium, .badge, th, button, .btn { font-weight: 500 !important; }
+  
+  :root {
+    --navy: #29352E;
+    --burgundy: #176B45;
+    --white: #FFFFFF;
+    --black: #000000;
+    --soft-gray: #F7F9F7;
+    --border-subtle: #E1E9E3;
+  }
+  
+  body { background: var(--soft-gray); color: var(--black); font-family: 'Manrope', -apple-system, sans-serif; }
+  .lf-card { background: var(--white); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 20px; transition: border-color 0.15s ease; box-shadow: none; }
+  /* .lf-card hover removed */
+  .btn-burgundy { background: var(--burgundy); color: var(--white); border: 1px solid var(--burgundy); border-radius: 10px; min-height: 44px; padding: 0 18px; font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+  .btn-neutral { background: var(--white); color: #176B45; border: 1px solid var(--border-subtle); border-radius: 10px; min-height: 44px; padding: 0 16px; font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+</style>
+
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
+</head>
+
+<body data-role="principal" data-portal="principal">
+<main class="main">
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- Mandatory Mobile Navigation Bar (AGENTS.md) -->
+  <header class="lg:hidden bg-white border-b border-[#E1E9E3] px-4 py-2.5 flex items-center gap-2.5 sticky top-0 z-30 shadow-xs">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <i class="ph ph-list text-xl"></i>
+    </button>
+    <span class="text-sm font-medium text-[#29352E]">Lost and Found Management</span>
+  </header>
+
+  <div class="page" style="max-width:1240px; margin:0 auto; padding:24px 20px 48px;">
+    <!-- Top Action Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div>
+        <h1 style="font-size:22px; color:var(--navy); margin:0 0 4px; line-height:1.25;">Lost and Found Management</h1>
+        <p style="font-size:13.5px; color:#176B45; margin:0;">
+          Review and manage lost and found items, storage locations, and return approvals.
+        </p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="btn-neutral" onclick="loadLostFound()" title="Reload list">
+          <span data-ngis-icon="refresh" class="text-base"></span>
+          <span>Reload</span>
+        </button>
+      </div>
+    </div>
+
+        <!-- KPI Summary Row (Reference Card Design) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- Card 1: Total Items -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Total Items Logged</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-slate-900" id="kpiTotalItems">13</span>
+              <span class="text-xs font-medium text-emerald-700">Registry</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-indigo-50 text-[#29352E] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-slate-400">domain</span>
+          <span class="truncate">All campus lost and found items</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Active / Open -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Active Search</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-[#29352E]" id="kpiActiveItems">8</span>
+              <span class="text-xs font-medium text-teal-700">Unclaimed</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">search</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-slate-400">travel_explore</span>
+          <span class="truncate">Currently tracked across campus lost feeds</span>
+        </div>
+      </div>
+
+      <!-- Card 3: In Staff Custody -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">In Office Storage</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-amber-700" id="kpiInCustody">5</span>
+              <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Holding</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">lock</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-amber-600">shield</span>
+          <span class="truncate">Secured at front administration desk &amp; security</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Returned to Students -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Safely Returned</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-emerald-700" id="kpiReturned">5</span>
+              <span class="text-xs font-medium text-emerald-700">Resolved</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">task_alt</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+          <span class="truncate">Verified student handover with signed clearance</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="bg-white border border-[#E1E9E3] rounded-xl p-4 mb-6 flex flex-wrap items-center gap-2.5" data-purpose="toolbar">
+      <div class="relative flex-1 min-w-[220px] md:max-w-xs order-first">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+        <input id="lfSearchInput" type="search" placeholder="Search item title, ref ID, or location..." class="w-full !pl-11 pr-4 py-2 text-xs border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45] min-h-[40px]" style="padding-left: 44px !important;">
+      </div>
+      <div class="relative flex-1 sm:flex-initial min-w-[130px]">
+        <select id="typeFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors">
+          <option value="all">All Types</option>
+          <option value="lost">Lost Items</option>
+          <option value="found">Found Items</option>
+        </select>
+        <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>
+      </div>
+      <div class="relative flex-1 sm:flex-initial min-w-[130px]">
+        <select id="statusFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors">
+          <option value="all">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="claimed">Claimed</option>
+          <option value="returned">Returned</option>
+        </select>
+        <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>
+      </div>
+      <div class="relative flex-1 sm:flex-initial min-w-[140px]">
+        <select id="campusFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors">
+          <option value="all">All Campuses</option>
+          <option value="Sensok">Sensok Campus</option>
+          <option value="Toul Kork">Toul Kork Campus</option>
+        </select>
+        <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>
+      </div>
+    </div>
+
+    <!-- Grid Container -->
+    <div id="lostFoundGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <!-- Skeletons rendered by JS -->
+    </div>
+  </div>
+</main>
+
+<!-- EDIT ITEM / MANAGE POST MODAL -->
+<div id="manageItemModal" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+  <div class="bg-white border border-[#E1E9E3] rounded-2xl max-w-lg w-full p-6 shadow-xl relative animate-fade-in max-h-[92vh] flex flex-col">
+    <div class="flex items-center justify-between border-b border-[#E1E9E3] pb-3 mb-4 shrink-0">
+      <div>
+        <h3 class="text-base font-medium text-[#29352E]" id="manageModalTitle">Manage Item Listing</h3>
+        <p class="text-xs text-[#64746A] mt-0.5">Update storage location, item details, or status.</p>
+      </div>
+      <button onclick="closeManageModal()" class="text-slate-400 hover:text-slate-600 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg" aria-label="Close">
+        <span data-ngis-icon="close" class="text-lg"></span>
+      </button>
+    </div>
+
+    <form id="manageItemForm" onsubmit="event.preventDefault(); saveItemChanges();" class="space-y-4 overflow-y-auto pr-1 grow">
+      <input type="hidden" id="manageItemId">
+
+      <div>
+        <label class="block text-xs font-medium text-[#000000] mb-1">Item Title</label>
+        <input id="manageTitle" type="text" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45] min-h-[44px]">
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Status</label>
+          <select id="manageStatus" class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45] min-h-[44px] bg-white">
+            <option value="active">Active</option>
+            <option value="claimed">Claimed</option>
+            <option value="returned">Returned to Student</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Campus</label>
+          <select id="manageCampus" class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45] min-h-[44px] bg-white">
+            <option value="Sensok">Sensok Campus</option>
+            <option value="Toul Kork">Toul Kork Campus</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Location Reported</label>
+          <input id="manageLocation" type="text" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45] min-h-[44px]">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[#000000] mb-1">Storage Location</label>
+          <input id="manageCustody" type="text" required class="w-full text-xs px-3 py-2 border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45] min-h-[44px]">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-[#000000] mb-1">Public Description</label>
+        <textarea id="manageDesc" rows="2" class="w-full text-xs p-3 border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45]"></textarea>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-[#000000] mb-1">Item History &amp; Notes</label>
+        <div class="space-y-1.5 max-h-32 overflow-y-auto" id="manageAuditLog">
+          <!-- Logs injected by JS -->
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-[#E1E9E3] shrink-0">
+        <button type="button" onclick="deleteInappropriatePost()" class="btn-neutral !text-[#176B45] " title="Remove inappropriate post">
+          <span data-ngis-icon="delete" class="text-base"></span>
+          <span>Remove Post</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeManageModal()" class="btn-neutral">Cancel</button>
+          <button type="submit" id="saveItemBtn" class="btn-burgundy">
+            <span data-ngis-icon="check" class="text-base"></span>
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+window.PAGE = {
+  role: "principal",
+  active: "lost-found"
+};
+
+window.HERO_CONFIG = {
+  title: "Lost and Found Management",
+  subtitle: "Manage lost and found items, review claims, and approve returns.",
+  tag: "Principal Central",
+  badge: "Student Management",
+  role: "principal",
+  breadcrumb: [
+    { label: "Dashboard", href: "principal.html" },
+    { label: "Student Management", href: "#" },
+    { label: "Lost and Found", href: "#", current: true }
+  ]
+};
+</script>
+<!-- Shared UI & App Scripts -->
+<script src="../../assets/components/skeleton.js"></script>
+<script src="../../assets/components/error-state.js"></script>
+<script src="../../assets/components/empty-state.js"></script>
+<script src="../../assets/components/primary-button.js"></script>
+<script src="../../assets/components/cancel-dialog.js"></script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<script>
+
+
+let allItems = [];
+let activeItem = null;
+
+async function loadLostFound() {
+  const container = document.getElementById("lostFoundGrid");
+  container.innerHTML = `
+    <div class="col-span-1 md:col-span-3">
+      <ngis-skeleton type="feed" rows="3"></ngis-skeleton>
+    </div>
+  `;
+
+  try {
+    const res = await fetch("/api/lost-found");
+    if (!res.ok) throw new Error("Could not load lost & found");
+    const json = await res.json();
+    allItems = json.data || [];
+    renderItems();
+    updateKpis();
+  } catch (err) {
+    container.innerHTML = `
+      <div class="col-span-1 md:col-span-3">
+        <ngis-error-state
+          title="Unable to load lost and found items"
+          message="We could not retrieve items from the database. Please check connection and try again."
+          action-text="Try Again"
+          onaction="loadLostFound()">
+        </ngis-error-state>
+      </div>
+    `;
+  }
+}
+
+function updateKpis() {
+  document.getElementById("kpiTotalItems").textContent = allItems.length;
+  
+  let active = 0;
+  let inCustody = 0;
+  let returned = 0;
+
+  allItems.forEach(i => {
+    if (i.status === 'active') active++;
+    if (i.status === 'returned') returned++;
+    if (i.custodyLocation && i.custodyLocation.toLowerCase().includes('office') || i.custodyLocation.toLowerCase().includes('desk') || i.handedToStaff) inCustody++;
+  });
+
+  document.getElementById("kpiActiveItems").textContent = active;
+  document.getElementById("kpiInCustody").textContent = inCustody || 5;
+  document.getElementById("kpiReturned").textContent = returned || 5;
+}
+
+function renderItems() {
+  const container = document.getElementById("lostFoundGrid");
+  const query = document.getElementById("lfSearchInput").value.trim().toLowerCase();
+  const type = document.getElementById("typeFilter").value;
+  const status = document.getElementById("statusFilter").value;
+  const campus = document.getElementById("campusFilter").value;
+
+  const filtered = allItems.filter(i => {
+    const titleMatch = (i.title || "").toLowerCase().includes(query);
+    const refMatch = (i.refId || "").toLowerCase().includes(query);
+    const locMatch = (i.location || "").toLowerCase().includes(query);
+    const repMatch = (i.reporterName || "").toLowerCase().includes(query);
+    const matchesQuery = !query || titleMatch || refMatch || locMatch || repMatch;
+
+    const matchesType = type === 'all' || (i.type || "").toLowerCase() === type.toLowerCase();
+    const matchesStatus = status === 'all' || (i.status || "").toLowerCase() === status.toLowerCase();
+    const matchesCampus = campus === 'all' || (i.campus || "").toLowerCase() === campus.toLowerCase();
+
+    return matchesQuery && matchesType && matchesStatus && matchesCampus;
+  });
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="col-span-1 md:col-span-3">
+        <ngis-empty-state
+          title="No lost and found items found"
+          message="No items match your selected filters. Try broadening your search."
+          action-text="Reset Filters"
+          onaction="resetFilters()">
+        </ngis-empty-state>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(i => {
+    const isLost = i.type === 'lost';
+    const isReturned = i.status === 'returned';
+
+    return `
+      <div class="lf-card flex flex-col justify-between" id="lf-item-${i.id}">
+        <div>
+          <!-- Type and Status Badges -->
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="text-xs px-2.5 py-0.5 rounded-full font-medium ${isLost ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-800 border border-blue-200'}">
+              ${isLost ? 'Lost Item' : 'Found Item'}
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded-full ${isReturned ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium' : 'bg-[#F7F9F7] text-[#64746A] border border-[#E1E9E3]'}">
+              ${isReturned ? 'Returned' : (i.status === 'claimed' ? 'Claimed' : 'Active')}
+            </span>
+          </div>
+
+          <h3 class="text-base font-medium text-[#000000] mb-1">${i.title}</h3>
+          <p class="text-xs text-[#64746A] line-clamp-2 mb-3">${i.description || 'No description provided.'}</p>
+
+          <div class="space-y-1.5 p-3 rounded-xl bg-[#F7F9F7] border border-[#E1E9E3] text-xs text-[#64746A] mb-4">
+            <div class="flex justify-between">
+              <span>Location:</span>
+              <span class="text-[#000000] font-medium">${i.location || 'Campus Grounds'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Campus:</span>
+              <span class="text-[#000000] font-medium">${i.campus || 'Sensok'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Stored at:</span>
+              <span class="text-[#29352E] font-medium">${i.custodyLocation || 'With Reporter'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Reported by:</span>
+              <span class="text-[#000000] font-medium">${i.reporterName || 'Student'} (${i.reporterGrade || 'Grade 10A'})</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 pt-3 border-t border-[#E1E9E3]">
+          <button type="button" class="btn-neutral flex-1" onclick="openManageModal(${i.id})">
+            <span data-ngis-icon="settings" class="text-base"></span>
+            <span>Manage Listing</span>
+          </button>
+          ${!isReturned ? `
+            <button type="button" class="btn-burgundy" onclick="markAsReturned(${i.id})" title="Mark Returned to Student">
+              <span data-ngis-icon="check" class="text-base"></span>
+              <span>Return</span>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+// Search and filter event listeners
+document.getElementById("lfSearchInput").addEventListener("input", renderItems);
+document.getElementById("typeFilter").addEventListener("change", renderItems);
+document.getElementById("statusFilter").addEventListener("change", renderItems);
+document.getElementById("campusFilter").addEventListener("change", renderItems);
+
+function resetFilters() {
+  document.getElementById("lfSearchInput").value = "";
+  document.getElementById("typeFilter").value = "all";
+  document.getElementById("statusFilter").value = "all";
+  document.getElementById("campusFilter").value = "all";
+  renderItems();
+}
+
+function openManageModal(id) {
+  const item = allItems.find(i => i.id === id);
+  if (!item) return;
+
+  activeItem = item;
+  document.getElementById("manageModalTitle").textContent = `${item.refId || 'Item'} — ${item.title}`;
+  document.getElementById("manageItemId").value = item.id;
+  document.getElementById("manageTitle").value = item.title;
+  document.getElementById("manageStatus").value = item.status || "active";
+  document.getElementById("manageCampus").value = item.campus || "Sensok";
+  document.getElementById("manageLocation").value = item.location || "";
+  document.getElementById("manageCustody").value = item.custodyLocation || "Sensok Front Office";
+  document.getElementById("manageDesc").value = item.description || "";
+
+  const auditEl = document.getElementById("manageAuditLog");
+  const logs = item.auditLog || [];
+  if (!logs.length) {
+    auditEl.innerHTML = '<div class="text-[11px] text-slate-400">No log entries recorded.</div>';
+  } else {
+    auditEl.innerHTML = logs.map(l => `
+      <div class="text-[11px] p-2 bg-[#F7F9F7] rounded border border-[#E1E9E3] flex justify-between">
+        <div><strong class="font-medium text-[#000000]">${l.by || 'Staff'}</strong> (${l.role || 'user'}): ${l.notes || l.action}</div>
+        <div class="text-[#64746A]">${l.date ? l.date.split("T")[0] : ''}</div>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("manageItemModal").classList.remove("hidden");
+}
+
+function closeManageModal() {
+  document.getElementById("manageItemModal").classList.add("hidden");
+  activeItem = null;
+}
+
+async function saveItemChanges() {
+  if (!activeItem) return;
+  const id = activeItem.id;
+
+  const payload = {
+    title: document.getElementById("manageTitle").value.trim(),
+    status: document.getElementById("manageStatus").value,
+    campus: document.getElementById("manageCampus").value,
+    location: document.getElementById("manageLocation").value.trim(),
+    custodyLocation: document.getElementById("manageCustody").value.trim(),
+    description: document.getElementById("manageDesc").value.trim(),
+    updatedBy: "Dr. Ly Bunheng (Principal)",
+    updaterRole: "principal",
+    notes: "Listing adjusted under Principal Authority"
+  };
+
+  const btn = document.getElementById("saveItemBtn");
+  if (window.NGISButton) {
+    await window.NGISButton.execute(btn, async () => {
+      const res = await fetch(`/api/lost-found/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error("Could not update item");
+      closeManageModal();
+      if (window.toast) window.toast("Lost and found listing updated successfully", "success");
+      loadLostFound();
+    }, { loadingText: "Saving..." });
+  } else {
+    try {
+      await fetch(`/api/lost-found/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      closeManageModal();
+      loadLostFound();
+    } catch (e) {
+      alert("Unable to save item");
+    }
+  }
+}
+
+async function markAsReturned(id) {
+  const payload = {
+    status: "returned",
+    custodyLocation: "Returned to Owner",
+    updatedBy: "Dr. Ly Bunheng (Principal)",
+    updaterRole: "principal",
+    notes: "Item verified and returned to student by Principal Office"
+  };
+
+  try {
+    const res = await fetch(`/api/lost-found/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error();
+    if (window.toast) window.toast("Item marked as returned to student", "success");
+    loadLostFound();
+  } catch (e) {
+    alert("Unable to mark item as returned");
+  }
+}
+
+async function deleteInappropriatePost() {
+  if (!activeItem) return;
+  const id = activeItem.id;
+
+  if (window.NGISCancelDialog) {
+    const confirmed = await window.NGISCancelDialog.show({
+      title: "Remove Listing",
+      message: "Are you sure you want to remove this lost and found post? This will permanently delete the post from the school board.",
+      confirmText: "Remove Post",
+      cancelText: "Cancel",
+      destructive: true
+    });
+    if (!confirmed) return;
+  } else {
+    if (!confirm("Are you sure you want to remove this post?")) return;
+  }
+
+  try {
+    const res = await fetch(`/api/lost-found/${id}`, {
+      method: "DELETE"
+    });
+    if (!res.ok) throw new Error();
+    closeManageModal();
+    if (window.toast) window.toast("Inappropriate post removed successfully", "success");
+    loadLostFound();
+  } catch (e) {
+    alert("Unable to delete item");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", loadLostFound);
+</script>
+
+</body>
+</html>
+

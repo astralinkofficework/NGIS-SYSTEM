@@ -82,10 +82,6 @@
       title: 'Digital Student ID Card',
       greeting: 'Official student credential, library card barcode, and campus access pass'
     },
-    'student-clubs.html': {
-      title: 'Student Clubs & Co-Curricular',
-      greeting: 'Campus clubs, student leadership, extracurricular activities, and events'
-    },
     'student-lost-found.html': {
       title: 'Campus Lost & Found Hub',
       greeting: 'Report lost personal items, browse discovered campus articles, and claim belongings'
@@ -117,44 +113,35 @@
         '<!-- Center: Global Search Capsule -->' +
         '<div class="htb-search-wrap" role="search">' +
           '<span class="mi htb-search-icon">search</span>' +
-          '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses, syllabi, tutors, grades…" aria-label="Search courses, syllabi, tutors, grades">' +
-          '<kbd class="htb-search-kbd">⌘ K</kbd>' +
+          '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses," aria-label="Search courses">' +
         '</div>' +
 
         '<!-- Right: Controls & User Profile -->' +
         '<div class="htb-right-controls">' +
-          '<a href="student-calendar.html" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">' +
-            '<span class="mi">calendar_today</span>' +
-          '</a>' +
+          '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
+            '<span class="mi">menu</span>' +
+          '</button>' +
+
           '<button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">' +
             '<span class="mi">notifications</span>' +
             '<span class="htb-ctrl-badge">3</span>' +
           '</button>' +
 
-
           '<a href="student-notifications.html" class="htb-ctrl-btn" id="htbMsgBtn" title="Messages" aria-label="Messages">' +
             '<span class="mi">mail</span>' +
-            '<span class="htb-ctrl-badge" style="background:#e11d48">11</span>' +
+            '<span class="htb-ctrl-badge">11</span>' +
           '</a>' +
-
-          '<div class="htb-ctrl-divider" aria-hidden="true"></div>' +
 
           '<div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu" aria-haspopup="true" aria-expanded="false">' +
             '<div class="htb-chip-avatar-wrap">' +
               '<img class="htb-chip-avatar" src="' + STUDENT.avatarSm + '" alt="' + STUDENT.name + '">' +
-              '<span class="htb-online-pip" title="Active"></span>' +
             '</div>' +
             '<div class="htb-chip-text">' +
               '<div class="htb-chip-name-row">' +
                 '<span class="htb-chip-name">' + STUDENT.name + '</span>' +
               '</div>' +
-              '<span class="htb-chip-meta">Grade 10</span>' +
             '</div>' +
           '</div>' +
-
-          '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
-            '<span class="mi">menu</span>' +
-          '</button>' +
         '</div>' +
 
       '</div>' +
@@ -369,7 +356,7 @@
         var badge = nb.querySelector('.htb-ctrl-badge');
         if (badge) badge.style.display = 'none';
       }
-      markAllBtn.textContent = 'All read ✓';
+      markAllBtn.textContent = 'All read';
       markAllBtn.style.opacity = '0.6';
       markAllBtn.style.cursor = 'default';
       markAllBtn.disabled = true;

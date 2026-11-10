@@ -1,125 +1,285 @@
 @import url('design-tokens.css');
 @import url('shared-components.css');
+@import url('action-icons.css');
 
 /* ============================================================
    NGIS ERP — Master Global Design System & Visual Style
-   Strict 5-Color System:
-   - Navy:      #202F63 (Primary Color: main navigation, sidebar, primary headings, structural elements)
-   - Burgundy:  #92243D (The ONLY Accent Color: primary action buttons, key highlights, small visual emphasis)
-   - White:     #FFFFFF (Main Surface: page backgrounds, cards, panels, forms, tables, modals)
-   - Black:     #000000 (Text & Contrast: body text, strong contrast, important labels, crisp icons)
-   - Soft Gray: #F3F3F5 (Secondary Surface: subtle canvas, table separators, input surfaces)
+   Official Forest Green + Clean White + Warm Orange Design System:
+   - Forest Green: #176B45 (Primary brand color, sidebar, primary buttons, active navigation)
+   - Pure White:   #FFFFFF (Main content surfaces, cards, tables, forms, modals)
+   - Warm Orange:  #F28C28 (Important actions, notifications, small highlights)
+   - Soft Mint:    #E8F3ED (Selected navigation backgrounds, subtle sections, icon backgrounds)
+   - Off White:    #F7F9F7 (Main application workspace background)
+   - Dark Charcoal:#29352E (Headings, primary text, body text)
+
+   Supporting Structural Colors:
+   - Subtle Border:#E1E9E3 (Subtle green-gray hairline borders & dividers)
+   - Text Muted:   #64746A (Muted supporting descriptions & subtitles)
+   - Primary Hover:#125638 (Dark forest green for button hover)
 
    Strict Rules:
-   - Primary Font: Manrope (font-weight <= 500 per AGENTS.md)
-   - Continuous Canvas: var(--token-canvas) (#F3F3F5)
-   - Content Surfaces: var(--token-surface) (#FFFFFF with 1px solid #E5E5E8 border & 14px radius)
-   - Transparent Backgrounds for headers, navigation, filter strips, breadcrumbs
+   - Primary Font for Headings: Manrope (font-weight <= 500 per AGENTS.md, H1 exactly 28px)
+   - General Interface Font: Plus Jakarta Sans (font-weight 400 or 500)
+   - Continuous Canvas: var(--color-background, #F7F9F7)
+   - Content Surfaces: #FFFFFF with 1px solid #E1E9E3 border & 12px radius
    - Strictly ZERO colored hover overlays, ZERO lifting, ZERO scaling
    ============================================================ */
 
 /* ── 1. Universal Design Tokens ──────────────────────────────── */
 :root {
-  /* Typography */
-  --font-primary: var(--token-font-family);
-  --font-khmer: var(--token-font-khmer);
-  --font-mono: var(--token-font-mono);
+  /* Typography System (Manrope + Plus Jakarta Sans) */
+  --font-heading: 'Manrope', sans-serif;
+  --font-body:    'Plus Jakarta Sans', sans-serif;
+  --font-primary: 'Plus Jakarta Sans', sans-serif;
+
+  --font-size-h1: 28px;
+  --font-size-h2: 22px;
+  --font-size-h3: 18px;
+  --font-size-h4: 16px;
+
+  --font-size-body:  14px;
+  --font-size-small: 13px;
+  --font-size-label: 12px;
+
+  --font-khmer:   'Kantumruy Pro', 'Plus Jakarta Sans', sans-serif;
+  --font-mono:    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Neutral Surface Palette */
-  --ngis-canvas: var(--token-canvas);
-  --ngis-surface: var(--token-surface);
-  --ngis-surface-subtle: var(--token-surface-subtle);
-  --ngis-surface-translucent: var(--token-surface-translucent);
+  --ngis-canvas:              var(--color-background, #F7F9F7);
+  --ngis-surface:             #FFFFFF;
+  --ngis-surface-subtle:      var(--color-mint, #E8F3ED);
+  --ngis-surface-translucent: rgba(255, 255, 255, 0.96);
 
   /* Borders & Outlines */
-  --ngis-border: var(--token-border);
-  --ngis-border-subtle: var(--token-border-subtle);
-  --ngis-border-hover: var(--color-navy);
+  --ngis-border:        var(--color-border, #E1E9E3);
+  --ngis-border-subtle: #EEF4F0;
+  --ngis-border-hover:  var(--color-primary, #176B45);
 
   /* Typography Colors */
-  --ngis-text-primary: var(--token-text-primary);
-  --ngis-text-secondary: var(--token-text-secondary);
-  --ngis-text-muted: var(--token-text-muted);
-  --ngis-text-faint: var(--token-text-faint);
+  --ngis-text-primary:   var(--color-text, #29352E);
+  --ngis-text-secondary: var(--color-text-secondary, #64746A);
+  --ngis-text-muted:     var(--color-text-muted, #8FA095);
+  --ngis-text-faint:     #A5B4AA;
 
-  /* Brand Accent: Single Accent #92243D (Burgundy) */
-  --ngis-brand-forest: var(--color-navy);
-  --ngis-brand-teal: var(--color-navy);
-  --ngis-brand-hover: var(--color-navy);
+  /* Brand Accents */
+  --ngis-brand-deep:     var(--color-primary, #176B45);
+  --ngis-brand-hover:    var(--color-primary-hover, #125638);
+  --ngis-brand-steel:    var(--color-accent, #F28C28);
+  --ngis-brand-light:    var(--color-mint, #E8F3ED);
 
   /* Minimal Shadows */
-  --ngis-shadow-card: var(--token-shadow-card);
-  --ngis-shadow-float: var(--token-shadow-float);
-  --ngis-shadow-none: var(--token-shadow-none);
+  --ngis-shadow-card:  0 1px 3px 0 rgba(23, 107, 69, 0.04);
+  --ngis-shadow-float: 0 8px 24px -4px rgba(23, 107, 69, 0.12);
+  --ngis-shadow-none:  none;
 
   /* Radius */
-  --ngis-radius-card: var(--token-radius-card);
-  --ngis-radius-nested: var(--token-radius-md);
-  --ngis-radius-btn: var(--token-radius-md);
-  --ngis-radius-pill: var(--token-radius-pill);
+  --ngis-radius-card:   12px;
+  --ngis-radius-nested: 8px;
+  --ngis-radius-btn:    8px;
+  --ngis-radius-pill:   9999px;
 }
 
 html[data-theme="dark"],
 [data-theme="dark"] {
-  --ngis-canvas: #0D1322;
-  --ngis-surface: #141D33;
-  --ngis-surface-subtle: #0D1322;
-  --ngis-surface-translucent: rgba(20, 29, 51, 0.94);
-  --ngis-border: rgba(243, 243, 245, 0.14);
-  --ngis-border-subtle: rgba(243, 243, 245, 0.08);
-  --ngis-border-hover: #202F63;
-  --ngis-text-primary: #FFFFFF;
-  --ngis-text-secondary: #E5E5E8;
-  --ngis-text-muted: #A5A5AA;
-  --ngis-text-faint: #77777F;
-  --ngis-shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.35);
+  --ngis-canvas:              #101713;
+  --ngis-surface:             #18231D;
+  --ngis-surface-subtle:      #1F2E26;
+  --ngis-surface-translucent: rgba(24, 35, 29, 0.94);
+  --ngis-border:              rgba(225, 233, 227, 0.15);
+  --ngis-border-subtle:       rgba(225, 233, 227, 0.08);
+  --ngis-border-hover:        #176B45;
+  --ngis-text-primary:        #FFFFFF;
+  --ngis-text-secondary:      #E8F3ED;
+  --ngis-text-muted:          #8FA095;
+  --ngis-text-faint:          #64746A;
+  --ngis-shadow-card:         0 1px 3px 0 rgba(0, 0, 0, 0.4);
 }
 
 /* ── 2. Global Canvas & Typography Reset ─────────────────────── */
 html, body {
   background-color: var(--ngis-canvas) !important;
   color: var(--ngis-text-primary) !important;
-  font-family: var(--font-primary) !important;
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: var(--font-size-body, 14px);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden !important;
+  max-width: 100vw;
 }
 
-/* Typography Weight Rules:
-   - Regular & Medium for normal content (avoid bold throughout application).
-   - 600 or 700 allowed ONLY for page titles and section headings when necessary. */
+/* Base text elements default to Plus Jakarta Sans */
+body, button, input, select, textarea, p, span, div, label, a, table, tr, td, th {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+
+/* Icons preserve their icon font family */
+.material-symbols-outlined,
+.material-icons,
+[class*="ph-"],
+.ph,
+.ph-bold,
+.ph-fill {
+  font-family: 'Material Symbols Outlined', 'Phosphor', sans-serif !important;
+}
+
+/* Typography Weight Rules */
 *, b, strong, th, td, button, span, div, input, select, textarea, p, label, a {
   font-weight: 400;
 }
 
-/* Medium weight for interactive controls, badges, table headers, labels */
+/* Medium weight (500) for interactive controls, badges, table headers, labels */
 .font-medium, .stat-val, .badge, th, .btn, .nav-link, .nav-group-label,
-.font-semibold, .font-bold, .font-extrabold, .font-black,
-[class*="font-semibold"], [class*="font-bold"], [class*="font-extrabold"], [class*="font-black"], [class*="font-medium"] {
+[class*="font-medium"] {
   font-weight: 500;
 }
 
-/* Page titles and section headings allowed 600 or 700 */
-h1, .page-title, .dash-hero-title, [data-purpose="page-title"], .masthead-title {
-  font-family: 'Manrope', 'Plus Jakarta Sans', sans-serif !important;
+/* Semi-bold weight (600) for H1-H4 headings and titles */
+.font-semibold, h1, h2, h3, h4, .page-title, [class*="font-semibold"] {
   font-weight: 600;
 }
 
-h2, h3, .section-title, [data-purpose="section-title"] {
-  font-family: 'Manrope', 'Plus Jakarta Sans', sans-serif !important;
-  font-weight: 600;
+/* H1 Page Titles: Manrope, exactly 28px, weight 600, line-height 1.25 */
+h1,
+.page-title,
+.dash-hero-title,
+[data-purpose="page-title"],
+.masthead-title,
+.portal-title {
+  font-family: var(--font-heading, 'Manrope', sans-serif) !important;
+  font-weight: 600 !important;
+  font-size: var(--font-size-h1, 28px) !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em;
+  color: var(--color-text, #29352E) !important;
+}
+
+/* H2 Section Headings: Manrope, 22px, weight 600 */
+h2,
+.section-title,
+[data-purpose="section-title"],
+.dash-card-title,
+.module-title {
+  font-family: var(--font-heading, 'Manrope', sans-serif) !important;
+  font-weight: 600 !important;
+  font-size: var(--font-size-h2, 22px) !important;
+  line-height: 1.30 !important;
+  color: var(--color-text, #29352E) !important;
+}
+
+/* H3 Subsection Headings: Manrope, 18px, weight 600 */
+h3,
+.subsection-title,
+.modal-title,
+.dialog-title {
+  font-family: var(--font-heading, 'Manrope', sans-serif) !important;
+  font-weight: 600 !important;
+  font-size: var(--font-size-h3, 18px) !important;
+  line-height: 1.35 !important;
+  color: var(--color-text, #29352E) !important;
+}
+
+/* H4 Small Headings: Manrope, 16px, weight 600 */
+h4,
+.card-title,
+.subcard-title {
+  font-family: var(--font-heading, 'Manrope', sans-serif) !important;
+  font-weight: 600 !important;
+  font-size: var(--font-size-h4, 16px) !important;
+  line-height: 1.40 !important;
+  color: var(--color-text, #29352E) !important;
+}
+
+/* Body & Paragraphs: Plus Jakarta Sans, 14px, weight 400 */
+p,
+.body-text {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: var(--font-size-body, 14px) !important;
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+/* Supporting Text: Plus Jakarta Sans, 13px, weight 400 */
+.supporting-text,
+.meta-text,
+.sub-info,
+.stat-sub,
+.desc,
+.description,
+.breadcrumb-item,
+.caption {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: var(--font-size-small, 13px) !important;
+  font-weight: 400;
+}
+
+/* Small Labels & Badges: Plus Jakarta Sans, 12px, weight 500 */
+label,
+.label,
+.badge,
+.pill,
+.tag,
+.stat-lbl,
+.small-label,
+.meta-lbl {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: var(--font-size-label, 12px) !important;
+  font-weight: 500;
+}
+
+/* Buttons: Plus Jakarta Sans, 14px, weight 500 */
+button,
+.btn,
+.button,
+input[type="button"],
+input[type="submit"] {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Input Fields: Plus Jakarta Sans, 14px, weight 400 */
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+select,
+textarea {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 400;
+}
+
+/* Table Content: Plus Jakarta Sans, 13–14px */
+table, .tbl, .classes-table, .sk-table {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: 13px !important;
+}
+th {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+td {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+}
+
+/* Sidebar Navigation: Plus Jakarta Sans, 14px */
+.sidebar, .nav-link, .nav-item, .side-brand, .sidebar nav {
+  font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: 14px !important;
+}
+.sidebar .nav-link {
+  font-weight: 400;
+}
+.sidebar .nav-link.active {
+  font-weight: 500 !important;
 }
 
 /* Khmer Text Font */
 [lang="km"], [data-lang="km"], .font-khmer, .khmer-text {
-  font-family: 'Kantumruy Pro', 'Manrope', sans-serif !important;
+  font-family: var(--font-khmer, 'Kantumruy Pro', 'Plus Jakarta Sans', sans-serif) !important;
 }
 
-/* Supporting Interface Elements (pills, badges, metadata) */
-.supporting-ui, .pill, .meta-text, .tag, .stat-lbl, .breadcrumb-item {
-  font-family: 'Plus Jakarta Sans', 'Inter', 'Manrope', sans-serif;
-}
-
-/* ── Universal Primary Button Engine (Burgundy #92243D + White #FFFFFF) ── */
+/* ── Universal Primary Button Engine (Forest Green #176B45 + White #FFFFFF) ── */
 .btn-primary,
 .ngis-btn-primary,
 .ov-btn-main,
@@ -139,11 +299,14 @@ a.btn-primary,
 #btnPrimaryAddCourse,
 #btnSubmitUpload,
 #btnSubmitRequest {
-  background: #92243D !important;
-  background-color: #92243D !important;
+  background: var(--color-primary, #176B45) !important;
+  background-color: var(--color-primary, #176B45) !important;
   color: #FFFFFF !important;
-  border: 1px solid #92243D !important;
-  box-shadow: 0 1px 3px 0 rgba(146, 36, 61, 0.20) !important;
+  border: 1px solid var(--color-primary, #176B45) !important;
+  box-shadow: 0 1px 2px 0 rgba(23, 107, 69, 0.20) !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
 }
 
 .btn-primary:hover,
@@ -165,13 +328,12 @@ a.btn-primary:hover,
 #btnPrimaryAddCourse:hover,
 #btnSubmitUpload:hover,
 #btnSubmitRequest:hover {
-  background: #7A1D32 !important;
-  background-color: #7A1D32 !important;
-  border-color: #7A1D32 !important;
+  background: var(--color-primary-hover, #125638) !important;
+  background-color: var(--color-primary-hover, #125638) !important;
+  border-color: var(--color-primary-hover, #125638) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 2px 6px 0 rgba(146, 36, 61, 0.28) !important;
+  box-shadow: 0 2px 5px 0 rgba(18, 86, 56, 0.28) !important;
   transform: none !important;
-  translate: none !important;
 }
 
 .btn-primary *,
@@ -187,6 +349,74 @@ a.btn-primary *,
 .sh-new-request-btn *,
 #btnUploadAssignmentOrWork * {
   color: #FFFFFF !important;
+}
+
+/* Secondary Buttons (White with Forest Green text & subtle border) */
+.btn-secondary,
+.btn-neutral,
+button.btn-secondary,
+a.btn-secondary {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  color: var(--color-primary, #176B45) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+}
+.btn-secondary:hover,
+.btn-neutral:hover,
+button.btn-secondary:hover,
+a.btn-secondary:hover {
+  background: var(--color-mint, #E8F3ED) !important;
+  border-color: var(--color-primary, #176B45) !important;
+  color: var(--color-primary, #176B45) !important;
+  transform: none !important;
+}
+
+/* Accent Buttons (Warm Orange #F28C28 with White #FFFFFF text) */
+.btn-accent,
+.ngis-btn-accent,
+.btn-orange,
+button.btn-accent,
+a.btn-accent {
+  background: var(--color-accent, #F28C28) !important;
+  background-color: var(--color-accent, #F28C28) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--color-accent, #F28C28) !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+}
+.btn-accent:hover,
+.ngis-btn-accent:hover,
+.btn-orange:hover,
+button.btn-accent:hover,
+a.btn-accent:hover {
+  background: var(--color-accent-hover, #D9771A) !important;
+  background-color: var(--color-accent-hover, #D9771A) !important;
+  border-color: var(--color-accent-hover, #D9771A) !important;
+  color: #FFFFFF !important;
+  transform: none !important;
+}
+
+/* Soft Action Buttons (#E8F3ED with #176B45 text) */
+.btn-soft,
+.btn-accent-soft,
+button.btn-soft {
+  background: var(--color-mint, #E8F3ED) !important;
+  background-color: var(--color-mint, #E8F3ED) !important;
+  color: var(--color-primary, #176B45) !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+}
+.btn-soft:hover,
+.btn-accent-soft:hover,
+button.btn-soft:hover {
+  background: #D8EADF !important;
+  color: var(--color-primary-hover, #125638) !important;
+  transform: none !important;
 }
 
 /* ── 3. Transparent Background Design ────────────────────────── */
@@ -214,11 +444,6 @@ header[class*="sticky"] {
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-}
-
-.hero:not(.hero-main):not(:has(.hero-body)) .hero-topbar::after {
-  display: none !important;
-  content: none !important;
 }
 
 /* ── 4. Premium Content Surfaces & Clean Cards ───────────────── */
@@ -257,15 +482,14 @@ header[class*="sticky"] {
 .box,
 .panel,
 .widget,
-.demo-pill,
-[class~="card"],
-[class*="card"]:not([class*="-title"]):not([class*="-body"]):not([class*="-desc"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-text"]):not([class*="-inner"]):not([class*="-content"]):not([class*="-row"]):not([class*="-chevron"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-meta"]):not([class*="-sub"]):not([class*="-pad"]):not([class*="-grid"]):not([class*="-wrap"]):not([class*="-list"]):not([class*="-name"]):not([class*="-val"]):not([class*="-label"]):not([class*="-btn"]):not([class*="-link"]) {
-  background: var(--ngis-surface) !important;
-  background-color: var(--ngis-surface) !important;
-  border: 1px solid var(--ngis-border) !important;
-  border-radius: var(--ngis-radius-card) !important;
-  box-shadow: var(--ngis-shadow-card) !important;
-  transition: border-color 0.15s ease !important;
+.mgr-card,
+.dash-card,
+.telemetry-card {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px 0 rgba(23, 107, 69, 0.03) !important;
 }
 
 /* ── 5. STRICT: Zero Colored Hover Overlays & No Jumps ───────── */
@@ -304,19 +528,19 @@ header[class*="sticky"] {
 .box:hover,
 .panel:hover,
 .widget:hover,
-.demo-pill:hover,
-[class~="card"]:hover,
-[class*="card"]:not([class*="-title"]):not([class*="-body"]):not([class*="-desc"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-text"]):not([class*="-inner"]):not([class*="-content"]):not([class*="-row"]):not([class*="-chevron"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-meta"]):not([class*="-sub"]):not([class*="-pad"]):not([class*="-grid"]):not([class*="-wrap"]):not([class*="-list"]):not([class*="-name"]):not([class*="-val"]):not([class*="-label"]):not([class*="-btn"]):not([class*="-link"]):hover {
-  background: var(--ngis-surface) !important;
-  background-color: var(--ngis-surface) !important;
-  border-color: var(--ngis-border-hover) !important;
-  box-shadow: var(--ngis-shadow-card) !important;
+.mgr-card:hover,
+.dash-card:hover,
+.telemetry-card:hover {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border-color: var(--color-border, #E1E9E3) !important;
+  box-shadow: 0 1px 3px 0 rgba(23, 107, 69, 0.03) !important;
   transform: none !important;
   translate: none !important;
   scale: 1 !important;
 }
 
-/* Interactive clickable buttons & links: no lifting, no bouncing */
+/* Interactive clickable buttons: no lifting, no bouncing */
 a[href]:hover,
 button:not(:disabled):hover,
 [role="button"]:hover,
@@ -331,107 +555,64 @@ button:not(:disabled):hover,
   scale: 1 !important;
 }
 
-/* Table rows: clean neutral background on hover */
-table tbody tr:hover td,
-.tbl tbody tr:hover td,
-.sk-table tr:hover td,
-.class-table tbody tr:hover td,
-.news-tbl tr:hover td,
-.req-table tbody tr:hover td {
-  background-color: var(--ngis-canvas) !important;
-  transform: none !important;
+/* Table rows styling */
+table, .tbl, .sk-table, .class-table, .classes-table, .mgr-table {
+  background-color: #FFFFFF !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
 }
 
-/* ── 6. Top Search Capsule & Navigation Bar ──────────────────── */
-.htb-search-wrap {
-  background: #FFFFFF !important;
-  border: 1px solid var(--ngis-border) !important;
-  border-radius: 999px !important;
-  box-shadow: none !important;
-  transition: border-color 0.15s ease !important;
-}
-.htb-search-wrap:hover {
-  border-color: var(--color-navy) !important;
-  background: #FFFFFF !important;
-  box-shadow: none !important;
-}
-.htb-search-wrap:focus-within {
-  border-color: var(--color-navy) !important;
-  background: #FFFFFF !important;
-  box-shadow: 0 0 0 2px rgba(32, 47, 99, 0.20) !important;
+thead tr, thead th {
+  background-color: var(--color-mint, #E8F3ED) !important;
+  color: var(--color-text, #29352E) !important;
+  border-bottom: 1px solid var(--color-border, #E1E9E3) !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
 }
 
-/* Absolute zero inner box / zero border for search input across all selectors */
-html body .htb-search-wrap input,
-html body .htb-search-wrap input[type="search"],
-html body .htb-search-input,
-html body #htbSearchInput,
-html body [role="search"] input,
-html body .htb-search-wrap input:hover,
-html body .htb-search-wrap input:focus,
-html body .htb-search-wrap input:active,
-html body .htb-search-input:hover,
-html body .htb-search-input:focus,
-html body .htb-search-input:active,
-html body #htbSearchInput:hover,
-html body #htbSearchInput:focus,
-html body #htbSearchInput:active {
-  border: none !important;
-  border-width: 0 !important;
-  border-style: none !important;
-  border-color: transparent !important;
+tbody tr td {
+  border-bottom: 1px solid var(--color-border, #E1E9E3) !important;
+  color: var(--color-text, #29352E) !important;
+}
+
+tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+tbody tr:hover td {
+  background-color: #FAFDFB !important;
+}
+
+/* Form Inputs & Controls */
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+select,
+textarea {
+  background-color: #FFFFFF !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  color: var(--color-text, #29352E) !important;
+  border-radius: 8px !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-primary, #176B45) !important;
   outline: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  background-color: transparent !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
+  box-shadow: 0 0 0 2px rgba(23, 107, 69, 0.18) !important;
 }
 
-.hero.hero-main .htb-search-wrap,
-.hero:has(.hero-body) .htb-search-wrap {
-  background: rgba(255, 255, 255, 0.18) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-}
-.hero.hero-main .htb-search-wrap:focus-within,
-.hero:has(.hero-body) .htb-search-wrap:focus-within {
-  background: rgba(255, 255, 255, 0.28) !important;
-  border-color: rgba(255, 255, 255, 0.6) !important;
+input::placeholder,
+select::placeholder,
+textarea::placeholder {
+  color: #8FA095 !important;
 }
 
-/* ── 7. Transparent Containers & Continuous Flow ─────────────── */
-.demo-strip {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-.demo-pill {
-  background: #FFFFFF !important;
-  border: 1px solid var(--ngis-border) !important;
-  border-radius: 14px !important;
-}
-.demo-pill:hover {
-  background: #FFFFFF !important;
-  border-color: var(--color-navy) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Modal Evaluation Drawer stacking above mobile navigation */
-#scoringDrawer {
-  z-index: 95 !important;
-}
-body:has(#scoringDrawer:not(.translate-x-full)) .mob-bottomnav {
-  transform: translateX(-50%) translateY(calc(100% + 48px)) scale(0.88) !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-
-/* ── Mobile Hamburger Menu Button: Hidden on Desktop (>= 1025px), Visible on Mobile (<= 1024px) ── */
+/* ── 6. Mobile Hamburger Menu Button ─────────────────────────── */
 @media (min-width: 1025px) {
   .hamburger-btn,
   .mobile-hamburger-btn,
@@ -461,3 +642,1358 @@ body:has(#scoringDrawer:not(.translate-x-full)) .mob-bottomnav {
     order: -9999 !important;
   }
 }
+
+/* ── 7. Golden Reference Telemetry Card ──────────────────────── */
+.telemetry-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: 12px !important;
+  padding: 1.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  box-shadow: 0 1px 3px rgba(23, 107, 69, 0.03) !important;
+  transform: none !important;
+  transition: none !important;
+  position: relative;
+}
+
+.telemetry-card:hover {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 3px rgba(23, 107, 69, 0.03) !important;
+  transform: none !important;
+}
+
+/* Telemetry Card Typography & Accents */
+.telemetry-card .stat-val,
+.telemetry-card [id^="kpi"] {
+  color: var(--color-text, #29352E) !important;
+  font-family: 'Manrope', sans-serif !important;
+  font-weight: 500 !important;
+}
+
+.telemetry-card span.uppercase {
+  color: var(--color-text-secondary, #64746A) !important;
+}
+
+/* Icon containers in telemetry cards */
+.telemetry-card .w-10.h-10 {
+  background-color: var(--color-mint, #E8F3ED) !important;
+  color: var(--color-primary, #176B45) !important;
+  border-radius: 10px !important;
+}
+
+.telemetry-pill {
+  padding: 0.5rem 0.625rem !important;
+  background-color: var(--color-mint, #E8F3ED) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+  color: var(--color-text-secondary, #64746A) !important;
+}
+
+.telemetry-pill .material-symbols-outlined {
+  color: var(--color-primary, #176B45) !important;
+}
+
+/* ── 8. Universal Search & Filter Input Padding ───────────────── */
+.search-input-with-icon,
+[data-purpose="filtering-controls"] input[type="text"],
+[data-purpose="filtering-controls"] input[type="search"],
+.filter-bar input[type="text"],
+.filter-bar input[type="search"],
+.classes-search-input {
+  padding-left: 44px !important;
+}
+
+[data-purpose="filtering-controls"] select,
+.filter-bar select,
+.filter-select,
+.select-filter {
+  width: auto !important;
+  max-width: 100% !important;
+  display: inline-block !important;
+}
+
+
+/* ============================================================
+   MASTER TYPOGRAPHY SPECIFICATION (Manrope + Plus Jakarta Sans)
+   H1: Manrope 28px, weight 600, line-height 1.25
+   H2: Manrope 22px, weight 600
+   H3: Manrope 18px, weight 600
+   H4: Manrope 16px, weight 600
+   Body: Plus Jakarta Sans 14px, weight 400
+   Supporting: Plus Jakarta Sans 13px, weight 400
+   Labels: Plus Jakarta Sans 12px, weight 500
+   Buttons: Plus Jakarta Sans 14px, weight 500
+   Inputs: Plus Jakarta Sans 14px, weight 400
+   Tables: Plus Jakarta Sans 13-14px (th: 500, td: 400)
+   Sidebar: Plus Jakarta Sans 14px (normal: 400, active: 500)
+   ============================================================ */
+
+/* H1 Main Page Titles */
+html body h1,
+html body h1[class*="font-"],
+html body .page-title,
+html body .page-title[class*="font-"],
+html body .hero-title,
+html body .dash-hero-title,
+html body [data-purpose="page-title"],
+html body .masthead-title,
+html body .portal-title {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* H2 Section Headings */
+html body h2,
+html body .section-title,
+html body [data-purpose="section-title"],
+html body .dash-card-title,
+html body .module-title {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  line-height: 1.30 !important;
+}
+
+/* H3 Subsection Headings */
+html body h3,
+html body .subsection-title,
+html body .modal-title,
+html body .dialog-title {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+}
+
+/* H4 Small Headings */
+html body h4,
+html body .card-title,
+html body .subcard-title {
+  font-family: 'Manrope', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.40 !important;
+}
+
+/* Body & Paragraphs */
+html body,
+html body p,
+html body .body-text {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400;
+  line-height: 1.50;
+}
+
+/* Supporting text */
+html body .supporting-text,
+html body .meta-text,
+html body .sub-info,
+html body .stat-sub,
+html body .desc,
+html body .description,
+html body .breadcrumb-item,
+html body .caption {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 400;
+}
+
+/* Small labels & badges */
+html body label,
+html body .label,
+html body .badge,
+html body .pill,
+html body .tag,
+html body .stat-lbl,
+html body .small-label,
+html body .meta-lbl {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Buttons */
+html body button,
+html body .btn,
+html body .button,
+html body input[type="button"],
+html body input[type="submit"] {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Input fields */
+html body input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+html body select,
+html body textarea {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 14px !important;
+}
+
+/* Tables */
+html body table,
+html body .tbl,
+html body .classes-table,
+html body .sk-table {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+html body th {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+html body td {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+}
+
+/* ============================================================
+   GLOBAL SIDEBAR SVG ICON VISIBILITY & CONTRAST DESIGN SYSTEM
+   Standardized high-contrast sidebar icons across all portals:
+   - Inactive nav icons: #64746A (Visible Slate-Green, Opacity 1)
+   - Active nav icons:   #FFFFFF on Forest Green #176B45 Capsule
+   - Active container:   #176B45 with #FFFFFF text & icon
+   - Hover state:        #176B45 icon, neutral subtle background
+   - Section headings:   17-19px (18px), color #64746A, opacity 1
+   - Chevrons:           16-18px (17px), right-aligned, color #8A9A90
+   - Sizing:             20-22px (21px), 22px box, flex-shrink 0
+   - SVG handling:       viewBox preserved, stroke currentColor, overflow visible
+   - Zero pale mint icons on white backgrounds
+   - Zero orange for ordinary sidebar navigation
+   ============================================================ */
+
+/* 1. Sidebar Container Base */
+html body .sidebar,
+html body #sidebar,
+html body aside.sidebar {
+  background-color: #FFFFFF !important;
+  color: #29352E !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 14px !important;
+}
+
+html body .nav-link,
+html body .nav-item,
+html body .side-brand,
+html body .sidebar nav {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 14px !important;
+}
+
+/* 2. Navigation Item Container & Proportions */
+html body .sidebar .nav-link,
+html body .sidebar .nav-item,
+html body #sidebar .nav-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 9px 12px !important;
+  min-height: 42px !important;
+  border-radius: 8px !important;
+  color: #29352E !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  position: relative !important;
+  font-weight: 400 !important;
+  transition: background 150ms ease, color 150ms ease !important;
+  user-select: none !important;
+}
+
+/* 3. Inactive Navigation Icons (High Contrast Slate-Green #64746A) */
+html body .sidebar .nav-link-icon,
+html body .sidebar .nav-icon,
+html body .sidebar .nav-item .nav-icon,
+html body .sidebar .nav-link > .material-symbols-outlined,
+html body .sidebar .nav-link > i,
+html body .sidebar .nav-link > svg,
+html body .sidebar .nav-icon-svg,
+html body #sidebar .nav-link-icon,
+html body #sidebar .nav-icon {
+  font-size: 21px !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+  color: #64746A !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: color 150ms ease !important;
+}
+
+/* 4. Technical SVG Icon Visibility Rules */
+html body .sidebar .nav-icon svg,
+html body .sidebar .nav-link-icon svg,
+html body .sidebar .nav-link svg,
+html body .sidebar .nav-item svg,
+html body .sidebar .nav-icon-svg svg,
+html body #sidebar .nav-icon svg,
+html body #sidebar .nav-link svg {
+  width: 21px !important;
+  height: 21px !important;
+  display: block !important;
+  flex-shrink: 0 !important;
+  opacity: 1 !important;
+  overflow: visible !important;
+  stroke: currentColor;
+}
+html body .sidebar .nav-icon svg path,
+html body .sidebar .nav-link-icon svg path,
+html body .sidebar .nav-link svg path {
+  opacity: 1 !important;
+}
+
+/* 5. Navigation Label Typography & Truncation */
+html body .sidebar .nav-link .nav-link-label,
+html body #sidebar .nav-link .nav-link-label {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+}
+
+/* Inactive label text color */
+html body .sidebar .nav-link:not(.active) .nav-link-label,
+html body #sidebar .nav-link:not(.active) .nav-link-label {
+  color: #29352E !important;
+}
+
+/* 6. Navigation Chevrons: Direct links have no chevrons; collapsible subgroups use .ngl-subchevron */
+html body .sidebar .nav-link-chevron,
+html body #sidebar .nav-link-chevron,
+html body .sidebar .ngl-chevron,
+html body #sidebar .ngl-chevron {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 7. Hover State (Subtle Neutral Tint with Forest Green Feedback) */
+html body .sidebar .nav-link:not(.active):hover,
+html body #sidebar .nav-link:not(.active):hover {
+  background: rgba(23, 107, 69, 0.06) !important;
+  color: #176B45 !important;
+}
+html body .sidebar .nav-link:not(.active):hover .nav-link-icon,
+html body .sidebar .nav-link:not(.active):hover .nav-icon,
+html body .sidebar .nav-link:not(.active):hover > .material-symbols-outlined,
+html body .sidebar .nav-link:not(.active):hover > i,
+html body .sidebar .nav-link:not(.active):hover > svg,
+html body #sidebar .nav-link:not(.active):hover .nav-link-icon {
+  color: #176B45 !important;
+  opacity: 1 !important;
+}
+html body .sidebar .nav-link:not(.active):hover .nav-link-label {
+  color: #176B45 !important;
+}
+html body .sidebar .nav-link:not(.active):hover .nav-link-chevron {
+  color: #176B45 !important;
+  opacity: 1 !important;
+  transform: translateX(2px) !important;
+}
+
+/* 8. Active Navigation Item (Solid Forest Green Capsule with Crisp White Content) */
+html body .sidebar .nav-link.active,
+html body .sidebar .nav-item.active,
+html body .sidebar .nav-link[aria-current="page"],
+html body .sidebar .nav-item[aria-current="page"],
+html body #sidebar .nav-link.active {
+  background: #176B45 !important;
+  background-color: #176B45 !important;
+  border: 1px solid #176B45 !important;
+  border-radius: 8px !important;
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 6px -1px rgba(23, 107, 69, 0.28) !important;
+}
+html body .sidebar .nav-link.active .nav-link-icon,
+html body .sidebar .nav-link.active .nav-icon,
+html body .sidebar .nav-link.active > .material-symbols-outlined,
+html body .sidebar .nav-link.active > i,
+html body .sidebar .nav-link.active > svg,
+html body .sidebar .nav-item.active .nav-icon,
+html body .sidebar .nav-item[aria-current="page"] .nav-icon,
+html body #sidebar .nav-link.active .nav-link-icon {
+  color: #FFFFFF !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+html body .sidebar .nav-link.active .nav-link-label,
+html body .sidebar .nav-link.active > span,
+html body .sidebar .nav-item.active .nav-link-label,
+html body .sidebar .nav-link[aria-current="page"] .nav-link-label,
+html body .sidebar .nav-item[aria-current="page"] .nav-link-label,
+html body #sidebar .nav-link.active .nav-link-label {
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+}
+html body .sidebar .nav-link.active .nav-link-chevron {
+  color: rgba(255, 255, 255, 0.85) !important;
+  opacity: 1 !important;
+}
+html body .sidebar .nav-link.active .pill,
+html body .sidebar .nav-link.active .badge {
+  background: #FFFFFF !important;
+  color: #176B45 !important;
+}
+
+/* 9. Section Headings (17-19px icon, #64746A, uppercase) */
+html body .sidebar .nav-group-label,
+html body #sidebar .nav-group-label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 12px 12px 4px 12px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: #64746A !important;
+  opacity: 1 !important;
+  background: transparent !important;
+  border: none !important;
+}
+html body .sidebar .nav-group-icon,
+html body .sidebar .nav-group-label .nav-icon,
+html body .sidebar .nav-group-label .material-symbols-outlined:first-child,
+html body .sidebar .nav-group-label svg:first-child,
+html body #sidebar .nav-group-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  color: #64746A !important;
+  opacity: 1 !important;
+}
+html body .sidebar .ngl-chevron,
+html body #sidebar .ngl-chevron {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+html body .sidebar .nav-group.collapsible.expanded > .nav-group-label .nav-group-icon {
+  color: #176B45 !important;
+}
+html body .sidebar .nav-group.collapsible.expanded > .nav-group-label .ngl-chevron {
+  color: #176B45 !important;
+}
+
+/* 10. Nested Navigation Subgroups (18-20px icons) */
+html body .sidebar .nav-subgroup-label,
+html body #sidebar .nav-subgroup-label {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 8px 12px !important;
+  gap: 12px !important;
+  min-height: 40px !important;
+  border-radius: 8px !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  color: #29352E !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 150ms ease !important;
+  text-align: left !important;
+}
+html body .sidebar .nav-subgroup-label .nav-link-icon,
+html body .sidebar .nav-subgroup-label .nav-icon,
+html body #sidebar .nav-subgroup-label .nav-link-icon,
+html body #sidebar .nav-subgroup-label .nav-icon {
+  font-size: 21px !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  color: #64746A !important;
+  transition: color 150ms ease !important;
+}
+html body .sidebar .nav-subgroup-label .nav-link-label,
+html body #sidebar .nav-subgroup-label .nav-link-label {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+}
+html body .sidebar .nav-subgroup-label:hover,
+html body #sidebar .nav-subgroup-label:hover {
+  background: rgba(23, 107, 69, 0.06) !important;
+  color: #176B45 !important;
+}
+html body .sidebar .nav-subgroup-label:hover .nav-link-icon,
+html body .sidebar .nav-subgroup-label:hover .nav-icon,
+html body .sidebar .nav-subgroup-label:hover .ngl-subchevron,
+html body #sidebar .nav-subgroup-label:hover .nav-link-icon,
+html body #sidebar .nav-subgroup-label:hover .ngl-subchevron {
+  color: #176B45 !important;
+}
+html body .sidebar .ngl-subchevron,
+html body #sidebar .ngl-subchevron {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 19px !important;
+  width: 19px !important;
+  height: 19px !important;
+  min-width: 19px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+  color: #8A9A90 !important;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 150ms ease !important;
+}
+html body .sidebar .nav-subgroup.expanded > .nav-subgroup-label,
+html body #sidebar .nav-subgroup.expanded > .nav-subgroup-label {
+  color: #176B45 !important;
+  background: rgba(23, 107, 69, 0.05) !important;
+}
+html body .sidebar .nav-subgroup.expanded > .nav-subgroup-label .nav-link-icon,
+html body #sidebar .nav-subgroup.expanded > .nav-subgroup-label .nav-link-icon {
+  color: #176B45 !important;
+}
+html body .sidebar .nav-subgroup.expanded > .nav-subgroup-label .ngl-subchevron,
+html body #sidebar .nav-subgroup.expanded > .nav-subgroup-label .ngl-subchevron {
+  transform: rotate(180deg) !important;
+  color: #176B45 !important;
+}
+html body .sidebar .nav-subgroup-links,
+html body #sidebar .nav-subgroup-links {
+  display: grid !important;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+html body .sidebar .nav-subgroup.expanded .nav-subgroup-links,
+html body #sidebar .nav-subgroup.expanded .nav-subgroup-links {
+  grid-template-rows: 1fr;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+html body .sidebar .nav-subgroup-links > div,
+html body #sidebar .nav-subgroup-links > div {
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+html body .sidebar .nav-link.nav-sub-link,
+html body #sidebar .nav-link.nav-sub-link {
+  display: flex !important;
+  align-items: center !important;
+  padding: 7px 12px 7px 46px !important;
+  min-height: 36px !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #45544B !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  transition: all 150ms ease !important;
+}
+html body .sidebar .nav-link.nav-sub-link:hover,
+html body #sidebar .nav-link.nav-sub-link:hover {
+  background: rgba(23, 107, 69, 0.06) !important;
+  color: #176B45 !important;
+  padding-left: 49px !important;
+}
+html body .sidebar .nav-link.nav-sub-link.active,
+html body .sidebar .nav-link.nav-sub-link[aria-current="page"],
+html body #sidebar .nav-link.nav-sub-link.active,
+html body #sidebar .nav-link.nav-sub-link[aria-current="page"] {
+  background: #176B45 !important;
+  background-color: #176B45 !important;
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 4px rgba(23, 107, 69, 0.25) !important;
+}
+html body .sidebar .nav-link.nav-sub-link.active .nav-link-label,
+html body #sidebar .nav-link.nav-sub-link.active .nav-link-label {
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+}
+
+/* 2nd-Level Nested Subgroup Navigation (e.g. Academic Result) */
+html body .sidebar .nav-nested-group,
+html body #sidebar .nav-nested-group {
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 1px 0 !important;
+}
+html body .sidebar .nav-nested-label,
+html body #sidebar .nav-nested-label {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 7px 12px 7px 46px !important;
+  min-height: 36px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #45544B !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 150ms ease !important;
+  text-align: left !important;
+}
+html body .sidebar .nav-nested-label .nav-link-label,
+html body #sidebar .nav-nested-label .nav-link-label {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: normal !important;
+}
+html body .sidebar .nav-nested-label:hover,
+html body #sidebar .nav-nested-label:hover {
+  background: rgba(23, 107, 69, 0.06) !important;
+  color: #176B45 !important;
+}
+html body .sidebar .nav-nested-label:hover .ngl-nestedchevron,
+html body #sidebar .nav-nested-label:hover .ngl-nestedchevron {
+  color: #176B45 !important;
+}
+html body .sidebar .ngl-nestedchevron,
+html body #sidebar .ngl-nestedchevron {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+  color: #8A9A90 !important;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 150ms ease !important;
+}
+html body .sidebar .nav-nested-group.expanded > .nav-nested-label,
+html body #sidebar .nav-nested-group.expanded > .nav-nested-label {
+  color: #176B45 !important;
+  background: rgba(23, 107, 69, 0.04) !important;
+}
+html body .sidebar .nav-nested-group.expanded > .nav-nested-label .ngl-nestedchevron,
+html body #sidebar .nav-nested-group.expanded > .nav-nested-label .ngl-nestedchevron {
+  transform: rotate(180deg) !important;
+  color: #176B45 !important;
+}
+html body .sidebar .nav-nested-links,
+html body #sidebar .nav-nested-links {
+  display: grid !important;
+  grid-template-rows: 0fr !important;
+  transition: grid-template-rows 0.24s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow: hidden !important;
+}
+html body .sidebar .nav-nested-group.expanded .nav-nested-links,
+html body #sidebar .nav-nested-group.expanded .nav-nested-links {
+  grid-template-rows: 1fr !important;
+  margin-top: 1px !important;
+  margin-bottom: 2px !important;
+}
+html body .sidebar .nav-nested-links > div,
+html body #sidebar .nav-nested-links > div {
+  overflow: hidden !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+html body .sidebar .nav-link.nav-nested-link,
+html body #sidebar .nav-link.nav-nested-link {
+  display: flex !important;
+  align-items: center !important;
+  padding: 6px 12px 6px 58px !important;
+  min-height: 34px !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+  color: #55655B !important;
+  border-radius: 6px !important;
+  text-decoration: none !important;
+  transition: all 150ms ease !important;
+}
+html body .sidebar .nav-link.nav-nested-link:hover,
+html body #sidebar .nav-link.nav-nested-link:hover {
+  background: rgba(23, 107, 69, 0.06) !important;
+  color: #176B45 !important;
+  padding-left: 61px !important;
+}
+html body .sidebar .nav-link.nav-nested-link.active,
+html body .sidebar .nav-link.nav-nested-link[aria-current="page"],
+html body #sidebar .nav-link.nav-nested-link.active,
+html body #sidebar .nav-link.nav-nested-link[aria-current="page"] {
+  background: #176B45 !important;
+  background-color: #176B45 !important;
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 4px rgba(23, 107, 69, 0.25) !important;
+}
+html body .sidebar .nav-link.nav-nested-link.active .nav-link-label,
+html body #sidebar .nav-link.nav-nested-link.active .nav-link-label {
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+}
+html body .sidebar .ngl-subchevron-static,
+html body #sidebar .ngl-subchevron-static {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: auto !important;
+  flex-shrink: 0 !important;
+  color: #8A9A90 !important;
+}
+
+/* 11. Footer Links (Help & Logout) */
+html body .sidebar .side-foot-help .nav-link-icon {
+  color: #64746A !important;
+  opacity: 1 !important;
+}
+html body .sidebar .side-foot-help:hover .nav-link-icon {
+  color: #176B45 !important;
+}
+html body .sidebar .side-foot-signout .nav-link-icon {
+  color: #176B45 !important;
+  opacity: 1 !important;
+}
+
+/* 12. Collapse & Expand Control Buttons */
+html body .sidebar .sidebar-collapse-btn,
+html body #sidebarCollapseBtn {
+  color: #64746A !important;
+  opacity: 1 !important;
+}
+html body .sidebar .sidebar-collapse-btn:hover,
+html body #sidebarCollapseBtn:hover {
+  background: #E8F3ED !important;
+  color: #176B45 !important;
+}
+html body .sidebar .side-collapse-svg,
+html body #sidebarCollapseBtn svg {
+  stroke: currentColor !important;
+  width: 16px !important;
+  height: 16px !important;
+  display: block !important;
+}
+html body .sidebar-expand-btn,
+html body #sidebarExpandBtn {
+  color: #176B45 !important;
+  opacity: 1 !important;
+}
+html body .sidebar-expand-btn .side-expand-svg,
+html body #sidebarExpandBtn svg {
+  stroke: currentColor !important;
+  width: 14px !important;
+  height: 14px !important;
+  display: block !important;
+}
+
+/* 13. Focus States for Keyboard Navigation */
+html body .sidebar .nav-link:focus-visible,
+html body .sidebar .nav-subgroup-label:focus-visible,
+html body .sidebar .sidebar-collapse-btn:focus-visible,
+html body .sidebar-expand-btn:focus-visible {
+  outline: 2px solid #176B45 !important;
+  outline-offset: -2px !important;
+}
+
+/* 14. Collapsed Rail Sidebar State */
+html body .sidebar.collapsed .nav-link .nav-link-icon,
+html body .sidebar.collapsed .nav-link .nav-icon {
+  font-size: 22px !important;
+  width: 22px !important;
+  height: 22px !important;
+  margin: 0 auto !important;
+  color: #64746A !important;
+  opacity: 1 !important;
+}
+html body .sidebar.collapsed .nav-link:hover .nav-link-icon {
+  color: #176B45 !important;
+}
+html body .sidebar.collapsed .nav-link.active {
+  background: #176B45 !important;
+}
+html body .sidebar.collapsed .nav-link.active .nav-link-icon {
+  color: #FFFFFF !important;
+}
+
+/* 15. Dark Theme Adaptations */
+html[data-theme="dark"] body .sidebar,
+html[data-theme="dark"] body #sidebar,
+body[data-theme="dark"] .sidebar,
+body[data-theme="dark"] #sidebar {
+  background-color: #141E18 !important;
+  border-right-color: rgba(255, 255, 255, 0.08) !important;
+}
+html[data-theme="dark"] body .sidebar .nav-link-icon,
+html[data-theme="dark"] body .sidebar .nav-icon,
+body[data-theme="dark"] .sidebar .nav-link-icon,
+body[data-theme="dark"] .sidebar .nav-icon {
+  color: #A3B8AC !important;
+  opacity: 1 !important;
+}
+html[data-theme="dark"] body .sidebar .nav-link-label,
+body[data-theme="dark"] .sidebar .nav-link-label {
+  color: #F1F5F9 !important;
+}
+html[data-theme="dark"] body .sidebar .nav-group-label,
+body[data-theme="dark"] .sidebar .nav-group-label {
+  color: #8FA095 !important;
+}
+html[data-theme="dark"] body .sidebar .nav-group-icon,
+body[data-theme="dark"] .sidebar .nav-group-icon {
+  color: #8FA095 !important;
+}
+html[data-theme="dark"] body .sidebar .nav-link.active,
+body[data-theme="dark"] .sidebar .nav-link.active {
+  background: #176B45 !important;
+  color: #FFFFFF !important;
+}
+html[data-theme="dark"] body .sidebar .nav-link.active .nav-link-icon,
+body[data-theme="dark"] .sidebar .nav-link.active .nav-link-icon {
+  color: #FFFFFF !important;
+}
+
+/* ============================================================
+   GLOBAL GOLDEN SPACING & TABLE CONSISTENCY ENGINE
+   Reference: Teacher Profiles Golden Layout
+   ============================================================ */
+:root {
+  --ngis-content-px: 40px;
+  --ngis-content-pt: 36px;
+  --ngis-heading-gap: 32px;
+  --ngis-card-gap: 18px;
+  --ngis-card-pad: 24px;
+  --ngis-card-to-toolbar: 26px;
+  --ngis-toolbar-pad: 18px;
+  --ngis-toolbar-to-table: 26px;
+  --ngis-table-header-h: 56px;
+  --ngis-table-row-h: 62px;
+  --ngis-table-cell-px: 18px;
+  --ngis-table-cell-py: 15px;
+  --ngis-section-gap: 28px;
+}
+
+/* Table Consistency across all portals */
+table thead tr,
+table thead th,
+.classes-table thead th,
+.sk-table thead th,
+.academic-table thead th,
+.mgr-table thead th {
+  height: var(--ngis-table-header-h) !important;
+  padding: 12px var(--ngis-table-cell-px) !important;
+  vertical-align: middle !important;
+}
+
+table tbody tr td,
+.classes-table tbody td,
+.sk-table tbody td,
+.academic-table tbody td,
+.mgr-table tbody td {
+  padding: var(--ngis-table-cell-py) var(--ngis-table-cell-px) !important;
+  vertical-align: middle !important;
+  line-height: 1.5 !important;
+}
+
+table tbody tr,
+.classes-table tbody tr,
+.sk-table tbody tr,
+.academic-table tbody tr,
+.mgr-table tbody tr {
+  min-height: var(--ngis-table-row-h) !important;
+}
+
+/* Table Action Cell */
+td.table-actions,
+td:last-child .action-group {
+  padding-right: var(--ngis-table-cell-px) !important;
+}
+
+/* Summary Card Consistency */
+.summary-cards-grid,
+.kpi-grid,
+.stat-grid,
+.stats-grid {
+  display: grid;
+  gap: var(--ngis-card-gap) !important;
+  margin-bottom: var(--ngis-card-to-toolbar) !important;
+}
+
+.summary-card,
+.kpi-card,
+.stat-card {
+  padding: var(--ngis-card-pad) !important;
+  border-radius: var(--ngis-radius-card, 12px) !important;
+}
+
+/* Toolbar Consistency */
+.toolbar,
+.filter-bar,
+.dir-toolbar,
+.table-toolbar {
+  padding: var(--ngis-toolbar-pad) !important;
+  margin-bottom: var(--ngis-toolbar-to-table) !important;
+  border-radius: var(--ngis-radius-card, 12px) !important;
+}
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 1024px) {
+  :root {
+    --ngis-content-px: 24px;
+    --ngis-content-pt: 24px;
+    --ngis-heading-gap: 24px;
+    --ngis-card-gap: 14px;
+    --ngis-card-pad: 18px;
+    --ngis-toolbar-margin: 20px;
+    --ngis-toolbar-pad: 14px;
+    --ngis-table-cell-px: 14px;
+    --ngis-table-cell-py: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --ngis-content-px: 16px;
+    --ngis-content-pt: 16px;
+    --ngis-heading-gap: 16px;
+    --ngis-card-gap: 12px;
+    --ngis-card-pad: 14px;
+    --ngis-toolbar-margin: 16px;
+    --ngis-toolbar-pad: 12px;
+    --ngis-table-cell-px: 10px;
+    --ngis-table-cell-py: 10px;
+  }
+}
+
+/* ============================================================================
+   STUDENT MANAGEMENT EXECUTIVE WORKSPACE
+   Scoped NGIS implementation of the two supplied dashboard references:
+   - Verify Student Profile Updates
+   - Absence Statistics & Attendance Risk Register
+   Uses master tokens only: forest green, white surfaces, subtle borders,
+   400/500 weights, 12px cards, no gradients and no decorative lifting.
+   ========================================================================== */
+.ngis-sm {
+  --smx-surface:        var(--ngis-surface, #FFFFFF);
+  --smx-canvas:         var(--ngis-canvas, #F7F9F7);
+  --smx-subtle:         var(--ngis-surface-subtle, #F2F5F3);
+  --smx-raised:         var(--color-background, #F7F9F7);
+  --smx-border:         var(--ngis-border, #E1E9E3);
+  --smx-border-soft:    var(--ngis-border-subtle, #EEF4F0);
+  --smx-text:           var(--ngis-text-primary, #29352E);
+  --smx-muted:          var(--ngis-text-secondary, #64746A);
+  --smx-primary:        var(--color-primary, #176B45);
+  --smx-primary-hover:  var(--color-primary-hover, #125638);
+  --smx-primary-soft:   var(--color-mint, #E8F3ED);
+  --smx-accent:         var(--color-accent, #F28C28);
+  --smx-accent-soft:    var(--color-accent-light, #FFF4EB);
+  --smx-danger:         var(--token-status-danger, #BA1A1A);
+  --smx-danger-soft:    var(--token-status-danger-bg, #FDF2F2);
+  --smx-shadow:         var(--ngis-shadow-card, 0 1px 3px 0 rgba(23, 107, 69, .04));
+  --smx-radius:         var(--ngis-radius-card, 12px);
+  --smx-radius-btn:     var(--ngis-radius-btn, 8px);
+  --smx-radius-pill:    var(--ngis-radius-pill, 9999px);
+  color: var(--smx-text);
+  font-family: var(--font-body, 'Plus Jakarta Sans'), sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+/* The injected layout shell is a flex item. Without an explicit floor it is
+   sized to the ledger table's min-content width, which pushes the whole app
+   shell (topbar included) past the viewport and clips the right-hand columns.
+   Scope the containment to the two executive workspaces only. */
+body.smx-page .shell { width: 100%; max-width: 100%; min-width: 0; }
+body.smx-page .main { max-width: 100%; min-width: 0; }
+body.smx-page #studentMgmtRoot.page { max-width: 100%; min-width: 0; }
+
+html[data-theme="dark"] .ngis-sm,
+[data-theme="dark"] .ngis-sm {
+  --smx-raised:      #1A2620;
+  --smx-accent-soft: #2E2218;
+  --smx-danger-soft: rgba(186, 26, 26, .18);
+}
+.ngis-sm *, .ngis-sm *::before, .ngis-sm *::after { box-sizing: border-box; }
+.ngis-sm h1, .ngis-sm h2, .ngis-sm h3, .ngis-sm h4,
+.ngis-sm p, .ngis-sm figure { margin: 0; }
+.ngis-sm h1, .ngis-sm h2, .ngis-sm h3, .ngis-sm h4 {
+  font-family: var(--font-heading, 'Manrope'), sans-serif !important;
+  font-weight: 500 !important;
+  color: var(--smx-text) !important;
+}
+.ngis-sm button, .ngis-sm input, .ngis-sm select, .ngis-sm textarea {
+  font-family: var(--font-body, 'Plus Jakarta Sans'), sans-serif !important;
+  font-weight: 400 !important;
+}
+.ngis-sm strong, .ngis-sm b { font-weight: 500 !important; }
+.smx-icon { font-size: 18px; line-height: 1; vertical-align: middle; }
+.smx-icon.sm { font-size: 15px; }
+
+/* Mobile appbar must stay a real surface despite the global transparent header rule. */
+.mobile-appbar.smx-appbar {
+  background: var(--ngis-surface, #FFFFFF) !important;
+  background-color: var(--ngis-surface, #FFFFFF) !important;
+  border-bottom: 1px solid var(--ngis-border, #E1E9E3) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.smx-appbar-title {
+  color: var(--ngis-text-primary, #29352E) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* ── Executive header ──────────────────────────────────────────────────── */
+.smx-head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 14px 20px; margin-bottom: 20px;
+}
+.smx-eyebrow {
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--smx-muted); margin-bottom: 5px;
+}
+.smx-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.smx-title {
+  font-size: var(--font-size-h1, 28px) !important;
+  line-height: 1.25 !important; letter-spacing: -.02em !important;
+}
+.smx-sub { color: var(--smx-muted); font-size: 13px; margin-top: 6px; max-width: 760px; }
+.smx-head-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.smx-term-pill {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  padding: 0 14px; border: 1px solid var(--smx-border); border-radius: var(--smx-radius-btn);
+  background: var(--smx-surface); color: var(--smx-text); font-size: 12px;
+}
+.smx-term-pill .label { color: var(--smx-muted); }
+.smx-term-pill .smx-icon { color: var(--smx-primary); }
+
+/* ── Buttons, badges, fields ───────────────────────────────────────────── */
+.smx-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  min-height: 44px; padding: 0 14px; border-radius: var(--smx-radius-btn);
+  border: 1px solid var(--smx-border); background: var(--smx-surface);
+  color: var(--smx-text); font-size: 13px !important; font-weight: 500 !important;
+  cursor: pointer; white-space: nowrap; text-decoration: none;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.smx-btn:hover:not(:disabled) { border-color: var(--smx-primary); background: var(--smx-subtle); }
+.smx-btn:focus-visible, .smx-input:focus-visible, .smx-select:focus-visible,
+.smx-textarea:focus-visible { outline: 2px solid var(--smx-primary); outline-offset: 1px; }
+.smx-btn:disabled { opacity: .48; cursor: not-allowed; }
+.smx-btn.primary { background: var(--smx-primary); border-color: var(--smx-primary); color: #FFFFFF; }
+.smx-btn.primary:hover:not(:disabled) { background: var(--smx-primary-hover); border-color: var(--smx-primary-hover); }
+.smx-btn.danger { color: var(--smx-danger); border-color: var(--smx-danger); background: var(--smx-danger-soft); }
+.smx-btn.soft { color: var(--smx-primary); border-color: var(--smx-border); background: var(--smx-primary-soft); }
+.smx-btn.ghost { background: transparent; }
+.smx-btn.sm { min-height: 36px; padding: 0 10px; font-size: 11.5px !important; }
+.smx-btn.icon { width: 36px; min-width: 36px; padding: 0; }
+.smx-badge {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  min-height: 24px; padding: 2px 10px; border-radius: var(--smx-radius-pill);
+  border: 1px solid var(--smx-border); background: var(--smx-surface);
+  color: var(--smx-muted); font-size: 11px; font-weight: 500;
+}
+.smx-badge.ok { background: var(--smx-primary-soft); border-color: #C8E3D3; color: var(--smx-primary); }
+.smx-badge.warn { background: var(--smx-accent-soft); border-color: #FCD6B3; color: #A9570B; }
+.smx-badge.bad { background: var(--smx-danger-soft); border-color: #F7C1C1; color: var(--smx-danger); }
+.smx-badge.neutral { background: var(--smx-subtle); color: var(--smx-muted); }
+.smx-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.smx-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.smx-field > span { font-size: 11px; color: var(--smx-muted); font-weight: 500; }
+.smx-input, .smx-select, .smx-textarea {
+  width: 100%; min-height: 44px; border: 1px solid var(--smx-border) !important;
+  border-radius: var(--smx-radius-btn) !important; background: var(--smx-surface) !important;
+  color: var(--smx-text) !important; font-size: 13px !important; padding: 9px 12px;
+  outline: none; box-shadow: none !important;
+}
+.smx-textarea { min-height: 88px; resize: vertical; line-height: 1.5; }
+.smx-input:focus, .smx-select:focus, .smx-textarea:focus {
+  border-color: var(--smx-primary) !important;
+  box-shadow: 0 0 0 2px rgba(23, 107, 69, .12) !important;
+}
+.smx-search { position: relative; flex: 1 1 260px; min-width: 220px; }
+.smx-search .smx-icon {
+  position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+  color: var(--smx-muted); pointer-events: none;
+}
+.smx-search .smx-input { padding-left: 40px !important; }
+.smx-checkbox { width: 16px; height: 16px; accent-color: var(--smx-primary); cursor: pointer; }
+
+/* ── KPI strip ─────────────────────────────────────────────────────────── */
+.smx-kpi-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px; margin-bottom: 18px;
+}
+.smx-kpi {
+  min-width: 0; padding: 18px; border: 1px solid var(--smx-border);
+  border-radius: var(--smx-radius); background: var(--smx-surface);
+  box-shadow: var(--smx-shadow);
+}
+.smx-kpi-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.smx-kpi-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--smx-muted); font-weight: 500;
+}
+.smx-kpi-icon {
+  width: 34px; height: 34px; border-radius: var(--smx-radius-btn); flex: none;
+  display: grid; place-items: center; background: var(--smx-primary-soft); color: var(--smx-primary);
+}
+.smx-kpi-icon.warn { background: var(--smx-accent-soft); color: var(--smx-accent); }
+.smx-kpi-icon.bad { background: var(--smx-danger-soft); color: var(--smx-danger); }
+.smx-kpi-value {
+  font-family: var(--font-heading, 'Manrope'), sans-serif; font-size: 28px;
+  line-height: 36px; font-weight: 500; color: var(--smx-text);
+  margin-top: 12px; font-variant-numeric: tabular-nums;
+}
+.smx-kpi-value small { font-size: 14px; color: var(--smx-muted); }
+.smx-kpi-foot { display: flex; align-items: center; gap: 7px; margin-top: 6px; color: var(--smx-muted); font-size: 11px; }
+.smx-kpi-foot i { width: 7px; height: 7px; border-radius: 50%; background: var(--smx-primary); flex: none; }
+.smx-kpi-foot i.warn { background: var(--smx-accent); }
+.smx-kpi-foot i.bad { background: var(--smx-danger); }
+
+/* ── Bento analytics ───────────────────────────────────────────────────── */
+.smx-bento {
+  display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, 1fr);
+  gap: 14px; margin-bottom: 18px;
+}
+.smx-card {
+  min-width: 0; background: var(--smx-surface); border: 1px solid var(--smx-border);
+  border-radius: var(--smx-radius); box-shadow: var(--smx-shadow); overflow: hidden;
+}
+.smx-card-head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 14px 16px; border-bottom: 1px solid var(--smx-border-soft);
+}
+.smx-card-title { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; }
+.smx-card-title .smx-icon { color: var(--smx-primary); }
+.smx-card-sub { color: var(--smx-muted); font-size: 11px; }
+.smx-card-body { padding: 14px 16px; }
+.smx-cohort-list, .smx-class-list { display: flex; flex-direction: column; gap: 12px; }
+.smx-cohort-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
+.smx-cohort-name { font-size: 12.5px; font-weight: 500; color: var(--smx-text); }
+.smx-cohort-meta { grid-column: 1; color: var(--smx-muted); font-size: 11px; }
+.smx-cohort-value { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 12px; font-weight: 500; color: var(--smx-primary); text-align: right; }
+.smx-bar { height: 6px; border-radius: 999px; background: var(--smx-subtle); overflow: hidden; margin-top: 6px; }
+.smx-bar > i { display: block; height: 100%; border-radius: inherit; background: var(--smx-primary); }
+.smx-bar > i.warn { background: var(--smx-accent); }
+.smx-bar > i.bad { background: var(--smx-danger); }
+.smx-class-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; }
+.smx-class-label { font-size: 12px; color: var(--smx-text); }
+.smx-class-value { font-size: 11.5px; color: var(--smx-muted); text-align: right; }
+.smx-class-row .smx-bar { grid-column: 1 / -1; margin-top: 2px; }
+.smx-note { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--smx-border-soft); color: var(--smx-muted); font-size: 11px; }
+
+/* ── Tabs and filter toolbar ───────────────────────────────────────────── */
+.smx-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.smx-tab {
+  min-height: 38px; padding: 0 13px; border-radius: var(--smx-radius-btn);
+  border: 1px solid var(--smx-border); background: var(--smx-surface);
+  color: var(--smx-muted); font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
+}
+.smx-tab:hover { border-color: var(--smx-primary); color: var(--smx-text); }
+.smx-tab.active { background: var(--smx-primary-soft); border-color: var(--smx-primary); color: var(--smx-primary); }
+.smx-tab .count { margin-left: 6px; opacity: .8; }
+.smx-toolbar {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px;
+  padding: 14px; margin-bottom: 18px; border: 1px solid var(--smx-border);
+  border-radius: var(--smx-radius); background: var(--smx-surface); box-shadow: var(--smx-shadow);
+}
+.smx-toolbar .smx-field { flex: 1 1 180px; }
+.smx-toolbar .smx-search { flex: 2 1 280px; }
+.smx-toolbar .smx-btn { flex: none; }
+
+/* ── Dense ledger table ────────────────────────────────────────────────── */
+.smx-table-card { margin-bottom: 8px; }
+.smx-table-scroll {
+  width: 100%; max-width: 100%; overflow-x: auto;
+  -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+}
+.ngis-sm table.smx-table {
+  width: 100% !important; min-width: 980px; border: 0 !important;
+  border-radius: 0 !important; border-spacing: 0 !important; border-collapse: collapse !important;
+  background: transparent !important; box-shadow: none !important;
+  font-family: var(--font-body, 'Plus Jakarta Sans'), sans-serif !important;
+  font-size: 12px !important;
+}
+.ngis-sm .smx-table thead tr { height: auto !important; }
+.ngis-sm .smx-table thead th {
+  height: auto !important; padding: 11px 14px !important; text-align: left;
+  background: var(--smx-subtle) !important; color: var(--smx-muted) !important;
+  border-bottom: 1px solid var(--smx-border) !important; border-top: 0 !important;
+  font-size: 10.5px !important; font-weight: 500 !important; letter-spacing: .05em;
+  text-transform: uppercase; white-space: nowrap;
+}
+.ngis-sm .smx-table tbody tr { min-height: 0 !important; }
+.ngis-sm .smx-table tbody td {
+  padding: 11px 14px !important; vertical-align: middle !important;
+  background: transparent !important; color: var(--smx-text) !important;
+  border-bottom: 1px solid var(--smx-border-soft) !important; border-top: 0 !important;
+  font-size: 12px !important; font-weight: 400 !important; line-height: 1.45 !important;
+}
+.ngis-sm .smx-table tbody tr:last-child td { border-bottom: 0 !important; }
+.ngis-sm .smx-table tbody tr:hover td { background: var(--smx-raised) !important; }
+.ngis-sm .smx-table th.center, .ngis-sm .smx-table td.center { text-align: center; }
+.ngis-sm .smx-table th.right, .ngis-sm .smx-table td.right { text-align: right; }
+.smx-person { display: flex; align-items: center; gap: 10px; min-width: 180px; }
+.smx-avatar {
+  width: 32px; height: 32px; border-radius: 9px; flex: none; display: grid; place-items: center;
+  background: var(--smx-primary-soft); color: var(--smx-primary); font-size: 11px; font-weight: 500;
+}
+.smx-person-name { font-size: 12.5px; font-weight: 500; color: var(--smx-text); }
+.smx-mono { color: var(--smx-muted); font-family: var(--font-mono, monospace); font-size: 10.5px; }
+.smx-muted { color: var(--smx-muted); }
+.smx-nowrap { white-space: nowrap; }
+.smx-amend { min-width: 270px; max-width: 360px; display: flex; flex-direction: column; gap: 2px; }
+.smx-amend-old { color: var(--smx-muted); text-decoration: line-through; font-size: 11px; }
+.smx-amend-new { color: var(--smx-primary); font-size: 11.5px; font-weight: 500; }
+.smx-amend-new .smx-icon { font-size: 13px; }
+.smx-attendance { min-width: 120px; }
+.smx-attendance .value { font-size: 12px; font-weight: 500; }
+.smx-attendance .smx-bar { margin-top: 5px; }
+.smx-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; white-space: nowrap; }
+.smx-empty { padding: 36px 16px !important; text-align: center; color: var(--smx-muted); font-size: 12px; }
+.smx-table-foot {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 16px; border-top: 1px solid var(--smx-border-soft); color: var(--smx-muted); font-size: 11px;
+}
+.smx-pager { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.smx-page {
+  min-width: 32px; min-height: 32px; padding: 0 9px; border: 1px solid var(--smx-border);
+  border-radius: 7px; background: var(--smx-surface); color: var(--smx-muted);
+  font-size: 11px; font-weight: 500; cursor: pointer;
+}
+.smx-page:hover:not(:disabled) { border-color: var(--smx-primary); color: var(--smx-primary); }
+.smx-page.active { background: var(--smx-primary); border-color: var(--smx-primary); color: #FFFFFF; }
+.smx-page:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── Modal + toast (floating layers only) ──────────────────────────────── */
+.smx-modal-backdrop {
+  position: fixed; inset: 0; z-index: 900; display: grid; place-items: center;
+  padding: 18px; background: rgba(17, 32, 24, .42);
+}
+.smx-modal-backdrop.hidden { display: none !important; }
+.smx-modal {
+  width: min(620px, 100%); max-height: 88vh; display: flex; flex-direction: column;
+  background: var(--ngis-surface, #FFFFFF); color: var(--ngis-text-primary, #29352E);
+  border: 1px solid var(--ngis-border, #E1E9E3); border-radius: var(--ngis-radius-card, 12px);
+  box-shadow: var(--ngis-shadow-float, 0 8px 24px -4px rgba(23, 107, 69, .12));
+  overflow: hidden;
+}
+.smx-modal.wide { width: min(820px, 100%); }
+.smx-modal-head, .smx-modal-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; }
+.smx-modal-head { border-bottom: 1px solid var(--ngis-border, #E1E9E3); }
+.smx-modal-foot { border-top: 1px solid var(--ngis-border, #E1E9E3); flex-wrap: wrap; justify-content: flex-end; }
+.smx-modal-title { font-family: var(--font-heading, 'Manrope'), sans-serif; font-size: 17px; font-weight: 500; }
+.smx-modal-sub { color: var(--ngis-text-secondary, #64746A); font-size: 11px; margin-top: 2px; }
+.smx-modal-body { padding: 18px; overflow: auto; font-size: 12.5px; }
+.smx-close {
+  width: 36px; height: 36px; border: 1px solid var(--ngis-border, #E1E9E3);
+  border-radius: var(--ngis-radius-btn, 8px); background: var(--ngis-surface, #FFFFFF);
+  color: var(--ngis-text-secondary, #64746A); cursor: pointer;
+}
+.smx-close:hover { border-color: var(--color-primary, #176B45); color: var(--color-primary, #176B45); }
+.smx-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.smx-info {
+  padding: 11px 12px; border: 1px solid var(--ngis-border, #E1E9E3);
+  border-radius: var(--ngis-radius-btn, 8px); background: var(--ngis-surface-subtle, #F2F5F3);
+}
+.smx-info .label { display: block; color: var(--ngis-text-secondary, #64746A); font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; }
+.smx-info .value { display: block; margin-top: 4px; color: var(--ngis-text-primary, #29352E); font-size: 12.5px; font-weight: 500; word-break: break-word; }
+.smx-section-label { margin: 16px 0 6px; color: var(--ngis-text-secondary, #64746A); font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; }
+.smx-diff { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.smx-diff > div { padding: 11px 12px; border: 1px solid var(--ngis-border, #E1E9E3); border-radius: var(--ngis-radius-btn, 8px); }
+.smx-diff .old { color: var(--ngis-text-secondary, #64746A); text-decoration: line-through; }
+.smx-diff .new { color: var(--color-primary, #176B45); font-weight: 500; }
+.smx-doc {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 12px; border: 1px solid var(--ngis-border, #E1E9E3); border-radius: var(--ngis-radius-btn, 8px);
+}
+.smx-toast {
+  position: fixed; right: 22px; bottom: 22px; z-index: 1000; display: flex; align-items: center; gap: 9px;
+  max-width: min(420px, calc(100vw - 32px)); padding: 11px 15px;
+  border-radius: var(--ngis-radius-btn, 8px); background: var(--color-primary, #176B45);
+  color: #FFFFFF; font-size: 12.5px; box-shadow: var(--ngis-shadow-float, 0 8px 24px -4px rgba(23, 107, 69, .12));
+  opacity: 0; pointer-events: none; transition: opacity .18s ease;
+}
+.smx-toast.show { opacity: 1; }
+.smx-toast.error { background: var(--token-status-danger, #BA1A1A); }
+.smx-toast.info { background: var(--ngis-text-primary, #29352E); }
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 1180px) {
+  .smx-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .smx-bento { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .ngis-sm { font-size: 12.5px; }
+  .smx-head { align-items: flex-start; }
+  .smx-head-actions { width: 100%; }
+  .smx-term-pill, .smx-head-actions .smx-btn { flex: 1 1 auto; }
+  .smx-kpi-grid { grid-template-columns: 1fr; }
+  .smx-toolbar { align-items: stretch; }
+  .smx-toolbar .smx-search, .smx-toolbar .smx-field, .smx-toolbar .smx-btn { flex: 1 1 100%; }
+  .smx-info-grid, .smx-diff { grid-template-columns: 1fr; }
+  .smx-modal-foot { justify-content: stretch; }
+  .smx-modal-foot .smx-btn { flex: 1 1 auto; }
+}
+

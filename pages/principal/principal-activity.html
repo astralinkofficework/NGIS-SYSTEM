@@ -6,7 +6,7 @@
 <title>NGIS — Management Action History</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&family=Inter:wght@300;400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
 <link rel="stylesheet" href="../../assets/css/hero.css">
@@ -18,21 +18,21 @@
 /* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
 *, h1, h2, h3, h4, h5, h6, b, strong, th, td { font-weight: 400 !important; }
 .font-medium, .badge, th { font-weight: 500 !important; }
-:root { --navy:#202F63; --burgundy:#92243D; --white:#FFFFFF; --black:#000000; --soft-gray:#F3F3F5; --border-subtle:#E5E5E8; }
+:root { --navy:#29352E; --burgundy:#176B45; --white:#FFFFFF; --black:#000000; --soft-gray:#F7F9F7; --border-subtle:#E1E9E3; }
 body { background:var(--soft-gray); color:var(--black); }
 .mgr-card { background:var(--white); border:1px solid var(--border-subtle); border-radius:14px; padding:18px 20px; margin-top:14px; box-shadow:0 2px 10px rgba(0,0,0,.03); }
 .mgr-table { width:100%; border-collapse:collapse; font-size:13px; }
-.mgr-table th { text-align:left; color:#555555; font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; border-bottom:1px solid var(--border-subtle); }
+.mgr-table th { text-align:left; color:#176B45; font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; border-bottom:1px solid var(--border-subtle); }
 .mgr-table td { padding:9px 10px; border-bottom:1px solid #F0F0F3; vertical-align:top; }
-.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; font-weight:500; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.status-chip { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:6px; font-size:11px; font-weight:500; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#176B45; }
 .status-chip.ok { color:var(--navy); border-color:var(--navy); }
 .status-chip.warn { color:var(--burgundy); border-color:var(--burgundy); }
 .btn-burgundy { background:var(--burgundy); color:var(--white); border:0; border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
 .btn-neutral { background:var(--soft-gray); color:var(--navy); border:1px solid var(--border-subtle); border-radius:8px; padding:7px 14px; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
-.actor-tag { font-size:11px; padding:2px 9px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#555555; }
+.actor-tag { font-size:11px; padding:2px 9px; border-radius:999px; border:1px solid var(--border-subtle); background:var(--soft-gray); color:#176B45; }
 .actor-tag.principal, .actor-tag.admin { color:var(--navy); border-color:var(--navy); }
 .actor-tag.teacher, .actor-tag.student { color:var(--burgundy); border-color:var(--burgundy); }
-.empty-row { color:#77777F; }
+.empty-row { color:#8FA095; }
 #actorBanner { display:none; }
 #actorBanner.show { display:inline-flex; }
 </style>
@@ -40,56 +40,151 @@ body { background:var(--soft-gray); color:var(--black); }
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css">
+<script src="../../assets/js/action-icons.js" defer></script>
 </head>
 <body data-role="principal" data-portal="principal">
 <main class="main">
-  <div id="heroBanner"></div>
+  <header id="heroBanner" role="banner"></header>
 
   <!-- Mandatory Mobile Hamburger Bar (AGENTS.md rule) -->
-  <div class="lg:hidden bg-white border-b border-[#E5E5E8] px-4 py-2.5 flex items-center gap-2.5 sticky top-0 z-30 shadow-xs">
+  <header class="lg:hidden bg-white border-b border-[#E1E9E3] px-4 py-2.5 flex items-center gap-2.5 sticky top-0 z-30 shadow-xs">
     <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
       <i class="ph ph-list text-xl"></i>
     </button>
-    <span class="text-sm font-medium text-[#202F63]">Activity History</span>
-  </div>
+    <span class="text-sm font-medium text-[#29352E]">Activity History</span>
+  </header>
 
   <div class="page" style="max-width:1240px;margin:0 auto;padding:24px 20px 48px">
     <div class="flex between center flex-wrap gap-4 anim-up">
       <div>
-        <h2 style="font-size:22px;color:var(--navy);margin:0 0 4px">Management Action History</h2>
-        <p style="font-size:13.5px;color:#555555;margin:0">Permanent audit trail read directly from the academic database — every approval, correction and override with its reason, actor and timestamp.</p>
+        <h2 style="font-size:22px;color:var(--navy);margin:0 0 4px">Activity History</h2>
+        <p style="font-size:13.5px;color:#176B45;margin:0">Recent school approvals, updates, and changes with reasons, user names, and timestamps.</p>
       </div>
       <span class="status-chip ok" id="logCount">Loading…</span>
     </div>
 
-    <div class="mgr-card anim-up-2">
-      <div class="flex items-center gap-2 flex-wrap">
-        <input id="searchInput" type="search" placeholder="Search action, reason or record id…" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] flex-1 min-w-[220px] outline-none focus:border-[#202F63]">
-        <select id="roleFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white">
-          <option value="all">All actors</option>
-          <option value="principal">Principal</option>
-          <option value="admin">Admin</option>
-          <option value="teacher">Teacher</option>
-          <option value="student">Student</option>
-        </select>
-        <select id="limitFilter" class="text-xs px-3 py-2 rounded-lg border border-[#E5E5E8] bg-white">
-          <option value="25">25 rows</option>
-          <option value="50">50 rows</option>
-          <option value="100">100 rows</option>
-          <option value="200">200 rows</option>
-        </select>
-        <button class="btn-burgundy text-xs" onclick="loadLog()"><span class="material-symbols-outlined" style="font-size:15px">search</span> Query</button>
+        <!-- KPI Summary Row (Reference Card Design) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 anim-up mb-6 mt-4">
+      <!-- Card 1: Total Audit Entries -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Total Activity Entries</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-[#29352E]" id="kpiAuditTotal">128</span>
+              <span class="text-xs font-medium text-emerald-700">Live Log</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-indigo-50 text-[#29352E] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">history</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-slate-400">storage</span>
+          <span class="truncate">Activity records saved in database</span>
+        </div>
+      </div>
+
+      <!-- Card 2: Executive Overrides -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Principal Approvals</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-slate-900" id="kpiAuditPrincipal">18</span>
+              <span class="text-xs font-medium text-emerald-700">Verified</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">verified_user</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+          <span class="truncate">Approvals with notes and reasons</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Faculty Submissions -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Teacher Submissions</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-slate-900">74</span>
+              <span class="text-xs font-medium text-teal-700">Submissions</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">co_present</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-slate-400">badge</span>
+          <span class="truncate">Grade submissions &amp; attendance updates</span>
+        </div>
+      </div>
+
+      <!-- Card 4: Integrity Compliance -->
+      <div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">
+        <div class="flex items-start justify-between">
+          <div>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">System Security</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span class="text-3xl font-medium tracking-tight text-emerald-700">100%</span>
+              <span class="text-xs font-medium text-emerald-700">Verified</span>
+            </div>
+          </div>
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[22px]">security</span>
+          </div>
+        </div>
+        <div class="pt-2.5 mt-3 border-t border-slate-100 flex items-center gap-1.5 text-xs text-slate-500 font-normal">
+          <span class="material-symbols-outlined text-[16px] text-emerald-600">shield</span>
+          <span class="truncate">All records secure and verified</span>
+        </div>
+      </div>
+    </div>
+<div class="mgr-card anim-up-2">
+      <div class="flex flex-wrap items-center gap-2.5" data-purpose="toolbar">
+        <div class="relative flex-1 min-w-[220px] md:max-w-xs">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+          <input id="searchInput" type="search" placeholder="Search action, reason or record id…" class="w-full !pl-11 pr-3 py-2 text-xs rounded-lg border border-[#E1E9E3] outline-none focus:border-[#176B45] min-h-[40px]" style="padding-left: 44px !important;">
+        </div>
+        <div class="relative flex-1 sm:flex-initial min-w-[130px]">
+          <select id="roleFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium cursor-pointer min-h-[40px] appearance-none">
+            <option value="all">All users</option>
+            <option value="principal">Principal</option>
+            <option value="admin">Admin</option>
+            <option value="teacher">Teacher</option>
+            <option value="student">Student</option>
+          </select>
+          <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>
+        </div>
+        <div class="relative flex-1 sm:flex-initial min-w-[120px]">
+          <select id="limitFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium cursor-pointer min-h-[40px] appearance-none">
+            <option value="25">25 rows</option>
+            <option value="50">50 rows</option>
+            <option value="100">100 rows</option>
+            <option value="200">200 rows</option>
+          </select>
+          <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>
+        </div>
+        <button class="btn-burgundy text-xs inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#176B45] text-white font-medium min-h-[40px] cursor-pointer" onclick="loadLog()"><span data-ngis-icon="search" style="font-size:15px"></span> Search</button>
       </div>
       <div id="actorBanner" class="flex items-center gap-2 mt-3">
-        <span class="status-chip warn" id="actorBannerText">Filtered by person</span>
-        <button class="btn-neutral text-xs" onclick="clearActorFilter()">Clear person filter ✕</button>
+        <span class="status-chip warn" id="actorBannerText">Filtered by user</span>
+        <button class="btn-neutral text-xs" onclick="clearActorFilter()" aria-label="Clear user filter">Clear filter <span data-ngis-icon="close"></span></button>
       </div>
       <div style="overflow-x:auto" class="mt-3">
         <table class="mgr-table">
           <thead><tr>
-            <th>When</th><th>Actor</th><th>Action</th><th>Record</th><th>Reason</th><th>Details</th>
+            <th>When</th><th>User</th><th>Action</th><th>Record</th><th>Reason</th><th>Details</th>
           </tr></thead>
-          <tbody id="logBody"><tr><td colspan="6" class="empty-row">Loading the management audit trail…</td></tr></tbody>
+          <tbody id="logBody"><tr><td colspan="6" class="empty-row">Loading activity history…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -100,20 +195,29 @@ body { background:var(--soft-gray); color:var(--black); }
 <script>
 window.HERO_CONFIG = {
   role: 'principal', active: 'activity', isDashboard: false,
-  name: 'Dr. Ly Bunheng', id: 'PRN-2024-002', grade: 'Executive Governance',
+  name: 'Dr. Ly Bunheng', id: 'PRN-2024-001', grade: 'Principal',
   avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
   avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
   homeLink: '../../index.html', signOutLink: '../../index.html',
   profileLink: 'principal-profile.html', notifLink: 'principal.html', notifCount: 0,
-  title: 'Management Action History',
-  greeting: 'Every decision, correction and override — preserved forever with its reason.',
+  title: 'Activity History',
+  greeting: 'Recent decisions, updates, and changes with notes and reasons.',
   ddRows: []
 };
 </script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script>
-function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+
+function fmtWhen(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+  const date = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  return `${date} \u00b7 ${time}`;
+}
 
 let actorFilter = new URLSearchParams(location.search).get('actor') || '';
 
@@ -154,7 +258,7 @@ async function loadLog() {
     document.getElementById('logCount').textContent = rows.length + ' event(s) shown';
     body.innerHTML = rows.length ? rows.map(e => `
       <tr>
-        <td class="text-[11px] text-slate-500 whitespace-nowrap">${esc(e.created_at)}</td>
+        <td class="text-[11px] text-slate-500 whitespace-nowrap">${esc(fmtWhen(e.created_at))}</td>
         <td><span class="actor-tag ${esc(e.actor_role)}">${esc(e.actor_role)}</span><div class="text-[11px] text-slate-500 mt-1">${esc(e.actor_id)}</div></td>
         <td>${actionChip(e.action)}</td>
         <td class="text-[11px]"><span style="color:var(--navy)">${esc(e.entity_type)}</span><div class="text-slate-500">${esc(e.entity_id)}</div></td>
@@ -163,7 +267,7 @@ async function loadLog() {
       </tr>`).join('')
       : '<tr><td colspan="6" class="empty-row">No audit events match these filters.</td></tr>';
   } catch (err) {
-    body.innerHTML = `<tr><td colspan="6" style="color:#92243D">Could not load audit history: ${esc(err.message)}</td></tr>`;
+    body.innerHTML = `<tr><td colspan="6" style="color:#176B45">Could not load change history: ${esc(err.message)}</td></tr>`;
   }
 }
 

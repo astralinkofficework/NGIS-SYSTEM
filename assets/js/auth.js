@@ -30,6 +30,17 @@
       title: "Campus Principal",
       avatar: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80"
     },
+    editor: {
+      id: "USR-006",
+      firstName: "Keo",
+      lastName: "Sreymom",
+      role: "editor",
+      portal: "admin",
+      email: "sreymom.keo@ngis.edu.kh",
+      title: "Academic Configuration Editor",
+      assignedCampus: "TK-MAIN",
+      avatar: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=80"
+    },
     teacher: {
       id: "TCH-2024-042",
       firstName: "Dr. Sarah",

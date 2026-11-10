@@ -1,7 +1,10 @@
 with open('assets/js/layout.js', 'r', encoding='utf-8') as f:
-    lines = f.readlines()
+    text = f.read()
 
-for i, line in enumerate(lines[:300]):
-    if any(k in line for k in ['NAV', 'MENU', 'sidebar', 'items', 'student', 'teacher', 'admin', 'principal', 'staff', 'role']):
-        print(f'{i+1}: {line.strip()[:100]}')
-
+import re
+matches = re.finditer(r'admin-news|school-information|admin-school', text)
+for m in matches:
+    idx = m.start()
+    print("Match at index", idx)
+    print(text[max(0, idx-150):min(len(text), idx+200)])
+    print("-" * 50)

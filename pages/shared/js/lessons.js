@@ -1,4 +1,4 @@
-﻿/* ══════════════════════════════════════
+/* ══════════════════════════════════════
    NGIS Resource Library — lessons.js
    ══════════════════════════════════════ */
 
@@ -384,9 +384,9 @@ function renderFileList() {
       + '<div class="lib-file-row-actions" onclick="event.stopPropagation()">'
       + (r.fileType !== 'link' && r.fileType !== 'video' ?
         '<button class="icon-btn" title="Download" aria-label="Download" onclick="downloadFile(\'' + escAttr(r.src) + '\',\'' + escAttr(r.name) + '\')">'
-        + '<span class="material-symbols-outlined">download</span></button>' : '')
+        + '<span data-ngis-icon="download"></span></button>' : '')
       + '<button class="icon-btn lib-bm-btn" title="Bookmark" aria-label="Bookmark" onclick="toggleBookmark(this)">'
-      + '<span class="material-symbols-outlined">bookmark_border</span></button>'
+      + '<span data-ngis-icon="bookmark"></span></button>'
       + '</div>'
       + '</div>';
   });
@@ -845,7 +845,7 @@ function openInViewer(r) {
         + '<div class="viewer-link-name">' + escHtml(r.name) + '</div>'
         + '<p>This is an external resource that opens in a new tab.</p>'
         + '<a href="' + escHtml(r.src) + '" target="_blank" rel="noopener noreferrer" class="btn btn-primary">'
-        + '<span class="material-symbols-outlined">open_in_new</span>Open Link</a>'
+        + '<span data-ngis-icon="open"></span>Open Link</a>'
         + '</div>';
     }
     frameWrap.innerHTML = frameHtml;
@@ -1002,7 +1002,7 @@ function _rpvPopulateTabs(r) {
         + '<div class="rpv-attach-body"><div class="rpv-attach-name">' + escHtml(a.name) + '</div>'
         + '<div class="rpv-attach-sub">' + escHtml(a.size) + '</div></div>'
         + '<button class="rpv-tool-btn" style="width:28px;height:28px;color:var(--muted)" title="Download" aria-label="Download '+ escHtml(a.name) +'">'
-        + '<span class="material-symbols-outlined" style="font-size:16px">download</span></button>'
+        + '<span style="font-size:16px" data-ngis-icon="download"></span></button>'
         + '</div>';
     }).join('');
   }
@@ -1059,7 +1059,7 @@ function _rpvPopulateTabs(r) {
         + '<div class="rpv-ext-name">' + escHtml(lnk.name) + '</div>'
         + '<div class="rpv-ext-url">' + escHtml(lnk.domain) + '</div>'
         + '</div>'
-        + '<span class="material-symbols-outlined rpv-ext-arrow">arrow_forward</span>'
+        + '<span class="rpv-ext-arrow" data-ngis-icon="chevronRight"></span>'
         + '</a>';
     }).join('');
   }
@@ -1105,13 +1105,12 @@ function rpvRotate() {
 function _rpvSyncBmBtns() {
   var bmBtn    = document.getElementById('rpvBmBtn');
   var bmBarBtn = document.getElementById('rpvBmBarBtn');
-  var icon     = _rpvBm ? 'bookmark' : 'bookmark_border';
-  var fill     = _rpvBm ? "'FILL' 1" : "'FILL' 0";
   [bmBtn, bmBarBtn].forEach(function(btn) {
     if (!btn) return;
-    var ico = btn.querySelector('.material-symbols-outlined');
-    if (ico) { ico.textContent = icon; ico.style.fontVariationSettings = fill; }
+    var ico = btn.querySelector('[data-ngis-icon]');
+    if (ico) ico.setAttribute('data-ngis-icon', _rpvBm ? 'bookmarkAdded' : 'bookmark');
     btn.classList.toggle('bookmarked', _rpvBm);
+    if (window.NGIS && window.NGIS.hydrate) window.NGIS.hydrate(btn);
   });
 }
 function togglePreviewBookmark() {
@@ -1121,9 +1120,10 @@ function togglePreviewBookmark() {
   if (_activeId) {
     var row = document.querySelector('.lib-file-row[data-id="' + _activeId + '"] .lib-bm-btn');
     if (row) {
-      var ico = row.querySelector('.material-symbols-outlined');
-      if (ico) { ico.textContent = _rpvBm ? 'bookmark' : 'bookmark_border'; ico.style.fontVariationSettings = _rpvBm ? "'FILL' 1" : "'FILL' 0"; }
+      var ico = row.querySelector('[data-ngis-icon]');
+      if (ico) ico.setAttribute('data-ngis-icon', _rpvBm ? 'bookmarkAdded' : 'bookmark');
       row.classList.toggle('bookmarked', _rpvBm);
+      if (window.NGIS && window.NGIS.hydrate) window.NGIS.hydrate(row);
     }
   }
 }
@@ -1201,11 +1201,10 @@ function applyFilters() {
    Bookmark
 ════════════════════════════════════ */
 function toggleBookmark(btn) {
-  var ico = btn.querySelector('.material-symbols-outlined');
-  if (!ico) return;
   var active = btn.classList.toggle('bookmarked');
-  ico.textContent = active ? 'bookmark' : 'bookmark_border';
-  ico.style.fontVariationSettings = active ? "'FILL' 1" : "'FILL' 0";
+  var ico = btn.querySelector('[data-ngis-icon]');
+  if (ico) ico.setAttribute('data-ngis-icon', active ? 'bookmarkAdded' : 'bookmark');
+  if (window.NGIS && window.NGIS.hydrate) window.NGIS.hydrate(btn);
 }
 
 /* ════════════════════════════════════
@@ -1271,7 +1270,7 @@ function openPreview(name, rOrObj, src) {
       + '<span class="material-symbols-outlined">open_in_new</span>'
       + '<h4>' + escHtml(_previewName) + '</h4>'
       + '<a href="' + _previewSrc + '" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top:16px">'
-      + '<span class="material-symbols-outlined">open_in_new</span>Open Link</a></div>';
+      + '<span data-ngis-icon="open"></span>Open Link</a></div>';
   }
 
   document.getElementById('previewModal').hidden = false;
@@ -1517,11 +1516,10 @@ function oakRenderCards() {
       }
       var isBookmarked = !!_oakBookmarkedIds[r.id];
       var bookmarkedClass = isBookmarked ? ' active' : '';
-      var bookmarkIcon = isBookmarked ? 'bookmark' : 'bookmark_border';
 
       var actionBtnHtml = isQuiz
-        ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span class="material-symbols-outlined">play_circle</span> Start Quiz</button>'
-        : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span class="material-symbols-outlined">visibility</span> Preview</button>';
+        ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span data-ngis-icon="play"></span> Start Quiz</button>'
+        : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span data-ngis-icon="view"></span> Preview</button>';
 
       var iconBadgeHtml = isQuiz
         ? '<div class="oak-banner-icon-badge type-quiz"><span class="material-symbols-outlined">task_alt</span></div>'
@@ -1549,10 +1547,10 @@ function oakRenderCards() {
         + '      ' + actionBtnHtml
         + '      <div class="oak-act-icons">'
         + '        <button class="oak-icon-action' + bookmarkedClass + '" title="Bookmark" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
-        + '          <span class="material-symbols-outlined">' + bookmarkIcon + '</span>'
+        + '          <span data-ngis-icon="' + (isBookmarked ? 'bookmarkAdded' : 'bookmark') + '"></span>'
         + '        </button>'
         + '        <button class="oak-icon-action" title="Download" onclick="oakDownload(\'' + r.id + '\')">'
-        + '          <span class="material-symbols-outlined">download</span>'
+        + '          <span data-ngis-icon="download"></span>'
         + '        </button>'
         + '      </div>'
         + '    </div>'
@@ -1567,7 +1565,6 @@ function oakRenderCards() {
     filtered.forEach(function(r) {
       var isQuiz = !!r.isQuiz;
       var isBookmarked = !!_oakBookmarkedIds[r.id];
-      var bookmarkIcon = isBookmarked ? 'bookmark' : 'bookmark_border';
       var bookmarkedClass = isBookmarked ? ' active' : '';
 
       listHtml += '<div class="oak-list-row">'
@@ -1587,13 +1584,13 @@ function oakRenderCards() {
         + '    </div>'
         + '  </div>'
         + '  <div class="oak-list-right">'
-        + (isQuiz ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span class="material-symbols-outlined">play_circle</span> Start Quiz</button>'
-                 : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span class="material-symbols-outlined">visibility</span> Preview</button>')
+        + (isQuiz ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span data-ngis-icon="play"></span> Start Quiz</button>'
+                 : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span data-ngis-icon="view"></span> Preview</button>')
         + '    <button class="oak-icon-action' + bookmarkedClass + '" title="Bookmark" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
-        + '      <span class="material-symbols-outlined">' + bookmarkIcon + '</span>'
+        + '      <span data-ngis-icon="' + (isBookmarked ? 'bookmarkAdded' : 'bookmark') + '"></span>'
         + '    </button>'
         + '    <button class="oak-icon-action" title="Download" onclick="oakDownload(\'' + r.id + '\')">'
-        + '      <span class="material-symbols-outlined">download</span>'
+        + '      <span data-ngis-icon="download"></span>'
         + '    </button>'
         + '  </div>'
         + '</div>';
@@ -1651,11 +1648,10 @@ function oakDownload(resId) {
 function oakToggleBookmark(btn, resId) {
   _oakBookmarkedIds[resId] = !_oakBookmarkedIds[resId];
   var active = _oakBookmarkedIds[resId];
-  var ico = btn.querySelector('.material-symbols-outlined');
-  if (ico) {
-    ico.textContent = active ? 'bookmark' : 'bookmark_border';
-  }
+  var ico = btn.querySelector('[data-ngis-icon]');
+  if (ico) ico.setAttribute('data-ngis-icon', active ? 'bookmarkAdded' : 'bookmark');
   btn.classList.toggle('active', active);
+  if (window.NGIS && window.NGIS.hydrate) window.NGIS.hydrate(btn);
   if (window.toast) {
     window.toast(active ? 'Saved to Bookmarks' : 'Removed from Bookmarks', 'info');
   }

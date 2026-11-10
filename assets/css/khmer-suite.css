@@ -1,0 +1,1102 @@
+/* ============================================================================
+   Khmer School Admin Suite — shared component styles
+   Uses the NGIS design tokens; every subject colour comes from state.
+   ========================================================================== */
+:root {
+  /* Alias the NGIS master design tokens instead of re-declaring colours.
+     This keeps the suite on the 60-30-10 forest-green palette and makes the
+     dark theme work for free (see html[data-theme="dark"] below). */
+  --ks-green:        var(--color-primary, #176B45);
+  --ks-green-dark:   var(--color-primary-hover, #125638);
+  --ks-green-soft:   var(--color-mint, #E8F3ED);
+  --ks-orange:       var(--color-accent, #F28C28);
+  --ks-orange-soft:  var(--color-accent-light, #FFF4EB);
+  --ks-ink:          var(--color-text, #29352E);
+  --ks-muted:        var(--color-text-secondary, #64746A);
+  --ks-border:       var(--color-border, #E1E9E3);
+  --ks-border-soft:  var(--color-border-subtle, #EEF4F0);
+  --ks-bg:           var(--color-background, #F7F9F7);
+  --ks-surface:      var(--ngis-surface, #FFFFFF);
+  --ks-red:          #BA1A1A;
+  --ks-red-soft:     #FFDAD6;
+  --ks-green-bad:    #137A45;
+  --ks-green-bad-bg: #ECFDF3;
+  --ks-shadow:       var(--ngis-shadow-card, 0 1px 3px 0 rgba(23, 107, 69, .04));
+  --ks-radius:       var(--ngis-radius-card, 12px);
+  --ks-radius-btn:   var(--ngis-radius-btn, 8px);
+  --ks-radius-pill:  var(--ngis-radius-pill, 9999px);
+  --ks-subtle:       #F2F5F3;   /* table headers / total rows / legends */
+  --ks-raised:       #FBFCFB;   /* one step above canvas, below surface */
+  --ks-font:         'Noto Sans Khmer', var(--font-khmer, 'Kantumruy Pro'),
+                     var(--font-body, 'Plus Jakarta Sans'), sans-serif;
+}
+
+html[data-theme="dark"], [data-theme="dark"] {
+  --ks-surface:      var(--ngis-surface, #18231D);
+  --ks-bg:           var(--ngis-canvas, #101713);
+  --ks-ink:          var(--ngis-text-primary, #FFFFFF);
+  --ks-muted:        var(--ngis-text-secondary, #E8F3ED);
+  --ks-border:       var(--ngis-border, rgba(225, 233, 227, .15));
+  --ks-border-soft:  var(--ngis-border-subtle, rgba(225, 233, 227, .08));
+  --ks-red:          #FFB4AB;
+  --ks-red-soft:     rgba(147, 0, 10, .25);
+  --ks-green-bad:    #6FFBBE;
+  --ks-green-bad-bg: rgba(0, 108, 73, .18);
+  --ks-subtle:       var(--ngis-surface-subtle, #1F2E26);
+  --ks-raised:       #1A2620;
+}
+
+.ks, .ks * { box-sizing: border-box; }
+.ks {
+  font-family: var(--ks-font);
+  color: var(--ks-ink);
+  background: var(--ks-bg);
+  min-height: 100vh;
+  padding: 24px var(--space-lg, 1.5rem) 32px;
+  font-size: var(--font-size-body, 14px);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.ks button, .ks input, .ks select, .ks textarea { font-family: inherit; font-size: inherit; }
+.ks button { cursor: pointer; }
+/* AGENTS.md: weights 400/500 only — never 600/700. */
+.ks h1, .ks h2, .ks h3, .ks h4, .ks strong, .ks b { margin: 0; font-weight: 500; }
+.ks-page-title {
+  font-family: var(--font-heading, 'Manrope'), var(--ks-font);
+  font-size: var(--font-size-h1, 28px); font-weight: 500;
+  line-height: 36px; letter-spacing: -.01em; color: var(--ks-ink);
+}
+.ks-h1 { font-size: var(--font-size-h1, 28px); letter-spacing: -.01em; }
+.ks-sub { color: var(--ks-muted); font-size: var(--font-size-label, 12px); }
+.ks-kh-num { font-variant-numeric: tabular-nums; }
+/* Surfaced surfaces follow the token, not a hardcoded #fff. */
+.ks-surface { background: var(--ks-surface); }
+
+/* ── Header / module navigation ─────────────────────────────────────────── */
+.ks-head {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 14px;
+}
+.ks-head-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.ks-mark {
+  width: 38px; height: 38px; border-radius: 10px; flex: none;
+  background: var(--ks-green); color: #fff;
+  display: grid; place-items: center; font-size: 19px;
+  box-shadow: 0 6px 16px -8px rgba(23, 107, 69, .8);
+}
+.ks-institution { line-height: 1.4; }
+.ks-institution strong { display: block; font-weight: 500; font-size: 14px; }
+.ks-head-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+.ks-tag {
+  background: var(--ks-surface); border: 1px solid var(--ks-border); color: var(--ks-muted);
+  border-radius: 999px; padding: 1px 9px; font-size: 10.5px; white-space: nowrap;
+}
+.ks-tag.accent { background: var(--ks-orange-soft); border-color: #FADFC2; color: #A9570B; }
+
+.ks-save {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px;
+  color: var(--ks-muted); background: var(--ks-surface); border: 1px solid var(--ks-border);
+  border-radius: 999px; padding: 5px 11px; white-space: nowrap;
+}
+.ks-save .dot { width: 7px; height: 7px; border-radius: 50%; background: #16A34A; }
+.ks-save[data-state="dirty"] .dot, .ks-save[data-state="saving"] .dot { background: var(--ks-orange); animation: ks-pulse 1s infinite; }
+.ks-save[data-state="offline"] .dot { background: #94A3B8; }
+@keyframes ks-pulse { 50% { opacity: .35; } }
+
+.ks-modules {
+  display: flex; gap: 4px; background: var(--ks-surface); border: 1px solid var(--ks-border);
+  border-radius: 10px; padding: 4px; overflow-x: auto; margin-bottom: 14px;
+  scrollbar-width: thin;
+}
+.ks-module {
+  display: inline-flex; align-items: center; gap: 7px; white-space: nowrap;
+  padding: 7px 13px; border: 0; border-radius: 7px; background: transparent;
+  color: var(--ks-muted); font-size: 12px; text-decoration: none; transition: .15s;
+}
+.ks-module:hover { background: var(--ks-bg); color: var(--ks-ink); }
+.ks-module.active { background: var(--ks-green); color: #fff; box-shadow: 0 3px 10px -5px rgba(23,107,69,.9); }
+.ks-module .n {
+  width: 17px; height: 17px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(0,0,0,.06); font-size: 10px;
+}
+.ks-module.active .n { background: rgba(255,255,255,.22); }
+
+/* ── Buttons / chips / badges ───────────────────────────────────────────── */
+.ks-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  background: var(--ks-surface); border: 1px solid var(--ks-border); border-radius: var(--ks-radius);
+  padding: 10px 12px; margin-bottom: 12px; box-shadow: var(--ks-shadow);
+}
+.ks-toolbar .spacer { flex: 1 1 auto; }
+.ks-sep { width: 1px; height: 24px; background: var(--ks-border); margin: 0 3px; }
+.ks-btn {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  min-height: 38px;
+  border: 1px solid var(--ks-border); background: var(--ks-surface); color: var(--ks-ink);
+  padding: 7px 12px; border-radius: var(--ks-radius-btn); font-size: 13px; line-height: 1.3;
+  transition: border-color .15s, background-color .15s; text-decoration: none;
+}
+.ks-btn:hover:not(:disabled) { border-color: var(--ks-green); }
+.ks-btn:disabled { opacity: .45; cursor: not-allowed; }
+.ks-btn.primary { background: var(--ks-green); border-color: var(--ks-green); color: #fff; }
+.ks-btn.primary:hover:not(:disabled) { background: var(--ks-green-dark); border-color: var(--ks-green-dark); }
+/* No gradients / no 4th brand colour — the AI action uses the same primary. */
+.ks-btn.ai { background: var(--ks-green); border-color: var(--ks-green); color: #fff; }
+.ks-btn.ai:hover:not(:disabled) { background: var(--ks-green-dark); border-color: var(--ks-green-dark); }
+.ks-btn.warn { color: var(--ks-orange); background: var(--ks-orange-soft); border-color: var(--ks-orange); }
+.ks-btn.danger { color: var(--ks-red); border-color: var(--ks-red); background: var(--ks-red-soft); }
+.ks-btn.sm { padding: 4px 9px; min-height: 32px; font-size: 12px; border-radius: 6px; }
+.ks-icon {
+  width: 38px; height: 38px; padding: 0; display: inline-grid; place-items: center;
+  border: 1px solid var(--ks-border); background: var(--ks-surface); border-radius: var(--ks-radius-btn); color: var(--ks-ink);
+}
+.ks-icon:hover:not(:disabled) { background: var(--ks-bg); }
+.ks-icon:disabled { opacity: .4; cursor: not-allowed; }
+.ks-select, .ks-input {
+  border: 1px solid var(--ks-border); background: var(--ks-surface); border-radius: var(--ks-radius-btn);
+  min-height: 38px; padding: 6px 9px; color: var(--ks-ink); outline: none; max-width: 100%;
+}
+.ks-select:focus, .ks-input:focus { border-color: var(--ks-green); box-shadow: 0 0 0 3px rgba(23,107,69,.09); }
+.ks-tabs { display: inline-flex; gap: 3px; background: var(--ks-bg); padding: 3px; border-radius: 8px; }
+.ks-tab { border: 0; background: transparent; padding: 6px 12px; border-radius: 6px; color: var(--ks-muted); font-size: 11.5px; white-space: nowrap; }
+.ks-tab.active { background: var(--ks-surface); color: var(--ks-ink); border: 1px solid var(--ks-border); }
+
+.ks-badge {
+  display: inline-flex; align-items: center; gap: 5px; border-radius: var(--ks-radius-pill);
+  padding: 3px 10px; font-size: 11px; border: 1px solid var(--ks-border);
+  background: var(--ks-surface); color: var(--ks-muted); white-space: nowrap;
+}
+.ks-badge.ok { background: var(--ks-green-bad-bg); border-color: var(--ks-green-soft); color: var(--ks-green-bad); }
+.ks-badge.bad { background: var(--ks-red-soft); border-color: var(--ks-red); color: var(--ks-red); }
+.ks-badge.warn { background: var(--ks-orange-soft); border-color: var(--ks-orange); color: var(--ks-orange); }
+.ks-badge.info { background: var(--ks-green-soft); border-color: var(--ks-border); color: var(--ks-green); }
+.ks-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+.ks-chip {
+  display: inline-flex; align-items: center; gap: 6px; border-radius: var(--ks-radius-btn);
+  border: 1px solid var(--ks-border); padding: 6px 10px; font-size: 11.5px;
+  background: var(--ks-surface); color: var(--ks-ink); cursor: pointer;
+  transition: border-color .15s; user-select: none;
+}
+/* DESIGN-RULES V2/V4: no lifting, no decorative shadow. */
+.ks-chip:hover { border-color: var(--ks-green); }
+.ks-chip.selected { outline: 2px solid var(--ks-green); outline-offset: 1px; }
+.ks-chip .swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.ks-chip .count {
+  background: rgba(0,0,0,.09); border-radius: 999px; min-width: 18px; text-align: center;
+  padding: 0 5px; font-size: 10.5px;
+}
+.ks-chip.disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── Cards / layout ─────────────────────────────────────────────────────── */
+.ks-card {
+  background: var(--ks-surface); border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius); box-shadow: var(--ks-shadow); overflow: hidden;
+}
+.ks-card + .ks-card { margin-top: 12px; }
+.ks-card-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 11px 14px; border-bottom: 1px solid var(--ks-border-soft); flex-wrap: wrap;
+}
+.ks-card-title { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.ks-card-body { padding: 13px 14px; }
+.ks-card-body.tight { padding: 8px; }
+.ks-hint { color: var(--ks-muted); font-size: 11px; line-height: 1.6; }
+.ks-legend {
+  display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 9px 13px;
+  background: #FBFCFB; border-top: 1px solid var(--ks-border-soft);
+  color: var(--ks-muted); font-size: 11px;
+}
+.ks-legend b { color: var(--ks-ink); font-weight: 500; }
+.ks-empty { padding: 28px 14px; text-align: center; color: var(--ks-muted); font-size: 12px; }
+
+.ks-layout-3 { display: grid; grid-template-columns: 216px minmax(0, 1fr) 268px; gap: 12px; align-items: start; }
+.ks-layout-2 { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: start; }
+@media (max-width: 1250px) {
+  .ks-layout-3 { grid-template-columns: 190px minmax(0, 1fr); }
+  .ks-layout-3 > .ks-right { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  .ks-layout-3, .ks-layout-2 { grid-template-columns: 1fr; }
+  .ks { padding: 14px 12px 40px; }
+}
+
+.ks-scroll { overflow: auto; scrollbar-width: thin; }
+.ks-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.ks-scroll::-webkit-scrollbar-thumb { background: #D7E2D9; border-radius: 8px; }
+
+/* ── Stepper (module 1) ─────────────────────────────────────────────────── */
+.ks-stepper { display: flex; align-items: center; gap: 0; padding: 14px 16px; flex-wrap: wrap; }
+.ks-step { display: flex; align-items: center; gap: 8px; color: var(--ks-muted); font-size: 12px; }
+.ks-step .num {
+  width: 25px; height: 25px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--ks-bg); border: 1px solid var(--ks-border); font-size: 11px;
+}
+.ks-step.active { color: var(--ks-green); }
+.ks-step.active .num { background: var(--ks-green); color: #fff; border-color: var(--ks-green); }
+.ks-step.done .num { background: var(--ks-green-soft); color: var(--ks-green); border-color: #BFE0CD; }
+.ks-step-line { flex: 1 1 26px; height: 1px; background: var(--ks-border); margin: 0 12px; min-width: 16px; }
+
+.ks-class-list { display: flex; flex-direction: column; gap: 3px; padding: 8px; }
+.ks-class-item {
+  border: 1px solid transparent; background: transparent; border-radius: 8px;
+  padding: 8px 10px; text-align: left; width: 100%; transition: .15s;
+}
+.ks-class-item:hover { background: var(--ks-bg); }
+.ks-class-item.active { background: var(--ks-green-soft); border-color: #C6E3D2; }
+.ks-class-item .top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.ks-class-item .name { font-size: 13px; font-weight: 500; }
+.ks-class-item .meta { font-size: 10.5px; color: var(--ks-muted); margin-top: 2px; }
+.ks-mini-bar { height: 4px; border-radius: 4px; background: #E8EEE9; margin-top: 6px; overflow: hidden; }
+.ks-mini-bar > i { display: block; height: 100%; background: var(--ks-green); border-radius: 4px; }
+
+.ks-fields { display: flex; flex-wrap: wrap; gap: 10px; }
+.ks-field { display: flex; flex-direction: column; gap: 4px; min-width: 110px; }
+.ks-field label { font-size: 10.5px; color: var(--ks-muted); }
+
+/* ── Tables ─────────────────────────────────────────────────────────────── */
+.ks-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ks-table th {
+  background: #F7FAF8; color: var(--ks-muted); font-weight: 500; text-align: left;
+  padding: 9px 10px; border-bottom: 1px solid var(--ks-border); white-space: nowrap; font-size: 11px;
+}
+.ks-table td { padding: 7px 10px; border-bottom: 1px solid var(--ks-border-soft); vertical-align: middle; }
+.ks-table tr:last-child td { border-bottom: 0; }
+.ks-table tbody tr:hover { background: #FCFDFC; }
+.ks-table .right { text-align: right; }
+.ks-table .center { text-align: center; }
+.ks-table input, .ks-table select {
+  width: 100%; min-width: 60px; border: 1px solid transparent; background: transparent;
+  border-radius: 6px; padding: 4px 6px; color: var(--ks-ink); outline: none;
+}
+.ks-table input:hover, .ks-table select:hover { border-color: var(--ks-border); }
+.ks-table input:focus, .ks-table select:focus { border-color: var(--ks-green); background: var(--ks-surface); box-shadow: 0 0 0 2px rgba(23,107,69,.08); }
+.ks-table input[type="number"] { max-width: 74px; }
+.ks-table input[type="color"] { width: 32px; height: 26px; padding: 0; border: 1px solid var(--ks-border); border-radius: 5px; background: var(--ks-surface); cursor: pointer; }
+.ks-total-row td { background: #F4F9F6; font-weight: 500; border-top: 1px solid var(--ks-border); }
+.ks-overload { color: var(--ks-red) !important; background: var(--ks-red-soft) !important; }
+
+.ks-subject-chip {
+  display: inline-flex; align-items: center; gap: 6px; border-radius: 6px;
+  padding: 3px 8px; font-size: 11px; white-space: nowrap;
+}
+.ks-subject-chip .swatch { width: 9px; height: 9px; border-radius: 3px; }
+
+.ks-loadbar { position: relative; height: 6px; border-radius: 6px; background: #EDF1EE; overflow: hidden; margin-top: 4px; }
+.ks-loadbar > i { display: block; height: 100%; border-radius: 6px; background: var(--ks-green); transition: width .25s; }
+.ks-loadbar.over > i { background: var(--ks-red); }
+.ks-load-line { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--ks-muted); }
+
+.ks-teacher-row { display: flex; align-items: center; gap: 9px; padding: 8px 2px; border-bottom: 1px solid var(--ks-border-soft); }
+.ks-teacher-row:last-child { border-bottom: 0; }
+.ks-avatar {
+  width: 30px; height: 30px; border-radius: 8px; flex: none; display: grid; place-items: center;
+  font-size: 10.5px; color: #1F2937;
+}
+.ks-teacher-row .info { flex: 1; min-width: 0; }
+.ks-teacher-row .info b { display: block; font-weight: 500; font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ks-teacher-row .info small { color: var(--ks-muted); font-size: 10px; }
+
+/* ── Timetable grid (module 2) ──────────────────────────────────────────── */
+.ks-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.ks-grid-wrap { overflow: auto; max-height: 62vh; border-radius: 8px; border: 1px solid var(--ks-border-soft); }
+.ks-grid { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 720px; table-layout: fixed; }
+.ks-grid th {
+  position: sticky; top: 0; z-index: 2; background: #F7FAF8; color: var(--ks-muted);
+  font-weight: 500; font-size: 11px; padding: 8px 6px; text-align: center;
+  border-bottom: 1px solid var(--ks-border); border-right: 1px solid var(--ks-border-soft);
+}
+.ks-grid th:first-child { width: 116px; text-align: left; padding-left: 12px; left: 0; z-index: 3; }
+.ks-grid td {
+  border-bottom: 1px solid var(--ks-border-soft); border-right: 1px solid var(--ks-border-soft);
+  height: 50px; padding: 3px; text-align: center; vertical-align: middle;
+}
+.ks-grid td.period-cell {
+  background: #FBFCFB; font-size: 10.5px; color: var(--ks-muted); text-align: left;
+  padding-left: 11px; position: sticky; left: 0; z-index: 1; white-space: nowrap;
+}
+.ks-grid tr.shift-start td { border-top: 2px solid var(--ks-border); }
+.ks-cell {
+  width: 100%; height: 100%; min-height: 42px; border: 1px dashed transparent;
+  border-radius: 7px; background: transparent; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1px; padding: 2px 3px;
+  transition: .12s; overflow: hidden;
+}
+.ks-cell:hover { border-color: var(--ks-green); background: rgba(23,107,69,.04); }
+.ks-cell.empty { color: #B6C2BA; font-size: 10.5px; }
+.ks-cell.filled { border-style: solid; border-color: rgba(0,0,0,.06); color: #17251D; }
+.ks-cell.filled .sub { font-size: 10.5px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.ks-cell.filled .tchr { font-size: 10px; opacity: .78; white-space: nowrap; }
+.ks-cell.conflict { outline: 2px solid var(--ks-red); outline-offset: -2px; }
+.ks-cell.target { outline: 2px dashed var(--ks-green); outline-offset: -2px; background: rgba(23,107,69,.06); }
+.ks-cell.proposed { box-shadow: inset 0 0 0 2px #6D5AE6; }
+.ks-grid-wrap.preview { max-height: 74vh; }
+.ks-grid.preview { min-width: 1600px; font-size: 10px; }
+.ks-grid.preview td { height: 34px; }
+.ks-grid.preview .ks-cell { min-height: 28px; }
+
+.ks-remaining-list { display: flex; flex-direction: column; gap: 4px; padding: 8px; max-height: 52vh; overflow: auto; }
+.ks-remaining-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 8px 9px; border: 1px solid var(--ks-border-soft); border-radius: 8px; background: var(--ks-surface);
+}
+.ks-remaining-item .lbl { font-size: 11.5px; }
+.ks-remaining-item .lbl small { display: block; color: var(--ks-muted); font-size: 10px; }
+
+/* ── Viewer (module 3) ──────────────────────────────────────────────────── */
+.ks-class-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.ks-class-card {
+  border: 1px solid var(--ks-border); border-radius: 10px; padding: 11px 12px;
+  background: var(--ks-surface); min-height: 92px; display: flex; flex-direction: column; justify-content: space-between;
+}
+.ks-class-card .name { font-size: 15px; font-weight: 500; }
+.ks-class-card .when { font-size: 10.5px; color: var(--ks-muted); }
+.ks-class-card .lesson { margin-top: 8px; border-radius: 7px; padding: 6px 8px; font-size: 11px; }
+.ks-class-card .lesson.free { background: var(--ks-bg); color: var(--ks-muted); }
+.ks-dist-table { min-width: 900px; }
+.ks-dist-table td, .ks-dist-table th { text-align: center; font-size: 10.5px; padding: 6px 4px; }
+.ks-dist-table td:first-child, .ks-dist-table th:first-child { text-align: left; position: sticky; left: 0; background: var(--ks-surface); z-index: 1; }
+.ks-dist-cell { display: inline-block; min-width: 26px; border-radius: 4px; padding: 2px 4px; font-size: 10px; }
+
+/* ── Records (module 5) ─────────────────────────────────────────────────── */
+.ks-records-wrap { overflow: auto; max-height: 60vh; }
+.ks-records-table { min-width: 1500px; }
+.ks-records-table td { padding: 2px 4px; }
+.ks-records-table input { font-size: 11px; }
+.ks-summary {
+  display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+  background: var(--ks-subtle); border-top: 1px solid var(--ks-border);
+  padding: 11px 14px; font-size: 11.5px;
+}
+.ks-summary b { color: var(--ks-green); font-weight: 500; font-size: 13px; }
+
+/* ── Modal / toast / history ────────────────────────────────────────────── */
+.ks-backdrop {
+  position: fixed; inset: 0; background: rgba(17, 32, 24, .42); z-index: 900;
+  display: grid; place-items: center; padding: 18px; backdrop-filter: blur(2px);
+}
+.ks-modal {
+  background: var(--ks-surface); border-radius: 14px; width: min(620px, 100%); max-height: 86vh;
+  display: flex; flex-direction: column; box-shadow: 0 30px 80px -30px rgba(0,0,0,.5); overflow: hidden;
+}
+.ks-modal.wide { width: min(920px, 100%); }
+.ks-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--ks-border); }
+.ks-modal-body { padding: 14px 16px; overflow: auto; }
+.ks-modal-foot { padding: 11px 16px; border-top: 1px solid var(--ks-border); display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.ks-close { border: 0; background: var(--ks-bg); border-radius: 7px; width: 28px; height: 28px; font-size: 16px; color: var(--ks-muted); }
+.ks-close:hover { background: #E9EFEA; }
+.ks-candidate {
+  display: flex; align-items: center; gap: 11px; width: 100%; text-align: left;
+  border: 1px solid var(--ks-border); background: var(--ks-surface); border-radius: 9px;
+  padding: 9px 11px; margin-bottom: 6px; transition: .15s;
+}
+.ks-candidate:hover:not(:disabled) { border-color: var(--ks-green); background: #FAFDFB; }
+.ks-candidate:disabled { opacity: .5; cursor: not-allowed; }
+.ks-candidate .grow { flex: 1; min-width: 0; }
+.ks-candidate .grow b { display: block; font-size: 12px; font-weight: 500; }
+.ks-candidate .grow small { color: var(--ks-muted); font-size: 10.5px; }
+.ks-toast-host { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 1000; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.ks-toast {
+  background: #1F2D25; color: #fff; border-radius: 9px; padding: 9px 16px;
+  font-size: 12px; box-shadow: 0 12px 30px -12px rgba(0,0,0,.7); animation: ks-in .2s ease-out;
+}
+.ks-toast.error { background: #9F1D1D; }
+.ks-toast.success { background: #176B45; }
+@keyframes ks-in { from { opacity: 0; transform: translateY(8px); } }
+
+.ks-history-item {
+  display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+  border-bottom: 1px solid var(--ks-border-soft); font-size: 11.5px;
+}
+.ks-history-item:last-child { border-bottom: 0; }
+.ks-history-item time { color: var(--ks-muted); font-size: 10px; margin-left: auto; white-space: nowrap; }
+.ks-conflict-item {
+  display: flex; gap: 9px; align-items: flex-start; padding: 9px 11px;
+  border-bottom: 1px solid var(--ks-border-soft); font-size: 11.5px;
+}
+.ks-conflict-item:last-child { border-bottom: 0; }
+.ks-conflict-item .ico { flex: none; }
+
+.ks-diff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 9px; }
+.ks-diff-stat { border: 1px solid var(--ks-border); border-radius: 9px; padding: 11px 12px; background: #FCFDFC; }
+.ks-diff-stat .v { font-size: 21px; font-weight: 500; color: var(--ks-green); }
+.ks-diff-stat .l { font-size: 10.5px; color: var(--ks-muted); }
+
+/* ── Design-system conformance pass ─────────────────────────────────────────
+   Neutral tints and focus rings must follow tokens so the suite inherits the
+   NGIS light/dark canvas instead of painting hardcoded near-white rectangles.
+   Kept as one override block so the component rules above stay readable.
+   -------------------------------------------------------------------------- */
+.ks-tag { background: var(--ks-surface); }
+.ks-tag.accent { background: var(--ks-orange-soft); border-color: var(--ks-orange); color: var(--ks-orange); }
+.ks-save { background: var(--ks-surface); }
+.ks-modules { background: var(--ks-surface); }
+.ks-module.active { box-shadow: none; }
+.ks-legend { background: var(--ks-raised); }
+.ks-mini-bar, .ks-loadbar { background: var(--ks-subtle); }
+.ks-table th, .ks-grid th { background: var(--ks-subtle); }
+.ks-table tbody tr:hover { background: var(--ks-raised); }
+.ks-total-row td, .ks-grid td.period-cell, .ks-dist-table td:first-child,
+.ks-dist-table th:first-child { background: var(--ks-subtle); }
+.ks-diff-stat { background: var(--ks-subtle); }
+.ks-close:hover { background: var(--ks-subtle); }
+.ks-candidate:hover:not(:disabled) { background: var(--ks-raised); }
+.ks-cell:hover, .ks-cell.target { background: var(--ks-green-soft); }
+.ks-cell.proposed { box-shadow: inset 0 0 0 2px var(--ks-green); }
+.ks-cell.filled { color: var(--ks-ink); border-color: var(--ks-border-soft); }
+.ks-select:focus, .ks-input:focus,
+.ks-table input:focus, .ks-table select:focus {
+  box-shadow: 0 0 0 2px var(--ks-green-soft);
+}
+.ks-card, .ks-toolbar, .ks-modal { box-shadow: var(--ks-shadow); }
+.ks, .ks button, .ks input, .ks select, .ks textarea {
+  font-weight: 400;
+  /* design-system.css sets html/body font-family with !important; keep Khmer
+     glyphs on Noto Sans Khmer while Latin falls back to Plus Jakarta Sans. */
+  font-family: var(--ks-font) !important;
+}
+.ks h1, .ks h2, .ks h3, .ks h4, .ks strong, .ks b,
+.ks-card-title, .ks-institution strong, .ks-table th, .ks-grid th,
+.ks-total-row td, .ks-legend b, .ks-teacher-row .info b { font-weight: 500; }
+
+/* ── Executive header + KPI strip (matches the NGIS dashboard shell) ───── */
+.ks-page-head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 12px 16px; margin-bottom: 16px;
+}
+.ks-page-head .ks-eyebrow {
+  font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ks-muted); margin-bottom: 4px;
+}
+.ks-page-head .ks-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ks-page-head .ks-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ks-kpi-strip {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px; margin-bottom: 16px;
+}
+@media (max-width: 1100px) { .ks-kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px)  { .ks-kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; } }
+.ks-kpi {
+  background: var(--ks-surface); border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius); padding: 14px; box-shadow: var(--ks-shadow);
+  min-width: 0;
+}
+.ks-kpi .ks-kpi-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ks-kpi .ks-kpi-label {
+  font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ks-muted); font-weight: 500;
+}
+.ks-kpi .ks-kpi-icon {
+  width: 32px; height: 32px; border-radius: var(--ks-radius-btn); flex: none;
+  display: grid; place-items: center; background: var(--ks-green-soft);
+  color: var(--ks-green); font-size: 16px;
+}
+.ks-kpi .ks-kpi-icon.warn { background: var(--ks-orange-soft); color: var(--ks-orange); }
+.ks-kpi .ks-kpi-icon.bad  { background: var(--ks-red-soft); color: var(--ks-red); }
+.ks-kpi .ks-kpi-value {
+  font-family: var(--font-heading, 'Manrope'), var(--ks-font);
+  font-size: 28px; line-height: 36px; font-weight: 500; margin-top: 12px;
+  color: var(--ks-ink); font-variant-numeric: tabular-nums;
+}
+.ks-kpi .ks-kpi-value small { font-size: 16px; color: var(--ks-muted); }
+.ks-kpi .ks-kpi-foot { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 11px; color: var(--ks-muted); }
+.ks-kpi .ks-kpi-foot i { width: 8px; height: 8px; border-radius: 50%; background: var(--ks-green); flex: none; }
+.ks-kpi .ks-kpi-foot i.bad { background: var(--ks-red); }
+.ks-kpi .ks-kpi-foot i.warn { background: var(--ks-orange); }
+
+/* ── Print (A4 timetable / A3 records → browser PDF) ───────────────────── */
+.ks-print-only { display: none; }
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  .ks-no-print, .sidebar, .topbar, .bottom-nav, .scrim { display: none !important; }
+  .ks { padding: 0; background: #FFFFFF !important; color: #29352E !important; }
+  .ks-card { box-shadow: none; border-color: #ccc; break-inside: avoid; }
+  .ks-grid-wrap { max-height: none; overflow: visible; }
+  .ks-grid { min-width: 0; }
+  .ks-print-only { display: block; }
+  .main { margin-left: 0 !important; }
+}
+
+/* ============================================================================
+   Master Three-Step Workflow & Excel Spreadsheet Styles (Cambodian School App)
+   ========================================================================== */
+
+/* ── 1. Master 3-Step Horizontal Stepper ───────────────────────────────── */
+.ks-workflow-bar {
+  display: none !important;
+}
+.ks-workflow-bar::-webkit-scrollbar {
+  display: none;
+}
+.ks-wf-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: var(--ks-radius-btn);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--ks-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all .15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ks-wf-step:hover {
+  background: var(--ks-bg);
+  color: var(--ks-ink);
+}
+.ks-wf-step.active {
+  background: var(--ks-green-soft);
+  border-color: #BEE1CE;
+  color: var(--ks-green);
+}
+.ks-wf-step .wf-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--ks-bg);
+  border: 1px solid var(--ks-border);
+  color: var(--ks-muted);
+}
+.ks-wf-step.active .wf-num {
+  background: var(--ks-green);
+  color: #fff;
+  border-color: var(--ks-green);
+}
+.ks-wf-step.done .wf-num {
+  background: var(--ks-green);
+  color: #fff;
+  border-color: var(--ks-green);
+}
+.ks-wf-arrow {
+  color: var(--ks-border);
+  font-size: 16px;
+  user-select: none;
+}
+
+/* ── 2. Excel-Style Spreadsheet Component (Step 1) ─────────────────────── */
+.ks-sheet-container {
+  background: var(--ks-surface);
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius);
+  box-shadow: var(--ks-shadow);
+  overflow: hidden;
+}
+.ks-sheet-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #FBFCFB;
+  border-bottom: 1px solid var(--ks-border);
+}
+.ks-sheet-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 14px;
+  background: var(--ks-surface);
+  border-bottom: 1px solid var(--ks-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ks-sheet-tabs::-webkit-scrollbar {
+  display: none;
+}
+.ks-sheet-tab {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ks-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+
+/* Universal responsive scroll helper */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.ks-sheet-tab:hover {
+  background: var(--ks-bg);
+  color: var(--ks-ink);
+}
+.ks-sheet-tab.active {
+  background: var(--ks-green-soft);
+  border-color: #C6E3D2;
+  color: var(--ks-green);
+}
+.ks-grid-scroll {
+  max-height: 65vh;
+  overflow: auto;
+  position: relative;
+  scrollbar-width: thin;
+}
+.ks-spreadsheet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  text-align: left;
+}
+.ks-spreadsheet-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #F2F5F3;
+  color: var(--ks-muted);
+  font-weight: 500;
+  padding: 8px 10px;
+  border: 1px solid var(--ks-border);
+  white-space: nowrap;
+}
+.ks-spreadsheet-table td {
+  padding: 4px 8px;
+  border: 1px solid var(--ks-border-soft);
+  background: var(--ks-surface);
+  min-width: 80px;
+  height: 32px;
+  position: relative;
+  user-select: none;
+}
+.ks-spreadsheet-table td.row-num {
+  background: #F7F9F7;
+  color: var(--ks-muted);
+  text-align: center;
+  width: 44px;
+  min-width: 44px;
+  font-size: 11px;
+}
+.ks-spreadsheet-table td.cell-active {
+  outline: 2px solid var(--ks-green);
+  outline-offset: -2px;
+  z-index: 1;
+}
+.ks-spreadsheet-table td.cell-invalid {
+  background: #FFF0F0 !important;
+  border-color: var(--ks-red) !important;
+}
+.ks-cell-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: var(--ks-ink);
+  padding: 0;
+}
+
+/* ── 3. Step 2 Teacher Assignment Workspace ───────────────────────────── */
+.ks-assign-workspace {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .ks-assign-workspace { grid-template-columns: 1fr; }
+}
+.ks-teacher-nav {
+  background: var(--ks-surface);
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius);
+  box-shadow: var(--ks-shadow);
+  overflow: hidden;
+}
+.ks-teacher-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ks-border-soft);
+  background: var(--ks-surface);
+  cursor: pointer;
+  transition: all .15s;
+}
+.ks-teacher-card-item:hover {
+  background: var(--ks-bg);
+}
+.ks-teacher-card-item.active {
+  background: var(--ks-green-soft);
+  border-left: 4px solid var(--ks-green);
+}
+.ks-assign-panel {
+  background: var(--ks-surface);
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius);
+  box-shadow: var(--ks-shadow);
+  padding: 16px;
+}
+.ks-grade-group {
+  margin-bottom: 18px;
+}
+.ks-grade-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ks-muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ks-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ks-class-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s ease;
+  user-select: none;
+}
+/* State 1: Assigned to this teacher */
+.ks-class-chip.is-assigned {
+  background: var(--ks-green-soft);
+  border: 1.5px solid var(--ks-green);
+  color: var(--ks-green);
+}
+/* State 2: Unassigned */
+.ks-class-chip.is-unassigned {
+  background: #F7F9F7;
+  border: 1.5px dashed var(--ks-border);
+  color: var(--ks-muted);
+}
+.ks-class-chip.is-unassigned:hover {
+  border-color: var(--ks-green);
+  color: var(--ks-ink);
+  background: var(--ks-green-soft);
+}
+/* State 3: Assigned to another teacher */
+.ks-class-chip.is-other {
+  background: #FFF8F0;
+  border: 1px solid #F4D3B0;
+  color: #8C4E10;
+}
+.ks-class-chip.is-other:hover {
+  border-color: var(--ks-orange);
+}
+
+/* ── 4. Unavailability Matrix Tab ─────────────────────────────────────── */
+.ks-unavail-matrix {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ks-unavail-matrix th, .ks-unavail-matrix td {
+  border: 1px solid var(--ks-border);
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 11.5px;
+}
+.ks-unavail-toggle {
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: .15s;
+}
+.ks-unavail-toggle.off {
+  background: #FFECEB;
+  color: var(--ks-red);
+  font-weight: 500;
+}
+.ks-unavail-toggle.on {
+  background: transparent;
+  color: var(--ks-muted);
+}
+
+/* Authentic Cambodian Curriculum Timetable Grid & Flush Cell Styling */
+.ks-timetable-grid {
+  table-layout: fixed !important;
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+.ks-timetable-grid th {
+  padding: 8px 4px !important;
+  vertical-align: middle !important;
+  font-family: 'Noto Sans Khmer', 'Kantumruy Pro', 'Battambang', sans-serif !important;
+  font-weight: 500 !important;
+}
+.ks-timetable-grid td {
+  padding: 0 !important;
+  vertical-align: middle !important;
+  height: 58px !important;
+}
+.ks-timetable-grid td.time-col {
+  padding: 6px 2px !important;
+  vertical-align: middle !important;
+}
+.ks-timetable-grid .font-khmer,
+.font-khmer {
+  font-family: 'Noto Sans Khmer', 'Kantumruy Pro', 'Battambang', 'Khmer OS Siemreap', 'Khmer OS System', sans-serif !important;
+}
+.ks-cell-btn {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 58px !important;
+  border-radius: 0 !important;
+}
+
+/* ── Visual Drag-and-Drop Scheduler Styles ───────────────────────────────── */
+.ks-timetable-container {
+  position: relative;
+  overflow: auto;
+  max-height: calc(100vh - 220px);
+}
+.ks-sticky-th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: #F8FAFC !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.ks-sticky-time {
+  position: sticky;
+  left: 0;
+  z-index: 15;
+  background-color: #F8FAFC !important;
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.04);
+}
+.ks-sticky-corner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 25;
+  background-color: #F1F5F9 !important;
+}
+
+/* Drag over states */
+.ks-drop-target-active {
+  outline: 2px dashed #006C49 !important;
+  outline-offset: -2px;
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+.ks-drop-target-invalid {
+  outline: 2px dashed #E11D48 !important;
+  outline-offset: -2px;
+  background-color: rgba(244, 63, 94, 0.12) !important;
+  cursor: not-allowed !important;
+}
+.ks-cell-ghost {
+  opacity: 0.6;
+  border: 2px dashed #0284C7;
+  transform: scale(0.96);
+  pointer-events: none;
+}
+.ks-slot-pulse {
+  animation: ksSlotPulse 1.5s ease-in-out infinite;
+}
+@keyframes ksSlotPulse {
+  0%, 100% { box-shadow: inset 0 0 0 2px #0284C7, 0 0 0 0 rgba(2, 132, 199, 0.4); }
+  50% { box-shadow: inset 0 0 0 3px #0284C7, 0 0 0 6px rgba(2, 132, 199, 0.2); }
+}
+
+/* Draggable chip styling */
+.ks-lesson-chip {
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  user-select: none;
+}
+.ks-lesson-chip:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.97);
+}
+.ks-lesson-chip:active {
+  transform: scale(0.96);
+}
+.ks-lesson-chip.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.94);
+}
+.ks-lesson-chip.is-selected {
+  outline: 2px solid #006C49;
+  outline-offset: 1px;
+}
+
+/* Quick Lesson Editor Popover */
+.ks-quick-editor-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: ksFadeIn 0.15s ease-out;
+}
+.ks-quick-editor-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  width: 92%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: ksZoomIn 0.18s ease-out;
+}
+@keyframes ksFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ksZoomIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================================================
+   Builder executive chrome — restored title / KPI / module nav / insights.
+   Uses NGIS master tokens only: no gradients, no 600/700 weights, no lift.
+   ========================================================================== */
+#ks-root .ks-exec-block > * { margin-bottom: 12px; }
+#ks-root .ks-exec-block > *:last-child { margin-bottom: 0; }
+
+#ks-root .ks-exec-head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 12px 18px; padding: 18px 20px;
+  background: var(--ks-surface); border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius); box-shadow: var(--ks-shadow);
+}
+#ks-root .ks-exec-main { flex: 1 1 340px; min-width: 0; }
+#ks-root .ks-exec-head .ks-eyebrow {
+  font-size: 11px; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--ks-muted); margin-bottom: 5px;
+}
+#ks-root .ks-exec-head .ks-title-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px;
+}
+#ks-root .ks-exec-head .ks-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+/* Guard against the ligature text showing if the icon font is unavailable. */
+#ks-root .ks-exec-head .ks-btn .material-symbols-outlined,
+#ks-root .ks-kpi-icon .material-symbols-outlined {
+  font-size: 16px; line-height: 1; width: 1em; height: 1em; overflow: hidden;
+}
+#ks-root .ks-exec-head .ks-btn:hover:not(:disabled) { border-color: var(--ks-green); }
+#ks-root .ks-exec-head .ks-sub { margin-top: 7px; line-height: 1.5; font-size: 12px; }
+#ks-root .ks-exec-head .ks-tag,
+#ks-root .ks-exec-head .ks-badge { flex: none; }
+
+#ks-root .ks-kpi-icon .material-symbols-outlined { font-size: 17px; }
+#ks-root .ks-kpi-value small { font-size: 15px; }
+/* Keep KPI cards inside their grid track: long labels/footers must wrap. */
+#ks-root .ks-kpi,
+#ks-root .ks-kpi-top,
+#ks-root .ks-kpi-label,
+#ks-root .ks-kpi-value,
+#ks-root .ks-kpi-foot { min-width: 0; max-width: 100%; }
+#ks-root .ks-kpi { overflow: hidden; }
+#ks-root .ks-kpi-label { white-space: normal; overflow-wrap: anywhere; }
+#ks-root .ks-kpi-foot { min-height: 16px; flex-wrap: wrap; overflow-wrap: anywhere; }
+
+#ks-root .ks-modules { margin-bottom: 0; }
+#ks-root .ks-module { min-height: 38px; }
+#ks-root .ks-module.active { box-shadow: none; }
+
+/* Toolbar controls wrap instead of shrinking into clipped labels. */
+#ks-root .ks-builder-toolbar { max-width: 100%; }
+#ks-root .ks-builder-toolbar-left,
+#ks-root .ks-builder-toolbar-actions { min-width: 0; }
+#ks-root .ks-builder-toolbar-left > * { flex-shrink: 0; }
+#ks-root .ks-builder-toolbar-actions > * { flex-shrink: 0; }
+
+#ks-root .ks-insights {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+}
+#ks-root .ks-insight-card {
+  min-width: 0; padding: 16px 18px; background: var(--ks-surface);
+  border: 1px solid var(--ks-border); border-radius: var(--ks-radius);
+  box-shadow: var(--ks-shadow);
+}
+#ks-root .ks-insight-card h3 {
+  font-family: var(--font-heading, 'Manrope'), var(--ks-font);
+  font-size: 14px; font-weight: 500; color: var(--ks-ink);
+}
+#ks-root .ks-insight-note { margin: 2px 0 12px; font-size: 11px; color: var(--ks-muted); }
+#ks-root .ks-insight-row {
+  display: grid; grid-template-columns: 76px minmax(0, 1fr) 26px;
+  align-items: center; gap: 8px; margin-bottom: 7px;
+  font-size: 11px; color: var(--ks-muted);
+}
+#ks-root .ks-insight-track {
+  display: block; height: 6px; border-radius: var(--ks-radius-pill);
+  background: var(--ks-green-soft); overflow: hidden;
+}
+#ks-root .ks-insight-track i { display: block; height: 100%; background: var(--ks-green); border-radius: inherit; }
+#ks-root .ks-insight-num { text-align: right; color: var(--ks-ink); font-variant-numeric: tabular-nums; }
+#ks-root .ks-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+#ks-root .ks-legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ks-muted); }
+#ks-root .ks-legend-item i {
+  width: 9px; height: 9px; border-radius: 3px; flex: none; border: 1px solid var(--ks-border);
+}
+#ks-root .ks-change-list { list-style: none; margin: 0; padding: 0; }
+#ks-root .ks-change-list li {
+  display: flex; justify-content: space-between; gap: 10px; padding: 7px 0;
+  border-bottom: 1px solid var(--ks-border-soft); font-size: 11.5px; color: var(--ks-ink);
+}
+#ks-root .ks-change-list li:last-child { border-bottom: 0; }
+#ks-root .ks-change-list time {
+  flex: none; font-family: var(--font-mono, monospace); font-size: 10.5px; color: var(--ks-muted);
+}
+
+/* The weekly matrix must scroll inside its own card, never clip days away. */
+#ks-root .ks-timetable-container {
+  overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+}
+#ks-root .ks-timetable-container::-webkit-scrollbar { height: 8px; }
+#ks-root .ks-timetable-container::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 999px; }
+#ks-root .ks-timetable-container::-webkit-scrollbar-track { background: transparent; }
+
+@media (max-width: 1180px) {
+  #ks-root .ks-insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  #ks-root .ks-exec-head { align-items: flex-start; padding: 14px; }
+  #ks-root .ks-exec-main { flex: 1 1 100%; }
+  #ks-root .ks-exec-head .ks-page-title { font-size: 22px; line-height: 30px; }
+  #ks-root .ks-exec-head .ks-actions { width: 100%; }
+  #ks-root .ks-exec-head .ks-btn { flex: 1 1 calc(50% - 4px); justify-content: center; min-height: 40px; }
+  #ks-root .ks-kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  #ks-root .ks-kpi { padding: 12px; }
+  #ks-root .ks-kpi .ks-kpi-value { font-size: 22px; line-height: 30px; margin-top: 8px; }
+  #ks-root .ks-kpi .ks-kpi-label { font-size: 10px; }
+  #ks-root .ks-kpi-icon { width: 28px; height: 28px; }
+  #ks-root .ks-modules { padding: 4px; }
+  #ks-root .ks-module { min-height: 40px; flex: none; }
+  #ks-root .ks-insights { grid-template-columns: 1fr; }
+  #ks-root .ks-insight-card { padding: 14px; }
+  #ks-root button:not(.ks-cell-btn), #ks-root select { min-height: 38px; }
+  #ks-root .ks-builder-toolbar-left,
+  #ks-root .ks-builder-toolbar-actions { width: 100%; }
+  #ks-root .ks-builder-toolbar-actions > button { flex: 1 1 auto; }
+  #ks-root .ks-builder-toolbar select { max-width: 180px; }
+}
+@media print {
+  #ks-root .ks-exec-block, #ks-root .ks-insights { display: none !important; }
+}
+
+
+

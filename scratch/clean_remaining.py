@@ -1,17 +1,18 @@
-for p in [
-    'assets/css/app.css',
-    'pages/admin/admin-lifecycle.html',
-    'pages/teacher/teacher-lessons.html',
-    'pages/shared/departments.html'
-]:
-    with open(p, 'r', encoding='utf-8') as f:
-        c = f.read()
-    c = c.replace('Cinzel', 'Manrope')
-    c = c.replace('cinzel', 'manrope')
-    c = c.replace('Roboto', 'Manrope')
-    c = c.replace('roboto', 'manrope')
-    with open(p, 'w', encoding='utf-8') as f:
-        f.write(c)
+def clean_remaining():
+    with open('pages/student/student-timetable.html', 'r', encoding='utf-8') as f:
+        text = f.read()
+    text = text.replace('👨\u200d🏫', '').replace('👨', '')
+    with open('pages/student/student-timetable.html', 'w', encoding='utf-8') as f:
+        f.write(text)
 
-print('Cleaned remaining 4 files!')
+    with open('assets/js/khmer-suite-ui.js', 'r', encoding='utf-8') as f:
+        ui_text = f.read()
+    # Replace ✓ with Step Done icon or text
+    ui_text = ui_text.replace("'✓'", "'<span class=\"material-symbols-outlined text-[13px]\">check</span>'")
+    ui_text = ui_text.replace("'✕'", "'<span class=\"material-symbols-outlined text-[14px]\">close</span>'")
+    ui_text = ui_text.replace(">✕<", "><span class=\"material-symbols-outlined text-[14px]\">close</span><")
+    with open('assets/js/khmer-suite-ui.js', 'w', encoding='utf-8') as f:
+        f.write(ui_text)
 
+clean_remaining()
+print('Cleaned remaining.')

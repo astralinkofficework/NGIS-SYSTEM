@@ -1,0 +1,3 @@
+with open('pages/admin/admin-school-information.html', 'r', encoding='utf-8') as f:
+    print(f.read())
+
