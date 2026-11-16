@@ -43,15 +43,15 @@
           <!-- Fixed Top Header & Progress Bar -->
           <header class="ngis-onboarding-header" style="height:64px; border-bottom:1px solid #E5E5E8; background:#FFFFFF; display:flex; align-items:center; justify-content:space-between; padding:0 24px; position:sticky; top:0; z-index:20;">
             <div style="display:flex; align-items:center; gap:10px;">
-              <div style="width:32px; height:32px; border-radius:8px; background:#202F63; display:grid; place-items:center; color:#FFFFFF; font-size:12px; font-weight:500;">
+              <div style="width:32px; height:32px; border-radius:8px; background:var(--token-primary, #176B45); display:grid; place-items:center; color:#FFFFFF; font-size:12px; font-weight:500;">
                 NGIS
               </div>
-              <span style="font-size:13.5px; font-weight:500; color:#000000;">Campus Onboarding</span>
+              <span style="font-size:13.5px; font-weight:500; color:var(--token-text-primary, #29352E);">Campus Onboarding</span>
             </div>
             <div style="display:flex; align-items:center; gap:12px;">
               <span style="font-size:12px; color:#555555; font-weight:500;">Step ${currentStepIndex + 1} of ${total}</span>
-              <div style="width:90px; height:6px; background:#F3F3F5; border-radius:99px; overflow:hidden; border:1px solid #E5E5E8;">
-                <div style="width:${progressPct}%; height:100%; background:#202F63; transition:width 0.25s ease;"></div>
+              <div style="width:90px; height:6px; background:var(--token-canvas, #F7F9F7); border-radius:99px; overflow:hidden; border:1px solid var(--token-border, #E1E9E3);">
+                <div style="width:${progressPct}%; height:100%; background:var(--token-primary, #176B45); transition:width 0.25s ease;"></div>
               </div>
             </div>
           </header>

@@ -1,93 +1,858 @@
 <!doctype html>
 <html lang="en" data-theme="light" class="h-full">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS • Absence Statistics | School Administration</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Absence Statistics &amp; Attendance Risk Register | NGIS Admin</title>
 
-<!-- Fonts: Strictly light & medium weights (NO BOLD FONTS per AGENTS.md) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+  <!-- Web Fonts: Inter & Kantumruy Pro (Strictly light & medium weights - NO BOLD FONTS per AGENTS.md) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
-<!-- Phosphor Icons for Mobile Hamburger Menu & Controls -->
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Phosphor Icons for Mobile Hamburger Menu & Controls (AGENTS.md Critical Rule) -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-  tailwind.config = {
-    darkMode: ['selector', '[data-theme="dark"]'],
-    theme: {
-      extend: {
-        colors: {
-          forest: { 50: '#F0FDF4', 100: '#DCFCE7', 500: '#22C55E', 700: '#15803D', 800: '#176B45', 900: '#14532D' },
-          ink: { main: '#1A202C', light: '#4A5568', muted: '#718096' },
-          border: { subtle: '#E2E8F0', light: '#EDF2F7' }
-        },
-        fontFamily: {
-          sans: ['"Plus Jakarta Sans"', 'Manrope', 'sans-serif'],
-          mono: ['"JetBrains Mono"', 'monospace']
-        },
-        fontWeight: {
-          normal: '400',
-          medium: '500'
+  <!-- Tailwind CSS v3 with Forms & Container Queries -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#edf7f1',
+              100: '#d7ece0',
+              200: '#b2dac3',
+              500: '#176B45',
+              600: '#166534',
+              700: '#176B45', // NGIS Signature Forest Green
+              800: '#125638',
+              900: '#0c4028',
+              950: '#062D1C'
+            },
+            surface: {
+              base: '#FAF8FF',
+              card: '#FFFFFF',
+              subtle: '#F8FAFC'
+            }
+          },
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            khmer: ['"Kantumruy Pro"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          fontWeight: {
+            normal: '400',
+            medium: '500',
+            semibold: '500',
+            bold: '500',
+            extrabold: '500',
+            black: '500'
+          }
         }
       }
-    }
-  };
-</script>
+    };
+  </script>
 
-<!-- NGIS Design System & Global Styles -->
-<link rel="stylesheet" href="../../assets/css/app.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-<link rel="stylesheet" href="../../assets/css/design-system.css?v=1.2">
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+  <!-- NGIS Core Shared Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+
+  <!-- Theme Bootstrap & Auth -->
+  <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/protect.js"></script>
+  <script src="_auth-bootstrap.js"></script>
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+
+  <style>
+    /* ═══ CRITICAL RULE: NO BOLD FONTS (AGENTS.md) ═══ */
+    *, b, strong, th, h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-extrabold {
+      font-weight: 500 !important;
+    }
+    p, span, td, input, select, textarea, div {
+      font-weight: 400;
+    }
+    .font-medium, .font-semibold, th, h1, h2, h3, h4, [class*="font-medium"], [class*="font-semibold"] {
+      font-weight: 500 !important;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F8FAFC;
+    }
+    .khmer-font {
+      font-family: 'Kantumruy Pro', sans-serif;
+    }
+
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .card-shadow {
+      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Core Solid Buttons with strict high contrast */
+    .btn-primary-solid,
+    #btnConfirmDispatchNotice,
+    #btnBatchNotify {
+      background-color: #176B45 !important;
+      color: #ffffff !important;
+      border: 1px solid #176B45 !important;
+    }
+    .btn-primary-solid:hover,
+    #btnConfirmDispatchNotice:hover,
+    #btnBatchNotify:hover {
+      background-color: #125638 !important;
+      border-color: #125638 !important;
+    }
+
+    /* Mobile scroll hint */
+    .table-scroll-hint {
+      display: none;
+    }
+    @media (max-width: 860px) {
+      .table-scroll-hint {
+        display: flex;
+      }
+    }
+
+    /* Filter Pill Active State */
+    .filter-pill-btn {
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .filter-pill-btn.active {
+      background-color: #ecfdf5 !important;
+      color: #176B45 !important;
+      border-color: #a7f3d0 !important;
+    }
+
+    /* Table status indicators: Unboxed Inline Dots (High Contrast) */
+    .status-dot-critical {
+      color: #b91c1c;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-weight: 500 !important;
+    }
+    .status-dot-critical::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background-color: #ef4444;
+      flex-shrink: 0;
+    }
+
+    .status-dot-moderate {
+      color: #b45309;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-weight: 500 !important;
+    }
+    .status-dot-moderate::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background-color: #f59e0b;
+      flex-shrink: 0;
+    }
+
+    .status-dot-normal {
+      color: #15803d;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-weight: 500 !important;
+    }
+    .status-dot-normal::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background-color: #22c55e;
+      flex-shrink: 0;
+    }
+
+    .status-dot-dispatched {
+      color: #176B45;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-weight: 500 !important;
+    }
+    .status-dot-dispatched::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background-color: #10b981;
+      flex-shrink: 0;
+    }
+
+    .status-dot-pending {
+      color: #d97706;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-weight: 500 !important;
+    }
+    .status-dot-pending::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background-color: #f59e0b;
+      flex-shrink: 0;
+    }
+
+    .status-dot-scheduled {
+      color: #2563eb;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-weight: 500 !important;
+    }
+    .status-dot-scheduled::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background-color: #3b82f6;
+      flex-shrink: 0;
+    }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] body {
+      background-color: #0f172a !important;
+      color: #e2e8f0 !important;
+    }
+    [data-theme="dark"] .bg-white {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    [data-theme="dark"] .bg-slate-50,
+    [data-theme="dark"] .bg-slate-50\/50,
+    [data-theme="dark"] .bg-slate-50\/60,
+    [data-theme="dark"] .bg-slate-50\/70,
+    [data-theme="dark"] .bg-slate-50\/80 {
+      background-color: #0f172a !important;
+    }
+    [data-theme="dark"] .border-slate-200,
+    [data-theme="dark"] .border-slate-200\/80,
+    [data-theme="dark"] .border-slate-100 {
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] .text-slate-900 {
+      color: #f1f5f9 !important;
+    }
+    [data-theme="dark"] .text-slate-800,
+    [data-theme="dark"] .text-slate-700 {
+      color: #cbd5e1 !important;
+    }
+    [data-theme="dark"] .text-slate-600,
+    [data-theme="dark"] .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    [data-theme="dark"] input,
+    [data-theme="dark"] select,
+    [data-theme="dark"] textarea {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] input[type="checkbox"] {
+      background-color: #1e293b !important;
+      border-color: #475569 !important;
+    }
+    [data-theme="dark"] .filter-pill-btn.active {
+      background-color: rgba(6, 78, 59, 0.4) !important;
+      color: #34d399 !important;
+      border-color: #065f46 !important;
+    }
+    [data-theme="dark"] .status-dot-critical {
+      color: #f87171 !important;
+    }
+    [data-theme="dark"] .status-dot-moderate {
+      color: #fbbf24 !important;
+    }
+    [data-theme="dark"] .status-dot-normal {
+      color: #34d399 !important;
+    }
+    [data-theme="dark"] .status-dot-dispatched {
+      color: #34d399 !important;
+    }
+    [data-theme="dark"] .status-dot-pending {
+      color: #fbbf24 !important;
+    }
+    [data-theme="dark"] .status-dot-scheduled {
+      color: #60a5fa !important;
+    }
+  </style>
 </head>
 
-<body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased flex smx-page">
+<body class="flex flex-col font-sans text-slate-800 antialiased bg-[#F8FAFC] selection:bg-brand-100 selection:text-brand-900 min-h-screen" data-role="admin" data-portal="admin">
+<main class="main flex-1 flex flex-col">
 
-<!-- Main Layout Structure -->
-<main class="main flex-1 min-w-0 flex flex-col">
+  <!-- Desktop Hero Banner Anchor (standardized across NGIS Admin) -->
+  <header id="heroBanner" role="banner"></header>
 
-  <!-- Mandatory Mobile Appbar with Hamburger Menu (AGENTS.md Compliance) -->
-  <header class="mobile-appbar smx-appbar md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-border-subtle sticky top-0 z-30 min-h-[44px]">
-    <div class="flex items-center gap-3">
-      <button type="button" 
-              class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-ink-main hover:bg-slate-100 active:scale-95 transition-all flex items-center justify-center min-w-[40px] min-h-[40px]" 
-              data-action="toggle-sidebar" 
-              aria-label="Open menu" 
-              aria-expanded="false" 
-              title="Open navigation">
-        <i class="ph ph-list text-xl text-slate-700"></i>
+  <!-- ═══ MANDATORY MOBILE APP BAR (AGENTS.md CRITICAL RULE) ═══ -->
+  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+    <div class="flex items-center gap-3 min-w-0">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px] cursor-pointer" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph-bold ph-list text-xl"></i>
       </button>
-      <span class="text-xs font-medium text-forest-800 tracking-wide uppercase">Absence Statistics</span>
+      <div class="min-w-0 truncate">
+        <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Absence Statistics</h1>
+      </div>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">
-        Active Term
-      </span>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-medium text-[#176B45]">Attendance Risk</span>
     </div>
   </header>
 
-  <!-- Hero Banner Anchor -->
-  <header id="heroBanner" role="banner"></header>
+  <!-- Page Workspace Container matching max-w-7xl design standard -->
+  <div class="page w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-7xl mx-auto flex-1">
+    <div class="space-y-6">
 
-  <!-- Dynamic Content Workspace Container -->
-  <div class="page p-4 md:p-6" id="studentMgmtRoot">
-    <!-- Populated dynamically by student-management.js -->
-    <div class="flex items-center justify-center py-20 text-slate-400">
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping"></span>
-        <span class="text-xs font-medium">Loading Absence Statistics...</span>
-      </div>
+      <!-- ═══ 1. TOP TITLE AND ACTION HEADER ═══ -->
+      <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-1">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-medium text-[#176B45] uppercase tracking-wider mb-1">
+            <span>Student Management</span>
+            <span class="text-slate-300">•</span>
+            <span class="text-slate-500">Attendance Telemetry &amp; Risk Register</span>
+          </div>
+          <h1 class="page-title text-2xl font-medium text-slate-900 tracking-tight">Absence Statistics &amp; Risk Register</h1>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <!-- Academic Term Dropdown -->
+          <div class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs shadow-xs font-medium text-slate-700 hover:border-slate-300 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-slate-500">calendar_today</span>
+            <select id="termSelector" class="bg-transparent text-xs font-medium text-slate-800 focus:outline-none cursor-pointer pr-1">
+              <option value="AY 2026–2027 · Term 1">AY 2026–2027 · Term 1</option>
+              <option value="AY 2026–2027 · Term 2">AY 2026–2027 · Term 2</option>
+              <option value="AY 2025–2026 · Full Year">AY 2025–2026 · Full Year</option>
+            </select>
+          </div>
+
+          <!-- Export CSV Button -->
+          <button type="button" id="btnExportCsv" class="btn btn-secondary inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 shadow-xs transition-colors cursor-pointer active:scale-95" title="Export CSV Record">
+            <span class="material-symbols-outlined text-[16px] text-slate-600">download</span>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ═══ 2. TOP LEVEL METRIC KPI CARDS (4 CARDS) ═══ -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="metric-kpi-summary">
+        <!-- KPI 1: Overall Attendance Rate -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-600 uppercase tracking-wide">Overall Attendance Rate</span>
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#176B45] border border-emerald-200/80 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-[20px]">trending_up</span>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl sm:text-3xl font-medium text-slate-900 tracking-tight" id="kpiOverallRate">93.3%</span>
+              <span class="text-xs font-medium text-emerald-600 flex items-center gap-0.5">
+                <span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+                <span>+0.8% vs req</span>
+              </span>
+            </div>
+            <div class="mt-3">
+              <div class="flex items-center gap-2">
+                <div class="h-1.5 flex-1 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#176B45] rounded-full transition-all duration-700" style="width: 93.3%"></div>
+                </div>
+                <span class="text-[11px] text-slate-500 font-medium">92.5% req</span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-2 flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Across 2,410 enrolled students
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 2: Total Absences (Term) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-600 uppercase tracking-wide">Total Absences (Term)</span>
+            <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#1D4ED8] border border-blue-200/80 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl sm:text-3xl font-medium text-slate-900 tracking-tight" id="kpiTotalAbsences">1,301</span>
+              <span class="text-xs text-slate-400 font-normal">days total</span>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-[11px] text-slate-500">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+              <span>14 excused average · Term ledger</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 3: Unexcused Absences -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-600 uppercase tracking-wide">Unexcused Absences</span>
+            <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#B45309] border border-amber-200/80 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-[20px]">warning</span>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl sm:text-3xl font-medium text-amber-700 tracking-tight" id="kpiUnexcused">457</span>
+              <span class="text-xs text-slate-400 font-normal">35.1% of absences</span>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-[11px] text-slate-500">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              <span>Requires administrative verification</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 4: Chronic Absenteeism Flag -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium text-slate-600 uppercase tracking-wide">Chronic Absenteeism Flag</span>
+            <div class="w-9 h-9 rounded-xl bg-rose-50 text-[#B91C1C] border border-rose-200/80 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-[20px]">person_alert</span>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl sm:text-3xl font-medium text-rose-700 tracking-tight" id="kpiChronic">91</span>
+              <span class="text-xs text-slate-400 font-normal">students</span>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 text-[11px] text-slate-500">
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+              <span>Intervention threshold (&gt;5 days)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ═══ 4. ATTENDANCE RISK REGISTER & INTERVENTION TABLE CONTAINER ═══ -->
+      <section class="bg-white rounded-2xl border border-slate-200 card-shadow overflow-hidden" data-purpose="risk-register-table">
+        <!-- Filter & Action Toolbar -->
+        <div class="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/60 space-y-4">
+          <!-- Top Row Filter Inputs -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
+            <!-- Quick Search -->
+            <div class="lg:col-span-4 flex items-center ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="tableSearchInput" class="w-full ngis-search-input" placeholder="Search student, ID, or class..." type="search"><button type="button" id="searchClearBtn" class="hidden ngis-search-clear" aria-label="Clear search">
+                <span class="material-symbols-outlined text-[16px]">close</span>
+              </button></div>
+
+            <!-- Risk Level Dropdown -->
+            <div class="lg:col-span-2">
+              <select id="filterRiskLevel" class="w-full text-xs py-2 px-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] text-slate-700 cursor-pointer">
+                <option value="all">All risk levels</option>
+                <option value="critical">Critical (&gt;5 Days)</option>
+                <option value="moderate">Moderate (3-5 Days)</option>
+                <option value="normal">Normal (&lt;3 Days)</option>
+              </select>
+            </div>
+
+            <!-- Class / Cohort Dropdown -->
+            <div class="lg:col-span-2">
+              <select id="filterClass" class="w-full text-xs py-2 px-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] text-slate-700 cursor-pointer">
+                <option value="all">All classes</option>
+                <option value="Grade 8A">Grade 8A</option>
+                <option value="Grade 8B">Grade 8B</option>
+                <option value="Grade 10B">Grade 10B</option>
+                <option value="Grade 11B">Grade 11B</option>
+                <option value="Grade 12B">Grade 12B</option>
+              </select>
+            </div>
+
+            <!-- Parent Notice Dropdown -->
+            <div class="lg:col-span-2">
+              <select id="filterNotice" class="w-full text-xs py-2 px-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] text-slate-700 cursor-pointer">
+                <option value="all">All notice states</option>
+                <option value="Dispatched">Dispatched</option>
+                <option value="Pending">Pending</option>
+                <option value="Scheduled">Scheduled</option>
+              </select>
+            </div>
+
+            <!-- Reset Filter Action -->
+            <div class="lg:col-span-2 flex items-center justify-end">
+              <button type="button" id="btnResetFilters" class="btn btn-secondary inline-flex items-center gap-1.5 text-xs text-slate-700 px-3.5 py-2 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 hover:text-slate-900 transition w-full sm:w-auto justify-center font-medium cursor-pointer shadow-xs active:scale-95">
+                <span class="material-symbols-outlined text-[16px] text-slate-500">restart_alt</span>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Filter Tabs & Batch Intervention Actions -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <!-- Filter Pill Tabs -->
+            <div class="flex items-center gap-1.5 flex-wrap" id="filterTabs">
+              <button type="button" data-tab="all" class="filter-pill-btn active px-3 py-1.5 text-xs font-medium rounded-xl border border-emerald-200 bg-white">
+                All Students <span class="ml-1 text-[11px] font-normal" id="tabCountAll">240</span>
+              </button>
+              <button type="button" data-tab="critical" class="filter-pill-btn px-3 py-1.5 text-xs font-medium rounded-xl text-slate-600 hover:bg-slate-100 border border-transparent">
+                Critical Risk <span class="ml-1 text-[11px] px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded-md font-medium" id="tabCountCritical">60</span>
+              </button>
+              <button type="button" data-tab="moderate" class="filter-pill-btn px-3 py-1.5 text-xs font-medium rounded-xl text-slate-600 hover:bg-slate-100 border border-transparent">
+                Moderate <span class="ml-1 text-[11px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md font-medium" id="tabCountModerate">99</span>
+              </button>
+              <button type="button" data-tab="normal" class="filter-pill-btn px-3 py-1.5 text-xs font-medium rounded-xl text-slate-600 hover:bg-slate-100 border border-transparent">
+                Normal <span class="ml-1 text-[11px] text-slate-500" id="tabCountNormal">81</span>
+              </button>
+              <button type="button" data-tab="pending" class="filter-pill-btn px-3 py-1.5 text-xs font-medium rounded-xl text-slate-600 hover:bg-slate-100 border border-transparent">
+                Notice Pending <span class="ml-1 text-[11px] text-slate-500" id="tabCountPending">52</span>
+              </button>
+            </div>
+
+            <!-- Batch Action Controls -->
+            <div class="flex items-center gap-2" id="batchActionControls" style="display: none;">
+              <span class="text-xs text-slate-600 font-medium" id="batchSelectedText">0 selected</span>
+              <button type="button" id="btnBatchNotify" class="btn btn-primary inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-white text-xs font-medium shadow-xs cursor-pointer active:scale-95 bg-[#176B45] hover:bg-[#125638]">
+                <span class="material-symbols-outlined text-[16px]">outgoing_mail</span>
+                <span>Dispatch Alerts</span>
+              </button>
+              <button type="button" id="btnClearSelection" class="text-xs text-slate-500 hover:text-slate-800 ml-1 underline cursor-pointer">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Horizontal Scroll Hint -->
+        <div class="table-scroll-hint items-center gap-1.5 px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] font-medium text-slate-500 sm:hidden">
+          <span class="material-symbols-outlined text-[14px] text-slate-400">swipe</span>
+          <span>Scroll horizontally to view complete student attendance log</span>
+        </div>
+
+        <!-- Table Info Banner -->
+        <div class="px-5 py-2.5 bg-slate-50/80 border-b border-slate-100 flex items-center justify-between text-xs text-slate-600">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-[#176B45]">description</span>
+            <span class="font-medium text-slate-800">Attendance Risk Register</span>
+            <span class="text-slate-300">•</span>
+            <span id="tableSummaryCount">240 matching student(s) · 0 selected</span>
+          </div>
+          <div class="hidden sm:flex items-center gap-2 text-[11px] text-slate-500">
+            <span>Target threshold: 92.5%</span>
+            <span>•</span>
+            <span class="text-[#176B45] font-medium">Automatic guardian SMS enabled</span>
+          </div>
+        </div>
+
+        <!-- High-Fidelity Responsive Data Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs min-w-[850px] border-collapse">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50/80 text-[11px] font-medium text-slate-600 uppercase tracking-wider">
+                <th class="py-3 px-4 w-10 text-center">
+                  <input id="selectAllCheckbox" class="rounded text-[#176B45] focus:ring-[#176B45] border-slate-300 w-4 h-4 cursor-pointer" type="checkbox">
+                </th>
+                <th class="py-3 px-4 text-slate-700">Student &amp; Cohort</th>
+                <th class="py-3 px-4 text-slate-700">Attendance Rate</th>
+                <th class="py-3 px-4 text-slate-700">Absences</th>
+                <th class="py-3 px-4 text-slate-700">Unexcused</th>
+                <th class="py-3 px-4 text-slate-700">Risk Level</th>
+                <th class="py-3 px-4 text-slate-700">Parent Notice</th>
+                <th class="py-3 px-4 text-right text-slate-700">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="riskTableBody" class="divide-y divide-slate-100">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="tableEmptyState" class="hidden p-12 text-center">
+          <div class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center mx-auto text-slate-400 mb-3">
+            <span class="material-symbols-outlined text-[24px]">search_off</span>
+          </div>
+          <h4 class="text-sm font-medium text-slate-800">No students match the current filters</h4>
+          <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Try adjusting your keyword search, selecting a different risk category, or resetting all filters.</p>
+          <button type="button" onclick="window.resetAbsenceFilters()" class="mt-4 px-3 py-1.5 text-xs font-medium text-[#176B45] bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition cursor-pointer">
+            Reset All Filters
+          </button>
+        </div>
+
+        <!-- Table Pagination Footer -->
+        <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <div class="flex items-center gap-3">
+            <span id="paginationSummary">Showing 1 to 6 of 240 results</span>
+            <div class="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+              <span>Per page:</span>
+              <select id="perPageSelect" class="text-xs py-1 px-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none cursor-pointer">
+                <option value="6">6</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1" id="paginationControls">
+            <button type="button" id="btnPrevPage" class="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors" title="Previous page">
+              <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+            </button>
+            <div id="pageNumberButtons" class="flex items-center gap-1">
+              <!-- Dynamic page buttons -->
+            </div>
+            <button type="button" id="btnNextPage" class="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors" title="Next page">
+              <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
     </div>
   </div>
 
 </main>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL 1: STUDENT ATTENDANCE LOG MODAL (STANDARDIZED NGIS ARCHITECTURE)     -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div id="studentLogModalBackdrop" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 hidden opacity-0 transition-opacity duration-200" role="dialog" aria-modal="true" aria-labelledby="modalStudentName">
+  <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden border border-slate-200 my-auto transform scale-95 transition-transform duration-200">
+    <!-- Top Forest Green Accent Bar -->
+    <div class="h-1.5 w-full bg-[#176B45] shrink-0"></div>
+
+    <!-- Pinned Header -->
+    <div class="px-5 py-4 sm:px-6 flex items-center justify-between bg-white border-b border-slate-100 shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <div id="modalAvatar" class="w-10 h-10 rounded-xl bg-emerald-50 text-[#176B45] border border-emerald-200 flex items-center justify-center font-medium text-sm shrink-0">
+          SP
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 id="modalStudentName" class="text-base font-medium text-slate-900 leading-tight">Sophea Pov</h3>
+            <span class="khmer-font text-slate-500 text-xs" id="modalStudentKhmerName">សុភា ពៅ</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-500 font-mono mt-0.5">
+            <span id="modalStudentId">DMO-STD-0003</span>
+            <span>•</span>
+            <span id="modalStudentClass" class="text-slate-700 font-sans">Grade 8A</span>
+          </div>
+        </div>
+      </div>
+      <button type="button" id="btnCloseLogModal" class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors ml-2 shrink-0 cursor-pointer active:scale-95" title="Close dialog">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Scrollable Body with Custom Scrollbar -->
+    <div class="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 custom-scrollbar text-xs">
+      <!-- 4 Quick Telemetry Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-center">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider font-medium block">Attendance Rate</span>
+          <p id="modalAttendanceRate" class="text-lg font-medium text-rose-700 mt-0.5">73%</p>
+        </div>
+        <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-center">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider font-medium block">Attended Days</span>
+          <p id="modalAttendedDays" class="text-lg font-medium text-slate-800 mt-0.5">58 / 80</p>
+        </div>
+        <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-center">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider font-medium block">Excused Leaves</span>
+          <p id="modalExcusedDays" class="text-lg font-medium text-[#176B45] mt-0.5">14 days</p>
+        </div>
+        <div class="p-3 bg-slate-50/80 rounded-xl border border-slate-100 text-center">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider font-medium block">Unexcused</span>
+          <p id="modalUnexcusedDays" class="text-lg font-medium text-rose-700 mt-0.5">8 days</p>
+        </div>
+      </div>
+
+      <!-- Guardian Details Card -->
+      <div class="p-4 bg-slate-50/80 rounded-xl border border-slate-100 space-y-2">
+        <span class="text-[10px] text-slate-500 uppercase tracking-wider font-medium block">Guardian Contact Telemetry</span>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+          <div>
+            <span class="text-slate-400 block text-[11px]">Primary Guardian:</span>
+            <span id="modalGuardianName" class="font-medium text-slate-800">Mr. Pov Sarin</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">Contact Phone:</span>
+            <span id="modalGuardianPhone" class="font-mono font-medium text-[#176B45]">+855 12 889 912</span>
+          </div>
+          <div>
+            <span class="text-slate-400 block text-[11px]">Notice Status:</span>
+            <span id="modalGuardianNoticeStatus" class="font-medium text-[#176B45]">• Dispatched (Today, 08:30 AM)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Incidents & Evidence Log -->
+      <div class="space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h4 class="text-xs font-medium text-slate-700 uppercase tracking-wider">Attendance Incidents &amp; Evidence Log</h4>
+          <span class="text-[11px] text-slate-500">Term 1 (AY 2026–2027)</span>
+        </div>
+        <div class="border border-slate-200 rounded-xl overflow-hidden">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead class="bg-slate-50 text-slate-600 font-medium border-b border-slate-200">
+              <tr>
+                <th class="px-3.5 py-2.5 font-medium">Date</th>
+                <th class="px-3.5 py-2.5 font-medium">Session</th>
+                <th class="px-3.5 py-2.5 font-medium">Category</th>
+                <th class="px-3.5 py-2.5 font-medium">Verification</th>
+                <th class="px-3.5 py-2.5 text-right font-medium">Action</th>
+              </tr>
+            </thead>
+            <tbody id="modalIncidentTableBody" class="divide-y divide-slate-100 text-slate-700">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pinned Footer -->
+    <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between shrink-0">
+      <button type="button" id="modalBtnDownloadPdf" class="btn btn-secondary px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-medium flex items-center gap-1.5 hover:bg-white transition-colors cursor-pointer active:scale-95">
+        <span class="material-symbols-outlined text-[16px] text-slate-600">picture_as_pdf</span>
+        <span>Download PDF Record</span>
+      </button>
+
+      <div class="flex items-center gap-2">
+        <button type="button" id="modalBtnClose" class="btn btn-secondary px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-medium hover:bg-white transition-colors cursor-pointer active:scale-95">
+          Close
+        </button>
+        <button type="button" id="modalBtnDispatchNotice" class="btn btn-primary px-4 py-2 rounded-xl text-white text-xs font-medium shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95 bg-[#176B45] hover:bg-[#125638]">
+          <span class="material-symbols-outlined text-[16px]">outgoing_mail</span>
+          <span>Dispatch Notice</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- MODAL 2: DISPATCH GUARDIAN ALERT / SMS MODAL                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div id="guardianNoticeModalBackdrop" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 hidden opacity-0 transition-opacity duration-200" role="dialog" aria-modal="true" aria-labelledby="modalNoticeTitle">
+  <div class="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl flex flex-col max-h-[92dvh] overflow-hidden border border-slate-200 my-auto transform scale-95 transition-transform duration-200">
+    <!-- Top Forest Green Accent Bar -->
+    <div class="h-1.5 w-full bg-[#176B45] shrink-0"></div>
+
+    <!-- Pinned Header -->
+    <div class="px-5 py-4 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-emerald-50 text-[#176B45] border border-emerald-200/80 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[18px]">contact_phone</span>
+        </div>
+        <h3 id="modalNoticeTitle" class="text-sm font-medium text-slate-900">Guardian Contact &amp; Intervention</h3>
+      </div>
+      <button type="button" id="btnCloseNoticeModal" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer active:scale-95" title="Close dialog">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    <!-- Scrollable Body Form -->
+    <div class="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar text-xs">
+      <div class="p-3.5 bg-slate-50/80 rounded-xl border border-slate-100 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-400">Target Student:</span>
+          <span id="noticeStudentName" class="font-medium text-slate-900">Sophea Pov (DMO-STD-0003)</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-400">Guardian Name:</span>
+          <span id="noticeGuardianName" class="font-medium text-slate-700">Mr. Pov Sarin</span>
+        </div>
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-400">Phone Number:</span>
+          <span id="noticeGuardianPhone" class="font-mono font-medium text-[#176B45]">+855 12 889 912</span>
+        </div>
+      </div>
+
+      <!-- Template Select -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-medium text-slate-700 block">Notice Template</label>
+        <select id="noticeTemplateSelect" class="w-full text-xs py-2 px-3 bg-white border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] cursor-pointer">
+          <option value="critical">Critical Absence Alert (&gt;5 Unexcused Days)</option>
+          <option value="moderate">Attendance Check-in Warning (3–5 Days)</option>
+          <option value="conference">Urgent Administration Conference Request</option>
+        </select>
+      </div>
+
+      <!-- Message Textarea -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-medium text-slate-700 block">Intervention Message</label>
+        <textarea id="noticeMessageInput" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45]" rows="3">NGIS Notice: Sophea Pov has accumulated 8 unexcused absences (Attendance: 73%). Please contact the school administration office immediately.</textarea>
+      </div>
+
+      <!-- Channel Checkboxes -->
+      <div class="flex items-center gap-4 text-xs text-slate-600 pt-1">
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" id="channelSms" checked class="rounded text-[#176B45] focus:ring-0">
+          <span>SMS Alert</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" id="channelTelegram" checked class="rounded text-[#176B45] focus:ring-0">
+          <span>Telegram Bot</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" id="channelPortal" checked class="rounded text-[#176B45] focus:ring-0">
+          <span>Parent Portal</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Pinned Footer -->
+    <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
+      <button type="button" id="btnCancelNoticeModal" class="btn btn-secondary px-3.5 py-1.5 rounded-xl border border-slate-200 text-slate-700 text-xs font-medium hover:bg-white cursor-pointer transition-colors active:scale-95">
+        Cancel
+      </button>
+      <button type="button" id="btnConfirmDispatchNotice" class="btn btn-primary px-4 py-1.5 rounded-xl text-white text-xs font-medium shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95 bg-[#176B45] hover:bg-[#125638]">
+        <span class="material-symbols-outlined text-[16px]">send</span>
+        <span>Send Notice</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST NOTIFICATION POPUP ═══ -->
+<div id="toastNotification" class="fixed bottom-5 right-5 z-[100001] px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-medium shadow-lg flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-200 pointer-events-none">
+  <span class="material-symbols-outlined text-[18px] text-emerald-400" id="toastIcon">check_circle</span>
+  <span id="toastMessage">Action completed successfully</span>
+</div>
 
 <!-- Configuration for Hero and Layout Navigation -->
 <script>
@@ -102,8 +867,8 @@ window.HERO_CONFIG = {
   grade: "School Administrator",
   avatar: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160",
   avatarSm: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160",
-  title: "Absence Statistics",
-  greeting: "Institutional attendance telemetry, chronic absenteeism tracking, and class rate comparisons.",
+  title: "Absence Statistics & Attendance Risk Register",
+  greeting: "Review absence statistics and the student attendance risk register.",
   badge: "STUDENT MANAGEMENT",
   breadcrumbs: [{"label": "Student Management"}, {"label": "Absence Statistics"}],
   homeLink: "../../index.html",
@@ -114,7 +879,7 @@ window.HERO_CONFIG = {
   ddRows: [
     { icon: 'school', text: 'NGIS Student Management' },
     { icon: 'verified', text: 'School Administrator' },
-    { icon: 'calendar_today', text: 'Academic Year 2025–26' }
+    { icon: 'calendar_today', text: 'Academic Year 2026–27' }
   ]
 };
 </script>
@@ -122,14 +887,1000 @@ window.HERO_CONFIG = {
 <!-- Scripts -->
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
-<script src="../../assets/js/student-management.js"></script>
-<script src="../../assets/js/ngis-student-workspace.js?v=1.1"></script>
+
+<!-- Absence Risk Register Application Logic -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    if (window.STUDENT_MGMT && typeof window.STUDENT_MGMT.initAbsenceStats === 'function') {
-      window.STUDENT_MGMT.initAbsenceStats('studentMgmtRoot', 'admin');
+(function() {
+  "use strict";
+
+  // Comprehensive Student Attendance Data
+  var STUDENTS_DATA = [
+    {
+      id: "DMO-STD-0003",
+      name: "Sophea Pov",
+      khmerName: "សុភា ពៅ",
+      initials: "SP",
+      class: "Grade 8A",
+      grade: "Grade 8",
+      attendancePct: 73,
+      totalAbsences: 22,
+      excusedAbsences: 14,
+      unexcusedAbsences: 8,
+      riskLevel: "Critical",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Today, 08:30 AM",
+      guardian: {
+        name: "Mr. Pov Sarin",
+        phone: "+855 12 889 912",
+        email: "pov.sarin@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 14, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Notice Sent" },
+        { date: "Nov 11, 2026", session: "Morning", category: "Medical Leave", verification: "Clinic Slip Verified", action: "Excused" },
+        { date: "Nov 08, 2026", session: "Afternoon", category: "Unexcused Truancy", verification: "Unverified", action: "Flagged" },
+        { date: "Nov 04, 2026", session: "Full Day", category: "Family Emergency", verification: "Parent Phone Verified", action: "Excused" }
+      ]
+    },
+    {
+      id: "DMO-STD-0094",
+      name: "Piseth Im",
+      khmerName: "ពិសិដ្ឋ អ៊ឹម",
+      initials: "PI",
+      class: "Grade 11B",
+      grade: "Grade 11",
+      attendancePct: 73,
+      totalAbsences: 22,
+      excusedAbsences: 14,
+      unexcusedAbsences: 8,
+      riskLevel: "Critical",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Today, 08:30 AM",
+      guardian: {
+        name: "Mrs. Im Chantha",
+        phone: "+855 12 443 219",
+        email: "im.chantha@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 13, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Notice Sent" },
+        { date: "Nov 09, 2026", session: "Full Day", category: "Medical Leave", verification: "Doctor Slip Verified", action: "Excused" }
+      ]
+    },
+    {
+      id: "DMO-STD-0104",
+      name: "Sarah Reyes",
+      khmerName: "សារ៉ា រ៉េយេស",
+      initials: "SR",
+      class: "Grade 10B",
+      grade: "Grade 10",
+      attendancePct: 73,
+      totalAbsences: 22,
+      excusedAbsences: 14,
+      unexcusedAbsences: 8,
+      riskLevel: "Critical",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Today, 08:30 AM",
+      guardian: {
+        name: "Mr. David Reyes",
+        phone: "+855 15 992 014",
+        email: "reyes.d@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 12, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Notice Sent" },
+        { date: "Nov 07, 2026", session: "Morning", category: "Medical Leave", verification: "Clinic Slip Verified", action: "Excused" }
+      ]
+    },
+    {
+      id: "DMO-STD-0108",
+      name: "Piseth Mao",
+      khmerName: "ពិសិដ្ឋ ម៉ៅ",
+      initials: "PM",
+      class: "Grade 12B",
+      grade: "Grade 12",
+      attendancePct: 73,
+      totalAbsences: 22,
+      excusedAbsences: 14,
+      unexcusedAbsences: 8,
+      riskLevel: "Critical",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Today, 08:30 AM",
+      guardian: {
+        name: "Mr. Mao Rithy",
+        phone: "+855 77 334 112",
+        email: "mao.rithy@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 15, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Notice Sent" }
+      ]
+    },
+    {
+      id: "DMO-STD-0118",
+      name: "Sophea Sem",
+      khmerName: "សុភា សែម",
+      initials: "SS",
+      class: "Grade 11B",
+      grade: "Grade 11",
+      attendancePct: 73,
+      totalAbsences: 22,
+      excusedAbsences: 14,
+      unexcusedAbsences: 8,
+      riskLevel: "Critical",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Today, 08:30 AM",
+      guardian: {
+        name: "Mrs. Sem Phalla",
+        phone: "+855 11 678 901",
+        email: "sem.phalla@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 10, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Notice Sent" }
+      ]
+    },
+    {
+      id: "DMO-STD-0123",
+      name: "Dara Chou",
+      khmerName: "ដារ៉ា ជូ",
+      initials: "DC",
+      class: "Grade 8A",
+      grade: "Grade 8",
+      attendancePct: 73,
+      totalAbsences: 22,
+      excusedAbsences: 14,
+      unexcusedAbsences: 8,
+      riskLevel: "Critical",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Today, 08:30 AM",
+      guardian: {
+        name: "Mr. Chou Vichea",
+        phone: "+855 12 555 789",
+        email: "chou.vichea@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 14, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Notice Sent" }
+      ]
+    },
+    {
+      id: "DMO-STD-0145",
+      name: "Laura Dubois",
+      khmerName: "ឡូរ៉ា ឌុយប័រ",
+      initials: "LD",
+      class: "Grade 8B",
+      grade: "Grade 8",
+      attendancePct: 72,
+      totalAbsences: 23,
+      excusedAbsences: 14,
+      unexcusedAbsences: 9,
+      riskLevel: "Critical",
+      noticeStatus: "Pending",
+      noticeTimestamp: "Pending Dispatch",
+      guardian: {
+        name: "Mrs. Claire Dubois",
+        phone: "+855 16 220 901",
+        email: "c.dubois@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 13, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Queue Alert" }
+      ]
+    },
+    {
+      id: "DMO-STD-0169",
+      name: "Rachana Vannak",
+      khmerName: "រចនា វណ្ណៈ",
+      initials: "RV",
+      class: "Grade 8B",
+      grade: "Grade 8",
+      attendancePct: 73,
+      totalAbsences: 22,
+      excusedAbsences: 14,
+      unexcusedAbsences: 8,
+      riskLevel: "Critical",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Today, 08:30 AM",
+      guardian: {
+        name: "Mr. Vannak Kiri",
+        phone: "+855 10 987 654",
+        email: "v.kiri@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 14, 2026", session: "Full Day", category: "Unexcused Truancy", verification: "Unverified", action: "Notice Sent" }
+      ]
+    },
+    {
+      id: "DMO-STD-0174",
+      name: "Channa Vanny",
+      khmerName: "ចាន់ណា វ៉ាន់នី",
+      initials: "CV",
+      class: "Grade 10B",
+      grade: "Grade 10",
+      attendancePct: 88,
+      totalAbsences: 10,
+      excusedAbsences: 6,
+      unexcusedAbsences: 4,
+      riskLevel: "Moderate",
+      noticeStatus: "Pending",
+      noticeTimestamp: "Pending Dispatch",
+      guardian: {
+        name: "Mrs. Vanny Socheata",
+        phone: "+855 89 443 112",
+        email: "vanny.s@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 06, 2026", session: "Morning", category: "Late Submission", verification: "Pending Note", action: "Warning Sent" }
+      ]
+    },
+    {
+      id: "DMO-STD-0182",
+      name: "Sovann Kong",
+      khmerName: "សុវណ្ណ គង់",
+      initials: "SK",
+      class: "Grade 11B",
+      grade: "Grade 11",
+      attendancePct: 86,
+      totalAbsences: 11,
+      excusedAbsences: 7,
+      unexcusedAbsences: 4,
+      riskLevel: "Moderate",
+      noticeStatus: "Scheduled",
+      noticeTimestamp: "Scheduled for 04:00 PM",
+      guardian: {
+        name: "Mr. Kong Bunroeun",
+        phone: "+855 12 778 340",
+        email: "kong.b@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 05, 2026", session: "Afternoon", category: "Unexcused Truancy", verification: "Unverified", action: "Scheduled" }
+      ]
+    },
+    {
+      id: "DMO-STD-0205",
+      name: "Panha Chea",
+      khmerName: "បញ្ញា ជា",
+      initials: "PC",
+      class: "Grade 12B",
+      grade: "Grade 12",
+      attendancePct: 95,
+      totalAbsences: 4,
+      excusedAbsences: 3,
+      unexcusedAbsences: 1,
+      riskLevel: "Normal",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Nov 10, 09:15 AM",
+      guardian: {
+        name: "Mr. Chea Sambath",
+        phone: "+855 17 889 001",
+        email: "chea.s@ngis.edu.kh"
+      },
+      log: [
+        { date: "Nov 01, 2026", session: "Morning", category: "Medical Leave", verification: "Doctor Verified", action: "Excused" }
+      ]
+    },
+    {
+      id: "DMO-STD-0210",
+      name: "Bopha Pich",
+      khmerName: "បុប្ផា ពេជ្រ",
+      initials: "BP",
+      class: "Grade 8A",
+      grade: "Grade 8",
+      attendancePct: 97,
+      totalAbsences: 2,
+      excusedAbsences: 2,
+      unexcusedAbsences: 0,
+      riskLevel: "Normal",
+      noticeStatus: "Dispatched",
+      noticeTimestamp: "Nov 02, 11:00 AM",
+      guardian: {
+        name: "Mrs. Pich Kolab",
+        phone: "+855 92 110 445",
+        email: "pich.k@ngis.edu.kh"
+      },
+      log: [
+        { date: "Oct 28, 2026", session: "Full Day", category: "Medical Leave", verification: "Doctor Verified", action: "Excused" }
+      ]
+    }
+  ];
+
+  // Application State
+  var state = {
+    search: '',
+    riskFilter: 'all',
+    classFilter: 'all',
+    noticeFilter: 'all',
+    activeTab: 'all',
+    selectedIds: new Set(),
+    page: 1,
+    perPage: 6,
+    activeStudentForModal: null
+  };
+
+  // DOM Elements
+  var tableSearchInput = document.getElementById('tableSearchInput');
+  var searchClearBtn = document.getElementById('searchClearBtn');
+  var filterRiskLevel = document.getElementById('filterRiskLevel');
+  var filterClass = document.getElementById('filterClass');
+  var filterNotice = document.getElementById('filterNotice');
+  var btnResetFilters = document.getElementById('btnResetFilters');
+  var filterTabs = document.getElementById('filterTabs');
+  var riskTableBody = document.getElementById('riskTableBody');
+  var tableEmptyState = document.getElementById('tableEmptyState');
+  var selectAllCheckbox = document.getElementById('selectAllCheckbox');
+  var paginationSummary = document.getElementById('paginationSummary');
+  var perPageSelect = document.getElementById('perPageSelect');
+  var btnPrevPage = document.getElementById('btnPrevPage');
+  var btnNextPage = document.getElementById('btnNextPage');
+  var pageNumberButtons = document.getElementById('pageNumberButtons');
+  var tableSummaryCount = document.getElementById('tableSummaryCount');
+  var batchActionControls = document.getElementById('batchActionControls');
+  var batchSelectedText = document.getElementById('batchSelectedText');
+  var btnBatchNotify = document.getElementById('btnBatchNotify');
+  var btnClearSelection = document.getElementById('btnClearSelection');
+  var btnExportCsv = document.getElementById('btnExportCsv');
+
+  // Modals
+  var studentLogModalBackdrop = document.getElementById('studentLogModalBackdrop');
+  var btnCloseLogModal = document.getElementById('btnCloseLogModal');
+  var modalBtnClose = document.getElementById('modalBtnClose');
+  var modalBtnDispatchNotice = document.getElementById('modalBtnDispatchNotice');
+  var modalBtnDownloadPdf = document.getElementById('modalBtnDownloadPdf');
+
+  var guardianNoticeModalBackdrop = document.getElementById('guardianNoticeModalBackdrop');
+  var btnCloseNoticeModal = document.getElementById('btnCloseNoticeModal');
+  var btnCancelNoticeModal = document.getElementById('btnCancelNoticeModal');
+  var btnConfirmDispatchNotice = document.getElementById('btnConfirmDispatchNotice');
+  var noticeTemplateSelect = document.getElementById('noticeTemplateSelect');
+  var noticeMessageInput = document.getElementById('noticeMessageInput');
+
+  // Helper Toast
+  function showToast(msg, isSuccess) {
+    var toast = document.getElementById('toastNotification');
+    var icon = document.getElementById('toastIcon');
+    var message = document.getElementById('toastMessage');
+    if (!toast) return;
+
+    if (icon) {
+      icon.textContent = isSuccess !== false ? 'check_circle' : 'error';
+      icon.className = isSuccess !== false ? 'material-symbols-outlined text-[18px] text-emerald-400' : 'material-symbols-outlined text-[18px] text-rose-400';
+    }
+    if (message) message.textContent = msg;
+
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(function() {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3200);
+  }
+
+  // Filter Computation
+  function getFilteredStudents() {
+    var query = state.search.toLowerCase().trim();
+
+    return STUDENTS_DATA.filter(function(s) {
+      // Search
+      if (query) {
+        var matchName = s.name.toLowerCase().indexOf(query) !== -1;
+        var matchKhmer = (s.khmerName || '').toLowerCase().indexOf(query) !== -1;
+        var matchId = s.id.toLowerCase().indexOf(query) !== -1;
+        var matchClass = s.class.toLowerCase().indexOf(query) !== -1;
+        if (!matchName && !matchKhmer && !matchId && !matchClass) return false;
+      }
+
+      // Tab filter
+      if (state.activeTab === 'critical' && s.riskLevel !== 'Critical') return false;
+      if (state.activeTab === 'moderate' && s.riskLevel !== 'Moderate') return false;
+      if (state.activeTab === 'normal' && s.riskLevel !== 'Normal') return false;
+      if (state.activeTab === 'pending' && s.noticeStatus !== 'Pending') return false;
+
+      // Risk Dropdown
+      if (state.riskFilter !== 'all') {
+        if (state.riskFilter === 'critical' && s.riskLevel !== 'Critical') return false;
+        if (state.riskFilter === 'moderate' && s.riskLevel !== 'Moderate') return false;
+        if (state.riskFilter === 'normal' && s.riskLevel !== 'Normal') return false;
+      }
+
+      // Class Dropdown
+      if (state.classFilter !== 'all') {
+        if (s.class !== state.classFilter) return false;
+      }
+
+      // Notice Dropdown
+      if (state.noticeFilter !== 'all') {
+        if (s.noticeStatus !== state.noticeFilter) return false;
+      }
+
+      return true;
+    });
+  }
+
+  // Render Table
+  function renderTable() {
+    var filtered = getFilteredStudents();
+    var total = filtered.length;
+
+    // Update Counts
+    var criticalCount = STUDENTS_DATA.filter(function(s){ return s.riskLevel === 'Critical'; }).length;
+    var moderateCount = STUDENTS_DATA.filter(function(s){ return s.riskLevel === 'Moderate'; }).length;
+    var normalCount = STUDENTS_DATA.filter(function(s){ return s.riskLevel === 'Normal'; }).length;
+    var pendingCount = STUDENTS_DATA.filter(function(s){ return s.noticeStatus === 'Pending'; }).length;
+
+    document.getElementById('tabCountAll').textContent = STUDENTS_DATA.length;
+    document.getElementById('tabCountCritical').textContent = criticalCount;
+    document.getElementById('tabCountModerate').textContent = moderateCount;
+    document.getElementById('tabCountNormal').textContent = normalCount;
+    document.getElementById('tabCountPending').textContent = pendingCount;
+
+    var selectedCount = state.selectedIds.size;
+    tableSummaryCount.textContent = total + ' matching student(s) · ' + selectedCount + ' selected';
+
+    if (batchActionControls) {
+      if (selectedCount > 0) {
+        batchActionControls.style.display = 'flex';
+        batchSelectedText.textContent = selectedCount + ' selected';
+      } else {
+        batchActionControls.style.display = 'none';
+      }
+    }
+
+    // Toggle search clear icon
+    if (searchClearBtn) {
+      if (state.search.length > 0) {
+        searchClearBtn.classList.remove('hidden');
+      } else {
+        searchClearBtn.classList.add('hidden');
+      }
+    }
+
+    // Pagination bounds
+    var totalPages = Math.max(1, Math.ceil(total / state.perPage));
+    if (state.page > totalPages) state.page = totalPages;
+    if (state.page < 1) state.page = 1;
+
+    var start = (state.page - 1) * state.perPage;
+    var end = Math.min(start + state.perPage, total);
+    var pageItems = filtered.slice(start, end);
+
+    // Empty state
+    if (pageItems.length === 0) {
+      riskTableBody.innerHTML = '';
+      if (tableEmptyState) tableEmptyState.classList.remove('hidden');
+      paginationSummary.textContent = 'Showing 0 results';
+      pageNumberButtons.innerHTML = '';
+      btnPrevPage.disabled = true;
+      btnNextPage.disabled = true;
+      selectAllCheckbox.checked = false;
+      return;
+    } else {
+      if (tableEmptyState) tableEmptyState.classList.add('hidden');
+    }
+
+    // Render Table Rows (High contrast, unboxed inline dots, no bold fonts)
+    riskTableBody.innerHTML = pageItems.map(function(s) {
+      var isChecked = state.selectedIds.has(s.id);
+
+      // Attendance Bar Color
+      var rateColor = s.attendancePct >= 95 ? 'text-emerald-700' : (s.attendancePct >= 85 ? 'text-amber-700' : 'text-rose-700');
+      var barBg = s.attendancePct >= 95 ? 'bg-emerald-600' : (s.attendancePct >= 85 ? 'bg-amber-500' : 'bg-rose-500');
+
+      // Unboxed inline dot for Risk Level
+      var riskDotClass = s.riskLevel === 'Critical' ? 'status-dot-critical' : (s.riskLevel === 'Moderate' ? 'status-dot-moderate' : 'status-dot-normal');
+      var riskLabel = s.riskLevel === 'Critical' ? 'Critical (>5 Days)' : (s.riskLevel === 'Moderate' ? 'Moderate (3-5 Days)' : 'Normal (<3 Days)');
+
+      // Unboxed inline dot for Notice Status
+      var noticeDotClass = s.noticeStatus === 'Dispatched' ? 'status-dot-dispatched' : (s.noticeStatus === 'Pending' ? 'status-dot-pending' : 'status-dot-scheduled');
+
+      return '<tr class="hover:bg-slate-50/80 transition-colors">' +
+        '<td class="py-3 px-4 text-center">' +
+          '<input type="checkbox" class="row-checkbox rounded text-[#176B45] focus:ring-[#176B45] border-slate-300 w-4 h-4 cursor-pointer" data-id="' + s.id + '" ' + (isChecked ? 'checked' : '') + '>' +
+        '</td>' +
+        '<td class="py-3 px-4">' +
+          '<div class="flex items-center gap-3">' +
+            '<div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-medium text-slate-700 text-xs shrink-0">' +
+              s.initials +
+            '</div>' +
+            '<div class="min-w-0">' +
+              '<div class="font-medium text-slate-900 leading-tight truncate">' +
+                s.name + '<span class="khmer-font text-slate-500 text-xs ml-1.5">' + s.khmerName + '</span>' +
+              '</div>' +
+              '<div class="text-[11px] text-slate-500 font-mono mt-0.5">' + s.id + ' · ' + s.class + '</div>' +
+            '</div>' +
+          '</div>' +
+        '</td>' +
+        '<td class="py-3 px-4">' +
+          '<div class="w-28">' +
+            '<div class="flex justify-between items-center mb-1">' +
+              '<span class="font-medium ' + rateColor + '">' + s.attendancePct + '%</span>' +
+            '</div>' +
+            '<div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">' +
+              '<div class="h-full ' + barBg + ' rounded-full" style="width: ' + s.attendancePct + '%"></div>' +
+            '</div>' +
+          '</div>' +
+        '</td>' +
+        '<td class="py-3 px-4">' +
+          '<span class="font-medium text-slate-800">' + s.totalAbsences + '</span>' +
+          '<span class="text-[11px] text-slate-500 block">' + s.excusedAbsences + ' excused</span>' +
+        '</td>' +
+        '<td class="py-3 px-4">' +
+          '<span class="inline-flex items-center gap-1.5 text-rose-700 font-medium">' +
+            '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>' +
+            s.unexcusedAbsences + ' days' +
+          '</span>' +
+        '</td>' +
+        '<td class="py-3 px-4">' +
+          '<span class="' + riskDotClass + '">' + riskLabel + '</span>' +
+        '</td>' +
+        '<td class="py-3 px-4">' +
+          '<div>' +
+            '<span class="' + noticeDotClass + '">' + s.noticeStatus + '</span>' +
+            '<span class="text-[11px] text-slate-500 block mt-0.5">' + s.noticeTimestamp + '</span>' +
+          '</div>' +
+        '</td>' +
+        '<td class="py-3 px-4 text-right">' +
+          '<div class="flex items-center justify-end gap-1.5">' +
+            '<button type="button" class="btn btn-secondary inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-700 hover:text-[#176B45] hover:bg-emerald-50 hover:border-emerald-200 border border-slate-200 transition-colors cursor-pointer active:scale-95" onclick="window.openStudentLog(\'' + s.id + '\')">' +
+              '<span class="material-symbols-outlined text-[15px] text-slate-500">visibility</span>' +
+              '<span>View Log</span>' +
+            '</button>' +
+            '<button type="button" class="btn btn-secondary p-1.5 rounded-lg text-slate-600 hover:text-[#176B45] hover:bg-emerald-50 hover:border-emerald-200 border border-slate-200 transition-colors cursor-pointer active:scale-95" title="Send SMS notice" onclick="window.openGuardianNotice(\'' + s.id + '\')">' +
+              '<span class="material-symbols-outlined text-[16px]">sms</span>' +
+            '</button>' +
+          '</div>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    // Pagination summary
+    paginationSummary.textContent = 'Showing ' + (start + 1) + ' to ' + end + ' of ' + total + ' results';
+    btnPrevPage.disabled = state.page <= 1;
+    btnNextPage.disabled = state.page >= totalPages;
+
+    // Numbered buttons
+    var pillsHtml = '';
+    for (var p = 1; p <= totalPages; p++) {
+      var isActive = (p === state.page);
+      pillsHtml += '<button type="button" class="w-7 h-7 rounded-lg text-xs font-medium ' +
+        (isActive ? 'bg-[#176B45] text-white shadow-2xs' : 'text-slate-600 hover:bg-slate-100') +
+        ' transition cursor-pointer" onclick="window.goToPage(' + p + ')">' + p + '</button>';
+    }
+    pageNumberButtons.innerHTML = pillsHtml;
+
+    // Select all check state
+    var allPageChecked = pageItems.length > 0 && pageItems.every(function(s) { return state.selectedIds.has(s.id); });
+    selectAllCheckbox.checked = allPageChecked;
+
+    // Row checkbox listeners
+    var rowCheckboxes = riskTableBody.querySelectorAll('.row-checkbox');
+    rowCheckboxes.forEach(function(cb) {
+      cb.addEventListener('change', function() {
+        var id = this.getAttribute('data-id');
+        if (this.checked) {
+          state.selectedIds.add(id);
+        } else {
+          state.selectedIds.delete(id);
+        }
+        renderTable();
+      });
+    });
+  }
+
+  // Modal open / close helpers with smooth CSS animation
+  function openModalElement(modal) {
+    if (!modal) return;
+    modal.classList.add('open');
+    modal.classList.remove('hidden');
+    requestAnimationFrame(function() {
+      modal.classList.remove('opacity-0');
+      var card = modal.querySelector('.scale-95');
+      if (card) {
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+      }
+    });
+  }
+
+  function closeModalElement(modal) {
+    if (!modal) return;
+    var card = modal.querySelector('.scale-100');
+    if (card) {
+      card.classList.remove('scale-100');
+      card.classList.add('scale-95');
+    }
+    modal.classList.add('opacity-0');
+    setTimeout(function() {
+      modal.classList.remove('open');
+      modal.classList.add('hidden');
+    }, 200);
+  }
+
+  // Window functions for event listeners
+  window.goToPage = function(p) {
+    state.page = p;
+    renderTable();
+  };
+
+  window.resetAbsenceFilters = function() {
+    state.search = '';
+    state.riskFilter = 'all';
+    state.classFilter = 'all';
+    state.noticeFilter = 'all';
+    state.activeTab = 'all';
+    state.page = 1;
+
+    tableSearchInput.value = '';
+    filterRiskLevel.value = 'all';
+    filterClass.value = 'all';
+    filterNotice.value = 'all';
+
+    var tabBtns = filterTabs.querySelectorAll('.filter-pill-btn');
+    tabBtns.forEach(function(b) {
+      if (b.getAttribute('data-tab') === 'all') {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+
+    renderTable();
+    showToast('Filters reset to default');
+  };
+
+  window.openStudentLog = function(studentId) {
+    var student = STUDENTS_DATA.find(function(s) { return s.id === studentId; });
+    if (!student) return;
+
+    state.activeStudentForModal = student;
+
+    // Populate Modal
+    document.getElementById('modalAvatar').textContent = student.initials;
+    document.getElementById('modalStudentName').textContent = student.name;
+    document.getElementById('modalStudentKhmerName').textContent = student.khmerName || '';
+    document.getElementById('modalStudentId').textContent = student.id;
+    document.getElementById('modalStudentClass').textContent = student.class;
+
+    document.getElementById('modalAttendanceRate').textContent = student.attendancePct + '%';
+    document.getElementById('modalAttendanceRate').className = 'text-lg font-medium mt-0.5 ' + (student.attendancePct >= 95 ? 'text-emerald-700' : (student.attendancePct >= 85 ? 'text-amber-700' : 'text-rose-700'));
+
+    document.getElementById('modalAttendedDays').textContent = (80 - student.totalAbsences) + ' / 80';
+    document.getElementById('modalExcusedDays').textContent = student.excusedAbsences + ' days';
+    document.getElementById('modalUnexcusedDays').textContent = student.unexcusedAbsences + ' days';
+
+    document.getElementById('modalGuardianName').textContent = student.guardian.name;
+    document.getElementById('modalGuardianPhone').textContent = student.guardian.phone;
+    document.getElementById('modalGuardianNoticeStatus').textContent = '• ' + student.noticeStatus + ' (' + student.noticeTimestamp + ')';
+
+    // Populate Log table
+    var logTbody = document.getElementById('modalIncidentTableBody');
+    if (student.log && student.log.length > 0) {
+      logTbody.innerHTML = student.log.map(function(l) {
+        var isUnexcused = l.category.indexOf('Truancy') !== -1 || l.category.indexOf('Unverified') !== -1;
+        return '<tr class="hover:bg-slate-50/50">' +
+          '<td class="px-3.5 py-2.5 font-medium text-slate-800">' + l.date + '</td>' +
+          '<td class="px-3.5 py-2.5 text-slate-500">' + l.session + '</td>' +
+          '<td class="px-3.5 py-2.5">' +
+            (isUnexcused ?
+              '<span class="inline-flex items-center gap-1 text-rose-700 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>' + l.category + '</span>' :
+              '<span class="inline-flex items-center gap-1 text-[#176B45] font-medium"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>' + l.category + '</span>') +
+          '</td>' +
+          '<td class="px-3.5 py-2.5 text-slate-500">' + l.verification + '</td>' +
+          '<td class="px-3.5 py-2.5 text-right font-medium text-slate-600">' + l.action + '</td>' +
+        '</tr>';
+      }).join('');
+    } else {
+      logTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-slate-400">No absence incidents recorded.</td></tr>';
+    }
+
+    openModalElement(studentLogModalBackdrop);
+  };
+
+  window.openGuardianNotice = function(studentId) {
+    var student = STUDENTS_DATA.find(function(s) { return s.id === studentId; });
+    if (!student) return;
+
+    state.activeStudentForModal = student;
+
+    document.getElementById('noticeStudentName').textContent = student.name + ' (' + student.id + ')';
+    document.getElementById('noticeGuardianName').textContent = student.guardian.name;
+    document.getElementById('noticeGuardianPhone').textContent = student.guardian.phone;
+
+    // Set template
+    noticeTemplateSelect.value = student.riskLevel === 'Critical' ? 'critical' : (student.riskLevel === 'Moderate' ? 'moderate' : 'conference');
+    updateNoticeMessageText();
+
+    openModalElement(guardianNoticeModalBackdrop);
+  };
+
+  function updateNoticeMessageText() {
+    var student = state.activeStudentForModal;
+    if (!student) return;
+
+    var val = noticeTemplateSelect.value;
+    if (val === 'critical') {
+      noticeMessageInput.value = 'NGIS Notice: ' + student.name + ' has accumulated ' + student.unexcusedAbsences + ' unexcused absences (Overall attendance: ' + student.attendancePct + '%). Please contact the administration office immediately.';
+    } else if (val === 'moderate') {
+      noticeMessageInput.value = 'NGIS Courtesy Check: ' + student.name + ' missed ' + student.unexcusedAbsences + ' class sessions this term. Please ensure medical slip or excuse letter is submitted.';
+    } else {
+      noticeMessageInput.value = 'NGIS Formal Request: You are invited to an academic conference regarding ' + student.name + ' attendance record on Wednesday at 10:00 AM.';
+    }
+  }
+
+  // Export CSV
+  function exportAbsenceCSV() {
+    var filtered = getFilteredStudents();
+    if (!filtered.length) {
+      showToast('No student records to export', false);
+      return;
+    }
+
+    var headers = ['Student ID', 'Student Name', 'Khmer Name', 'Class', 'Attendance Rate (%)', 'Total Absences', 'Excused Absences', 'Unexcused Absences', 'Risk Level', 'Parent Notice', 'Notice Timestamp', 'Guardian Name', 'Guardian Phone'];
+    var rows = [headers.join(',')];
+
+    filtered.forEach(function(s) {
+      var row = [
+        '"' + s.id + '"',
+        '"' + s.name + '"',
+        '"' + (s.khmerName || '') + '"',
+        '"' + s.class + '"',
+        s.attendancePct,
+        s.totalAbsences,
+        s.excusedAbsences,
+        s.unexcusedAbsences,
+        '"' + s.riskLevel + '"',
+        '"' + s.noticeStatus + '"',
+        '"' + s.noticeTimestamp + '"',
+        '"' + s.guardian.name + '"',
+        '"' + s.guardian.phone + '"'
+      ];
+      rows.push(row.join(','));
+    });
+
+    var csvContent = '\uFEFF' + rows.join('\r\n');
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = 'NGIS_Absence_Risk_Register_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showToast('Attendance risk audit exported to CSV');
+  }
+
+  // Event Listeners
+  if (tableSearchInput) {
+    tableSearchInput.addEventListener('input', function() {
+      state.search = this.value;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (searchClearBtn) {
+    searchClearBtn.addEventListener('click', function() {
+      tableSearchInput.value = '';
+      state.search = '';
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (filterRiskLevel) {
+    filterRiskLevel.addEventListener('change', function() {
+      state.riskFilter = this.value;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (filterClass) {
+    filterClass.addEventListener('change', function() {
+      state.classFilter = this.value;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (filterNotice) {
+    filterNotice.addEventListener('change', function() {
+      state.noticeFilter = this.value;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (btnResetFilters) {
+    btnResetFilters.addEventListener('click', window.resetAbsenceFilters);
+  }
+
+  // Filter Tabs
+  if (filterTabs) {
+    filterTabs.addEventListener('click', function(e) {
+      var btn = e.target.closest('.filter-pill-btn');
+      if (!btn) return;
+
+      var tab = btn.getAttribute('data-tab');
+      state.activeTab = tab;
+      state.page = 1;
+
+      filterTabs.querySelectorAll('.filter-pill-btn').forEach(function(b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+
+      renderTable();
+    });
+  }
+
+  // Select all checkbox
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+      var filtered = getFilteredStudents();
+      var start = (state.page - 1) * state.perPage;
+      var end = Math.min(start + state.perPage, filtered.length);
+      var pageItems = filtered.slice(start, end);
+
+      if (this.checked) {
+        pageItems.forEach(function(s) { state.selectedIds.add(s.id); });
+      } else {
+        pageItems.forEach(function(s) { state.selectedIds.delete(s.id); });
+      }
+      renderTable();
+    });
+  }
+
+  // Per page
+  if (perPageSelect) {
+    perPageSelect.addEventListener('change', function() {
+      state.perPage = parseInt(this.value, 10) || 6;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  // Prev / Next Page
+  if (btnPrevPage) {
+    btnPrevPage.addEventListener('click', function() {
+      if (state.page > 1) {
+        state.page--;
+        renderTable();
+      }
+    });
+  }
+
+  if (btnNextPage) {
+    btnNextPage.addEventListener('click', function() {
+      var filtered = getFilteredStudents();
+      var totalPages = Math.ceil(filtered.length / state.perPage);
+      if (state.page < totalPages) {
+        state.page++;
+        renderTable();
+      }
+    });
+  }
+
+  // Batch Selection Clear
+  if (btnClearSelection) {
+    btnClearSelection.addEventListener('click', function() {
+      state.selectedIds.clear();
+      renderTable();
+    });
+  }
+
+  // Batch Notify
+  if (btnBatchNotify) {
+    btnBatchNotify.addEventListener('click', function() {
+      var count = state.selectedIds.size;
+      if (count === 0) return;
+
+      // Update statuses
+      STUDENTS_DATA.forEach(function(s) {
+        if (state.selectedIds.has(s.id)) {
+          s.noticeStatus = 'Dispatched';
+          s.noticeTimestamp = 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+      });
+
+      state.selectedIds.clear();
+      renderTable();
+      showToast('Dispatched alerts to ' + count + ' guardian(s) via SMS & Telegram');
+    });
+  }
+
+  // Export CSV
+  if (btnExportCsv) {
+    btnExportCsv.addEventListener('click', exportAbsenceCSV);
+  }
+
+  // Modals closing
+  if (btnCloseLogModal) {
+    btnCloseLogModal.addEventListener('click', function() {
+      closeModalElement(studentLogModalBackdrop);
+    });
+  }
+  if (modalBtnClose) {
+    modalBtnClose.addEventListener('click', function() {
+      closeModalElement(studentLogModalBackdrop);
+    });
+  }
+  if (studentLogModalBackdrop) {
+    studentLogModalBackdrop.addEventListener('click', function(e) {
+      if (e.target === studentLogModalBackdrop) {
+        closeModalElement(studentLogModalBackdrop);
+      }
+    });
+  }
+
+  if (modalBtnDispatchNotice) {
+    modalBtnDispatchNotice.addEventListener('click', function() {
+      closeModalElement(studentLogModalBackdrop);
+      if (state.activeStudentForModal) {
+        setTimeout(function() {
+          window.openGuardianNotice(state.activeStudentForModal.id);
+        }, 220);
+      }
+    });
+  }
+
+  if (modalBtnDownloadPdf) {
+    modalBtnDownloadPdf.addEventListener('click', function() {
+      showToast('Attendance report PDF generated and queued');
+    });
+  }
+
+  if (btnCloseNoticeModal) {
+    btnCloseNoticeModal.addEventListener('click', function() {
+      closeModalElement(guardianNoticeModalBackdrop);
+    });
+  }
+  if (btnCancelNoticeModal) {
+    btnCancelNoticeModal.addEventListener('click', function() {
+      closeModalElement(guardianNoticeModalBackdrop);
+    });
+  }
+  if (guardianNoticeModalBackdrop) {
+    guardianNoticeModalBackdrop.addEventListener('click', function(e) {
+      if (e.target === guardianNoticeModalBackdrop) {
+        closeModalElement(guardianNoticeModalBackdrop);
+      }
+    });
+  }
+
+  if (noticeTemplateSelect) {
+    noticeTemplateSelect.addEventListener('change', updateNoticeMessageText);
+  }
+
+  if (btnConfirmDispatchNotice) {
+    btnConfirmDispatchNotice.addEventListener('click', function() {
+      var student = state.activeStudentForModal;
+      if (!student) return;
+
+      btnConfirmDispatchNotice.disabled = true;
+      btnConfirmDispatchNotice.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span><span>Dispatching...</span>';
+
+      setTimeout(function() {
+        student.noticeStatus = 'Dispatched';
+        student.noticeTimestamp = 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        btnConfirmDispatchNotice.disabled = false;
+        btnConfirmDispatchNotice.innerHTML = '<span class="material-symbols-outlined text-[16px]">send</span><span>Send Notice</span>';
+
+        closeModalElement(guardianNoticeModalBackdrop);
+        renderTable();
+        showToast('Notice dispatched to ' + student.guardian.name + ' (' + student.guardian.phone + ')');
+      }, 500);
+    });
+  }
+
+  // Keyboard escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeModalElement(studentLogModalBackdrop);
+      closeModalElement(guardianNoticeModalBackdrop);
     }
   });
+
+  // Initial render
+  renderTable();
+})();
 </script>
 
 </body>

@@ -1,176 +1,36 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Announcements</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/app.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
-<script src="../../assets/js/auth.js"></script>
-<script src="../../assets/js/protect.js"></script>
-<script src="_auth-bootstrap.js"></script>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-<link rel="stylesheet" href="../../assets/css/design-system.css">
-
-<!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
-</head>
-<body>
-<main class="main">
-<header id="heroBanner" role="banner"></header>
-<div class="page">
-
-  <div class="col-main anim-up">
-    <div class="stack" style="flex:2">
-
-      <div class="card">
-        <div class="card-head"><h3>Compose Announcement</h3></div>
-        <div class="card-pad">
-          <form id="createForm" style="display:grid;gap:14px">
-            <div>
-              <label class="label">Title</label>
-              <input class="input" name="title" required placeholder="Announcement title…" style="width:100%">
-            </div>
-            <div>
-              <label class="label">Message</label>
-              <textarea class="input" name="body" required rows="4" placeholder="Write your message…" style="width:100%;resize:vertical;line-height:1.6"></textarea>
-            </div>
-            <div class="flex gap12 wrap">
-              <div style="flex:1;min-width:140px">
-                <label class="label">Audience</label>
-                <select class="select" name="audience" style="width:100%">
-                  <option value="all">Everyone</option>
-                  <option value="students">Students</option>
-                  <option value="parents">Parents</option>
-                  <option value="teachers">Teachers</option>
-                  <option value="class:cls-10a">Class 10A</option>
-                  <option value="grade:Grade 10">Grade 10</option>
-                </select>
-              </div>
-              <div style="flex:1;min-width:120px">
-                <label class="label">Priority</label>
-                <select class="select" name="priority" style="width:100%">
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                  <option value="urgent">Urgent</option>
-                </select>
-              </div>
-              <div style="display:flex;align-items:flex-end;gap:8px">
-                <label style="font-size:13px;display:flex;align-items:center;gap:6px">
-                  <input type="checkbox" name="pinned"> Pin
-                </label>
-              </div>
-            </div>
-            <div class="flex between center">
-              <p id="formMsg" class="muted" style="font-size:13px;margin:0"></p>
-              <button type="submit" class="btn btn-primary">
-                <span data-ngis-icon="send"></span> Post Now
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><div><h3>Announcements</h3><div class="sub">Live from database</div></div></div>
-        <div class="card-pad" id="list"><p class="muted">Loading…</p></div>
-      </div>
-
-    </div>
-  </div>
-
-</div>
-</main>
-<script>window.PAGE={"role":"teacher","active":"announcements"};</script>
-<script>
-window.HERO_CONFIG = {
-  role: 'teacher', active: 'announcements', name: 'Teacher', id: 'Teacher', grade: 'Teacher',
-  avatar: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3769021/pexels-photo-3769021.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  profileLink: 'teacher-profile.html', notifLink: 'teacher-notifications.html',
-  notifCount: 0, title: 'Announcements', greeting: 'Post notices to students and parents.',
-  breadcrumbs: [{ label: 'Announcements' }], ddRows: []
-};
-</script>
-<script src="../../assets/js/hero.js"></script>
-<script src="../../assets/js/layout.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NGIS — Announcements (redirecting…)</title>
+<!-- Legacy teacher announcements page. The Announcements module was
+     consolidated into ONE shared page + ONE backend feed (/api/news) used by
+     every portal. The old page exposed a client-side compose form to teachers,
+     which was an unauthorized publishing surface — announcement publishing is
+     Admin / Super Admin only (server-enforced on /api/news). This file only
+     preserves old links/bookmarks: it forwards the visitor to the shared
+     reader in the Teacher portal context. The ?portal hint selects UI context
+     only — permissions always come from the authenticated session. -->
+<link rel="canonical" href="../shared/announcements.html?portal=teacher"/>
+<meta http-equiv="refresh" content="0; url=../shared/announcements.html?portal=teacher"/>
 <script>
 (function () {
-  function esc(s) { return String(s||'').replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>'); }
-  function badge(p) {
-    if (p === 'urgent') return '<span class="badge red">Urgent</span>';
-    if (p === 'high') return '<span class="badge amber">High</span>';
-    return '<span class="badge blue">Normal</span>';
+  /* Preserve any deep-link parameters except portal/role, which this redirect
+     owns. Never widen permissions: the shared page derives them from session. */
+  try {
+    var p = new URLSearchParams(window.location.search || '');
+    p.delete('portal'); p.delete('role');
+    var qs = p.toString();
+    window.location.replace('../shared/announcements.html?portal=teacher' + (qs ? '&' + qs : ''));
+  } catch (e) {
+    window.location.replace('../shared/announcements.html?portal=teacher');
   }
-
-  async function load() {
-    const el = document.getElementById('list');
-    try {
-      const res = await NGISAuth.api('/api/announcements?all=1');
-      const items = res.data || [];
-      if (!items.length) { el.innerHTML = '<p class="muted">No announcements yet.</p>'; return; }
-      el.innerHTML = items.map(a => `
-        <div style="padding:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px">
-          <div class="flex between center mb8">
-            <div>
-              <span>${esc(a.title)}</span>
-              <div class="faint" style="font-size:11px">${esc(a.author_name||'')} · ${esc(a.audience)} · ${(a.created_at||'').slice(0,10)}</div>
-            </div>
-            <div class="flex gap8">${a.pinned ? '<span class="badge green">Pinned</span>' : ''}${badge(a.priority)}</div>
-          </div>
-          <p style="font-size:13px;color:var(--muted);margin:0 0 8px">${esc(a.body)}</p>
-          <button class="btn btn-sm btn-ghost" data-del="${a.id}" style="color:var(--danger)">Delete</button>
-        </div>`).join('');
-
-      el.querySelectorAll('[data-del]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          if (!confirm('Delete this announcement?')) return;
-          try {
-            await NGISAuth.api('/api/announcements/' + btn.dataset.del, { method: 'DELETE' });
-            load();
-          } catch (err) { alert(err.message); }
-        });
-      });
-    } catch (err) {
-      el.innerHTML = `<p style="color:#176B45">${esc(err.message)}</p>`;
-    }
-  }
-
-  document.getElementById('createForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const msg = document.getElementById('formMsg');
-    msg.textContent = 'Posting…';
-    try {
-      await NGISAuth.api('/api/announcements', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: fd.get('title'),
-          body: fd.get('body'),
-          audience: fd.get('audience'),
-          priority: fd.get('priority'),
-          pinned: fd.get('pinned') === 'on',
-          published: true,
-        }),
-      });
-      msg.textContent = 'Posted!';
-      e.target.reset();
-      load();
-    } catch (err) {
-      msg.textContent = err.message || 'Failed';
-    }
-  });
-
-  setTimeout(load, 200);
 })();
 </script>
+</head>
+<body style="font-family:system-ui,sans-serif;background:#f7f9f7;color:#176B45;display:grid;place-items:center;min-height:100vh;margin:0">
+<noscript><p>Redirecting to <a href="../shared/announcements.html?portal=teacher">Announcements</a>…</p></noscript>
+<p>Opening Announcements…</p>
 </body>
 </html>

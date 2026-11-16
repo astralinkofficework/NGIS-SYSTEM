@@ -8,14 +8,14 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- Phosphor Icons for Mobile Hamburger Menu (AGENTS.md Critical Rule) -->
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <!-- NGIS Stylesheets -->
-<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.2">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
@@ -124,8 +124,9 @@ try {
 <script src="_auth-bootstrap.js"></script>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 
 <body data-role="teacher" data-portal="teacher" data-page="attendance" class="bg-[#F7F9F7] text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-100 selection:text-brand-900">
@@ -368,10 +369,12 @@ window.HERO_CONFIG = {
   "use strict";
 
   // Cycle states: P -> L -> A -> E
+  // Semantic colors per the global urgency system: Present=green,
+  // Late=warning orange, Absent=overdue red, Excused=neutral.
   const STATES = [
     { code: 'P', label: 'Present', bg: 'bg-[#176B45]', hover: 'hover:bg-[#125638]', text: 'text-white', weight: 1.0 },
-    { code: 'L', label: 'Late',    bg: 'bg-[#176B45]',   hover: 'hover:bg-[#125638]',   text: 'text-white', weight: 0.8 },
-    { code: 'A', label: 'Absent',  bg: 'bg-[#176B45]',    hover: 'hover:bg-[#125638]',    text: 'text-white', weight: 0.0 },
+    { code: 'L', label: 'Late',    bg: 'bg-[#F28C28]',   hover: 'hover:bg-[#D9741A]',   text: 'text-white', weight: 0.8 },
+    { code: 'A', label: 'Absent',  bg: 'bg-[#DC3545]',    hover: 'hover:bg-[#B02A37]',    text: 'text-white', weight: 0.0 },
     { code: 'E', label: 'Excused', bg: 'bg-slate-500',   hover: 'hover:bg-slate-600',   text: 'text-white', weight: 1.0 }
   ];
 
@@ -730,12 +733,12 @@ window.HERO_CONFIG = {
       } catch(e) {}
 
       if (window.NGISUI) {
-        NGISUI.toast.success("Attendance Synchronized", `Successfully recorded weekly attendance for ${rosterData.length} students in Grade 10A.`, {
+        NGISUI.toast.success("Attendance Synchronized", `Recorded weekly attendance for ${rosterData.length} students in Grade 10A.`, {
           actionText: "Export CSV",
           onAction: () => window.exportAttendanceCSV()
         });
       } else if (window.toast) {
-        window.toast('Attendance matrix successfully saved & synced', 'success');
+        window.toast('Attendance matrix saved and synced', 'success');
       }
     };
 

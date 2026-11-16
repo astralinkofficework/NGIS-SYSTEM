@@ -8,11 +8,11 @@
 <!-- Fonts: Manrope for Headings, Plus Jakarta Sans for Body (AGENTS.md & Typography System) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- NGIS Stylesheets -->
-<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.2">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
@@ -114,8 +114,9 @@ tailwind.config = {
 <script src="_auth-bootstrap.js"></script>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 
 <body data-role="principal" data-portal="principal" class="bg-[#F7F9F7] text-slate-800 antialiased min-h-screen flex flex-col font-sans selection:bg-[#E8F3ED] selection:text-[#29352E]">
@@ -236,7 +237,7 @@ tailwind.config = {
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10 flex items-center">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
           </span>
-          <input id="deptSearchInput" style="padding-left: 44px !important;" class="w-full pl-11 pr-9 py-2 bg-white border border-[#E1E9E3] rounded-lg text-xs placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all min-h-[40px]" placeholder="Search department name, head of department, or subjects..." type="text">
+          <input id="deptSearchInput" class="w-full pl-11 pr-9 py-2 bg-white border border-[#E1E9E3] rounded-lg text-xs placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all min-h-[40px]" placeholder="Search department name, head of department, or subjects..." type="text">
           <button class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#176B45] cursor-pointer" id="clearDeptSearch" type="button" aria-label="Clear search">
             <span data-ngis-icon="close" class="w-4 h-4"></span>
           </button>
@@ -548,7 +549,7 @@ function renderGrid(list) {
         <div>
           <div class="flex items-start justify-between gap-3 mb-3">
             <div class="flex items-center gap-2">
-              <span class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">${d.code || 'DEPT'}</span>
+              <span class="text-xs font-medium text-slate-500 tracking-wide">${d.code || 'DEPT'}</span>
               <span class="text-xs px-2.5 py-0.5 rounded-full font-medium ${d.status === 'active' ? 'bg-[#E8F3ED] text-[#204F3A] border border-[#c4dece]' : 'bg-rose-50 text-rose-700 border border-rose-200'}">${d.status === 'active' ? 'Active' : 'Under Review'}</span>
             </div>
             <div class="text-right">
@@ -688,7 +689,7 @@ function renderPager(total, pages, start, shown) {
       ? `<button type="button" aria-current="page" class="w-8 h-8 rounded-lg font-medium text-sm flex items-center justify-center transition-all cursor-pointer bg-[#176B45] text-white">${p}</button>`
       : `<button type="button" onclick="gotoPage(${p})" class="w-8 h-8 rounded-lg font-medium text-sm flex items-center justify-center transition-all cursor-pointer bg-white border border-[#E1E9E3] text-slate-700 hover:bg-[#F7F9F7]">${p}</button>`;
   }
-  ctrl.innerHTML = `<button type="button" class="${navCls(prevDis)}" ${prevDis ? 'disabled' : `onclick="gotoPage(${currentPage - 1})"`}><span data-ngis-icon="chevronLeft" class="text-[16px] text-slate-400"></span><span class="hidden sm:inline">Previous</span></button>${nums}<button type="button" class="${navCls(nextDis)}" ${nextDis ? 'disabled' : `onclick="gotoPage(${currentPage + 1})"`}><span class="hidden sm:inline">Next</span><span data-ngis-icon="chevronRight" class="text-[16px] text-slate-400"></span></button>`;
+  ctrl.innerHTML = `<button type="button" class="${navCls(prevDis)}" ${prevDis ? 'disabled' : `onclick="gotoPage(${currentPage - 1})"`}><span data-ngis-icon="chevronLeft" class="text-[16px] text-slate-400"></span><span class="hidden sm:inline">Previous</span></button>${nums}<button type="button" class="${navCls(nextDis)}" ${nextDis ? 'disabled' : `onclick="gotoPage(${currentPage + 1})"`}><span class="hidden sm:inline">Next Page</span><span data-ngis-icon="chevronRight" class="text-[16px] text-slate-400"></span></button>`;
 }
 
 function gotoPage(p) { currentPage = p; renderDepartments(filteredList); }
@@ -723,9 +724,20 @@ function exportDepartmentsCSV() {
   toast("Department list exported to CSV");
 }
 
-function toast(msg) {
-  const t = document.getElementById("ngisToast");
-  if (t) { t.textContent = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 3000); }
+function toast(msg, kind) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — no page-local
+     toast UI; this delegate keeps the page's toast(msg, kind) calls. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', msg);
+    return null;
+  }
+  var t;
+  if (kind === true || kind === 'error' || kind === 'danger' || kind === 'bad' || kind === 'fail') t = 'error';
+  else if (kind === 'warning' || kind === 'warn') t = 'warning';
+  else if (kind === 'info') t = 'info';
+  else if (kind === 'loading') t = 'loading';
+  else t = 'success';
+  return window.NGISUI.toast.show(t, String(msg));
 }
 
 document.getElementById("deptSearchInput").addEventListener("input", filterDepartments);
@@ -850,7 +862,7 @@ async function saveDepartmentChanges() {
     });
     if (!res.ok) throw new Error("Could not save department");
     closeEditModal();
-    toast(isNew ? 'Department created successfully' : 'Department details updated successfully');
+    toast(isNew ? 'Department created' : 'Department details updated');
     loadDepartments();
   } catch (err) {
     alert("Could not save department");

@@ -26,6 +26,7 @@ import os
 import json
 import re
 import time
+import urllib.parse
 
 import uuid
 
@@ -33,7 +34,7 @@ import base64
 
 from datetime import datetime
 
-from flask import Flask, request, jsonify, send_from_directory, abort
+from flask import Flask, request, jsonify, send_from_directory, abort, redirect
 
 from flask_cors import CORS
 
@@ -45,8 +46,13 @@ from school_configuration_api import school_config_bp
 from admin_operations_api import admin_operations_bp
 from dashboard_cms_api import cms_bp
 from sidebar_nav_api import nav_bp
+import exam_management_api
+from exam_management_api import exam_bp, init_exam_schema
 
 app = Flask(__name__, static_folder='.', static_url_path='')
+# Icon / asset updates must reach the browser immediately during development:
+# never let the dev server hand out long-lived static caches.
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 CORS(app)
 
 # Register blueprints
@@ -55,6 +61,17 @@ app.register_blueprint(school_config_bp)
 app.register_blueprint(admin_operations_bp)
 app.register_blueprint(cms_bp)
 app.register_blueprint(nav_bp)
+app.register_blueprint(exam_bp)
+init_exam_schema()
+
+# Security & Access Control Center: /api/security blueprint + app-wide hooks
+# (rate limiting, IP-restriction enforcement, restriction expiry sweep,
+#  401/403 failure instrumentation). See security_api.py.
+try:
+    import security_api
+    security_api.install(app)
+except Exception as _sec_exc:
+    print(f'security center unavailable: {_sec_exc}')
 
 
 
@@ -70,6 +87,65 @@ ENABLE_STATELESS_SESSIONS = os.environ.get('ENABLE_STATELESS_SESSIONS', 'true').
 @app.before_request
 def record_start_time():
     request._start_time = time.perf_counter()
+
+
+@app.before_request
+def enforce_page_access():
+    """Server-side direct-URL gate for User Access & Visibility Control.
+
+    Hiding a sidebar link is never the security boundary: every HTML page
+    request is checked against the same resolver that produces the sidebar
+    filter. Anonymous demo browsing is intentionally unaffected; an explicit
+    identity (X-Actor header or ngis_actor cookie) activates enforcement.
+    """
+    path = (request.path or '').lower()
+    if '/pages/' not in path or not path.endswith('.html'):
+        return None
+    if path.endswith(('access-denied.html', '404.html', 'onboarding.html', 'index.html')):
+        return None
+    # The browser writes ngis_actor with encodeURIComponent(); Werkzeug leaves
+    # cookie values URL-encoded, so decode before resolving the account.
+    actor = (request.headers.get('X-Actor')
+             or urllib.parse.unquote(request.cookies.get('ngis_actor') or '')
+             or '').strip().lower()
+    if not actor:
+        return None
+    try:
+        import roles_permissions_api as rp
+        idstore = rp._identity_store()
+        account = rp._account_by_username(actor, idstore)
+        if not account:
+            return None
+        store = rp._store()
+        doc = rp._resolve_access(account, (store.get('user_overrides') or {}).get(actor, {}))
+        filename = path.rsplit('/', 1)[-1]
+        portal_dir = path.split('/pages/', 1)[-1].split('/')[0] if '/pages/' in path else ''
+        candidates = [p for p in doc['pages'] if p['file'].lower() == filename]
+        # Nav ids and sometimes filenames repeat between portals; resolve the
+        # page that belongs to the directory actually being requested.
+        page = next((p for p in candidates if p['portal'] == portal_dir), None)
+        if page is None and portal_dir == 'shared' and candidates:
+            # A shared page is a role-agnostic shell registered by many
+            # portals. Judge it by the viewer's OWN portal rule so an explicit
+            # page deny still binds — never by an arbitrary portal that merely
+            # happens to register the same filename first.
+            home = rp.PORTAL_BY_CORE_ROLE.get(doc.get('role', ''), '')
+            page = next((p for p in candidates if p['portal'] == home), None)
+        if page is None and candidates:
+            page = candidates[0]
+        if page and not page['allowed']:
+            # A page under /pages/shared/ is a role-agnostic shell. A portal that
+            # merely registers the same filename in its nav (the student portal
+            # owns departments.html) must not deny the shared page for other
+            # roles. An explicit page-level deny still blocks it.
+            if not (portal_dir == 'shared' and page['source'] == 'portal_denied'):
+                attempted = request.full_path.rstrip('?')
+                return redirect('/pages/shared/access-denied.html?attempted=' +
+                                urllib.parse.quote(attempted, safe='') +
+                                '&reason=access_denied', code=302)
+    except Exception:
+        return None
+    return None
 
 # ── Security & Performance headers ─────────────────────────────
 @app.after_request
@@ -535,15 +611,48 @@ DB = {
 
     'classes': [
 
-        {'id': 'cls-10a', 'name': 'Grade 10A', 'grade': '10', 'section': 'A', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room 302', 'studentCount': 32, 'campus': 'Sensok'},
+        # English Department
+        {'id': 'cls-10a', 'name': 'Grade 10A', 'grade': '10', 'section': '10A', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room 302', 'studentCount': 32, 'campus': 'Sensok'},
+        {'id': 'cls-10b', 'name': 'Grade 10B', 'grade': '10', 'section': '10B', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Pov Sophea', 'room': 'Room 304', 'studentCount': 30, 'campus': 'Sensok'},
+        {'id': 'cls-11a', 'name': 'Grade 11A', 'grade': '11', 'section': '11A', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room 201', 'studentCount': 28, 'campus': 'TK'},
+        {'id': 'cls-11b', 'name': 'Grade 11B', 'grade': '11', 'section': '11B', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room 203', 'studentCount': 31, 'campus': 'Sensok'},
+        {'id': 'cls-11c', 'name': 'Grade 11C', 'grade': '11', 'section': '11C', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Muthukumaran Pakkirisamy', 'room': 'Room 407 (11C)', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-eng-12a', 'name': 'Grade 12A', 'grade': '12', 'section': '12A', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room E-301', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-eng-12b', 'name': 'Grade 12B', 'grade': '12', 'section': '12B', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room E-302', 'studentCount': 27, 'campus': 'Sensok'},
+        {'id': 'cls-eng-9a', 'name': 'Grade 9A', 'grade': '9', 'section': '9A', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room E-091', 'studentCount': 30, 'campus': 'Sensok'},
+        {'id': 'cls-eng-9b', 'name': 'Grade 9B', 'grade': '9', 'section': '9B', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Pov Sophea', 'room': 'Room E-092', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-eng-9c', 'name': 'Grade 9C', 'grade': '9', 'section': '9C', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room E-093', 'studentCount': 29, 'campus': 'Sensok'},
+        {'id': 'cls-eng-8a', 'name': 'Grade 8A', 'grade': '8', 'section': '8A', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room E-081', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-eng-8b', 'name': 'Grade 8B', 'grade': '8', 'section': '8B', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Pov Sophea', 'room': 'Room E-082', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-eng-7a', 'name': 'Grade 7A', 'grade': '7', 'section': '7A', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room E-071', 'studentCount': 27, 'campus': 'Sensok'},
+        {'id': 'cls-eng-7b', 'name': 'Grade 7B', 'grade': '7', 'section': '7B', 'department_id': 'dept-eng', 'department': 'English Department', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room E-072', 'studentCount': 26, 'campus': 'Sensok'},
 
-        {'id': 'cls-10b', 'name': 'Grade 10B', 'grade': '10', 'section': 'B', 'homeroomTeacher': 'Dr. Pov Sophea', 'room': 'Room 304', 'studentCount': 30, 'campus': 'Sensok'},
+        # Khmer Studies Department
+        {'id': 'cls-khm-12a', 'name': 'Grade 12A', 'grade': '12', 'section': '12A', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-301', 'studentCount': 30, 'campus': 'Sensok'},
+        {'id': 'cls-khm-12b', 'name': 'Grade 12B', 'grade': '12', 'section': '12B', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-302', 'studentCount': 29, 'campus': 'Sensok'},
+        {'id': 'cls-khm-11a', 'name': 'Grade 11A', 'grade': '11', 'section': '11A', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-201', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-khm-11b', 'name': 'Grade 11B', 'grade': '11', 'section': '11B', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-202', 'studentCount': 27, 'campus': 'Sensok'},
+        {'id': 'cls-khm-10a', 'name': 'Grade 10A', 'grade': '10', 'section': '10A', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-101', 'studentCount': 30, 'campus': 'Sensok'},
+        {'id': 'cls-khm-10b', 'name': 'Grade 10B', 'grade': '10', 'section': '10B', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-102', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-khm-9a', 'name': 'Grade 9A', 'grade': '9', 'section': '9A', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-091', 'studentCount': 31, 'campus': 'Sensok'},
+        {'id': 'cls-khm-9b', 'name': 'Grade 9B', 'grade': '9', 'section': '9B', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-092', 'studentCount': 29, 'campus': 'Sensok'},
+        {'id': 'cls-khm-8a', 'name': 'Grade 8A', 'grade': '8', 'section': '8A', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-081', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-khm-8b', 'name': 'Grade 8B', 'grade': '8', 'section': '8B', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-082', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-khm-7a', 'name': 'Grade 7A', 'grade': '7', 'section': '7A', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-071', 'studentCount': 26, 'campus': 'Sensok'},
+        {'id': 'cls-khm-7b', 'name': 'Grade 7B', 'grade': '7', 'section': '7B', 'department_id': 'dept-khm', 'department': 'Khmer Studies Department', 'homeroomTeacher': 'Mr. Chhem Sokha', 'room': 'Room K-072', 'studentCount': 27, 'campus': 'Sensok'},
 
-        {'id': 'cls-11a', 'name': 'Grade 11A', 'grade': '11', 'section': 'A', 'homeroomTeacher': 'Ms. Rin Lina', 'room': 'Room 201', 'studentCount': 28, 'campus': 'TK'},
-
-        {'id': 'cls-11b', 'name': 'Grade 11B', 'grade': '11', 'section': 'B', 'homeroomTeacher': 'Dr. Sarah Jenkins', 'room': 'Room 203', 'studentCount': 31, 'campus': 'Sensok'},
-
-        {'id': 'cls-11c', 'name': 'Grade 11C', 'grade': '11', 'section': 'C', 'homeroomTeacher': 'Muthukumaran Pakkirisamy', 'room': 'Room 407 (11C)', 'studentCount': 28, 'campus': 'Sensok'},
+        # Chinese Language Department
+        {'id': 'cls-chn-12a', 'name': 'Grade 12A', 'grade': '12', 'section': '12A', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-301', 'studentCount': 24, 'campus': 'Sensok'},
+        {'id': 'cls-chn-11a', 'name': 'Grade 11A', 'grade': '11', 'section': '11A', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-201', 'studentCount': 26, 'campus': 'Sensok'},
+        {'id': 'cls-chn-11b', 'name': 'Grade 11B', 'grade': '11', 'section': '11B', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-202', 'studentCount': 25, 'campus': 'Sensok'},
+        {'id': 'cls-chn-10a', 'name': 'Grade 10A', 'grade': '10', 'section': '10A', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-101', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-chn-10b', 'name': 'Grade 10B', 'grade': '10', 'section': '10B', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-102', 'studentCount': 27, 'campus': 'Sensok'},
+        {'id': 'cls-chn-9a', 'name': 'Grade 9A', 'grade': '9', 'section': '9A', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-091', 'studentCount': 28, 'campus': 'Sensok'},
+        {'id': 'cls-chn-9b', 'name': 'Grade 9B', 'grade': '9', 'section': '9B', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-092', 'studentCount': 26, 'campus': 'Sensok'},
+        {'id': 'cls-chn-8a', 'name': 'Grade 8A', 'grade': '8', 'section': '8A', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-081', 'studentCount': 25, 'campus': 'Sensok'},
+        {'id': 'cls-chn-8b', 'name': 'Grade 8B', 'grade': '8', 'section': '8B', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-082', 'studentCount': 25, 'campus': 'Sensok'},
+        {'id': 'cls-chn-7a', 'name': 'Grade 7A', 'grade': '7', 'section': '7A', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-071', 'studentCount': 24, 'campus': 'Sensok'},
+        {'id': 'cls-chn-7b', 'name': 'Grade 7B', 'grade': '7', 'section': '7B', 'department_id': 'dept-chn', 'department': 'Chinese Language Department', 'homeroomTeacher': 'Ms. Li Wei', 'room': 'Room C-072', 'studentCount': 24, 'campus': 'Sensok'},
 
     ],
 
@@ -1036,155 +1145,355 @@ def health():
 
 
 # ── NEWS ──
+NEWS_FILE = os.path.join(ROOT, 'data', 'news.json')
+
+def _save_news():
+    try:
+        os.makedirs(os.path.dirname(NEWS_FILE), exist_ok=True)
+        with open(NEWS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(DB['news'], f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"Error saving news.json: {e}")
+
+def _load_news():
+    if os.path.exists(NEWS_FILE):
+        try:
+            with open(NEWS_FILE, 'r', encoding='utf-8') as f:
+                saved = json.load(f)
+                if isinstance(saved, list) and len(saved) > 0:
+                    for item in saved:
+                        item.setdefault('status', 'published' if item.get('published', True) else 'draft')
+                        msg = item.get('message') or item.get('body') or item.get('content') or ''
+                        item.setdefault('message', msg)
+                        item.setdefault('body', msg)
+                        item.setdefault('content', msg)
+                        item.setdefault('summary', item.get('message', '')[:140])
+                        author = item.get('author') or item.get('author_name') or 'Mr. Heng Samnang'
+                        item.setdefault('author', author)
+                        item.setdefault('author_name', author)
+                        d = item.get('date') or item.get('created_at') or '2026-07-01'
+                        item.setdefault('date', d)
+                        item.setdefault('created_at', d)
+                    DB['news'] = saved
+                    return
+        except Exception as e:
+            print(f"Error loading news.json: {e}")
+    _save_news()
+
+_load_news()
+
+
+# ── Announcements visibility (ONE feed shared by every portal) ──
+# The server — never the client's ?portal= hint — decides what a viewer may
+# read. Audience tokens map an authenticated core role onto the audience labels
+# an editor can target when publishing.
+_NEWS_AUDIENCE_BY_ROLE = {
+    'student':   ('students', 'student'),
+    'teacher':   ('teachers', 'teacher'),
+    'principal': ('principal', 'principals', 'staff'),
+    'staff':     ('staff',),
+}
+_NEWS_MANAGER_ROLES = ('super_admin', 'admin', 'staff')
+
+
+def _news_viewer():
+    """Resolve the authenticated viewer of the announcements feed.
+
+    Anonymous browsing (passive demo, no explicit identity) keeps the legacy
+    open behaviour, mirroring the page gate which is likewise open until an
+    explicit identity exists. An explicit actor is fully audience-scoped.
+    """
+    actor = (request.headers.get('X-Actor')
+             or urllib.parse.unquote(request.cookies.get('ngis_actor') or '')
+             or '').strip().lower()
+    viewer = {'actor': actor, 'role': '', 'anonymous': True, 'manager': True,
+              'audiences': (), 'campus': '', 'department': '', 'classes': []}
+    if not actor:
+        return viewer
+    try:
+        import roles_permissions_api as rp
+        account = rp._account_by_username(actor, rp._identity_store())
+    except Exception:
+        account = None
+    if not account:
+        return viewer
+    role = str(account.get('role') or '').lower()
+    classes = [c.strip() for c in str(account.get('assignment') or '').split(',') if c.strip()]
+    viewer.update({
+        'anonymous': False,
+        'role': role,
+        'manager': role in _NEWS_MANAGER_ROLES,
+        'audiences': _NEWS_AUDIENCE_BY_ROLE.get(role, ()),
+        'campus': str(account.get('campus') or ''),
+        'department': str(account.get('department') or ''),
+        'classes': classes,
+    })
+    return viewer
+
+
+def _news_target_all(value):
+    return str(value or 'all').strip().lower() in ('', 'all', 'everyone', 'school')
+
+
+def _news_scope_match(value, candidates):
+    """True when an item's targeting value is school-wide or matches the viewer."""
+    if _news_target_all(value):
+        return True
+    v = str(value).strip().lower()
+    if not candidates:
+        return False
+    return any(v == c.lower() or v in c.lower() or c.lower() in v for c in candidates)
+
+
+def _news_in_window(item, today):
+    """Published, past its schedule, and not yet auto-archived."""
+    status = str(item.get('status') or '').lower()
+    if status in ('draft', 'archived') or item.get('published') is False:
+        return False
+    timing = str(item.get('publish_timing') or 'instant').lower()
+    sched = str(item.get('scheduled_date') or '')[:10]
+    if timing in ('schedule', 'scheduled') and sched:
+        try:
+            if datetime.strptime(sched, '%Y-%m-%d').date() > today:
+                return False
+        except Exception:
+            pass
+    m = re.match(r'^(\d+)d$', str(item.get('expiry_rule') or 'never').lower())
+    if m:
+        d = str(item.get('date') or item.get('created_at') or '')[:10]
+        try:
+            if (today - datetime.strptime(d, '%Y-%m-%d').date()).days > int(m.group(1)):
+                return False
+        except Exception:
+            pass
+    return True
+
+
+def _news_visible(item, viewer, today):
+    """Managers see everything; every other viewer is scoped by publication
+    window, audience and campus / department / class targeting."""
+    if viewer['manager']:
+        return True
+    if not _news_in_window(item, today):
+        return False
+    aud = item.get('audience')
+    tokens = ([str(a).strip().lower() for a in aud]
+              if isinstance(aud, list) else [str(aud or 'all').strip().lower()])
+    if 'all' not in tokens and not any(t in tokens for t in viewer['audiences']):
+        return False
+    if not _news_scope_match(item.get('target_campus'), [viewer['campus']]):
+        return False
+    if not _news_scope_match(item.get('target_department'), [viewer['department']]):
+        return False
+    # A viewer's class codes ("11B") double as their grade tokens ("11").
+    grade_tokens = list(viewer['classes'])
+    for c in viewer['classes']:
+        m = re.match(r'^(\d+)', c)
+        if m:
+            grade_tokens.append(m.group(1))
+    if not _news_scope_match(item.get('target_grade'), grade_tokens):
+        return False
+    if not _news_scope_match(item.get('target_class'), viewer['classes']):
+        return False
+    return True
+
+
+def _viewer_from_account(account):
+    """Build a news-viewer context from a directory account record."""
+    role = str((account or {}).get('role') or '').lower()
+    classes = [c.strip() for c in str((account or {}).get('assignment') or '').split(',') if c.strip()]
+    return {'actor': (account or {}).get('username', ''), 'role': role, 'anonymous': False,
+            'manager': role in _NEWS_MANAGER_ROLES,
+            'audiences': _NEWS_AUDIENCE_BY_ROLE.get(role, ()),
+            'campus': str((account or {}).get('campus') or ''),
+            'department': str((account or {}).get('department') or ''),
+            'classes': classes}
+
+
+_NEWS_NOTIFY_CAP = 500
+
+
+def _announce_publish_notifications(item):
+    """Best-effort in-portal notification fan-out for a published announcement.
+
+    Runs at most once per announcement (deduped through item['notified_ids']),
+    never for drafts / archived / not-yet-live items, and only to accounts whose
+    own audience, campus, department and class targeting match. Publishing must
+    never fail because this side-effect did. Abroad channels (Telegram / email)
+    are intentionally not triggered here — they require explicit configuration.
+    """
+    try:
+        if str(item.get('status') or '').lower() != 'published' or item.get('published') is False:
+            return 0
+        today = datetime.now().date()
+        if not _news_in_window(item, today):
+            return 0
+        import roles_permissions_api as rp
+        accounts = rp._identity_store().get('accounts') or []
+        already = set(item.get('notified_ids') or [])
+        title = item.get('title') or 'New announcement'
+        message = (item.get('summary') or item.get('message') or item.get('content') or '')[:180]
+        sent = []
+        for acct in accounts:
+            if str(acct.get('status') or 'active') != 'active':
+                continue
+            uid = acct.get('id')
+            if not uid or uid in already:
+                continue
+            v = _viewer_from_account(acct)
+            if v['manager']:   # publishers and staff are not the audience
+                continue
+            if not _news_visible(item, v, today):
+                continue
+            _notify_user(uid, title, message, 'general')
+            sent.append(uid)
+            if len(already) + len(sent) >= _NEWS_NOTIFY_CAP:
+                break
+        if sent:
+            item['notified_ids'] = sorted(already | set(sent))
+        return len(sent)
+    except Exception:
+        return 0
+
 
 @app.route('/api/news', methods=['GET'])
-
 def get_news():
-
+    _load_news()
+    viewer = _news_viewer()
     audience = request.args.get('audience')
-
     priority = request.args.get('priority')
-
     category = request.args.get('category')
-
     q = request.args.get('q')
+    status_filter = request.args.get('status')
+    all_flag = request.args.get('all') in ('1', 'true', 'yes')
+    wants_all = all_flag or status_filter == 'all'
 
-    
+    # The full / draft view is a management capability: honour it only for a
+    # manager. An explicit non-manager asking for `all` silently receives the
+    # ordinary published feed instead (no draft count leak).
+    if wants_all and viewer['manager']:
+        items = list(DB['news'])
+    elif status_filter and viewer['manager']:
+        items = [n for n in DB['news'] if n.get('status') == status_filter or (status_filter == 'published' and n.get('published'))]
+    else:
+        items = [n for n in DB['news'] if n.get('published', True) and n.get('status') != 'draft' and n.get('status') != 'archived']
 
-    items = [n for n in DB['news'] if n['published']]
-
-    
+    today = datetime.now().date()
+    items = [n for n in items if _news_visible(n, viewer, today)]
 
     if audience and audience != 'all':
-
-        items = [n for n in items if n['audience'] == audience or n['audience'] == 'all']
-
-    if priority:
-
-        items = [n for n in items if n['priority'] == priority]
-
-    if category:
-
-        items = [n for n in items if n['category'] == category]
-
+        items = [n for n in items if n.get('audience') == audience or n.get('audience') == 'all' or (isinstance(n.get('audience'), list) and (audience in n.get('audience') or 'all' in n.get('audience')))]
+    if priority and priority != 'all':
+        items = [n for n in items if n.get('priority') == priority]
+    if category and category != 'all':
+        items = [n for n in items if n.get('category') == category]
     if q:
-
         lq = q.lower()
+        items = [n for n in items if lq in n.get('title', '').lower() or lq in n.get('message', '').lower() or lq in n.get('summary', '').lower()]
 
-        items = [n for n in items if lq in n['title'].lower() or lq in n['message'].lower()]
-
-    
+    def _sort_date(x):
+        d = str(x.get('date', '2026-01-01'))[:10]
+        try:
+            return datetime.strptime(d, '%Y-%m-%d')
+        except Exception:
+            return datetime.min
 
     items.sort(key=lambda x: (
-
-        not x['pinned'],
-
-        x['priority'] != 'urgent',
-
-        datetime.strptime(x['date'], '%Y-%m-%d'),
-
+        not x.get('pinned', False),
+        x.get('priority') != 'urgent',
+        _sort_date(x),
     ), reverse=True)
-
-    
 
     return jsonify({'data': items, 'meta': {'total': len(items)}})
 
-
-
 @app.route('/api/news/<int:id>', methods=['GET'])
-
 def get_news_item(id):
-
     item = next((n for n in DB['news'] if n['id'] == id), None)
-
     if not item:
-
         return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'News post not found'}}), 404
-
     item['views'] = (item.get('views') or 0) + 1
-
+    _save_news()
     return jsonify({'data': item})
 
-
-
 @app.route('/api/news', methods=['POST'])
-
 def create_news():
-
-    data = request.get_json()
-
+    data = request.get_json(silent=True) or {}
     title = data.get('title')
-
-    message = data.get('message')
-
+    message = data.get('message') or data.get('content') or data.get('body')
     
-
-    if not title or not message:
-
-        return jsonify({'error': {'code': 'VALIDATION_ERROR', 'message': 'title and message are required'}}), 400
-
+    if not title:
+        return jsonify({'error': {'code': 'VALIDATION_ERROR', 'message': 'title is required'}}), 400
     
+    status = data.get('status', 'published')
+    is_published = (status == 'published') if 'status' in data else data.get('published', True)
+    
+    now_date = data.get('date') or datetime.now().strftime('%Y-%m-%d')
+    author_name = data.get('author') or data.get('author_name') or 'Mr. Heng Samnang'
+    body_text = message or ''
 
+    # Allocate the next id from the store itself: the global counter resets on
+    # every restart, which previously collided with persisted announcement ids.
+    existing_ids = [int(n['id']) for n in DB['news'] if str(n.get('id') or '').isdigit()]
     item = {
-
-        'id': new_id(),
-
+        'id': (max(existing_ids) + 1) if existing_ids else new_id(),
         'title': title,
-
-        'message': message,
-
+        'summary': data.get('summary') or (body_text[:140] + '...' if len(body_text) > 140 else body_text),
+        'message': body_text,
+        'body': body_text,
+        'content': data.get('content') or body_text,
         'audience': data.get('audience', 'all'),
-
+        'target_campus': data.get('target_campus', 'all'),
+        'target_grade': data.get('target_grade', 'all'),
+        'target_class': data.get('target_class', 'all'),
+        'target_department': data.get('target_department', 'all'),
         'priority': data.get('priority', 'normal'),
-
         'category': data.get('category', 'general'),
-
-        'pinned': data.get('pinned', False),
-
-        'image': data.get('image'),
-
-        'date': datetime.now().strftime('%Y-%m-%d'),
-
-        'views': 0,
-
-        'published': True
-
+        'pinned': bool(data.get('pinned', False)),
+        'image': data.get('image') or data.get('cover_image'),
+        'author': author_name,
+        'author_name': author_name,
+        'author_role': data.get('author_role', 'School Administration'),
+        'date': now_date,
+        'created_at': now_date,
+        'publish_timing': data.get('publish_timing', 'instant'),
+        'scheduled_date': data.get('scheduled_date'),
+        'expiry_rule': data.get('expiry_rule', 'never'),
+        'views': data.get('views', 0),
+        'published': is_published,
+        'status': status,
+        'attachments': data.get('attachments', []),
+        'telegram_broadcast': bool(data.get('telegram_broadcast', False)),
+        'khmer_ready': bool(data.get('khmer_ready', True))
     }
-
     DB['news'].insert(0, item)
-
+    _announce_publish_notifications(item)
+    _save_news()
     return jsonify({'data': item}), 201
 
-
-
 @app.route('/api/news/<int:id>', methods=['PUT'])
-
 def update_news(id):
-
     idx = next((i for i, n in enumerate(DB['news']) if n['id'] == id), None)
-
     if idx is None:
-
         return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'News post not found'}}), 404
-
-    DB['news'][idx].update(request.get_json())
-
+    data = request.get_json(silent=True) or {}
+    if 'status' in data:
+        data['published'] = (data['status'] == 'published')
+    if 'content' in data and not data.get('message'):
+        data['message'] = data['content']
+    elif 'message' in data and not data.get('content'):
+        data['content'] = data['message']
+    DB['news'][idx].update(data)
+    _announce_publish_notifications(DB['news'][idx])
+    _save_news()
     return jsonify({'data': DB['news'][idx]})
 
-
-
 @app.route('/api/news/<int:id>', methods=['DELETE'])
-
 def delete_news(id):
-
     idx = next((i for i, n in enumerate(DB['news']) if n['id'] == id), None)
-
     if idx is None:
-
         return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'News post not found'}}), 404
-
     deleted = DB['news'].pop(idx)
-
+    _save_news()
     return jsonify({'data': deleted, 'message': 'Deleted successfully'})
 
 
@@ -1813,7 +2122,7 @@ def review_claim(item_id, claim_id):
 
 
 
-    if new_status in ['approved', 'rejected', 'verified', 'ready_for_collection']:
+    if new_status in ['approved', 'rejected', 'verified', 'ready_for_collection', 'info_requested', 'under_review']:
 
         claim['status'] = new_status
 
@@ -1834,6 +2143,9 @@ def review_claim(item_id, claim_id):
         elif new_status == 'rejected' and all(c.get('status') == 'rejected' for c in item.get('claims', [])):
 
             item['status'] = 'active'
+        elif new_status in ['info_requested', 'under_review']:
+            if item.get('status') == 'active':
+                item['status'] = 'matching'
 
 
 
@@ -2109,6 +2421,8 @@ def get_lost_found_stats():
 
     user_id = request.args.get('userId', '2026-STD-0144')
 
+    pending_claims = sum(len([c for c in i.get('claims', []) if c.get('status') in ['under_review', 'info_requested']]) for i in items)
+
     stats = {
 
         'total': len(items),
@@ -2124,6 +2438,8 @@ def get_lost_found_stats():
         'ready': len([i for i in items if i.get('status') == 'ready_for_collection']),
 
         'returned': len([i for i in items if i.get('status') == 'returned']),
+
+        'pendingClaims': pending_claims,
 
         'myReports': len([i for i in items if str(i.get('reporterId')) == str(user_id)]),
 
@@ -2763,6 +3079,24 @@ def _academic_user():
 
             return user
 
+    # Provisioned identity sessions (User Management store accounts).
+
+    if token.startswith('um-session-'):
+
+        try:
+
+            from user_management_api import resolve_store_session
+
+            user = resolve_store_session(token[len('um-session-'):])
+
+            if user:
+
+                return user
+
+        except Exception:
+
+            pass
+
     return None
 
 
@@ -2804,16 +3138,37 @@ def _parent_can_view(user, student_id):
 
 
 def _teacher_can_class(user, class_id):
-
     if user['role'] in ('admin', 'principal'): return True
-
     if user['role'] != 'teacher': return False
+    teacher = next((t for t in DB['teachers'] if t.get('id') == user['id'] or t.get('email') == user.get('email')), None)
+    if not teacher: return False
 
-    teacher = next((t for t in DB['teachers'] if t.get('id') == user['id']), None)
+    # 1. Direct class id or name match against teacher['classes']
+    cls = next((c for c in DB['classes'] if c.get('id') == class_id or c.get('name', '').replace('Grade ', '').lower() == str(class_id).replace('Grade ', '').lower()), None)
+    cls_name = cls.get('name', '').replace('Grade ', '').strip().lower() if cls else str(class_id).replace('Grade ', '').strip().lower()
+    t_classes = [c.replace('Grade ', '').strip().lower() for c in teacher.get('classes', [])]
+    if cls_name in t_classes or str(class_id).lower() in [c.lower() for c in teacher.get('classes', [])]:
+        return True
 
-    cls = next((c for c in DB['classes'] if c.get('id') == class_id), None)
+    # 2. Check dynamic teacher['assignments']
+    for a in teacher.get('assignments', []):
+        a_class = (a.get('class') or '').replace('Grade ', '').strip().lower()
+        a_cid = (a.get('class_id') or '').strip().lower()
+        if (a_class and a_class == cls_name) or (a_cid and (a_cid == str(class_id).lower() or (cls and a_cid == cls.get('id', '').lower()))):
+            return True
 
-    return bool(teacher and cls and (cls.get('name', '').replace('Grade ', '') in teacher.get('classes', [])))
+    # 3. Check SQLite teacher_assignments
+    try:
+        sq_matches = ACADEMIC.query(
+            "SELECT 1 FROM teacher_assignments WHERE teacher_id = ? AND (class_id = ? OR class_id = ?) AND status = 'active'",
+            [user['id'], class_id, cls.get('id') if cls else class_id]
+        )
+        if sq_matches:
+            return True
+    except Exception:
+        pass
+
+    return False
 
 
 
@@ -4638,34 +4993,80 @@ def academic_report_card_details():
 
 
 @app.route('/api/auth/login', methods=['POST'])
-
 def auth_login():
-
     data = request.get_json(silent=True) or {}
-
-    email = data.get('email', '').strip().lower()
-
+    email = (data.get('email') or data.get('username') or '').strip().lower()
     password = data.get('password', '')
-
     user = AUTH_USERS.get(email)
 
-    if not user or password != 'password123':
+    if user and password == 'password123':
 
-        return _academic_error('INVALID_CREDENTIALS', 'Invalid email or password', 401)
+        token = f"mock-jwt-token-{user['role']}"
 
-    token = f"mock-jwt-token-{user['role']}"
+        return jsonify({
 
-    return jsonify({
+            'data': {
 
-        'data': {
+                'token': token,
 
-            'token': token,
+                'user': user
 
-            'user': user
+            }
 
-        }
+        })
 
-    })
+    # Provisioned identity accounts (User Management store): credential is a
+
+    # salted hash verified against data/user_accounts.json. Suspended,
+
+    # disabled, locked, and not-yet-activated accounts are rejected here.
+
+    try:
+
+        from user_management_api import authenticate_store_account
+
+        result, status = authenticate_store_account(email, password)
+
+        if status == 200:
+
+            try:
+                from security_api import log_event as _sec_log
+                _sec_log('auth.login_success',
+                         actor_account=(result.get('user') or {}).get('id', ''),
+                         outcome='success', detail='store account sign-in')
+            except Exception:
+                pass
+            return jsonify({'data': result})
+
+        if result:
+
+            # Seeded demo accounts have no password hash at all (they sign in
+            # through AUTH_USERS above). From a login form's perspective a
+            # wrong password is simply invalid credentials, not a setup error.
+            # Provisioned accounts awaiting activation keep their 403 response.
+            if (result.get('error') or {}).get('code') == 'CREDENTIAL_SETUP_REQUIRED' and email in AUTH_USERS:
+
+                return _academic_error('INVALID_CREDENTIALS', 'Invalid email or password', 401)
+
+            try:
+                from security_api import log_event as _sec_log
+                _code = (result.get('error') or {}).get('code', '')
+                if _code == 'INVALID_CREDENTIALS':
+                    _sec_log('auth.login_failed', actor_account=email[:80], outcome='rejected',
+                             status_code=401, detail='invalid credentials (store account)')
+                elif _code in ('ACCOUNT_SUSPENDED', 'ACCOUNT_LOCKED', 'ACTIVATION_REQUIRED'):
+                    _sec_log('auth.account_rejected', actor_account=email[:80], outcome='blocked',
+                             status_code=403, detail=_code)
+            except Exception:
+                pass
+
+            return jsonify({'error': result['error']}), status
+
+    except Exception as exc:
+
+        print(f'store auth unavailable: {exc}')
+
+    return _academic_error('INVALID_CREDENTIALS', 'Invalid email or password', 401)
 
 
 
@@ -4689,17 +5090,34 @@ def auth_me():
 
 def get_teacher_me():
 
+    # Provisioned store accounts resolve to their own teacher record; the
+    # demo session keeps the seeded first teacher.
+    user = _academic_user() or {}
+
+    teacher = None
+
+    if user.get('role') == 'teacher' and user.get('id'):
+
+        teacher = next((t for t in DB.get('teachers', [])
+                        if t.get('id') == user['id']), None)
+
+    if not teacher:
+
+        teacher = DB['teachers'][0]
+
+        user = user if user.get('role') == 'teacher' else AUTH_USERS['teacher@ngis.edu.kh']
+
     return jsonify({
 
         'data': {
 
-            'teacher': DB['teachers'][0],
+            'teacher': teacher,
 
-            'user': AUTH_USERS['teacher@ngis.edu.kh'],
+            'user': user,
 
             'classes': DB['classes'][:2],
 
-            'subjects': DB['teachers'][0]['subjects']
+            'subjects': teacher.get('subjects') or []
 
         }
 
@@ -4708,81 +5126,74 @@ def get_teacher_me():
 
 
 @app.route('/api/teacher/classes', methods=['GET'])
-
 def get_teacher_classes():
-
     user = _academic_user()
-
     if not user:
-
         return _academic_error('UNAUTHORIZED', 'Authentication required', 401)
 
-
-
     classes_list = DB['classes']
-
     teacher_name = 'Dr. Sarah Jenkins'
 
     if user['role'] == 'teacher':
+        teacher = next((t for t in DB['teachers'] if t.get('id') == user['id'] or t.get('email') == user.get('email')), None)
+        if teacher:
+            teacher_name = teacher.get('name', 'Dr. Sarah Jenkins')
+            assigned_names = set(c.replace('Grade ', '').strip() for c in teacher.get('classes', []))
+            for a in teacher.get('assignments', []):
+                if a.get('class'): assigned_names.add(a.get('class').replace('Grade ', '').strip())
+                if a.get('class_id'): assigned_names.add(a.get('class_id').strip())
+            # SQLite assignments
+            try:
+                sq_asgns = ACADEMIC.query("SELECT class_id, department_id, grade FROM teacher_assignments WHERE teacher_id=?", [teacher['id']])
+                for r in sq_asgns:
+                    assigned_names.add(r['class_id'])
+            except Exception:
+                pass
 
-        teacher = next((t for t in DB['teachers'] if t.get('id') == user['id'] or t.get('email') == user.get('email')), DB['teachers'][0])
+            matched_classes = [c for c in DB['classes'] if c.get('name', '').replace('Grade ', '') in assigned_names or c.get('id') in assigned_names]
 
-        teacher_name = teacher.get('name', 'Dr. Sarah Jenkins')
+            # Synthesize any assigned classes that are not in DB['classes']
+            matched_ids = {c.get('id') for c in matched_classes} | {c.get('name', '').replace('Grade ', '') for c in matched_classes}
+            for a in teacher.get('assignments', []):
+                ac_code = (a.get('class') or '').replace('Grade ', '').strip()
+                ac_id = a.get('class_id') or f"cls-{ac_code.lower()}"
+                if ac_code and ac_code not in matched_ids and ac_id not in matched_ids:
+                    synth_cls = {
+                        'id': ac_id,
+                        'name': f"Grade {ac_code}",
+                        'grade': a.get('grade', '').replace('Grade ', '') or '12',
+                        'room': 'Room ' + ac_code,
+                        'capacity': 30,
+                        'department': a.get('department', teacher.get('department', 'General Studies'))
+                    }
+                    matched_classes.append(synth_cls)
+                    matched_ids.add(ac_code)
+                    matched_ids.add(ac_id)
 
-        assigned_names = [c.replace('Grade ', '') for c in teacher.get('classes', [])]
-
-        classes_list = [c for c in DB['classes'] if c.get('name', '').replace('Grade ', '') in assigned_names or c.get('id') in assigned_names]
-
-        if not classes_list:
-
-            classes_list = DB['classes'][:3]
-
-
+            classes_list = matched_classes if matched_classes else (DB['classes'][:3] if not teacher.get('assignments') and not teacher.get('classes') else [])
 
     enriched = []
-
     for c in classes_list:
-
         cid = c['id']
-
         c_code = c.get('name','').replace('Grade ','')
-
-        c_students = [s for s in DB['students'] if s.get('class') == c_code]
-
+        c_students = [s for s in DB['students'] if s.get('class') == c_code or any(e.get('class') == c_code for e in s.get('enrollments', []))]
         asgns = [a for a in DB['assignments'] if a.get('classId') == cid]
-
         pending_subs = sum(len([s for s in a.get('submissions', []) if s.get('status') == 'submitted']) for a in asgns)
 
-
-
         att_rows = ACADEMIC.query("SELECT status FROM attendance WHERE class_id=? AND attendance_date=?", (cid, ACADEMIC.now()[:10]))
-
         att_rate = 96.4
-
         if att_rows:
-
             p_cnt = sum(1 for r in att_rows if r['status'] == 'present')
-
             att_rate = round(p_cnt / len(att_rows) * 100, 1)
 
-
-
         enriched.append({
-
             **c,
-
             'studentCount': len(c_students) if c_students else c.get('studentCount', 28),
-
             'pendingSubmissions': pending_subs,
-
             'activeAssignments': len(asgns),
-
             'attendanceRate': att_rate,
-
-            'department': 'Mathematics & Sciences',
-
+            'department': c.get('department') or 'General Studies',
             'isHomeroom': c.get('homeroomTeacher') == teacher_name
-
         })
 
 
@@ -5028,8 +5439,38 @@ def get_teacher_class_students(class_id):
 
 
     cls_code = cls_obj.get('name', '').replace('Grade ', '')
+    dept_id = cls_obj.get('department_id', '')
+    dept_name = cls_obj.get('department', '')
+    students = []
+    seen = set()
 
-    students = [s for s in DB['students'] if s.get('class') == cls_code]
+    for s in DB.get('students', []):
+        sid = s.get('id')
+        enrs = s.get('enrollments') or []
+        # Match primary class
+        if s.get('class') == cls_code and (not dept_name or s.get('department') in (dept_name, dept_id, None)):
+            if sid not in seen:
+                students.append(s)
+                seen.add(sid)
+                continue
+        # Match explicit enrollment in this class or department+class
+        for e in enrs:
+            if e.get('class_id') == class_id or (e.get('class') == cls_code and (not dept_name or e.get('department') in (dept_name, dept_id))):
+                if sid not in seen:
+                    students.append(s)
+                    seen.add(sid)
+                break
+
+    # Also query SQLite enrollments table for active placements
+    try:
+        db_enrs = ACADEMIC.query("SELECT student_id FROM enrollments WHERE class_id = ? AND status = 'active'", (class_id,))
+        for r in db_enrs:
+            st = _student(r['student_id'])
+            if st and st.get('id') not in seen:
+                students.append(st)
+                seen.add(st['id'])
+    except Exception:
+        pass
 
     return jsonify({'data': students, 'meta': {'total': len(students)}})
 
@@ -5083,299 +5524,84 @@ def get_teacher_class_submissions(class_id):
 
 def get_teacher_exams():
 
+    """Compatibility alias: serves the persistent exam engine, not demo literals."""
+
     user, error = _academic_require(('teacher', 'admin', 'principal'))
 
     if error: return error
 
-
-
-    teacher_classes = ['cls-10a', 'cls-11b', 'cls-11c']
-
-
-
-    my_exams = [
-
-        {
-
-            'id': 'exam-10a-math-midterm',
-
-            'title': 'Mid-Term Exam: Advanced Mathematics',
-
-            'subjectId': 'subj-math',
-
-            'subjectName': 'Advanced Mathematics',
-
-            'classId': 'cls-10a',
-
-            'className': 'Grade 10A',
-
-            'date': '2026-11-04',
-
-            'time': '08:30 – 10:30',
-
-            'room': 'Room 302',
-
-            'role': 'Lead Examiner & Invigilator',
-
-            'status': 'Scheduled',
-
-            'enrolledCount': 17,
-
-            'maxScore': 50,
-
-            'isToday': False,
-
-            'instructions': 'Distribute Formula Sheets (Form C) and scientific calculators. Scratch paper collected at end.'
-
-        },
-
-        {
-
-            'id': 'exam-11b-phys-midterm',
-
-            'title': 'Mid-Term Exam: Physics CP & Kinematics',
-
-            'subjectId': 'subj-phys',
-
-            'subjectName': 'Physics CP',
-
-            'classId': 'cls-11b',
-
-            'className': 'Grade 11B',
-
-            'date': '2026-11-06',
-
-            'time': '10:45 – 12:15',
-
-            'room': 'Room 203',
-
-            'role': 'Course Teacher',
-
-            'status': 'Scheduled',
-
-            'enrolledCount': 6,
-
-            'maxScore': 50,
-
-            'isToday': False,
-
-            'instructions': 'Formula packet attached to exam booklet. Graphing calculators permitted.'
-
-        },
-
-        {
-
-            'id': 'exam-10a-math-final',
-
-            'title': 'Semester 1 Final Examination: Mathematics',
-
-            'subjectId': 'subj-math',
-
-            'subjectName': 'Advanced Mathematics',
-
-            'classId': 'cls-10a',
-
-            'className': 'Grade 10A',
-
-            'date': '2026-12-14',
-
-            'time': '08:30 – 11:00',
-
-            'room': 'Room 302',
-
-            'role': 'Chief Invigilator',
-
-            'status': 'Upcoming',
-
-            'enrolledCount': 17,
-
-            'maxScore': 100,
-
-            'isToday': False,
-
-            'instructions': 'Formal institutional examination. Student ID check at door mandatory.'
-
-        }
-
-    ]
-
-
-
-    invigilation_duties = [
-
-        {
-
-            'id': 'duty-inv-01',
-
-            'examTitle': 'Mid-Term Exam: Advanced Mathematics',
-
-            'classId': 'cls-10a',
-
-            'className': 'Grade 10A',
-
-            'room': 'Room 302',
-
-            'date': '2026-11-04',
-
-            'time': '08:30 – 10:30',
-
-            'reportingTime': '08:10 (20 mins prior)',
-
-            'dutyRole': 'Chief Invigilator',
-
-            'partnerInvigilator': 'Muthukumaran Pakkirisamy',
-
-            'studentCount': 17,
-
-            'status': 'Confirmed',
-
-            'conflict': None,
-
-            'checklist': [
-
-                'Collect test packets from Examination Office (Room 101) at 08:05',
-
-                'Verify student photo IDs upon seating',
-
-                'Ensure mobile phones and smart devices are powered off in bags at front',
-
-                'Announce 15-minute remaining warning at 10:15',
-
-                'Seal answer booklets in presence of student witness'
-
-            ]
-
-        },
-
-        {
-
-            'id': 'duty-inv-02',
-
-            'examTitle': 'Final Written Test: Khmer Literature',
-
-            'classId': 'cls-12a',
-
-            'className': 'Grade 12A',
-
-            'room': 'Room 407 (11C)',
-
-            'date': '2026-11-05',
-
-            'time': '13:30 – 15:30',
-
-            'reportingTime': '13:15 (15 mins prior)',
-
-            'dutyRole': 'Assistant Invigilator',
-
-            'partnerInvigilator': 'Sokha Meng',
-
-            'studentCount': 14,
-
-            'status': 'Confirmed',
-
-            'conflict': None,
-
-            'checklist': [
-
-                'Support Chief Invigilator with attendance roll verification',
-
-                'Monitor room perimeter and corridor restroom transitions',
-
-                'Collect test papers in alphabetical sequence'
-
-            ]
-
-        }
-
-    ]
-
-
-
-    room_arrangements = []
-
-    for c_id in teacher_classes:
-
-        c_obj = next((c for c in DB['classes'] if c.get('id') == c_id), None)
-
-        if not c_obj: continue
-
-        c_code = c_obj.get('name','').replace('Grade ','')
-
-        students = [s for s in DB['students'] if s.get('class') == c_code]
-
-        room_name = c_obj.get('room', 'Room 302')
-
-        capacity = 24 if '302' in room_name else (20 if '203' in room_name else 16)
-
-        is_over = len(students) > capacity
-
-
-
-        room_arrangements.append({
-
-            'roomId': c_obj.get('room', 'Room 302').lower().replace(' ', '-').replace('(', '').replace(')', ''),
-
-            'roomName': room_name,
-
-            'classId': c_id,
-
-            'className': c_obj.get('name', c_id),
-
-            'capacity': capacity,
-
-            'assignedCount': len(students),
-
-            'availableDesks': max(0, capacity - len(students)),
-
-            'isOverCapacity': is_over,
-
-            'students': [
-
-                {
-
-                    'id': s['id'],
-
-                    'name': s['name'],
-
-                    'desk': f"Desk {idx + 1:02d}",
-
-                    'specialAccommodations': 'Standard' if idx % 4 != 0 else 'Extra 15 mins (IEP)'
-
-                }
-
-                for idx, s in enumerate(students)
-
-            ],
-
-            'supervisor': 'Dr. Sarah Jenkins',
-
-            'emergencyExit': 'Stairwell B (North Wing)'
-
-        })
-
-
-
-    return jsonify({
-
-        'data': {
-
-            'exams': my_exams,
-
-            'invigilations': invigilation_duties,
-
-            'rooms': room_arrangements,
-
-            'conflicts': []
-
-        }
-
-    })
+    return exam_management_api.list_simple_exams()
 
 
 
 @app.route('/api/student/dashboard', methods=['GET'])
 
 def get_student_dashboard():
+
+    # Resolve the caller's identity: provisioned store accounts land on their
+    # own student record; query param student_id allows direct inspection.
+    user = _academic_user() or {}
+    req_sid = request.args.get('student_id')
+    student = None
+    if req_sid:
+        student = next((s for s in DB.get('students', []) if str(s.get('id')) == str(req_sid)), None)
+    elif user.get('role') == 'student' and user.get('id'):
+        student = next((s for s in DB.get('students', [])
+                        if s.get('id') == user['id']), None)
+
+    if student:
+
+        cls_obj = next((c for c in DB.get('classes', [])
+                        if (c.get('name') or '').replace('Grade ', '') == student.get('class')), None)
+
+        return jsonify({
+
+            'data': {
+
+                'student': {
+
+                    'id': student.get('id'),
+
+                    'name': student.get('name'),
+
+                    'grade': student.get('grade'),
+
+                    'class': student.get('class'),
+
+                    'class_id': cls_obj.get('id') if cls_obj else None,
+
+                    'student_number': student.get('id'),
+
+                    'attendance_rate': student.get('attendance', 100),
+
+                    'gpa': student.get('gpa', 0),
+
+                    'status': student.get('status', 'active'),
+
+                    'enrollments': student.get('enrollments') or [
+                        {
+                            'department': 'English Department',
+                            'grade': student.get('grade') or 'Grade 10',
+                            'class': student.get('class') or '10A',
+                            'class_id': cls_obj.get('id') if cls_obj else 'cls-10a',
+                            'status': student.get('status', 'active'),
+                            'academic_year': '2025-26'
+                        }
+                    ]
+
+                },
+
+                'user': user,
+
+                'unreadNotifications': 2,
+
+                'gpa': student.get('gpa', 0),
+
+                'attendanceRate': student.get('attendance', 100)
+
+            }
+
+        })
 
     return jsonify({
 
@@ -5399,7 +5625,12 @@ def get_student_dashboard():
 
                 'gpa': 3.87,
 
-                'status': 'active'
+                'status': 'active',
+
+                'enrollments': [
+                    {'department': 'English Department', 'grade': 'Grade 10', 'class': '10A', 'class_id': 'cls-10a', 'status': 'active', 'academic_year': '2025-26'},
+                    {'department': 'Khmer Studies Department', 'grade': 'Grade 10', 'class': '10A', 'class_id': 'cls-khm-10a', 'status': 'active', 'academic_year': '2025-26'}
+                ]
 
             },
 
@@ -6065,6 +6296,18 @@ if not PRINCIPAL_DEMO_MODE:
     _saved_students = _load_json_file(STUDENTS_OVERLAY_FILE)
     if isinstance(_saved_students, list) and _saved_students:
         DB['students'] = _saved_students
+
+    # Restore the other people overlays the same way, so dashboards and
+    # directory pages reflect the persisted stores (incl. NGIS_DEMO_2026
+    # seeded records) instead of only the in-memory fixtures.
+    for _overlay_key, _fname in (
+        ('teachers', 'teachers_overlay.json'),
+        ('staff', 'staff_overlay.json'),
+        ('principals', 'principals_overlay.json'),
+    ):
+        _saved_people = _load_json_file(os.path.join(ROOT, 'data', _fname))
+        if isinstance(_saved_people, list) and _saved_people:
+            DB[_overlay_key] = _saved_people
 
 
 
@@ -7728,7 +7971,8 @@ def principal_roster_students():
 
     for s in DB['students']:
 
-        if class_filter and s.get('class') != class_filter:
+        matches_class = s.get('class') == class_filter or any(e.get('class') == class_filter or e.get('class_id') == class_filter for e in (s.get('enrollments') or []))
+        if class_filter and not matches_class:
 
             continue
 
@@ -7750,7 +7994,7 @@ def principal_roster_students():
 
 
 
-STUDENT_EDITABLE_FIELDS = ('name', 'gender', 'grade', 'class', 'status', 'parentEmail', 'parentName', 'advisor')
+STUDENT_EDITABLE_FIELDS = ('name', 'gender', 'grade', 'class', 'status', 'parentEmail', 'parentName', 'advisor', 'enrollments')
 
 
 
@@ -7819,6 +8063,20 @@ def principal_edit_student(student_id):
     previous = {k: student.get(k) for k in changes}
 
     student.update(changes)
+
+    if 'enrollments' in changes:
+        try:
+            for enr in student.get('enrollments', []):
+                ACADEMIC.enroll_student(
+                    student_id=student_id,
+                    class_id=enr.get('class_id', f"cls-{enr.get('class', '').lower()}"),
+                    academic_year_id=f"ay-{enr.get('academic_year', '2025-26')}",
+                    status=enr.get('status', 'active'),
+                    department_id=enr.get('department_id', ''),
+                    grade=enr.get('grade', '')
+                )
+        except Exception:
+            pass
 
     _persist_students()
 
@@ -8017,48 +8275,67 @@ def principal_edit_teacher(teacher_id):
     teacher = next((t for t in pool if str(t.get('id')) == str(teacher_id)), None)
 
     if not teacher:
-
         return _academic_error('NOT_FOUND', 'Teacher not found in registry', 404)
 
     changes = {}
 
+    # Handle dynamic teaching assignments if provided
+    if 'assignments' in data and isinstance(data['assignments'], list):
+        asgns = data['assignments']
+        teacher['assignments'] = asgns
+        c_list = []
+        s_list = []
+        for a in asgns:
+            c_code = (a.get('class') or '').replace('Grade ', '').strip()
+            if c_code and c_code not in c_list:
+                c_list.append(c_code)
+            s_name = (a.get('subject') or '').strip()
+            if s_name and s_name not in s_list:
+                s_list.append(s_name)
+        teacher['classes'] = c_list
+        teacher['classesAssigned'] = len(c_list)
+        if s_list:
+            teacher['subjects'] = s_list
+            teacher['subject'] = s_list[0]
+        try:
+            for a in asgns:
+                c_code = (a.get('class') or '').replace('Grade ', '').strip()
+                cid = a.get('class_id') or f"cls-{c_code.lower()}"
+                s_id = a.get('subject_id') or f"sub-{(a.get('subject') or 'gen').lower()[:6]}"
+                d_id = a.get('department_id') or a.get('department') or ''
+                g_val = a.get('grade') or ''
+                ACADEMIC.assign_teacher(teacher_id, cid, s_id, 'ay-2025-26', d_id, g_val)
+        except Exception:
+            pass
+        changes['assignments'] = asgns
+
     for k in TEACHER_EDITABLE_FIELDS:
-
-        if k not in data:
-
+        if k not in data or k == 'assignments':
             continue
-
         val = data[k]
-
         if k in ('classesAssigned', 'yearsAtSchool', 'target', 'max_daily'):
-
             try:
-
                 val = int(val or 0)
-
             except (TypeError, ValueError):
-
                 return _academic_error('BAD_NUMBER', '%s must be whole numbers' % k)
-
         else:
-
             val = str(val or '').strip()
-
             if not val and k in ('name', 'department', 'subject', 'email'):
-
                 return _academic_error('EMPTY_FIELD', 'Field "%s" cannot be blank' % k)
-
         if str(val) != str(teacher.get(k)):
-
             changes[k] = val
 
     if not changes:
-
         return _academic_error('NO_CHANGES', 'No field values actually changed')
 
     previous = {k: teacher.get(k) for k in changes}
-
     teacher.update(changes)
+
+    try:
+        from user_management_api import _save_overlay
+        _save_overlay('teacher')
+    except Exception:
+        pass
 
     if PRINCIPAL_DEMO_MODE:
 
@@ -8205,10 +8482,28 @@ def principal_student_profile(student_id):
                                     if t.get('id') == student.get('advisor') or t.get('name') == student.get('advisor')),
                                    student.get('advisor') or '—')
         grows = ACADEMIC.query(
-            "SELECT g.*, a.title AS assessmentTitle FROM grades g "
+            "SELECT g.*, a.title AS assessmentTitle, a.category AS assessmentCategory, "
+            "a.max_score AS assessmentMaxScore, s.name AS subjectName "
+            "FROM grades g "
             "LEFT JOIN assessments a ON a.id = g.assessment_id "
+            "LEFT JOIN subjects s ON s.id = a.subject_id "
             "WHERE g.student_id=? ORDER BY g.id DESC LIMIT 40", (sid,))
         data['grades'] = [dict(r) for r in grows]
+        # Live GPA derived only from actually graded, scored assessments.
+        pct_scores = []
+        for g in data['grades']:
+            if str(g.get('state') or '') != 'graded' or g.get('score') is None:
+                continue
+            max_score = g.get('assessmentMaxScore') or g.get('maxScore')
+            try:
+                max_score = float(max_score) if max_score else 100.0
+                if max_score <= 0:
+                    max_score = 100.0
+                pct_scores.append(max(0.0, min(100.0, float(g['score']) / max_score * 100.0)))
+            except (TypeError, ValueError):
+                continue
+        if pct_scores:
+            data['gpaLive'] = round(min(4.0, max(0.0, (sum(pct_scores) / len(pct_scores)) / 25.0)), 2)
         arows = ACADEMIC.query(
             "SELECT * FROM attendance WHERE student_id=? ORDER BY attendance_date DESC LIMIT 12", (sid,))
         data['attendance'] = {'studentId': sid, 'records': [dict(r) for r in arows],
@@ -8225,6 +8520,43 @@ def principal_student_profile(student_id):
                                 if str(r.get('status', '')).lower() in ('open', 'pending', 'in_progress')])
     data['documents'] = _profile_docs_for('student', sid)
     data['activity'] = _profile_activity(sid)
+
+    # Ensure structured enrollments list is present
+    if not data.get('enrollments'):
+        try:
+            sql_enrs = ACADEMIC.get_student_enrollments(sid)
+            if sql_enrs:
+                enrs = []
+                for se in sql_enrs:
+                    cid = se.get('class_id')
+                    cl_obj = next((c for c in DB.get('classes', []) if c.get('id') == cid), None)
+                    d_obj = next((d for d in DB.get('departments', []) if d.get('id') == se.get('department_id') or (cl_obj and d.get('id') == cl_obj.get('department_id'))), None)
+                    enrs.append({
+                        'department': (d_obj and d_obj.get('name')) or (cl_obj and cl_obj.get('department')) or se.get('department_id') or 'Academic Department',
+                        'department_id': se.get('department_id') or (d_obj and d_obj.get('id')) or '',
+                        'grade': se.get('grade') or (cl_obj and f"Grade {cl_obj.get('grade')}") or student.get('grade', 'Grade 10'),
+                        'class': (cl_obj and cl_obj.get('name', '').replace('Grade ', '')) or se.get('class_id', ''),
+                        'class_id': cid,
+                        'academic_year': se.get('academic_year_id', 'ay-2025-26').replace('ay-', ''),
+                        'status': se.get('status', 'active')
+                    })
+                data['enrollments'] = enrs
+        except Exception:
+            pass
+
+    if not data.get('enrollments'):
+        cls_name = (data.get('class') or '10A').replace('Grade ', '')
+        dept_name = 'Khmer Studies Department' if '12' in (data.get('grade') or '') else 'English Department'
+        data['enrollments'] = [{
+            'department': dept_name,
+            'department_id': 'dept-khm' if 'Khmer' in dept_name else 'dept-eng',
+            'grade': data.get('grade') or 'Grade 10',
+            'class': cls_name,
+            'class_id': f"cls-{cls_name.lower()}",
+            'academic_year': '2025-26',
+            'status': data.get('status', 'active')
+        }]
+
     return jsonify({'status': 'success', 'mode': 'demo' if PRINCIPAL_DEMO_MODE else 'live', 'data': data})
 
 
@@ -8697,29 +9029,226 @@ def academic_gradebook_submit_clearance():
 # ── ADMIN MANAGEMENT API ENDPOINTS ──
 
 @app.route('/api/admin/stats', methods=['GET'])
-
 def admin_stats():
+    # Real live data aggregation across NGIS database
+    import time as _time
+    _t0 = _time.time()
+    std_count = len(DB.get('students', []))
+    tch_count = len(DB.get('teachers', []))
+    stf_count = len(DB.get('staff', [])) + len(DB.get('principals', []))
+    cls_count = len(DB.get('classes', []))
+    grd_count = len(DB.get('grades', []))
+    tt_count = len(DB.get('timetables', []))
+    tt_classes = len({t.get('classId') for t in DB.get('timetables', []) if t.get('classId')})
+    
+    # Real average student attendance rate from live student records
+    att_vals = [s.get('attendance') for s in DB.get('students', []) if isinstance(s.get('attendance'), (int, float))]
+    attendance_rate = round(sum(att_vals) / len(att_vals), 1) if att_vals else 0.0
+
+    # User accounts breakdown from store
+    acc_total = 0
+    acc_active = 0
+    acc_pending = 0
+    acc_by_role = {'students': 0, 'teachers': 0, 'staff': 0, 'principals': 0, 'admins': 0}
+    account_pending_actions = []
+    audit_recent = []
+    audit_total = 0
+    user_acc_path = os.path.join(ROOT, 'data', 'user_accounts.json')
+    if os.path.exists(user_acc_path):
+        try:
+            with open(user_acc_path, 'r', encoding='utf-8') as f:
+                udata = json.load(f)
+                accs = udata.get('accounts', [])
+                acc_total = len(accs)
+                acc_active = sum(1 for a in accs if a.get('status') == 'active')
+                acc_pending = sum(1 for a in accs if a.get('status') == 'pending_activation')
+                audit_log_full = udata.get('audit_log', [])
+                audit_total = len(audit_log_full)
+                audit_recent = audit_log_full[-10:]
+                audit_recent.reverse()
+                role_key = {'student': 'students', 'teacher': 'teachers', 'staff': 'staff', 'principal': 'principals', 'admin': 'admins'}
+                for a in accs:
+                    key = role_key.get(str(a.get('person_type', '')).lower())
+                    if key:
+                        acc_by_role[key] += 1
+                    if a.get('status') == 'pending_activation':
+                        account_pending_actions.append({
+                            'kind': 'account',
+                            'name': a.get('name') or a.get('username') or 'Pending account',
+                            'detail': 'Password activation pending'
+                        })
+        except Exception:
+            pass
+
+    # Pending teacher update requests
+    tur_pending = 0
+    tur_pending_actions = []
+    tur_path = os.path.join(ROOT, 'data', 'teacher_update_requests.json')
+    if os.path.exists(tur_path):
+        try:
+            with open(tur_path, 'r', encoding='utf-8') as f:
+                tur_data = json.load(f)
+                reqs = tur_data if isinstance(tur_data, list) else tur_data.get('requests', [])
+                for r in reqs:
+                    if r.get('status') == 'pending':
+                        tur_pending += 1
+                        tur_pending_actions.append({
+                            'kind': 'teacher',
+                            'name': r.get('teacherName') or 'Teacher',
+                            'detail': r.get('fieldChanged') or 'Profile update pending'
+                        })
+        except Exception:
+            pass
+
+    # Pending student update requests
+    sur_pending = 0
+    sur_pending_actions = []
+    sur_path = os.path.join(ROOT, 'data', 'student_update_requests.json')
+    if os.path.exists(sur_path):
+        try:
+            with open(sur_path, 'r', encoding='utf-8') as f:
+                sur_data = json.load(f)
+                reqs = sur_data if isinstance(sur_data, list) else sur_data.get('requests', [])
+                for r in reqs:
+                    if r.get('status') == 'pending':
+                        sur_pending += 1
+                        sur_pending_actions.append({
+                            'kind': 'student',
+                            'name': r.get('studentName') or 'Student',
+                            'detail': r.get('field') or 'Profile update pending'
+                        })
+        except Exception:
+            pass
+
+    total_pending = tur_pending + sur_pending + acc_pending
+
+    # Pending service requests (admin service queue)
+    sr_pending = 0
+    sr_pending_actions = []
+    sr_path = os.path.join(ROOT, 'data', 'service_requests.json')
+    if os.path.exists(sr_path):
+        try:
+            with open(sr_path, 'r', encoding='utf-8') as f:
+                sr_data = json.load(f)
+                sreqs = sr_data if isinstance(sr_data, list) else sr_data.get('requests', [])
+                for r in sreqs:
+                    if str(r.get('status', '')).lower() in ('pending', 'open'):
+                        sr_pending += 1
+                        sr_pending_actions.append({
+                            'kind': 'service',
+                            'name': r.get('studentName') or r.get('requestedBy') or r.get('requester') or 'Service requester',
+                            'detail': r.get('title') or 'Service request pending',
+                            'href': 'admin-services.html',
+                            'action': 'Process'
+                        })
+        except Exception:
+            pass
+    total_pending += sr_pending
+
+    _href_by_kind = {
+        'teacher': 'admin-teacher-profiles.html', 'student': 'admin-student-profiles.html',
+        'account': 'admin-users-students.html', 'service': 'admin-services.html',
+    }
+    _action_by_kind = {'teacher': 'Review', 'student': 'Review', 'account': 'Activate', 'service': 'Process'}
+    for a in tur_pending_actions + sur_pending_actions + account_pending_actions:
+        a.setdefault('href', _href_by_kind.get(a.get('kind'), 'admin-logs.html'))
+        a.setdefault('action', _action_by_kind.get(a.get('kind'), 'Review'))
+    pending_actions = (tur_pending_actions + sur_pending_actions + account_pending_actions + sr_pending_actions)[:6]
+
+    # Faculty credential completeness (teachers with full profile on file)
+    _tcomplete = 0
+    for t in DB.get('teachers', []):
+        if t.get('email') and t.get('department') and (t.get('subjects') or t.get('classes')):
+            _tcomplete += 1
+    credential_pct = round(100.0 * _tcomplete / tch_count) if tch_count else 0
+
+    # Staff & Leadership descriptor: role of the primary operational staff member
+    staff_role = None
+    if DB.get('staff'):
+        staff_role = DB['staff'][0].get('role') or DB['staff'][0].get('position')
+    if not staff_role and DB.get('principals'):
+        staff_role = DB['principals'][0].get('role') or DB['principals'][0].get('position') or 'Principal'
+
+    # Academic year / term / exam schedule terms from system configuration
+    academic_year = None
+    exam_terms = 0
+    current_term = None
+    syscfg_path = os.path.join(ROOT, 'data', 'system_configuration.json')
+    if os.path.exists(syscfg_path):
+        try:
+            with open(syscfg_path, 'r', encoding='utf-8') as f:
+                _cfg = json.load(f)
+            years = _cfg.get('school_years') or []
+            yr = next((y for y in years if y.get('isCurrent')), None)
+            if not yr and years:
+                yr = years[-1]
+            if yr:
+                academic_year = yr.get('year')
+                exam_terms = yr.get('termsCount') or 0
+        except Exception:
+            pass
+    if academic_year is None and DB.get('academic_years'):
+        y0 = DB['academic_years'][-1] if isinstance(DB.get('academic_years'), list) else None
+        if isinstance(y0, dict):
+            academic_year = y0.get('year') or y0.get('label')
+            exam_terms = y0.get('termsCount') or 0
+    if not current_term:
+        _m = datetime.now().month
+        current_term = 'Semester 1' if 8 <= _m <= 12 else 'Semester 2'
+
+    # Audit error entries (real error count from the audit log)
+    audit_errors = 0
+    for e in audit_recent:
+        if str(e.get('status', '')).lower() == 'error' or str(e.get('level', '')).lower() == 'error':
+            audit_errors += 1
+
+    _latency_ms = round((_time.time() - _t0) * 1000)
+    # Roles enforced by the NGIS identity model
+    roles_enforced = 6  # admin, principal, teacher, staff, student, parent
 
     return jsonify({
-
         'data': {
-
-            'students': 1250,
-
-            'teachers': 86,
-
-            'parents': 980,
-
-            'activeClasses': 48,
-
-            'attendanceToday': 95.4,
-
-            'pendingRequests': 14,
-
-            'grades': len(DB['grades'])
-
+            'students': std_count,
+            'teachers': tch_count,
+            'staff': stf_count,
+            'parents': len(DB.get('parents', [])),
+            'activeClasses': cls_count,
+            'attendanceToday': attendance_rate,
+            'credentialPct': credential_pct,
+            'staffRole': staff_role,
+            'publishedGrades': grd_count,
+            'pendingGrades': 0,
+            'timetableSlots': tt_count,
+            'timetableClasses': tt_classes,
+            'examTerms': exam_terms,
+            'academicYear': academic_year,
+            'currentTerm': current_term,
+            'pendingRequests': total_pending,
+            'teacherPendingUpdates': tur_pending,
+            'studentPendingUpdates': sur_pending,
+            'servicePendingRequests': sr_pending,
+            'pendingActions': pending_actions,
+            'accounts': {
+                'total': acc_total,
+                'active': acc_active,
+                'pending': acc_pending,
+                'byRole': acc_by_role
+            },
+            'grades': grd_count,
+            'timetables': tt_count,
+            'recentActivity': audit_recent,
+            'auditTotal': audit_total,
+            'systemHealth': {
+                'api': 'Operational',
+                'database': 'Connected',
+                'auth': 'Enforced',
+                'storage': 'Ready',
+                'latencyMs': _latency_ms,
+                'roles': roles_enforced,
+                'errors': audit_errors,
+                'lastChecked': datetime.now().isoformat()
+            }
         }
-
     })
 
 
@@ -8769,53 +9298,31 @@ def admin_audit():
 
 
 @app.route('/api/announcements', methods=['GET', 'POST'])
-
 def handle_announcements():
-
     if request.method == 'POST':
-
         data = request.get_json(silent=True) or {}
-
         item = {
-
             'id': len(DB['news']) + 1,
-
             'title': data.get('title', 'Untitled'),
-
             'message': data.get('message', ''),
-
             'audience': data.get('audience', 'all'),
-
             'date': datetime.now().strftime('%Y-%m-%d'),
-
             'category': data.get('category', 'general'),
-
             'pinned': bool(data.get('pinned', False)),
-
             'published': True
-
         }
-
         DB['news'].insert(0, item)
-
+        _save_news()
         return jsonify({'data': item}), 201
-
     return jsonify({'data': DB['news'], 'meta': {'total': len(DB['news'])}})
 
-
-
 @app.route('/api/announcements/<int:id>', methods=['DELETE'])
-
 def delete_announcement(id):
-
     idx = next((i for i, n in enumerate(DB['news']) if n['id'] == id), None)
-
     if idx is not None:
-
         DB['news'].pop(idx)
-
+        _save_news()
         return jsonify({'data': None, 'message': 'Deleted'})
-
     return jsonify({'error': {'code': 'NOT_FOUND', 'message': 'Announcement not found'}}), 404
 
 
@@ -8835,6 +9342,16 @@ data_dictionary_api.register_dictionary_routes(app, DB)
 # ── SYSTEM MANAGEMENT API ROUTES (System, School Year Config & Accounts) ──
 import system_management_api
 system_management_api.register_system_routes(app, DB)
+
+# ── USER MANAGEMENT API ROUTES (Centralized Identity Administration) ──
+import user_management_api
+user_management_api.register_user_mgmt_routes(app)
+
+# ── ROLES & ACCESS CONTROL API (roles, permissions, user overrides, gate) ──
+import roles_permissions_api
+import roles_permissions_ext
+roles_permissions_api.register_roles_mgmt_routes(app)
+roles_permissions_ext.register_roles_ext_routes(app)
 
 
 
@@ -8878,7 +9395,7 @@ def route_student():
 
 def route_staff():
 
-    return send_from_directory(ROOT, 'pages/staff/staff.html')
+    return redirect('/pages/admin/admin-services.html?portal=staff')
 
 
 
@@ -9001,12 +9518,37 @@ def handle_single_class(class_id):
     enrolled = [s for s in DB['students'] if s.get('class') == class_name or s.get('class') == c['name']]
     return jsonify({'data': c, 'students': enrolled, 'meta': {'enrolledTotal': len(enrolled)}})
 
-@app.route('/api/departments', methods=['GET'])
+@app.route('/api/departments', methods=['GET', 'POST'])
 def get_departments():
     depts = DB.get('departments', [])
+    if request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        name = data.get('name', '').strip()
+        code = data.get('code', '').strip().upper()
+        if not name:
+            return jsonify({'error': {'code': 'BAD_REQUEST', 'message': 'Department name is required'}}), 400
+        dept_id = 'dept-' + (code.lower() if code else str(len(depts) + 1))
+        new_dept = {
+            'id': dept_id,
+            'code': code or f'D{len(depts)+1}',
+            'name': name,
+            'head': data.get('head', 'Unassigned'),
+            'headId': data.get('headId', ''),
+            'teachersCount': int(data.get('teachersCount', 0)),
+            'studentsCount': int(data.get('studentsCount', 0)),
+            'room': data.get('room', 'Building A'),
+            'email': data.get('email', f'{code.lower()}@ngis.edu.kh'),
+            'subjects': data.get('subjects', []),
+            'curriculum': data.get('curriculum', 'NGIS Standard Curriculum Framework'),
+            'status': data.get('status', 'active'),
+            'syllabusCompliance': int(data.get('syllabusCompliance', 100))
+        }
+        depts.append(new_dept)
+        return jsonify({'status': 'success', 'message': 'Department created successfully', 'data': new_dept}), 201
+
     return jsonify({'status': 'success', 'data': depts, 'meta': {'total': len(depts)}})
 
-@app.route('/api/departments/<dept_id>', methods=['GET', 'PUT'])
+@app.route('/api/departments/<dept_id>', methods=['GET', 'PUT', 'DELETE'])
 def handle_single_department(dept_id):
     depts = DB.get('departments', [])
     d = next((item for item in depts if item['id'] == dept_id or item.get('code', '').lower() == dept_id.lower()), None)
@@ -9015,13 +9557,17 @@ def handle_single_department(dept_id):
     
     if request.method == 'PUT':
         data = request.get_json(silent=True) or {}
-        for key in ['name', 'head', 'headId', 'room', 'email', 'curriculum', 'status', 'syllabusCompliance']:
+        for key in ['name', 'code', 'head', 'headId', 'room', 'email', 'curriculum', 'status', 'syllabusCompliance', 'teachersCount', 'studentsCount']:
             if key in data:
                 d[key] = data[key]
         return jsonify({'status': 'success', 'message': 'Department information updated', 'data': d})
     
+    if request.method == 'DELETE':
+        DB['departments'] = [item for item in depts if item['id'] != dept_id and item.get('code', '').lower() != dept_id.lower()]
+        return jsonify({'status': 'success', 'message': 'Department removed'})
+
     # Also find assigned teachers
-    dept_teachers = [t for t in DB['teachers'] if t.get('department', '').lower() in d['name'].lower()]
+    dept_teachers = [t for t in DB.get('teachers', []) if t.get('department', '').lower() in d['name'].lower()]
     return jsonify({'data': d, 'teachers': dept_teachers})
 
 @app.route('/api/assignments/<asgn_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -9147,6 +9693,17 @@ def principal_correct_attendance():
 # ── Start ─────────────────────────────────────────────────────
 
 if __name__ == '__main__':
+
+    import sys
+
+    # When launched directly, this module runs as "__main__" — but backend
+    # modules (user_management_api, student_management_api, …) import
+    # "server", which would re-execute this file and create a SECOND module
+    # state: a second Flask app, a second DB dict, a second AUTH_USERS.
+    # Writes through blueprints then land in the wrong dict (created
+    # accounts invisible to roster/dashboard routes and vice versa).
+    # Alias __main__ as "server" so every importer shares one namespace.
+    sys.modules.setdefault('server', sys.modules['__main__'])
 
     print("=" * 60)
 

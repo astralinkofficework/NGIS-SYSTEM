@@ -7,83 +7,88 @@
 <meta name="description" content="The school management portal for New Gateway International School. Sign in as an administrator, teacher, student, or principal."/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<link rel="stylesheet" href="assets/css/design-tokens.css">
 <link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/shared-components.css">
 <script>
 try {
   localStorage.setItem('ngis-theme', 'light');
   document.documentElement.setAttribute('data-theme', 'light');
 } catch(e) {}
 </script>
+<!-- Canonical identity helper. Loaded on the landing page so the portal picker
+     can mirror the chosen session into ngis_actor BEFORE the first navigation,
+     keeping the server-side direct-URL gate active from the very first hop. -->
+<script src="assets/js/auth.js"></script>
 <style>
-body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7; color:#000000; font-family:'Manrope', -apple-system, sans-serif; }
+body { min-height:100vh; display:flex; flex-direction:column; background:var(--token-bg, #F7F9F7); color:#111814; font-family:'Manrope', -apple-system, sans-serif; }
+@media (min-width: 1025px) { .sidebar.index-drawer-only { display:none !important; visibility:hidden !important; pointer-events:none !important; } }
 .lh { position:sticky; top:0; z-index:50; background:#ffffff; border-bottom:1px solid #E1E9E3; }
 .lh-inner { max-width:1080px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
 .logo-block { display:flex; align-items:center; gap:12px; }
-.logo-mark { width:40px; height:40px; border-radius:10px; background:#29352E; display:grid; place-items:center; color:#ffffff; font-weight:500; font-size:14px; }
-.logo-text span { font-size:16px; font-weight:500; letter-spacing:-.02em; display:block; color:#000000; line-height:1.2; }
-.logo-text small { font-size:11px; color:#176B45; font-weight:400; }
+.logo-mark { width:40px; height:40px; border-radius:10px; background:#176B45; display:grid; place-items:center; color:#ffffff; font-weight:500; font-size:14px; }
+.logo-text span { font-size:16px; font-weight:500; letter-spacing:-.02em; display:block; color:#111814; line-height:1.2; }
+.logo-text small { font-size:11px; color:#45544B; font-weight:400; }
 .lh-actions { display:flex; align-items:center; gap:10px; }
 
 .hero { background:transparent; border-bottom:none; }
 .hero-inner { max-width:920px; margin:0 auto; padding:56px 24px 36px; text-align:center; }
-.hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:#ffffff; color:#176B45; border:1px solid #E1E9E3; padding:6px 14px; border-radius:999px; font-size:13px; font-weight:500; margin-bottom:20px; box-shadow:0 1px 2px rgba(15,23,42,0.03); }
-.hero h1 { font-size:clamp(28px,4.5vw,42px); line-height:1.15; letter-spacing:-.025em; color:#000000; font-weight:500; }
-.hero p { font-size:16px; color:#176B45; margin:14px auto 0; max-width:600px; line-height:1.6; font-weight:400; }
-.hero-cta { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:28px; }
+.hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:#E8F3ED; color:#176B45; border:1px solid #C8E1D3; padding:6px 14px; border-radius:999px; font-size:13px; font-weight:500; margin-bottom:20px; }
+.hero h1 { font-size:clamp(28px,4.5vw,42px); line-height:1.15; letter-spacing:-.025em; color:#111814; font-weight:500; }
+.hero p { font-size:16px; color:#45544B; margin:14px auto 0; max-width:600px; line-height:1.6; font-weight:400; }
+.hero-cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:28px; }
 
-.btn { display:inline-flex; align-items:center; gap:8px; padding:10px 18px; border-radius:12px; font-size:13.5px; font-weight:500; text-decoration:none; transition:border-color .15s ease, opacity .15s ease; cursor:pointer; }
-.btn-primary { background:#29352E; color:#ffffff; border:1px solid #29352E; }
-.btn-primary:hover { background:#29352E !important; border-color:#29352E !important; opacity:0.95; }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:10px 18px; border-radius:10px; font-size:13.5px; font-weight:500; text-decoration:none; transition:background-color .15s ease, border-color .15s ease; cursor:pointer; }
+.btn-primary { background:#176B45; color:#ffffff; border:1px solid #176B45; }
+.btn-primary:hover { background:#125638 !important; border-color:#125638 !important; }
 .btn-ghost { background:#ffffff; border:1px solid #E1E9E3; color:#176B45; box-shadow:0 1px 2px rgba(15,23,42,0.03); }
-.btn-ghost:hover { background:#ffffff !important; border-color:#E1E9E3 !important; color:#000000 !important; }
-.btn-sm { padding:7px 12px; font-size:12.5px; }
+.btn-ghost:hover { background:#F2F8F4 !important; border-color:#C8E1D3 !important; color:#125638 !important; }
+.btn-sm { min-height:38px; padding:7px 12px; font-size:12.5px; }
 
-/* Demo Strip - Transparent container, no nested card-in-card */
 .demo-strip { margin:36px auto 0; max-width:920px; background:transparent !important; border:none !important; border-radius:0 !important; padding:0 !important; box-shadow:none !important; text-align:left; }
-.demo-strip-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; font-size:13px; color:#176B45; font-weight:500; flex-wrap:wrap; }
-.demo-tag { display:inline-flex; align-items:center; gap:5px; background:#ffffff; color:#176B45; font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; padding:3px 10px; border-radius:999px; border:1px solid #E1E9E3; box-shadow:0 1px 2px rgba(15,23,42,0.03); }
-.demo-pills { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; }
-.demo-pill { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:14px; background:#ffffff !important; border:1px solid #E1E9E3 !important; text-decoration:none; color:inherit; transition:border-color .15s ease, box-shadow .15s ease; cursor:pointer; box-shadow:0 1px 3px rgba(15,23,42,0.03); }
-.demo-pill:hover { background:#ffffff !important; border-color:#E1E9E3 !important; transform:none !important; box-shadow:0 1px 3px rgba(15,23,42,0.06) !important; }
+.demo-strip-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; font-size:13px; color:#45544B; font-weight:500; flex-wrap:wrap; }
+.demo-tag { display:inline-flex; align-items:center; gap:5px; background:#E8F3ED; color:#176B45; font-size:11px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; padding:3px 10px; border-radius:999px; border:1px solid #C8E1D3; }
+.demo-pills { display:grid; grid-template-columns:repeat(auto-fit, minmax(175px, 1fr)); gap:12px; }
+.demo-pill { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; background:#ffffff !important; border:1px solid #E1E9E3 !important; text-decoration:none; color:inherit; transition:border-color .15s ease, box-shadow .15s ease; cursor:pointer; box-shadow:0 1px 3px rgba(15,23,42,0.03); }
+.demo-pill:hover { background:#ffffff !important; border-color:#176B45 !important; transform:none !important; box-shadow:0 2px 6px rgba(23,107,69,0.08) !important; }
 .demo-pill .demo-pill-icon { font-size:22px; color:#176B45; flex-shrink:0; }
-.demo-pill strong { display:block; font-size:13px; color:#000000; line-height:1.2; font-weight:500; }
-.demo-pill small { display:block; font-size:11px; color:#176B45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:110px; font-weight:400; }
+.demo-pill strong { display:block; font-size:13px; color:#111814; line-height:1.25; font-weight:500; }
+.demo-pill small { display:block; font-size:11.5px; color:#64746A; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px; font-weight:400; }
 
-.portals { flex:1; max-width:1080px; margin:0 auto; padding:56px 24px; width:100%; box-sizing:border-box; }
-.portals-head { text-align:center; margin-bottom:36px; }
-.portals-head .eyebrow { font-size:12px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:#176B45; margin-bottom:8px; }
-.portals-head h2 { font-size:24px; font-weight:500; color:#000000; }
-.portals-head p { color:#176B45; font-size:15px; margin-top:6px; font-weight:400; }
+.portals { flex:1; max-width:1080px; margin:0 auto; padding:48px 24px; width:100%; box-sizing:border-box; }
+.portals-head { text-align:center; margin-bottom:32px; }
+.portals-head .eyebrow { font-size:12px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:#176B45; margin-bottom:8px; }
+.portals-head h2 { font-size:24px; font-weight:500; color:#111814; }
+.portals-head p { color:#45544B; font-size:15px; margin-top:6px; font-weight:400; }
 .portals-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
 
 .portal-card { display:flex; flex-direction:column; gap:14px; padding:22px; background:#ffffff; border:1px solid #E1E9E3; border-radius:14px; box-shadow:none; cursor:pointer; text-decoration:none; color:inherit; transition:border-color .15s ease; }
-.portal-card:hover { background:#ffffff !important; border-color:#E1E9E3 !important; transform:none !important; box-shadow:none !important; }
-.p-icon { width:48px; height:48px; border-radius:10px; display:grid; place-items:center; background:#F7F9F7; color:#176B45; border:1px solid #E1E9E3; flex-shrink:0; }
+.portal-card:hover { background:#ffffff !important; border-color:#176B45 !important; transform:none !important; box-shadow:0 2px 8px rgba(23,107,69,0.06) !important; }
+.p-icon { width:48px; height:48px; border-radius:10px; display:grid; place-items:center; background:#F2F8F4; color:#176B45; border:1px solid #C8E1D3; flex-shrink:0; }
 .p-icon .material-symbols-outlined { font-size:26px; }
-.p-title { font-size:17px; font-weight:500; color:#000000; margin-bottom:4px; }
-.p-desc { color:#176B45; font-size:13.5px; line-height:1.5; font-weight:400; }
+.p-title { font-size:17px; font-weight:500; color:#111814; margin-bottom:4px; }
+.p-desc { color:#45544B; font-size:13.5px; line-height:1.5; font-weight:400; }
 .p-demo-badge { display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#176B45; background:#F7F9F7; border:1px solid #E1E9E3; padding:4px 10px; border-radius:8px; font-weight:500; margin-top:8px; width:fit-content; }
 .p-demo-badge .material-symbols-outlined { font-size:15px; color:#176B45; }
-.p-action { display:flex; align-items:center; gap:6px; font-size:13.5px; font-weight:500; color:#29352E; margin-top:auto; padding-top:6px; }
+.p-action { display:flex; align-items:center; gap:6px; font-size:13.5px; font-weight:500; color:#176B45; margin-top:auto; padding-top:6px; }
 .p-action .material-symbols-outlined { font-size:17px; }
 
 .features { background:#ffffff; border-top:1px solid #E1E9E3; border-bottom:1px solid #E1E9E3; padding:24px; }
 .features-inner { max-width:1080px; margin:0 auto; display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
-.feature-item { display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:400; color:#176B45; }
-.feature-item .material-symbols-outlined { font-size:18px; color:#29352E; }
+.feature-item { display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:400; color:#45544B; }
+.feature-item .material-symbols-outlined { font-size:18px; color:#176B45; }
 
 .lf { padding:24px; text-align:center; background:#F7F9F7; border-top:1px solid #E1E9E3; }
-.lf p { font-size:13px; color:#176B45; margin:0; }
+.lf p { font-size:13px; color:#45544B; margin:0; }
 .lf a { color:#176B45; text-decoration:none; font-weight:500; }
 .lf a:hover { text-decoration:underline; }
 
 @media (max-width: 768px) {
-  .hero-inner { padding:40px 16px 36px; }
-  .portals { padding:40px 16px; }
-  .demo-strip { padding:16px; }
+  .hero-inner { padding:40px 16px 32px; }
+  .portals { padding:36px 16px; }
   .demo-pills { grid-template-columns:1fr; }
 }
 </style>
@@ -91,8 +96,9 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
 <link rel="stylesheet" href="assets/css/design-system.css">
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="./assets/css/action-icons.css">
-<script src="./assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="./assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="assets/css/ui-cleanup.css">
+<script src="./assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 <body>
 
@@ -128,54 +134,54 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
   <div class="hero-inner">
     <span class="hero-eyebrow">
       <span class="material-symbols-outlined" style="font-size:16px">school</span>
-      Academic Year 2025–26 · Interactive Live Demo
+      <span data-copy="index.eyebrow">Academic Year 2025–26 · School Workspace</span>
     </span>
-    <h1>One platform for your whole school community</h1>
-    <p>Attendance, grades, lessons, assignments, and announcements — connected across all roles with complete live demo data.</p>
+    <h1 data-copy="index.heroTitle">One workspace for your whole school</h1>
+    <p data-copy="index.heroSub">Sign in as an administrator, principal, teacher, or student to manage timetables, attendance, grades, and campus updates.</p>
     <div class="hero-cta">
       <a class="btn btn-primary" href="pages/student/student.html" data-portal="student">
-        <span class="material-symbols-outlined">school</span>Launch Student Demo
+        <span class="material-symbols-outlined">school</span><span data-copy="index.studentBtn">Open Student Portal</span>
       </a>
       <a class="btn btn-ghost" href="pages/teacher/teacher.html" data-portal="teacher">
-        <span class="material-symbols-outlined">co_present</span>Launch Teacher Demo
+        <span class="material-symbols-outlined">co_present</span><span data-copy="index.teacherBtn">Open Teacher Portal</span>
       </a>
       <a class="btn btn-ghost" href="pages-directory.html">
-        <span class="material-symbols-outlined">account_tree</span>All 85 Pages
+        <span class="material-symbols-outlined">account_tree</span><span data-copy="index.directoryBtn">All Pages Directory</span>
       </a>
     </div>
 
-    <!-- Quick 1-Click Interactive Demo Strip -->
+    <!-- Quick 1-Click Role Switch Strip -->
     <div class="demo-strip">
       <div class="demo-strip-head">
-        <span class="demo-tag"><span class="material-symbols-outlined" style="font-size:14px">play_arrow</span>LIVE DEMO READY</span>
-        <span>Instant 1-Click Access · Click any role to test its live interactive portal:</span>
+        <span class="demo-tag"><span class="material-symbols-outlined" style="font-size:14px">play_arrow</span>QUICK ACCESS</span>
+        <span>Choose a role workspace to continue:</span>
       </div>
       <div class="demo-pills">
         <a class="demo-pill" href="pages/student/student.html" data-portal="student">
           <span class="material-symbols-outlined demo-pill-icon">school</span>
           <div>
-            <strong>Student Demo</strong>
+            <strong>Student Portal</strong>
             <small>Nrinphouneta Hok</small>
           </div>
         </a>
         <a class="demo-pill" href="pages/teacher/teacher.html" data-portal="teacher">
           <span class="material-symbols-outlined demo-pill-icon">co_present</span>
           <div>
-            <strong>Teacher Demo</strong>
+            <strong>Teacher Portal</strong>
             <small>Dr. Sarah Jenkins</small>
           </div>
         </a>
         <a class="demo-pill" href="pages/admin/admin.html" data-portal="admin">
           <span class="material-symbols-outlined demo-pill-icon">admin_panel_settings</span>
           <div>
-            <strong>Admin Demo</strong>
+            <strong>Admin Portal</strong>
             <small>Sok Panha Heng</small>
           </div>
         </a>
         <a class="demo-pill" href="pages/principal/principal.html" data-portal="principal">
           <span class="material-symbols-outlined demo-pill-icon">military_tech</span>
           <div>
-            <strong>Principal Demo</strong>
+            <strong>Principal Portal</strong>
             <small>Dr. Ly Bunheng</small>
           </div>
         </a>
@@ -187,48 +193,48 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
 <main class="portals">
   <div class="portals-head">
     <div class="eyebrow">Select a Role</div>
-    <h2>Interactive Campus Portals</h2>
-    <p>Sign in to test each role with preloaded demo data.</p>
+    <h2>Campus Portals</h2>
+    <p>Open the workspace tailored to your daily responsibilities.</p>
   </div>
   <div class="portals-grid">
     <a class="portal-card" href="pages/admin/admin.html" data-portal="admin">
       <div class="p-icon"><span class="material-symbols-outlined">admin_panel_settings</span></div>
       <div>
         <div class="p-title">Administrator</div>
-        <div class="p-desc">Student lifecycle, classes, accounts, timetables, and campus departments.</div>
-        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Demo: Sok Panha Heng</div>
+        <div class="p-desc">Student lifecycle, classes, user accounts, timetables, and campus departments.</div>
+        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Signed in as: Sok Panha Heng</div>
       </div>
-      <div class="p-action">Launch Admin Demo <span class="material-symbols-outlined">arrow_forward</span></div>
+      <div class="p-action">Open Admin Portal <span class="material-symbols-outlined">arrow_forward</span></div>
     </a>
 
     <a class="portal-card" href="pages/principal/principal.html" data-portal="principal">
       <div class="p-icon"><span class="material-symbols-outlined">military_tech</span></div>
       <div>
         <div class="p-title">Principal</div>
-        <div class="p-desc">Executive approvals, campus-wide KPIs, academic reports, and governance.</div>
-        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Demo: Dr. Ly Bunheng</div>
+        <div class="p-desc">Academic oversight, timetable scheduling, teacher assignments, and reports.</div>
+        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Signed in as: Dr. Ly Bunheng</div>
       </div>
-      <div class="p-action">Launch Principal Demo <span class="material-symbols-outlined">arrow_forward</span></div>
+      <div class="p-action">Open Principal Portal <span class="material-symbols-outlined">arrow_forward</span></div>
     </a>
 
     <a class="portal-card" href="pages/teacher/teacher.html" data-portal="teacher">
       <div class="p-icon"><span class="material-symbols-outlined">co_present</span></div>
       <div>
         <div class="p-title">Teacher</div>
-        <div class="p-desc">Upload lessons, publish &amp; grade assignments, record attendance, and manage classes.</div>
-        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Demo: Dr. Sarah Jenkins</div>
+        <div class="p-desc">Upload lessons, review assignments, record attendance, and view your timetable.</div>
+        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Signed in as: Dr. Sarah Jenkins</div>
       </div>
-      <div class="p-action">Launch Teacher Demo <span class="material-symbols-outlined">arrow_forward</span></div>
+      <div class="p-action">Open Teacher Portal <span class="material-symbols-outlined">arrow_forward</span></div>
     </a>
 
     <a class="portal-card" href="pages/student/student.html" data-portal="student">
       <div class="p-icon"><span class="material-symbols-outlined">school</span></div>
       <div>
         <div class="p-title">Student</div>
-        <div class="p-desc">Access timetable, lessons &amp; syllabi, coursework submissions, grades, and campus hub.</div>
-        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Demo: Nrinphouneta Hok</div>
+        <div class="p-desc">View class timetable, lessons, coursework updates, grades, and campus announcements.</div>
+        <div class="p-demo-badge"><span class="material-symbols-outlined">badge</span>Signed in as: Nrinphouneta Hok</div>
       </div>
-      <div class="p-action">Launch Student Demo <span class="material-symbols-outlined">arrow_forward</span></div>
+      <div class="p-action">Open Student Portal <span class="material-symbols-outlined">arrow_forward</span></div>
     </a>
   </div>
 </main>
@@ -243,7 +249,7 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
 </div>
 
 <footer class="lf">
-  <p>© 2026 New Gateway International School · <a href="pages-directory.html">All 85 Pages Directory</a></p>
+  <p>© 2026 New Gateway International School · <a href="pages-directory.html">All Pages Directory</a></p>
 </footer>
 
 <script>
@@ -255,10 +261,12 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
 
   /* Portal selection state */
   var PORTAL_USERS = {
-    admin: { id: 'ADM-2024-001', firstName: 'Sok Panha', lastName: 'Heng', role: 'admin', email: 'admin@ngis.edu.kh' },
-    principal: { id: 'PRN-2024-001', firstName: 'Dr. Ly', lastName: 'Bunheng', role: 'principal', email: 'principal@ngis.edu.kh' },
-    teacher: { id: 'TCH-2024-042', firstName: 'Dr. Sarah', lastName: 'Jenkins', role: 'teacher', email: 'teacher@ngis.edu.kh' },
-    student: { id: 'STU-2024-089', firstName: 'Nrinphouneta', lastName: 'Hok', role: 'student', email: 'student@ngis.edu.kh' }
+    superadmin: { id: 'SUP-2024-001', firstName: 'Sok Panha', lastName: 'Heng', role: 'superadmin', portal: 'superadmin', email: 'superadmin@ngis.edu.kh' },
+    admin: { id: 'ADM-2024-001', firstName: 'Sok Panha', lastName: 'Heng', role: 'admin', portal: 'admin', email: 'admin@ngis.edu.kh' },
+    staff: { id: 'STF-2024-018', firstName: 'Chanthou', lastName: 'Meas', role: 'staff', portal: 'staff', email: 'staff@ngis.edu.kh' },
+    principal: { id: 'PRN-2024-001', firstName: 'Dr. Ly', lastName: 'Bunheng', role: 'principal', portal: 'principal', email: 'principal@ngis.edu.kh' },
+    teacher: { id: 'TCH-2024-042', firstName: 'Dr. Sarah', lastName: 'Jenkins', role: 'teacher', portal: 'teacher', email: 'teacher@ngis.edu.kh' },
+    student: { id: 'STU-2024-089', firstName: 'Nrinphouneta', lastName: 'Hok', role: 'student', portal: 'student', email: 'student@ngis.edu.kh' }
   };
 
   document.querySelectorAll('[data-portal]').forEach(function(el) {
@@ -267,9 +275,15 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
       if (portal) {
         try {
           localStorage.setItem('ngis_active_portal', portal);
+          localStorage.removeItem('ngis_session_mode');
           if (PORTAL_USERS[portal]) {
             localStorage.setItem('ngis_user', JSON.stringify(PORTAL_USERS[portal]));
             localStorage.setItem('ngis_token', 'mock-jwt-token-' + portal);
+          }
+          // Mirror the chosen identity into the cookie used by the server-side
+          // direct-URL access gate before navigating to the portal.
+          if (window.NGISAuth && typeof window.NGISAuth.syncActorCookie === 'function') {
+            window.NGISAuth.syncActorCookie();
           }
         } catch(e) {}
       }
@@ -331,7 +345,7 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
 </script>
 
 <!-- Mobile Navigation Sidebar Drawer for Index -->
-<aside class="sidebar custom-scrollbar" id="sidebar" role="navigation" aria-label="Main navigation">
+<aside class="sidebar custom-scrollbar index-drawer-only" id="sidebar" role="navigation" aria-label="Main navigation">
   <div class="side-brand">
     <a class="side-brand-info" href="index.html" aria-label="New Gateway International School">
       <img class="side-brand-crest" src="assets/images/ngis-seal.svg" alt="NGIS Crest" onerror="this.onerror=null;this.src='pages/student/LOGO%20NGIS%20(2).png'">
@@ -346,26 +360,28 @@ body { min-height:100vh; display:flex; flex-direction:column; background:#F7F9F7
   </div>
   <nav class="side-nav custom-scrollbar" aria-label="Portal Navigation" style="padding:16px 14px;display:flex;flex-direction:column;gap:6px">
     <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#176B45;padding:6px 10px">School Portals</div>
-    <a class="nav-link" href="pages/student/student.html" data-portal="student" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#000000;font-size:13.5px;font-weight:500">
+    <a class="nav-link" href="pages/student/student.html" data-portal="student" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#111814;font-size:13.5px;font-weight:500">
       <span class="material-symbols-outlined nav-link-icon nav-icon" style="font-size:21px">school</span>Student Portal
     </a>
-    <a class="nav-link" href="pages/teacher/teacher.html" data-portal="teacher" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#000000;font-size:13.5px;font-weight:500">
+    <a class="nav-link" href="pages/teacher/teacher.html" data-portal="teacher" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#111814;font-size:13.5px;font-weight:500">
       <span class="material-symbols-outlined nav-link-icon nav-icon" style="font-size:21px">co_present</span>Teacher Portal
     </a>
-    <a class="nav-link" href="pages/principal/principal.html" data-portal="principal" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#000000;font-size:13.5px;font-weight:500">
+    <a class="nav-link" href="pages/principal/principal.html" data-portal="principal" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#111814;font-size:13.5px;font-weight:500">
       <span class="material-symbols-outlined nav-link-icon nav-icon" style="font-size:21px">shield_person</span>Principal Portal
     </a>
-    <a class="nav-link" href="pages/admin/admin.html" data-portal="admin" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#000000;font-size:13.5px;font-weight:500">
+    <a class="nav-link" href="pages/admin/admin.html" data-portal="admin" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#111814;font-size:13.5px;font-weight:500">
       <span class="material-symbols-outlined nav-link-icon nav-icon" style="font-size:21px">admin_panel_settings</span>Admin Portal
     </a>
     <div style="height:1px;background:#E1E9E3;margin:10px 0"></div>
     <div style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#176B45;padding:6px 10px">System Directory</div>
-    <a class="nav-link" href="pages-directory.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#000000;font-size:13.5px;font-weight:500">
-      <span class="material-symbols-outlined nav-link-icon nav-icon" style="font-size:21px">account_tree</span>All 85 Pages Directory
+    <a class="nav-link" href="pages-directory.html" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;text-decoration:none;color:#111814;font-size:13.5px;font-weight:500">
+      <span class="material-symbols-outlined nav-link-icon nav-icon" style="font-size:21px">account_tree</span>All Pages Directory
     </a>
   </nav>
 </aside>
 <div class="scrim" id="scrim"></div>
+<script src="assets/js/ngis-copy.js"></script>
+<script src="assets/components/ngis-ui-kit.js"></script>
 
 </body>
 </html>

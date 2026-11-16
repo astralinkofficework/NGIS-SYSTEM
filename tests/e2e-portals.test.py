@@ -43,7 +43,7 @@ class TestNgisRolePortals(unittest.TestCase):
             "pages/teacher/teacher-profile.html",
             # Admin
             "pages/admin/admin.html",
-            "pages/admin/admin-users.html",
+            "pages/admin/admin-users-students.html",
             "pages/admin/admin-classes.html",
             "pages/admin/admin-assignments.html",
             "pages/admin/admin-lessons.html",

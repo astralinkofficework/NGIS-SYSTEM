@@ -1,0 +1,2370 @@
+/* ============================================================================
+ * NGIS User Management — role-scoped identity administration & provisioning.
+ * Drives the five Account Directories via NGIS_USERS.init(containerId, module):
+ *   students | teachers | staff | principals | admins
+ *
+ * Design: token-scoped .ngis-sm / .smx-* classes (see assets/css/design-system.css).
+ *         Zero font-weight >= 600, zero CSS gradients, inline SVGs with viewBox.
+ * Data:   live /api/user-mgmt/* endpoints with race-safe search, server pagination,
+ *         live username checks, role-specific Add Account modal, and contextual
+ *         row actions with confirmation dialogs.
+ * ==========================================================================*/
+(function (window, document) {
+  'use strict';
+
+  var UM = window.NGIS_USERS = {};
+  UM.version = '1.0';
+
+  var ROLES_BY_TYPE = {
+    student: 'STUDENT',
+    teacher: 'TEACHER',
+    staff: 'STAFF',
+    principal: 'PRINCIPAL',
+    admin: 'ADMIN'
+  };
+
+  var ADMIN_SCOPES = [
+    'All Departments & Operations',
+    'Identity & User Access',
+    'Academic Operations',
+    'Campus & Facility Admin',
+    'Finance & Registrar'
+  ];
+
+  var MODULES = {
+    students: {
+      module: 'students',
+      type: 'student',
+      eyebrow: 'ACCOUNT DIRECTORIES · STUDENT ACCOUNTS',
+      title: 'Student Accounts',
+      sub: 'Manage student login credentials linked to enrolled academic profiles.',
+      addLabel: 'Add Student Account',
+      portalNote: 'Grants read access to Student Portal, timetable, homework, and grades.',
+      recordNoun: 'student',
+      recordPlural: 'students',
+      hasBulk: true,
+      hasImport: true,
+      showLastLogin: true,
+      extraFilter: 'class',
+      extraFilterLabel: 'Class',
+      fallbackUrl: 'admin-student-profiles.html',
+      fallbackLabel: 'Open Student Profiles',
+      searchPlaceholder: 'Search student name, ID, or username...',
+      columns: ['Student', 'Username', 'Campus', 'Class', 'Account Status', 'Last Login', 'Actions']
+    },
+    teachers: {
+      module: 'teachers',
+      type: 'teacher',
+      eyebrow: 'ACCOUNT DIRECTORIES · TEACHER ACCOUNTS',
+      title: 'Teacher Accounts',
+      sub: 'Provision and govern faculty portal logins linked to teaching assignments.',
+      addLabel: 'Add Teacher Account',
+      portalNote: 'Grants access to Teacher Portal, class rosters, attendance, and gradebook.',
+      recordNoun: 'teacher',
+      recordPlural: 'teachers',
+      hasBulk: true,
+      hasImport: true,
+      showLastLogin: true,
+      extraFilter: 'department',
+      extraFilterLabel: 'Department',
+      fallbackUrl: 'admin-teacher-profiles.html',
+      fallbackLabel: 'Open Teacher Profiles',
+      searchPlaceholder: 'Search teacher name, ID, or department...',
+      columns: ['Teacher', 'Username', 'Campus', 'Department', 'Account Status', 'Last Login', 'Actions']
+    },
+    staff: {
+      module: 'staff',
+      type: 'staff',
+      eyebrow: 'ACCOUNT DIRECTORIES · STAFF ACCOUNTS',
+      title: 'Staff Accounts',
+      sub: 'Manage operational non-teaching staff logins scoped to their department.',
+      addLabel: 'Add Staff Account',
+      portalNote: 'Grants scoped operational access without academic classroom editing privileges.',
+      recordNoun: 'staff member',
+      recordPlural: 'staff records',
+      hasBulk: false,
+      hasImport: true,
+      showLastLogin: false,
+      extraFilter: 'department',
+      extraFilterLabel: 'Department',
+      fallbackUrl: '',
+      fallbackLabel: '',
+      searchPlaceholder: 'Search staff name, ID, or position...',
+      columns: ['Staff Member', 'Username', 'Department', 'Position', 'Account Status', 'Actions']
+    },
+    principals: {
+      module: 'principals',
+      type: 'principal',
+      eyebrow: 'ACCOUNT DIRECTORIES · PRINCIPAL ACCOUNTS',
+      title: 'Principal Accounts',
+      sub: 'Manage campus leadership accounts with academic oversight across assigned campuses.',
+      addLabel: 'Add Principal Account',
+      portalNote: 'Grants access to Principal Portal for campus academics and timetable oversight.',
+      recordNoun: 'principal',
+      recordPlural: 'principal records',
+      hasBulk: false,
+      hasImport: false,
+      showLastLogin: true,
+      extraFilter: null,
+      extraFilterLabel: '',
+      fallbackUrl: '',
+      fallbackLabel: '',
+      searchPlaceholder: 'Search principal name, ID, or campus...',
+      columns: ['Principal', 'Username', 'Assigned Campus', 'Account Status', 'Last Login', 'Actions']
+    },
+    admins: {
+      module: 'admins',
+      type: 'admin',
+      eyebrow: 'ACCOUNT DIRECTORIES · ADMIN ACCOUNTS',
+      title: 'Admin Accounts',
+      sub: 'Govern privileged administrator accounts under Super Admin authorization.',
+      addLabel: 'Add Admin Account',
+      portalNote: 'Grants Administrative Portal privileges. Super Admin roles cannot be assigned here.',
+      recordNoun: 'administrator',
+      recordPlural: 'administrators',
+      hasBulk: false,
+      hasImport: false,
+      showLastLogin: false,
+      extraFilter: null,
+      extraFilterLabel: '',
+      fallbackUrl: '',
+      fallbackLabel: '',
+      searchPlaceholder: 'Search administrator name, username, or scope...',
+      columns: ['Administrator', 'Username', 'Campus', 'Access Scope', 'Account Status', 'Actions']
+    }
+  };
+
+  var STATUS_LABEL = {
+    pending_activation: 'Pending Activation',
+    active: 'Active',
+    suspended: 'Suspended',
+    disabled: 'Disabled',
+    locked: 'Locked',
+    none: 'No Account'
+  };
+
+  var ICONS = {
+    plus:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    upload:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>',
+    download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>',
+    filter:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4"/></svg>',
+    search:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+    reset:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+    more:     '<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>',
+    copy:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    sliders:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>',
+    check:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>',
+    shield:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
+  };
+
+  function esc(v) {
+    return String(v === null || v === undefined ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function q(root, sel) { return root ? root.querySelector(sel) : null; }
+  function qa(root, sel) { return root ? Array.prototype.slice.call(root.querySelectorAll(sel)) : []; }
+
+  function currentUser() {
+    if (window.NGIS_CURRENT_USER && (window.NGIS_CURRENT_USER.email || window.NGIS_CURRENT_USER.username)) {
+      return window.NGIS_CURRENT_USER;
+    }
+    if (window.NGISAuth && typeof window.NGISAuth.getUser === 'function') {
+      var u = window.NGISAuth.getUser();
+      if (u && (u.email || u.username)) return u;
+    }
+    try {
+      var raw = window.localStorage.getItem('auth_user');
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (parsed && (parsed.email || parsed.username)) return parsed;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  function actor() {
+    var u = currentUser();
+    if (u && u.email) return String(u.email).trim().toLowerCase();
+    if (u && u.username) return String(u.username).trim().toLowerCase();
+    return (window.PAGE && window.PAGE.userEmail) || 'admin@ngis.edu.kh';
+  }
+
+  function fetchJson(url) {
+    return fetch(url, { headers: { 'X-Actor': actor() } }).then(function (r) {
+      return r.json().then(function (j) {
+        if (!r.ok) {
+          var err = new Error((j && j.error) || ('HTTP ' + r.status));
+          err.status = r.status;
+          err.payload = j;
+          throw err;
+        }
+        return j;
+      });
+    });
+  }
+
+  function postJson(url, body, method) {
+    return fetch(url, {
+      method: method || 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Actor': actor() },
+      body: JSON.stringify(body || {})
+    }).then(function (r) {
+      return r.json().then(function (j) { j.__status = r.status; return j; });
+    });
+  }
+
+  function toast(root, message, tone) {
+    var host = q(root, '.ngis-sm') || root;
+    if (!host) return;
+    var old = q(host, '.smx-toast');
+    if (old) old.remove();
+    var t = document.createElement('div');
+    t.className = 'smx-toast show' + (tone === 'bad' ? ' error' : '');
+    t.textContent = message;
+    host.appendChild(t);
+    setTimeout(function () { if (t.parentNode) t.remove(); }, 3800);
+  }
+
+  function initials(name) {
+    var clean = String(name || '?')
+      .replace(/^(?:h\.e\.|dr|mr|mrs|ms|prof|coach)\.?\s+/i, '')
+      .trim();
+    var parts = clean ? clean.split(/\s+/) : ['?'];
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  function avatarTone(name) {
+    var s = String(name || '');
+    var hash = 0;
+    for (var i = 0; i < s.length; i += 1) hash = (hash + s.charCodeAt(i)) % 6;
+    return 'tone-' + hash;
+  }
+
+  function avatarSrc(photo) {
+    var url = String(photo || '').trim();
+    if (!url) return '';
+    if (url.indexOf('images.pexels.com/') !== -1) {
+      var base = url.split('?')[0];
+      return base + '?auto=compress&cs=tinysrgb&w=240&h=240&fit=crop&crop=faces,top';
+    }
+    if (url.indexOf('images.unsplash.com/') !== -1 && url.indexOf('fit=crop') !== -1) {
+      return url.replace(/w=\d+/g, 'w=240').replace(/h=\d+/g, 'h=240');
+    }
+    return url;
+  }
+
+  function avatarHtml(name, photo, opts) {
+    var o = opts || {};
+    var sizeCls = o.size === 'lg' ? ' smx-avatar-lg' : (o.size === 'sm' ? ' smx-avatar-sm' : '');
+    var src = avatarSrc(photo);
+    var inner =
+      '<span class="smx-avatar-wrap' + sizeCls + '">' +
+        '<span class="smx-avatar smx-avatar-fallback ' + avatarTone(name) + '" aria-hidden="true">' + esc(initials(name)) + '</span>' +
+        (src ? '<img class="smx-avatar smx-avatar-img" src="' + esc(src) + '" alt="' + (o.interactive ? '' : esc(name)) + '" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
+      '</span>';
+    if (o.interactive) {
+      return '<button type="button" class="smx-avatar-btn" data-action="view" aria-label="View ' + esc(name) + ' details" title="View details">' + inner + '</button>';
+    }
+    return inner;
+  }
+
+  function statusIndicatorHtml(status) {
+    var s = status || 'none';
+    var label = STATUS_LABEL[s] || s;
+    if (s === 'suspended' || s === 'disabled' || s === 'locked') {
+      return '<span class="smx-status-warn-pill ' + esc(s) + '"><i class="smx-status-dot" aria-hidden="true"></i>' + esc(label) + '</span>';
+    }
+    return '<span class="smx-status-inline' + (s === 'none' ? ' is-none' : '') + '">' +
+      '<i class="smx-status-dot ' + esc(s) + '" aria-hidden="true"></i>' + esc(label) + '</span>';
+  }
+
+  function formatDateTime(ts) {
+    if (!ts) return 'Never';
+    return String(ts).replace('T', ' ').slice(0, 16);
+  }
+
+  function suggestUsername(name, personType) {
+    var clean = String(name || '')
+      .replace(/^(?:h\.e\.|dr|mr|mrs|ms|prof|coach)\.?\s+/i, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    var base = clean.length >= 2 ? (clean[0] + '.' + clean[clean.length - 1]) : (clean[0] || personType || 'user');
+    base = base.slice(0, 26);
+    if (personType === 'admin' && base.indexOf('@') === -1) return base + '@ngis.edu.kh';
+    return base;
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        resolve();
+      } catch (err) { reject(err); }
+    });
+  }
+
+  function pageWindow(current, totalPages) {
+    if (totalPages <= 7) {
+      var arr = [];
+      for (var i = 1; i <= totalPages; i += 1) arr.push(i);
+      return arr;
+    }
+    var out = [1];
+    var left = Math.max(2, current - 1);
+    var right = Math.min(totalPages - 1, current + 1);
+    if (left > 2) out.push('…');
+    for (var p = left; p <= right; p += 1) out.push(p);
+    if (right < totalPages - 1) out.push('…');
+    out.push(totalPages);
+    return out;
+  }
+
+  function pagerHtml(st) {
+    if (!st.total) return '';
+    var start = (st.page - 1) * st.pageSize + 1;
+    var end = Math.min(st.total, st.page * st.pageSize);
+    var parts = ['<div class="smx-table-foot">'];
+    parts.push('<span>Showing <span class="smx-record-count">' + start + '</span> to <span class="smx-record-count">' +
+      end + '</span> of <span class="smx-record-count">' + st.total + '</span> records</span>');
+    if (st.pages > 1) {
+      parts.push('<div class="smx-pager" role="navigation" aria-label="Directory pagination">');
+      parts.push('<button type="button" class="smx-btn sm ghost" data-page="prev"' +
+        (st.page <= 1 ? ' disabled' : '') + '>Previous</button>');
+      pageWindow(st.page, st.pages).forEach(function (item) {
+        if (item === '…') {
+          parts.push('<span class="smx-pager-ellip" aria-hidden="true">…</span>');
+        } else {
+          var isCur = item === st.page;
+          parts.push('<button type="button" class="smx-page-btn' + (isCur ? ' active' : '') + '" data-page-num="' + item + '"' +
+            (isCur ? ' aria-current="page"' : '') + '>' + item + '</button>');
+        }
+      });
+      parts.push('<button type="button" class="smx-btn sm ghost" data-page="next"' +
+        (st.page >= st.pages ? ' disabled' : '') + '>Next</button>');
+      parts.push('</div>');
+    }
+    parts.push('</div>');
+    return parts.join('');
+  }
+
+  function closeFloatingMenus() {
+    qa(document, '.smx-row-menu').forEach(function (el) { el.remove(); });
+    qa(document, '.smx-more-pop').forEach(function (el) { el.classList.add('hidden'); });
+    qa(document, '[aria-expanded="true"][data-action="more"]').forEach(function (b) {
+      b.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function openModal(root, title, subtitle, bodyHtml, footHtml, wide, options) {
+    closeFloatingMenus();
+    closeModal(root, true);
+    var wrap = document.createElement('div');
+    wrap.className = 'smx-modal-backdrop ngis-modal-backdrop';
+    wrap.setAttribute('role', 'dialog');
+    wrap.setAttribute('aria-modal', 'true');
+    wrap.setAttribute('aria-label', title || 'Modal Dialog');
+    wrap.innerHTML =
+      '<div class="smx-modal ngis-modal' + (wide ? ' wide ngis-modal-lg' : '') + '" role="document">' +
+        '<div class="smx-modal-head ngis-modal-head"><div>' +
+          '<h2 class="smx-modal-title ngis-modal-title">' + esc(title) + '</h2>' +
+          (subtitle ? '<p class="smx-modal-sub ngis-modal-sub">' + esc(subtitle) + '</p>' : '') +
+        '</div><button type="button" class="smx-close ngis-modal-close" data-modal-close aria-label="Close modal">&times;</button></div>' +
+        '<div class="smx-modal-body ngis-modal-body">' + bodyHtml + '</div>' +
+        (footHtml ? '<div class="smx-modal-foot ngis-modal-foot">' + footHtml + '</div>' : '') +
+      '</div>';
+
+    // Append to document.body to ensure full viewport isolation from transformed ancestors
+    document.body.appendChild(wrap);
+
+    if (window.NGIS_MODAL && typeof window.NGIS_MODAL.open === 'function') {
+      window.NGIS_MODAL.open(wrap, options || { confirmUnsaved: true });
+    } else {
+      document.body.classList.add('ngis-modal-open');
+      wrap.classList.add('ngis-modal-active');
+    }
+
+    wrap.addEventListener('click', function (e) {
+      if (e.target === wrap) {
+        closeModal(root, false);
+      } else if (e.target.closest('[data-modal-close]')) {
+        closeModal(root, false);
+      }
+    });
+    return wrap;
+  }
+
+  function closeModal(root, force) {
+    var old = document.querySelector('.smx-modal-backdrop') || (root && q(root, '.smx-modal-backdrop'));
+    if (!old) return;
+    if (window.NGIS_MODAL && typeof window.NGIS_MODAL.close === 'function') {
+      window.NGIS_MODAL.close(old, !!force);
+    } else {
+      old.remove();
+      document.body.classList.remove('ngis-modal-open');
+    }
+  }
+
+  function closeFilterSheet(root, force) {
+    var sheet = document.querySelector('.smx-sheet-backdrop') || (root && q(root, '.smx-sheet-backdrop'));
+    if (!sheet) return;
+    if (window.NGIS_MODAL && typeof window.NGIS_MODAL.close === 'function') {
+      window.NGIS_MODAL.close(sheet, !!force);
+    } else {
+      sheet.remove();
+      document.body.classList.remove('ngis-modal-open');
+    }
+  }
+
+  function renderDirectory(root, cfg) {
+    var state = {
+      search: '',
+      status: '',
+      campus: '',
+      department: '',
+      classFilter: '',
+      sort: 'name',
+      order: 'asc',
+      page: 1,
+      pageSize: 25,
+      pages: 1,
+      total: 0,
+      summary: { total: 0, active: 0, pending: 0, locked: 0, suspended: 0, disabled: 0, withoutAccount: 0, withAccount: 0, campusesCount: 1 },
+      facets: { campuses: [], campus_options: ['Tuol Kork Main Campus', 'Chamkarmon High School Branch', 'STEM & Robotics Innovation Hub', 'Sensok', 'All campuses'], departments: [], classes: [] },
+      rows: [],
+      allTypeRows: [],
+      selected: {},
+      selectedRows: {},
+      tokenNotice: null,
+      loading: true,
+      requestSeq: 0
+    };
+
+    var docEscBound = false;
+
+    function isSuperAdminActor() {
+      var u = currentUser();
+      var em = actor();
+      var role = String((u && (u.accountRole || u.role)) || '').toUpperCase().replace(/\s+/g, '_');
+      var poolList = (state.allTypeRows && state.allTypeRows.length) ? state.allTypeRows : state.rows;
+      var superMatch = (poolList || []).find(function (r) {
+        return r.account && r.account.role === 'SUPER_ADMIN' && r.account.status === 'active' &&
+          (r.account.username === em || r.account.email === em);
+      });
+      if (superMatch) return true;
+      return role === 'SUPER_ADMIN' || em === 'admin@ngis.edu.kh';
+    }
+
+    function activeFilterCount() {
+      var n = 0;
+      if (state.status) n += 1;
+      if (state.campus) n += 1;
+      if (state.department) n += 1;
+      if (state.classFilter) n += 1;
+      return n;
+    }
+
+    function queryUrl(exportCsv) {
+      var p = new URLSearchParams({
+        type: cfg.type,
+        search: state.search,
+        status: state.status || 'all',
+        campus: state.campus || 'all',
+        department: state.department || 'all',
+        'class': state.classFilter || 'all',
+        sort: state.sort,
+        order: state.order,
+        page: String(state.page),
+        page_size: String(state.pageSize)
+      });
+      return (exportCsv ? '/api/user-mgmt/export?' : '/api/user-mgmt/directory?') + p.toString();
+    }
+
+    function load(opts) {
+      var keepShell = opts && opts.keepToolbar;
+      state.requestSeq += 1;
+      var seq = state.requestSeq;
+      if (!keepShell && !state.rows.length) {
+        root.innerHTML = '<div class="ngis-sm"><div class="smx-empty">Loading ' + esc(cfg.title.toLowerCase()) + '...</div></div>';
+      }
+      fetchJson(queryUrl(false)).then(function (j) {
+        if (seq !== state.requestSeq) return;
+        state.loading = false;
+        state.rows = j.data || [];
+        state.total = j.total || 0;
+        state.pages = j.pages || 1;
+        state.summary = j.summary || state.summary;
+        state.facets = j.facets || state.facets;
+        state.rows.forEach(function (r) {
+          if (state.selected[r.person_id]) state.selectedRows[r.person_id] = r;
+        });
+        paint();
+      }).catch(function (err) {
+        if (seq !== state.requestSeq) return;
+        root.innerHTML = '<div class="ngis-sm"><div class="smx-empty">Unable to load directory (' + esc(err.message) + ').</div></div>';
+      });
+    }
+
+    function metricsHtml() {
+      var s = state.summary || {};
+      var total = s.totalRecords || 0;
+      var linked = s.linkedCount || 0;
+      var active = s.activeCount || 0;
+      var pending = s.pendingCount || 0;
+      var unlinked = s.unlinkedCount || 0;
+      var suspended = s.suspendedCount || 0;
+      var attention = pending + suspended;
+      var notReady = pending + unlinked;
+      var activePct = total ? Math.round((active * 100) / total) : 0;
+
+      var sub3 = [];
+      if (pending) sub3.push(pending + ' pending activation');
+      if (unlinked) sub3.push(unlinked + ' without login');
+      if (suspended) sub3.push(suspended + ' restricted');
+      if (!sub3.length) sub3.push('All accounts verified');
+
+      return '<section class="smx-stat-strip" aria-label="Directory summary">' +
+        '<div class="smx-stat-card">' +
+          '<span class="smx-stat-label">Total Accounts</span>' +
+          '<div class="smx-stat-value">' + total + '</div>' +
+          '<span class="smx-stat-sub">' + linked + ' provisioned · ' + (s.campusesCount || 1) + (s.campusesCount === 1 ? ' campus' : ' campuses') + '</span>' +
+        '</div>' +
+        '<div class="smx-stat-card">' +
+          '<span class="smx-stat-label">Active Accounts</span>' +
+          '<div class="smx-stat-value ok">' + active + '</div>' +
+          '<span class="smx-stat-sub">' + activePct + '% enabled for portal sign-in</span>' +
+        '</div>' +
+        '<div class="smx-stat-card' + (attention > 0 ? ' warn' : '') + '">' +
+          '<span class="smx-stat-label">Pending / No Login</span>' +
+          '<div class="smx-stat-value' + (attention > 0 ? ' warn' : '') + '">' + notReady + '</div>' +
+          '<span class="smx-stat-sub">' + esc(sub3.join(' · ')) + '</span>' +
+        '</div>' +
+      '</section>';
+    }
+
+    function headSectionHtml() {
+      var isAdminDir = cfg.type === 'admin';
+      var allowAdd = !isAdminDir || isSuperAdminActor();
+      var secondaryDesktop =
+        (cfg.hasImport ? '<button type="button" class="smx-btn smx-head-secondary-desktop" data-action="import">' + ICONS.upload + 'Import</button>' : '') +
+        '<a class="smx-btn smx-head-secondary-desktop" href="' + esc(queryUrl(true)) + '" download>' + ICONS.download + 'Export CSV</a>';
+      var addBtn =
+        '<button type="button" class="smx-btn primary smx-btn-primary-add" data-action="add-account"' +
+        (allowAdd ? '' : ' disabled title="Super Admin authorization required to create administrator logins"') + '>' +
+        ICONS.plus + esc(cfg.addLabel) + '</button>';
+      var overflowBtn =
+        '<button type="button" class="smx-btn smx-head-overflow-btn" data-action="head-overflow" aria-label="More directory actions" title="Import or Export">' +
+        ICONS.more + '</button>';
+
+      return '<section class="smx-head">' +
+        '<div>' +
+          '<div class="smx-eyebrow">' + esc(cfg.eyebrow) + '</div>' +
+          '<div class="smx-title-row"><h1 class="smx-title">' + esc(cfg.title) + '</h1></div>' +
+          '<p class="smx-sub">' + esc(cfg.sub) + '</p>' +
+        '</div>' +
+        '<div class="smx-head-actions">' + addBtn + secondaryDesktop + overflowBtn + '</div>' +
+      '</section>';
+    }
+
+    function statusOptionsHtml(selected) {
+      var opts = [
+        ['', 'All statuses'],
+        ['active', 'Active'],
+        ['pending_activation', 'Pending Activation'],
+        ['none', 'No Account'],
+        ['suspended', 'Suspended'],
+        ['disabled', 'Disabled'],
+        ['locked', 'Locked']
+      ];
+      return opts.map(function (o) {
+        return '<option value="' + esc(o[0]) + '"' + (selected === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>';
+      }).join('');
+    }
+
+    function campusFilterOptionsHtml(selected) {
+      var list = state.facets.campuses || [];
+      return '<option value="">All campuses</option>' + list.map(function (c) {
+        return '<option value="' + esc(c) + '"' + (selected === c ? ' selected' : '') + '>' + esc(c) + '</option>';
+      }).join('');
+    }
+
+    function extraFilterSelectHtml(idPrefix) {
+      if (cfg.extraFilter === 'class') {
+        var classes = state.facets.classes || [];
+        return '<select id="' + esc(idPrefix) + 'class" class="smx-select" aria-label="Filter by class">' +
+          '<option value="">All classes</option>' +
+          classes.map(function (c) {
+            return '<option value="' + esc(c) + '"' + (state.classFilter === c ? ' selected' : '') + '>' + esc(c) + '</option>';
+          }).join('') + '</select>';
+      }
+      if (cfg.extraFilter === 'department') {
+        var deps = state.facets.departments || [];
+        return '<select id="' + esc(idPrefix) + 'dept" class="smx-select" aria-label="Filter by department">' +
+          '<option value="">All departments</option>' +
+          deps.map(function (d) {
+            return '<option value="' + esc(d) + '"' + (state.department === d ? ' selected' : '') + '>' + esc(d) + '</option>';
+          }).join('') + '</select>';
+      }
+      return '';
+    }
+
+    function toolbarHtml() {
+      var fCount = activeFilterCount();
+      var hasAny = fCount > 0 || !!state.search || state.sort !== 'name';
+      return '<section class="smx-filter-card" aria-label="Directory search and filters">' +
+        '<div class="smx-filter-top">' +
+          '<div class="smx-search">' +
+            '<span class="smx-search-icon">' + ICONS.search + '</span>' +
+            '<input id="smx-search" class="smx-input" type="search" value="' + esc(state.search) + '" placeholder="' + esc(cfg.searchPlaceholder) + '" aria-label="' + esc(cfg.searchPlaceholder) + '">' +
+          '</div>' +
+          '<button type="button" class="smx-btn smx-filters-toggle" data-action="open-filter-sheet">' +
+            ICONS.filter + 'Filters' + (fCount ? ' (' + fCount + ')' : '') +
+          '</button>' +
+          '<div class="smx-filter-group">' +
+            '<select id="smx-status" class="smx-select" aria-label="Filter by account status">' + statusOptionsHtml(state.status) + '</select>' +
+            '<select id="smx-campus" class="smx-select" aria-label="Filter by campus">' + campusFilterOptionsHtml(state.campus) + '</select>' +
+            extraFilterSelectHtml('smx-') +
+            '<div class="smx-more-wrap">' +
+              '<button type="button" class="smx-btn" data-action="toggle-more-pop" aria-haspopup="true" aria-expanded="false">' + ICONS.sliders + 'More</button>' +
+              '<div class="smx-more-pop hidden" id="smx-more-pop" role="dialog" aria-label="Sort and display options">' +
+                '<div><label class="smx-more-pop-label" for="smx-sort">Sort order</label>' +
+                  '<select id="smx-sort" class="smx-select">' +
+                    '<option value="name"' + (state.sort === 'name' ? ' selected' : '') + '>Name (A to Z)</option>' +
+                    '<option value="status"' + (state.sort === 'status' ? ' selected' : '') + '>Account Status</option>' +
+                    '<option value="last_login"' + (state.sort === 'last_login' ? ' selected' : '') + '>Last Login</option>' +
+                  '</select></div>' +
+                '<div><label class="smx-more-pop-label" for="smx-pagesize">Rows per page</label>' +
+                  '<select id="smx-pagesize" class="smx-select">' +
+                    '<option value="25"' + (state.pageSize === 25 ? ' selected' : '') + '>25 per page</option>' +
+                    '<option value="50"' + (state.pageSize === 50 ? ' selected' : '') + '>50 per page</option>' +
+                    '<option value="100"' + (state.pageSize === 100 ? ' selected' : '') + '>100 per page</option>' +
+                  '</select></div>' +
+              '</div>' +
+            '</div>' +
+            (hasAny ? '<button type="button" class="smx-btn ghost smx-reset-btn" data-action="clear-filters">' + ICONS.reset + 'Clear</button>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="smx-filter-sub">' +
+          '<div class="smx-filter-sub-left">' +
+            '<span>Showing <span class="smx-record-count">' + state.total + '</span> ' + esc(state.total === 1 ? cfg.recordNoun : cfg.recordPlural) + '</span>' +
+            (fCount ? '<span class="smx-vdiv" aria-hidden="true"></span><span>' + fCount + (fCount === 1 ? ' filter active' : ' filters active') + '</span>' : '') +
+          '</div>' +
+          '<div class="smx-filter-sub-left">' +
+            (cfg.type === 'admin' && !isSuperAdminActor() ? '<span class="smx-cell-muted">Read-only view (Super Admin required to create or edit admins)</span>' : '') +
+          '</div>' +
+        '</div>' +
+      '</section>';
+    }
+
+    function tokenBarHtml() {
+      var t = state.tokenNotice;
+      if (!t) return '';
+      return '<div class="smx-token-bar" role="status">' +
+        '<div class="smx-token-main">' +
+          '<span><strong>' + esc(t.title) + ':</strong> ' + esc(t.username) + ' · One-time token' + (t.expires ? ' (expires ' + esc(formatDateTime(t.expires)) + ')' : '') + ':</span>' +
+          '<code class="smx-token-code">' + esc(t.token) + '</code>' +
+        '</div>' +
+        '<div class="smx-token-actions">' +
+          '<button type="button" class="smx-btn sm" data-action="copy-token">' + ICONS.copy + 'Copy Token</button>' +
+          '<button type="button" class="smx-btn sm ghost" data-action="dismiss-token">Dismiss</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function bulkBarHtml() {
+      if (!cfg.hasBulk) return '';
+      var count = Object.keys(state.selected).length;
+      if (!count) return '';
+      return '<div class="smx-bulk-bar" role="region" aria-label="Bulk selection actions">' +
+        '<div class="smx-bulk-info">' +
+          '<span class="smx-bulk-badge">' + count + ' selected</span>' +
+          '<span>Apply action to selected records in this directory</span>' +
+        '</div>' +
+        '<div class="smx-bulk-actions">' +
+          '<button type="button" class="smx-btn sm primary" data-action="bulk-provision">Provision Unlinked</button>' +
+          '<button type="button" class="smx-btn sm" data-action="bulk-activate">Activate</button>' +
+          '<button type="button" class="smx-btn sm danger" data-action="bulk-suspend">Suspend</button>' +
+          '<button type="button" class="smx-btn sm ghost" data-action="clear-selection">Clear</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function rowActionsHtml(r) {
+      if (!r.account) {
+        return '<div class="smx-row-actions">' +
+          '<button type="button" class="smx-action-link" data-action="view">View</button>' +
+          '<button type="button" class="smx-action-link primary-link" data-action="create-for-row">' + ICONS.plus + 'Create</button>' +
+        '</div>';
+      }
+      return '<div class="smx-row-actions">' +
+        '<button type="button" class="smx-action-link" data-action="view">View</button>' +
+        '<button type="button" class="smx-action-link" data-action="edit">Edit</button>' +
+        '<button type="button" class="smx-icon-btn smx-more-trigger" data-action="more" aria-label="More options for ' + esc(r.name) + '" aria-expanded="false" aria-haspopup="menu" title="More options">' + ICONS.more + '</button>' +
+      '</div>';
+    }
+
+    function rowCellsHtml(r) {
+      var a = r.account;
+      var uname = a && a.username
+        ? '<span class="smx-username">' + esc(a.username) + '</span>'
+        : '<span class="smx-cell-muted">Not provisioned</span>';
+      var personCol = cfg.columns[0];
+      var personCell =
+        '<td class="smx-cell-person" data-label="' + esc(personCol) + '">' +
+          '<div class="smx-person">' +
+            avatarHtml(r.name, r.photo, { interactive: true }) +
+            '<div><div class="smx-person-name">' + esc(r.name) + '</div>' +
+            '<div class="smx-person-id smx-mono">' + esc(r.person_id) + '</div></div>' +
+          '</div>' +
+        '</td>';
+
+      var checkCell = cfg.hasBulk
+        ? '<td class="center" data-label="Select"><input type="checkbox" class="smx-checkbox" data-row-check' +
+          (state.selected[r.person_id] ? ' checked' : '') + ' aria-label="Select ' + esc(r.name) + '"></td>'
+        : '';
+
+      var middle = '';
+      var rowStatus = a ? a.status : 'none';
+      if (cfg.type === 'student') {
+        middle =
+          '<td data-label="Username">' + uname + '</td>' +
+          '<td data-label="Campus"><span class="smx-cell-plain">' + esc(r.campus || '—') + '</span></td>' +
+          '<td data-label="Class"><span class="smx-cell-plain">' + esc(r.assignment || '—') + '</span></td>' +
+          '<td data-label="Account Status">' + statusIndicatorHtml(rowStatus) + '</td>' +
+          '<td data-label="Last Login"><span class="smx-cell-muted smx-nowrap">' + esc(formatDateTime(a && a.last_login)) + '</span></td>';
+      } else if (cfg.type === 'teacher') {
+        middle =
+          '<td data-label="Username">' + uname + '</td>' +
+          '<td data-label="Campus"><span class="smx-cell-plain">' + esc(r.campus || '—') + '</span></td>' +
+          '<td data-label="Department"><span class="smx-cell-plain">' + esc(r.department || '—') + '</span></td>' +
+          '<td data-label="Account Status">' + statusIndicatorHtml(rowStatus) + '</td>' +
+          '<td data-label="Last Login"><span class="smx-cell-muted smx-nowrap">' + esc(formatDateTime(a && a.last_login)) + '</span></td>';
+      } else if (cfg.type === 'staff') {
+        middle =
+          '<td data-label="Username">' + uname + '</td>' +
+          '<td data-label="Department"><span class="smx-cell-plain">' + esc(r.department || '—') + '</span></td>' +
+          '<td data-label="Position"><span class="smx-cell-plain">' + esc(r.assignment || r.display_role || '—') + '</span></td>' +
+          '<td data-label="Account Status">' + statusIndicatorHtml(rowStatus) + '</td>';
+      } else if (cfg.type === 'principal') {
+        middle =
+          '<td data-label="Username">' + uname + '</td>' +
+          '<td data-label="Assigned Campus"><span class="smx-cell-plain">' + esc(r.campus || '—') + '</span></td>' +
+          '<td data-label="Account Status">' + statusIndicatorHtml(rowStatus) + '</td>' +
+          '<td data-label="Last Login"><span class="smx-cell-muted smx-nowrap">' + esc(formatDateTime(a && a.last_login)) + '</span></td>';
+      } else {
+        var scopeText = (a && a.access_scope) || (a && a.role === 'SUPER_ADMIN' ? 'Full System Access' : 'Standard Admin Scope');
+        middle =
+          '<td data-label="Username">' + uname + '</td>' +
+          '<td data-label="Campus"><span class="smx-cell-plain">' + esc(r.campus || 'All campuses') + '</span></td>' +
+          '<td data-label="Access Scope"><span class="smx-cell-plain">' + esc(scopeText) + '</span></td>' +
+          '<td data-label="Account Status">' + statusIndicatorHtml(rowStatus) + '</td>';
+      }
+
+      return checkCell + personCell + middle + '<td class="right" data-label="Actions">' + rowActionsHtml(r) + '</td>';
+    }
+
+    function tableHtml() {
+      var allPageSelected = cfg.hasBulk && state.rows.length > 0 && state.rows.every(function (r) {
+        return !!state.selected[r.person_id];
+      });
+      var ths = [];
+      if (cfg.hasBulk) {
+        ths.push('<th class="center smx-th-check"><input type="checkbox" class="smx-checkbox" id="smx-check-all"' +
+          (allPageSelected ? ' checked' : '') + ' aria-label="Select all on page"></th>');
+      }
+      cfg.columns.forEach(function (col) {
+        ths.push('<th' + (col === 'Actions' ? ' class="right"' : '') + '>' + esc(col) + '</th>');
+      });
+
+      var colSpan = cfg.columns.length + (cfg.hasBulk ? 1 : 0);
+      var rowsHtml = state.rows.length
+        ? state.rows.map(function (r) {
+            return '<tr class="' + (state.selected[r.person_id] ? 'is-selected' : '') + '" data-pid="' + esc(r.person_id) + '">' +
+              rowCellsHtml(r) + '</tr>';
+          }).join('')
+        : '<tr><td colspan="' + colSpan + '" class="smx-empty">No matching records in ' + esc(cfg.title) + '.</td></tr>';
+
+      return '<section class="smx-table-card" aria-label="' + esc(cfg.title) + ' table">' +
+        '<div class="smx-table-scroll"><table class="smx-table">' +
+          '<thead><tr>' + ths.join('') + '</tr></thead>' +
+          '<tbody>' + rowsHtml + '</tbody>' +
+        '</table></div>' + pagerHtml(state) + '</section>';
+    }
+
+    function paint() {
+      var activeEl = document.activeElement;
+      var restoreSearchFocus = activeEl && activeEl.id === 'smx-search';
+      var selStart = restoreSearchFocus ? activeEl.selectionStart : null;
+      var selEnd = restoreSearchFocus ? activeEl.selectionEnd : null;
+
+      root.innerHTML = '<div class="ngis-sm">' +
+        headSectionHtml() +
+        metricsHtml() +
+        toolbarHtml() +
+        tokenBarHtml() +
+        bulkBarHtml() +
+        tableHtml() +
+      '</div>';
+
+      bindHandlers();
+
+      if (restoreSearchFocus) {
+        var inp = q(root, '#smx-search');
+        if (inp) {
+          inp.focus();
+          if (selStart !== null) {
+            try { inp.setSelectionRange(selStart, selEnd); } catch (_) {}
+          }
+        }
+      }
+    }
+
+    var searchTimer = null;
+    function bindHandlers() {
+      var searchInput = q(root, '#smx-search');
+      if (searchInput) {
+        searchInput.addEventListener('input', function (e) {
+          state.search = e.target.value.trim();
+          state.page = 1;
+          if (searchTimer) clearTimeout(searchTimer);
+          searchTimer = setTimeout(function () { load({ keepToolbar: true }); }, 160);
+        });
+      }
+
+      var statusSel = q(root, '#smx-status');
+      if (statusSel) {
+        statusSel.addEventListener('change', function (e) {
+          state.status = e.target.value; state.page = 1; load({ keepToolbar: true });
+        });
+      }
+      var campusSel = q(root, '#smx-campus');
+      if (campusSel) {
+        campusSel.addEventListener('change', function (e) {
+          state.campus = e.target.value; state.page = 1; load({ keepToolbar: true });
+        });
+      }
+      var classSel = q(root, '#smx-class');
+      if (classSel) {
+        classSel.addEventListener('change', function (e) {
+          state.classFilter = e.target.value; state.page = 1; load({ keepToolbar: true });
+        });
+      }
+      var deptSel = q(root, '#smx-dept');
+      if (deptSel) {
+        deptSel.addEventListener('change', function (e) {
+          state.department = e.target.value; state.page = 1; load({ keepToolbar: true });
+        });
+      }
+      var sortSel = q(root, '#smx-sort');
+      if (sortSel) {
+        sortSel.addEventListener('change', function (e) {
+          state.sort = e.target.value;
+          state.order = state.sort === 'last_login' ? 'desc' : 'asc';
+          state.page = 1;
+          load({ keepToolbar: true });
+        });
+      }
+      var sizeSel = q(root, '#smx-pagesize');
+      if (sizeSel) {
+        sizeSel.addEventListener('change', function (e) {
+          state.pageSize = parseInt(e.target.value, 10) || 25;
+          state.page = 1;
+          load({ keepToolbar: true });
+        });
+      }
+
+      var moreBtn = q(root, '[data-action="toggle-more-pop"]');
+      var morePop = q(root, '#smx-more-pop');
+      if (moreBtn && morePop) {
+        moreBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var wasHidden = morePop.classList.contains('hidden');
+          closeFloatingMenus();
+          if (wasHidden) {
+            morePop.classList.remove('hidden');
+            moreBtn.setAttribute('aria-expanded', 'true');
+          }
+        });
+        morePop.addEventListener('click', function (e) { e.stopPropagation(); });
+      }
+
+      var sheetBtn = q(root, '[data-action="open-filter-sheet"]');
+      if (sheetBtn) sheetBtn.addEventListener('click', openFilterSheet);
+
+      var clearBtn = q(root, '[data-action="clear-filters"]');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+          state.search = ''; state.status = ''; state.campus = '';
+          state.department = ''; state.classFilter = '';
+          state.sort = 'name'; state.order = 'asc'; state.page = 1;
+          load();
+        });
+      }
+
+      var addBtn = q(root, '[data-action="add-account"]');
+      if (addBtn) addBtn.addEventListener('click', function () {
+        // Add User is link-first: search and link an existing registry record
+        // of THIS directory's type (Sections A-D). When the person does not
+        // exist yet, Section A offers the sanctioned create-new-record path.
+        // The backend independently validates the account type and the
+        // actor's authority regardless of the page context.
+        openAddAccountModal(null);
+      });
+
+      var impBtn = q(root, '[data-action="import"]');
+      if (impBtn) impBtn.addEventListener('click', openImportModal);
+
+      var overflowBtn = q(root, '[data-action="head-overflow"]');
+      if (overflowBtn) {
+        overflowBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openHeaderOverflowMenu(overflowBtn);
+        });
+      }
+
+      var copyBtn = q(root, '[data-action="copy-token"]');
+      if (copyBtn && state.tokenNotice) {
+        copyBtn.addEventListener('click', function () {
+          copyToClipboard(state.tokenNotice.token).then(function () {
+            toast(root, 'One-time token copied to clipboard.');
+          });
+        });
+      }
+      var dismissBtn = q(root, '[data-action="dismiss-token"]');
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', function () { state.tokenNotice = null; paint(); });
+      }
+
+      var bulkProv = q(root, '[data-action="bulk-provision"]');
+      if (bulkProv) bulkProv.addEventListener('click', openBulkModal);
+      var bulkAct = q(root, '[data-action="bulk-activate"]');
+      if (bulkAct) bulkAct.addEventListener('click', function () { confirmBulkStatus('activate'); });
+      var bulkSusp = q(root, '[data-action="bulk-suspend"]');
+      if (bulkSusp) bulkSusp.addEventListener('click', function () { confirmBulkStatus('suspend'); });
+      var bulkClr = q(root, '[data-action="clear-selection"]');
+      if (bulkClr) bulkClr.addEventListener('click', function () {
+        state.selected = {}; state.selectedRows = {}; paint();
+      });
+
+      var checkAll = q(root, '#smx-check-all');
+      if (checkAll) {
+        checkAll.addEventListener('change', function (e) {
+          state.rows.forEach(function (r) {
+            if (e.target.checked) { state.selected[r.person_id] = true; state.selectedRows[r.person_id] = r; }
+            else { delete state.selected[r.person_id]; delete state.selectedRows[r.person_id]; }
+          });
+          paint();
+        });
+      }
+
+      qa(root, '[data-row-check]').forEach(function (cb) {
+        cb.addEventListener('change', function (e) {
+          var pid = cb.closest('tr').getAttribute('data-pid');
+          var r = state.rows.find(function (x) { return x.person_id === pid; });
+          if (e.target.checked) { state.selected[pid] = true; if (r) state.selectedRows[pid] = r; }
+          else { delete state.selected[pid]; delete state.selectedRows[pid]; }
+          paint();
+        });
+      });
+
+      qa(root, 'tbody tr[data-pid]').forEach(function (tr) {
+        var pid = tr.getAttribute('data-pid');
+        var row = state.rows.find(function (r) { return r.person_id === pid; });
+        if (!row) return;
+        qa(tr, '[data-action]').forEach(function (btn) {
+          btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var act = btn.getAttribute('data-action');
+            if (act === 'view') openViewModal(row);
+            else if (act === 'edit') openEditModal(row);
+            else if (act === 'create-for-row') openAddAccountModal(row);
+            else if (act === 'more') openRowMenu(row, btn);
+          });
+        });
+      });
+
+      qa(root, '[data-page]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.page += (b.getAttribute('data-page') === 'next' ? 1 : -1);
+          load({ keepToolbar: true });
+        });
+      });
+      qa(root, '[data-page-num]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          state.page = parseInt(b.getAttribute('data-page-num'), 10) || 1;
+          load({ keepToolbar: true });
+        });
+      });
+
+      if (!docEscBound) {
+        docEscBound = true;
+        document.addEventListener('click', function () { closeFloatingMenus(); });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            closeFloatingMenus();
+            closeFilterSheet(root);
+            closeModal(root);
+          }
+        });
+      }
+    }
+
+    function openHeaderOverflowMenu(triggerBtn) {
+      closeFloatingMenus();
+      var rect = triggerBtn.getBoundingClientRect();
+      var menu = document.createElement('div');
+      menu.className = 'smx-row-menu';
+      menu.setAttribute('role', 'menu');
+      menu.innerHTML =
+        (cfg.hasImport ? '<button type="button" class="smx-menu-item" role="menuitem" data-hdr="import">Import Provisioning CSV</button>' : '') +
+        '<a class="smx-menu-item" role="menuitem" href="' + esc(queryUrl(true)) + '" download>Export Directory CSV</a>';
+      menu.style.top = (rect.bottom + 6) + 'px';
+      menu.style.right = Math.max(12, window.innerWidth - rect.right) + 'px';
+      document.body.appendChild(menu);
+      menu.addEventListener('click', function (e) { e.stopPropagation(); });
+      var imp = q(menu, '[data-hdr="import"]');
+      if (imp) imp.addEventListener('click', function () { closeFloatingMenus(); openImportModal(); });
+    }
+
+    function openFilterSheet() {
+      closeFilterSheet(root);
+      var host = q(root, '.ngis-sm') || root;
+      var sheet = document.createElement('div');
+      sheet.className = 'smx-sheet-backdrop';
+      sheet.innerHTML =
+        '<div class="smx-sheet" role="dialog" aria-modal="true" aria-label="Filter ' + esc(cfg.title) + '">' +
+          '<div class="smx-sheet-head">' +
+            '<h2 class="smx-modal-title">Filter &amp; Sort</h2>' +
+            '<button type="button" class="smx-close" data-sheet-close aria-label="Close filters">&times;</button>' +
+          '</div>' +
+          '<label class="smx-field"><span>Account Status</span><select id="sh-status" class="smx-select">' + statusOptionsHtml(state.status) + '</select></label>' +
+          '<label class="smx-field"><span>Campus</span><select id="sh-campus" class="smx-select">' + campusFilterOptionsHtml(state.campus) + '</select></label>' +
+          (cfg.extraFilter ? '<label class="smx-field"><span>' + esc(cfg.extraFilterLabel) + '</span>' + extraFilterSelectHtml('sh-') + '</label>' : '') +
+          '<label class="smx-field"><span>Sort by</span><select id="sh-sort" class="smx-select">' +
+            '<option value="name"' + (state.sort === 'name' ? ' selected' : '') + '>Name (A to Z)</option>' +
+            '<option value="status"' + (state.sort === 'status' ? ' selected' : '') + '>Account Status</option>' +
+            '<option value="last_login"' + (state.sort === 'last_login' ? ' selected' : '') + '>Last Login</option>' +
+          '</select></label>' +
+          '<div class="smx-sheet-actions">' +
+            '<button type="button" class="smx-btn" data-sheet-reset>Clear All</button>' +
+            '<button type="button" class="smx-btn primary" data-sheet-apply>Apply Filters</button>' +
+          '</div>' +
+        '</div>';
+      host.appendChild(sheet);
+      sheet.addEventListener('click', function (e) {
+        if (e.target === sheet || e.target.closest('[data-sheet-close]')) closeFilterSheet(root);
+      });
+      q(sheet, '[data-sheet-reset]').addEventListener('click', function () {
+        state.status = ''; state.campus = ''; state.department = ''; state.classFilter = '';
+        state.sort = 'name'; state.order = 'asc'; state.page = 1;
+        closeFilterSheet(root);
+        load();
+      });
+      q(sheet, '[data-sheet-apply]').addEventListener('click', function () {
+        state.status = q(sheet, '#sh-status').value;
+        state.campus = q(sheet, '#sh-campus').value;
+        var shClass = q(sheet, '#sh-class');
+        var shDept = q(sheet, '#sh-dept');
+        if (shClass) state.classFilter = shClass.value;
+        if (shDept) state.department = shDept.value;
+        state.sort = q(sheet, '#sh-sort').value;
+        state.order = state.sort === 'last_login' ? 'desc' : 'asc';
+        state.page = 1;
+        closeFilterSheet(root);
+        load();
+      });
+    }
+
+    function openRowMenu(row, triggerBtn) {
+      var wasOpen = triggerBtn.getAttribute('aria-expanded') === 'true';
+      closeFloatingMenus();
+      if (wasOpen) return;
+
+      var acc = row.account;
+      if (!acc) return;
+      var st = acc.status || 'pending_activation';
+      var isSuper = acc.role === 'SUPER_ADMIN';
+      var canModifyAdmin = cfg.type !== 'admin' || isSuperAdminActor();
+      var items = [];
+
+      if (st !== 'disabled' && canModifyAdmin) {
+        items.push({ key: 'reset', label: 'Reset Password' });
+      }
+      if (canModifyAdmin) {
+        if (st === 'pending_activation') items.push({ key: 'activate', label: 'Activate Account' });
+        else if (st === 'locked') items.push({ key: 'unlock', label: 'Unlock Account' });
+        else if (st === 'suspended' || st === 'disabled') items.push({ key: 'activate', label: 'Reactivate Account' });
+
+        if ((st === 'active' || st === 'pending_activation') && !isSuper) {
+          items.push({ key: 'suspend', label: 'Suspend Account', danger: true });
+        }
+        if (st !== 'disabled' && !isSuper) {
+          items.push({ key: 'disable', label: 'Disable Account', danger: true });
+        }
+        if (st === 'active' || st === 'pending_activation') {
+          items.push({ key: 'revoke', label: 'Revoke Active Sessions', danger: true });
+        }
+      }
+      items.push({ sep: true });
+      items.push({ key: 'activity', label: 'View Activity History' });
+
+      var menu = document.createElement('div');
+      menu.className = 'smx-row-menu';
+      menu.setAttribute('role', 'menu');
+      menu.innerHTML = items.map(function (it) {
+        if (it.sep) return '<div class="smx-menu-sep" role="separator"></div>';
+        return '<button type="button" class="smx-menu-item' + (it.danger ? ' danger' : '') + '" role="menuitem" data-menu="' + esc(it.key) + '">' + esc(it.label) + '</button>';
+      }).join('');
+
+      document.body.appendChild(menu);
+      var rect = triggerBtn.getBoundingClientRect();
+      var mw = menu.offsetWidth || 200;
+      var mh = menu.offsetHeight || 180;
+      var left = Math.min(window.innerWidth - mw - 12, Math.max(12, rect.right - mw));
+      var top = (rect.bottom + mh + 10 > window.innerHeight) ? Math.max(12, rect.top - mh - 6) : (rect.bottom + 6);
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
+      triggerBtn.setAttribute('aria-expanded', 'true');
+
+      menu.addEventListener('click', function (e) { e.stopPropagation(); });
+      qa(menu, '[data-menu]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var key = btn.getAttribute('data-menu');
+          closeFloatingMenus();
+          if (key === 'activity') openActivityModal(row);
+          else confirmRowSecurityAction(row, key);
+        });
+      });
+    }
+
+    function confirmRowSecurityAction(row, actionKey) {
+      var acc = row.account;
+      var titles = {
+        reset: 'Reset Password',
+        activate: 'Activate Login Account',
+        unlock: 'Unlock Login Account',
+        suspend: 'Suspend Login Account',
+        disable: 'Disable Login Account',
+        revoke: 'Revoke Active Sessions'
+      };
+      var descriptions = {
+        reset: 'Generates a single-use password reset token and invalidates prior reset tokens for ' + row.name + '.',
+        activate: 'Allows ' + row.name + ' (' + acc.username + ') to sign in to the assigned portal immediately.',
+        unlock: 'Clears the lockout flag on ' + acc.username + ' so the user can authenticate again.',
+        suspend: 'Temporarily blocks sign-in for ' + acc.username + '. Institutional student/teacher/staff records remain intact.',
+        disable: 'Disables portal login access for ' + acc.username + '. Academic and employment profile records are preserved and never deleted.',
+        revoke: 'Signs ' + acc.username + ' out of all active browser sessions immediately.'
+      };
+      var isDanger = (actionKey === 'suspend' || actionKey === 'disable' || actionKey === 'revoke');
+      var modal = openModal(
+        root,
+        titles[actionKey] || 'Confirm Action',
+        row.name + ' · ' + acc.username,
+        '<div class="smx-note-box' + (isDanger ? ' warn' : '') + '">' + esc(descriptions[actionKey]) + '</div>',
+        '<button type="button" class="smx-btn" data-modal-close>Cancel</button>' +
+        '<button type="button" class="smx-btn ' + (isDanger ? 'danger' : 'primary') + '" data-confirm-sec>Confirm</button>'
+      );
+      q(modal, '[data-confirm-sec]').addEventListener('click', function (e) {
+        var btn = e.currentTarget;
+        btn.disabled = true;
+        var req;
+        if (actionKey === 'reset') req = postJson('/api/user-mgmt/account/' + encodeURIComponent(acc.id) + '/reset-password', {});
+        else if (actionKey === 'revoke') req = postJson('/api/user-mgmt/account/' + encodeURIComponent(acc.id) + '/revoke-sessions', {});
+        else req = postJson('/api/user-mgmt/account/' + encodeURIComponent(acc.id) + '/status', { action: actionKey });
+
+        req.then(function (j) {
+          closeModal(root);
+          if (!j.success) {
+            toast(root, j.error || 'Action rejected', 'bad');
+            return;
+          }
+          if (j.reset_token) {
+            state.tokenNotice = {
+              title: 'Password reset token ready',
+              username: acc.username,
+              token: j.reset_token,
+              expires: j.expires_at
+            };
+          }
+          toast(root, titles[actionKey] + ' completed.');
+          load({ keepToolbar: true });
+        });
+      });
+    }
+
+    function openViewModal(row) {
+      fetchJson('/api/user-mgmt/user/' + encodeURIComponent(row.person_type) + '/' + encodeURIComponent(row.person_id))
+        .then(function (d) {
+          var p = d.person || row;
+          var a = d.account;
+          var scopeOrAssign = cfg.type === 'admin'
+            ? ((a && a.access_scope) || (a && a.role === 'SUPER_ADMIN' ? 'Full System Access' : 'Standard Admin Scope'))
+            : (p.assignment || p.department || p.display_role || '—');
+          var assignLabel = cfg.type === 'student' ? 'Enrolled Class'
+            : (cfg.type === 'teacher' ? 'Teaching Assignment'
+            : (cfg.type === 'staff' ? 'Department / Position'
+            : (cfg.type === 'admin' ? 'Access Scope' : 'Academic Oversight')));
+
+          var infoGrid =
+            '<div class="smx-profile-banner">' +
+              avatarHtml(p.name, p.photo, { size: 'lg' }) +
+              '<div class="smx-profile-banner-meta">' +
+                '<div class="smx-profile-banner-name">' + esc(p.name) + '</div>' +
+                '<div class="smx-profile-banner-sub"><span class="smx-mono">' + esc(p.person_id) + '</span><span>·</span>' +
+                  statusIndicatorHtml(a && a.id ? a.status : 'none') + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="smx-info-grid">' +
+              '<div class="smx-info"><span class="smx-info-label">Account Type</span><span>' + esc(ROLES_BY_TYPE[cfg.type]) + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">Username</span><span class="smx-mono">' + esc((a && a.username) || 'Not provisioned') + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">Campus</span><span>' + esc((a && a.campus) || p.campus || '—') + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">' + esc(assignLabel) + '</span><span>' + esc(scopeOrAssign) + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">Email</span><span>' + esc((a && a.email) || 'Not set') + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">Last Login</span><span>' + esc(formatDateTime(a && a.last_login)) + '</span></div>' +
+            '</div>' +
+            '<p class="smx-note">Identity records remain preserved in the institutional directory even when portal login access is disabled.</p>';
+
+          var foot = '<button type="button" class="smx-btn" data-modal-close>Close</button>' +
+            (a && a.id
+              ? '<button type="button" class="smx-btn" data-view-act="activity">Activity</button><button type="button" class="smx-btn primary" data-view-act="edit">Edit Account</button>'
+              : '<button type="button" class="smx-btn primary" data-view-act="create">' + ICONS.plus + 'Create Account</button>');
+          var modal = openModal(root, p.name, cfg.title + ' · Account Details', infoGrid, foot, true);
+          qa(modal, '[data-view-act]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var k = btn.getAttribute('data-view-act');
+              closeModal(root);
+              if (k === 'edit') openEditModal(row);
+              else if (k === 'activity') openActivityModal(row);
+              else if (k === 'create') openAddAccountModal(row);
+            });
+          });
+        });
+    }
+
+    function openEditModal(row) {
+      var a = row.account;
+      if (!a) { openAddAccountModal(row); return; }
+      var campusOpts = (state.facets.campus_options || state.facets.campuses || ['Sensok', 'All campuses']);
+      var canChangeCampus = cfg.type === 'principal' || cfg.type === 'admin' || cfg.type === 'staff';
+      var campusField = canChangeCampus
+        ? '<label class="smx-field"><span>Assigned Campus</span><select id="ed-campus" class="smx-select">' +
+            campusOpts.map(function (c) {
+              return '<option value="' + esc(c) + '"' + ((a.campus || row.campus) === c ? ' selected' : '') + '>' + esc(c) + '</option>';
+            }).join('') + '</select></label>'
+        : '<div class="smx-field"><span>Linked Campus</span><div class="smx-note-box">' + esc(row.campus || 'Sensok') + ' (synced from ' + esc(cfg.recordNoun) + ' profile)</div></div>';
+
+      var scopeField = cfg.type === 'admin'
+        ? '<label class="smx-field smx-span-2"><span>Access Scope</span><select id="ed-scope" class="smx-select">' +
+            ADMIN_SCOPES.map(function (s) {
+              return '<option value="' + esc(s) + '"' + ((a.access_scope || '') === s ? ' selected' : '') + '>' + esc(s) + '</option>';
+            }).join('') + '</select></label>'
+        : (cfg.type === 'staff'
+          ? '<label class="smx-field"><span>Department</span><input id="ed-dept" class="smx-input" value="' + esc(a.department || row.department || '') + '"></label>' +
+            '<label class="smx-field"><span>Position</span><input id="ed-assign" class="smx-input" value="' + esc(a.assignment || row.assignment || '') + '"></label>'
+          : '<div class="smx-field smx-span-2"><span>' + esc(cfg.type === 'student' ? 'Class Assignment' : 'Teaching Department') + '</span>' +
+              '<div class="smx-note-box">' + esc(cfg.type === 'student' ? (row.assignment || '—') : (row.department || '—')) +
+              ' · Managed from the institutional profile registry to prevent duplicate records.</div></div>');
+
+      var body =
+        '<div id="ed-err"></div>' +
+        '<div class="smx-form-grid">' +
+          '<label class="smx-field"><span>Username</span><input id="ed-username" class="smx-input" value="' + esc(a.username) + '"><div id="ed-un-avail" class="smx-avail"></div></label>' +
+          '<label class="smx-field"><span>Email Address</span><input id="ed-email" class="smx-input" type="email" value="' + esc(a.email || '') + '"></label>' +
+          campusField +
+          '<div class="smx-field"><span>Account Role</span><div class="smx-readonly-chip">' + esc(a.role) + ' (Locked to directory)</div></div>' +
+          scopeField +
+        '</div>';
+
+      var modal = openModal(
+        root,
+        'Edit ' + cfg.recordNoun.charAt(0).toUpperCase() + cfg.recordNoun.slice(1) + ' Account',
+        row.name + ' · ' + row.person_id,
+        body,
+        '<button type="button" class="smx-btn" data-modal-close>Cancel</button>' +
+        '<button type="button" class="smx-btn primary" data-edit-save>Save Changes</button>',
+        true
+      );
+
+      var unInp = q(modal, '#ed-username');
+      var unAvail = q(modal, '#ed-un-avail');
+      var unTimer = null;
+      unInp.addEventListener('input', function () {
+        var v = unInp.value.trim().toLowerCase();
+        if (unTimer) clearTimeout(unTimer);
+        if (!v) { unAvail.className = 'smx-avail bad'; unAvail.textContent = 'Username cannot be empty.'; return; }
+        unAvail.className = 'smx-avail checking'; unAvail.textContent = 'Checking availability...';
+        unTimer = setTimeout(function () {
+          fetchJson('/api/user-mgmt/check-username?username=' + encodeURIComponent(v) + '&exclude_id=' + encodeURIComponent(a.id))
+            .then(function (res) {
+              unAvail.className = 'smx-avail ' + (res.available ? 'ok' : 'bad');
+              unAvail.textContent = res.message || (res.available ? 'Available' : 'Already taken');
+            });
+        }, 180);
+      });
+
+      q(modal, '[data-edit-save]').addEventListener('click', function (e) {
+        var btn = e.currentTarget;
+        var errBox = q(modal, '#ed-err');
+        errBox.innerHTML = '';
+        var username = unInp.value.trim().toLowerCase();
+        var email = q(modal, '#ed-email').value.trim();
+        if (!username) { errBox.innerHTML = '<div class="smx-note-box warn" role="alert">Username is required.</div>'; return; }
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          errBox.innerHTML = '<div class="smx-note-box warn" role="alert">Enter a valid email address.</div>';
+          return;
+        }
+        var payload = { username: username, email: email };
+        var edCampus = q(modal, '#ed-campus');
+        var edScope = q(modal, '#ed-scope');
+        var edDept = q(modal, '#ed-dept');
+        var edAssign = q(modal, '#ed-assign');
+        if (edCampus) payload.campus = edCampus.value;
+        if (edScope) payload.access_scope = edScope.value;
+        if (edDept) payload.department = edDept.value;
+        if (edAssign) payload.assignment = edAssign.value;
+
+        btn.disabled = true;
+        postJson('/api/user-mgmt/account/' + encodeURIComponent(a.id), payload, 'PUT').then(function (j) {
+          btn.disabled = false;
+          if (!j.success) {
+            errBox.innerHTML = '<div class="smx-note-box warn" role="alert">' + esc(j.error || 'Could not update account') + '</div>';
+            return;
+          }
+          closeModal(root);
+          toast(root, 'Account updated for ' + row.name + '.');
+          load({ keepToolbar: true });
+        });
+      });
+    }
+
+    function openActivityModal(row) {
+      fetchJson('/api/user-mgmt/user/' + encodeURIComponent(row.person_type) + '/' + encodeURIComponent(row.person_id))
+        .then(function (d) {
+          var logins = (d.login_history || []).slice().reverse();
+          var audits = (d.audit || []).slice().reverse();
+          var lh = logins.length
+            ? logins.map(function (l) {
+                return '<div class="smx-activity-row"><span class="smx-mono">' + esc(formatDateTime(l.ts || l.at)) + '</span>' +
+                  '<span class="smx-activity-action">' + esc(l.event || 'sign-in') + '</span>' +
+                  '<span class="smx-cell-muted smx-mono">' + esc(l.ip || l.by || '') + '</span></div>';
+              }).join('')
+            : '<div class="smx-cell-muted">No login events recorded yet.</div>';
+          var ah = audits.length
+            ? audits.map(function (e) {
+                return '<div class="smx-activity-row"><span class="smx-mono">' + esc(formatDateTime(e.ts || e.at)) + '</span>' +
+                  '<span class="smx-activity-action">' + esc(e.action) + '</span>' +
+                  '<span class="smx-cell-muted">' + esc(e.actor || '') + '</span></div>';
+              }).join('')
+            : '<div class="smx-cell-muted">No security audit events yet.</div>';
+
+          openModal(
+            root,
+            'Activity & Audit History',
+            row.name + ' · ' + ((row.account && row.account.username) || row.person_id),
+            '<h3 class="smx-section-label">Recent Authentication Events</h3><div class="smx-activity">' + lh + '</div>' +
+            '<h3 class="smx-section-label">Account Security Log</h3><div class="smx-activity">' + ah + '</div>',
+            '<button type="button" class="smx-btn primary" data-modal-close>Done</button>',
+            true
+          );
+        });
+    }
+
+    // ── Single Clean 4-Section Add Account Modal (Strictly Page-Scoped) ─────
+    function openAddAccountModal(preselectedRow) {
+      if (cfg.type === 'admin' && !isSuperAdminActor()) {
+        toast(root, 'Super Admin authorization is required to create administrator accounts.', 'bad');
+        return;
+      }
+
+      var isAdmin = cfg.type === 'admin';
+      var picked = preselectedRow || null;
+      var form = {
+        adminName: '',
+        username: preselectedRow ? suggestUsername(preselectedRow.name, cfg.type) : '',
+        email: '',
+        activation: 'token',
+        campus: (preselectedRow && preselectedRow.campus) || (isAdmin ? 'All campuses' : 'Sensok'),
+        accessScope: ADMIN_SCOPES[0],
+        elevatedConfirmed: false,
+        usernameValid: false,
+        usernameChecked: false,
+        usernameMessage: ''
+      };
+      var pool = [];
+      var unCheckTimer = null;
+      var unSeq = 0;
+
+      var campusOpts = state.facets.campus_options || ['Tuol Kork Main Campus', 'Chamkarmon High School Branch', 'STEM & Robotics Innovation Hub', 'Sensok', 'All campuses'];
+
+      var fallbackHtml = cfg.fallbackUrl
+        ? '<a class="smx-btn sm soft" href="' + esc(cfg.fallbackUrl) + '">' + esc(cfg.fallbackLabel) + ' &rarr;</a>'
+        : '<span class="smx-cell-muted">Ensure the person record exists in the institutional registry before creating login credentials.</span>';
+
+      var sectionAHtml = isAdmin
+        ? '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">A</span>Administrator Identity</span>' +
+              '<span class="smx-readonly-chip">Account Type: Admin Only</span></div>' +
+            '<div class="smx-note-box">Administrator logins are governed accounts outside the student/teacher/staff academic directory. Role hierarchy prevents creating Super Admin accounts here.</div>' +
+            '<div class="smx-form-grid smx-mt-sm">' +
+              '<label class="smx-field smx-span-2"><span>Full Name *</span><input id="add-admin-name" class="smx-input" placeholder="e.g. Ms. Sokha Meas" autocomplete="off"></label>' +
+            '</div>' +
+          '</section>'
+        : '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">A</span>Link Existing ' + esc(cfg.recordNoun.charAt(0).toUpperCase() + cfg.recordNoun.slice(1)) + ' Record</span>' +
+              '<span class="smx-readonly-chip">Type: ' + esc(ROLES_BY_TYPE[cfg.type]) + ' (Locked)</span></div>' +
+            '<p class="smx-sec-desc">Search the existing ' + esc(cfg.type) + ' registry. Usernames and accounts are linked without duplicating profile records.</p>' +
+            '<input id="add-rec-search" class="smx-input smx-mt-sm" placeholder="Search ' + esc(cfg.recordNoun) + ' name, ID, or department/class..." autocomplete="off">' +
+            '<div id="add-rec-picker" class="smx-picker"></div>' +
+            '<div id="add-rec-selected" class="smx-mt-sm"></div>' +
+            '<div class="smx-linknew-row smx-mt-sm"><span class="smx-cell-muted">Person not in the ' + esc(cfg.type) + ' registry yet?</span>' +
+              '<button type="button" class="smx-action-link primary-link" data-action="open-create-new">Create a new ' + esc(cfg.recordNoun) + ' record with login</button></div>' +
+          '</section>';
+
+      var sectionCHtml;
+      if (cfg.type === 'student' || cfg.type === 'teacher') {
+        sectionCHtml =
+          '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">C</span>Access Assignment</span>' +
+              '<span class="smx-readonly-chip">Role: ' + esc(ROLES_BY_TYPE[cfg.type]) + '</span></div>' +
+            '<div class="smx-note-box">' + esc(cfg.portalNote) + '</div>' +
+            '<div id="add-c-meta" class="smx-form-grid smx-mt-sm"></div>' +
+          '</section>';
+      } else if (cfg.type === 'staff' || cfg.type === 'principal') {
+        sectionCHtml =
+          '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">C</span>Access Assignment</span>' +
+              '<span class="smx-readonly-chip">Role: ' + esc(ROLES_BY_TYPE[cfg.type]) + '</span></div>' +
+            '<div class="smx-note-box">' + esc(cfg.portalNote) + '</div>' +
+            '<div class="smx-form-grid smx-mt-sm">' +
+              '<label class="smx-field"><span>' + esc(cfg.type === 'principal' ? 'Assigned Campus' : 'Campus Scope') + '</span>' +
+                '<select id="add-campus" class="smx-select">' +
+                  campusOpts.map(function (c) {
+                    return '<option value="' + esc(c) + '"' + (form.campus === c ? ' selected' : '') + '>' + esc(c) + '</option>';
+                  }).join('') +
+                '</select></label>' +
+              '<div id="add-c-meta" class="smx-field"></div>' +
+            '</div>' +
+          '</section>';
+      } else {
+        sectionCHtml =
+          '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">C</span>Access Assignment &amp; Security Confirmation</span>' +
+              '<span class="smx-readonly-chip">Role: ADMIN (System Administrator)</span></div>' +
+            '<div class="smx-form-grid">' +
+              '<label class="smx-field"><span>Campus Scope</span><select id="add-campus" class="smx-select">' +
+                campusOpts.map(function (c) {
+                  return '<option value="' + esc(c) + '"' + (form.campus === c ? ' selected' : '') + '>' + esc(c) + '</option>';
+                }).join('') + '</select></label>' +
+              '<label class="smx-field"><span>Operational Access Scope</span><select id="add-scope" class="smx-select">' +
+                ADMIN_SCOPES.map(function (s) {
+                  return '<option value="' + esc(s) + '"' + (form.accessScope === s ? ' selected' : '') + '>' + esc(s) + '</option>';
+                }).join('') + '</select></label>' +
+              '<div class="smx-span-2 smx-note-box warn">' +
+                '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;">' +
+                  '<input type="checkbox" id="add-elevated-confirm" class="smx-checkbox" style="margin-top:2px;flex:none;">' +
+                  '<span>Confirm privileged Admin provisioning: grants Admin Portal access within the selected scope. Super Admin accounts cannot be created from this screen.</span>' +
+                '</label>' +
+              '</div>' +
+            '</div>' +
+          '</section>';
+      }
+
+      var bodyHtml =
+        '<div class="smx-form-sections">' +
+          '<div id="add-form-err"></div>' +
+          sectionAHtml +
+          '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">B</span>Login Information</span></div>' +
+            '<div class="smx-form-grid">' +
+              '<label class="smx-field"><span>Username *</span><input id="add-username" class="smx-input" value="' + esc(form.username) + '" placeholder="e.g. firstname.lastname" autocomplete="off"><div id="add-un-status" class="smx-avail"></div></label>' +
+              '<label class="smx-field"><span>Institutional Email (optional)</span><input id="add-email" class="smx-input" type="email" placeholder="name@ngis.edu.kh" autocomplete="off"></label>' +
+              '<label class="smx-field smx-span-2"><span>Activation Method (no plaintext password stored)</span>' +
+                '<select id="add-activation" class="smx-select">' +
+                  '<option value="token">Generate one-time activation token (recommended)</option>' +
+                  '<option value="pending">Queue for activation link email</option>' +
+                '</select></label>' +
+            '</div>' +
+          '</section>' +
+          sectionCHtml +
+          '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">D</span>Review &amp; Create</span></div>' +
+            '<div id="add-review" class="smx-review-box"></div>' +
+          '</section>' +
+        '</div>';
+
+      var modal = openModal(
+        root,
+        cfg.addLabel,
+        cfg.title + ' · Strictly scoped to ' + ROLES_BY_TYPE[cfg.type] + ' accounts',
+        bodyHtml,
+        '<button type="button" class="smx-btn" data-modal-close>Cancel</button>' +
+        '<button type="button" class="smx-btn primary" data-add-submit>Create ' + esc(cfg.type.charAt(0).toUpperCase() + cfg.type.slice(1)) + ' Account</button>',
+        true
+      );
+
+      var usernameInp = q(modal, '#add-username');
+      var emailInp = q(modal, '#add-email');
+      var unStatus = q(modal, '#add-un-status');
+      var errHost = q(modal, '#add-form-err');
+      var reviewEl = q(modal, '#add-review');
+      var pickerEl = q(modal, '#add-rec-picker');
+      var selectedEl = q(modal, '#add-rec-selected');
+      var recSearch = q(modal, '#add-rec-search');
+      var cMetaEl = q(modal, '#add-c-meta');
+      var userEditedUsername = false;
+
+      function validateUsernameLive(val) {
+        var v = String(val || '').trim().toLowerCase();
+        form.username = v;
+        if (unCheckTimer) clearTimeout(unCheckTimer);
+        if (!v) {
+          form.usernameValid = false;
+          form.usernameChecked = false;
+          unStatus.className = 'smx-avail';
+          unStatus.textContent = '';
+          updateReview();
+          return;
+        }
+        unStatus.className = 'smx-avail checking';
+        unStatus.textContent = 'Checking username availability...';
+        unSeq += 1;
+        var seq = unSeq;
+        unCheckTimer = setTimeout(function () {
+          fetchJson('/api/user-mgmt/check-username?username=' + encodeURIComponent(v)).then(function (res) {
+            if (seq !== unSeq) return;
+            form.usernameChecked = true;
+            form.usernameValid = !!(res.valid && res.available);
+            form.usernameMessage = res.message || '';
+            unStatus.className = 'smx-avail ' + (form.usernameValid ? 'ok' : 'bad');
+            unStatus.textContent = (form.usernameValid ? '✓ ' : '✕ ') + (res.message || '');
+            updateReview();
+          });
+        }, 160);
+      }
+
+      function updateSectionCAndSelected() {
+        if (selectedEl) {
+          if (picked) {
+            selectedEl.innerHTML =
+              '<div class="smx-note-box">' +
+                '<strong>Selected:</strong> ' + esc(picked.name) + ' <span class="smx-mono">(' + esc(picked.person_id) + ')</span>' +
+                (picked.campus ? ' · ' + esc(picked.campus) : '') +
+                (picked.assignment ? ' · ' + esc(picked.assignment) : '') +
+              '</div>';
+          } else {
+            selectedEl.innerHTML = '';
+          }
+        }
+        if (cMetaEl) {
+          if (cfg.type === 'student' || cfg.type === 'teacher') {
+            cMetaEl.innerHTML =
+              '<div class="smx-info"><span class="smx-info-label">Campus</span><span>' + esc((picked && picked.campus) || 'Select record in Section A') + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">' + esc(cfg.type === 'student' ? 'Class' : 'Department') + '</span><span>' +
+                esc((picked && (cfg.type === 'student' ? picked.assignment : picked.department)) || '—') + '</span></div>';
+          } else {
+            cMetaEl.innerHTML =
+              '<span>Position / Role</span><div class="smx-note-box">' + esc((picked && (picked.assignment || picked.department)) || cfg.recordNoun) + '</div>';
+          }
+        }
+        updateReview();
+      }
+
+      function updateReview() {
+        var identityName = isAdmin ? (form.adminName.trim() || 'Not entered') : (picked ? (picked.name + ' (' + picked.person_id + ')') : 'No record selected');
+        var scopeText = isAdmin ? (form.campus + ' · ' + form.accessScope)
+          : (cfg.type === 'student' ? ((picked && picked.campus ? picked.campus + ' · ' : '') + ((picked && picked.assignment) || '—'))
+          : (cfg.type === 'teacher' ? ((picked && picked.campus ? picked.campus + ' · ' : '') + ((picked && picked.department) || '—'))
+          : form.campus));
+        reviewEl.innerHTML =
+          '<div class="smx-info"><span class="smx-info-label">Person / Identity</span><span>' + esc(identityName) + '</span></div>' +
+          '<div class="smx-info"><span class="smx-info-label">Assigned Role</span><span>' + esc(ROLES_BY_TYPE[cfg.type]) + '</span></div>' +
+          '<div class="smx-info"><span class="smx-info-label">Username</span><span class="smx-mono">' + esc(form.username || 'Not set') + '</span></div>' +
+          '<div class="smx-info"><span class="smx-info-label">Scope / Placement</span><span>' + esc(scopeText) + '</span></div>' +
+          '<div class="smx-info"><span class="smx-info-label">Initial Account State</span><span>Pending Activation</span></div>' +
+          '<div class="smx-info"><span class="smx-info-label">Security Mode</span><span>' + esc(form.activation === 'token' ? 'One-time setup token' : 'Email activation queue') + '</span></div>';
+      }
+
+      function paintPicker(query) {
+        if (!pickerEl) return;
+        var qLow = String(query || '').trim().toLowerCase();
+        var filtered = pool.filter(function (r) {
+          if (!qLow) return true;
+          return [r.name, r.person_id, r.campus, r.department, r.assignment].some(function (f) {
+            return String(f || '').toLowerCase().indexOf(qLow) !== -1;
+          });
+        });
+        if (!filtered.length) {
+          pickerEl.innerHTML = '<div style="padding:12px;">' +
+            '<div class="smx-cell-muted" style="margin-bottom:8px;">No matching ' + esc(cfg.recordNoun) + ' record found.</div>' +
+            fallbackHtml + '</div>';
+          return;
+        }
+        pickerEl.innerHTML = filtered.slice(0, 40).map(function (r) {
+          var isLinked = !!r.account;
+          var isPicked = picked && picked.person_id === r.person_id;
+          var meta = [r.person_id, r.campus, r.department || r.assignment].filter(Boolean).join(' · ');
+          return '<button type="button" class="smx-picker-item' + (isPicked ? ' is-selected' : '') + (isLinked ? ' is-linked' : '') +
+            '" data-pick-pid="' + esc(r.person_id) + '">' +
+            '<span class="smx-picker-meta">' +
+              '<span class="smx-picker-name">' + esc(r.name) + '</span>' +
+              '<span class="smx-picker-sub">' + esc(meta) + '</span>' +
+            '</span>' +
+            '<span class="smx-cell-muted">' + (isLinked ? ('Linked (' + esc(r.account.username) + ')') : (isPicked ? 'Selected' : 'Select')) + '</span>' +
+          '</button>';
+        }).join('');
+
+        qa(pickerEl, '[data-pick-pid]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var id = btn.getAttribute('data-pick-pid');
+            var rec = pool.find(function (x) { return x.person_id === id; });
+            if (!rec) return;
+            errHost.innerHTML = '';
+            if (rec.account) {
+              errHost.innerHTML = '<div class="smx-note-box warn" role="alert">' + esc(rec.name) + ' already has an active/provisioned login (<span class="smx-mono">' + esc(rec.account.username) + '</span>). Edit the existing account instead.</div>';
+              return;
+            }
+            picked = rec;
+            form.campus = rec.campus || form.campus;
+            var campusInp = q(modal, '#add-campus');
+            if (campusInp && rec.campus) campusInp.value = rec.campus;
+            if (!userEditedUsername) {
+              var suggested = suggestUsername(rec.name, cfg.type);
+              usernameInp.value = suggested;
+              validateUsernameLive(suggested);
+            }
+            paintPicker(recSearch ? recSearch.value : '');
+            updateSectionCAndSelected();
+          });
+        });
+      }
+
+      var createNewBtn = q(modal, '[data-action="open-create-new"]');
+      if (createNewBtn) createNewBtn.addEventListener('click', function () {
+        closeModal(root);
+        openCreatePersonWizard();
+      });
+
+      if (!isAdmin) {
+        if (pickerEl) pickerEl.innerHTML = '<div style="padding:12px;" class="smx-cell-muted">Searching ' + esc(cfg.recordPlural) + '...</div>';
+        fetchJson('/api/user-mgmt/directory?type=' + encodeURIComponent(cfg.type) + '&page_size=200').then(function (j) {
+          pool = j.data || [];
+          state.allTypeRows = pool;
+          if (!picked && pool.length) {
+            // Keep unpicked by default so administrator explicitly chooses or searches,
+            // unless user clicked "+ Create" directly on a row.
+          }
+          paintPicker('');
+          updateSectionCAndSelected();
+        });
+        if (recSearch) recSearch.addEventListener('input', function () { paintPicker(recSearch.value); });
+      } else {
+        var adminNameInp = q(modal, '#add-admin-name');
+        adminNameInp.focus();
+        adminNameInp.addEventListener('input', function () {
+          form.adminName = adminNameInp.value;
+          if (!userEditedUsername) {
+            var sug = suggestUsername(form.adminName, 'admin');
+            usernameInp.value = sug;
+            validateUsernameLive(sug);
+          }
+          updateReview();
+        });
+      }
+
+      usernameInp.addEventListener('input', function () {
+        userEditedUsername = true;
+        validateUsernameLive(usernameInp.value);
+      });
+      emailInp.addEventListener('input', function () {
+        form.email = emailInp.value.trim();
+        updateReview();
+      });
+      q(modal, '#add-activation').addEventListener('change', function (e) {
+        form.activation = e.target.value;
+        updateReview();
+      });
+      var addCampusEl = q(modal, '#add-campus');
+      if (addCampusEl) {
+        addCampusEl.addEventListener('change', function (e) { form.campus = e.target.value; updateReview(); });
+      }
+      var addScopeEl = q(modal, '#add-scope');
+      if (addScopeEl) {
+        addScopeEl.addEventListener('change', function (e) { form.accessScope = e.target.value; updateReview(); });
+      }
+      var addElevEl = q(modal, '#add-elevated-confirm');
+      if (addElevEl) {
+        addElevEl.addEventListener('change', function (e) { form.elevatedConfirmed = e.target.checked; });
+      }
+
+      if (preselectedRow) validateUsernameLive(form.username);
+      updateSectionCAndSelected();
+
+      q(modal, '[data-add-submit]').addEventListener('click', function (e) {
+        var btn = e.currentTarget;
+        errHost.innerHTML = '';
+        if (!isAdmin && !picked) {
+          errHost.innerHTML = '<div class="smx-note-box warn" role="alert">Please select an existing ' + esc(cfg.recordNoun) + ' record in Section A first.</div>';
+          return;
+        }
+        if (isAdmin && !form.adminName.trim()) {
+          errHost.innerHTML = '<div class="smx-note-box warn" role="alert">Please enter the administrator full name in Section A.</div>';
+          return;
+        }
+        var uname = usernameInp.value.trim().toLowerCase();
+        if (!uname) {
+          errHost.innerHTML = '<div class="smx-note-box warn" role="alert">Please enter a valid username in Section B.</div>';
+          return;
+        }
+        if (form.usernameChecked && !form.usernameValid) {
+          errHost.innerHTML = '<div class="smx-note-box warn" role="alert">' + esc(form.usernameMessage || 'Please fix the username before submitting.') + '</div>';
+          return;
+        }
+        var emailVal = emailInp.value.trim();
+        if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+          errHost.innerHTML = '<div class="smx-note-box warn" role="alert">Please enter a valid email address (for example: name@ngis.edu.kh).</div>';
+          return;
+        }
+        if (isAdmin && !form.elevatedConfirmed) {
+          errHost.innerHTML = '<div class="smx-note-box warn" role="alert">Please check the Super Admin confirmation box in Section C before creating this administrator login.</div>';
+          return;
+        }
+
+        var payload = isAdmin
+          ? {
+              person_type: 'admin',
+              name: form.adminName.trim(),
+              username: uname,
+              email: emailVal || null,
+              campus: form.campus,
+              access_scope: form.accessScope,
+              elevated_confirmed: true,
+              activation: form.activation
+            }
+          : {
+              person_type: cfg.type,
+              person_id: picked.person_id,
+              username: uname,
+              email: emailVal || null,
+              campus: form.campus,
+              activation: form.activation
+            };
+
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+        postJson('/api/user-mgmt/provision', payload).then(function (j) {
+          btn.disabled = false;
+          btn.textContent = 'Create ' + cfg.type.charAt(0).toUpperCase() + cfg.type.slice(1) + ' Account';
+          if (!j.success) {
+            errHost.innerHTML = '<div class="smx-note-box warn" role="alert">' + esc(j.error || 'Could not create account.') + '</div>';
+            return;
+          }
+          closeModal(root);
+          if (j.activation_token) {
+            state.tokenNotice = {
+              title: 'Account created',
+              username: uname,
+              token: j.activation_token,
+              expires: j.activation_expires
+            };
+          }
+          toast(root, j.message || ('Account created for ' + uname + '.'));
+          load();
+        });
+      });
+    }
+
+    function openCreatePersonWizard() {
+      if (cfg.type === 'admin') { openAddAccountModal(null); return; }
+
+      var step = 1;
+      var STEP_TITLES = { 1: 'Personal', 2: 'School', 3: 'Login', 4: 'Review' };
+      var form = {
+        firstName: '', lastName: '', gender: 'M', dob: '',
+        email: '', phone: '', photo: '',
+        campus: 'Sensok', department: '', position: '',
+        subjects: '', klass: '', academicYear: '', enrollmentStatus: 'active',
+        scope: '', username: '', activation: 'token',
+        usernameValid: false, usernameChecked: false, usernameMessage: ''
+      };
+      var opts = { campuses: [], departments: [], classes: [], subjects: [],
+                   positions: [], academic_years: [] };
+      var unCheckTimer = null;
+      var unSeq = 0;
+      var userEditedUsername = false;
+
+      var modal = openModal(
+        root,
+        cfg.addLabel,
+        'Create a brand-new ' + esc(cfg.recordNoun) + ' profile and login account · ' +
+        esc(ROLES_BY_TYPE[cfg.type]) + ' accounts only',
+        '<div id="cw-body"></div>',
+        '<button type="button" class="smx-btn" data-cw-cancel>Cancel</button>' +
+        '<button type="button" class="smx-btn" data-cw-back hidden>Back</button>' +
+        '<button type="button" class="smx-btn primary" data-cw-next>Next</button>',
+        true
+      );
+      var bodyEl = q(modal, '#cw-body');
+      var footBack = q(modal, '[data-cw-back]');
+      var footNext = q(modal, '[data-cw-next]');
+
+      function loadOptions(done) {
+        fetchJson('/api/user-mgmt/form-options?type=' + encodeURIComponent(cfg.type)).then(function (j) {
+          if (j && j.success) {
+            opts.campuses = j.campuses || [];
+            opts.departments = j.departments || [];
+            opts.classes = j.classes || [];
+            opts.subjects = j.subjects || [];
+            opts.positions = j.positions || [];
+            opts.academic_years = j.academic_years || [];
+          }
+          if (done) done();
+        });
+      }
+
+      function suggestedLogin() {
+        var raw = (form.firstName.trim() + ' ' + form.lastName.trim()).trim();
+        return suggestUsername(raw, cfg.type);
+      }
+
+      function stepsHtml() {
+        var items = '';
+        [1, 2, 3, 4].forEach(function (n) {
+          var cls = 'smx-step' + (n === step ? ' is-active' : '') + (n < step ? ' is-done' : '');
+          items += '<span class="' + cls + '"><span class="smx-step-num">' +
+            (n < step ? '✓' : n) + '</span>' + STEP_TITLES[n] + '</span>';
+        });
+        return '<div class="smx-steps">' + items + '</div>';
+      }
+
+      function selOptions(list, selected, anyLabel) {
+        var html = anyLabel ? '<option value="">' + esc(anyLabel) + '</option>' : '';
+        return html + list.map(function (v) {
+          return '<option value="' + esc(v) + '"' + (selected === v ? ' selected' : '') + '>' + esc(v) + '</option>';
+        }).join('');
+      }
+
+      function stepBodyHtml() {
+        if (step === 1) {
+          var genderField = cfg.type === 'student'
+            ? '<label class="smx-field"><span>Gender</span><select id="cw-gender" class="smx-select">' +
+              '<option value="M"' + (form.gender === 'M' ? ' selected' : '') + '>Male</option>' +
+              '<option value="F"' + (form.gender === 'F' ? ' selected' : '') + '>Female</option></select></label>'
+            : '';
+          var dobField = cfg.type === 'student'
+            ? '<label class="smx-field"><span>Date of Birth (optional)</span><input type="date" id="cw-dob" class="smx-input" value="' + esc(form.dob) + '"></label>'
+            : '';
+          return '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">1</span>Personal Information</span>' +
+              '<span class="smx-readonly-chip">Type: ' + esc(ROLES_BY_TYPE[cfg.type]) + ' (Locked)</span></div>' +
+            '<p class="smx-sec-desc">Creates a completely new ' + esc(cfg.recordNoun) + ' record — no existing registry entry is selected or required.</p>' +
+            '<div class="smx-form-grid smx-mt-sm">' +
+              '<label class="smx-field"><span>First Name *</span><input id="cw-first" class="smx-input" value="' + esc(form.firstName) + '" autocomplete="off"></label>' +
+              '<label class="smx-field"><span>Last Name *</span><input id="cw-last" class="smx-input" value="' + esc(form.lastName) + '" autocomplete="off"></label>' +
+              genderField + dobField +
+              '<label class="smx-field"><span>Email</span><input id="cw-email" type="email" class="smx-input" value="' + esc(form.email) + '" placeholder="name@ngis.edu.kh" autocomplete="off"></label>' +
+              '<label class="smx-field"><span>Phone</span><input id="cw-phone" class="smx-input" value="' + esc(form.phone) + '" placeholder="+855 …" autocomplete="off"></label>' +
+              '<label class="smx-field smx-span-2"><span>Profile Photo URL (optional)</span><input id="cw-photo" class="smx-input" value="' + esc(form.photo) + '" placeholder="https://…" autocomplete="off"></label>' +
+            '</div></section>';
+        }
+        if (step === 2) {
+          var head = '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">2</span>School Information</span>' +
+              '<span class="smx-readonly-chip">' + esc(cfg.title) + '</span></div>' +
+            '<p class="smx-sec-desc">Campus, department, class, and other options load live from the school registries.</p>';
+          var grid = '<div class="smx-form-grid smx-mt-sm">';
+          if (cfg.type === 'student') {
+            var classOpts = opts.classes.map(function (c) {
+              return '<option value="' + esc(c.short) + '"' + (form.klass === c.short ? ' selected' : '') + '>' +
+                esc(c.name) + (c.campus ? ' · ' + esc(c.campus) : '') + '</option>';
+            }).join('');
+            grid +=
+              '<label class="smx-field"><span>Campus *</span><select id="cw-campus" class="smx-select">' +
+                selOptions(opts.campuses, form.campus) + '</select></label>' +
+              '<label class="smx-field"><span>Class *</span><select id="cw-class" class="smx-select">' +
+                '<option value="">Select class…</option>' + classOpts + '</select></label>' +
+              '<label class="smx-field"><span>Academic Year</span><select id="cw-year" class="smx-select">' +
+                selOptions(opts.academic_years, form.academicYear || (opts.academic_years[0] || '2025-26')) + '</select></label>' +
+              '<label class="smx-field"><span>Enrollment Status</span><select id="cw-enroll" class="smx-select">' +
+                '<option value="active"' + (form.enrollmentStatus === 'active' ? ' selected' : '') + '>Active</option>' +
+                '<option value="pending"' + (form.enrollmentStatus === 'pending' ? ' selected' : '') + '>Pending</option></select></label>';
+          } else if (cfg.type === 'teacher') {
+            grid +=
+              '<label class="smx-field"><span>Campus *</span><select id="cw-campus" class="smx-select">' +
+                selOptions(opts.campuses, form.campus) + '</select></label>' +
+              '<label class="smx-field"><span>Department *</span><select id="cw-dept" class="smx-select">' +
+                selOptions(opts.departments, form.department, 'Select department…') + '</select></label>' +
+              '<label class="smx-field"><span>Position</span><input id="cw-position" class="smx-input" value="' + esc(form.position || 'Teacher') + '" autocomplete="off"></label>' +
+              '<label class="smx-field smx-span-2"><span>Assigned Subjects (comma-separated, optional)</span>' +
+                '<input id="cw-subjects" class="smx-input" value="' + esc(form.subjects) + '" list="cw-subject-list" placeholder="e.g. Physics & Lab, Calculus I" autocomplete="off"></label>' +
+              '<datalist id="cw-subject-list">' + opts.subjects.map(function (s) {
+                return '<option value="' + esc(s) + '"></option>';
+              }).join('') + '</datalist>';
+          } else if (cfg.type === 'staff') {
+            grid +=
+              '<label class="smx-field"><span>Campus *</span><select id="cw-campus" class="smx-select">' +
+                selOptions(opts.campuses, form.campus) + '</select></label>' +
+              '<label class="smx-field"><span>Department *</span><select id="cw-dept" class="smx-select">' +
+                selOptions(opts.departments, form.department, 'Select department…') + '</select></label>' +
+              '<label class="smx-field smx-span-2"><span>Job Position *</span><input id="cw-position" class="smx-input" value="' + esc(form.position) + '" list="cw-position-list" placeholder="e.g. Lab Assistant" autocomplete="off"></label>' +
+              '<datalist id="cw-position-list">' + opts.positions.map(function (s) {
+                return '<option value="' + esc(s) + '"></option>';
+              }).join('') + '</datalist>';
+          } else {
+            grid +=
+              '<label class="smx-field"><span>Assigned Campus *</span><select id="cw-campus" class="smx-select">' +
+                selOptions(opts.campuses, form.campus) + '</select></label>' +
+              '<label class="smx-field"><span>Position</span><input id="cw-position" class="smx-input" value="' + esc(form.position || 'Campus Principal') + '" list="cw-position-list" autocomplete="off"></label>' +
+              '<label class="smx-field smx-span-2"><span>Authorized School Scope</span><input id="cw-scope" class="smx-input" value="' + esc(form.scope) + '" placeholder="e.g. Sensok campus academics" autocomplete="off"></label>' +
+              '<datalist id="cw-position-list">' + opts.positions.map(function (s) {
+                return '<option value="' + esc(s) + '"></option>';
+              }).join('') + '</datalist>';
+          }
+          return head + grid + '</div></section>';
+        }
+        if (step === 3) {
+          return '<section class="smx-form-sec">' +
+            '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">3</span>Login Account</span>' +
+              '<span class="smx-readonly-chip">Portal role: ' + esc(ROLES_BY_TYPE[cfg.type]) + ' (automatic)</span></div>' +
+            '<div class="smx-note-box">' + esc(cfg.portalNote) + ' The account starts as Pending Activation — credentials are set through a one-time token, never a shared plaintext password.</div>' +
+            '<div class="smx-form-grid smx-mt-sm">' +
+              '<label class="smx-field"><span>Username *</span><input id="cw-username" class="smx-input" value="' + esc(form.username) + '" autocomplete="off"><div id="cw-un-status" class="smx-avail"></div></label>' +
+              '<label class="smx-field"><span>Login Email (optional — defaults to username)</span><input id="cw-login-email" type="email" class="smx-input" value="' + esc(form.email) + '" autocomplete="off"></label>' +
+              '<label class="smx-field smx-span-2"><span>Activation Method</span><select id="cw-activation" class="smx-select">' +
+                '<option value="token">Generate one-time activation token (recommended)</option>' +
+                '<option value="pending">Queue for activation link email</option></select></label>' +
+            '</div></section>';
+        }
+        var assignment = cfg.type === 'student'
+          ? (form.klass || '—') + ' · ' + (form.academicYear || (opts.academic_years[0] || '2025-26'))
+          : (cfg.type === 'teacher'
+            ? (form.department || '—') + ' · ' + (form.position || 'Teacher')
+            : (cfg.type === 'staff'
+              ? (form.department || '—') + ' · ' + (form.position || '—')
+              : (form.campus || '—') + ' · ' + (form.position || 'Campus Principal')));
+        return '<section class="smx-form-sec">' +
+          '<div class="smx-sec-head"><span class="smx-sec-title"><span class="smx-sec-num">4</span>Review &amp; Create</span></div>' +
+          '<div class="smx-review-box">' +
+            '<div class="smx-info"><span class="smx-info-label">Full Name</span><span>' + esc(form.firstName + ' ' + form.lastName) + '</span></div>' +
+            '<div class="smx-info"><span class="smx-info-label">Institutional ID</span><span>Generated from registry rules on create</span></div>' +
+            '<div class="smx-info"><span class="smx-info-label">Account Type</span><span>' + esc(ROLES_BY_TYPE[cfg.type]) + ' (fixed by this directory)</span></div>' +
+            '<div class="smx-info"><span class="smx-info-label">Username</span><span class="smx-mono">' + esc(form.username || 'Not set') + '</span></div>' +
+            '<div class="smx-info"><span class="smx-info-label">Campus</span><span>' + esc(form.campus || '—') + '</span></div>' +
+            '<div class="smx-info"><span class="smx-info-label">Assignment</span><span>' + esc(assignment) + '</span></div>' +
+            '<div class="smx-info"><span class="smx-info-label">Account Status</span><span>Pending Activation</span></div>' +
+            '<div class="smx-info"><span class="smx-info-label">Security Mode</span><span>' + esc(form.activation === 'token' ? 'One-time setup token' : 'Email activation queue') + '</span></div>' +
+          '</div></section>';
+      }
+
+      function readStepInputs() {
+        var ids = {
+          'cw-first': 'firstName', 'cw-last': 'lastName', 'cw-email': 'email',
+          'cw-phone': 'phone', 'cw-photo': 'photo', 'cw-campus': 'campus',
+          'cw-dept': 'department', 'cw-position': 'position',
+          'cw-subjects': 'subjects', 'cw-scope': 'scope',
+          'cw-username': 'username', 'cw-activation': 'activation'
+        };
+        Object.keys(ids).forEach(function (id) {
+          var el = q(modal, '#' + id);
+          if (el) form[ids[id]] = el.value;
+        });
+        var g = q(modal, '#cw-gender');
+        if (g) form.gender = g.value;
+        var dob = q(modal, '#cw-dob');
+        if (dob) form.dob = dob.value;
+        var yr = q(modal, '#cw-year');
+        if (yr) form.academicYear = yr.value;
+        var en = q(modal, '#cw-enroll');
+        if (en) form.enrollmentStatus = en.value;
+        var kl = q(modal, '#cw-class');
+        if (kl) form.klass = kl.value;
+      }
+
+      function validateUsernameLive(val) {
+        var v = String(val || '').trim().toLowerCase();
+        form.username = v;
+        var unStatus = q(modal, '#cw-un-status');
+        if (!unStatus) return;
+        if (unCheckTimer) clearTimeout(unCheckTimer);
+        if (!v) {
+          form.usernameValid = false;
+          form.usernameChecked = false;
+          unStatus.className = 'smx-avail';
+          unStatus.textContent = '';
+          return;
+        }
+        unStatus.className = 'smx-avail checking';
+        unStatus.textContent = 'Checking username availability…';
+        unSeq += 1;
+        var seq = unSeq;
+        unCheckTimer = setTimeout(function () {
+          fetchJson('/api/user-mgmt/check-username?username=' + encodeURIComponent(v)).then(function (res) {
+            if (seq !== unSeq) return;
+            form.usernameChecked = true;
+            form.usernameValid = !!(res.valid && res.available);
+            form.usernameMessage = res.message || '';
+            unStatus.className = 'smx-avail ' + (form.usernameValid ? 'ok' : 'bad');
+            unStatus.textContent = (form.usernameValid ? '✓ ' : '✕ ') + (res.message || '');
+          });
+        }, 160);
+      }
+
+      function wireStep() {
+        ['cw-first', 'cw-last'].forEach(function (id) {
+          var el = q(modal, '#' + id);
+          if (el) el.addEventListener('input', function () {
+            readStepInputs();
+            if (!userEditedUsername && form.firstName && form.lastName) {
+              var sug = suggestedLogin();
+              var un = q(modal, '#cw-username');
+              if (un && step >= 3) { un.value = sug; validateUsernameLive(sug); }
+              else form.username = sug;
+            }
+          });
+        });
+        var un = q(modal, '#cw-username');
+        if (un) un.addEventListener('input', function () {
+          userEditedUsername = true;
+          validateUsernameLive(un.value);
+        });
+        ['cw-email', 'cw-phone', 'cw-photo', 'cw-campus', 'cw-dept',
+         'cw-position', 'cw-subjects', 'cw-scope', 'cw-activation'].forEach(function (id) {
+          var el = q(modal, '#' + id);
+          if (el) el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', readStepInputs);
+        });
+        var g = q(modal, '#cw-gender');
+        if (g) g.addEventListener('change', readStepInputs);
+        var dob = q(modal, '#cw-dob');
+        if (dob) dob.addEventListener('change', readStepInputs);
+        var yr = q(modal, '#cw-year');
+        if (yr) yr.addEventListener('change', readStepInputs);
+        var en = q(modal, '#cw-enroll');
+        if (en) en.addEventListener('change', readStepInputs);
+        var kl = q(modal, '#cw-class');
+        if (kl) kl.addEventListener('change', function () {
+          readStepInputs();
+          var cls = opts.classes.find(function (c) { return c.short === form.klass; });
+          if (cls && cls.campus) {
+            var cam = q(modal, '#cw-campus');
+            if (cam && opts.campuses.indexOf(cls.campus) !== -1) {
+              cam.value = cls.campus;
+              form.campus = cls.campus;
+            }
+          }
+        });
+        if (step === 3 && !form.usernameChecked) validateUsernameLive(form.username || suggestedLogin());
+        if (step === 3) {
+          var unInp = q(modal, '#cw-username');
+          if (unInp && !unInp.value) {
+            unInp.value = suggestedLogin();
+            form.username = unInp.value;
+            validateUsernameLive(form.username);
+          }
+        }
+      }
+
+      function paint() {
+        bodyEl.innerHTML = stepsHtml() + '<div id="cw-step-body">' + stepBodyHtml() + '</div>' +
+          '<div id="cw-err"></div>';
+        footBack.hidden = step === 1;
+        footNext.textContent = step === 4 ? 'Create Account' : 'Next';
+        wireStep();
+      }
+
+      function stepError(msg) {
+        var host = q(modal, '#cw-err');
+        if (host) host.innerHTML = '<div class="smx-note-box warn" role="alert">' + esc(msg) + '</div>';
+      }
+
+      function validateStep() {
+        readStepInputs();
+        if (step === 1) {
+          if (!form.firstName.trim() || !form.lastName.trim()) {
+            stepError('First and last names are required.'); return false;
+          }
+          if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+            stepError('Please enter a valid email address (for example: name@ngis.edu.kh).'); return false;
+          }
+        }
+        if (step === 2) {
+          if (!form.campus) { stepError('Please select a campus.'); return false; }
+          if (cfg.type === 'student' && !form.klass) { stepError('Please select a class.'); return false; }
+          if (cfg.type === 'teacher' && !form.department) { stepError('Please select a department.'); return false; }
+          if (cfg.type === 'staff') {
+            if (!form.department) { stepError('Please select a department.'); return false; }
+            if (!form.position.trim()) { stepError('Job position is required.'); return false; }
+          }
+        }
+        if (step === 3) {
+          if (!form.username.trim()) { stepError('Please enter a username.'); return false; }
+          if (form.usernameChecked && !form.usernameValid) {
+            stepError(form.usernameMessage || 'Please fix the username before continuing.'); return false;
+          }
+        }
+        return true;
+      }
+
+      function submitWizard() {
+        var errHost = q(modal, '#cw-err');
+        errHost.innerHTML = '';
+        footNext.disabled = true;
+        footNext.textContent = 'Creating…';
+        var p = {
+          person_type: cfg.type,
+          first_name: form.firstName.trim(),
+          last_name: form.lastName.trim(),
+          email: form.email.trim() || null,
+          phone: form.phone.trim() || null,
+          photo: form.photo.trim() || null,
+          campus: form.campus,
+          username: form.username.trim().toLowerCase(),
+          activation: form.activation
+        };
+        if (cfg.type === 'student') {
+          p.gender = form.gender;
+          p.class = form.klass;
+          p.academic_year = form.academicYear || (opts.academic_years[0] || '2025-26');
+          p.enrollment_status = form.enrollmentStatus;
+        } else if (cfg.type === 'teacher') {
+          p.department = form.department;
+          p.position = form.position.trim() || 'Teacher';
+          p.subjects = form.subjects.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        } else if (cfg.type === 'staff') {
+          p.department = form.department;
+          p.position = form.position.trim();
+        } else {
+          p.position = form.position.trim() || 'Campus Principal';
+          p.scope = form.scope.trim() || form.campus;
+        }
+        postJson('/api/user-mgmt/create-person', p).then(function (j) {
+          footNext.disabled = false;
+          footNext.textContent = 'Create Account';
+          if (!j.success) {
+            stepError(j.error || 'Could not create the account.');
+            return;
+          }
+          closeModal(root);
+          if (j.activation_token) {
+            state.tokenNotice = {
+              title: 'Account created',
+              username: p.username,
+              token: j.activation_token,
+              expires: j.activation_expires
+            };
+          }
+          toast(root, j.message || ('Account created for ' + p.username + '.'));
+          load();
+        });
+      }
+
+      q(modal, '[data-cw-cancel]').addEventListener('click', function () { closeModal(root); });
+      footBack.addEventListener('click', function () {
+        if (step > 1) { step -= 1; paint(); }
+      });
+      footNext.addEventListener('click', function () {
+        if (!validateStep()) return;
+        if (step < 4) { step += 1; paint(); return; }
+        submitWizard();
+      });
+
+      paint();
+      loadOptions(function () {
+        if (opts.campuses.length && opts.campuses.indexOf(form.campus) === -1) {
+          form.campus = opts.campuses[0];
+        }
+        if (!form.academicYear && opts.academic_years.length) {
+          form.academicYear = opts.academic_years[0];
+        }
+        paint();
+      });
+    }
+
+    function confirmBulkStatus(actionKey) {
+      var ids = Object.keys(state.selected);
+      var rows = ids.map(function (id) {
+        return state.selectedRows[id] || state.rows.find(function (r) { return r.person_id === id; });
+      }).filter(function (r) { return r && r.account; });
+      if (!rows.length) {
+        toast(root, 'Selected rows do not have provisioned login accounts yet.', 'bad');
+        return;
+      }
+      var label = actionKey === 'activate' ? 'Activate Selected Accounts' : 'Suspend Selected Accounts';
+      var isDanger = actionKey === 'suspend';
+      var modal = openModal(
+        root,
+        label,
+        rows.length + ' provisioned accounts selected',
+        '<div class="smx-note-box' + (isDanger ? ' warn' : '') + '">' +
+          (isDanger
+            ? 'Selected accounts will be prevented from signing in. Institutional profile records are never removed.'
+            : 'Selected accounts will become Active and allowed to sign in.') +
+        '</div>',
+        '<button type="button" class="smx-btn" data-modal-close>Cancel</button>' +
+        '<button type="button" class="smx-btn ' + (isDanger ? 'danger' : 'primary') + '" data-bulk-st-go>' + esc(label) + '</button>'
+      );
+      q(modal, '[data-bulk-st-go]').addEventListener('click', function (e) {
+        e.currentTarget.disabled = true;
+        postJson('/api/user-mgmt/bulk-status', {
+          person_type: cfg.type, person_ids: rows.map(function (r) { return r.person_id; }), action: actionKey
+        }).then(function (j) {
+          closeModal(root);
+          var ok = (j.results || []).filter(function (r) { return r.ok; }).length;
+          toast(root, label + ': ' + ok + ' updated.', ok ? undefined : 'bad');
+          state.selected = {};
+          state.selectedRows = {};
+          load({ keepToolbar: true });
+        });
+      });
+    }
+
+    function openBulkModal() {
+      var ids = Object.keys(state.selected);
+      if (!ids.length) { toast(root, 'Select rows first to bulk provision.', 'bad'); return; }
+      var rows = ids.map(function (id) {
+        return state.selectedRows[id] || state.rows.find(function (r) { return r.person_id === id; });
+      }).filter(Boolean);
+      var ready = rows.filter(function (r) { return !r.account; });
+      var already = rows.filter(function (r) { return r.account; });
+      var modal = openModal(
+        root,
+        'Bulk Account Provisioning',
+        cfg.title,
+        '<p class="smx-note-box">' + ready.length + ' unlinked records will receive Pending Activation login accounts. ' +
+          (already.length ? already.length + ' already provisioned will be skipped automatically.' : '') + '</p>' +
+        '<div class="smx-activity smx-mt-sm">' + rows.map(function (r) {
+          return '<div class="smx-activity-row">' +
+            '<span class="smx-person" style="min-width:0;flex:1 1 auto">' +
+              avatarHtml(r.name, r.photo, { size: 'sm' }) +
+              '<span class="smx-person-meta"><span class="smx-person-name">' + esc(r.name) + '</span>' +
+              '<span class="smx-person-id smx-mono">' + esc(r.person_id) + '</span></span>' +
+            '</span>' +
+            '<span class="smx-cell-muted">' + (r.account ? 'Already linked' : 'Ready') + '</span>' +
+          '</div>';
+        }).join('') + '</div>',
+        '<button type="button" class="smx-btn" data-modal-close>Cancel</button>' +
+        '<button type="button" class="smx-btn primary" data-bulk-confirm' + (ready.length ? '' : ' disabled') + '>Provision ' + ready.length + ' Accounts</button>'
+      );
+      q(modal, '[data-bulk-confirm]').addEventListener('click', function () {
+        postJson('/api/user-mgmt/bulk-provision', {
+          person_type: cfg.type, person_ids: ids, activation: 'token'
+        }).then(function (j) {
+          closeModal(root);
+          var ok = (j.results || []).filter(function (r) { return r.ok; }).length;
+          var fail = (j.results || []).length - ok;
+          toast(root, 'Bulk provisioning: ' + ok + ' created' + (fail ? ', ' + fail + ' skipped.' : '.'));
+          state.selected = {};
+          state.selectedRows = {};
+          load();
+        });
+      });
+    }
+
+    function openImportModal() {
+      var body =
+        '<p class="smx-note-box">Upload a CSV file containing an <span class="smx-mono">ID</span> column matching existing ' +
+        esc(cfg.recordPlural) + '. Duplicate accounts and unknown IDs are rejected without altering existing records.</p>' +
+        '<input type="file" id="smx-import-file" class="smx-input smx-mt-sm" accept=".csv,text/csv">' +
+        '<div id="smx-import-preview" class="smx-mt-sm"></div>';
+      var modal = openModal(
+        root,
+        'Import Provisioning List',
+        cfg.title,
+        body,
+        '<button type="button" class="smx-btn" data-modal-close>Cancel</button>' +
+        '<button type="button" class="smx-btn primary" data-import-confirm disabled>Provision Valid Records</button>'
+      );
+      var fileInput = q(modal, '#smx-import-file');
+      var preview = q(modal, '#smx-import-preview');
+      var confirmBtn = q(modal, '[data-import-confirm]');
+
+      fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          var lines = String(reader.result).split(/\r?\n/).filter(Boolean);
+          var header = (lines[0] || '').toLowerCase();
+          var idIdx = header.split(',').findIndex(function (c) { return c.trim() === 'id'; });
+          if (idIdx === -1) {
+            preview.innerHTML = '<div class="smx-note-box warn">CSV must include an "ID" header column.</div>';
+            confirmBtn.disabled = true;
+            return;
+          }
+          var parsedIds = lines.slice(1).map(function (l) { return (l.split(',')[idIdx] || '').trim(); }).filter(Boolean);
+          fetchJson('/api/user-mgmt/directory?type=' + encodeURIComponent(cfg.type) + '&page_size=200').then(function (j) {
+            var all = j.data || [];
+            var valid = parsedIds.filter(function (id) {
+              var r = all.find(function (x) { return x.person_id === id; });
+              return r && !r.account;
+            });
+            var dup = parsedIds.filter(function (id) {
+              var r = all.find(function (x) { return x.person_id === id; });
+              return r && r.account;
+            });
+            var unknown = parsedIds.filter(function (id) {
+              return !all.find(function (x) { return x.person_id === id; });
+            });
+            preview.innerHTML = '<div class="smx-info-grid">' +
+              '<div class="smx-info"><span class="smx-info-label">Ready</span><span>' + valid.length + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">Already Linked</span><span>' + dup.length + '</span></div>' +
+              '<div class="smx-info"><span class="smx-info-label">Unknown IDs</span><span>' + unknown.length + '</span></div>' +
+            '</div>';
+            confirmBtn.disabled = !valid.length;
+            confirmBtn.setAttribute('data-valid-ids', JSON.stringify(valid));
+          });
+        };
+        reader.readAsText(file);
+      });
+
+      confirmBtn.addEventListener('click', function () {
+        var valid = JSON.parse(confirmBtn.getAttribute('data-valid-ids') || '[]');
+        if (!valid.length) return;
+        postJson('/api/user-mgmt/bulk-provision', {
+          person_type: cfg.type, person_ids: valid, activation: 'token'
+        }).then(function (j) {
+          closeModal(root);
+          var ok = (j.results || []).filter(function (r) { return r.ok; }).length;
+          toast(root, 'Import processed: ' + ok + '/' + valid.length + ' accounts created.', ok ? undefined : 'bad');
+          load();
+        });
+      });
+    }
+
+    load();
+  }
+
+  function suppressDuplicateHamburger() {
+    var heroBtn = document.getElementById('htbHamburger');
+    var mq = window.matchMedia('(max-width: 767px)');
+    function apply() {
+      if (!heroBtn) return;
+      if (mq.matches) heroBtn.style.setProperty('display', 'none', 'important');
+      else heroBtn.style.removeProperty('display');
+    }
+    if (mq.addEventListener) mq.addEventListener('change', apply);
+    else mq.addListener(apply);
+    apply();
+  }
+
+  UM.init = function (containerId, module) {
+    var root = document.getElementById(containerId);
+    if (!root) return;
+    var cfg = MODULES[module];
+    if (!cfg) return;
+    suppressDuplicateHamburger();
+    renderDirectory(root, cfg);
+  };
+})(window, document);

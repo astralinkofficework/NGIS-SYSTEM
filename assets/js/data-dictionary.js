@@ -23,20 +23,22 @@
     });
   }
 
-  function toast(msg, type) {
-    var existing = document.getElementById('ddToast');
-    if (existing) existing.remove();
-    var t = document.createElement('div');
-    t.id = 'ddToast';
-    var bg = type === 'error' ? 'bg-rose-600' : (type === 'info' ? 'bg-slate-800' : 'bg-[#176B45]');
-    t.className = 'fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-lg text-white text-xs font-medium transition-all transform translate-y-0 ' + bg;
-    t.innerHTML = '<span class="material-symbols-outlined text-sm">' + (type === 'error' ? 'error' : 'check_circle') + '</span><span>' + esc(msg) + '</span>';
-    document.body.appendChild(t);
-    setTimeout(function () {
-      t.classList.add('opacity-0', 'translate-y-2');
-      setTimeout(function () { t.remove(); }, 300);
-    }, 3200);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
   }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
 
   var SECTION_TITLES = {
     school: 'School Data Reference Schema',
@@ -92,7 +94,9 @@
     function loadSection(secName) {
       state.section = secName;
       state.loading = true;
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading ' + esc(SECTION_TITLES[secName] || secName) + '...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON
+        ? window.NGIS_SKELETON.table({ rows: 6 })
+        : '<div class="ngis-sk-table-container p-6">' + (window.NGISKit ? window.NGISKit.Skeleton({ type: "table" }) : '') + '</div>';
 
       fetch('/api/dictionary/section/' + encodeURIComponent(secName))
         .then(function (res) { return res.json(); })
@@ -336,7 +340,7 @@
               .then(function (r) { return r.json(); })
               .then(function (res) {
                 if (res.success) {
-                  toast('Definition added successfully.');
+                  toast('Definition added.');
                   modal.classList.add('hidden');
                   loadSection(state.section);
                 }

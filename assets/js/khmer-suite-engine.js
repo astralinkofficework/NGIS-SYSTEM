@@ -443,14 +443,33 @@
     return fetch(API + '/state', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ state: state, label: 'រក្សាទុកដោយស្វ័យប្រវត្តិ' }),
+      // Concurrency guard: reject when another editor saved a newer revision.
+      body: JSON.stringify({ state: state, label: 'រក្សាទុកដោយស្វ័យប្រវត្តិ',
+                             base_revision: state.revision }),
       keepalive: true
-    }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    }).then(function (r) {
+      if (r.status === 409) return r.json().then(function (j) {
+        var err = new Error('save-conflict');
+        err.conflict = true;
+        err.serverRevision = j && j.current_revision;
+        throw err;
+      });
+      if (!r.ok) throw new Error(r.status);
+      return r.json();
+    })
       .then(function (data) {
         if (data && data.revision) state.revision = data.revision;
+        state.updated_at = new Date().toISOString();
         setSaveStatus('saved');
         return true;
-      }).catch(function () {
+      }).catch(function (err) {
+        if (err && err.conflict) {
+          // Never silently overwrite the other editor's draft: surface the
+          // conflict and remember the server revision so a retry can succeed.
+          if (typeof err.serverRevision === 'number') state.revision = err.serverRevision;
+          setSaveStatus('conflict');
+          return false;
+        }
         if (typeof navigator !== 'undefined' && navigator.onLine === false) {
           online = false;
           setSaveStatus('offline');
@@ -459,6 +478,33 @@
         }
         return false;
       });
+  }
+
+  function reloadFromServer() {
+    /* Adopt the authoritative server document when it is newer than the
+       local copy — used after surgical server-side mutations (e.g. subject
+       creation via /api/timetable/subjects) that bypass the full-state PUT.
+       Pending local edits are flushed first so nothing unsaved is lost. */
+    return fetch(API + '/state', { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (data) {
+        if (!(data && data.state && data.state.grid &&
+              data.state.schema_version >= 2 && data.state.schema_version <= 4)) return false;
+        var serverState = data.state;
+        var adopt = function () {
+          if ((serverState.revision || 0) < ((state && state.revision) || 0)) return false;
+          state = serverState;
+          persistLocal();
+          setSaveStatus('saved');
+          emit('sync');
+          return true;
+        };
+        if (saveStatus === 'dirty') {
+          return flushSave().then(adopt);
+        }
+        return adopt();
+      })
+      .catch(function () { return false; });
   }
 
   function scheduleSave() {
@@ -755,6 +801,7 @@
     saveStatus: function () { return saveStatus; },
     isOnline: function () { return online; },
     flushSave: flushSave, scheduleSave: scheduleSave,
+    reloadFromServer: reloadFromServer,
     autoAssignResult: function (o) { return autoAssign(state, o); },
     autoAssign: function (o) {
       var result = autoAssign(state, o);
@@ -848,20 +895,71 @@
 
       return { ok: true, preserved: preserved.length, displaced: displaced.length, details: details };
     },
-    publish: function (publishedBy, note) {
+    publish: function (publishedBy, note, opts) {
+      opts = opts || {};
       var errors = scanConflicts(state).filter(function (c) { return c.severity === 'error'; });
       if (errors.length) return Promise.reject({ message: 'មានជម្លោះកាលវិភាគ ' + errors.length + ' ករណី', conflicts: errors });
 
       return api('/publish', {
         method: 'POST',
-        body: JSON.stringify({ published_by: publishedBy || 'Admin', note: note || '' })
+        body: JSON.stringify({
+          published_by: publishedBy || 'Admin', note: note || '',
+          effective_from: opts.effectiveFrom || null,
+          force: !!opts.force
+        })
       }).then(function (res) {
-        if (res && res.published) {
-          commit('បោះពុម្ពផ្សាយកាលវិភាគ v' + res.published.version, function (s) {
-            s.published = res.published;
+        if (!res.ok) {
+          var body = res.data || {};
+          // Incomplete timetable: server demands an explicit confirmation.
+          if (body.requires_confirmation) {
+            return Promise.reject({
+              requiresConfirmation: true,
+              unassigned: body.unassigned,
+              message: body.message || 'Timetable incomplete'
+            });
+          }
+          return Promise.reject({
+            message: body.message || body.error || 'Publish failed',
+            conflicts: body.conflicts || []
           });
         }
-        return res;
+        var published = res.data.published;
+        if (published) {
+          commit('បោះពុម្ពផ្សាយកាលវិភាគ v' + published.version, function (s) {
+            s.published = published;
+          });
+        }
+        return res.data;
+      });
+    },
+    publicationStatus: function () {
+      return api('/publication/status').then(function (res) {
+        if (!res.ok || !res.data.success) throw new Error('publication status unavailable');
+        return res.data;
+      });
+    },
+    publicationDiff: function () {
+      return api('/publication/diff').then(function (res) {
+        if (!res.ok || !res.data.success) throw new Error('diff unavailable');
+        return res.data.diff;
+      });
+    },
+    rollback: function (version, actor) {
+      return api('/publication/rollback', {
+        method: 'POST',
+        body: JSON.stringify({ version: version, published_by: actor || 'Admin' })
+      }).then(function (res) {
+        if (!res.ok || !res.data.success) {
+          return Promise.reject({ message: (res.data && res.data.error) || 'Rollback failed' });
+        }
+        var published = res.data.published;
+        if (published) {
+          commit('restore version ' + version, function (s) {
+            s.published = published;
+            s.grid = published.grid;
+          });
+        }
+        return res.data;
       });
     },
     bulkImportTeachers: function (rows) {

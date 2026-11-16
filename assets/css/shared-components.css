@@ -18,6 +18,7 @@
    ============================================================ */
 
 @import url('design-tokens.css');
+@import url('skeleton-system.css');
 
 /* ── 1. Global Reset & Base Typography ──────────────────────── */
 *, *::before, *::after {
@@ -81,36 +82,42 @@ a.btn,
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Button State 4: Focused (Rule 11) */
 .btn:focus-visible,
 button:focus-visible,
-a:focus-visible,
+a.btn:focus-visible,
+.ngis-btn:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--token-surface), 0 0 0 4px var(--token-focus-ring) !important;
+  outline: 2px solid var(--color-primary, #176B45) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px rgba(23, 107, 69, 0.25) !important;
 }
 
-/* Primary Button (Burgundy #176B45 — The ONLY Accent) */
+/* Primary Button (Forest Green #176B45) */
 .btn-primary,
 .ngis-btn-primary {
-  background-color: var(--color-burgundy) !important;
+  background-color: var(--color-primary, #176B45) !important;
   color: #FFFFFF !important;
-  border: 1px solid var(--color-burgundy) !important;
-  box-shadow: 0 1px 3px 0 rgba(146, 36, 61, 0.20) !important;
+  border: 1px solid var(--color-primary, #176B45) !important;
+  box-shadow: 0 1px 3px 0 rgba(23, 107, 69, 0.20) !important;
 }
 .btn-primary:hover,
 .ngis-btn-primary:hover {
-  background-color: var(--color-burgundy-hover) !important;
-  border-color: var(--color-burgundy-hover) !important;
-  box-shadow: 0 2px 6px 0 rgba(146, 36, 61, 0.28) !important;
-  transform: none !important;
+  background-color: var(--color-primary-hover, #125638) !important;
+  border-color: var(--color-primary-hover, #125638) !important;
+  box-shadow: 0 2px 6px 0 rgba(23, 107, 69, 0.28) !important;
 }
+/* Button State 3: Pressed / Active (Rule 11) */
+.btn:active,
+.ngis-btn:active,
 .btn-primary:active,
 .ngis-btn-primary:active {
-  background-color: #681729 !important;
-  border-color: #681729 !important;
-  box-shadow: 0 1px 2px 0 rgba(146, 36, 61, 0.20) !important;
+  background-color: #0D4029 !important;
+  border-color: #0D4029 !important;
+  box-shadow: 0 1px 2px 0 rgba(23, 107, 69, 0.20) !important;
+  transform: scale(0.98) !important;
 }
 
 /* Secondary Button (Pure White + Soft Gray Hairline) */
@@ -154,20 +161,20 @@ textarea:focus-visible {
   background-color: #EAEAEB !important;
 }
 
-/* Destructive / Critical Button (Burgundy Neutral) */
+/* Destructive / Critical Button (Red #DC2626 — delete / remove / revoke) */
 .btn-destructive,
 .btn-danger,
 .ngis-btn-danger {
-  background-color: var(--color-soft-gray) !important;
-  color: var(--color-burgundy) !important;
-  border: 1px solid var(--color-burgundy) !important;
+  background-color: var(--color-danger, #DC2626) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--color-danger, #DC2626) !important;
 }
 .btn-destructive:hover,
 .btn-danger:hover,
 .ngis-btn-danger:hover {
-  background-color: var(--color-burgundy) !important;
+  background-color: var(--color-danger-hover, #B91C1C) !important;
   color: #FFFFFF !important;
-  border-color: var(--color-burgundy) !important;
+  border-color: var(--color-danger-hover, #B91C1C) !important;
   transform: none !important;
 }
 
@@ -201,12 +208,63 @@ textarea:focus-visible {
   transform: none !important;
 }
 
+/* Button State 5: Loading with Spinner & Blocked Clicks (Rule 11) */
+.btn.is-loading,
+.ngis-btn.is-loading,
+button[aria-busy="true"],
+.btn[data-loading="true"] {
+  position: relative !important;
+  color: transparent !important;
+  pointer-events: none !important;
+  cursor: wait !important;
+}
+.btn.is-loading > *,
+.ngis-btn.is-loading > *,
+button[aria-busy="true"] > *,
+.btn[data-loading="true"] > * {
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+.btn.is-loading::after,
+.ngis-btn.is-loading::after,
+button[aria-busy="true"]::after,
+.btn[data-loading="true"]::after {
+  content: "" !important;
+  position: absolute !important;
+  width: 16px !important;
+  height: 16px !important;
+  top: calc(50% - 8px) !important;
+  left: calc(50% - 8px) !important;
+  border: 2px solid rgba(255, 255, 255, 0.35) !important;
+  border-top-color: #FFFFFF !important;
+  border-radius: 50% !important;
+  animation: ngisBtnSpinner 0.7s linear infinite !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 2 !important;
+}
+.btn-secondary.is-loading::after,
+.btn-outline.is-loading::after,
+.btn-ghost.is-loading::after,
+.ngis-btn-secondary.is-loading::after,
+.ngis-btn-ghost.is-loading::after {
+  border-color: rgba(23, 107, 69, 0.25) !important;
+  border-top-color: var(--color-primary, #176B45) !important;
+}
+@keyframes ngisBtnSpinner {
+  to { transform: rotate(360deg); }
+}
+
+/* Button State 6: Disabled (Rule 11) */
 .btn:disabled,
 button:disabled,
-.btn[aria-disabled="true"] {
-  opacity: 0.45 !important;
+.btn[aria-disabled="true"],
+.ngis-btn:disabled,
+.ngis-btn[aria-disabled="true"] {
+  opacity: var(--token-btn-disabled-opacity, 0.45) !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
+  box-shadow: none !important;
 }
 
 /* ── 3. Form Controls ───────────────────────────────────────── */
@@ -337,52 +395,90 @@ input[type="radio"] {
   white-space: nowrap;
 }
 
-/* Neutral status indicators (active, verified, completed, standard) */
+/* ── 4. Badges (Rule 9: Semantic status colors) ──────────────── */
+.badge,
+.ngis-badge,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--token-space-1);
+  font-size: var(--token-text-xs);
+  font-weight: var(--token-weight-medium);
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: var(--token-radius-pill, 9999px);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+/* Green: Active / Success / Completed / Published / Approved */
 .badge-success,
 .badge-active,
 .badge-verified,
 .badge-completed,
+.badge-published,
+.badge-approved,
 .badge-done {
-  background-color: var(--color-soft-gray) !important;
-  color: var(--color-black) !important;
-  border-color: var(--token-border) !important;
+  background-color: var(--token-status-success-bg, #E8F3ED) !important;
+  color: var(--token-status-success-text, #176B45) !important;
+  border-color: var(--token-status-success-border, #C8E3D3) !important;
 }
 
-/* Neutral subtle warning / pending */
+/* Amber: Pending / In Progress / On Hold / Draft / Review / Warning */
 .badge-warning,
 .badge-pending,
-.badge-in-progress {
-  background-color: var(--color-soft-gray) !important;
-  color: var(--color-black) !important;
-  border-color: var(--token-border) !important;
+.badge-review,
+.badge-draft,
+.badge-on-hold,
+.badge-in-progress,
+.badge-in_progress {
+  background-color: var(--token-status-warning-bg, #FEF3C7) !important;
+  color: var(--token-status-warning-text, #B45309) !important;
+  border-color: var(--token-status-warning-border, #FDE68A) !important;
 }
 
-/* Neutral info / navy */
+/* Blue: Info / New / Scheduled / Navy */
 .badge-info,
+.badge-new,
+.badge-scheduled,
 .badge-blue,
 .badge-navy {
-  background-color: var(--color-soft-gray) !important;
-  color: var(--color-navy) !important;
-  border-color: var(--token-border) !important;
+  background-color: var(--token-status-info-bg, #E0F2FE) !important;
+  color: var(--token-status-info-text, #0369A1) !important;
+  border-color: var(--token-status-info-border, #BAE6FD) !important;
 }
 
-/* Burgundy critical emphasis (overdue, urgent, danger, failed) */
+/* Red: Danger / Failed / Urgent / Overdue / Expired / Inactive / Rejected */
 .badge-danger,
 .badge-failed,
 .badge-urgent,
 .badge-overdue,
+.badge-expired,
+.badge-inactive,
+.badge-rejected,
 .badge-critical {
-  background-color: var(--color-soft-gray) !important;
-  color: var(--color-burgundy) !important;
-  border-color: var(--color-burgundy) !important;
+  background-color: var(--token-status-danger-bg, #FEE2E2) !important;
+  color: var(--token-status-danger-text, #B91C1C) !important;
+  border-color: var(--token-status-danger-border, #FECACA) !important;
 }
 
-/* Solid Burgundy Badge when strong emphasis is explicitly requested */
+/* Slate / Gray: Neutral / Archived / Default */
+.badge-neutral,
+.badge-gray,
+.badge-archived,
+.badge-default {
+  background-color: var(--token-status-neutral-bg, #F1F5F9) !important;
+  color: var(--token-status-neutral-text, #334155) !important;
+  border-color: var(--token-status-neutral-border, #CBD5E1) !important;
+}
+
+/* Solid Brand Badge when strong emphasis is explicitly requested */
 .badge-burgundy,
-.badge-accent {
-  background-color: var(--color-burgundy) !important;
+.badge-accent,
+.badge-brand {
+  background-color: var(--color-primary, #176B45) !important;
   color: #FFFFFF !important;
-  border-color: var(--color-burgundy) !important;
+  border-color: var(--color-primary, #176B45) !important;
 }
 
 /* ── 5. Cards & Stat Tiles (Pure White, Hairlines, Visually Stable) ─ */
@@ -869,7 +965,8 @@ table td.num,
 }
 .nav-link:hover,
 .sidebar .nav-link:hover {
-  background-color: var(--color-soft-gray) !important; /* Neutral hover */
+  background-color: transparent !important;
+  background: transparent !important;
   color: var(--color-navy) !important;
   border-color: transparent !important;
 }
@@ -879,23 +976,23 @@ table td.num,
   color: var(--color-navy) !important;
 }
 
-/* ACTIVE NAVIGATION ITEM (Solid Navy Capsule) */
+/* ACTIVE NAVIGATION ITEM (Clean Transparent with Forest Green Text) */
 .nav-link.active,
 .sidebar .nav-link.active,
 [data-theme="dark"] .nav-link.active {
-  background: var(--color-navy) !important;
-  background-color: var(--color-navy) !important;
-  color: #FFFFFF !important;
-  border: 1px solid var(--color-navy) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #176B45 !important;
+  border: none !important;
   border-radius: var(--token-radius-md) !important;
-  box-shadow: 0 2px 6px -1px rgba(32, 47, 99, 0.28) !important;
+  box-shadow: none !important;
   text-shadow: none !important;
 }
 .nav-link.active .nav-link-icon,
 .nav-link.active .nav-link-label,
 .nav-link.active i,
 .nav-link.active span {
-  color: #FFFFFF !important;
+  color: #176B45 !important;
 }
 
 /* Navigation Notification Badge on Sidebar */
@@ -1040,7 +1137,7 @@ header.topbar::after {
   font-weight: 500 !important;
   color: var(--color-navy, #176B45) !important;
   letter-spacing: -0.01em !important;
-  font-family: var(--token-font-family, 'Plus Jakarta Sans', sans-serif) !important;
+  font-family: var(--token-font-family, 'Inter', sans-serif) !important;
 }
 
 .side-brand-school,
@@ -1231,4 +1328,945 @@ header.topbar::after {
     opacity: 0 !important;
     pointer-events: none !important;
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   NGIS SHARED UI KIT — Clear Writing, Clean Forms, Great Sidebar & Key Screens
+   Single Source of Truth styles for NGISKit & Sidebar Search/Promo
+   (Zero bold weights above 500, zero gradients, full Light & Dark support)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Sidebar Inline Search & Dismissible Guidance Card (Rules 9 & 11) */
+.sb-search-wrap {
+  padding: 12px 16px 4px;
+  flex-shrink: 0;
+}
+.sb-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--token-border, #E1E9E3);
+  background: var(--token-surface-subtle, #F7F9F7);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+.sb-search-box:focus-within {
+  border-color: var(--token-primary, #176B45);
+  background: var(--token-surface, #FFFFFF);
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.10);
+}
+.sb-search-icon {
+  font-size: 16px !important;
+  color: var(--token-text-secondary, #64746A);
+  flex-shrink: 0;
+}
+#sidebar .sb-search-box input.sb-search-input,
+.sb-search-box input.sb-search-input,
+#sidebarSearchInput,
+.sb-search-input {
+  width: 100%;
+  min-width: 0;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  appearance: none;
+  -webkit-appearance: none;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--token-text, #29352E) !important;
+  box-shadow: none !important;
+}
+
+#sidebar .sb-search-box input.sb-search-input:focus,
+.sb-search-box input.sb-search-input:focus,
+#sidebarSearchInput:focus,
+.sb-search-input:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] #sidebar .sb-search-box input.sb-search-input,
+[data-theme="dark"] #sidebar .sb-search-box input.sb-search-input:focus,
+[data-theme="dark"] #sidebarSearchInput,
+[data-theme="dark"] #sidebarSearchInput:focus,
+[data-theme="dark"] .sb-search-input,
+[data-theme="dark"] .sb-search-input:focus {
+  background-color: transparent !important;
+  color: var(--token-text, #F4F7F5) !important;
+}
+.sb-search-input::placeholder {
+  color: var(--token-text-muted, #64746A);
+}
+[data-theme="dark"] .sb-search-box {
+  background: #0F1713;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+[data-theme="dark"] .sb-search-input {
+  color: #F4F7F5;
+}
+
+.side-promo-card {
+  margin: 12px 16px 4px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--token-accent-border, #C8E1D3);
+  background: var(--token-surface-subtle, #F2F8F4);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.side-promo-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.side-promo-title {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--token-primary, #176B45);
+  line-height: 1.35;
+}
+.side-promo-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--token-text-secondary, #45544B);
+  line-height: 1.45;
+  margin: 0;
+}
+.side-promo-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--token-text-secondary, #64746A);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.side-promo-close:hover {
+  background: rgba(23, 107, 69, 0.10);
+  color: var(--token-primary, #176B45);
+}
+.side-promo-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--token-primary, #176B45);
+  color: #FFFFFF !important;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+.side-promo-cta:hover {
+  background: var(--token-primary-hover, #125638);
+}
+[data-theme="dark"] .side-promo-card {
+  background: #17241D;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+[data-theme="dark"] .side-promo-desc {
+  color: #B4C2B9;
+}
+
+/* 2. Unified Field & Inline Validation (Rules 4 & 6) */
+.ngis-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.ngis-field-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--token-text, #29352E);
+  line-height: 1.3;
+  text-align: left;
+}
+.ngis-req,
+.ngis-field-req {
+  color: var(--token-danger, #C53030);
+}
+.ngis-field-control {
+  width: 100%;
+}
+.ngis-field-control > input,
+.ngis-field-control > select,
+.ngis-field-control > textarea,
+.ngis-sheet-select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--token-border, #D1DDD6);
+  background: var(--token-surface, #FFFFFF);
+  color: var(--token-text, #29352E);
+  font-size: 13.5px;
+  font-weight: 400;
+}
+.ngis-field-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--token-text-muted, #64746A);
+  margin: 0;
+  line-height: 1.4;
+}
+.ngis-field.has-error input,
+.ngis-field.has-error select,
+.ngis-field.has-error textarea,
+.ngis-input-error,
+.ngis-field-invalid {
+  border-color: var(--token-danger, #C53030) !important;
+  background-color: var(--token-danger-bg, #FEF2F2) !important;
+}
+.ngis-field-error-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--token-danger, #C53030);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+.ngis-field-error-msg .material-symbols-outlined {
+  font-size: 15px !important;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* 3. Multi-Step Form Progress Indicator (Rule 5) */
+.ngis-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--token-border, #E1E9E3);
+  background: var(--token-surface-subtle, #F7F9F7);
+  margin-bottom: 16px;
+}
+.ngis-stepper-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ngis-stepper-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--token-primary, #176B45);
+}
+.ngis-stepper-pct {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--token-text-secondary, #64746A);
+}
+.ngis-stepper-track,
+.ngis-stepper-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--token-border, #E1E9E3);
+  overflow: hidden;
+}
+.ngis-stepper-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--token-primary, #176B45);
+  transition: width 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ngis-stepper-dots {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 6px;
+}
+.ngis-stepper-seg {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--token-border, #D1DDD6);
+}
+.ngis-stepper-seg.is-done {
+  background: var(--token-accent-border, #8AC2A4);
+}
+.ngis-stepper-seg.is-active {
+  background: var(--token-primary, #176B45);
+}
+.ngis-stepper-heading {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--token-text, #111814);
+}
+.ngis-stepper-sub {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--token-text-secondary, #64746A);
+  margin: 0;
+}
+
+/* 4. Grouped Settings & Account Detail Card (Rule 14) */
+.ngis-settings-group {
+  border: 1px solid var(--token-border, #E1E9E3);
+  border-radius: 12px;
+  background: var(--token-surface, #FFFFFF);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.ngis-sg-head,
+.ngis-settings-group-head {
+  padding: 10px 14px;
+  background: var(--token-surface-subtle, #F7F9F7);
+  border-bottom: 1px solid var(--token-border, #E1E9E3);
+}
+.ngis-sg-title,
+.ngis-settings-group-title {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--token-text-secondary, #64746A);
+  margin: 0;
+}
+.ngis-sg-desc {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--token-text-muted, #64746A);
+  margin: 4px 0 0 0;
+}
+.ngis-sg-body,
+.ngis-settings-list {
+  display: flex;
+  flex-direction: column;
+}
+.ngis-sg-row,
+.ngis-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--token-border, #EDF2EE);
+  text-decoration: none;
+  color: inherit;
+}
+.ngis-sg-row:last-child,
+.ngis-settings-row:last-child {
+  border-bottom: none;
+}
+.ngis-sg-label,
+.ngis-settings-row-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--token-text, #29352E);
+}
+.ngis-sg-val,
+.ngis-settings-row-value {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--token-text-secondary, #45544B);
+  text-align: right;
+  word-break: break-word;
+}
+
+/* 5. Mobile Filter Sheet & Confirmation Dialog (Rules 7 & 16) */
+.ngis-filter-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: var(--token-sheet-backdrop, rgba(15, 23, 18, 0.45));
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+.ngis-sheet-panel {
+  width: 100%;
+  max-width: 560px;
+  max-height: 86vh;
+  background: var(--token-surface, #FFFFFF);
+  border-radius: 18px 18px 0 0;
+  border: 1px solid var(--token-border, #E1E9E3);
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.16);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+@media (min-width: 769px) {
+  .ngis-filter-sheet {
+    align-items: center;
+    padding: 20px;
+  }
+  .ngis-sheet-panel {
+    border-radius: 16px;
+    max-height: 80vh;
+  }
+}
+.ngis-sheet-grab {
+  width: 38px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--token-border, #D1DDD6);
+  margin: 10px auto 2px;
+  flex-shrink: 0;
+}
+.ngis-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--token-border, #E1E9E3);
+}
+.ngis-sheet-title {
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--token-text, #111814);
+  margin: 0;
+}
+.ngis-sheet-body {
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ngis-sheet-footer {
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--token-border, #E1E9E3);
+  background: var(--token-surface, #FFFFFF);
+}
+.ngis-sheet-apply {
+  width: 100%;
+}
+.ngis-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  background: var(--token-sheet-backdrop, rgba(15, 23, 18, 0.45));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.ngis-modal-box {
+  width: 100%;
+  max-width: 440px;
+  background: var(--token-surface, #FFFFFF);
+  border: 1px solid var(--token-border, #E1E9E3);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+}
+.ngis-confirm-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--token-text, #111814);
+}
+.ngis-confirm-desc {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--token-text-secondary, #45544B);
+  line-height: 1.5;
+}
+.ngis-confirm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.ngis-btn {
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+.ngis-btn-primary {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-color: var(--token-primary, #176B45);
+  background: var(--token-primary, #176B45);
+  color: #FFFFFF;
+}
+.ngis-btn-primary:hover {
+  background: var(--token-primary-hover, #125638);
+}
+.ngis-btn-secondary {
+  border-color: var(--token-border, #E1E9E3);
+  background: var(--token-surface, #FFFFFF);
+  color: var(--token-text, #29352E);
+}
+.ngis-btn-ghost {
+  background: transparent;
+  color: var(--token-text-secondary, #45544B);
+}
+.ngis-btn-ghost:hover {
+  background: var(--token-surface-subtle, #F2F8F4);
+  color: var(--token-primary, #176B45);
+}
+.ngis-btn-danger {
+  min-height: 44px;
+  padding: 10px 18px;
+  border-color: var(--token-danger, #C53030);
+  background: var(--token-danger, #C53030);
+  color: #FFFFFF;
+}
+[data-theme="dark"] .ngis-stepper,
+[data-theme="dark"] .ngis-sg-head,
+[data-theme="dark"] .ngis-settings-group-head {
+  background: #141E18;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] .ngis-settings-group,
+[data-theme="dark"] .ngis-sheet-panel,
+[data-theme="dark"] .ngis-sheet-footer,
+[data-theme="dark"] .ngis-modal-box,
+[data-theme="dark"] .ngis-sheet-select,
+[data-theme="dark"] .ngis-field-control > input,
+[data-theme="dark"] .ngis-field-control > select,
+[data-theme="dark"] .ngis-field-control > textarea,
+[data-theme="dark"] .ngis-btn-secondary {
+  background: #18231D;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #F4F7F5;
+}
+[data-theme="dark"] .ngis-field-label,
+[data-theme="dark"] .ngis-stepper-heading,
+[data-theme="dark"] .ngis-sg-label,
+[data-theme="dark"] .ngis-settings-row-label,
+[data-theme="dark"] .ngis-sheet-title,
+[data-theme="dark"] .ngis-confirm-title {
+  color: #F4F7F5;
+}
+
+/* Redundant rail-edge expand circle suppressed in favor of #sidebarCollapseBtn inside .side-head */
+html body #sidebarExpandBtn,
+html body .sidebar-expand-btn {
+  display: none !important;
+}
+
+/* Prevent stacked duplicate mobile headers & hamburgers on < 768px / <= 1024px */
+@media (max-width: 767.98px) {
+  body:has(.mobile-appbar) #heroBanner.hero-subpage,
+  body:has(.mobile-appbar) #heroBanner.hero-transparent,
+  body:has(.mobile-appbar) .hero.hero-subpage,
+  body:has(.mobile-appbar) .hero.hero-transparent,
+  header.hero.has-mobile-appbar {
+    display: none !important;
+  }
+}
+@media (max-width: 1023.98px) {
+  header.hero.has-lg-mobile-appbar,
+  body:has(header[class*="lg:hidden"]) header.hero {
+    display: none !important;
+  }
+  body:has(#htbHamburger) button#ttInlineHamburger[data-action="toggle-sidebar"] {
+    display: none !important;
+  }
+}
+@media (min-width: 1024px) {
+  header.hero.has-lg-mobile-appbar {
+    display: block;
+  }
+}
+
+/* ============================================================
+   NGIS MASTER MVP UI/UX STANDARDIZATION — 10 UX PRINCIPLES SUITE
+   ============================================================ */
+
+/* ── RULE 1: Dashboard & Telemetry Stat Hierarchy ────────── */
+.stat-val, .kpi-val, .stat-value, .ov-kpi-value, [data-ui="stat-value"] {
+  font-size: 26px !important;
+  line-height: 1.2 !important;
+  font-weight: 500 !important;
+  color: #0F172A !important;
+  font-variant-numeric: tabular-nums !important;
+  margin: 4px 0 !important;
+}
+.ov-kpi--dark .ov-kpi-value, .stat-card--dark .stat-val, .card-dark .stat-val {
+  color: #FFFFFF !important;
+}
+.stat-label, .kpi-label, .stat-title, .ov-kpi-label, [data-ui="stat-label"] {
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: #64746A !important;
+  font-weight: 500 !important;
+}
+.ov-kpi--dark .ov-kpi-label, .stat-card--dark .stat-label, .card-dark .stat-label {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.stat-delta, .kpi-trend, .trend-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+}
+.trend-up, .stat-delta.is-positive {
+  color: #15803D !important;
+  background-color: #F0FDF4 !important;
+}
+.trend-down, .stat-delta.is-negative {
+  color: #B91C1C !important;
+  background-color: #FEF2F2 !important;
+}
+
+/* ── RULE 2 & 9: Consistent Vertical Form Alignment & Clear Input Boxes ── */
+.form-group, .ngis-form-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  margin-bottom: 20px !important;
+  text-align: left !important;
+}
+.form-label, .ngis-form-label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #334155 !important;
+  margin-bottom: 0 !important;
+}
+.form-label .req-star, .ngis-req {
+  color: #DC2626 !important;
+  margin-left: 2px !important;
+}
+.form-input, .form-select, .form-textarea, .ngis-input, .ngis-select {
+  width: 100% !important;
+  min-height: 40px !important;
+  padding: 8px 12px !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  font-size: 13px !important;
+  font-family: inherit !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+.form-input:hover, .form-select:hover, .form-textarea:hover {
+  border-color: #94A3B8 !important;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: #176B45 !important;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.20) !important;
+}
+.form-input.is-error, .form-select.is-error, .form-textarea.is-error, .ngis-input-error {
+  border-color: #DC2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+.form-error-msg, .ngis-field-error-msg {
+  font-size: 11.5px !important;
+  color: #DC2626 !important;
+  margin-top: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+.form-hint, .field-hint, .input-format-hint {
+  font-size: 11.5px !important;
+  color: #64746A !important;
+  margin-top: 4px !important;
+}
+
+/* ── RULE 3: Intelligent Spacing Hierarchy ──────────────────── */
+.space-label-input { margin-bottom: 6px !important; }
+.space-field-gap { gap: 16px !important; }
+.space-form-row { margin-bottom: 20px !important; }
+.space-section-gap { margin-bottom: 28px !important; }
+.space-action-gap { margin-top: 28px !important; }
+
+/* ── RULE 4: Semantic Color Hierarchy ────────────────────── */
+.btn-save, .btn-confirm, .btn-primary, .btn-create {
+  background-color: #176B45 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #176B45 !important;
+}
+.btn-save:hover, .btn-confirm:hover, .btn-primary:hover, .btn-create:hover {
+  background-color: #125638 !important;
+  border-color: #125638 !important;
+}
+.btn-cancel, .btn-back, .btn-secondary, .btn-neutral {
+  background-color: #FFFFFF !important;
+  color: #334155 !important;
+  border: 1px solid #CBD5E1 !important;
+}
+.btn-cancel:hover, .btn-back:hover, .btn-secondary:hover, .btn-neutral:hover {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+  border-color: #94A3B8 !important;
+}
+.btn-delete, .btn-danger, .btn-reject, .btn-destructive, .btn-revoke {
+  background-color: #DC2626 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #DC2626 !important;
+}
+.btn-delete:hover, .btn-danger:hover, .btn-reject:hover, .btn-destructive:hover, .btn-revoke:hover {
+  background-color: #B91C1C !important;
+  border-color: #B91C1C !important;
+}
+.btn-info, .badge-info {
+  background-color: #0284C7 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0284C7 !important;
+}
+.btn-warning, .badge-warning {
+  background-color: #D97706 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #D97706 !important;
+}
+
+/* ── RULE 5: Selection Controls (Radio vs Checkbox) ───────── */
+input[type="radio"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: 50% !important;
+  outline: none !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  display: grid !important;
+  place-content: center !important;
+  background-color: #FFFFFF !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease !important;
+  flex-shrink: 0 !important;
+}
+input[type="radio"]::before {
+  content: "" !important;
+  width: 9px !important;
+  height: 9px !important;
+  border-radius: 50% !important;
+  transform: scale(0) !important;
+  transition: 120ms transform ease-in-out !important;
+  background-color: #176B45 !important;
+}
+input[type="radio"]:checked {
+  border-color: #176B45 !important;
+}
+input[type="radio"]:checked::before {
+  transform: scale(1) !important;
+}
+input[type="radio"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.25) !important;
+}
+
+input[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: 4px !important;
+  outline: none !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  display: grid !important;
+  place-content: center !important;
+  background-color: #FFFFFF !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease !important;
+  flex-shrink: 0 !important;
+}
+input[type="checkbox"]::before {
+  content: "" !important;
+  width: 10px !important;
+  height: 6px !important;
+  border-left: 2px solid #FFFFFF !important;
+  border-bottom: 2px solid #FFFFFF !important;
+  transform: rotate(-45deg) translate(1px, -1px) scale(0) !important;
+  transition: 120ms transform ease-in-out !important;
+}
+input[type="checkbox"]:checked {
+  background-color: #176B45 !important;
+  border-color: #176B45 !important;
+}
+input[type="checkbox"]:checked::before {
+  transform: rotate(-45deg) translate(1px, -1px) scale(1) !important;
+}
+input[type="checkbox"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.25) !important;
+}
+
+/* ── RULE 6: Searchable Dropdown & Combobox ───────────────── */
+.ngis-combobox {
+  position: relative !important;
+  width: 100% !important;
+}
+.ngis-combobox-trigger {
+  width: 100% !important;
+  min-height: 40px !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  color: #0F172A !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  transition: border-color 0.15s ease !important;
+}
+.ngis-combobox-trigger:hover {
+  border-color: #94A3B8 !important;
+}
+.ngis-combobox-trigger:focus, .ngis-combobox.is-open .ngis-combobox-trigger {
+  border-color: #176B45 !important;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.20) !important;
+}
+.ngis-combobox-dropdown {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  overflow: hidden !important;
+  display: none !important;
+  flex-direction: column !important;
+}
+.ngis-combobox.is-open .ngis-combobox-dropdown {
+  display: flex !important;
+}
+.ngis-combobox-search-box {
+  padding: 8px !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  background-color: #F8FAFC !important;
+  position: relative !important;
+}
+.ngis-combobox-search-input {
+  width: 100% !important;
+  min-height: 34px !important;
+  padding: 6px 10px 6px 30px !important;
+  font-size: 12px !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 6px !important;
+  background-color: #FFFFFF !important;
+  outline: none !important;
+}
+.ngis-combobox-search-input:focus {
+  border-color: #176B45 !important;
+}
+.ngis-combobox-search-icon {
+  position: absolute !important;
+  left: 16px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-size: 16px !important;
+  color: #94A3B8 !important;
+  pointer-events: none !important;
+}
+.ngis-combobox-list {
+  max-height: 220px !important;
+  overflow-y: auto !important;
+  padding: 4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.ngis-combobox-option {
+  padding: 8px 10px !important;
+  font-size: 12.5px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  color: #334155 !important;
+  transition: background-color 0.1s ease !important;
+}
+.ngis-combobox-option:hover, .ngis-combobox-option.is-highlighted {
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+}
+.ngis-combobox-option.is-selected {
+  background-color: #E8F3ED !important;
+  color: #176B45 !important;
+  font-weight: 500 !important;
+}
+.ngis-combobox-empty {
+  padding: 16px 12px !important;
+  font-size: 12px !important;
+  color: #94A3B8 !important;
+  text-align: center !important;
+}
+
+/* ── RULE 10: Compact Multi-Select Chips ─────────────────── */
+.chip-group, .ngis-chip-group {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+.filter-chip, .ngis-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  min-height: 32px !important;
+  padding: 4px 12px !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border: 1px solid #CBD5E1 !important;
+  background-color: #F8FAFC !important;
+  color: #334155 !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: all 0.15s ease !important;
+}
+.filter-chip:hover, .ngis-chip:hover {
+  background-color: #F1F5F9 !important;
+  border-color: #94A3B8 !important;
+}
+.filter-chip.is-active, .filter-chip[data-selected="true"], .ngis-chip.selected {
+  background-color: #E8F3ED !important;
+  border-color: #176B45 !important;
+  color: #176B45 !important;
+}
+.filter-chip .chip-check, .ngis-chip .chip-check {
+  display: none !important;
+  font-size: 14px !important;
+}
+.filter-chip.is-active .chip-check, .filter-chip[data-selected="true"] .chip-check, .ngis-chip.selected .chip-check {
+  display: inline-flex !important;
 }

@@ -158,6 +158,71 @@
       if (elPeriodsDetail) {
         elPeriodsDetail.textContent = d.metrics.total_placed + ' / ' + d.metrics.total_demand + ' lessons placed';
       }
+
+      // Publication status panel (draft vs live portals).
+      var pub = d.publication || {};
+      var chip = document.getElementById('pubStatusChip');
+      if (chip) {
+        if (pub.status === 'published') {
+          chip.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 border border-emerald-200 text-emerald-700';
+          chip.innerHTML = '<span class="material-symbols-outlined text-[14px]">verified</span><span>Published v' + pub.version + '</span>';
+        } else {
+          chip.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 border border-amber-200 text-amber-700';
+          chip.innerHTML = '<span class="material-symbols-outlined text-[14px]">pending</span><span>Draft</span>';
+        }
+      }
+      var set = function (id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+      };
+      set('pubDraftSave', pub.draft_updated_at ? String(pub.draft_updated_at).replace('T', ' ').slice(0, 16) : '—');
+      set('pubClassesComplete', d.metrics.classes_completed + ' of ' + d.metrics.total_classes);
+      set('pubLastPublished', pub.published_at ? String(pub.published_at).replace('T', ' ').slice(0, 16) : 'Not published');
+      set('pubPublishedBy', pub.published_by || '—');
+      var summary = document.getElementById('pubSummary');
+      if (summary) {
+        summary.textContent = pub.status === 'published'
+          ? 'Version ' + pub.version + ' live on Teacher & Student portals since ' + pub.published_at +
+            (pub.effective_from ? ' · effective ' + pub.effective_from : '') +
+            ' · ' + (pub.history_count || 1) + ' publication record(s)'
+          : 'Timetable is still an unpublished draft — publish from the builder to distribute it to the portals.';
+      }
+
+      // Notify the responsible principal via the existing reminder workflow.
+      var notifyBtn = document.getElementById('pubNotifyBtn');
+      if (notifyBtn && !notifyBtn.dataset.bound) {
+        notifyBtn.dataset.bound = '1';
+        notifyBtn.addEventListener('click', function () {
+          notifyBtn.disabled = true;
+          fetch('/api/timetable/reminders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              task_id: 'publication-status',
+              task_name: 'Timetable Publication Review',
+              recipient_id: 'PRIN-2024-001',
+              recipient_name: 'Dr. Ly Bunheng',
+              recipient_role: 'Principal',
+              recipient_email: 'principal@ngis.edu.kh',
+              missing_summary: pub.status === 'published'
+                ? 'Published version ' + pub.version + ' — please review the live schedule.'
+                : 'The master timetable is still an unpublished draft. Please complete and publish it.',
+              message: pub.status === 'published'
+                ? 'Timetable v' + pub.version + ' is live (published by ' + (pub.published_by || 'admin') + '). Please review the published schedule for accuracy.'
+                : 'The master timetable draft is not yet published. Please finalize conflicts and publish it to the Teacher and Student portals.',
+              deadline: '',
+              authorized_url: 'pages/principal/principal-timetable-builder.html',
+              force_duplicate: false
+            })
+          })
+            .then(function (r) { return r.json(); })
+            .then(function (res) {
+              notifyBtn.disabled = false;
+              if (self.showToast) self.showToast(res.success ? 'Reminder sent to the Principal' : (res.error || 'Could not send reminder'), res.success ? 'success' : 'error');
+            })
+            .catch(function () { notifyBtn.disabled = false; });
+        });
+      }
     },
 
     // ── 3. Outstanding Work & Responsibility Table ──────────────────────────
@@ -349,7 +414,9 @@
       }
 
       // Fetch grid from authoritative API
-      container.innerHTML = '<div class="py-12 text-center text-slate-400 font-normal text-sm"><span class="material-symbols-outlined text-2xl animate-spin mb-1">sync</span><p>Loading schedule grid for ' + classTask.class_name + '...</p></div>';
+      container.innerHTML = window.NGIS_SKELETON
+        ? window.NGIS_SKELETON.table({ rows: 5 })
+        : '<div class="ngis-sk-table-container p-4"></div>';
 
       fetch('/api/timetable/grid?class_id=' + classId)
         .then(function (r) { return r.json(); })
@@ -780,7 +847,7 @@
           }
 
           if (res.success) {
-            self.showToast('Reminder successfully sent to ' + recipientName + '!', 'success');
+            self.showToast('Reminder sent to ' + recipientName + '!', 'success');
             self.closeModal();
             self.fetchData(); // Refresh history
           } else {

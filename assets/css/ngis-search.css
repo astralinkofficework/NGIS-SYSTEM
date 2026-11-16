@@ -1,0 +1,316 @@
+/* NGIS Shared Search System
+   One visual pattern for global header, sidebar and page-level searches.
+   Loaded by layout.js after ui-cleanup/shared-components so its higher
+   specificity wins without scattering page-level !important overrides. */
+
+:root {
+  --ngis-search-border: #E1E9E3;
+  --ngis-search-border-hover: #CBD5CC;
+  --ngis-search-bg: #FFFFFF;
+  --ngis-search-text: #29352E;
+  --ngis-search-placeholder: #87958B;
+  --ngis-search-icon: #6B7B71;
+  --ngis-search-focus: #176B45;
+  --ngis-search-radius: 10px;
+  --ngis-search-height: 44px;
+  --ngis-search-kbd-bg: #F8FAF8;
+}
+
+[data-theme="dark"] {
+  --ngis-search-border: #2D3A31;
+  --ngis-search-border-hover: #435247;
+  --ngis-search-bg: #1F2E26;
+  --ngis-search-text: #F7F9F7;
+  --ngis-search-placeholder: #9AAA9F;
+  --ngis-search-icon: #9AAA9F;
+  --ngis-search-focus: #4BB785;
+  --ngis-search-kbd-bg: #25342B;
+}
+
+/* ── Core container ───────────────────────────────────────────────────── */
+/* NOTE: width uses :where() (zero specificity) so page-side width utilities
+   such as `w-full sm:w-56` or `max-w-md` always win over the default. */
+:where(.ngis-search) {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  height: var(--ngis-search-height);
+  padding: 0 14px;
+  background: var(--ngis-search-bg);
+  border: 1px solid var(--ngis-search-border);
+  border-radius: var(--ngis-search-radius);
+  box-shadow: none;
+  color: var(--ngis-search-text);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.ngis-search:hover {
+  border-color: var(--ngis-search-border-hover);
+}
+
+.ngis-search:focus-within {
+  border-color: var(--ngis-search-focus);
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.12);
+  outline: none;
+}
+
+.ngis-search .ngis-search-icon {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--ngis-search-icon);
+  font-size: 18px;
+  line-height: 1;
+  /* Neutralise utility positioning left on legacy wrapped icons. */
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+  margin: 0;
+  pointer-events: none;
+}
+
+.ngis-search input.ngis-search-input,
+.ngis-search .ngis-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 !important;
+  margin: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ngis-search-text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+}
+
+.ngis-search input.ngis-search-input::placeholder,
+.ngis-search .ngis-search-input::placeholder {
+  /* design-system.css forces a global placeholder colour with !important;
+     the token must win here (incl. dark theme) for every search input. */
+  color: var(--ngis-search-placeholder) !important;
+  opacity: 1;
+}
+
+.ngis-search input.ngis-search-input:focus,
+.ngis-search .ngis-search-input:focus {
+  outline: 0;
+  box-shadow: none;
+  border: 0;
+}
+
+/* Native WebKit clear glyph would duplicate the shared clear button. */
+.ngis-search input[type="search"].ngis-search-input::-webkit-search-cancel-button,
+.ngis-search input[type="search"].ngis-search-input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ngis-search .ngis-search-clear {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ngis-search-icon);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+.ngis-search .ngis-search-clear:hover { color: var(--ngis-search-text); }
+.ngis-search .ngis-search-clear:focus-visible {
+  outline: 2px solid var(--ngis-search-focus);
+  outline-offset: 1px;
+}
+.ngis-search.has-value .ngis-search-clear { display: inline-flex; }
+
+.ngis-search .ngis-search-kbd {
+  flex: 0 0 auto;
+  padding: 1px 5px;
+  border: 1px solid var(--ngis-search-border);
+  border-radius: 5px;
+  background: var(--ngis-search-kbd-bg);
+  color: var(--ngis-search-placeholder);
+  font: inherit;
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.ngis-search.is-disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.ngis-search.is-loading .ngis-search-icon {
+  animation: ngis-search-pulse 900ms ease-in-out infinite;
+}
+@keyframes ngis-search-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.ngis-search--compact {
+  --ngis-search-height: 38px;
+  gap: 8px;
+  padding: 0 12px;
+}
+.ngis-search--compact .ngis-search-icon { flex-basis: 16px; width: 16px; height: 16px; font-size: 16px; }
+.ngis-search--compact input.ngis-search-input { font-size: 12px; }
+
+.ngis-search-empty {
+  padding: 18px;
+  border: 1px dashed var(--ngis-search-border);
+  border-radius: var(--ngis-search-radius);
+  background: var(--ngis-search-bg);
+  color: var(--ngis-search-placeholder);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ── Global hero/topbar search ────────────────────────────────────────── */
+.htb-search-wrap.ngis-search--hero {
+  height: 42px;
+  padding: 0 14px;
+  background: var(--ngis-search-bg);
+  border: 1px solid var(--ngis-search-border);
+  border-radius: var(--ngis-search-radius);
+  box-shadow: none;
+  gap: 10px;
+}
+.htb-search-wrap.ngis-search--hero:hover { border-color: var(--ngis-search-border-hover); }
+.htb-search-wrap.ngis-search--hero .htb-search-icon,
+.htb-search-wrap.ngis-search--hero > .material-symbols-outlined:first-child {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ngis-search-icon);
+  font-size: 18px;
+  line-height: 1;
+  position: static;
+  transform: none;
+}
+.htb-search-wrap.ngis-search--hero .htb-search-input,
+.htb-search-wrap.ngis-search--hero input.ngis-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ngis-search-text);
+  font-size: 13px;
+}
+.htb-search-wrap.ngis-search--hero input::placeholder {
+  color: var(--ngis-search-placeholder);
+  opacity: 1;
+}
+
+/* Legacy layout topbar .search wrapper (non-functional display field). */
+.search.ngis-search--hero { max-width: 340px; }
+.search.ngis-search--hero input { font-size: 12.5px; }
+
+/* ── Sidebar navigation filter ────────────────────────────────────────── */
+.sb-search-box.ngis-search,
+.sb-search-wrap .ngis-search {
+  height: 38px;
+  padding: 0 12px;
+  gap: 8px;
+  background: var(--ngis-search-bg);
+  border: 1px solid var(--ngis-search-border);
+  border-radius: var(--ngis-search-radius);
+  box-shadow: none;
+}
+.sb-search-box.ngis-search .sb-search-icon,
+.sb-search-box.ngis-search > .material-symbols-outlined:first-child {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--ngis-search-icon);
+  font-size: 16px;
+  position: static;
+  transform: none;
+}
+.sb-search-box.ngis-search .sb-search-input {
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ngis-search-text);
+  font-size: 12px;
+}
+.sb-search-box.ngis-search input::placeholder { color: var(--ngis-search-placeholder); opacity: 1; }
+
+/* ── Admin global-search panel input ──────────────────────────────────── */
+.hpd-search-input-wrap.ngis-search {
+  height: 42px;
+  padding: 0 14px;
+  gap: 10px;
+  background: var(--ngis-search-bg);
+  border: 1px solid var(--ngis-search-border);
+  border-radius: var(--ngis-search-radius);
+  box-shadow: none;
+}
+.hpd-search-input-wrap.ngis-search .mi {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--ngis-search-icon);
+  font-size: 18px;
+  position: static;
+}
+.hpd-search-input-wrap.ngis-search .hpd-search-input {
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ngis-search-text);
+  font-size: 13px;
+}
+.hpd-search-input-wrap.ngis-search input::placeholder { color: var(--ngis-search-placeholder); opacity: 1; }
+
+/* ── Existing page components: align them to the same token set ───────── */
+.search-input-with-icon input[type="search"],
+[data-purpose="filtering-controls"] input[type="search"],
+.filter-bar input[type="search"],
+.ann-search-input-wrap input[type="search"],
+.dir-search-input,
+.smx-search .smx-input {
+  color: var(--ngis-search-text);
+  font-size: 13px;
+}
+.search-input-with-icon input[type="search"]::placeholder,
+[data-purpose="filtering-controls"] input[type="search"]::placeholder,
+.filter-bar input[type="search"]::placeholder,
+.ann-search-input-wrap input::placeholder,
+.dir-search-input::placeholder,
+.smx-search .smx-input::placeholder {
+  color: var(--ngis-search-placeholder);
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .search.ngis-search--hero { max-width: none; width: 100%; }
+  .ngis-search .ngis-search-kbd { display: none; }
+}

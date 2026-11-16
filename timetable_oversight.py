@@ -144,6 +144,10 @@ def create_reminder(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     # Create new reminder record
     rid = f"rem-{now.strftime('%Y%m%d')}-{len(reminders) + 1:03d}"
+    # Sender identity: recorded from the authenticated actor when provided,
+    # so the audit trail reflects who actually dispatched the reminder.
+    sender_id = str(payload.get("sender_id") or "ADM-2024-001").strip()
+    sender_name = str(payload.get("sender_name") or "Mr. Heng Samnang (Super Admin)").strip()
     new_reminder = {
         "id": rid,
         "recipient_id": recipient_id,
@@ -162,8 +166,8 @@ def create_reminder(payload: Dict[str, Any]) -> Dict[str, Any]:
         "read": False,
         "read_at": None,
         "created_at": now.strftime("%Y-%m-%d %H:%M:%S"),
-        "sender_id": "ADM-2024-001",
-        "sender_name": "Mr. Heng Samnang (Super Admin)"
+        "sender_id": sender_id,
+        "sender_name": sender_name
     }
 
     reminders.append(new_reminder)
@@ -492,6 +496,18 @@ def compute_oversight_data() -> Dict[str, Any]:
         "review_queue": review_queue,
         "activity_history": activity_history[:15],
         "reminders": reminders,
+        "publication": {
+            "status": "published" if published_ver else "draft",
+            "version": published_ver,
+            "published_at": published.get("published_at"),
+            "published_by": published.get("published_by"),
+            "effective_from": published.get("effective_from"),
+            "draft_updated_at": state.get("updated_at"),
+            "draft_revision": state.get("revision", 0),
+            "history_count": len(state.get("published_history", [])),
+            "campus": (state.get("institution", {}).get("name_en")
+                       or state.get("institution", {}).get("name_kh", "")),
+        },
         "metrics": {
             "total_demand": total_demand,
             "total_placed": total_placed,

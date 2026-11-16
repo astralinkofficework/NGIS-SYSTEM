@@ -41,16 +41,16 @@
 
       // Icon determination based on error mode
       let icon = "ph-warning-circle";
-      let iconColor = "#92243D";
+      let iconColor = "var(--token-danger, #C53030)";
       let badgeLabel = "System Notice";
 
       if (type === "offline" || !navigator.onLine) {
         icon = "ph-wifi-slash";
-        iconColor = "#202F63";
+        iconColor = "var(--token-primary, #176B45)";
         badgeLabel = "Offline Mode";
       } else if (type === "timeout") {
         icon = "ph-clock-countdown";
-        iconColor = "#202F63";
+        iconColor = "var(--token-primary, #176B45)";
         badgeLabel = "Connection Timeout";
       } else if (type === "not_found") {
         icon = "ph-magnifying-glass";
@@ -75,15 +75,13 @@
             ${badgeLabel}
           </span>
         </div>
-        <h3 class="ngis-state-title" style="font-size:16px; font-weight:500; color:#000000; margin-bottom:8px;">
-          ${title}
-        </h3>
+        <h3 class="ngis-state-title" style="font-size:16px; font-weight:500; color:#000000; margin-bottom:8px;">${title}</h3>
         <p class="ngis-state-desc" style="font-size:13.5px; font-weight:400; color:#555555; max-width:440px; margin:0 auto 20px; line-height:1.55;">
           ${message}
         </p>
         <div class="ngis-state-actions" style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap;">
           ${onRetry ? `
-            <button type="button" class="ngis-btn-primary ngis-retry-action-btn" style="min-height:44px; padding:0 20px; border-radius:10px; display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:500; cursor:pointer;">
+            <button type="button" class="ngis-btn-primary ngis-retry-action-btn ngis-btn-retry" style="min-height:44px; padding:0 20px; border-radius:10px; display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:500; cursor:pointer;">
               <i class="ph ph-arrow-clockwise"></i>
               <span>${retryText}</span>
             </button>

@@ -6,7 +6,8 @@
 <title>NGIS — Student Timetable</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
 <link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
@@ -113,6 +114,12 @@
     gap:16px;
     margin-top:16px;
   }
+  /* Global heading-color normalization overrides the inline #fff on the
+     green ticker bar — keep the ticker text white and readable. */
+  html body #tickerText,
+  html body #tickerText * {
+    color: #ffffff !important;
+  }
   .shift-divider td {
     background:#F2F6F3;
     padding:8px 14px;
@@ -146,8 +153,9 @@
 </style>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 <script src="../../assets/js/khmer-suite-data.js"></script>
 </head>
 <body data-page="student" data-role="student" class="student-dashboard">
@@ -260,6 +268,23 @@
     }
   }
 
+  // Resolve the logged-in student's actual enrolled class from real records.
+  async function resolveStudentClass() {
+    var params = new URLSearchParams(window.location.search);
+    var sid = params.get('student');
+    if (!sid || state.classId) return;
+    try {
+      var res = await fetch('/api/students');
+      if (!res.ok) return;
+      var students = await res.json();
+      var stu = (Array.isArray(students) ? students : (students.data || []))
+        .find(function (s) { return s.id === sid; });
+      if (stu && stu.class) {
+        state.classId = 'class_' + stu.class.replace(/\s+|Grade\s*/gi, '');
+      }
+    } catch (e) { /* keep the default class */ }
+  }
+
   function esc(s) {
     return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
@@ -312,44 +337,21 @@
         state.lessons = data.lessons || [];
         state.isPublished = true;
         state.version = data.version || 1;
+        state.effectiveFrom = data.effective_from || null;
       } else {
-        // Fallback to active state
-        var sRes = await fetch('/api/timetable/state');
-        if (sRes.ok) {
-          var sData = await sRes.json();
-          var cls = (sData.classes || []).find(function (c) { return c.id === state.classId; });
-          state.classInfo = cls || { id: state.classId, display: state.classId.replace('class_', ''), room: 'Room 101', shift: 'ព្រឹក' };
-          var placed = sData.placed || {};
-          var sMap = {}; (sData.subjects || []).forEach(function (s) { sMap[s.id] = s; });
-          var tMap = {}; (sData.teachers || []).forEach(function (t) { tMap[t.id] = t; });
-          var lList = [];
-          Object.keys(placed).forEach(function (k) {
-            var parts = k.split('|');
-            if (parts.length >= 4 && parts[3] === state.classId) {
-              var pVal = placed[k];
-              var sub = sMap[pVal.subject_id] || {};
-              var tch = tMap[pVal.teacher_id] || {};
-              lList.push({
-                key: k,
-                day: parts[0],
-                shift: parts[1],
-                period: parseInt(parts[2], 10),
-                class_id: state.classId,
-                class_display: state.classInfo.display || '',
-                subject_id: sub.id,
-                subject_name: sub.name_kh || sub.name_en || '',
-                subject_code: sub.code || '',
-                color: sub.color || '#176B45',
-                teacher_id: tch.id,
-                teacher_code: tch.code || '',
-                teacher_name: tch.name_kh || tch.name_en || '',
-                room: state.classInfo.room || 'Room 101'
-              });
-            }
-          });
-          state.lessons = lList;
-          state.isPublished = false;
-        }
+        // No published timetable yet — NEVER fall back to the unpublished
+        // draft: students must only ever see the official published schedule.
+        state.lessons = [];
+        state.isPublished = false;
+        state.version = null;
+        try {
+          var sRes = await fetch('/api/timetable/state');
+          if (sRes.ok) {
+            var sData = await sRes.json();
+            var cls = (sData.classes || []).find(function (c) { return c.id === state.classId; });
+            state.classInfo = cls || { id: state.classId, display: state.classId.replace('class_', ''), room: '', shift: 'ព្រឹក' };
+          }
+        } catch (e2) { /* banner falls back to defaults */ }
       }
     } catch (e) {
       console.error('Error fetching timetable:', e);
@@ -368,11 +370,23 @@
     if (pBadge) {
       if (state.isPublished) {
         pBadge.className = 'tt-chip green';
-        pBadge.innerHTML = '<span class="material-symbols-outlined">verified</span> Published (v' + state.version + ')';
+        pBadge.innerHTML = '<span class="material-symbols-outlined">verified</span> Published (v' + state.version + ')' +
+          (state.effectiveFrom ? ' · effective ' + esc(state.effectiveFrom) : '');
       } else {
         pBadge.className = 'tt-chip warn';
-        pBadge.innerHTML = '<span class="material-symbols-outlined">pending</span> Draft Timetable';
+        pBadge.innerHTML = '<span class="material-symbols-outlined">pending</span> Not Published Yet';
       }
+    }
+
+    // Official empty state: never render unpublished draft data here.
+    if (!state.isPublished) {
+      container.innerHTML =
+        '<div style="text-align:center;padding:56px 20px;color:#738479">' +
+        '<span class="material-symbols-outlined" style="font-size:40px;color:#B9C7BD">hourglass_empty</span>' +
+        '<div style="margin-top:10px;font-weight:500;color:#29352E">No published timetable yet</div>' +
+        '<div style="margin-top:4px;font-size:13px">Your class schedule will appear here automatically once the school publishes it.</div>' +
+        '</div>';
+      return;
     }
 
     var rChip = document.getElementById('roomChip');
@@ -625,7 +639,7 @@
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    if (window.toast) window.toast('Class timetable (.ICS) exported successfully!', 'success');
+    if (window.toast) window.toast('Class timetable (.ICS) exported', 'success');
   };
 
   window.openClassDetail = function (subject, teacher, location, timeInfo) {
@@ -635,7 +649,9 @@
   };
 
   parseQueryParams();
-  loadClasses().then(loadTimetable);
+  resolveStudentClass().then(function () {
+    return loadClasses().then(loadTimetable);
+  });
   setInterval(updateTicker, 60000);
 
 })();

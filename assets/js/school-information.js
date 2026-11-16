@@ -26,21 +26,22 @@
     });
   }
 
-  function toast(msg, type) {
-    var existing = document.getElementById('siToast');
-    if (existing) existing.remove();
-    var t = document.createElement('div');
-    t.id = 'siToast';
-    var cls = type === 'error' ? 'si-toast-error' : (type === 'info' ? 'si-toast-info' : 'si-toast-success');
-    t.className = 'si-toast ' + cls;
-    t.innerHTML = '<span class="material-symbols-outlined text-sm">' + (type === 'error' ? 'error' : (type === 'info' ? 'info' : 'check_circle')) + '</span><span>' + esc(msg) + '</span>';
-    document.body.appendChild(t);
-    setTimeout(function () {
-      t.style.opacity = '0';
-      t.style.transform = 'translateY(10px)';
-      setTimeout(function () { t.remove(); }, 300);
-    }, 3500);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
   }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
 
   function apiCall(endpoint, method, data) {
     var opts = {
@@ -77,7 +78,9 @@
   SI.loadData = function (containerId) {
     var root = document.getElementById(containerId);
     if (!root) return;
-    root.innerHTML = '<div class="flex items-center justify-center py-24 text-slate-400 gap-3"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping"></span><span class="text-sm font-medium">Loading institutional configuration & permissions...</span></div>';
+    root.innerHTML = window.NGIS_SKELETON
+      ? window.NGIS_SKELETON.dashboard({ kpis: 3 })
+      : '<div class="ngis-sk-dashboard-wrap p-6">' + (window.NGISKit ? window.NGISKit.Skeleton({ type: "table" }) : '') + '</div>';
 
     apiCall('/api/school-config/full')
       .then(function (res) {
@@ -538,7 +541,7 @@
 
     apiCall('/api/school-config/profile', 'PUT', payload)
       .then(function (res) {
-        toast('School profile updated and saved successfully.');
+        toast('School profile updated and saved.');
         state.config.school_info = res.data;
       })
       .catch(function (err) {
@@ -698,7 +701,7 @@
       enrollmentEnd: enrollEnd,
       status: 'draft'
     }).then(function (res) {
-      toast('Academic Year ' + yName + ' created successfully.');
+      toast('Academic Year ' + yName + ' created.');
       SI.closeModal();
       SI.loadData('schoolInfoRoot');
     }).catch(function (err) {
@@ -864,7 +867,7 @@
       principal: prn,
       status: 'active'
     }).then(function (res) {
-      toast('Campus ' + name + ' added successfully.');
+      toast('Campus ' + name + ' added.');
       SI.closeModal();
       SI.loadData('schoolInfoRoot');
     }).catch(function (err) {

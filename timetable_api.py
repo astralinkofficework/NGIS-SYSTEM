@@ -71,6 +71,117 @@ def _indexed(items: List[Dict[str, Any]], key: str = "id") -> Dict[str, Dict[str
     return {item[key]: item for item in items}
 
 
+def _actor() -> Optional[str]:
+    """Authenticated actor name for audit trails (X-Actor header, set by the
+    front-end from the logged-in user)."""
+    return (request.headers.get("X-Actor") or "").strip() or None
+
+
+MONITOR_ROLES = {"admin", "principal", "editor", "super_admin", "superadmin"}
+READONLY_TIMETABLE_ROLES = {"admin", "student", "teacher", "staff", "monitoring"}
+
+
+def _resolved_actor_role() -> str:
+    role = (request.headers.get("X-Actor-Role") or request.headers.get("X-User-Role") or "").strip().lower()
+    if not role:
+        auth_hdr = (request.headers.get("Authorization") or "").strip()
+        if "mock-jwt-token-" in auth_hdr:
+            role = auth_hdr.split("mock-jwt-token-")[-1].strip().lower()
+    return role
+
+
+def _monitor_guard() -> Optional[Tuple[Response, int]]:
+    """Backend authorization for monitoring endpoints: only administrative
+    roles may read monitoring data or dispatch reminders. Never rely on
+    hidden buttons alone."""
+    role = _resolved_actor_role()
+    if role not in MONITOR_ROLES:
+        return _fail("សូមទោស — មានត្រណមតែ Admin/Principal ប៉ុណ្ណោះ", 403)
+    return None
+
+
+def _builder_write_guard() -> Optional[Tuple[Response, int]]:
+    """Prevent read-only roles (including explicit admin monitoring) from
+    modifying drafts, assignments, or publishing timetables."""
+    role = _resolved_actor_role()
+    if role in READONLY_TIMETABLE_ROLES:
+        return _fail(
+            "Admin Timetable Monitoring is read-only. Timetable editing and publishing belong to the Principal Portal.",
+            403,
+            read_only=True,
+        )
+    return None
+
+
+def _subject_write_guard() -> Optional[Tuple[Response, int]]:
+    """Curriculum (subject directory) management guard.
+
+    Unlike timetable drafting — which the read-only monitor guard keeps
+    Principal-Portal-only — the subject directory is a curriculum-management
+    function shared by Admin and Principal portals. Only administrative roles
+    may create or modify subjects; students, teachers, staff and monitoring
+    sessions are rejected server-side."""
+    role = _resolved_actor_role()
+    if role not in MONITOR_ROLES:
+        return _fail(
+            "Subject management requires Admin, Principal or Super Admin access.",
+            403,
+            role=role or None,
+        )
+    return None
+
+
+@timetable_bp.route("/subjects", methods=["POST"])
+def create_subject():
+    """Create a subject (+ optional per-class teacher assignments) in the
+    authoritative timetable state document. Same store, same file — no
+    parallel subject database."""
+    denied = _subject_write_guard()
+    if denied:
+        return denied
+    body = _body()
+    try:
+        result = STORE.add_subject(body.get("subject") or {},
+                                   body.get("assignments") or [], actor=_actor())
+    except M.SubjectValidationError as exc:
+        return _fail(str(exc), 400)
+    return _ok(result["state"], saved=True, subject=result["subject"],
+               assignments=result["assignments"])
+
+
+@timetable_bp.route("/subjects/<subject_id>", methods=["DELETE"])
+def remove_subject(subject_id: str):
+    """Delete a subject (mirrors the existing client-side delete semantics)."""
+    denied = _subject_write_guard()
+    if denied:
+        return denied
+    try:
+        result = STORE.delete_subject(subject_id, actor=_actor())
+    except LookupError as exc:
+        return _fail(str(exc), 404)
+    return _ok(result["state"], saved=True, subject=result["subject"],
+               grid_cells_removed=result["grid_cells_removed"])
+
+
+@timetable_bp.route("/subjects/<subject_id>", methods=["PUT"])
+def update_subject(subject_id: str):
+    """Update subject fields and reconcile class assignments (grid-protected)."""
+    denied = _subject_write_guard()
+    if denied:
+        return denied
+    body = _body()
+    try:
+        result = STORE.update_subject(subject_id, body.get("subject") or {},
+                                      body.get("assignments"), actor=_actor())
+    except M.SubjectValidationError as exc:
+        return _fail(str(exc), 400)
+    except LookupError as exc:
+        return _fail(str(exc), 404)
+    return _ok(result["state"], saved=True, subject=result["subject"],
+               added=result["added"], removed=result["removed"],
+               warnings=result["warnings"])
+
+
 def _next_id(prefix: str, items: List[Dict[str, Any]], field: str = "id") -> str:
     used = {str(i.get(field, "")) for i in items}
     n = 1
@@ -161,19 +272,39 @@ def get_data_legacy():
 
 @timetable_bp.route("/state", methods=["PUT", "POST"])
 def put_state():
-    """Autosave: replace the whole document, then re-derive every counter."""
+    """Autosave: replace the whole document, then re-derive every counter.
+
+    Send `base_revision` to enable the concurrent-editor guard: the save is
+    rejected with 409 when the server document has moved on, so a stale editor
+    can never silently overwrite another editor's work.
+    """
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     body = _body()
     incoming = body.get("state", body)
     error = _validate_state(incoming)
     if error:
         return _fail(error)
     state = _clean_state(deepcopy(incoming))
-    saved = STORE.replace(state, body.get("label", "រក្សាទុកដោយស្វ័យប្រវត្តិ"))
+    base_revision = body.get("base_revision")
+    try:
+        saved = STORE.replace(state, body.get("label", "រក្សាទុកដោយស្វ័យប្រវត្តិ"),
+                              base_revision=base_revision, actor=_actor())
+    except M.RevisionConflict as exc:
+        return jsonify({
+            "success": False, "error": "save-conflict",
+            "message": "Another editor saved a newer version of this draft.",
+            "current_revision": exc.current_revision,
+        }), 409
     return _ok(saved, saved=True)
 
 
 @timetable_bp.route("/reset", methods=["POST"])
 def reset_state():
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     state = STORE.reset()
     return _ok(state, reset=True)
 
@@ -219,6 +350,9 @@ def get_grid():
 @timetable_bp.route("/grid/assign", methods=["POST"])
 def assign_cell():
     """Place (or replace) one lesson. Hard conflicts block unless force=true."""
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     body = _body()
     key = body.get("key")
     subject_id = body.get("subject_id")
@@ -243,13 +377,16 @@ def assign_cell():
         "teacher_id": teacher_id, "day": parts["day"],
         "shift": parts["shift"], "period": parts["period"],
     }
-    saved = STORE.patch_grid(key, cell, body.get("label", "កំណត់ម៉ោង"))
+    saved = STORE.patch_grid(key, cell, body.get("label", "កំណត់ម៉ោង"), actor=_actor())
     return _ok(saved, conflicts=conflicts, cell=_cell_view(saved, key, cell))
 
 
 @timetable_bp.route("/cells", methods=["DELETE"])
 @timetable_bp.route("/grid/clear", methods=["POST"])
 def clear_cell():
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     body = _body()
     key = body.get("key") or request.args.get("key")
     if not key:
@@ -257,13 +394,16 @@ def clear_cell():
     state = STORE.state()
     if key not in state["grid"]:
         return _ok(state, cleared=False)
-    saved = STORE.patch_grid(key, None, body.get("label", "លុបម៉ោង"))
+    saved = STORE.patch_grid(key, None, body.get("label", "លុបម៉ោង"), actor=_actor())
     return _ok(saved, cleared=True)
 
 
 @timetable_bp.route("/cells/batch", methods=["POST"])
 def batch_cells():
     """Atomic multi-cell patch used by undo / AI apply / drag edits."""
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     body = _body()
     changes = body.get("changes")
     if not isinstance(changes, list) or len(changes) > 5000:
@@ -287,7 +427,7 @@ def batch_cells():
                 "day": parts["day"], "shift": parts["shift"],
                 "period": parts["period"],
             }
-    saved = STORE.replace(state, body.get("label", "កែប្រែច្រើនក្រឡា"))
+    saved = STORE.replace(state, body.get("label", "កែប្រែច្រើនក្រឡា"), actor=_actor())
     return _ok(saved, changed=len(changes))
 
 
@@ -391,6 +531,10 @@ def auto_assign():
     body = _body()
     state = STORE.state()
     preview = bool(body.get("preview")) or body.get("mode") == "preview"
+    if not preview:
+        denied = _builder_write_guard()
+        if denied:
+            return denied
     constraints = body.get("constraints") or {}
 
     working = deepcopy(state)
@@ -440,6 +584,9 @@ def auto_assign():
 
 @timetable_bp.route("/generate/apply", methods=["POST"])
 def apply_proposal():
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     token = _body().get("token", "")
     proposal = _PROPOSALS.pop(token, None)
     if not proposal or time.time() - proposal["at"] > _PROPOSAL_TTL:
@@ -531,6 +678,9 @@ _collection("assignments", "asg_", ("class_id", "subject_id", "teacher_id"), {
 
 @timetable_bp.route("/assignments/bulk", methods=["PUT"])
 def bulk_assignments():
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     body = _body()
     items = body.get("assignments")
     if not isinstance(items, list):
@@ -854,6 +1004,9 @@ def import_records():
 @timetable_bp.route("/reassign", methods=["POST"])
 def reassign():
     """Section 8 Critical Rule: safely reassign a teacher in a class."""
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     body = _body()
     class_id = body.get("class_id")
     subject_id = body.get("subject_id")
@@ -872,19 +1025,97 @@ def reassign():
 
 @timetable_bp.route("/publish", methods=["POST"])
 def publish():
-    """Section 18: Approve and publish active draft timetable."""
+    """Section 18: Approve and publish active draft timetable.
+
+    Hard conflicts always block. An incomplete timetable (unassigned required
+    lessons) publishes only with an explicit `force: true` confirmation from
+    the editor, per school policy.
+    """
+    denied = _builder_write_guard()
+    if denied:
+        return denied
     body = _body()
     published_by = body.get("published_by", "Admin")
     note = body.get("note", "")
+    effective_from = body.get("effective_from")
+    force = bool(body.get("force"))
     state = STORE.state()
     conflicts = [c for c in M.scan_conflicts(state) if c["severity"] == "error"]
     if conflicts:
         return _fail("មិនអាចបោះពុម្ពផ្សាយបានទេ ពីព្រោះមានជម្លោះកាលវិភាគ", 409, conflicts=conflicts)
+    stats = M.statistics(state)
+    unassigned = stats.get("unassigned", 0)
+    if unassigned > 0 and not force:
+        return jsonify({
+            "success": False, "requires_confirmation": True,
+            "error": "incomplete-timetable",
+            "message": "កាលវិភាគមិនទាន់ពេញលេញ — សូមបញ្ជាក់មុនបោះពុម្ពផ្សាយ",
+            "unassigned": unassigned,
+        }), 409
     try:
-        published = STORE.publish(published_by=published_by, note=note)
-        return _ok(published=published)
+        published = STORE.publish(published_by=published_by, note=note,
+                                  effective_from=effective_from)
     except Exception as e:
         return _fail(str(e), 400)
+    classes_affected = len(published.get("classes", []))
+    teachers_affected = len({c.get("teacher_id") for c in published["grid"].values()
+                             if c.get("teacher_id")})
+    students_affected = sum(int(c.get("student_count") or 0)
+                            for c in published.get("classes", []))
+    return _ok(published=published, affected={
+        "classes": classes_affected,
+        "teachers": teachers_affected,
+        "students": students_affected,
+    })
+
+
+@timetable_bp.route("/publication/status", methods=["GET"])
+def publication_status():
+    """Combined publication state for the sticky action bar & publish modal."""
+    state = STORE.state()
+    pub = state.get("published")
+    stats = M.statistics(state)
+    conflicts = [c for c in M.scan_conflicts(state) if c["severity"] == "error"]
+    diff = M.diff_publication(state)
+    return jsonify({
+        "success": True,
+        "revision": state.get("revision", 0),
+        "updated_at": state.get("updated_at"),
+        "institution": state.get("institution", {}),
+        "stats": {k: stats.get(k) for k in ("placed", "total_demand", "unassigned", "conflicts")},
+        "conflict_count": len(conflicts),
+        "published": ({k: pub[k] for k in ("version", "published_at", "published_by",
+                                           "effective_from", "note", "academic_year")}
+                      if pub else None),
+        "diff": {k: diff[k] for k in ("has_published", "changed", "added",
+                                      "removed", "modified")},
+        "history": STORE.publication_history(),
+    })
+
+
+@timetable_bp.route("/publication/diff", methods=["GET"])
+def publication_diff():
+    """Per-cell diff between the editable draft and the published snapshot."""
+    diff = STORE.publication_diff()
+    return jsonify({"success": True, "diff": diff})
+
+
+@timetable_bp.route("/publication/rollback", methods=["POST"])
+def publication_rollback():
+    """Audited rollback: republish a previous version and rebase the draft."""
+    denied = _builder_write_guard()
+    if denied:
+        return denied
+    body = _body()
+    version = body.get("version")
+    actor = body.get("published_by", "Admin")
+    if not isinstance(version, int):
+        return _fail("`version` (int) is required", 400)
+    try:
+        snapshot = STORE.rollback(version, actor=actor)
+    except ValueError as e:
+        return _fail(str(e), 404)
+    return _ok(published=snapshot, restored_from=version)
 
 
 @timetable_bp.route("/published", methods=["GET"])
@@ -898,8 +1129,14 @@ def get_published():
 
 @timetable_bp.route("/published/teacher/<teacher_id>", methods=["GET"])
 def get_published_teacher(teacher_id: str):
-    """Teacher portal read-only view of published timetable."""
+    """Teacher portal read-only view of the published timetable.
+
+    Returns 404 when nothing is published — the portal must never receive
+    unpublished draft data as if it were the official schedule.
+    """
     use_published = request.args.get("draft", "false").lower() != "true"
+    if use_published and not STORE.published():
+        return _fail("មិនទាន់មានកាលវិភាគបោះពុម្ពផ្សាយនៅឡើយទេ", 404)
     result = STORE.teacher_timetable(teacher_id, use_published=use_published)
     if not result.get("success"):
         return _fail(result.get("error", "រកគ្រូមិនឃើញ"), 404)
@@ -908,8 +1145,10 @@ def get_published_teacher(teacher_id: str):
 
 @timetable_bp.route("/published/class/<class_id>", methods=["GET"])
 def get_published_class(class_id: str):
-    """Student portal read-only view of published timetable."""
+    """Student portal read-only view of the published timetable (404 if none)."""
     use_published = request.args.get("draft", "false").lower() != "true"
+    if use_published and not STORE.published():
+        return _fail("មិនទាន់មានកាលវិភាគបោះពុម្ពផ្សាយនៅឡើយទេ", 404)
     result = STORE.class_timetable(class_id, use_published=use_published)
     if not result.get("success"):
         return _fail(result.get("error", "រកថ្នាក់មិនឃើញ"), 404)
@@ -1076,4 +1315,173 @@ def mark_reminder_as_read(reminder_id: str):
         return jsonify(result)
     except Exception as e:
         return _fail(f"បរាជ័យក្នុងការកែប្រែស្ថានភាព Reminder: {str(e)}", 500)
+
+
+# ── Admin Timetable Monitoring (read-only oversight) ───────────────────────
+
+@timetable_bp.route("/monitoring/classes", methods=["GET"])
+def monitoring_classes():
+    """Class-level timetable monitoring table.
+
+    Starts from the authoritative class registry (left-join semantics), so
+    classes with no timetable records surface as Not Started. All filtering,
+    sorting and pagination happen server-side.
+    """
+    guard = _monitor_guard()
+    if guard:
+        return guard
+    import timetable_monitoring as MON
+    state = STORE.state()
+    rows = MON.compute_class_rows(state)
+    params = {
+        "academic_year": request.args.get("academic_year", ""),
+        "campus": request.args.get("campus", ""),
+        "department": request.args.get("department", ""),
+        "grade": request.args.get("grade", ""),
+        "class_id": request.args.get("class_id", ""),
+        "status": request.args.get("status", ""),
+        "completion": request.args.get("completion", ""),
+        "search": request.args.get("search", ""),
+        "responsible": request.args.get("responsible", ""),
+        "sort": request.args.get("sort", "attention"),
+        "page": request.args.get("page", 1),
+        "page_size": request.args.get("page_size", 10),
+    }
+    # Enforce campus restriction for campus-scoped roles (e.g. editor)
+    user_campus = (request.headers.get("X-User-Campus") or "").strip()
+    if user_campus and user_campus.upper() != "ALL" and not params["campus"]:
+        params["campus"] = user_campus
+    page_data = MON.filter_sort_page(rows, params)
+    return jsonify({
+        "success": True,
+        "summary": MON.compute_summary(rows),
+        "meta": MON.filter_options(state, rows),
+        "rows": page_data["rows"],
+        "pagination": {k: page_data[k] for k in ("total", "page", "page_size", "total_pages")},
+    })
+
+
+@timetable_bp.route("/monitoring/classes/<class_id>", methods=["GET"])
+def monitoring_class_detail(class_id: str):
+    """Read-only monitoring detail: preparation, publication, audit history
+    and draft/published timetable previews. No editing is possible here."""
+    guard = _monitor_guard()
+    if guard:
+        return guard
+    import timetable_monitoring as MON
+    detail = MON.class_detail(STORE.state(), class_id)
+    if detail is None:
+        return _fail("រកថ្នាក់មិនឃើញ", 404)
+    return jsonify(detail)
+
+
+@timetable_bp.route("/monitoring/classes/<class_id>/remind", methods=["POST"])
+def monitoring_class_remind(class_id: str):
+    """Send a follow-up reminder to the recorded timetable owner via the
+    existing notification infrastructure (cooldown + audit included)."""
+    guard = _monitor_guard()
+    if guard:
+        return guard
+    import timetable_monitoring as MON
+    import timetable_oversight as O
+    state = STORE.state()
+    rows = {r["class_id"]: r for r in MON.compute_class_rows(state)}
+    row = rows.get(class_id)
+    if row is None:
+        return _fail("រកថ្នាក់មិនឃើញ", 404)
+
+    body = _body()
+    responsible = row.get("responsible") or dict(MON.TIMETABLE_OWNER)
+    status_label = row["status_label"]
+    missing_txt = (f"{row['missing_periods']} of {row['required_periods']} periods unplaced"
+                   if row["required_periods"] else "timetable incomplete")
+    if row["status"] == "not_started":
+        missing_txt = "no timetable has been prepared yet"
+    default_message = (f"Your timetable for {row['class_display']} has not been published. "
+                       f"Please review and complete the timetable preparation process "
+                       f"(status: {status_label}"
+                       + (f", {missing_txt}" if row["status"] != "published" else "") + ").")
+
+    actor_name = (request.headers.get("X-Actor") or "").strip() or "Admin"
+    actor_email = (request.headers.get("X-Actor-Email") or "").strip()
+    payload = {
+        "recipient_id": responsible.get("id") or "PRIN-2024-001",
+        "recipient_name": responsible.get("name") or "Dr. Ly Bunheng",
+        "recipient_role": responsible.get("role") or "Principal",
+        "recipient_email": responsible.get("email") or "principal@ngis.edu.kh",
+        "task_id": f"task_sched_{class_id}",
+        "task_name": f"Timetable Monitoring — {row['class_display']}",
+        "campus": row["campus"],
+        "academic_year": row["academic_year"] or "2026–2027",
+        "missing_summary": missing_txt,
+        "message": str(body.get("message") or default_message).strip(),
+        "deadline": str(body.get("deadline") or "").strip(),
+        "authorized_url": f"pages/principal/principal-timetable-builder.html?class={class_id}",
+        "force_duplicate": bool(body.get("force_duplicate")),
+        "sender_id": (request.headers.get("X-Actor-Id") or "").strip() or actor_email or "ADM-2024-001",
+        "sender_name": actor_name,
+    }
+    result = O.create_reminder(payload)
+    status_code = 200 if result.get("success") else (409 if result.get("cooldown_warning") else 400)
+    if result.get("success"):
+        result["class_id"] = class_id
+        result["class_display"] = row["class_display"]
+    return jsonify(result), status_code
+
+
+@timetable_bp.route("/monitoring/export", methods=["GET"])
+def monitoring_export():
+    """CSV export of the monitoring table (authorized data only)."""
+    guard = _monitor_guard()
+    if guard:
+        return guard
+    import csv
+    import io
+    import timetable_monitoring as MON
+    state = STORE.state()
+    rows = MON.compute_class_rows(state)
+    params = {
+        "academic_year": request.args.get("academic_year", ""),
+        "campus": request.args.get("campus", ""),
+        "department": request.args.get("department", ""),
+        "grade": request.args.get("grade", ""),
+        "class_id": request.args.get("class_id", ""),
+        "status": request.args.get("status", ""),
+        "completion": request.args.get("completion", ""),
+        "search": request.args.get("search", ""),
+        "responsible": request.args.get("responsible", ""),
+        "sort": request.args.get("sort", "attention"),
+        "page": 1,
+        "page_size": 100000,
+    }
+    rows = MON.filter_sort_page(rows, params)["rows"]
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["Class", "Campus", "Department", "Responsible", "Role",
+                     "Completion %", "Draft Status", "Publication Status",
+                     "Required Periods", "Placed Periods", "Missing Periods",
+                     "Last Edited By", "Last Edited", "Published By", "Published At",
+                     "Published Version", "Effective From", "Conflicts"])
+    for r in rows:
+        writer.writerow([
+            r["class_display"], r["campus"], r["department"],
+            r["responsible_display"], r["responsible_role"],
+            r["completion_pct"] if r["completion_pct"] is not None else "Not available",
+            r["draft_status_label"],
+            r["status_label"],
+            r["required_periods"], r["placed_periods"],
+            r["missing_periods"] if r["missing_periods"] is not None else "Not available",
+            r["last_edited_by"] or "—",
+            r["last_edited_at"] or "—",
+            r["published_by"] or "—",
+            r["published_at"] or "—",
+            r["published_version"] or "—",
+            r["effective_from"] or "—",
+            r["conflicts_count"],
+        ])
+    data = "\ufeff" + buf.getvalue()  # UTF-8 BOM for Excel compatibility
+    resp = Response(data, mimetype="text/csv")
+    resp.headers["Content-Disposition"] = "attachment; filename=timetable-monitoring.csv"
+    return resp
 

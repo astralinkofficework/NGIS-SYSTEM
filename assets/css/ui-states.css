@@ -321,7 +321,7 @@ textarea.ngis-input-error {
   flex-shrink: 0 !important;
 }
 
-/* ── 10. Success State & Global Toasts ── */
+/* ── 10. Operation Feedback (loading → success/error) ── */
 #ngisToastContainer {
   position: fixed !important;
   bottom: 24px !important;
@@ -335,54 +335,109 @@ textarea.ngis-input-error {
   pointer-events: none !important;
 }
 
+/* Flat white surface, minimal shadow, semantic accent only on the icon */
 .ngis-toast {
   pointer-events: auto !important;
   background-color: #ffffff !important;
-  border: 1px solid #E1E9E3 !important;
-  border-left-width: 4px !important;
-  border-radius: 8px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
   padding: 12px 14px !important;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.10) !important;
   display: flex !important;
   align-items: flex-start !important;
   gap: 10px !important;
-  animation: ngisToastSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  animation: ngisToastIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
   box-sizing: border-box !important;
 }
 
-@keyframes ngisToastSlideIn {
-  from {
-    transform: translateY(12px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+@keyframes ngisToastIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
-.ngis-toast.success {
-  border-left-color: #000000 !important;
+/* State transitions: loading → success/error morph */
+.ngis-toast.ngis-toast-morph {
+  animation: ngisToastMorph 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-.ngis-toast.error {
-  border-left-color: #176B45 !important;
-}
-.ngis-toast.info {
-  border-left-color: #176B45 !important;
-}
-.ngis-toast.warning {
-  border-left-color: #000000 !important;
+@keyframes ngisToastMorph {
+  0%   { transform: scale(0.97); }
+  60%  { transform: scale(1.01); }
+  100% { transform: scale(1); }
 }
 
+.ngis-toast.ngis-toast-leave {
+  transition: opacity 0.18s ease, transform 0.18s ease !important;
+  opacity: 0 !important;
+  transform: translateY(8px) !important;
+}
+
+/* Icon slot */
 .ngis-toast-icon {
-  font-size: 18px !important;
+  width: 20px !important;
+  height: 20px !important;
   flex-shrink: 0 !important;
   margin-top: 1px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
-.ngis-toast.success .ngis-toast-icon { color: #000000 !important; }
-.ngis-toast.error .ngis-toast-icon { color: #176B45 !important; }
-.ngis-toast.info .ngis-toast-icon { color: #176B45 !important; }
-.ngis-toast.warning .ngis-toast-icon { color: #000000 !important; }
+.ngis-toast-icon svg,
+.ngis-toast-icon .ngis-toast-gi { width: 20px !important; height: 20px !important; }
+.ngis-toast.success .ngis-toast-icon { color: #176B45 !important; }
+.ngis-toast.error   .ngis-toast-icon { color: var(--color-danger-text, #B02A37) !important; }
+.ngis-toast.warning .ngis-toast-icon { color: #B45309 !important; }
+.ngis-toast.info    .ngis-toast-icon { color: #176B45 !important; }
+.ngis-toast.loading .ngis-toast-icon { color: #176B45 !important; }
+
+/* Indeterminate circular spinner — NGIS green */
+.ngis-toast-spinner {
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(23, 107, 69, 0.18) !important;
+  border-top-color: #176B45 !important;
+  animation: ngisToastSpin 0.8s linear infinite !important;
+}
+@keyframes ngisToastSpin { to { transform: rotate(360deg); } }
+
+/* Animated success checkmark: ring + mark draw in */
+.ngis-toast-check { display: block !important; }
+.ngis-toast.success .ngis-check-ring {
+  stroke-dasharray: 64;
+  stroke-dashoffset: 64;
+  animation: ngisCheckRing 0.36s ease-out forwards !important;
+}
+.ngis-toast.success .ngis-check-mark {
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+  animation: ngisCheckMark 0.28s ease-out 0.18s forwards !important;
+}
+@keyframes ngisCheckRing { to { stroke-dashoffset: 0; } }
+@keyframes ngisCheckMark { to { stroke-dashoffset: 0; } }
+.ngis-toast-morph .ngis-toast-icon { animation: ngisCheckPop 0.3s ease-out !important; }
+@keyframes ngisCheckPop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Determinate progress bar (only when real progress is reported) */
+.ngis-toast-progress {
+  margin-top: 6px !important;
+  height: 3px !important;
+  width: 100% !important;
+  background: #EEF2F0 !important;
+  border-radius: 999px !important;
+  overflow: hidden !important;
+}
+.ngis-toast-progress > span {
+  display: block !important;
+  height: 100% !important;
+  width: 0 !important;
+  background: #176B45 !important;
+  border-radius: 999px !important;
+  transition: width 0.2s ease !important;
+}
 
 .ngis-toast-body {
   flex: 1 1 0% !important;
@@ -391,7 +446,7 @@ textarea.ngis-input-error {
 .ngis-toast-title {
   font-size: 13px !important;
   font-weight: 500 !important;
-  color: #000000 !important;
+  color: #29352E !important;
   line-height: 1.3 !important;
 }
 .ngis-toast-detail {
@@ -404,9 +459,8 @@ textarea.ngis-input-error {
 .ngis-toast-action {
   margin-top: 6px !important;
   font-size: 11.5px !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   color: #176B45 !important;
-  text-decoration: underline !important;
   cursor: pointer !important;
   background: transparent !important;
   border: none !important;
@@ -420,9 +474,30 @@ textarea.ngis-input-error {
   font-size: 16px !important;
   padding: 0 !important;
   line-height: 1 !important;
+  margin-left: 2px !important;
 }
-.ngis-toast-close:hover {
-  color: #333333 !important;
+.ngis-toast-close:hover { color: #333333 !important; }
+.ngis-toast-close:focus-visible,
+.ngis-toast-action:focus-visible {
+  outline: 2px solid #176B45 !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced motion: everything appears/disappears instantly, spinner stops */
+@media (prefers-reduced-motion: reduce) {
+  .ngis-toast,
+  .ngis-toast.ngis-toast-morph,
+  .ngis-toast.ngis-toast-leave,
+  .ngis-toast-morph .ngis-toast-icon {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ngis-toast-spinner { animation-duration: 1.6s !important; }
+  .ngis-toast.success .ngis-check-ring,
+  .ngis-toast.success .ngis-check-mark {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
 }
 
 /* Responsive adjustments */
@@ -483,19 +558,65 @@ textarea.ngis-input-error {
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  background-color: #176B45 !important;
+  background-color: var(--color-danger, #DC2626) !important;
   color: #FFFFFF !important;
-  border: 1px solid #176B45 !important;
+  border: 1px solid var(--color-danger, #DC2626) !important;
   border-radius: 10px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
   cursor: pointer !important;
   min-height: 44px !important;
   padding: 0 18px !important;
-  transition: opacity 0.15s ease !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease !important;
 }
 .ngis-btn-danger:hover {
-  opacity: 0.92 !important;
+  background-color: var(--color-danger-hover, #B91C1C) !important;
+  border-color: var(--color-danger-hover, #B91C1C) !important;
+  opacity: 0.96 !important;
+}
+
+/* Warning variant (suspend / reject) and Utility variant (neutral, icon-led) */
+.ngis-btn-warning {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background-color: var(--color-warning, #D97706) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--color-warning, #D97706) !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease !important;
+}
+.ngis-btn-warning:hover {
+  background-color: var(--color-warning-hover, #B45309) !important;
+  border-color: var(--color-warning-hover, #B45309) !important;
+  opacity: 0.96 !important;
+}
+
+.ngis-btn-utility {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background-color: #FFFFFF !important;
+  color: var(--color-text-secondary, #64746A) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  min-height: 44px !important;
+  padding: 0 18px !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+.ngis-btn-utility:hover {
+  background-color: var(--color-mint, #E8F3ED) !important;
+  color: var(--color-primary, #176B45) !important;
 }
 
 /* ── Rule 3: Instant Tap Feedback (<100ms) & Double-Click Guard ── */
@@ -504,7 +625,9 @@ button:active:not(:disabled),
 .btn:active:not(:disabled),
 .ngis-btn-primary:active:not(:disabled),
 .ngis-btn-secondary:active:not(:disabled),
-.ngis-btn-danger:active:not(:disabled) {
+.ngis-btn-danger:active:not(:disabled),
+.ngis-btn-warning:active:not(:disabled),
+.ngis-btn-utility:active:not(:disabled) {
   transform: scale(0.98) !important;
   opacity: 0.88 !important;
   transition: transform 60ms ease, opacity 60ms ease !important;
@@ -542,6 +665,8 @@ button:active:not(:disabled),
 .ngis-btn-primary,
 .ngis-btn-secondary,
 .ngis-btn-danger,
+.ngis-btn-warning,
+.ngis-btn-utility,
 .hamburger-btn,
 .mobile-hamburger-btn,
 button.icon-btn,
@@ -575,9 +700,14 @@ button[type="submit"] {
   border: 1px solid #E1E9E3 !important;
 }
 
-/* ── Visual V5: Clean Typography Standard (NO BOLD FONTS per AGENTS.md) ── */
+/* ── Visual V5: Clean Typography Standard (NO BOLD FONTS per AGENTS.md) ──
+   Single unified font system: Inter everywhere, with Noto Sans Khmer as the
+   per-glyph fallback for Khmer text (Inter carries no Khmer glyphs). */
 *, h1, h2, h3, h4, h5, h6, strong, b, th, .font-bold, .font-semibold, .font-extrabold {
-  font-family: 'Manrope', -apple-system, sans-serif !important;
+  font-family: 'Inter', 'Noto Sans Khmer', 'Khmer OS', 'Kantumruy Pro', -apple-system, sans-serif !important;
+}
+:lang(km) {
+  font-family: 'Noto Sans Khmer', 'Khmer OS', 'Kantumruy Pro', 'Inter', sans-serif !important;
 }
 h1, h2, h3, h4, th, .font-medium, .font-semibold, .font-bold {
   font-weight: 500 !important;

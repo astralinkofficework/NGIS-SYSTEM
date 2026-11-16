@@ -7,7 +7,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -18,8 +18,8 @@
 <link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
@@ -49,8 +49,9 @@
 <script src="../admin/_auth-bootstrap.js"></script>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 
 <body data-role="admin" data-portal="admin">
@@ -217,7 +218,7 @@
             <button type="button" class="dna-btn dna-btn-primary" style="padding:5px 10px;min-height:0">1</button>
             <button type="button" class="dna-btn" style="padding:5px 10px;min-height:0">2</button>
             <button type="button" class="dna-btn" style="padding:5px 10px;min-height:0">3</button>
-            <button type="button" class="dna-btn" style="padding:5px 10px;min-height:0">Next</button>
+            <button type="button" class="dna-btn" style="padding:5px 10px;min-height:0">Next Page</button>
           </div>
         </div>
       </div>
@@ -251,13 +252,21 @@ window.HERO_CONFIG = {
 (function () {
   'use strict';
 
-  function toast(msg) {
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.display = 'block';
-    clearTimeout(t._h);
-    t._h = setTimeout(function () { t.style.display = 'none'; }, 2600);
+  function toast(msg, kind) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — no page-local
+     toast UI; this delegate keeps the page's toast(msg, kind) calls. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', msg);
+    return null;
   }
+  var t;
+  if (kind === true || kind === 'error' || kind === 'danger' || kind === 'bad' || kind === 'fail') t = 'error';
+  else if (kind === 'warning' || kind === 'warn') t = 'warning';
+  else if (kind === 'info') t = 'info';
+  else if (kind === 'loading') t = 'loading';
+  else t = 'success';
+  return window.NGISUI.toast.show(t, String(msg));
+}
 
   var tbody = document.getElementById('clearanceBody');
   var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));

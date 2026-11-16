@@ -173,7 +173,7 @@ async function main() {
            'verify renderer overrides the legacy controller');
     assert(ABSENCE_PAGE.indexOf('student-management.js') < ABSENCE_PAGE.indexOf('ngis-student-workspace.js'),
            'absence renderer overrides the legacy controller');
-    assert(VERIFY_PAGE.includes('design-system.css?v=1.2') && ABSENCE_PAGE.includes('design-system.css?v=1.2'),
+    assert(VERIFY_PAGE.includes('design-system.css?v=1.4') && ABSENCE_PAGE.includes('design-system.css?v=1.4'),
            'scoped stylesheet is cache-busted');
     assert(VERIFY_PAGE.includes('smx-appbar') && ABSENCE_PAGE.includes('smx-appbar'),
            'mobile appbar uses the NGIS surface rule');
@@ -186,7 +186,7 @@ async function main() {
     assert(scoped.includes('.ngis-sm') && scoped.includes('.smx-kpi-grid') &&
            scoped.includes('.smx-bento') && scoped.includes('.smx-table'),
            'scoped NGIS workspace styles are present');
-    assert(scoped.includes('@media (max-width: 720px)'), 'mobile breakpoint exists');
+    assert(scoped.includes('@media (max-width: 768px)'), 'mobile breakpoint exists');
     // The injected .shell is a flex item; without a min-width floor the ledger's
     // min-content width used to push the whole app shell past the viewport.
     assert(/body\.smx-page \.shell\s*\{[^}]*min-width:\s*0[^}]*\}/.test(scoped),

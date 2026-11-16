@@ -519,7 +519,7 @@
             btn.innerHTML = '<span class="material-symbols-outlined text-[15px]">send</span><span>Send In-App Reminder</span>';
           }
           if (res.success) {
-            alert('Reminder delivered to ' + recipientName + ' successfully!');
+            alert('Reminder delivered to ' + recipientName + '.');
             self.closeReminderModal();
             self.fetchData();
           } else {

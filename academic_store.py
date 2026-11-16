@@ -192,6 +192,74 @@ def _apply_migrations(conn: sqlite3.Connection) -> None:
     add_col("report_cards", "gpa REAL DEFAULT 0.0")
     add_col("report_cards", "weighted_gpa REAL DEFAULT 0.0")
     add_col("report_cards", "remarks TEXT DEFAULT ''")
+    add_col("teacher_assignments", "department_id TEXT NOT NULL DEFAULT ''")
+    add_col("teacher_assignments", "grade TEXT NOT NULL DEFAULT ''")
+    add_col("teacher_assignments", "status TEXT NOT NULL DEFAULT 'active'")
+    add_col("teacher_assignments", "created_at TEXT NOT NULL DEFAULT ''")
+    add_col("enrollments", "department_id TEXT NOT NULL DEFAULT ''")
+    add_col("enrollments", "grade TEXT NOT NULL DEFAULT ''")
+    add_col("enrollments", "created_at TEXT NOT NULL DEFAULT ''")
+
+    # Check if enrollments primary key needs migration to composite (student_id, academic_year_id, class_id)
+    try:
+        tbl_sql = conn.execute("SELECT sql FROM sqlite_master WHERE type='table' AND name='enrollments'").fetchone()
+        if tbl_sql and "PRIMARY KEY(student_id, academic_year_id)" in tbl_sql[0] and "class_id" not in tbl_sql[0].split("PRIMARY KEY")[1]:
+            conn.execute("PRAGMA foreign_keys = OFF")
+            conn.execute("""
+            CREATE TABLE IF NOT EXISTS enrollments_v2 (
+              student_id TEXT NOT NULL, class_id TEXT NOT NULL, academic_year_id TEXT NOT NULL,
+              status TEXT NOT NULL DEFAULT 'active', department_id TEXT NOT NULL DEFAULT '',
+              grade TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL DEFAULT '',
+              PRIMARY KEY(student_id, academic_year_id, class_id)
+            )
+            """)
+            conn.execute("""
+            INSERT OR IGNORE INTO enrollments_v2 (student_id, class_id, academic_year_id, status, department_id, grade, created_at)
+            SELECT student_id, class_id, academic_year_id, status, department_id, grade, created_at FROM enrollments
+            """)
+            conn.execute("DROP TABLE enrollments")
+            conn.execute("ALTER TABLE enrollments_v2 RENAME TO enrollments")
+            conn.execute("PRAGMA foreign_keys = ON")
+    except Exception:
+        pass
+
+    # Ensure standard department subjects are registered in subjects table
+    core_subjects = [
+        ("subj-khm-lit", "KHM-LIT", "Khmer Literature", 3.0, 50.0, "language"),
+        ("subj-khm-lang", "KHM-LANG", "Khmer Language", 3.0, 50.0, "language"),
+        ("subj-khm-hist", "KHM-HIST", "Khmer History & Culture", 2.0, 50.0, "humanities"),
+        ("subj-khm-civ", "KHM-CIV", "Moral & Civics", 2.0, 50.0, "humanities"),
+        ("subj-eng", "ENG-LIT", "English Literature", 3.0, 50.0, "english"),
+        ("subj-preap-eng2", "ENG-PAP2", "Pre-AP English II", 3.0, 50.0, "english"),
+        ("subj-eng-ela", "ENG-ELA", "English Language Arts", 3.0, 50.0, "english"),
+        ("subj-eng-esl", "ENG-ESL", "Academic Writing & ESL", 3.0, 50.0, "english"),
+        ("subj-chn-lang", "CHN-LANG", "Chinese Language", 3.0, 50.0, "language"),
+        ("subj-chn-lit", "CHN-LIT", "Chinese Literature", 3.0, 50.0, "language"),
+        ("subj-chn-conv", "CHN-CONV", "Conversational Chinese", 2.0, 50.0, "language"),
+        ("subj-chn-bus", "CHN-BUS", "Business Chinese", 3.0, 50.0, "language"),
+        ("subj-math", "MATH-10", "Advanced Mathematics", 3.0, 50.0, "mathematics"),
+        ("subj-ap-precalc", "MATH-APPC", "AP Pre-Calculus", 4.0, 50.0, "mathematics"),
+        ("subj-mat-calc", "MATH-CALC", "Calculus & Statistics", 4.0, 50.0, "mathematics"),
+        ("subj-mat-alg", "MATH-ALG", "Algebra & Geometry", 3.0, 50.0, "mathematics"),
+        ("subj-phys", "PHY-10", "Physics & Lab", 3.0, 50.0, "science"),
+        ("subj-phys-3", "PHY-3CP", "Physics III CP", 4.0, 50.0, "science"),
+        ("subj-chem", "CHEM-10", "Chemistry Practicum", 3.5, 50.0, "science"),
+        ("subj-preap-chem", "CHEM-PAP", "Pre-AP Chemistry", 4.0, 50.0, "science"),
+        ("subj-ap-bio", "BIO-AP", "AP Biology", 4.0, 50.0, "science"),
+        ("subj-ap-macro", "ECON-AP", "AP Macroeconomics", 3.0, 50.0, "humanities"),
+        ("subj-hum-hist", "HUM-HIST", "World History", 2.0, 50.0, "humanities"),
+        ("subj-hum-geo", "HUM-GEO", "Geography & Environment", 2.0, 50.0, "humanities"),
+        ("subj-art-cp", "ART-CP", "Art CP", 2.0, 50.0, "arts"),
+        ("subj-art-pe", "ART-PE", "Physical Education & Health", 1.5, 50.0, "arts"),
+        ("subj-art-mus", "ART-MUS", "Music & Performing Arts", 2.0, 50.0, "arts")
+    ]
+    try:
+        conn.executemany("""
+        INSERT OR IGNORE INTO subjects(id, code, name, credit_value, pass_mark, status, category)
+        VALUES (?, ?, ?, ?, ?, 'active', ?)
+        """, core_subjects)
+    except Exception:
+        pass
 
 
 def init(seed: dict[str, Any]) -> None:
@@ -291,10 +359,10 @@ def init(seed: dict[str, Any]) -> None:
         conn.executemany("INSERT OR REPLACE INTO teacher_assignments(teacher_id, class_id, subject_id, academic_year_id, room, teacher_name, teacher_email) VALUES (?, ?, ?, ?, ?, ?, ?)", assignments)
 
         # 6. Student Enrollments
-        conn.execute("INSERT OR IGNORE INTO enrollments VALUES (?, ?, ?, 'active')", ("2026-STD-0142", "cls-11c", "ay-2025-26"))
-        conn.execute("INSERT OR IGNORE INTO enrollments VALUES (?, ?, ?, 'active')", ("2026-STD-0142", "cls-10a", "ay-2025-26"))
-        conn.execute("INSERT OR IGNORE INTO enrollments VALUES (?, ?, ?, 'active')", ("2026-STD-0143", "cls-11b", "ay-2025-26"))
-        conn.execute("INSERT OR IGNORE INTO enrollments VALUES (?, ?, ?, 'active')", ("2026-STD-0144", "cls-10a", "ay-2025-26"))
+        conn.execute("INSERT OR IGNORE INTO enrollments(student_id, class_id, academic_year_id, status) VALUES (?, ?, ?, 'active')", ("2026-STD-0142", "cls-11c", "ay-2025-26"))
+        conn.execute("INSERT OR IGNORE INTO enrollments(student_id, class_id, academic_year_id, status) VALUES (?, ?, ?, 'active')", ("2026-STD-0142", "cls-10a", "ay-2025-26"))
+        conn.execute("INSERT OR IGNORE INTO enrollments(student_id, class_id, academic_year_id, status) VALUES (?, ?, ?, 'active')", ("2026-STD-0143", "cls-11b", "ay-2025-26"))
+        conn.execute("INSERT OR IGNORE INTO enrollments(student_id, class_id, academic_year_id, status) VALUES (?, ?, ?, 'active')", ("2026-STD-0144", "cls-10a", "ay-2025-26"))
 
         # 7. Seed Published Assessments & Grades matching reference school portal
         # Check if assessments are already seeded
@@ -862,6 +930,72 @@ def get_daily_attendance(student_id: str, limit: int = 50) -> list[dict[str, Any
             "recordedAt": r.get("recorded_at", "")
         })
     return out
+
+
+def enroll_student(student_id: str, class_id: str, academic_year_id: str = "ay-2025-26",
+                   status: str = "active", department_id: str = "", grade: str = "") -> None:
+    """Enroll a student in a class/department with full multi-department support."""
+    sql = """
+    INSERT INTO enrollments(student_id, class_id, academic_year_id, status, department_id, grade, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(student_id, academic_year_id, class_id) DO UPDATE SET
+      status = excluded.status,
+      department_id = CASE WHEN excluded.department_id != '' THEN excluded.department_id ELSE enrollments.department_id END,
+      grade = CASE WHEN excluded.grade != '' THEN excluded.grade ELSE enrollments.grade END
+    """
+    execute(sql, (student_id, class_id, academic_year_id, status, department_id, grade, _now()))
+
+
+def get_student_enrollments(student_id: str, academic_year_id: str | None = None) -> list[dict[str, Any]]:
+    """Return all active or historical enrollments for a student."""
+    if academic_year_id:
+        sql = "SELECT * FROM enrollments WHERE student_id = ? AND academic_year_id = ? ORDER BY created_at ASC"
+        return query(sql, (student_id, academic_year_id))
+    sql = "SELECT * FROM enrollments WHERE student_id = ? ORDER BY created_at ASC"
+    return query(sql, (student_id,))
+
+
+def unenroll_student(student_id: str, class_id: str, academic_year_id: str = "ay-2025-26") -> None:
+    """Remove or deactivate an enrollment."""
+    execute("DELETE FROM enrollments WHERE student_id = ? AND class_id = ? AND academic_year_id = ?",
+            (student_id, class_id, academic_year_id))
+
+
+def assign_teacher(teacher_id: str, class_id: str, subject_id: str, academic_year_id: str = "ay-2025-26",
+                   department_id: str = "", grade: str = "", teacher_name: str = "", teacher_email: str = "",
+                   room: str = "", status: str = "active") -> None:
+    """Assign a teacher to a class/subject/department with full multi-assignment support."""
+    sql = """
+    INSERT INTO teacher_assignments(teacher_id, class_id, subject_id, academic_year_id, room, teacher_name, teacher_email, department_id, grade, status, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(teacher_id, class_id, subject_id, academic_year_id) DO UPDATE SET
+      room = CASE WHEN excluded.room != '' THEN excluded.room ELSE teacher_assignments.room END,
+      teacher_name = CASE WHEN excluded.teacher_name != '' THEN excluded.teacher_name ELSE teacher_assignments.teacher_name END,
+      teacher_email = CASE WHEN excluded.teacher_email != '' THEN excluded.teacher_email ELSE teacher_assignments.teacher_email END,
+      department_id = CASE WHEN excluded.department_id != '' THEN excluded.department_id ELSE teacher_assignments.department_id END,
+      grade = CASE WHEN excluded.grade != '' THEN excluded.grade ELSE teacher_assignments.grade END,
+      status = excluded.status
+    """
+    execute(sql, (teacher_id, class_id, subject_id, academic_year_id, room, teacher_name, teacher_email, department_id, grade, status, _now()))
+
+
+def get_teacher_assignments(teacher_id: str, academic_year_id: str | None = None) -> list[dict[str, Any]]:
+    """Return all active or historical teaching assignments for a teacher."""
+    if academic_year_id:
+        sql = "SELECT * FROM teacher_assignments WHERE teacher_id = ? AND academic_year_id = ? ORDER BY created_at ASC"
+        return query(sql, (teacher_id, academic_year_id))
+    sql = "SELECT * FROM teacher_assignments WHERE teacher_id = ? ORDER BY created_at ASC"
+    return query(sql, (teacher_id,))
+
+
+def unassign_teacher(teacher_id: str, class_id: str, subject_id: str | None = None, academic_year_id: str = "ay-2025-26") -> None:
+    """Remove or deactivate a teaching assignment."""
+    if subject_id:
+        execute("DELETE FROM teacher_assignments WHERE teacher_id = ? AND class_id = ? AND subject_id = ? AND academic_year_id = ?",
+                (teacher_id, class_id, subject_id, academic_year_id))
+    else:
+        execute("DELETE FROM teacher_assignments WHERE teacher_id = ? AND class_id = ? AND academic_year_id = ?",
+                (teacher_id, class_id, academic_year_id))
 
 
 def now() -> str:

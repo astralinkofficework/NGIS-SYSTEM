@@ -382,11 +382,17 @@ function renderFileList() {
       + r.tags.slice(0,2).map(function(t){ return '<span class="lib-tag">' + t + '</span>'; }).join('')
       + '</div>'
       + '<div class="lib-file-row-actions" onclick="event.stopPropagation()">'
-      + (r.fileType !== 'link' && r.fileType !== 'video' ?
-        '<button class="icon-btn" title="Download" aria-label="Download" onclick="downloadFile(\'' + escAttr(r.src) + '\',\'' + escAttr(r.name) + '\')">'
-        + '<span data-ngis-icon="download"></span></button>' : '')
-      + '<button class="icon-btn lib-bm-btn" title="Bookmark" aria-label="Bookmark" onclick="toggleBookmark(this)">'
+      /* Primary action: Preview (bi-eye via the shared engine). Rows are
+         compact, so icon-only with a discoverable tooltip + accessible name. */
+      + '<button class="icon-btn lib-preview-btn" title="Preview resource" aria-label="Preview ' + escHtml(r.name) + '" onclick="selectFile(\'' + r.id + '\')">'
+      + '<span data-ngis-icon="view"></span></button>'
+      /* Secondary: Save / bookmark (bi-bookmark, bi-bookmark-fill when saved). */
+      + '<button class="icon-btn lib-bm-btn" title="Save resource" aria-label="Save ' + escHtml(r.name) + '" onclick="toggleBookmark(this)">'
       + '<span data-ngis-icon="bookmark"></span></button>'
+      /* Secondary: Download — only offered when the resource is downloadable. */
+      + (r.fileType !== 'link' && r.fileType !== 'video' ?
+        '<button class="icon-btn" title="Download file" aria-label="Download ' + escHtml(r.name) + '" onclick="downloadFile(\'' + escAttr(r.src) + '\',\'' + escAttr(r.name) + '\')">'
+        + '<span data-ngis-icon="download"></span></button>' : '')
       + '</div>'
       + '</div>';
   });
@@ -1363,9 +1369,12 @@ var OAK_SUBJECT_ICONS = {
 function oakSwitchSubject(subjId) {
   _oakCurrentSubject = subjId || 'math';
   _currentSubjectId = _oakCurrentSubject;
+  var rawTitle = OAK_SUBJECT_TITLES[_oakCurrentSubject] || _oakCurrentSubject.toUpperCase();
+  var libTitle = rawTitle.split(' ').map(function(w){ return w.charAt(0) + w.slice(1).toLowerCase(); }).join(' ') + ' Library';
+
   var titleEl = document.getElementById('curSubjName');
   if (titleEl) {
-    titleEl.textContent = OAK_SUBJECT_TITLES[_oakCurrentSubject] || _oakCurrentSubject.toUpperCase();
+    titleEl.textContent = rawTitle;
   }
   var icoEl = document.getElementById('curSubjIcon');
   if (icoEl && OAK_SUBJECT_ICONS[_oakCurrentSubject]) {
@@ -1373,10 +1382,21 @@ function oakSwitchSubject(subjId) {
     icoEl.style.color = OAK_SUBJECT_ICONS[_oakCurrentSubject].color;
   }
   var htbCrumb = document.querySelector('.htb-crumb-cur');
-  if (htbCrumb && OAK_SUBJECT_TITLES[_oakCurrentSubject]) {
-    var rawTitle = OAK_SUBJECT_TITLES[_oakCurrentSubject];
-    htbCrumb.textContent = (rawTitle.charAt(0) + rawTitle.slice(1).toLowerCase()) + ' Library';
+  if (htbCrumb) {
+    htbCrumb.textContent = libTitle;
   }
+  var heroTitle = document.querySelector('#heroBanner .hero-title, #heroBanner h1');
+  if (heroTitle) {
+    heroTitle.textContent = libTitle;
+  }
+  document.title = 'NGIS — ' + libTitle;
+
+  try {
+    var u = new URL(window.location.href);
+    u.searchParams.set('dept', _oakCurrentSubject);
+    window.history.replaceState({}, '', u.toString());
+  } catch(e) {}
+
   document.querySelectorAll('.oak-subj-item').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('onclick') && el.getAttribute('onclick').includes("'" + _oakCurrentSubject + "'"));
   });
@@ -1546,10 +1566,10 @@ function oakRenderCards() {
         + '    <div class="oak-card-actions">'
         + '      ' + actionBtnHtml
         + '      <div class="oak-act-icons">'
-        + '        <button class="oak-icon-action' + bookmarkedClass + '" title="Bookmark" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
+        + '        <button class="oak-icon-action' + bookmarkedClass + '" title="Save resource" aria-label="Save ' + escHtml(r.name) + '" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
         + '          <span data-ngis-icon="' + (isBookmarked ? 'bookmarkAdded' : 'bookmark') + '"></span>'
         + '        </button>'
-        + '        <button class="oak-icon-action" title="Download" onclick="oakDownload(\'' + r.id + '\')">'
+        + '        <button class="oak-icon-action" title="Download file" aria-label="Download ' + escHtml(r.name) + '" onclick="oakDownload(\'' + r.id + '\')">'
         + '          <span data-ngis-icon="download"></span>'
         + '        </button>'
         + '      </div>'
@@ -1586,10 +1606,10 @@ function oakRenderCards() {
         + '  <div class="oak-list-right">'
         + (isQuiz ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span data-ngis-icon="play"></span> Start Quiz</button>'
                  : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span data-ngis-icon="view"></span> Preview</button>')
-        + '    <button class="oak-icon-action' + bookmarkedClass + '" title="Bookmark" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
+        + '    <button class="oak-icon-action' + bookmarkedClass + '" title="Save resource" aria-label="Save ' + escHtml(r.name) + '" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
         + '      <span data-ngis-icon="' + (isBookmarked ? 'bookmarkAdded' : 'bookmark') + '"></span>'
         + '    </button>'
-        + '    <button class="oak-icon-action" title="Download" onclick="oakDownload(\'' + r.id + '\')">'
+        + '    <button class="oak-icon-action" title="Download file" aria-label="Download ' + escHtml(r.name) + '" onclick="oakDownload(\'' + r.id + '\')">'
         + '      <span data-ngis-icon="download"></span>'
         + '    </button>'
         + '  </div>'
@@ -1611,6 +1631,29 @@ function oakOpenPreview(resId) {
   var subEl = document.getElementById('oakModalSub');
   if (titleEl) titleEl.textContent = r.fullName || r.name;
   if (subEl) subEl.textContent = 'Uploaded ' + fmtDate(r.date) + ' • ' + (r.size || '2.0 MB') + ' • ' + (r.pages || 16) + ' pages';
+
+  var deptName = OAK_SUBJECT_TITLES[_oakCurrentSubject] || 'ACADEMICS';
+  var paperDept = document.getElementById('oakPaperDept');
+  var paperHeading = document.getElementById('oakPaperHeading');
+  var paperDesc = document.getElementById('oakPaperDesc');
+  var paperCallout = document.getElementById('oakPaperCallout');
+
+  if (paperDept) {
+    paperDept.textContent = 'Academic Handout • Department of ' + deptName.charAt(0) + deptName.slice(1).toLowerCase();
+  }
+  if (paperHeading) {
+    paperHeading.textContent = r.fullName || r.name;
+  }
+  if (paperDesc) {
+    paperDesc.textContent = r.desc || 'Comprehensive learning resource and syllabus guide covering core course concepts, review frameworks, and practice guidance.';
+  }
+  if (paperCallout) {
+    if (r.formulas && r.formulas.length) {
+      paperCallout.textContent = Array.isArray(r.formulas) ? r.formulas[0] : r.formulas;
+    } else {
+      paperCallout.textContent = (r.topic ? ('Focus: ' + r.topic) : 'Foundational Syllabus Unit') + (r.tags && r.tags.length ? (' (' + r.tags.join(', ') + ')') : '');
+    }
+  }
 
   var modal = document.getElementById('oakPreviewModal');
   if (modal) {
@@ -1754,7 +1797,7 @@ function oakSubmitQuiz() {
       if (feedbackEl) {
         feedbackEl.style.display = 'block';
         feedbackEl.className = 'quiz-feedback good';
-        feedbackEl.textContent = '✓ Correct! ' + item.hint;
+        feedbackEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>Correct! ' + (item.hint || '');
       }
     } else {
       if (btns[chosen]) btns[chosen].className = 'quiz-opt-btn wrong';
@@ -1762,7 +1805,7 @@ function oakSubmitQuiz() {
       if (feedbackEl) {
         feedbackEl.style.display = 'block';
         feedbackEl.className = 'quiz-feedback bad';
-        feedbackEl.textContent = '✗ Incorrect. ' + item.hint;
+        feedbackEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>Incorrect. ' + (item.hint || '');
       }
     }
   });

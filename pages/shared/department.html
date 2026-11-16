@@ -6,8 +6,8 @@
 <title>NGIS — Department Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
@@ -15,6 +15,8 @@
 <link rel="stylesheet" href="../../assets/css/design-system.css">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
 
 <style>
 /* ═══════════════════════════════════════════════════════════════
@@ -631,8 +633,9 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
 </style>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 
 <body data-page="department" data-role="student">
@@ -667,7 +670,6 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
       <span id="hubEyebrowText">ACADEMIC OVERVIEW · CAMBRIDGE CURRICULUM</span>
     </div>
     <h1 class="hub-title" id="hubTitle">English Department Hub</h1>
-    <p class="hub-subtitle" id="hubSubtitle">English literature syllabi, essay coursework submissions, IGCSE past papers, and evaluations.</p>
   </div>
 </section>
 
@@ -824,7 +826,16 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem('ngis_chat_user') || 'null'); } catch (e) {}
   var p = new URLSearchParams(window.location.search);
-  var role = (p.get('portal') || p.get('role') || 'student').toLowerCase();
+  var requestedRole = (p.get('portal') || p.get('role') || (window.NGISAuth ? NGISAuth.getRole() : 'student')).toLowerCase();
+  var savedUser = window.NGISAuth ? NGISAuth.getUser() : null;
+  var role = requestedRole;
+  if (window.NGISAuth && NGISAuth.hasExplicitSession() && savedUser && savedUser.role) {
+    role = String(savedUser.portal || savedUser.role).toLowerCase();
+    if (role === 'super_admin') role = 'superadmin';
+    if (role === 'editor') role = 'admin';
+  } else if (role === 'super_admin') {
+    role = 'superadmin';
+  }
   // Cross-portal protection: teachers belong in their dedicated portal page.
   if (role === 'teacher') { window.location.replace('../teacher/teacher-departments.html' + window.location.search); }
 
@@ -1030,12 +1041,16 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
     var cExm = document.getElementById('cardExams');
     var cTmt = document.getElementById('cardTimetable');
 
-    if (cAtt) cAtt.href = '../student/student-attendance.html?dept=' + targetParam;
-    if (cRep) cRep.href = '../student/student-grades.html?dept=' + targetParam;
-    if (cLes) cLes.href = 'lessons.html?dept=' + targetParam;
-    if (cTsk) cTsk.href = '../student/student-assignments.html?dept=' + targetParam;
-    if (cExm) cExm.href = '../student/student-exams.html?dept=' + targetParam;
-    if (cTmt) cTmt.href = '../student/student-timetable.html?dept=' + targetParam;
+    var portalQS = role ? '&portal=' + encodeURIComponent(role) : '';
+    var isAdminPortal = role === 'admin' || role === 'superadmin';
+    var isPrincipalPortal = role === 'principal';
+    var isStaffPortal = role === 'staff';
+    if (cAtt) cAtt.href = isAdminPortal ? '../admin/admin-attendance.html' : isPrincipalPortal ? '../principal/principal-attendance.html' : isStaffPortal ? 'announcements.html?portal=staff' : '../student/student-attendance.html?dept=' + targetParam;
+    if (cRep) cRep.href = isAdminPortal ? '../admin/admin-grades.html' : isPrincipalPortal ? '../principal/principal-reports.html' : isStaffPortal ? 'news.html?portal=staff' : '../student/student-grades.html?dept=' + targetParam;
+    if (cLes) cLes.href = 'lessons.html?dept=' + targetParam + portalQS;
+    if (cTsk) cTsk.href = isAdminPortal ? '../admin/admin-departments.html' : isPrincipalPortal ? '../principal/principal-departments.html' : isStaffPortal ? '../admin/admin-services.html?portal=staff' : '../student/student-assignments.html?dept=' + targetParam;
+    if (cExm) cExm.href = 'exams.html?dept=' + targetParam + portalQS;
+    if (cTmt) cTmt.href = isAdminPortal ? '../admin/admin-timetables.html' : isPrincipalPortal ? '../principal/principal-timetable-builder.html' : isStaffPortal ? '../admin/admin-services.html?portal=staff' : '../student/student-timetable.html?dept=' + targetParam;
 
     // Update Switcher Tab highlight
     document.querySelectorAll('.dept-tab').forEach(function (tab) {
@@ -1081,8 +1096,9 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
     }
   };
 
-  window.PAGE = { role: 'student', active: 'departments' };
-  if (saved) window.CURRENT_USER = saved;
+  window.PAGE = { role: role, active: (role === 'superadmin' ? 'sa-departments' : 'departments') };
+  if (typeof saved !== 'undefined' && saved) window.CURRENT_USER = saved;
+  else if (typeof savedUser !== 'undefined' && savedUser) window.CURRENT_USER = savedUser;
   document.body.classList.add('ready');
 })();
 </script>
@@ -1091,6 +1107,25 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
 (function() {
   var p = new URLSearchParams(window.location.search);
   var currentId = (p.get('id') || 'english').toLowerCase();
+
+  // Resolve the viewing role the same way as shared/news.html — explicit
+  // session first, ?portal= parameter second, auth context third, student
+  // default last — so the hero links point at the correct portal.
+  var requested = (p.get('portal') || p.get('role') || '').toLowerCase();
+  var savedUser = window.NGISAuth ? NGISAuth.getUser() : null;
+  var explicit = window.NGISAuth && NGISAuth.hasExplicitSession();
+  var allowedExplicit = ['student', 'teacher', 'admin', 'principal', 'staff', 'superadmin'];
+  var role = 'student';
+  if (explicit && savedUser && savedUser.role) {
+    role = String(savedUser.portal || savedUser.role).toLowerCase();
+    if (role === 'super_admin') role = 'superadmin';
+    if (role === 'editor') role = 'admin';
+  } else if (allowedExplicit.indexOf(requested) !== -1) {
+    role = requested;
+  } else if (window.NGISAuth) {
+    role = String(NGISAuth.getRole() || 'student').toLowerCase();
+  }
+
   var dNames = {
     english: { title: 'English Department Hub', desc: 'English literature syllabi, essay coursework submissions, IGCSE past papers, and evaluations.' },
     khmer: { title: 'Khmer Department Hub', desc: 'Khmer literature, grammar textbooks, national examination roadmaps, and term performance reports.' },
@@ -1110,8 +1145,8 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
     avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
     homeLink: '../../index.html',
     signOutLink: '../../index.html',
-    profileLink: '../student/student-profile.html',
-    notifLink: '../student/student-notifications.html',
+    profileLink: (role === 'admin' || role === 'superadmin' || role === 'staff') ? '../admin/admin-settings.html' : role === 'principal' ? '../principal/principal.html' : role === 'teacher' ? '../teacher/teacher-profile.html' : '../student/student-profile.html',
+    notifLink: (role === 'admin' || role === 'superadmin' || role === 'staff') ? '../admin/admin-notifications.html' : role === 'principal' ? '../principal/principal.html' : role === 'teacher' ? '../teacher/teacher-notifications.html' : '../student/student-notifications.html',
     notifCount: 3,
     ddRows: [
       { icon: 'school', text: 'Grade 10 — Science Stream' },
@@ -1120,13 +1155,24 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
       { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
       { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
     ],
+    role: role,
     title: curD.title,
     greeting: curD.desc,
     breadcrumbs: [
-      { label: 'Departments', href: 'departments.html' },
+      { label: 'Departments', href: role === 'admin' || role === 'superadmin' ? '../admin/admin-departments.html' : role === 'principal' ? '../principal/principal-departments.html' : 'departments.html?portal=' + encodeURIComponent(role) },
       { label: curD.title.replace(' Hub', '') }
     ]
   };
+  // Top-bar persona follows the active portal; hero.js role defaults supply the
+  // correct name/ID/links for Admin, Principal, Teacher and Staff viewers.
+  if (role !== 'student') {
+    delete window.HERO_CONFIG.name;
+    delete window.HERO_CONFIG.id;
+    delete window.HERO_CONFIG.grade;
+    delete window.HERO_CONFIG.avatar;
+    delete window.HERO_CONFIG.avatarSm;
+    delete window.HERO_CONFIG.ddRows;
+  }
 })();
 </script>
 <script src="../../assets/js/hero.js"></script>

@@ -1,161 +1,635 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" class="h-full">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>NGIS — Campus Management</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/app.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
-<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-<link rel="stylesheet" href="../../assets/css/design-system.css">
-<link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>NGIS • Campus Directory & Locations | School Administration</title>
 
-<!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+  <!-- Typography: Inter & Noto Sans Khmer -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Phosphor Icons for Mobile Hamburger & Action Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Tailwind CSS CDN with forms and container queries plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          fontWeight: {
+            normal: '400',
+            medium: '500',
+            semibold: '500',
+            bold: '500',
+            extrabold: '500',
+            black: '500'
+          },
+          colors: {
+            brand: {
+              50: '#edf7f1',
+              100: '#d7ece0',
+              200: '#b2dac3',
+              600: '#166534',
+              700: '#0F5132', // NGIS Signature Forest Green
+              800: '#0c4028',
+              900: '#093220',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- NGIS Core Shared Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+
+  <!-- Theme Bootstrap & Auth -->
+  <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/protect.js"></script>
+  <script src="_auth-bootstrap.js"></script>
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+
+  <style>
+    /* Global typography constraint: NO BOLD FONTS (AGENTS.md) */
+    *, b, strong, th, h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold {
+      font-weight: 500 !important;
+    }
+    p, span, td, input, select, textarea, div {
+      font-weight: 400;
+    }
+    .font-medium, .font-semibold, th, h1, h2, h3, h4, [class*="font-medium"], [class*="font-semibold"] {
+      font-weight: 500 !important;
+    }
+
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .card-shadow {
+      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Mobile scroll hint */
+    .table-scroll-hint {
+      display: none;
+    }
+    @media (max-width: 860px) {
+      .table-scroll-hint {
+        display: flex;
+      }
+    }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] body {
+      background-color: #0f172a !important;
+      color: #e2e8f0 !important;
+    }
+    [data-theme="dark"] .bg-white {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    [data-theme="dark"] .bg-slate-50,
+    [data-theme="dark"] .bg-slate-50\/50,
+    [data-theme="dark"] .bg-slate-50\/70 {
+      background-color: #0f172a !important;
+    }
+    [data-theme="dark"] .border-slate-200,
+    [data-theme="dark"] .border-slate-200\/80,
+    [data-theme="dark"] .border-slate-100 {
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] .text-slate-900 {
+      color: #f1f5f9 !important;
+    }
+    [data-theme="dark"] .text-slate-800,
+    [data-theme="dark"] .text-slate-700 {
+      color: #cbd5e1 !important;
+    }
+    [data-theme="dark"] .text-slate-600,
+    [data-theme="dark"] .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    [data-theme="dark"] input,
+    [data-theme="dark"] select,
+    [data-theme="dark"] textarea {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+  </style>
 </head>
-<body data-role="admin" data-portal="admin">
+
+<body class="flex flex-col font-sans text-slate-800 antialiased bg-[#F8FAFC] selection:bg-brand-100 selection:text-brand-900" data-role="admin" data-portal="admin">
 <main class="main">
-<header id="heroBanner" role="banner"></header>
-<div class="page">
 
-  <div class="flex between center mb16 anim-up wrap gap12">
-    <p class="muted" style="font-size:14px">Campuses are independent of departments — each holds its own students, teachers, parents, admins, principal, departments, and classes.</p>
-    <button class="btn btn-primary btn-sm" data-open-drawer="addCampusDrawer"><span data-ngis-icon="add"></span>Add Campus</button>
-  </div>
+  <!-- Desktop Hero Banner -->
+  <header id="heroBanner" role="banner"></header>
 
-  <div class="grid g-3 anim-up-2" id="campusGrid">
-
-    <a class="card card-pad card-hover" href="admin-campus.html?id=sensok" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:14px">
-      <div class="flex between center">
-        <div class="stat-ico t-green" style="width:52px;height:52px"><span class="material-symbols-outlined fill" style="font-size:26px">location_city</span></div>
-        <span class="badge green">Active</span>
+  <!-- ═══ MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE) ═══ -->
+  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+    <div class="flex items-center gap-3 min-w-0">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph-bold ph-list text-xl"></i>
+      </button>
+      <div class="min-w-0 truncate">
+        <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Campuses</h1>
       </div>
-      <div><div style="font-size:17px;font-weight: 400;color:var(--heading)">Sen Sok Campus</div><p class="muted mt4" style="font-size:13px">Principal: Dr. Sok Chenda</p></div>
-      <div class="grid g-2" style="gap:8px">
-        <div class="stat-mini"><span class="stat-mini-ico t-blue"><span class="material-symbols-outlined">school</span></span><div><span>1,842</span><small>Students</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-accent"><span class="material-symbols-outlined">co_present</span></span><div><span>56</span><small>Teachers</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-amber"><span class="material-symbols-outlined">family_restroom</span></span><div><span>1,190</span><small>Parents</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-purple"><span class="material-symbols-outlined">school</span></span><div><span>68</span><small>Classes</small></div></div>
-      </div>
-      <div class="module-card-arrow"><span>Open campus</span><span class="material-symbols-outlined">arrow_forward</span></div>
-    </a>
-
-    <a class="card card-pad card-hover" href="admin-campus.html?id=depo" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:14px">
-      <div class="flex between center">
-        <div class="stat-ico t-blue" style="width:52px;height:52px"><span class="material-symbols-outlined fill" style="font-size:26px">location_city</span></div>
-        <span class="badge green">Active</span>
-      </div>
-      <div><div style="font-size:17px;font-weight: 400;color:var(--heading)">Depo Campus</div><p class="muted mt4" style="font-size:13px">Principal: Mr. Vong Piseth</p></div>
-      <div class="grid g-2" style="gap:8px">
-        <div class="stat-mini"><span class="stat-mini-ico t-blue"><span class="material-symbols-outlined">school</span></span><div><span>1,560</span><small>Students</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-accent"><span class="material-symbols-outlined">co_present</span></span><div><span>48</span><small>Teachers</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-amber"><span class="material-symbols-outlined">family_restroom</span></span><div><span>1,005</span><small>Parents</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-purple"><span class="material-symbols-outlined">school</span></span><div><span>59</span><small>Classes</small></div></div>
-      </div>
-      <div class="module-card-arrow"><span>Open campus</span><span class="material-symbols-outlined">arrow_forward</span></div>
-    </a>
-
-    <a class="card card-pad card-hover" href="admin-campus.html?id=baktouk" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:14px">
-      <div class="flex between center">
-        <div class="stat-ico t-amber" style="width:52px;height:52px"><span class="material-symbols-outlined fill" style="font-size:26px">location_city</span></div>
-        <span class="badge green">Active</span>
-      </div>
-      <div><div style="font-size:17px;font-weight: 400;color:var(--heading)">Bak Touk Campus</div><p class="muted mt4" style="font-size:13px">Principal: Dr. Kim Leakhena</p></div>
-      <div class="grid g-2" style="gap:8px">
-        <div class="stat-mini"><span class="stat-mini-ico t-blue"><span class="material-symbols-outlined">school</span></span><div><span>1,418</span><small>Students</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-accent"><span class="material-symbols-outlined">co_present</span></span><div><span>44</span><small>Teachers</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-amber"><span class="material-symbols-outlined">family_restroom</span></span><div><span>910</span><small>Parents</small></div></div>
-        <div class="stat-mini"><span class="stat-mini-ico t-purple"><span class="material-symbols-outlined">school</span></span><div><span>59</span><small>Classes</small></div></div>
-      </div>
-      <div class="module-card-arrow"><span>Open campus</span><span class="material-symbols-outlined">arrow_forward</span></div>
-    </a>
-
-  </div>
-</div><!-- /page -->
-
-<!-- ═══ Add Campus drawer ═══ -->
-<div class="drawer-overlay" data-drawer="addCampusDrawer">
-  <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="addCampusTitle">
-    <div class="drawer-head">
-      <div><h3 id="addCampusTitle">Add Campus</h3><div class="sub">Register a new school campus</div></div>
-      <button class="icon-btn" data-close-drawer aria-label="Close"><span data-ngis-icon="close"></span></button>
     </div>
-    <div class="drawer-body">
-      <form id="addCampusForm" onsubmit="return false">
-        <div class="drawer-grid">
-          <div class="field field-full"><label class="label">Campus Name</label><input class="input" id="campName" placeholder="e.g. Chroy Changvar Campus"></div>
-          <div class="field field-full"><label class="label">Address</label><input class="input" placeholder="Street, city"></div>
-          <div class="field"><label class="label">Principal</label><input class="input" placeholder="Assign later if unset"></div>
-          <div class="field"><label class="label">Phone</label><input class="input" placeholder="+855 23 000 000"></div>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-medium text-[#0F5132]">Institutional</span>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="page w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-7xl mx-auto">
+    <div class="space-y-6">
+
+      <!-- Top Title and Action Header -->
+      <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-1">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-medium text-[#176B45] uppercase tracking-wider mb-1">
+            <span>Institutional Operations</span>
+            <span class="text-slate-300">•</span>
+            <span class="text-slate-500">Facility Network</span>
+          </div>
+          <h1 class="page-title text-2xl font-medium text-slate-900 tracking-tight">Campus Directory</h1>
+          <p class="text-xs text-slate-600 mt-1 max-w-2xl">Manage institutional branch locations, leadership, facility capacity, and student allocations across all campuses.</p>
         </div>
-      </form>
-    </div>
-    <div class="drawer-foot">
-      <button class="btn btn-ghost" data-close-drawer>Cancel</button>
-      <button class="btn btn-primary" id="campSaveBtn">Save</button>
-    </div>
-  </aside>
-</div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <button id="btnExportCampus" class="btn btn-secondary inline-flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 shadow-xs transition-colors cursor-pointer active:scale-95" type="button" title="Export CSV">
+            <span class="material-symbols-outlined text-[16px] text-slate-600">download</span>
+            <span>Export CSV</span>
+          </button>
+          <a href="admin-campus.html?open=add" id="btnAddCampus" class="btn btn-primary inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-white bg-[#176B45] hover:bg-[#125638] rounded-xl shadow-xs transition-colors cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined text-[18px]">add_location_alt</span>
+            <span>+ Add Campus</span>
+          </a>
+        </div>
+      </header>
 
+      <!-- Skeleton Loading State -->
+      <div id="campusSkeleton" class="space-y-6" aria-busy="true" aria-live="polite">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow animate-pulse space-y-3">
+            <div class="w-8 h-8 rounded-xl bg-slate-100"></div>
+            <div class="h-6 bg-slate-100 rounded w-16"></div>
+            <div class="h-3 bg-slate-100 rounded w-24"></div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow animate-pulse space-y-3">
+            <div class="w-8 h-8 rounded-xl bg-slate-100"></div>
+            <div class="h-6 bg-slate-100 rounded w-16"></div>
+            <div class="h-3 bg-slate-100 rounded w-24"></div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow animate-pulse space-y-3">
+            <div class="w-8 h-8 rounded-xl bg-slate-100"></div>
+            <div class="h-6 bg-slate-100 rounded w-16"></div>
+            <div class="h-3 bg-slate-100 rounded w-24"></div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow animate-pulse space-y-3">
+            <div class="w-8 h-8 rounded-xl bg-slate-100"></div>
+            <div class="h-6 bg-slate-100 rounded w-16"></div>
+            <div class="h-3 bg-slate-100 rounded w-24"></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 card-shadow p-6 space-y-4 animate-pulse">
+          <div class="h-10 bg-slate-100 rounded-xl w-full"></div>
+          <div class="h-12 bg-slate-100 rounded-lg w-full"></div>
+          <div class="h-12 bg-slate-100 rounded-lg w-full"></div>
+          <div class="h-12 bg-slate-100 rounded-lg w-full"></div>
+        </div>
+      </div>
+
+      <!-- Main Content Block -->
+      <div id="campusContent" class="hidden space-y-6">
+
+        <!-- KPI Summary Cards Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="kpi-cards">
+          <!-- Card 1: Campuses -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-600">Total Campuses</span>
+              <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#176B45] border border-emerald-200/80 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-[20px]">location_city</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="text-2xl font-medium text-slate-900 tracking-tight" id="kpiCampuses">—</div>
+              <div class="flex items-center gap-1.5 mt-1 text-[11px] font-medium text-[#176B45]">
+                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                <span>Active School Locations</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Enrolled Students -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-600">Enrolled Students</span>
+              <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#1D4ED8] border border-blue-200/80 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-[20px]">school</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="text-2xl font-medium text-slate-900 tracking-tight" id="kpiStudents">—</div>
+              <div class="flex items-center gap-1.5 mt-1 text-[11px] font-medium text-slate-500">
+                <span>Active student headcounts</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: Faculty & Staff -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-600">Faculty &amp; Staff</span>
+              <div class="w-9 h-9 rounded-xl bg-amber-50 text-[#B45309] border border-amber-200/80 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-[20px]">co_present</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="text-2xl font-medium text-slate-900 tracking-tight" id="kpiFaculty">—</div>
+              <div class="flex items-center gap-1.5 mt-1 text-[11px] font-medium text-slate-500">
+                <span>Assigned educators &amp; staff</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Active Classes -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-medium text-slate-600">Active Classes</span>
+              <div class="w-9 h-9 rounded-xl bg-purple-50 text-[#6D28D9] border border-purple-200/80 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-[20px]">meeting_room</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="text-2xl font-medium text-slate-900 tracking-tight" id="kpiClasses">—</div>
+              <div class="flex items-center gap-1.5 mt-1 text-[11px] font-medium text-slate-500">
+                <span>Scheduled class cohorts</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main Table & Filter Card -->
+        <section class="bg-white rounded-2xl border border-slate-200 card-shadow overflow-hidden">
+
+          <!-- Filter & Action Toolbar -->
+          <div class="p-4 sm:p-5 border-b border-slate-200 bg-slate-50/60 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1 min-w-0">
+              <!-- Search Input -->
+              <div class="flex-1 sm:max-w-xs ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input type="search" id="campusSearch" placeholder="Search campus, code, principal…"
+                       class="w-full ngis-search-input"><button type="button" id="campusSearchClear" class="hidden ngis-search-clear" aria-label="Clear search">
+                  <span class="material-symbols-outlined text-[16px]">close</span>
+                </button></div>
+
+              <!-- Status Filter Dropdown -->
+              <div class="relative">
+                <select id="campusStatus" class="w-full sm:w-auto pl-3 pr-8 py-2 text-xs bg-white border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] cursor-pointer">
+                  <option value="all">All Statuses</option>
+                  <option value="active">Active Only</option>
+                </select>
+              </div>
+
+              <!-- Sort Dropdown -->
+              <div class="relative">
+                <select id="campusSort" class="w-full sm:w-auto pl-3 pr-8 py-2 text-xs bg-white border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] cursor-pointer">
+                  <option value="name-asc">Campus Name (A → Z)</option>
+                  <option value="name-desc">Campus Name (Z → A)</option>
+                  <option value="students-desc">Enrollment (High → Low)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Toolbar Actions on Right -->
+            <div class="flex items-center gap-2 self-end sm:self-auto">
+              <button type="button" id="btnRefreshCampus" class="btn btn-secondary p-2 text-slate-600 hover:text-[#176B45] hover:bg-slate-50 bg-white border border-slate-200 rounded-xl shadow-xs transition cursor-pointer active:scale-95 flex items-center justify-center min-w-[36px] min-h-[36px]" title="Refresh Directory" aria-label="Refresh Directory">
+                <span class="material-symbols-outlined text-[18px]">refresh</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Horizontal Scroll Hint -->
+          <div class="table-scroll-hint items-center gap-1.5 px-4 py-2 bg-slate-50 border-b border-slate-100 text-[11px] font-medium text-slate-500 sm:hidden">
+            <span class="material-symbols-outlined text-[14px] text-slate-400">swipe</span>
+            <span>Scroll horizontally to view complete campus details</span>
+          </div>
+
+          <!-- Responsive Table Wrapper -->
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[760px] text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50/80 border-b border-slate-200 text-[11px] font-medium text-slate-600 uppercase tracking-wider">
+                  <th class="py-3 px-4 w-12 text-center">
+                    <input type="checkbox" id="campusSelectAll" class="rounded border-slate-300 text-[#176B45] focus:ring-[#176B45] h-4 w-4 cursor-pointer">
+                  </th>
+                  <th class="py-3 px-4 text-slate-700">Campus Location</th>
+                  <th class="py-3 px-4 text-slate-700">Principal &amp; Administrator</th>
+                  <th class="py-3 px-4 text-center text-slate-700">Enrolled</th>
+                  <th class="py-3 px-4 text-center text-slate-700">Faculty</th>
+                  <th class="py-3 px-4 text-center text-slate-700">Classes</th>
+                  <th class="py-3 px-4 text-center text-slate-700">Status</th>
+                  <th class="py-3 px-4 text-right text-slate-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="campusTbody" class="divide-y divide-slate-100">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div id="campusEmpty" class="hidden p-12 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center mx-auto text-slate-400 mb-3">
+              <span class="material-symbols-outlined text-[24px]">location_off</span>
+            </div>
+            <h4 class="text-sm font-medium text-slate-800">No campuses match your filters</h4>
+            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Try adjusting your keyword search or changing the filter options to view available campus branches.</p>
+            <button type="button" id="btnClearSearch" class="mt-4 px-3 py-1.5 text-xs font-medium text-[#0F5132] bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition cursor-pointer">
+              Reset Filters
+            </button>
+          </div>
+
+          <!-- Pagination / Count Footer -->
+          <div class="p-4 border-t border-slate-200/70 bg-slate-50/40 flex items-center justify-between text-xs text-slate-500" id="campusPagination">
+            <span id="campusCountText">Showing 0 campuses</span>
+            <span class="text-[11px] text-slate-400">Institutional records synchronized</span>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Error State Card -->
+      <div id="campusError" class="hidden bg-white border border-rose-200 rounded-2xl p-8 text-center max-w-md mx-auto shadow-sm">
+        <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 flex items-center justify-center mx-auto text-rose-600 mb-3">
+          <span class="material-symbols-outlined text-[24px]">cloud_off</span>
+        </div>
+        <h4 class="text-base font-medium text-slate-900">Campus Data Unavailable</h4>
+        <p class="text-xs text-slate-500 mt-1">We could not load the campus directory from the institutional server. Check your connection and try again.</p>
+        <div class="mt-5">
+          <button type="button" class="px-4 py-2 text-xs font-medium text-white bg-[#0F5132] hover:bg-[#0c4028] rounded-xl shadow-xs transition active:scale-95 cursor-pointer" id="btnRetryCampus">
+            Retry Connection
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </main>
-<script>window.PAGE={"role":"admin","active":"campuses"};</script>
-<script>window.HERO_CONFIG = {
-  name: 'Mr. Heng Samnang',
-  id: 'Admin ID: ADM-2026-001',
-  grade: 'School Administrator',
-  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
-  title: 'Campus Management',
-  greeting: 'Manage every school campus and its assigned staff.',
-  breadcrumbs: [{ label: 'Campuses' }],
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: 'admin-settings.html',
-  notifLink: 'admin-logs.html',
-  notifCount: 4,
-  ddRows: [
-    { icon: 'admin_panel_settings', text: 'School Administration' },
-    { icon: 'groups', text: '5,200 active users' },
-    { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Since: Jan 2018' },
-    { icon: 'verified', text: 'Principal Administrator' }
-  ]
-};</script>
+
+<!-- Scripts -->
+<script>
+  window.PAGE = { role: "admin", active: "campuses" };
+</script>
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 <script>
-(function () {
-  document.getElementById('campSaveBtn').addEventListener('click', function () {
-    var name = (document.getElementById('campName').value || '').trim() || 'New Campus';
-    var card = document.createElement('a');
-    card.className = 'card card-pad card-hover';
-    card.href = 'admin-campuses.html';
-    card.style.cssText = 'text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:14px';
-    card.innerHTML =
-      '<div class="flex between center"><div class="stat-ico t-blue" style="width:52px;height:52px"><span class="material-symbols-outlined fill" style="font-size:26px">location_city</span></div><span class="badge amber">New</span></div>' +
-      '<div><div style="font-size:17px;font-weight: 400;color:var(--heading)">' + name + '</div><p class="muted mt4" style="font-size:13px">Principal: Unassigned</p></div>' +
-      '<div class="grid g-2" style="gap:8px">' +
-        '<div class="stat-mini"><span class="stat-mini-ico t-blue"><span class="material-symbols-outlined">school</span></span><div><span>0</span><small>Students</small></div></div>' +
-        '<div class="stat-mini"><span class="stat-mini-ico t-accent"><span class="material-symbols-outlined">co_present</span></span><div><span>0</span><small>Teachers</small></div></div>' +
-        '<div class="stat-mini"><span class="stat-mini-ico t-amber"><span class="material-symbols-outlined">family_restroom</span></span><div><span>0</span><small>Parents</small></div></div>' +
-        '<div class="stat-mini"><span class="stat-mini-ico t-purple"><span class="material-symbols-outlined">school</span></span><div><span>0</span><small>Classes</small></div></div>' +
-      '</div>';
-    document.getElementById('campusGrid').appendChild(card);
-    window.toast(name + ' created', 'success');
-    document.querySelector('.drawer-overlay[data-drawer="addCampusDrawer"]').classList.remove('show');
-    document.getElementById('addCampusForm').reset();
-  });
+  (function initCampuses() {
+    "use strict";
+    var skeletonEl = document.getElementById('campusSkeleton');
+    var contentEl = document.getElementById('campusContent');
+    var errorEl = document.getElementById('campusError');
+    var tbody = document.getElementById('campusTbody');
+    var emptyEl = document.getElementById('campusEmpty');
+    var countEl = document.getElementById('campusCountText');
+    var searchEl = document.getElementById('campusSearch');
+    var searchClearBtn = document.getElementById('campusSearchClear');
+    var clearSearchBtn = document.getElementById('btnClearSearch');
+    var statusEl = document.getElementById('campusStatus');
+    var sortEl = document.getElementById('campusSort');
+    var retryBtn = document.getElementById('btnRetryCampus');
+    var refreshBtn = document.getElementById('btnRefreshCampus');
+    var exportBtn = document.getElementById('btnExportCampus');
+    var selectAll = document.getElementById('campusSelectAll');
+    var kpis = {
+      campuses: document.getElementById('kpiCampuses'),
+      students: document.getElementById('kpiStudents'),
+      faculty: document.getElementById('kpiFaculty'),
+      classes: document.getElementById('kpiClasses')
+    };
 
-  if (new URLSearchParams(location.search).get('add') === '1') {
-    document.querySelector('.drawer-overlay[data-drawer="addCampusDrawer"]').classList.add('show');
-  }
-})();
+    function num(v){ return (typeof v === 'number' && isFinite(v)) ? v : 0; }
+    function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]); }); }
+    function fmt(n){ return Number(n || 0).toLocaleString('en-US'); }
+
+    function showSkeleton(){
+      if (skeletonEl) skeletonEl.classList.remove('hidden');
+      if (contentEl) contentEl.classList.add('hidden');
+      if (errorEl) errorEl.classList.add('hidden');
+    }
+    function showError(){
+      if (skeletonEl) skeletonEl.classList.add('hidden');
+      if (contentEl) contentEl.classList.add('hidden');
+      if (errorEl) errorEl.classList.remove('hidden');
+    }
+    function showContent(){
+      if (skeletonEl) skeletonEl.classList.add('hidden');
+      if (errorEl) errorEl.classList.add('hidden');
+      if (contentEl) contentEl.classList.remove('hidden');
+    }
+
+    var state = { data: [], query: '', status: 'all', sort: 'name-asc' };
+
+    function visible(){
+      var q = state.query.trim().toLowerCase();
+      return state.data.filter(function(c){
+        var mq = !q ||
+                 (c.name || '').toLowerCase().indexOf(q) !== -1 ||
+                 (c.code || '').toLowerCase().indexOf(q) !== -1 ||
+                 (c.principal || '').toLowerCase().indexOf(q) !== -1 ||
+                 (c.administrator || '').toLowerCase().indexOf(q) !== -1 ||
+                 (c.address || '').toLowerCase().indexOf(q) !== -1;
+        var ms = state.status === 'all' || c.status === state.status;
+        return mq && ms;
+      });
+    }
+
+    function render(){
+      var rows = visible().slice();
+      if (state.sort === 'students-desc') rows.sort(function(a,b){ return (b.students || 0) - (a.students || 0); });
+      else if (state.sort === 'name-desc') rows.sort(function(a,b){ return (b.name || '').localeCompare(a.name || ''); });
+      else rows.sort(function(a,b){ return (a.name || '').localeCompare(b.name || ''); });
+
+      tbody.innerHTML = rows.map(function(c){
+        var href = 'admin-campus.html?id=' + encodeURIComponent(c.id);
+        var typeBadge = c.type ? '<span class="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">' + esc(c.type) + '</span>' : '';
+        return '' +
+          '<tr class="hover:bg-slate-50/80 transition-colors">' +
+          '<td class="py-3.5 px-4 text-center">' +
+          '<input type="checkbox" class="row-cb rounded border-slate-300 text-[#176B45] focus:ring-[#176B45] h-4 w-4 cursor-pointer" data-id="' + esc(c.id) + '">' +
+          '</td>' +
+          '<td class="py-3.5 px-4">' +
+          '<a href="' + href + '" class="flex items-center gap-3 group text-decoration-none">' +
+          '<div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 text-[#176B45] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">' +
+          '<span class="material-symbols-outlined text-[19px]">location_city</span>' +
+          '</div>' +
+          '<div class="min-w-0">' +
+          '<div class="text-xs font-medium text-slate-900 group-hover:text-[#176B45] transition-colors truncate">' + esc(c.name) + '</div>' +
+          '<div class="flex items-center gap-2 mt-0.5 flex-wrap">' +
+          '<span class="text-[11px] font-mono text-slate-500 font-normal">ID: ' + esc(c.code) + '</span>' +
+          (typeBadge ? '<span class="text-slate-300">•</span>' + typeBadge : '') +
+          '</div>' +
+          '</div>' +
+          '</a>' +
+          '</td>' +
+          '<td class="py-3.5 px-4">' +
+          '<div class="text-xs font-medium text-slate-900">' + esc(c.principal || '—') + '</div>' +
+          '<div class="text-[11px] text-slate-600 mt-0.5 truncate max-w-xs font-normal">' + esc(c.administrator || c.email || '—') + '</div>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 text-center">' +
+          '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 font-mono border border-slate-200/60">' + fmt(c.students) + '</span>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 text-center text-xs font-medium text-slate-800 font-mono">' + fmt(c.teachers) + '</td>' +
+          '<td class="py-3.5 px-4 text-center text-xs font-medium text-slate-800 font-mono">' + fmt(c.classes) + '</td>' +
+          '<td class="py-3.5 px-4 text-center">' +
+          '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">' +
+          '<span class="w-1.5 h-1.5 rounded-full bg-[#176B45]"></span>' +
+          '<span>' + esc((c.status || 'active').charAt(0).toUpperCase() + (c.status || 'active').slice(1)) + '</span>' +
+          '</span>' +
+          '</td>' +
+          '<td class="py-3.5 px-4 text-right">' +
+          '<div class="inline-flex items-center gap-1.5 justify-end">' +
+          '<a href="' + href + '" class="btn btn-secondary px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-colors active:scale-95 shadow-2xs">Open</a>' +
+          '<a href="' + href + '" class="action-icon-btn p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition" title="More options" aria-label="More options">' +
+          '<span class="material-symbols-outlined text-[18px]">more_vert</span>' +
+          '</a>' +
+          '</div>' +
+          '</td>' +
+          '</tr>';
+      }).join('');
+
+      var n = rows.length;
+      emptyEl.classList.toggle('hidden', n !== 0);
+      countEl.textContent = 'Showing ' + n + ' of ' + state.data.length + ' campuses';
+
+      // KPI totals
+      var all = state.data;
+      if (kpis.campuses) kpis.campuses.textContent = fmt(all.length);
+      if (kpis.students) kpis.students.textContent = fmt(all.reduce(function(t,c){ return t + (c.students || 0); }, 0));
+      if (kpis.faculty) kpis.faculty.textContent = fmt(all.reduce(function(t,c){ return t + (c.teachers || 0); }, 0));
+      if (kpis.classes) kpis.classes.textContent = fmt(all.reduce(function(t,c){ return t + (c.classes || 0); }, 0));
+
+      if (searchClearBtn) {
+        searchClearBtn.classList.toggle('hidden', !state.query.trim());
+      }
+    }
+
+    function load(){
+      showSkeleton();
+      fetch('/api/admin/operations/campuses', { cache: 'no-store' })
+        .then(function(res){
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(res){
+          if (res && res.success) {
+            state.data = res.data || [];
+            render();
+            showContent();
+          } else {
+            throw new Error('API error');
+          }
+        })
+        .catch(function(err){
+          console.warn('Campuses API unavailable:', err);
+          showError();
+        });
+    }
+
+    searchEl.addEventListener('input', function(e){
+      state.query = e.target.value;
+      render();
+    });
+
+    if (searchClearBtn) {
+      searchClearBtn.addEventListener('click', function(){
+        searchEl.value = '';
+        state.query = '';
+        render();
+        searchEl.focus();
+      });
+    }
+
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', function(){
+        searchEl.value = '';
+        state.query = '';
+        statusEl.value = 'all';
+        state.status = 'all';
+        sortEl.value = 'name-asc';
+        state.sort = 'name-asc';
+        render();
+      });
+    }
+
+    statusEl.addEventListener('change', function(e){
+      state.status = e.target.value;
+      render();
+    });
+
+    sortEl.addEventListener('change', function(e){
+      state.sort = e.target.value;
+      render();
+    });
+
+    if (selectAll) {
+      selectAll.addEventListener('change', function(e){
+        tbody.querySelectorAll('.row-cb').forEach(function(cb){
+          cb.checked = e.target.checked;
+        });
+      });
+    }
+
+    retryBtn.addEventListener('click', load);
+    refreshBtn.addEventListener('click', load);
+
+    exportBtn.addEventListener('click', function(){
+      var rows = visible();
+      var head = ['ID','Code','Campus','Principal','Students','Teachers','Classes','Status','Address','Phone','Email','Administrator'];
+      var lines = [head.join(',')].concat(rows.map(function(c){
+        return [c.id, c.code, c.name, c.principal||'', c.students||0, c.teachers||0, c.classes||0, c.status||'active', c.address||'', c.phone||'', c.email||'', c.administrator||'']
+          .map(function(v){ return '"' + String(v == null ? '' : v).replace(/"/g,'""') + '"'; }).join(',');
+      }));
+      var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'ngis-campuses.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      if (window.toast) window.toast('Campus directory exported successfully', 'success');
+    });
+
+    load();
+  })();
 </script>
 </body>
 </html>

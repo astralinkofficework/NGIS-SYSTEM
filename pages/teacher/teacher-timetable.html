@@ -6,7 +6,8 @@
 <title>NGIS — Teacher Timetable & Calendar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
@@ -16,8 +17,9 @@
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 <script src="../../assets/js/khmer-suite-data.js"></script>
 <style>
   .tt-tab-btn {
@@ -429,44 +431,21 @@
         state.lessons = data.lessons || [];
         state.isPublished = true;
         state.version = data.version || 1;
+        state.effectiveFrom = data.effective_from || null;
       } else {
-        // Fallback to active state
-        var sRes = await fetch('/api/timetable/state');
-        if (sRes.ok) {
-          var sData = await sRes.json();
-          var tch = (sData.teachers || []).find(function (t) { return t.id === state.teacherId; });
-          state.teacherInfo = tch || { id: state.teacherId, name_kh: 'Teacher', code: 'T1', target: 17, max_daily: 5 };
-          var placed = sData.placed || {};
-          var sMap = {}; (sData.subjects || []).forEach(function (s) { sMap[s.id] = s; });
-          var cMap = {}; (sData.classes || []).forEach(function (c) { cMap[c.id] = c; });
-          var lList = [];
-          Object.keys(placed).forEach(function (k) {
-            var parts = k.split('|');
-            var pVal = placed[k];
-            if (pVal.teacher_id === state.teacherId) {
-              var sub = sMap[pVal.subject_id] || {};
-              var cls = cMap[parts[3]] || {};
-              lList.push({
-                key: k,
-                day: parts[0],
-                shift: parts[1],
-                period: parseInt(parts[2], 10),
-                class_id: parts[3],
-                class_display: cls.display || parts[3],
-                subject_id: sub.id,
-                subject_name: sub.name_kh || sub.name_en || '',
-                subject_code: sub.code || '',
-                color: sub.color || '#176B45',
-                teacher_id: state.teacherId,
-                teacher_code: state.teacherInfo.code || '',
-                teacher_name: state.teacherInfo.name_kh || '',
-                room: cls.room || 'Room 101'
-              });
-            }
-          });
-          state.lessons = lList;
-          state.isPublished = false;
-        }
+        // No published timetable yet — NEVER fall back to the unpublished
+        // draft: draft changes must not appear as official lessons.
+        state.lessons = [];
+        state.isPublished = false;
+        state.version = null;
+        try {
+          var sRes = await fetch('/api/timetable/state');
+          if (sRes.ok) {
+            var sData = await sRes.json();
+            var tch = (sData.teachers || []).find(function (t) { return t.id === state.teacherId; });
+            state.teacherInfo = tch || { id: state.teacherId, name_kh: 'Teacher', code: 'T1', target: 17, max_daily: 5 };
+          }
+        } catch (e2) { /* banner falls back to defaults */ }
       }
     } catch (e) {
       console.error('Error fetching teacher timetable:', e);
@@ -493,11 +472,23 @@
     if (pubBadge) {
       if (state.isPublished) {
         pubBadge.className = 'tt-chip green';
-        pubBadge.innerHTML = '<span class="material-symbols-outlined">verified</span> Published (v' + state.version + ')';
+        pubBadge.innerHTML = '<span class="material-symbols-outlined">verified</span> Published (v' + state.version + ')' +
+          (state.effectiveFrom ? ' · effective ' + esc(state.effectiveFrom) : '');
       } else {
         pubBadge.className = 'tt-chip warn';
-        pubBadge.innerHTML = '<span class="material-symbols-outlined">pending</span> Draft Timetable';
+        pubBadge.innerHTML = '<span class="material-symbols-outlined">pending</span> Not Published Yet';
       }
+    }
+
+    // Official empty state: draft schedules must never appear as published lessons.
+    if (!state.isPublished) {
+      container.innerHTML =
+        '<div style="text-align:center;padding:56px 20px;color:#738479">' +
+        '<span class="material-symbols-outlined" style="font-size:40px;color:#B9C7BD">hourglass_empty</span>' +
+        '<div style="margin-top:10px;font-weight:500;color:#29352E">No published teaching schedule yet</div>' +
+        '<div style="margin-top:4px;font-size:13px">Your weekly teaching timetable will appear here automatically once the school publishes it.</div>' +
+        '</div>';
+      return;
     }
 
     var roleEl = document.getElementById('teacherRoleDisplay');
@@ -709,7 +700,7 @@
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    if (window.toast) window.toast('Teacher schedule (.ICS) exported successfully!', 'success');
+    if (window.toast) window.toast('Teacher schedule (.ICS) exported', 'success');
   };
 
   loadTeachers().then(loadTeacherTimetable);

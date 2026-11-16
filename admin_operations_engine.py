@@ -289,8 +289,8 @@ def compute_operations_overview() -> Dict[str, Any]:
         "badge_type": "warn" if tt_unassigned else "ok",
         "status": "Needs Attention" if tt_unassigned else "Completed",
         "description": f"{tt_placed} of {tt_demand} lessons scheduled ({tt_status['overall_progress_pct']}%). 11 classes awaiting placement in draft mode.",
-        "action_label": "Open Timetable Oversight",
-        "action_url": "admin-timetable-management.html",
+        "action_label": "Open Timetable Matrix",
+        "action_url": "admin-timetables.html",
         "action_id": "link_timetable",
         "stats": {
             "placed": tt_placed,

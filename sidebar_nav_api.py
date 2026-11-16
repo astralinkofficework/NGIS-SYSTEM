@@ -35,7 +35,7 @@ def _resolve_user():
 
 def _can_manage(user):
     """Navigation management is restricted to Admin / Super Admin."""
-    return bool(user) and user.get('role') in ('admin', 'superadmin')
+    return bool(user) and user.get('role') in ('admin', 'superadmin', 'super_admin')
 
 
 def _forbidden():
@@ -51,8 +51,13 @@ def get_published():
         nav = engine.get_published(portal)
         if nav is None:
             return jsonify({"success": False, "error": f"Unknown portal: {portal}"}), 404
-        return jsonify({"success": True, "data": nav})
-    return jsonify({"success": True, "data": engine.get_all_published()})
+        resp = jsonify({"success": True, "data": nav})
+    else:
+        resp = jsonify({"success": True, "data": engine.get_all_published()})
+    resp.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate, max-age=0'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+    return resp
 
 
 @nav_bp.route('/api/nav/portals', methods=['GET'])

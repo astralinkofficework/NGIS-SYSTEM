@@ -6,7 +6,7 @@
 <title>NGIS — School News & Announcements</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/app.css">
 <link rel="stylesheet" href="../../assets/css/hero.css">
@@ -298,8 +298,9 @@
 <link rel="stylesheet" href="../../assets/css/design-system.css">
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 <body>
 <main class="main">
@@ -412,6 +413,20 @@
   }
 
   // Get data helper
+  async function fetchLiveNews() {
+    try {
+      const res = await fetch('/api/news');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.length > 0) {
+          localStorage.setItem('ngis_news_posts', JSON.stringify(json.data));
+          renderFeed();
+        }
+      }
+    } catch(e) {}
+  }
+  fetchLiveNews();
+
   function getNews() {
     return JSON.parse(localStorage.getItem('ngis_news_posts')) || MOCK_NEWS;
   }
@@ -431,9 +446,18 @@
     // Filter matching posts
     const filtered = posts.filter(post => {
       // 1. Tag matching
-      if (activeFilter !== 'all' && post.priority !== activeFilter) return false;
+      if (activeFilter !== 'all') {
+        const pPriority = (post.priority || '').toLowerCase();
+        const pCategory = (post.category || '').toLowerCase();
+        if (pPriority !== activeFilter && pCategory !== activeFilter) return false;
+      }
       // 2. Search matching
-      if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        const titleMatch = (post.title || '').toLowerCase().includes(q);
+        const descMatch = ((post.desc || post.summary || post.message || '')).toLowerCase().includes(q);
+        if (!titleMatch && !descMatch) return false;
+      }
       return true;
     });
 
@@ -446,15 +470,18 @@
     filtered.forEach(p => {
       const card = document.createElement('div');
       card.className = 'news-card';
+      const imgUrl = p.image || p.cover_image || 'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=600';
+      const descText = p.desc || p.summary || p.message || '';
+      const priorityTag = p.priority || p.category || 'general';
       card.innerHTML = `
         <div class="news-card-img-wrap">
-          <img class="news-card-img" src="${p.image}" alt="Card image">
-          <span class="news-card-tag tag-${p.priority}">${p.priority}</span>
+          <img class="news-card-img" src="${imgUrl}" alt="Card image">
+          <span class="news-card-tag tag-${priorityTag}">${priorityTag}</span>
         </div>
         <div class="news-card-body">
-          <div class="news-card-date">${p.date}</div>
+          <div class="news-card-date">${p.date || 'July 2026'}</div>
           <h3 class="news-card-title">${p.title}</h3>
-          <p class="news-card-desc">${p.desc}</p>
+          <p class="news-card-desc">${descText}</p>
           <button class="news-card-readmore" data-post-id="${p.id}">
             <span>Read more</span>
             <span data-ngis-icon="chevronRight"></span>
@@ -481,11 +508,12 @@
   const modalContent = document.getElementById('modalContent');
 
   function openDetail(post) {
-    modalImg.src = post.image;
+    modalImg.src = post.image || post.cover_image || 'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=600';
     modalTitle.textContent = post.title;
-    modalDate.textContent = post.date;
-    modalAudience.textContent = `Target Audience: ${post.audience}`;
-    modalContent.innerHTML = post.desc.replace(/\n/g, '<br>');
+    modalDate.textContent = post.date || 'July 2026';
+    modalAudience.textContent = `Target Audience: ${post.audience || 'All'}`;
+    const fullText = post.content || post.message || post.desc || post.summary || '';
+    modalContent.innerHTML = fullText.includes('<p>') ? fullText : fullText.replace(/\n/g, '<br>');
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
   }
@@ -523,8 +551,39 @@
 
 })();
 </script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
 <script>
-  window.PAGE = { role: 'student', active: 'announcements' };
+  (function () {
+    var p = new URLSearchParams(window.location.search);
+    var requested = (p.get('portal') || p.get('role') || '').toLowerCase();
+    var saved = window.NGISAuth ? NGISAuth.getUser() : null;
+    var explicit = window.NGISAuth && NGISAuth.hasExplicitSession();
+    var allowedExplicit = ['student', 'teacher', 'admin', 'principal', 'staff', 'superadmin'];
+    var role = 'student';
+    if (explicit && saved && saved.role) {
+      role = String(saved.portal || saved.role).toLowerCase();
+      if (role === 'super_admin') role = 'superadmin';
+      if (role === 'editor') role = 'admin';
+    } else if (allowedExplicit.indexOf(requested) !== -1) {
+      role = requested;
+    } else if (window.NGISAuth) {
+      role = String(NGISAuth.getRole() || 'student').toLowerCase();
+    }
+    var homeBtn = document.querySelector('.htb-home-btn');
+    if (homeBtn) {
+      var homeMap = {
+        superadmin: '../admin/admin.html?portal=superadmin',
+        admin: '../admin/admin.html',
+        staff: '../admin/admin-services.html?portal=staff',
+        principal: '../principal/principal.html',
+        teacher: '../teacher/teacher.html',
+        student: '../student/student.html'
+      };
+      homeBtn.href = homeMap[role] || '../../index.html';
+    }
+    window.PAGE = { role: role, active: role === 'staff' ? 'staff-news' : 'announcements' };
+  })();
 </script>
 <script src="../../assets/js/layout.js"></script>
 </body>

@@ -14,9 +14,9 @@
     el.style.cssText = 'margin:0 0 16px;border-left:4px solid #202F63;';
     el.innerHTML = '<div class="card-head"><div><h3 style="margin:0">Live academic data</h3><div class="sub">' + esc(label) + ' · synced from NGIS Academic Records</div></div><span class="badge green">LIVE</span></div>' +
       '<div class="card-pad" style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">' +
-      '<div><div class="faint" style="font-size:11px;text-transform:uppercase">GPA</div><strong style="font-size:24px">' + esc(gpa) + '</strong><span class="faint"> / 4.00</span></div>' +
-      '<div><div class="faint" style="font-size:11px;text-transform:uppercase">Attendance</div><strong style="font-size:24px">' + esc(att) + '%</strong></div>' +
-      '<div><div class="faint" style="font-size:11px;text-transform:uppercase">Records in view</div><strong style="font-size:24px">' + esc(model.total != null ? model.total : students.length) + '</strong></div>' +
+      '<div><div class="faint" style="font-size:11px;text-transform:uppercase">GPA</div><span style="font-size:24px;font-weight:500">' + esc(gpa) + '</span><span class="faint"> / 4.00</span></div>' +
+      '<div><div class="faint" style="font-size:11px;text-transform:uppercase">Attendance</div><span style="font-size:24px;font-weight:500">' + esc(att) + '%</span></div>' +
+      '<div><div class="faint" style="font-size:11px;text-transform:uppercase">Records in view</div><span style="font-size:24px;font-weight:500">' + esc(model.total != null ? model.total : students.length) + '</span></div>' +
       '<div class="faint" style="font-size:12px">Grades use the active grading period and published workflow state.</div></div>';
     page.insertBefore(el, page.firstChild);
   }

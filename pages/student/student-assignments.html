@@ -8,8 +8,8 @@
 <!-- Fonts & Icons -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
 <!-- NGIS Framework Styles -->
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
@@ -88,12 +88,16 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 .page {
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
   padding: 24px 20px 64px;
+  min-width: 0;
 }
 @media (min-width: 640px) {
   .page { padding: 28px 28px 64px; }
@@ -102,32 +106,417 @@ html, body {
   .page { padding: 32px 36px 72px; }
 }
 
+/* Fluid responsive container adjustments */
+.subpage-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  min-width: 0;
+  box-sizing: border-box;
+}
+@media (max-width: 640px) {
+  .subpage-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-top: -24px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* ════════════════════════════════════════
+   COURSEWORK FILTER BAR
+   ════════════════════════════════════════ */
+.course-filter-scroll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.course-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+.course-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: #ffffff;
+  border: 1px solid #E1E9E3;
+  color: #475569;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all .15s ease;
+  flex-shrink: 0;
+}
+.course-filter-btn:hover {
+  background: #ffffff;
+  color: #176B45;
+  border-color: #E1E9E3;
+}
+.course-filter-btn.active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+.course-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: 500;
+  background: rgba(0,0,0,0.06);
+}
+.course-filter-btn.active .course-filter-count {
+  background: rgba(255,255,255,0.22);
+  color: #ffffff;
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE TASK CARD BUTTONS
+   ════════════════════════════════════════ */
+.asgn-sub-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid transparent;
+  color: #29352E;
+  min-height: 38px;
+  white-space: nowrap;
+  transition: color .15s ease;
+  cursor: pointer;
+}
+.asgn-sub-btn:hover {
+  background: #FFFFFF;
+  color: #176B45;
+}
+.asgn-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 12px;
+  background: #000000;
+  color: #ffffff;
+  min-height: 40px;
+  white-space: nowrap;
+  box-shadow: none;
+  transition: background .15s ease;
+  cursor: pointer;
+}
+.asgn-primary-btn:hover {
+  background: #29352E;
+}
+@media (max-width: 639px) {
+  .asgn-sub-btn {
+    flex: 1;
+    min-width: 0;
+    font-size: 11.5px;
+    padding: 7px 10px;
+  }
+  .asgn-primary-btn {
+    width: 100%;
+    margin-top: 2px;
+  }
+}
+
 /* ════════════════════════════════════════
    UPLOAD MODAL — Mobile-first coursework sheet
    ════════════════════════════════════════ */
 .um-overlay{position:fixed;inset:0;z-index:900;background:rgba(2,8,20,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .24s ease}
 .um-overlay.open{opacity:1;pointer-events:auto}
-.um-panel{width:100%;max-width:540px;max-height:min(94dvh,780px);display:flex;flex-direction:column;position:relative;overflow:hidden;background:#fff;border:1px solid #F7F9F7;border-bottom:0;border-radius:26px 26px 0 0;box-shadow:0 -16px 56px rgba(1,40,26,.2);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
+.um-panel{width:100%;max-width:540px;max-height:min(94dvh,780px);display:flex;flex-direction:column;position:relative;overflow:hidden;background:#fff;border:1px solid #E1E9E3;border-bottom:0;border-radius:26px 26px 0 0;box-shadow:0 -16px 56px rgba(1,40,26,.2);transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1)}
 .um-overlay.open .um-panel{transform:translateY(0)}
-@media(min-width:640px){.um-overlay{align-items:center;padding:24px}.um-panel{max-height:min(90vh,780px);border:1px solid #F7F9F7;border-radius:24px;transform:translateY(20px) scale(.98);box-shadow:0 24px 64px rgba(1,40,26,.18),0 4px 16px rgba(0,0,0,.06)}.um-overlay.open .um-panel{transform:translateY(0) scale(1)}}
+@media(min-width:640px){.um-overlay{align-items:center;padding:24px}.um-panel{max-height:min(90vh,780px);border:1px solid #E1E9E3;border-radius:24px;transform:translateY(20px) scale(.98);box-shadow:0 24px 64px rgba(1,40,26,.18),0 4px 16px rgba(0,0,0,.06)}.um-overlay.open .um-panel{transform:translateY(0) scale(1)}}
 .um-handle{height:24px;display:flex;justify-content:center;align-items:center;flex-shrink:0}.um-handle-bar{width:40px;height:4px;border-radius:99px;background:#E1E9E3}@media(min-width:640px){.um-handle{display:none}}
-.um-topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 20px 14px;flex-shrink:0}.um-label{font-size:12px;font-weight: 500;letter-spacing:.09em;text-transform:uppercase;color:#29352E}.um-x{width:36px;height:36px;border:0;border-radius:12px;background:#F7F9F7;display:grid;place-items:center;color:#176B45;cursor:pointer;transition:background .15s,transform .15s}.um-x:hover{}.um-x .material-symbols-outlined{font-size:19px}
-.um-scroll{overflow-y:auto;flex:1;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}.um-info{padding:2px 20px 16px;border-bottom:1px solid #F7F9F7}.um-asgn-name{font-size:19px;font-weight: 500;line-height:1.28;color:#000000;margin:0 0 10px;letter-spacing:-.025em}.um-asgn-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.um-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:9px;font-size:11px;font-weight: 500}.um-chip-course{background:#F7F9F7;color:#000000}.um-chip-due{background:#F7F9F7;color:#176B45}.um-chip .material-symbols-outlined{font-size:15px}
-.um-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 20px;background:#F7F9F7;border-bottom:1px solid #F7F9F7}.um-metric{text-align:center;min-width:0;padding:10px 5px;background:#fff;border:1px solid #F7F9F7;border-radius:13px}.um-metric-label{font-size:9px;font-weight: 500;text-transform:uppercase;letter-spacing:.075em;color:#176B45;margin-bottom:4px}.um-metric-value{font-size:11px;font-weight: 500;color:#000000;line-height:1.3;overflow-wrap:anywhere}
-.um-body{padding:16px 20px 10px}.um-slot{border:1.5px dashed #E1E9E3;border-radius:18px;background:#F7F9F7;transition:border-color .15s,background .15s;overflow:hidden}.um-slot.drag-on {border-color:#000000;background:#F7F9F7}.um-slot:hover{}.um-file-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.um-slot-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 14px;text-align:center;gap:9px}.um-slot-empty-ico{width:48px;height:48px;border-radius:50%;background:#F7F9F7;display:grid;place-items:center;color:#000000}.um-slot-empty-ico .material-symbols-outlined{font-size:24px}.um-slot-title{font-size:13px;font-weight: 500;color:#000000}.um-slot-sub{font-size:11px;color:#176B45;margin-top:3px}.um-browse-btn{margin-top:2px;padding:8px 14px;border:1px solid #F7F9F7;border-radius:10px;background:#fff;color:#29352E;font-family:inherit;font-size:11px;font-weight: 500;cursor:pointer;transition:all .12s}.um-browse-btn:hover{}.um-slot-file{display:none;align-items:center;gap:12px;padding:13px 14px}.um-slot-file.show{display:flex}.um-ftype{width:42px;height:42px;flex-shrink:0;border-radius:11px;background:#29352E;display:grid;place-items:center;font-size:10px;font-weight: 500;color:#fff;text-transform:uppercase}.um-fname{flex:1;min-width:0}.um-fname-name{font-size:12px;font-weight: 500;color:#000000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.um-fname-meta{font-size:10px;color:#176B45;margin-top:3px}.um-fremove{width:30px;height:30px;flex-shrink:0;border:0;border-radius:9px;background:#F7F9F7;display:grid;place-items:center;color:#176B45;cursor:pointer}.um-fremove:hover{}
-.um-extra{padding:2px 20px 18px}.um-comment-label{display:block;margin-bottom:6px;font-size:11px;font-weight: 500;color:#176B45}.um-comment{width:100%;min-height:66px;resize:vertical;border:1px solid #F7F9F7;border-radius:12px;padding:10px 12px;font-family:inherit;font-size:12px;line-height:1.45;color:#000000;background:#fff}.um-comment:focus{outline:none;border-color:#000000;box-shadow:0 0 0 3px rgba(0,108,73,.11)}.um-comment::placeholder{color:#176B45}.um-integrity{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:11px 12px;background:#F7F9F7;border:1px solid #F7F9F7;border-radius:12px;cursor:pointer}.um-integrity input{margin:2px 0 0;width:16px;height:16px;accent-color:#29352E;flex-shrink:0;cursor:pointer}.um-integrity-text{font-size:11px;line-height:1.45;color:#176B45}.um-integrity-text strong{color:#000000;font-weight: 500}
-.um-foot{display:flex;align-items:center;gap:10px;padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid #F7F9F7;background:rgba(255,255,255,.97);flex-shrink:0}.um-btn-cancel{flex:1;padding:12px 16px;border:1px solid #F7F9F7;border-radius:13px;background:#fff;font-size:13px;font-weight: 500;font-family:inherit;color:#176B45;cursor:pointer}.um-btn-cancel:hover{}.um-btn-upload{flex:1.4;padding:12px 16px;border:0;border-radius:13px;background:#29352E;font-size:13px;font-weight: 500;font-family:inherit;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(30,77,56,.22);transition:background .12s,opacity .12s,transform .1s}.um-btn-upload:hover:not(:disabled){}.um-btn-upload:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}.um-btn-upload .material-symbols-outlined{font-size:17px}
-.um-loader{position:absolute;inset:0;z-index:20;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;opacity:0;pointer-events:none;transition:opacity .18s ease}.um-loader.show{opacity:1;pointer-events:all}.um-prog-wrap{width:100%;height:4px;background:#F7F9F7;border-radius:99px;overflow:hidden;margin-bottom:16px}.um-prog-bar{height:100%;width:0;background:#29352E;border-radius:99px;transition:width .07s linear}.um-success-phase{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.15,.64,1)}.um-success-phase.show{opacity:1;transform:translateY(0);pointer-events:all}
+.um-topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 14px;flex-shrink:0}.um-label{font-size:12px;font-weight: 500;letter-spacing:.09em;text-transform:uppercase;color:#29352E}.um-x{width:36px;height:36px;border:0;border-radius:12px;background:#F7F9F7;display:grid;place-items:center;color:#176B45;cursor:pointer;transition:background .15s,transform .15s}.um-x:hover{background:#E8ECE8}.um-x .material-symbols-outlined{font-size:19px}
+.um-scroll{overflow-y:auto;flex:1;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}.um-info{padding:2px 20px 16px;border-bottom:1px solid #E1E9E3}.um-asgn-name{font-size:19px;font-weight: 500;line-height:1.28;color:#000000;margin:0 0 10px;letter-spacing:-.025em}.um-asgn-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.um-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:9px;font-size:11px;font-weight: 500}.um-chip-course{background:#F7F9F7;color:#000000}.um-chip-due{background:#F7F9F7;color:#176B45}.um-chip .material-symbols-outlined{font-size:15px}
+.um-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px 20px;background:#F7F9F7;border-bottom:1px solid #E1E9E3}.um-metric{text-align:center;min-width:0;padding:10px 5px;background:#fff;border:1px solid #E1E9E3;border-radius:13px}.um-metric-label{font-size:9px;font-weight: 500;text-transform:uppercase;letter-spacing:.075em;color:#176B45;margin-bottom:4px}.um-metric-value{font-size:11px;font-weight: 500;color:#000000;line-height:1.3;overflow-wrap:anywhere}
+.um-body{padding:16px 20px 10px}.um-slot{border:1.5px dashed #E1E9E3;border-radius:18px;background:#F7F9F7;transition:border-color .15s,background .15s;overflow:hidden}.um-slot.drag-on {border-color:#000000;background:#F7F9F7}.um-slot:hover{border-color:#000000}.um-file-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.um-slot-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 14px;text-align:center;gap:9px}.um-slot-empty-ico{width:48px;height:48px;border-radius:50%;background:#ffffff;border:1px solid #E1E9E3;display:grid;place-items:center;color:#000000}.um-slot-empty-ico .material-symbols-outlined{font-size:24px}.um-slot-title{font-size:13px;font-weight: 500;color:#000000}.um-slot-sub{font-size:11px;color:#176B45;margin-top:3px}.um-browse-btn{margin-top:2px;padding:8px 14px;border:1px solid #E1E9E3;border-radius:10px;background:#fff;color:#29352E;font-family:inherit;font-size:11px;font-weight: 500;cursor:pointer;transition:all .12s}.um-browse-btn:hover{background:#F7F9F7}.um-slot-file{display:none;align-items:center;gap:12px;padding:13px 14px}.um-slot-file.show{display:flex}.um-ftype{width:42px;height:42px;flex-shrink:0;border-radius:11px;background:#29352E;display:grid;place-items:center;font-size:10px;font-weight: 500;color:#fff;text-transform:uppercase}.um-fname{flex:1;min-width:0}.um-fname-name{font-size:12px;font-weight: 500;color:#000000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.um-fname-meta{font-size:10px;color:#176B45;margin-top:3px}.um-fremove{width:30px;height:30px;flex-shrink:0;border:0;border-radius:9px;background:#F7F9F7;display:grid;place-items:center;color:#176B45;cursor:pointer}.um-fremove:hover{background:#E8ECE8}
+.um-extra{padding:2px 20px 18px}.um-comment-label{display:block;margin-bottom:6px;font-size:11px;font-weight: 500;color:#176B45}.um-comment{width:100%;min-height:66px;resize:vertical;border:1px solid #E1E9E3;border-radius:12px;padding:10px 12px;font-family:inherit;font-size:12px;line-height:1.45;color:#000000;background:#fff}.um-comment:focus{outline:none;border-color:#000000;box-shadow:0 0 0 3px rgba(0,108,73,.11)}.um-comment::placeholder{color:#176B45}.um-integrity{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:11px 12px;background:#F7F9F7;border:1px solid #E1E9E3;border-radius:12px;cursor:pointer}.um-integrity input{margin:2px 0 0;width:16px;height:16px;accent-color:#29352E;flex-shrink:0;cursor:pointer}.um-integrity-text{font-size:11px;line-height:1.45;color:#176B45}.um-integrity-text strong{color:#000000;font-weight: 500}
+.um-foot{display:flex;align-items:center;gap:10px;padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid #E1E9E3;background:rgba(255,255,255,.97);flex-shrink:0}.um-btn-cancel{flex:1;padding:12px 16px;border:1px solid #E1E9E3;border-radius:13px;background:#fff;font-size:13px;font-weight: 500;font-family:inherit;color:#176B45;cursor:pointer}.um-btn-cancel:hover{background:#F7F9F7}.um-btn-upload{flex:1.4;padding:12px 16px;border:0;border-radius:13px;background:#000000;font-size:13px;font-weight: 500;font-family:inherit;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 3px 10px rgba(0,0,0,.15);transition:background .12s,opacity .12s,transform .1s}.um-btn-upload:hover:not(:disabled){background:#29352E}.um-btn-upload:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}.um-btn-upload .material-symbols-outlined{font-size:17px}
+.um-loader{position:absolute;inset:0;z-index:20;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;opacity:0;pointer-events:none;transition:opacity .18s ease}.um-loader.show{opacity:1;pointer-events:all}.um-prog-wrap{width:100%;height:4px;background:#F7F9F7;border-radius:99px;overflow:hidden;margin-bottom:16px}.um-prog-bar{height:100%;width:0;background:#000000;border-radius:99px;transition:width .07s linear}.um-success-phase{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .35s ease,transform .35s cubic-bezier(.34,1.15,.64,1)}.um-success-phase.show{opacity:1;transform:translateY(0);pointer-events:all}
 @media(prefers-reduced-motion:reduce){.um-overlay,.um-panel,.um-x,.um-btn-upload{transition:none!important}}
 
+/* ════════════════════════════════════════
+   FLAT DESIGN PRIMITIVES (borderless standard)
+   ════════════════════════════════════════ */
+/* Flat card standard: white surface, minimal shadow, no border */
+html body .task-card,
+html body .graded-card {
+  border: 0 !important;
+  box-shadow: 0 1px 2px 0 rgba(16, 24, 40, 0.04) !important;
+}
+html body .task-card:hover,
+html body .graded-card:hover {
+  border: 0 !important;
+  box-shadow: 0 1px 2px 0 rgba(16, 24, 40, 0.04) !important;
+}
+/* Status indicators — restrained text, no pills. Colors come from the
+   global semantic-state tokens (semantic-states.css / design-tokens.css)
+   so every portal shares one urgency palette. */
+.asgn-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.asgn-status .material-symbols-outlined { font-size: 15px; }
+.asgn-status-warn    { color: var(--state-warning-text); }
+.asgn-status-danger  { color: var(--state-overdue-text); }
+.asgn-status-neutral { color: var(--state-neutral-text); }
+.asgn-status-ok      { color: var(--state-complete-text); }
+/* Subject labels — clean secondary text */
+.asgn-subject { font-size: 11.5px; font-weight: 500; color: #64748B; }
+/* Due hint / grade — plain text */
+.asgn-duehint { font-size: 12px; font-weight: 400; color: #64748B; }
+.asgn-grade   { font-size: 11.5px; font-weight: 600; color: #29352E; }
+/* Late-submission informational row — no outlined container */
+.asgn-late-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #EEF2F0;
+}
+.asgn-late-note-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 400;
+  color: #475569;
+}
+.asgn-late-note-text .material-symbols-outlined { font-size: 16px; color: var(--state-overdue-text); }
+/* Small icon action buttons — white, stable, text-affordance hover */
+.asgn-mini-btn { transition: color .15s ease; cursor: pointer; }
+.asgn-mini-btn:hover { color: #176B45 !important; background-color: #FFFFFF !important; }
+/* Keyboard focus is preserved now that decorative borders are gone */
+.asgn-sub-btn:focus-visible,
+.asgn-primary-btn:focus-visible,
+.asgn-mini-btn:focus-visible,
+.course-filter-btn:focus-visible,
+.action-icon-btn:focus-visible {
+  outline: 2px solid #176B45;
+  outline-offset: 2px;
+}
 
+/* ════════════════════════════════════════
+   COMPREHENSIVE INSTITUTIONAL DARK THEME
+   ════════════════════════════════════════ */
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  background-color: #0B1120 !important;
+  color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .task-card,
+html[data-theme="dark"] .graded-item {
+  background-color: #111827 !important;
+  border-color: #1E293B !important;
+  color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .text-forest-800,
+html[data-theme="dark"] .text-forest-700,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3 {
+  color: #F8FAFC !important;
+}
+
+html[data-theme="dark"] .text-ink-muted,
+html[data-theme="dark"] .text-ink-soft {
+  color: #94A3B8 !important;
+}
+
+html[data-theme="dark"] .bg-surface-subtle,
+html[data-theme="dark"] .bg-\[\#F7F9F7\],
+html[data-theme="dark"] .bg-forest-50 {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #CBD5E1 !important;
+}
+
+html[data-theme="dark"] .border-surface-border,
+html[data-theme="dark"] .border-surface-borderLight,
+html[data-theme="dark"] .divide-surface-borderLight > * {
+  border-color: #1E293B !important;
+}
+
+/* Dark mode buttons */
+html[data-theme="dark"] .asgn-sub-btn {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #CBD5E1 !important;
+}
+html[data-theme="dark"] .asgn-sub-btn:hover {
+  background-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .asgn-primary-btn {
+  background-color: #0F5132 !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] .asgn-primary-btn:hover {
+  background-color: #166534 !important;
+}
+
+/* Coursework filter buttons in dark mode */
+html[data-theme="dark"] .course-filter-btn {
+  background: #111827 !important;
+  border-color: #1E293B !important;
+  color: #94A3B8 !important;
+}
+html[data-theme="dark"] .course-filter-btn:hover {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .course-filter-btn.active {
+  background: #10B981 !important;
+  border-color: #10B981 !important;
+  color: #0B1120 !important;
+}
+html[data-theme="dark"] .course-filter-btn.active .course-filter-count {
+  background: rgba(11,17,32,0.25) !important;
+  color: #0B1120 !important;
+}
+
+/* Dark mode search input handled by assets/css/ngis-search.css dark tokens. */
+
+/* Dark mode table */
+html[data-theme="dark"] table thead tr {
+  background-color: #0F172A !important;
+  border-color: #1E293B !important;
+  color: #94A3B8 !important;
+}
+html[data-theme="dark"] table tbody tr {
+  border-color: #1E293B !important;
+}
+html[data-theme="dark"] table tbody tr:hover {
+  background-color: #1E293B/50 !important;
+}
+
+/* Dark mode modal */
+html[data-theme="dark"] .um-panel {
+  background-color: #111827 !important;
+  border-color: #1E293B !important;
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .um-topbar,
+html[data-theme="dark"] .um-foot,
+html[data-theme="dark"] .um-info {
+  background-color: #111827 !important;
+  border-color: #1E293B !important;
+}
+html[data-theme="dark"] .um-label,
+html[data-theme="dark"] .um-asgn-name {
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .um-x {
+  background-color: #1E293B !important;
+  color: #94A3B8 !important;
+}
+html[data-theme="dark"] .um-metrics {
+  background-color: #0F172A !important;
+  border-color: #1E293B !important;
+}
+html[data-theme="dark"] .um-metric {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .um-metric-label {
+  color: #94A3B8 !important;
+}
+html[data-theme="dark"] .um-metric-value {
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .um-slot {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+}
+html[data-theme="dark"] .um-slot-empty-ico {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #34D399 !important;
+}
+html[data-theme="dark"] .um-slot-title {
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .um-slot-sub {
+  color: #94A3B8 !important;
+}
+html[data-theme="dark"] .um-browse-btn {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .um-comment {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .um-integrity {
+  background-color: #0F172A !important;
+  border-color: #1E293B !important;
+}
+html[data-theme="dark"] .um-integrity-text strong {
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] .um-btn-cancel {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #CBD5E1 !important;
+}
+html[data-theme="dark"] .um-loader {
+  background-color: #111827 !important;
+  color: #F8FAFC !important;
+}
+html[data-theme="dark"] #fbOverlay .um-panel {
+  background-color: #111827 !important;
+  border-color: #1E293B !important;
+}
+html[data-theme="dark"] #fbContent {
+  background-color: #0F172A !important;
+  border-color: #1E293B !important;
+  color: #CBD5E1 !important;
+}
 </style>
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 <body data-page="student" data-role="student" class="student-dashboard font-sans selection:bg-forest-100 selection:text-forest-800">
 
@@ -136,42 +525,93 @@ html, body {
   <header id="heroBanner" role="banner"></header>
 
   <!-- ═══════════════ EDITORIAL WORKSPACE ═══════════════ -->
-  <div class="subpage-container space-y-7">
+  <div class="subpage-container space-y-6">
+
+    <!-- ──────────────── COURSEWORK FILTER BAR ──────────────── -->
+    <div class="bg-white rounded-2xl p-3 sm:p-4 graded-card">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <!-- Left: Course pills -->
+        <div class="course-filter-scroll" id="courseFilters" role="tablist" aria-label="Course filters">
+          <button type="button" class="course-filter-btn active" data-course="all" onclick="setCourseFilter('all')">
+            <span>All Courses</span>
+            <span class="course-filter-count" id="countAll">4</span>
+          </button>
+          <button type="button" class="course-filter-btn" data-course="english" onclick="setCourseFilter('english')">
+            <span>English Literature</span>
+            <span class="course-filter-count" id="countEnglish">1</span>
+          </button>
+          <button type="button" class="course-filter-btn" data-course="math" onclick="setCourseFilter('math')">
+            <span>Mathematics</span>
+            <span class="course-filter-count" id="countMath">1</span>
+          </button>
+          <button type="button" class="course-filter-btn" data-course="physics" onclick="setCourseFilter('physics')">
+            <span>Physics</span>
+            <span class="course-filter-count" id="countPhysics">1</span>
+          </button>
+          <button type="button" class="course-filter-btn" data-course="history" onclick="setCourseFilter('history')">
+            <span>World History</span>
+            <span class="course-filter-count" id="countHistory">1</span>
+          </button>
+        </div>
+
+        <!-- Right: Search input -->
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="w-full sm:w-56 ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input type="text" id="asgnSearch" placeholder="Search assignments…" class="w-full ngis-search-input"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- ──────────────── MAIN TWO-COLUMN WORKSPACE ──────────────── -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-7 items-start">
 
       <!-- ═════════ LEFT COLUMN: ACTIVE & PENDING TASKS (~7 cols) ═════════ -->
       <div class="lg:col-span-7 space-y-4">
         
         <!-- Header -->
         <div class="flex items-center justify-between pb-3 border-b border-surface-border">
-          <h2 class="text-xl font-normal font-display text-forest-800 tracking-tight">
-            Active &amp; Pending Tasks
-          </h2>
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg sm:text-xl font-normal font-display text-forest-800 tracking-tight">
+              Active &amp; Pending Tasks
+            </h2>
+            <span class="text-[11px] font-medium text-ink-soft" id="tasksBadge">
+              4 Tasks
+            </span>
+          </div>
+        </div>
+
+        <!-- Empty state when no tasks match filter -->
+        <div id="noTasksState" style="display:none;" class="bg-white rounded-3xl p-8 text-center space-y-3">
+          <div class="w-12 h-12 rounded-2xl bg-surface-subtle text-ink-muted flex items-center justify-center mx-auto">
+            <span class="material-symbols-outlined text-2xl">assignment_turned_in</span>
+          </div>
+          <h3 class="text-base font-normal text-forest-800 font-display">No Pending Tasks Found</h3>
+          <p class="text-xs text-ink-muted max-w-sm mx-auto">There are no outstanding assignments due for this subject filter. Check back later or view completed coursework.</p>
+          <button type="button" onclick="setCourseFilter('all')" class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-normal rounded-xl bg-surface-subtle text-forest-800 asgn-mini-btn transition-colors">
+            <span>View All Courses</span>
+          </button>
         </div>
 
         <div class="space-y-4" id="tasksList">
 
           <!-- Task Card 1: Calculus -->
-          <div class="task-card bg-white rounded-3xl border border-surface-border shadow-xs transition-all p-5 sm:p-6" data-course="Advanced Mathematics" data-due="tomorrow" data-type="urgent">
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 rounded-2xl bg-[#F7F9F7] border border-[#E1E9E3] flex items-center justify-center text-[#000000] shrink-0">
-                <span class="material-symbols-outlined text-[22px]">calculate</span>
+          <div class="task-card bg-white rounded-3xl p-4 sm:p-6" data-course="Advanced Mathematics" data-due="tomorrow" data-type="urgent">
+            <div class="flex items-start gap-3.5 sm:gap-4">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#F7F9F7] flex items-center justify-center text-forest-700 shrink-0">
+                <span class="material-symbols-outlined text-[20px] sm:text-[22px]">calculate</span>
               </div>
               <div class="flex-1 min-w-0">
                 <!-- Badges Row -->
                 <div class="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10.5px] font-normal bg-[#F7F9F7] text-[#176B45] border border-[#176B45]/60 uppercase">
-                      <span class="material-symbols-outlined text-[13px]">notifications_active</span>
+                    <span class="asgn-status asgn-status-warn">
+                      <span class="material-symbols-outlined">notifications_active</span>
                       Due Tomorrow
                     </span>
-                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-surface-subtle text-ink-muted border border-surface-border">
+                    <span class="asgn-subject">
                       Advanced Mathematics
                     </span>
                   </div>
-                  <span class="text-xs font-normal text-[#000000] bg-[#F7F9F7] px-2.5 py-0.5 rounded-md border border-[#E1E9E3]/60">
+                  <span class="asgn-duehint" style="color:var(--state-warning-text);font-weight:500">
                     22 hrs remaining
                   </span>
                 </div>
@@ -179,7 +619,7 @@ html, body {
                 <h3 class="text-base sm:text-lg font-normal text-forest-800 tracking-tight font-display mb-1">
                   Calculus — Integration Problems Set 3
                 </h3>
-                <p class="text-xs text-ink-muted flex items-center gap-2 flex-wrap mb-4">
+                <p class="text-xs text-ink-muted flex items-center gap-2 flex-wrap mb-3.5">
                   <span class="flex items-center gap-1 font-medium text-ink-main"><span class="material-symbols-outlined text-[15px] text-forest-700">schedule</span> Jan 28 • 8:00 AM</span>
                   <span>•</span>
                   <span>Problem Set (10 Exercises)</span>
@@ -187,18 +627,18 @@ html, body {
                   <span class="font-normal text-forest-700">Weight: 15%</span>
                 </p>
                 <!-- Actions Row -->
-                <div class="flex items-center justify-between gap-2 flex-wrap pt-3 border-t border-surface-borderLight">
-                  <div class="flex items-center gap-2">
-                    <button onclick="if(window.toast) window.toast('Opening instructions PDF…','info'); else alert('Viewing Instructions for Calculus Set 3')" class="px-3.5 py-2 text-xs font-normal rounded-xl bg-surface-subtle border border-surface-border text-forest-800 transition-colors flex items-center gap-1.5">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 pt-3 border-t border-surface-borderLight">
+                  <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="if(window.toast) window.toast('Opening instructions PDF…','info'); else alert('Viewing Instructions for Calculus Set 3')" class="asgn-sub-btn">
                       <span data-ngis-icon="file" class="text-[16px]"></span>
-                      <span>View Instructions</span>
+                      <span>Instructions</span>
                     </button>
-                    <button onclick="if(window.toast) window.toast('Downloading Problem Set (.PDF)…','info'); else alert('Downloading Problem Set (.PDF)')" class="px-3.5 py-2 text-xs font-normal rounded-xl bg-surface-subtle border border-surface-border text-forest-800 transition-colors flex items-center gap-1.5">
+                    <button type="button" onclick="if(window.toast) window.toast('Downloading Problem Set (.PDF)…','info'); else alert('Downloading Problem Set (.PDF)')" class="asgn-sub-btn">
                       <span data-ngis-icon="download" class="text-[16px]"></span>
-                      <span>Problem Set (.PDF)</span>
+                      <span>Problem Set</span>
                     </button>
                   </div>
-                  <button onclick="openUpload('Calculus — Integration Problems Set 3','Advanced Mathematics','Jan 28 • 8:00 AM','Instructor TBA','Class 10A · SS2 KH','15% of Term')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 text-white shadow-xs transition-all flex items-center gap-1.5">
+                  <button type="button" onclick="openUpload('Calculus — Integration Problems Set 3','Advanced Mathematics','Jan 28 • 8:00 AM','Mr. Chea Sophea','Class 10A · SS2 KH','15% of Term')" class="asgn-primary-btn ngis-btn-warning">
                     <span data-ngis-icon="upload" class="text-[16px]"></span>
                     <span>Upload Submission</span>
                   </button>
@@ -208,24 +648,24 @@ html, body {
           </div>
 
           <!-- Task Card 2: History Essay (Past Due) -->
-          <div class="task-card bg-white rounded-3xl border border-surface-border shadow-xs transition-all p-5 sm:p-6" data-course="World History" data-due="past" data-type="urgent">
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 rounded-2xl bg-[#F7F9F7] border border-[#176B45] flex items-center justify-center text-[#176B45] shrink-0">
-                <span class="material-symbols-outlined text-[22px]">history_edu</span>
+          <div class="task-card bg-white rounded-3xl p-4 sm:p-6" data-course="World History" data-due="past" data-type="urgent">
+            <div class="flex items-start gap-3.5 sm:gap-4">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#F7F9F7] flex items-center justify-center text-forest-700 shrink-0">
+                <span class="material-symbols-outlined text-[20px] sm:text-[22px]">history_edu</span>
               </div>
               <div class="flex-1 min-w-0">
                 <!-- Badges Row -->
                 <div class="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10.5px] font-normal bg-[#F7F9F7] text-[#176B45] border border-[#176B45] uppercase">
-                      <span class="material-symbols-outlined text-[13px]">warning</span>
+                    <span class="asgn-status asgn-status-danger">
+                      <span class="material-symbols-outlined">warning</span>
                       Past Due
                     </span>
-                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-surface-subtle text-ink-muted border border-surface-border">
+                    <span class="asgn-subject">
                       World History
                     </span>
                   </div>
-                  <span class="text-xs font-normal text-[#176B45] bg-[#F7F9F7] px-2.5 py-0.5 rounded-md border border-[#176B45]">
+                  <span class="asgn-status asgn-status-danger">
                     Action Required
                   </span>
                 </div>
@@ -234,19 +674,19 @@ html, body {
                   History Essay — French Revolution Outline
                 </h3>
                 <p class="text-xs text-ink-muted flex items-center gap-2 flex-wrap mb-3.5">
-                  <span class="text-[#176B45] font-normal flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">event_busy</span> Due: Jan 20 • 11:59 PM</span>
+                  <span class="font-normal flex items-center gap-1" style="color:var(--state-overdue-text)"><span class="material-symbols-outlined text-[15px]">event_busy</span> Due: Jan 20 • 11:59 PM</span>
                   <span>•</span>
                   <span>Essay Draft (800 words)</span>
                   <span>•</span>
-                  <span class="font-normal text-[#176B45]">Late penalty applies (-5%/day)</span>
+                  <span class="font-normal" style="color:var(--state-overdue-text)">Late penalty applies (-5%/day)</span>
                 </p>
-                <!-- Notice Bar -->
-                <div class="bg-[#F7F9F7]/70 border border-[#176B45] rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                  <div class="flex items-center gap-2 text-[#176B45] font-medium text-[11.5px]">
-                    <span class="material-symbols-outlined text-[17px] text-[#176B45] shrink-0">info</span>
+                <!-- Late-submission info row -->
+                <div class="asgn-late-note">
+                  <div class="asgn-late-note-text">
+                    <span class="material-symbols-outlined" aria-hidden="true">info</span>
                     <span>Portal remains open for late uploads with faculty approval</span>
                   </div>
-                  <button onclick="openUpload('History Essay — French Revolution Outline','World History','Jan 20 • 11:59 PM (Late)','Instructor TBA','Class 10A · SS2 KH','Not specified')" class="px-3.5 py-1.5 text-xs font-normal rounded-xl bg-[#176B45] text-white shadow-xs transition-all flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
+                  <button type="button" onclick="openUpload('History Essay — French Revolution Outline','World History','Jan 20 • 11:59 PM (Late)','Dr. Vance Miller','Class 10A · SS2 KH','Not specified')" class="asgn-primary-btn ngis-btn-urgent w-full sm:w-auto">
                     <span data-ngis-icon="upload" class="text-[15px]"></span>
                     <span>Late Submission</span>
                   </button>
@@ -256,19 +696,19 @@ html, body {
           </div>
 
           <!-- Task Card 3: Physics Lab Report -->
-          <div class="task-card bg-white rounded-3xl border border-surface-border shadow-xs transition-all p-5 sm:p-6" data-course="Physics — Mechanics & Optics" data-due="week" data-type="this-week">
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 rounded-2xl bg-[#F7F9F7] border border-[#E1E9E3] flex items-center justify-center text-[#000000] shrink-0">
-                <span class="material-symbols-outlined text-[22px]">science</span>
+          <div class="task-card bg-white rounded-3xl p-4 sm:p-6" data-course="Physics — Mechanics & Optics" data-due="week" data-type="this-week">
+            <div class="flex items-start gap-3.5 sm:gap-4">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-[#F7F9F7] flex items-center justify-center text-forest-700 shrink-0">
+                <span class="material-symbols-outlined text-[20px] sm:text-[22px]">science</span>
               </div>
               <div class="flex-1 min-w-0">
                 <!-- Badges Row -->
                 <div class="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10.5px] font-normal bg-[#F7F9F7] text-[#000000] border border-[#E1E9E3] uppercase">
+                    <span class="asgn-status asgn-status-neutral">
                       2 Days Remaining
                     </span>
-                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-surface-subtle text-ink-muted border border-surface-border">
+                    <span class="asgn-subject">
                       Physics — Mechanics &amp; Optics
                     </span>
                   </div>
@@ -280,7 +720,7 @@ html, body {
                 <h3 class="text-base sm:text-lg font-normal text-forest-800 tracking-tight font-display mb-1">
                   Physics Lab Report — Wave Optics
                 </h3>
-                <p class="text-xs text-ink-muted flex items-center gap-2 flex-wrap mb-4">
+                <p class="text-xs text-ink-muted flex items-center gap-2 flex-wrap mb-3.5">
                   <span class="flex items-center gap-1 font-medium text-ink-main"><span class="material-symbols-outlined text-[15px] text-forest-700">schedule</span> Due: Jan 30 • 11:59 PM</span>
                   <span>•</span>
                   <span>Lab Experiment Data &amp; Analysis</span>
@@ -288,18 +728,18 @@ html, body {
                   <span>Max Size: 25 MB</span>
                 </p>
                 <!-- Actions Row -->
-                <div class="flex items-center justify-between gap-2 flex-wrap pt-3 border-t border-surface-borderLight">
-                  <div class="flex items-center gap-2">
-                    <button onclick="if(window.toast) window.toast('Downloading Lab Template (.XLSX)…','info'); else alert('Downloading Lab Template (.XLSX)')" class="px-3.5 py-2 text-xs font-normal rounded-xl bg-surface-subtle border border-surface-border text-forest-800 transition-colors flex items-center gap-1.5">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 pt-3 border-t border-surface-borderLight">
+                  <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="if(window.toast) window.toast('Downloading Lab Template (.XLSX)…','info'); else alert('Downloading Lab Template (.XLSX)')" class="asgn-sub-btn">
                       <span data-ngis-icon="list" class="text-[16px]"></span>
-                      <span>Lab Template (.XLSX)</span>
+                      <span>Lab Template</span>
                     </button>
-                    <button onclick="if(window.toast) window.toast('Viewing rubric guidelines…','info'); else alert('Opening Rubric')" class="px-3.5 py-2 text-xs font-normal rounded-xl bg-surface-subtle border border-surface-border text-forest-800 transition-colors flex items-center gap-1.5">
+                    <button type="button" onclick="if(window.toast) window.toast('Viewing rubric guidelines…','info'); else alert('Opening Rubric')" class="asgn-sub-btn">
                       <span data-ngis-icon="book" class="text-[16px]"></span>
                       <span>Rubric</span>
                     </button>
                   </div>
-                  <button onclick="openUpload('Physics Lab Report — Wave Optics','Physics — Mechanics & Optics','Jan 30 • 11:59 PM','Dr. Pov','STEM 1 (Gr. 10)','20% of Term')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 text-white shadow-xs transition-all flex items-center gap-1.5">
+                  <button type="button" onclick="openUpload('Physics Lab Report — Wave Optics','Physics — Mechanics & Optics','Jan 30 • 11:59 PM','Dr. Pov','STEM 1 (Gr. 10)','20% of Term')" class="asgn-primary-btn">
                     <span data-ngis-icon="upload" class="text-[16px]"></span>
                     <span>Upload</span>
                   </button>
@@ -309,19 +749,19 @@ html, body {
           </div>
 
           <!-- Task Card 4: English Essay -->
-          <div class="task-card bg-white rounded-3xl border border-surface-border shadow-xs transition-all p-5 sm:p-6" data-course="English Literature" data-due="next-week" data-type="next-week">
-            <div class="flex items-start gap-4">
-              <div class="w-12 h-12 rounded-2xl bg-surface-subtle border border-surface-border flex items-center justify-center text-forest-700 shrink-0">
-                <span class="material-symbols-outlined text-[22px]">auto_stories</span>
+          <div class="task-card bg-white rounded-3xl p-4 sm:p-6" data-course="English Literature" data-due="next-week" data-type="next-week">
+            <div class="flex items-start gap-3.5 sm:gap-4">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-surface-subtle flex items-center justify-center text-forest-700 shrink-0">
+                <span class="material-symbols-outlined text-[20px] sm:text-[22px]">auto_stories</span>
               </div>
               <div class="flex-1 min-w-0">
                 <!-- Badges Row -->
                 <div class="flex items-center justify-between gap-2 flex-wrap mb-1.5">
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10.5px] font-normal bg-surface-subtle text-ink-muted border border-surface-border uppercase">
+                    <span class="asgn-status asgn-status-neutral">
                       7 Days Remaining
                     </span>
-                    <span class="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-surface-subtle text-ink-muted border border-surface-border">
+                    <span class="asgn-subject">
                       English Literature
                     </span>
                   </div>
@@ -333,20 +773,22 @@ html, body {
                 <h3 class="text-base sm:text-lg font-normal text-forest-800 tracking-tight font-display mb-1">
                   English Essay — Comparative Literature
                 </h3>
-                <p class="text-xs text-ink-muted flex items-center gap-2 flex-wrap mb-4">
+                <p class="text-xs text-ink-muted flex items-center gap-2 flex-wrap mb-3.5">
                   <span class="flex items-center gap-1 font-medium text-ink-main"><span class="material-symbols-outlined text-[15px] text-forest-700">schedule</span> Due: Feb 3 • 11:59 PM</span>
                   <span>•</span>
                   <span>MLA Format • 1,500 words</span>
                   <span>•</span>
-                  <span>3 Peer Sources Required</span>
+                  <span>3 Peer Sources</span>
                 </p>
                 <!-- Actions Row -->
-                <div class="flex items-center justify-between gap-2 flex-wrap pt-3 border-t border-surface-borderLight">
-                  <button onclick="if(window.toast) window.toast('Opening MLA Citation Guidelines…','info'); else alert('Viewing Citation Guidelines')" class="px-3.5 py-2 text-xs font-normal rounded-xl bg-surface-subtle border border-surface-border text-forest-800 transition-colors flex items-center gap-1.5">
-                    <span data-ngis-icon="link" class="text-[16px]"></span>
-                    <span>Citation Guidelines</span>
-                  </button>
-                  <button onclick="openUpload('English Essay — Comparative Literature','English Literature','Feb 3 • 11:59 PM','Instructor TBA','Class 10A · SS2 KH','25% of Term')" class="px-4 py-2 text-xs font-normal rounded-xl bg-forest-800 text-white shadow-xs transition-all flex items-center gap-1.5">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 pt-3 border-t border-surface-borderLight">
+                  <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="button" onclick="if(window.toast) window.toast('Opening MLA Citation Guidelines…','info'); else alert('Viewing Citation Guidelines')" class="asgn-sub-btn">
+                      <span data-ngis-icon="link" class="text-[16px]"></span>
+                      <span>MLA Guidelines</span>
+                    </button>
+                  </div>
+                  <button type="button" onclick="openUpload('English Essay — Comparative Literature','English Literature','Feb 3 • 11:59 PM','Ms. Rathana Chea','Class 10A · SS2 KH','25% of Term')" class="asgn-primary-btn">
                     <span data-ngis-icon="upload" class="text-[16px]"></span>
                     <span>Upload</span>
                   </button>
@@ -362,7 +804,7 @@ html, body {
       <div class="lg:col-span-5 space-y-4">
         
         <!-- Header -->
-        <div class="flex items-center justify-between pb-1">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
           <div class="flex items-center gap-2">
             <span class="w-7 h-7 rounded-lg bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0">
               <span class="material-symbols-outlined text-[18px]">history</span>
@@ -376,21 +818,19 @@ html, body {
               </p>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="if(window.toast) window.toast('Filter applied','info'); else alert('Filtering graded records...')" class="px-2.5 py-1.5 text-xs font-normal rounded-xl bg-white border border-surface-border text-ink-muted shadow-xs transition-colors flex items-center gap-1">
-              <span data-ngis-icon="filter" class="text-[15px]"></span>
-              <span>Filter</span>
-            </button>
-            <button onclick="if(window.toast) window.toast('Showing all 14 graded records','info'); else alert('View all 14 records')" class="px-2.5 py-1.5 text-xs font-normal rounded-xl bg-white border border-surface-border text-forest-800 shadow-xs transition-colors flex items-center gap-1">
+          <div class="flex items-center gap-2 self-start sm:self-auto">
+            <button type="button" onclick="setCourseFilter('all')" class="px-2.5 py-1.5 text-xs font-normal rounded-xl bg-white text-forest-800 asgn-mini-btn transition-colors flex items-center gap-1">
               <span>View All (14)</span>
               <span data-ngis-icon="chevronRight" class="text-[15px]"></span>
             </button>
           </div>
         </div>
 
-        <!-- Table Card -->
-        <div class="bg-white rounded-3xl border border-surface-border shadow-xs overflow-hidden">
-          <div class="overflow-x-auto">
+        <!-- Table Card Container -->
+        <div class="bg-white rounded-3xl overflow-hidden graded-card">
+          
+          <!-- Desktop / Tablet Table View (hidden on mobile < 640px) -->
+          <div class="hidden sm:block overflow-x-auto">
             <table class="w-full text-left text-xs border-collapse">
               <thead>
                 <tr class="border-b border-surface-borderLight text-ink-soft font-normal uppercase tracking-wider text-[10px] bg-surface-subtle/50">
@@ -401,10 +841,10 @@ html, body {
                   <th class="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-surface-borderLight">
+              <tbody class="divide-y divide-surface-borderLight" id="gradedTableBody">
                 
                 <!-- Row 1 -->
-                <tr class="transition-colors group">
+                <tr class="transition-colors group" data-course="Mathematics">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-2.5">
                       <div class="w-8 h-8 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center font-normal text-xs shrink-0">
@@ -421,7 +861,7 @@ html, body {
                     <span class="font-normal text-forest-800">95</span> <span class="text-[10px] text-ink-soft">/100</span>
                   </td>
                   <td class="py-3.5 px-3 text-center whitespace-nowrap">
-                    <span class="px-2 py-0.5 rounded-full text-[10.5px] font-normal bg-[#F7F9F7] text-[#000000] border border-[#E1E9E3]">
+                    <span class="asgn-grade">
                       Grade A
                     </span>
                   </td>
@@ -438,7 +878,7 @@ html, body {
                 </tr>
 
                 <!-- Row 2 -->
-                <tr class="transition-colors group">
+                <tr class="transition-colors group" data-course="Physics">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-2.5">
                       <div class="w-8 h-8 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0">
@@ -455,7 +895,7 @@ html, body {
                     <span class="font-normal text-forest-800">88</span> <span class="text-[10px] text-ink-soft">/100</span>
                   </td>
                   <td class="py-3.5 px-3 text-center whitespace-nowrap">
-                    <span class="px-2 py-0.5 rounded-full text-[10.5px] font-normal bg-[#F7F9F7] text-[#000000] border border-[#E1E9E3]">
+                    <span class="asgn-grade">
                       Grade B+
                     </span>
                   </td>
@@ -472,7 +912,7 @@ html, body {
                 </tr>
 
                 <!-- Row 3 -->
-                <tr class="transition-colors group">
+                <tr class="transition-colors group" data-course="English Lit">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-2.5">
                       <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
@@ -489,7 +929,7 @@ html, body {
                     <span class="font-normal text-forest-800">82</span> <span class="text-[10px] text-ink-soft">/100</span>
                   </td>
                   <td class="py-3.5 px-3 text-center whitespace-nowrap">
-                    <span class="px-2 py-0.5 rounded-full text-[10.5px] font-normal bg-slate-200 text-slate-800 border border-slate-300">
+                    <span class="asgn-grade">
                       Grade B
                     </span>
                   </td>
@@ -506,7 +946,7 @@ html, body {
                 </tr>
 
                 <!-- Row 4 -->
-                <tr class="transition-colors group">
+                <tr class="transition-colors group" data-course="Computer Science">
                   <td class="py-3.5 px-4">
                     <div class="flex items-center gap-2.5">
                       <div class="w-8 h-8 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0">
@@ -523,7 +963,7 @@ html, body {
                     <span class="font-normal text-forest-800">98</span> <span class="text-[10px] text-ink-soft">/100</span>
                   </td>
                   <td class="py-3.5 px-3 text-center whitespace-nowrap">
-                    <span class="px-2 py-0.5 rounded-full text-[10.5px] font-normal bg-[#F7F9F7] text-[#000000] border border-[#E1E9E3]">
+                    <span class="asgn-grade">
                       Grade A+
                     </span>
                   </td>
@@ -543,9 +983,146 @@ html, body {
             </table>
           </div>
 
+          <!-- Mobile Graded Coursework Cards (visible only on mobile < 640px) -->
+          <div class="block sm:hidden divide-y divide-surface-borderLight" id="gradedMobileList">
+            
+            <!-- Mobile Card 1: Math -->
+            <div class="p-3.5 space-y-2.5 graded-item" data-course="Mathematics">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-start gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center text-xs shrink-0 font-normal">
+                    Σ
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-normal text-forest-800 text-[13px] leading-tight">Differentiation Worksheet</div>
+                    <div class="text-[11px] text-ink-soft">Jan 20 • Problem Set #4</div>
+                  </div>
+                </div>
+                <span class="asgn-grade shrink-0">
+                  Grade A
+                </span>
+              </div>
+              <div class="flex items-center justify-between pt-1 border-t border-surface-borderLight/60 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="asgn-subject">Mathematics</span>
+                  <span class="text-ink-muted text-[11px]"><strong class="font-normal text-forest-800">95</strong>/100</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="showFeedback('Differentiation Worksheet', 'Excellent mastery of the chain rule. Solutions were clearly organized with accurate mathematical notation.', 'Mr. Chea Sophea', '95/100 · Grade A')" class="asgn-mini-btn px-2.5 py-1 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center gap-1 min-h-[32px]">
+                    <span data-ngis-icon="mail"></span>
+                    <span>Feedback</span>
+                  </button>
+                  <button type="button" onclick="if(window.toast) window.toast('Downloading graded paper…','info'); else alert('Downloading graded submission')" class="asgn-mini-btn p-1.5 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center min-w-[32px] min-h-[32px] justify-center" title="Download Graded Paper">
+                    <span data-ngis-icon="download"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Card 2: Physics -->
+            <div class="p-3.5 space-y-2.5 graded-item" data-course="Physics">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-start gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">biotech</span>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-normal text-forest-800 text-[13px] leading-tight">Newton’s Laws Lab Report</div>
+                    <div class="text-[11px] text-ink-soft">Jan 15 • Force Simulation</div>
+                  </div>
+                </div>
+                <span class="asgn-grade shrink-0">
+                  Grade B+
+                </span>
+              </div>
+              <div class="flex items-center justify-between pt-1 border-t border-surface-borderLight/60 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="asgn-subject">Physics</span>
+                  <span class="text-ink-muted text-[11px]"><strong class="font-normal text-forest-800">88</strong>/100</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="showFeedback('Newton’s Laws Lab Report', 'Good experimental data. The error analysis section in Table 3 needs deeper interpretation of friction factors.', 'Ms. Rathana Chea', '88/100 · Grade B+')" class="asgn-mini-btn px-2.5 py-1 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center gap-1 min-h-[32px]">
+                    <span data-ngis-icon="mail"></span>
+                    <span>Feedback</span>
+                  </button>
+                  <button type="button" onclick="if(window.toast) window.toast('Downloading graded paper…','info'); else alert('Downloading graded submission')" class="asgn-mini-btn p-1.5 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center min-w-[32px] min-h-[32px] justify-center" title="Download Graded Paper">
+                    <span data-ngis-icon="download"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Card 3: English Lit -->
+            <div class="p-3.5 space-y-2.5 graded-item" data-course="English Lit">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-start gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">menu_book</span>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-normal text-forest-800 text-[13px] leading-tight">Hamlet Thematic Analysis Essay</div>
+                    <div class="text-[11px] text-ink-soft">Jan 10 • Act III Breakdown</div>
+                  </div>
+                </div>
+                <span class="asgn-grade shrink-0">
+                  Grade B
+                </span>
+              </div>
+              <div class="flex items-center justify-between pt-1 border-t border-surface-borderLight/60 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="asgn-subject">English Lit</span>
+                  <span class="text-ink-muted text-[11px]"><strong class="font-normal text-forest-800">82</strong>/100</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="showFeedback('Hamlet Thematic Analysis Essay', 'Compelling thesis statement on existential dread. Strengthen textual quotes integration in paragraphs 4-5.', 'Dr. Vance Miller', '82/100 · Grade B')" class="asgn-mini-btn px-2.5 py-1 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center gap-1 min-h-[32px]">
+                    <span data-ngis-icon="mail"></span>
+                    <span>Feedback</span>
+                  </button>
+                  <button type="button" onclick="if(window.toast) window.toast('Downloading graded paper…','info'); else alert('Downloading graded submission')" class="asgn-mini-btn p-1.5 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center min-w-[32px] min-h-[32px] justify-center" title="Download Graded Paper">
+                    <span data-ngis-icon="download"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Card 4: CS -->
+            <div class="p-3.5 space-y-2.5 graded-item" data-course="Computer Science">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-start gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-[#F7F9F7] text-[#000000] flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">terminal</span>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-normal text-forest-800 text-[13px] leading-tight">Python Sorting Algorithms</div>
+                    <div class="text-[11px] text-ink-soft">Jan 05 • Benchmark (.py)</div>
+                  </div>
+                </div>
+                <span class="asgn-grade shrink-0">
+                  Grade A+
+                </span>
+              </div>
+              <div class="flex items-center justify-between pt-1 border-t border-surface-borderLight/60 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="asgn-subject">Computer Science</span>
+                  <span class="text-ink-muted text-[11px]"><strong class="font-normal text-forest-800">98</strong>/100</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="showFeedback('Python Sorting Algorithms', 'Flawless complexity analysis and benchmarking graph implementations! Clean PEP8 code style.', 'Ms. SreyLeak Kem', '98/100 · Grade A+')" class="asgn-mini-btn px-2.5 py-1 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center gap-1 min-h-[32px]">
+                    <span data-ngis-icon="mail"></span>
+                    <span>Feedback</span>
+                  </button>
+                  <button type="button" onclick="if(window.toast) window.toast('Downloading graded paper…','info'); else alert('Downloading graded submission')" class="asgn-mini-btn p-1.5 rounded-lg text-xs font-normal bg-white text-forest-800 inline-flex items-center min-w-[32px] min-h-[32px] justify-center" title="Download Graded Paper">
+                    <span data-ngis-icon="download"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
           <!-- Pagination Footer -->
           <div class="p-3.5 px-4 bg-surface-subtle/50 border-t border-surface-borderLight flex items-center justify-between text-xs text-ink-soft">
-            <span>Displaying 4 of 14 graded records</span>
+            <span id="gradedCountText">Displaying 4 of 14 graded records</span>
             <div class="flex items-center gap-1 font-medium">
               <button onclick="if(window.toast) window.toast('Page 1','info')" class="w-6 h-6 rounded flex items-center justify-center text-ink-muted transition-colors">
                 <span data-ngis-icon="chevronLeft" class="text-[16px]"></span>
@@ -676,32 +1253,50 @@ window.PAGE = { role: "student", active: "assignments" };
 </script>
 
 <script>
-window.PAGE = {"role":"student","active":"assignments"};
-window.HERO_CONFIG = {
-  title: 'Assignments & Coursework',
-  greeting: 'Track upcoming homework, submitted problem sets, lab reports, and feedback',
+(function() {
+  var p = new URLSearchParams(window.location.search);
+  var dept = (p.get('dept') || p.get('subject') || '').toLowerCase();
+  var deptTitles = {
+    english: 'English Literature Assignments',
+    math: 'Mathematics Coursework & Tasks',
+    physics: 'Physics Lab & Coursework',
+    history: 'World History Coursework',
+    cs: 'Computer Science Coursework'
+  };
+  var pageTitle = deptTitles[dept] || 'Assignments & Coursework';
+  var crumbs = [{ label: 'Departments', href: '../shared/departments.html?portal=student' }];
+  if (dept) {
+    crumbs.push({ label: dept.charAt(0).toUpperCase() + dept.slice(1) + ' Department', href: '../shared/lessons.html?dept=' + encodeURIComponent(dept) + '&portal=student' });
+    crumbs.push({ label: 'Assignments' });
+  } else {
+    crumbs.push({ label: 'Assignments' });
+  }
+  document.title = 'NGIS — ' + (dept ? (dept.charAt(0).toUpperCase() + dept.slice(1) + ' Assignments') : 'Assignments & Coursework');
 
-  name: 'Nrinphouneta Hok',
-  id: 'Student ID: 2026-STD-0142',
-  grade: 'Grade 10',
-  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: 'student-profile.html',
-  notifLink: 'student-notifications.html',
-  notifCount: 3,
-  title: 'Assignments',
-  greeting: 'Track active coursework, submission deadlines, and graded feedback.',
-  breadcrumbs: [{ label: 'Assignments' }],
-  ddRows: [
-    { icon: 'school', text: 'Grade 10 — Science Stream' },
-    { icon: 'class', text: 'Class 10A · SS2 KH' },
-    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
-    { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
-  ]
-};
+  window.PAGE = { role: "student", active: "assignments" };
+  window.HERO_CONFIG = {
+    title: pageTitle,
+    greeting: dept ? ('Active submissions, deadlines, and teacher feedback for ' + (dept.charAt(0).toUpperCase() + dept.slice(1)) + '.') : 'Track upcoming homework, submitted problem sets, lab reports, and feedback',
+    name: 'Nrinphouneta Hok',
+    id: 'Student ID: 2026-STD-0142',
+    grade: 'Grade 10',
+    avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+    avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+    homeLink: '../../index.html',
+    signOutLink: '../../index.html',
+    profileLink: 'student-profile.html',
+    notifLink: 'student-notifications.html',
+    notifCount: 3,
+    breadcrumbs: crumbs,
+    ddRows: [
+      { icon: 'school', text: 'Grade 10 — Science Stream' },
+      { icon: 'class', text: 'Class 10A · SS2 KH' },
+      { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+      { icon: 'calendar_today', text: 'Academic Year: 2025–2026' },
+      { icon: 'emoji_events', text: 'GPA: 3.88 / 4.00' }
+    ]
+  };
+})();
 </script>
 <script src="js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
@@ -744,6 +1339,43 @@ window.showFeedback = function(title, feedback, teacher, grade) {
   var previousFocus = null;
   var maxBytes = 25 * 1024 * 1024;
   var allowed = ['pdf','doc','docx','xls','xlsx','zip'];
+
+  /* ── Status-aware action buttons (global semantic-state system).
+     Urgency is derived from each card's record-state attributes
+     (data-due / data-submitted), not from label text. Cards encode:
+       data-due="past"      → deadline passed, late window open → overdue
+       data-due="tomorrow"  → inside the 24h warning window  → approaching
+       data-due="week"      → normal schedule                → normal
+     data-submitted="true" → action already done → complete (never urgent). */
+  var urgencyRetries = 0;
+  function applyCardUrgency() {
+    if (!window.NGISStates) {
+      if (++urgencyRetries <= 30) setTimeout(applyCardUrgency, 100); /* engine loads via layout.js deferred injector */
+      return;
+    }
+    var cards = document.querySelectorAll('.task-card[data-due]');
+    cards.forEach(function (card) {
+      var record = {
+        status: card.getAttribute('data-submitted') === 'true' ? 'submitted' : 'pending',
+        dueDate: null,
+        lateAllowed: true
+      };
+      var due = card.getAttribute('data-due');
+      var level;
+      if (due === 'past') level = 'overdue';
+      else if (due === 'tomorrow') level = 'approaching';
+      else level = window.NGISStates.classify(record); /* 'normal' */
+      card.setAttribute('data-ngis-state', level);
+      var primary = card.querySelector('.asgn-primary-btn');
+      if (primary) window.NGISStates.styleButton(primary, level);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyCardUrgency);
+  } else {
+    applyCardUrgency();
+  }
+
   function notify(message, type) {
     if (window.toast) window.toast(message, type || 'info');
     else window.alert(message);
@@ -826,7 +1458,7 @@ window.showFeedback = function(title, feedback, teacher, grade) {
           actionText: 'View Details'
         });
       } else {
-        notify('Assignment successfully uploaded!', 'success');
+        notify('Assignment uploaded', 'success');
       }
     };
 
@@ -836,6 +1468,151 @@ window.showFeedback = function(title, feedback, teacher, grade) {
       await executeUpload();
     }
   });
+})();
+
+// Coursework Filtering & Search Controller
+(function() {
+  window.setCourseFilter = function(courseKey) {
+    var activeCourse = (courseKey || 'all').toLowerCase();
+
+    // Update filter buttons
+    document.querySelectorAll('.course-filter-btn').forEach(function(btn) {
+      var match = btn.getAttribute('data-course') === activeCourse;
+      btn.classList.toggle('active', match);
+      btn.setAttribute('aria-selected', match ? 'true' : 'false');
+    });
+
+    // Filter Task Cards
+    var tasks = document.querySelectorAll('.task-card');
+    var visibleTasks = 0;
+    tasks.forEach(function(card) {
+      var c = (card.getAttribute('data-course') || '').toLowerCase();
+      var show = (activeCourse === 'all');
+      if (!show) {
+        if (activeCourse === 'english' && (c.includes('english') || c.includes('literature'))) show = true;
+        else if (activeCourse === 'math' && (c.includes('math') || c.includes('calculus'))) show = true;
+        else if (activeCourse === 'physics' && (c.includes('physics') || c.includes('mechanics'))) show = true;
+        else if (activeCourse === 'history' && c.includes('history')) show = true;
+        else if (activeCourse === 'cs' && (c.includes('computer') || c.includes('python'))) show = true;
+        else if (c.includes(activeCourse)) show = true;
+      }
+      card.style.display = show ? '' : 'none';
+      if (show) visibleTasks++;
+    });
+
+    // Empty state for tasks
+    var noTasks = document.getElementById('noTasksState');
+    if (noTasks) noTasks.style.display = (visibleTasks === 0) ? 'block' : 'none';
+
+    var tasksBadge = document.getElementById('tasksBadge');
+    if (tasksBadge) {
+      tasksBadge.textContent = visibleTasks + ' Task' + (visibleTasks === 1 ? '' : 's');
+    }
+
+    // Filter Desktop Graded Table Rows
+    var tableRows = document.querySelectorAll('#gradedTableBody tr');
+    var visibleRows = 0;
+    tableRows.forEach(function(row) {
+      var subj = (row.getAttribute('data-course') || row.querySelector('td:nth-child(2)')?.textContent || '').toLowerCase();
+      var show = (activeCourse === 'all');
+      if (!show) {
+        if (activeCourse === 'english' && (subj.includes('english') || subj.includes('lit'))) show = true;
+        else if (activeCourse === 'math' && (subj.includes('math') || subj.includes('differentiation'))) show = true;
+        else if (activeCourse === 'physics' && subj.includes('physics')) show = true;
+        else if (activeCourse === 'history' && subj.includes('history')) show = true;
+        else if (activeCourse === 'cs' && (subj.includes('computer') || subj.includes('science'))) show = true;
+        else if (subj.includes(activeCourse)) show = true;
+      }
+      row.style.display = show ? '' : 'none';
+      if (show) visibleRows++;
+    });
+
+    // Filter Mobile Graded Cards
+    var mobileItems = document.querySelectorAll('#gradedMobileList .graded-item');
+    mobileItems.forEach(function(item) {
+      var subj = (item.getAttribute('data-course') || '').toLowerCase();
+      var show = (activeCourse === 'all');
+      if (!show) {
+        if (activeCourse === 'english' && (subj.includes('english') || subj.includes('lit'))) show = true;
+        else if (activeCourse === 'math' && (subj.includes('math') || subj.includes('differentiation'))) show = true;
+        else if (activeCourse === 'physics' && subj.includes('physics')) show = true;
+        else if (activeCourse === 'history' && subj.includes('history')) show = true;
+        else if (activeCourse === 'cs' && (subj.includes('computer') || subj.includes('science'))) show = true;
+        else if (subj.includes(activeCourse)) show = true;
+      }
+      item.style.display = show ? '' : 'none';
+    });
+
+    // Update footer count text
+    var footerCount = document.getElementById('gradedCountText');
+    if (footerCount) {
+      footerCount.textContent = (activeCourse === 'all')
+        ? 'Displaying 4 of 14 graded records'
+        : ('Displaying ' + visibleRows + ' record' + (visibleRows === 1 ? '' : 's') + ' for ' + (activeCourse.charAt(0).toUpperCase() + activeCourse.slice(1)));
+    }
+
+    // Sync URL search param
+    try {
+      var u = new URL(window.location.href);
+      if (activeCourse === 'all') {
+        u.searchParams.delete('dept');
+        u.searchParams.delete('subject');
+      } else {
+        u.searchParams.set('dept', activeCourse);
+      }
+      window.history.replaceState({}, '', u.toString());
+    } catch(e) {}
+  };
+
+  // Wire search input
+  var searchInput = document.getElementById('asgnSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+      var q = (e.target.value || '').toLowerCase().trim();
+      var tasks = document.querySelectorAll('.task-card');
+      var visibleTasks = 0;
+      tasks.forEach(function(card) {
+        var text = (card.textContent || '').toLowerCase();
+        var show = !q || text.includes(q);
+        card.style.display = show ? '' : 'none';
+        if (show) visibleTasks++;
+      });
+      var noTasks = document.getElementById('noTasksState');
+      if (noTasks) noTasks.style.display = (visibleTasks === 0) ? 'block' : 'none';
+      var tasksBadge = document.getElementById('tasksBadge');
+      if (tasksBadge) {
+        tasksBadge.textContent = visibleTasks + ' Task' + (visibleTasks === 1 ? '' : 's');
+      }
+    });
+  }
+
+  // Auto-activate filter on initial load based on URL query param
+  document.addEventListener('DOMContentLoaded', function() {
+    var p = new URLSearchParams(window.location.search);
+    var initDept = (p.get('dept') || p.get('subject') || '').toLowerCase();
+    if (initDept) {
+      if (initDept.includes('eng')) setCourseFilter('english');
+      else if (initDept.includes('math')) setCourseFilter('math');
+      else if (initDept.includes('phys')) setCourseFilter('physics');
+      else if (initDept.includes('hist')) setCourseFilter('history');
+      else if (initDept.includes('cs') || initDept.includes('comp')) setCourseFilter('cs');
+      else setCourseFilter(initDept);
+    }
+  });
+
+  // Run immediately if DOM is already ready
+  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    var p = new URLSearchParams(window.location.search);
+    var initDept = (p.get('dept') || p.get('subject') || '').toLowerCase();
+    if (initDept) {
+      if (initDept.includes('eng')) setCourseFilter('english');
+      else if (initDept.includes('math')) setCourseFilter('math');
+      else if (initDept.includes('phys')) setCourseFilter('physics');
+      else if (initDept.includes('hist')) setCourseFilter('history');
+      else if (initDept.includes('cs') || initDept.includes('comp')) setCourseFilter('cs');
+      else setCourseFilter(initDept);
+    }
+  }
 })();
 </script>
 </body>

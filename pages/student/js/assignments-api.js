@@ -46,30 +46,41 @@
         <div style="display:flex;flex-direction:column;gap:10px">
           ${items.map(a => {
             const status = a.submission_status || "pending";
-            const statusColor = status === "graded" ? "#16a34a" : status === "submitted" || status === "late" ? "#2563eb" : "#d97706";
-            const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+            const level = window.NGISStates
+              ? NGISStates.classify({ status: status, dueDate: a.due_date, lateAllowed: a.late_submission_allowed !== false })
+              : "normal";
+            const colors = {
+              overdue:    ["#B02A37", "Overdue — Action Required"],
+              urgent:     ["#B02A37", "Due Very Soon"],
+              approaching:["#B45309", "Due Soon"],
+              complete:   ["#176B45", status === "late" ? "Submitted (Late)" : status.charAt(0).toUpperCase() + status.slice(1)],
+              closed:     ["#64748B", status.charAt(0).toUpperCase() + status.slice(1)],
+              normal:     ["#64748B", status.charAt(0).toUpperCase() + status.slice(1)]
+            };
+            const [statusColor, statusLabel] = colors[level] || colors.normal;
+            const needsSubmit = status === "pending" || status === "unsubmitted" || status === "missing";
             return `
-              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px" data-ngis-state="${level}">
                 <div>
                   <div style="font-weight: 400;color:#0f172a;margin-bottom:4px">${escapeHtml(a.title)}</div>
-                  <div style="font-size:13px;color:#64748b;margin-bottom:6px">
+                  <div style="font-size:13px;color:${level === "overdue" || level === "urgent" ? "#B02A37" : level === "approaching" ? "#B45309" : "#64748b"};margin-bottom:6px">
                     ${escapeHtml(a.subject_name || "Subject")} · Due ${a.due_date || "—"}
                   </div>
                   <div style="font-size:13px;color:#475569">${escapeHtml((a.description || "").slice(0, 120))}${(a.description || "").length > 120 ? "…" : ""}</div>
-                  ${a.score != null ? `<div style="margin-top:8px;font-size:13px;font-weight: 400;color:#16a34a">Score: ${a.score}</div>` : ""}
+                  ${a.score != null ? `<div style="margin-top:8px;font-size:13px;font-weight: 400;color:#176B45">Score: ${a.score}</div>` : ""}
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
                   <span style="font-size:12px;font-weight: 400;color:${statusColor};background:${statusColor}15;padding:4px 10px;border-radius:999px">${statusLabel}</span>
-                  ${status === "pending" ? `
-                    <button data-submit="${a.id}" style="border:none;background:#2563eb;color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight: 400;cursor:pointer">
-                      Submit
+                  ${needsSubmit ? `
+                    <button data-submit="${a.id}" data-level="${level}" style="border:none;background:${level === "overdue" || level === "urgent" ? "#DC3545" : level === "approaching" ? "#F28C28" : "#176B45"};color:#fff;padding:8px 14px;border-radius:8px;font-size:13px;font-weight: 400;cursor:pointer">
+                      ${level === "overdue" || level === "urgent" ? "Late Submission" : "Submit"}
                     </button>` : ""}
                 </div>
               </div>`;
           }).join("")}
         </div>`;
 
-      // Wire submit buttons
+      // Wire submit buttons (lifecycle feedback via the shared toast engine)
       target.querySelectorAll("[data-submit]").forEach(btn => {
         btn.addEventListener("click", async () => {
           const id = btn.getAttribute("data-submit");
@@ -77,7 +88,7 @@
           btn.textContent = "Submitting…";
           try {
             await NGISAuth.api(`/api/assignments/${id}/submit`, { method: "POST", body: "{}" });
-            loadAssignments(); // refresh
+            loadAssignments(); // refresh — status change re-runs the classifier
           } catch (err) {
             alert(err.message || "Submit failed");
             btn.disabled = false;

@@ -45,8 +45,10 @@
     return '<span class="material-symbols-outlined smx-icon' + (extra ? ' ' + extra : '') + '">' + esc(name) + '</span>';
   }
 
+  /* Flat status label. Rounded pill badges are intentionally not used in the
+     clearance workspace — status is conveyed by text plus a square marker. */
   function badge(label, tone) {
-    return '<span class="smx-badge ' + esc(tone || 'neutral') + '"><i class="smx-dot"></i>' + esc(label) + '</span>';
+    return '<span class="smx-status ' + esc(tone || 'neutral') + '">' + esc(label) + '</span>';
   }
 
   function headHtml(eyebrow, title, sub, badgeLabel, actionsHtml) {
@@ -97,19 +99,22 @@
     return '<tr><td class="smx-empty" colspan="' + colspan + '">' + icon('folder_off') + '<div>' + esc(message) + '</div></td></tr>';
   }
 
-  function toast(message, type) {
-    if (!toastEl) {
-      toastEl = document.createElement('div');
-      toastEl.className = 'smx-toast';
-      if (document.body && document.body.appendChild) document.body.appendChild(toastEl);
-    }
-    toastEl.textContent = message;
-    toastEl.className = 'smx-toast show' + (type ? ' ' + esc(type) : '');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () {
-      if (toastEl) toastEl.className = 'smx-toast';
-    }, 3200);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
   }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
 
   function closeModal() {
     if (activeModal && activeModal.remove) activeModal.remove();
@@ -190,10 +195,13 @@
     if (link.click) link.click();
     if (document.body && document.body.removeChild) document.body.removeChild(link);
     if (window.URL.revokeObjectURL) window.URL.revokeObjectURL(url);
-    toast('CSV exported successfully');
+    toast('CSV exported');
   }
 
   function loadingHtml(label) {
+    if (window.NGIS_SKELETON) {
+      return '<div class="ngis-sm" data-renderer="ngis-sm">' + window.NGIS_SKELETON.table({ rows: 5 }) + '</div>';
+    }
     return '<div class="ngis-sm" data-renderer="ngis-sm">' +
       '<div class="smx-card"><div class="smx-card-body smx-empty">' + icon('hourglass_top') + '<div>' + esc(label) + '</div></div></div>' +
     '</div>';
@@ -533,13 +541,9 @@
       var h = [];
 
       h.push('<div class="ngis-sm" data-renderer="ngis-sm">');
-      h.push(headHtml(
-        'STUDENT MANAGEMENT · CLEARANCE DESK',
-        'Verify Student Profile Updates',
-        'Review custodial changes, legal identifiers, contact channels and supporting documentation before syncing the student ledger.',
-        pending + ' Pending Action',
-        termPill() + exportButton()
-      ));
+      /* The duplicate in-page header (eyebrow / title / round badge /
+         description) is intentionally omitted. The hero banner already owns
+         the workspace title, and Export CSV now lives in the toolbar. */
 
       h.push('<div class="smx-kpi-grid">' +
         kpiHtml('Pending Verification', esc(String(pending)), 'Requires registrar review', 'pending_actions', 'warn') +
@@ -580,7 +584,10 @@
       h.push('<section class="smx-card smx-table-card">' +
         '<div class="smx-card-head"><div><div class="smx-card-title">' + icon('table_rows', 'sm') + 'Clearance Ledger</div>' +
           '<div class="smx-card-sub">' + list.length + ' matching request(s) &middot; ' + selectedIds().length + ' selected</div></div>' +
-          '<button type="button" class="smx-btn soft sm" data-act="bulk-approve">' + icon('done_all', 'sm') + 'Approve Selected</button></div>' +
+          '<div class="smx-card-actions">' +
+            '<button type="button" class="smx-btn sm" data-act="export">' + icon('file_download', 'sm') + 'Export CSV</button>' +
+            '<button type="button" class="smx-btn soft sm" data-act="bulk-approve">' + icon('done_all', 'sm') + 'Approve Selected</button>' +
+          '</div></div>' +
         '<div class="smx-table-scroll"><table class="smx-table"><thead><tr>' +
           '<th class="center">' + selectAllHtml(allSelected) + '</th>' +
           '<th>Request ID</th><th>Student & Cohort</th><th>Field Changed</th>' +
@@ -787,7 +794,7 @@
 
     function notify(ids) {
       var targets = (ids || []).filter(Boolean);
-      if (!targets.length) { toast('Select at least one student to notify', 'error'); return; }
+      if (!targets.length) { toast('Select at least 1 student to notify', 'error'); return; }
       postJson('/api/student-mgmt/absence-stats/notify', {
         studentIds: targets,
         channel: 'sms_telegram'
@@ -944,7 +951,7 @@
             '<td class="center">' + rowCheckbox(s.studentId, !!state.selected[s.studentId]) + '</td>' +
             '<td>' + personHtml(s.initials || initials(s.studentName), s.studentName, s.studentId + ' · Grade ' + (s.class || '')) + '</td>' +
             '<td><div class="smx-attendance"><div class="value">' + esc(String(s.attendancePct)) + '%</div>' + barHtml(s.attendancePct, tone) + '</div></td>' +
-            '<td class="center"><strong>' + esc(String(s.totalAbsentDays)) + '</strong><div class="smx-muted">' + esc(String(s.excusedAbsences)) + ' excused</div></td>' +
+            '<td class="center"><span class="font-medium">' + esc(String(s.totalAbsentDays)) + '</span><div class="smx-muted">' + esc(String(s.excusedAbsences)) + ' excused</div></td>' +
             '<td class="center">' + badge(esc(String(s.unexcusedAbsences)) + ' days', tone === 'bad' ? 'bad' : (tone === 'warn' ? 'warn' : 'neutral')) + '</td>' +
             '<td>' + riskBadge(risk) + '</td>' +
             '<td><div class="smx-nowrap">' + noticeBadge(s.noticeStatus) + '</div><div class="smx-muted">' + esc(s.noticeDate || '') + '</div></td>' +

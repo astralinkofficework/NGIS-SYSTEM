@@ -3,7 +3,7 @@ from playwright.async_api import async_playwright
 
 PAGES_TO_AUDIT = [
     ("Admin Dashboard", "pages/admin/admin.html", "admin"),
-    ("Admin Students", "pages/admin/admin-users.html", "admin"),
+    ("Admin Students", "pages/admin/admin-users-students.html", "admin"),
     ("Teacher Dashboard", "pages/teacher/teacher.html", "teacher"),
     ("Teacher Attendance", "pages/teacher/teacher-attendance.html", "teacher"),
     ("Teacher Lessons", "pages/teacher/teacher-lessons.html", "teacher"),

@@ -1,228 +1,1984 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" class="h-full">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Student Services Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/app.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
-<!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
-<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
-<style>
-.admin-services { max-width: 1400px; margin: 0 auto; padding: 16px 24px 40px; display: flex; flex-direction: column; gap: 16px; }
-.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; box-shadow: var(--sh-1); }
-.stat-card .val { font-size: 28px; font-weight: 400; color: var(--heading); line-height: 1; }
-.stat-card .lbl { font-size: 12px; font-weight: 400; color: var(--muted); margin-top: 6px; }
-.filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.filters select, .filters input { font-size: 13px; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: var(--r-sm); background: var(--surface-2); color: var(--text); }
-.req-table { width: 100%; border-collapse: collapse; }
-.req-table th { text-align: left; font-size: 11px; font-weight: 400; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 12px 14px; background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
-.req-table td { padding: 14px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-.req-table tr:hover { }
-.status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 400; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
-.status-open { background: var(--accent-soft); color: #000000; }
-.status-pending { background: var(--primary-soft); color: var(--primary); }
-.status-in_progress { background: #FBFBFB; color: #1D1D1B; }
-.status-completed { background: #FBFBFB; color: #000000; }
-.status-rejected { background: var(--danger-soft); color: var(--danger); }
-.priority-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 400; padding: 3px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
-.priority-normal { background: var(--surface-3); color: var(--muted); }
-.priority-high { background: #FBFBFB; color: #F77442; }
-.priority-urgent { background: var(--danger-soft); color: var(--danger); }
-.modal-overlay { position: fixed; inset: 0; background: rgba(10,34,20,.50); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.modal-overlay.show { opacity: 1; pointer-events: auto; }
-.modal { background: var(--surface); border-radius: var(--r-xl); box-shadow: var(--sh-3); padding: 22px; width: 520px; max-width: 100%; max-height: 90vh; overflow-y: auto; }
-.modal h3 { font-size: 16px; margin-bottom: 6px; }
-.modal p { font-size: 14px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-.comment-box { background: var(--surface-2); border-radius: var(--r-md); padding: 12px; margin-top: 8px; }
-.comment-box .by { font-size: 11px; font-weight: 400; color: var(--primary); text-transform: uppercase; letter-spacing: .06em; }
-.comment-box .txt { font-size: 13px; color: var(--text); margin-top: 4px; }
-.comment-box .dt { font-size: 11px; color: var(--faint); margin-top: 4px; }
-@media (max-width: 900px) { .stat-row { grid-template-columns: repeat(2, 1fr); } .tbl-wrap { overflow-x: auto; } }
-@media (max-width: 600px) { .stat-row { grid-template-columns: 1fr; } }
-</style>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-<link rel="stylesheet" href="../../assets/css/design-system.css">
-<link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NGIS Operations — Service Desk &amp; Request Queue</title>
 
-<!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+  <!-- Fonts: strictly light & medium weights (NO BOLD FONTS per AGENTS.md) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..500,0..1,-50..200" rel="stylesheet">
+
+  <!-- Phosphor Icons for Mobile Hamburger & Action Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          fontWeight: {
+            normal: '400',
+            medium: '500',
+            semibold: '500',
+            bold: '500',
+            extrabold: '500',
+            black: '500'
+          },
+          colors: {
+            brand: {
+              50: '#edf7f1',
+              100: '#d7ece0',
+              200: '#b2dac3',
+              600: '#166534',
+              700: '#0F5132', // NGIS Primary Forest Green
+              800: '#0c4028',
+              900: '#093220',
+            },
+            ngis: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#0F5132', /* Primary Forest Green */
+              900: '#0b3d26',
+              950: '#052316',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- NGIS Core Unified Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+  <link rel="stylesheet" href="../../assets/css/ngis-components.css">
+
+  <script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/protect.js"></script>
+  <script src="_auth-bootstrap.js"></script>
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+
+  <style>
+    /* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+    *, b, strong, th, h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold {
+      font-weight: 500 !important;
+    }
+    p, span, td, input, select, textarea, div {
+      font-weight: 400;
+    }
+    .font-medium, .font-semibold, th, h1, h2, h3, h4, [class*="font-medium"], [class*="font-semibold"] {
+      font-weight: 500 !important;
+    }
+
+    /* CRITICAL FIX: Review Action Header Solid Opaque Background to defeat design-system.css transparency override */
+    #reviewActionHeader,
+    header#reviewActionHeader,
+    [id="reviewActionHeader"] {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 40 !important;
+      border-bottom: 1px solid #E2E8F0 !important;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+    }
+    [data-theme="dark"] #reviewActionHeader,
+    [data-theme="dark"] header#reviewActionHeader {
+      background: #1E293B !important;
+      background-color: #1E293B !important;
+      border-bottom-color: #334155 !important;
+    }
+
+    #mobileActionBottomBar {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      border-top: 1px solid #E2E8F0 !important;
+      box-shadow: 0 -2px 10px 0 rgba(0, 0, 0, 0.05) !important;
+    }
+    [data-theme="dark"] #mobileActionBottomBar {
+      background: #1E293B !important;
+      background-color: #1E293B !important;
+      border-top-color: #334155 !important;
+    }
+
+    /* Decision Action Buttons Preservation & Contrast */
+    .btn-ngis-reject,
+    #btn-reject-header, #btn-reject-mobile {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      color: var(--color-danger,#DC3545) !important;
+      border: 1px solid #FECDD3 !important;
+    }
+    .btn-ngis-reject:hover,
+    #btn-reject-header:hover, #btn-reject-mobile:hover {
+      background: #FFF1F2 !important;
+      background-color: #FFF1F2 !important;
+      border-color: #FDA4AF !important;
+    }
+    .btn-ngis-reject *,
+    #btn-reject-header *, #btn-reject-mobile * {
+      color: var(--color-danger,#DC3545) !important;
+    }
+
+    .btn-ngis-hold,
+    #btn-hold-header, #btn-hold-mobile {
+      background: #FFFFFF !important;
+      background-color: #FFFFFF !important;
+      color: #334155 !important;
+      border: 1px solid #CBD5E1 !important;
+    }
+    .btn-ngis-hold:hover,
+    #btn-hold-header:hover, #btn-hold-mobile:hover {
+      background: #F8FAFC !important;
+      background-color: #F8FAFC !important;
+      border-color: #94A3B8 !important;
+    }
+    .btn-ngis-hold *,
+    #btn-hold-header *, #btn-hold-mobile * {
+      color: #334155 !important;
+    }
+
+    .btn-ngis-approve,
+    #btn-approve-header, #btn-approve-mobile,
+    #svCreate, #svCreateSubmitBtn {
+      background: #0F5132 !important;
+      background-color: #0F5132 !important;
+      color: #FFFFFF !important;
+      border: 1px solid #0F5132 !important;
+    }
+    .btn-ngis-approve:hover,
+    #btn-approve-header:hover, #btn-approve-mobile:hover,
+    #svCreate:hover, #svCreateSubmitBtn:hover {
+      background: #0C4028 !important;
+      background-color: #0C4028 !important;
+    }
+    .btn-ngis-approve *,
+    #btn-approve-header *, #btn-approve-mobile *,
+    #svCreate *, #svCreateSubmitBtn * {
+      color: #FFFFFF !important;
+    }
+
+    /* Document Package Status Pills - High Contrast Preservation */
+    .doc-pill-included {
+      background-color: #ECFDF5 !important;
+      color: #065F46 !important;
+      border: 1px solid #A7F3D0 !important;
+    }
+    .doc-pill-verified {
+      background-color: #FFFBEB !important;
+      color: #92400E !important;
+      border: 1px solid #FDE68A !important;
+    }
+    .doc-pill-neutral {
+      background-color: #F1F5F9 !important;
+      color: #1E293B !important;
+      border: 1px solid #E2E8F0 !important;
+    }
+
+    /* Subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Dark Mode Overrides for Cards & Inputs */
+    [data-theme="dark"] body {
+      background-color: #0f172a !important;
+      color: #e2e8f0 !important;
+    }
+    [data-theme="dark"] .bg-white {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    [data-theme="dark"] .border-slate-200,
+    [data-theme="dark"] .border-slate-200\/80,
+    [data-theme="dark"] .border-slate-200\/90,
+    [data-theme="dark"] .border-slate-100 {
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] .bg-slate-50,
+    [data-theme="dark"] .bg-slate-50\/80,
+    [data-theme="dark"] .bg-slate-50\/40,
+    [data-theme="dark"] .bg-slate-50\/70 {
+      background-color: #0f172a !important;
+    }
+    [data-theme="dark"] .text-slate-900,
+    [data-theme="dark"] .text-slate-800 {
+      color: #f1f5f9 !important;
+    }
+    [data-theme="dark"] .text-slate-700,
+    [data-theme="dark"] .text-slate-600 {
+      color: #cbd5e1 !important;
+    }
+    [data-theme="dark"] .text-slate-500,
+    [data-theme="dark"] .text-slate-400 {
+      color: #94a3b8 !important;
+    }
+    [data-theme="dark"] select,
+    [data-theme="dark"] input[type="text"],
+    [data-theme="dark"] input[type="search"],
+    [data-theme="dark"] textarea {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+
+    /* Drawer animation */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 1000;
+      display: flex;
+      justify-content: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+      max-width: 100vw;
+    }
+    .drawer-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .drawer-overlay .drawer {
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .drawer-overlay.show .drawer {
+      transform: translateX(0);
+    }
+  </style>
 </head>
-<body data-role="admin" data-portal="admin">
-<main class="main">
-  <header class="hero" style="padding-bottom: 40px;">
-    <div class="hero-topbar">
-      <div class="htb-left">
-        <button class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation"><i class="ph ph-list text-xl"></i><span class="mi" style="display:none">menu</span></button>
-        <a href="admin.html" class="htb-home-btn"><span class="mi">arrow_back</span><span>Back to Dashboard</span></a>
+<body data-role="admin" data-portal="admin" class="min-h-screen bg-[#F8FAFC] font-sans text-slate-800 antialiased flex flex-col selection:bg-brand-100 selection:text-brand-900">
+
+  <!-- Interactive Toast Notification Container -->
+  <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4 transition-all duration-300 hidden" id="toast-banner">
+    <div class="flex items-center justify-between p-4 rounded-xl shadow-lg border backdrop-blur-md bg-white border-slate-200 text-slate-800" id="toast-inner">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-xl text-[#0F5132]" id="toast-icon">check_circle</span>
+        <p class="text-xs sm:text-sm font-medium" id="toast-text">Action completed successfully.</p>
       </div>
-      <div class="htb-center"><img class="htb-logo" src="../../assets/images/logo.png" alt="NGIS logo" /></div>
-      <div class="htb-right" style="opacity:0;pointer-events:none;"></div>
-    </div>
-  </header>
-
-  <div class="admin-services">
-    <div class="stat-row">
-      <div class="stat-card"><div class="val" id="aOpen">0</div><div class="lbl">Open</div></div>
-      <div class="stat-card"><div class="val" id="aPending">0</div><div class="lbl">Pending Review</div></div>
-      <div class="stat-card"><div class="val" id="aProgress">0</div><div class="lbl">In Progress</div></div>
-      <div class="stat-card"><div class="val" id="aCompleted">0</div><div class="lbl">Completed</div></div>
-    </div>
-
-    <div class="filters">
-      <select id="filterStatus" onchange="loadAdmin()">
-        <option value="">All Statuses</option>
-        <option value="open">Open</option>
-        <option value="pending">Pending</option>
-        <option value="in_progress">In Progress</option>
-        <option value="completed">Completed</option>
-        <option value="rejected">Rejected</option>
-      </select>
-      <select id="filterCampus" onchange="loadAdmin()">
-        <option value="">All Campuses</option>
-        <option>Sensok</option>
-        <option>TK</option>
-      </select>
-      <input type="text" id="filterQ" placeholder="Search requests..." oninput="loadAdmin()">
-    </div>
-
-    <div class="tbl-wrap">
-      <table class="req-table">
-        <thead>
-          <tr>
-            <th>ID</th><th>Student</th><th>Category</th><th>Type</th><th>Title</th><th>Campus</th><th>Status</th><th>Priority</th><th>Date</th><th style="text-align:right">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="adminTable"></tbody>
-      </table>
+      <button type="button" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 transition-colors" onclick="dismissToast()">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
     </div>
   </div>
-</main>
 
-<div class="modal-overlay" id="detailModal">
-  <div class="modal">
-    <h3 id="modalTitle">Request Details</h3>
-    <p id="modalDesc"></p>
-    <div id="modalComments"></div>
-    <div class="form-group" style="margin-top:12px">
-      <label class="form-label">Add Comment</label>
-      <input class="form-control" id="modalComment" placeholder="Type a comment...">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Close</button>
-      <button class="btn btn-primary" onclick="saveModal()">Save Changes</button>
-    </div>
-  </div>
-</div>
+  <main class="main flex-1 min-w-0 flex flex-col">
 
-<script>
-const API = '/api/service-requests';
-let currentId = null;
+    <!-- Unified NGIS Top Hero Banner (Desktop header + mobile hamburger app bar integration) -->
+    <header id="heroBanner" role="banner"></header>
 
-async function loadAdmin() {
-  const status = document.getElementById('filterStatus').value;
-  const campus = document.getElementById('filterCampus').value;
-  const q = document.getElementById('filterQ').value.trim();
-  let url = API + '?';
-  if (status) url += `status=${encodeURIComponent(status)}&`;
-  if (campus) url += `campus=${encodeURIComponent(campus)}&`;
-  const res = await fetch(url);
-  const json = await res.json();
-  let items = json.data || [];
-  if (q) { const lq = q.toLowerCase(); items = items.filter(r => r.id.toLowerCase().includes(lq) || r.studentName.toLowerCase().includes(lq) || r.title.toLowerCase().includes(lq)); }
-  document.getElementById('aOpen').textContent = items.filter(i => i.status === 'open').length;
-  document.getElementById('aPending').textContent = items.filter(i => i.status === 'pending').length;
-  document.getElementById('aProgress').textContent = items.filter(i => i.status === 'in_progress').length;
-  document.getElementById('aCompleted').textContent = items.filter(i => i.status === 'completed').length;
-  renderAdmin(items);
-}
+    <!-- ═══ MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE) ═══ -->
+    <header id="mobileMainAppbar" class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+      <div class="flex items-center gap-3 min-w-0">
+        <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+          <i class="ph-bold ph-list text-xl"></i>
+        </button>
+        <div class="min-w-0 truncate">
+          <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Service Request Queue</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-medium text-[#0F5132]">Operations</span>
+      </div>
+    </header>
 
-function badge(status) {
-  const map = { open: 'status-open', pending: 'status-pending', in_progress: 'status-in_progress', completed: 'status-completed', rejected: 'status-rejected' };
-  return `<span class="status-badge ${map[status] || 'status-open'}">${status.replace('_',' ')}</span>`;
-}
-function priorityBadge(p) {
-  const map = { normal: 'priority-normal', high: 'priority-high', urgent: 'priority-urgent' };
-  return `<span class="priority-badge ${map[p] || 'priority-normal'}">${p}</span>`;
-}
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- VIEW 1: SERVICE REQUEST QUEUE (TABLE & KPIS)                          -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div id="queueView" class="page w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-7xl mx-auto flex-1">
 
-function renderAdmin(items) {
-  const tbody = document.getElementById('adminTable');
-  if (!items.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--muted)">No requests found</td></tr>'; return; }
-  tbody.innerHTML = items.map(r => `
-    <tr>
-      <td><span>${r.id}</span></td>
-      <td>${r.studentName}</td>
-      <td>${r.category.replace('_',' ')}</td>
-      <td>${r.type.replace('_',' ')}</td>
-      <td>${r.title}</td>
-      <td>${r.campus}</td>
-      <td>${badge(r.status)}</td>
-      <td>${priorityBadge(r.priority)}</td>
-      <td>${r.date}</td>
-      <td class="table-actions" style="text-align:right">
-        <div class="action-group" style="justify-content:flex-end">
-          <button type="button" class="action-icon-btn primary" onclick="openModal('${r.id}')" title="Review Service Request #${r.id}" aria-label="Review Service Request #${r.id}">
-            <span data-ngis-icon="view"></span>
+      <!-- Breadcrumb & Page Header -->
+      <section class="flex flex-col md:flex-row md:items-center justify-between gap-4" data-purpose="page-title-section">
+        <div>
+          <h1 class="text-2xl font-medium tracking-tight text-slate-900">Service Request Queue</h1>
+          <p class="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">Real-time ticketing, institutional request dispatching, and resolution workflow.</p>
+        </div>
+        <!-- Header Quick Action Group -->
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <button type="button" id="svExport" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-xs active:scale-95">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+            <span>Export Log</span>
+          </button>
+          <button type="button" id="svCreate" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-white bg-[#0F5132] hover:bg-[#0c4028] active:bg-[#093220] rounded-lg shadow-sm shadow-emerald-950/20 transition-all active:scale-95">
+            <svg class="w-4 h-4 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+            <span>+ Create New Ticket</span>
           </button>
         </div>
-      </td>
-    </tr>
-  `).join('');
-  if (window.NGIS) window.NGIS.hydrate(tbody);
-}
+      </section>
 
-async function openModal(id) {
-  currentId = id;
-  const res = await fetch(`${API}/${id}`);
-  const r = await res.json();
-  const data = r.data;
-  document.getElementById('modalTitle').textContent = data.id + ' — ' + data.title;
-  document.getElementById('modalDesc').textContent = data.description || 'No description provided.';
-  const comments = data.comments || [];
-  document.getElementById('modalComments').innerHTML = comments.length ? comments.map(c => `<div class="comment-box"><div class="by">${c.by}</div><div class="txt">${c.text}</div><div class="dt">${c.date}</div></div>`).join('') : '<p style="color:var(--muted);font-size:13px">No comments yet.</p>';
-  document.getElementById('modalComment').value = '';
-  document.getElementById('detailModal').classList.add('show');
-}
+      <!-- Summary KPI Stat Cards (4 Cards Matching User Specification) -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="kpi-metric-cards" aria-label="Request queue summary">
+        <!-- Metric Card 1: Total Queue Volume -->
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">Total Requests</span>
+            <span class="p-1.5 bg-emerald-50 text-[#0F5132] rounded-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-medium text-slate-900" id="kpiTotal">8</span>
+            <span class="text-xs font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded" id="kpiTotalSub">100% Processed</span>
+          </div>
+        </div>
 
-function closeModal() { document.getElementById('detailModal').classList.remove('show'); currentId = null; }
+        <!-- Metric Card 2: Resolution Speed -->
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">Avg. Resolution Time</span>
+            <span class="p-1.5 bg-blue-50 text-blue-700 rounded-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-medium text-slate-900">1.4 <span class="text-sm font-medium text-slate-500">Days</span></span>
+            <span class="text-xs font-medium text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">↓ 0.3d vs Target</span>
+          </div>
+        </div>
 
-async function saveModal() {
-  if (!currentId) return;
-  const comment = document.getElementById('modalComment').value.trim();
-  const body = { status: 'in_progress', comment, commentBy: 'Admin' };
-  const res = await fetch(`${API}/${currentId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  if (res.ok) { window.toast('Request updated', 'success'); closeModal(); loadAdmin(); }
-  else { window.toast('Failed to update', 'error'); }
-}
+        <!-- Metric Card 3: Priority Breakdown -->
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">Urgent &amp; High Priority</span>
+            <span class="p-1.5 bg-rose-50 text-rose-700 rounded-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-medium text-slate-900" id="kpiUrgent">2 <span class="text-sm font-medium text-slate-500">Completed</span></span>
+            <span class="text-xs font-medium text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded" id="kpiUrgentSub">1 Urgent</span>
+          </div>
+        </div>
 
-document.getElementById('detailModal').addEventListener('click', (e) => { if (e.target.id === 'detailModal') closeModal(); });
-loadAdmin();
-</script>
-<script>window.PAGE={"role":"admin","active":"services"};</script>
-<script src="../../assets/js/layout.js"></script>
-<script>window.HERO_CONFIG = {
-  name: 'Sok Panha Heng', id: 'Super Administrator', grade: 'Admin',
-  avatar: 'https://images.pexels.com/photos/3771509/pexels-photo-3771509.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3771509/pexels-photo-3771509.jpeg?auto=compress&cs=tinysrgb&w=80',
-  homeLink: '../../index.html', profileLink: 'admin-settings.html',
-  notifLink: 'admin-logs.html', notifCount: 4,
-  title: 'Student Services', greeting: 'Review, approve, and process student service requests across all campuses.',
-  breadcrumbs: [{ label: 'Student Services' }],
-  ddRows: [
-    { icon: 'admin_panel_settings', text: 'Super Administrator' }, { icon: 'school', text: 'NGIS Main Campus' },
-    { icon: 'email', text: 'admin@ngis.edu.kh' }, { icon: 'calendar_today', text: 'Since 2024' }
-  ]
-};</script>
-<script src="../../assets/js/hero.js"></script>
+        <!-- Metric Card 4: Demographics -->
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-500">Student vs. Faculty</span>
+            <span class="p-1.5 bg-purple-50 text-purple-700 rounded-lg">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-medium text-slate-900" id="kpiDemographics">5 <span class="text-xs font-normal text-slate-500">Students</span></span>
+            <span class="text-slate-300">/</span>
+            <span class="text-lg font-medium text-slate-700" id="kpiDemographicsFaculty">3 <span class="text-xs font-normal text-slate-500">Faculty</span></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter and Search Toolbar -->
+      <section class="bg-white rounded-t-xl border border-slate-200 border-b-0 p-4 shadow-xs" data-purpose="table-filter-bar">
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+          <!-- Left: Search Box -->
+          <div class="flex-1 max-w-lg">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+              </div>
+              <input id="svSearch" class="w-full text-xs bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132] rounded-lg pl-9 pr-3 py-2 transition-all font-normal placeholder:text-slate-400" placeholder="Search by request title, ticket ID, or requester..." type="text">
+            </div>
+          </div>
+          <!-- Right: Dropdown Filters & Actions -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Category Filter -->
+            <div class="relative">
+              <select id="svCategory" class="text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg py-2 pl-3 pr-8 focus:ring-1 focus:ring-[#0F5132] focus:border-[#0F5132] cursor-pointer">
+                <option value="all">All Categories</option>
+                <option value="supplies">Supplies</option>
+                <option value="it_support">IT Support</option>
+                <option value="facilities">Facilities</option>
+                <option value="document">Document</option>
+                <option value="administration">Administration</option>
+                <option value="academic">Academic</option>
+                <option value="support">Support</option>
+              </select>
+            </div>
+            <!-- Campus Filter -->
+            <div class="relative">
+              <select id="svCampus" class="text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg py-2 pl-3 pr-8 focus:ring-1 focus:ring-[#0F5132] focus:border-[#0F5132] cursor-pointer">
+                <option value="all">All Campuses</option>
+                <option value="Sensok">Sensok Campus</option>
+                <option value="TK">TK Campus</option>
+                <option value="Depo">Depo Campus</option>
+                <option value="Bak Touk">Bak Touk</option>
+              </select>
+            </div>
+            <!-- Priority Filter -->
+            <div class="relative">
+              <select id="svPriority" class="text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg py-2 pl-3 pr-8 focus:ring-1 focus:ring-[#0F5132] focus:border-[#0F5132] cursor-pointer">
+                <option value="all">All Priorities</option>
+                <option value="urgent">Urgent</option>
+                <option value="high">High</option>
+                <option value="normal">Normal</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
+            <!-- Status Filter -->
+            <div class="relative">
+              <select id="svStatus" class="text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg py-2 pl-3 pr-8 focus:ring-1 focus:ring-[#0F5132] focus:border-[#0F5132] cursor-pointer">
+                <option value="all">Status: All</option>
+                <option value="completed">Completed</option>
+                <option value="in_progress">In Progress</option>
+                <option value="pending">Pending Review</option>
+                <option value="open">Open</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <!-- Sort Filter -->
+            <div class="relative">
+              <select id="svSort" class="text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:border-slate-300 rounded-lg py-2 pl-3 pr-8 focus:ring-1 focus:ring-[#0F5132] focus:border-[#0F5132] cursor-pointer">
+                <option value="newest" selected>Sort: Newest First</option>
+                <option value="oldest">Sort: Oldest First</option>
+                <option value="priority-desc">Sort: Priority High-Low</option>
+              </select>
+            </div>
+            <!-- Reset Filter Button -->
+            <button id="svReset" class="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors" title="Reset Filters" type="button">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Table Section (Clean table with BADGES REMOVED in rows per instruction) -->
+      <div class="bg-white border border-slate-200 rounded-b-xl overflow-hidden shadow-xs" data-purpose="request-data-table-container">
+        <!-- Mobile Horizontal Scroll Hint -->
+        <div class="table-scroll-hint items-center gap-2 px-4 py-2 bg-slate-50 text-slate-500 border-b border-slate-100 text-xs font-medium lg:hidden flex">
+          <i class="ph ph-arrows-left-right text-base text-slate-400"></i>
+          <span>Scroll horizontally to view all columns</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse" id="requests-queue-table">
+            <thead>
+              <tr class="bg-slate-50/80 border-b border-slate-200 text-[11px] font-medium tracking-wider text-slate-500 uppercase select-none">
+                <!-- Select Column -->
+                <th class="py-3.5 pl-4 pr-2 w-10 text-center" scope="col">
+                  <input id="selectAllCheckbox" aria-label="Select all requests" class="rounded border-slate-300 text-[#0F5132] focus:ring-[#0F5132] focus:ring-offset-0 cursor-pointer" type="checkbox">
+                </th>
+                <!-- Main Request Title Column -->
+                <th class="py-3.5 px-4 font-medium text-slate-600 min-w-[280px]" scope="col">Request &amp; Ticket Details</th>
+                <!-- Requester Column -->
+                <th class="py-3.5 px-4 font-medium text-slate-600 min-w-[170px]" scope="col">Requested By</th>
+                <!-- Category Column (NO BADGE in rows) -->
+                <th class="py-3.5 px-3 font-medium text-slate-600" scope="col">Category</th>
+                <!-- Campus Column (NO BADGE in rows) -->
+                <th class="py-3.5 px-3 font-medium text-slate-600" scope="col">Campus</th>
+                <!-- Priority Column (NO BADGE in rows) -->
+                <th class="py-3.5 px-3 font-medium text-slate-600" scope="col">Priority</th>
+                <!-- Status Column -->
+                <th class="py-3.5 px-3 font-medium text-slate-600" scope="col">Status</th>
+                <!-- Submitted Date Column -->
+                <th class="py-3.5 px-3 font-medium text-slate-600 whitespace-nowrap" scope="col">Submitted</th>
+                <!-- Action Column -->
+                <th class="py-3.5 pl-3 pr-5 text-right font-medium text-slate-600" scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="svTbody" class="divide-y divide-slate-100 text-xs">
+              <!-- Dynamically populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="svEmpty" class="hidden p-12 text-center">
+          <span class="material-symbols-outlined text-4xl text-slate-400 mb-2 block">inbox</span>
+          <p class="text-sm font-medium text-slate-700" id="svEmptyMsg">No service requests match your filters.</p>
+        </div>
+
+        <!-- Table Footer and Pagination -->
+        <div class="px-4 py-3.5 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500" data-purpose="table-footer">
+          <!-- Live Status Info -->
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="svCountText">Showing <strong class="font-medium text-slate-700">8</strong> of <strong class="font-medium text-slate-700">8</strong> requests</span>
+            <span class="text-slate-300">·</span>
+            <span class="text-slate-400 italic">Updated live from service desk queue</span>
+          </div>
+          <!-- Pagination & Rows Control -->
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-400">Rows per page:</span>
+              <select id="svPageSize" class="text-xs bg-slate-50 border border-slate-200 rounded py-1 px-2 focus:ring-1 focus:ring-[#0F5132] font-medium text-slate-700 cursor-pointer">
+                <option value="10" selected>10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <nav class="inline-flex items-center rounded-md border border-slate-200 bg-white shadow-2xs" id="svPager" aria-label="Pagination">
+              <!-- Pager controls dynamically generated -->
+            </nav>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- VIEW 2: TICKET REVIEW CONSOLE (MATCHING USER SPECIFICATION)            -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div id="reviewView" class="hidden flex-1 flex flex-col w-full pb-28 lg:pb-12 bg-[#F8FAFC]">
+
+      <!-- Opaque Sticky Top Action Bar (INSULATED FROM CSS TRANSPARENCY) -->
+      <header id="reviewActionHeader" class="w-full">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-3.5">
+          <!-- Top Row: Navigation, Ticket ID, Status & Priority -->
+          <div class="flex items-center justify-between gap-3 mb-2 sm:mb-2.5">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <!-- Mobile Hamburger Menu Button (MANDATORY per AGENTS.md) -->
+              <button type="button" class="lg:hidden hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px] shrink-0" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+                <i class="ph-bold ph-list text-xl"></i>
+              </button>
+
+              <!-- Back to Queue Button -->
+              <button type="button" id="btnBackToQueue" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 rounded-lg transition-colors shrink-0 group active:scale-95 min-h-[36px]" title="Return to Service Desk Queue">
+                <span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+                <span>Back to Queue</span>
+              </button>
+
+              <span class="text-slate-300 hidden sm:inline">|</span>
+
+              <!-- Ticket Identifier -->
+              <span class="text-xs sm:text-sm font-mono font-medium text-slate-700 truncate" id="revTicketId">Ticket #SR-1001</span>
+            </div>
+
+            <!-- Status & Priority Meta (Clean Unboxed Dots) -->
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+              <span id="revStatusPill" class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-800">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                <span>Status: Open</span>
+              </span>
+              <span id="revPriorityPill" class="inline-flex items-center gap-1 text-xs font-medium text-slate-600">
+                <span class="text-slate-300">·</span>
+                <span>Priority: Normal</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Main Row: Ticket Title & Responsive Action Buttons -->
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-2 sm:pt-0 border-t border-slate-100 lg:border-0">
+            <!-- Left: Ticket Title & Subtitle -->
+            <div class="min-w-0 flex-1">
+              <h1 class="text-base sm:text-lg lg:text-xl font-medium text-slate-900 tracking-tight leading-snug break-words" id="revTicketTitle">
+                Official Transcript Request
+              </h1>
+              <p class="text-xs text-slate-500 font-normal mt-0.5 truncate" id="revIntakeRef">
+                Academic Operations Division · Intake Ref: REG-2026-OCT-889
+              </p>
+            </div>
+
+            <!-- Right: Action Buttons Group (Desktop / Tablet) -->
+            <div class="flex items-center gap-2 sm:gap-2.5 shrink-0 flex-wrap sm:flex-nowrap mt-1 lg:mt-0">
+              <button class="btn-ngis-reject flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg transition-all active:scale-95 min-h-[38px]" id="btn-reject-header" type="button">
+                <span class="material-symbols-outlined text-[17px]">cancel</span>
+                <span>Reject Request</span>
+              </button>
+              <button class="btn-ngis-hold flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg transition-all active:scale-95 min-h-[38px]" id="btn-hold-header" type="button">
+                <span class="material-symbols-outlined text-[17px]">pause_circle</span>
+                <span>Request Info / Hold</span>
+              </button>
+              <button class="btn-ngis-approve w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-medium rounded-lg transition-all active:scale-95 shadow-2xs min-h-[38px]" id="btn-approve-header" type="button">
+                <span class="material-symbols-outlined text-[17px]">task_alt</span>
+                <span>Approve &amp; Dispatch</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Review Main Content Container -->
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6 space-y-6 w-full">
+
+        <!-- Requester & Academic Profile Section (Unified Responsive Card) -->
+        <section class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-2xs">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+            <!-- Requester Identity -->
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div id="revAvatar" class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-100 text-[#0F5132] font-medium text-sm flex items-center justify-center shrink-0 border border-emerald-200">
+                NH
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-baseline gap-2 flex-wrap">
+                  <span id="revRequesterName" class="text-sm sm:text-base font-medium text-slate-900">Nrinphouneta Hok</span>
+                  <span id="revRequesterKhmer" class="text-xs text-[#0F5132] font-medium">(ហុក និរិន្ទភូណេតា)</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-500 font-normal mt-0.5 flex-wrap">
+                  <span class="font-mono text-slate-700" id="revRequesterId">ID: 2026-STD-0142</span>
+                  <span>·</span>
+                  <span id="revRequesterRoleBadge" class="text-slate-600">Student</span>
+                  <span>·</span>
+                  <span id="revRequesterCampus">Sensok Main Campus</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Academic Clearance Status -->
+            <div class="flex items-center gap-2 self-start md:self-auto shrink-0">
+              <span class="px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-[#0F5132] border border-emerald-200/80 flex items-center gap-1.5" id="revAcademicClearancePill">
+                <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                <span>Academic Clearance Cleared</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Metadata Responsive Grid (4 columns desktop, 2 columns mobile/tablet) -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 text-xs">
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Department &amp; Class</span>
+              <p class="font-medium text-slate-800 mt-0.5 break-words" id="revCohort">Grade 12A · STEM Advanced AP</p>
+            </div>
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Request Category</span>
+              <p class="font-medium text-slate-800 mt-0.5" id="revCategoryDisplay">Official Document</p>
+            </div>
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">Submission Date</span>
+              <p class="font-medium text-slate-800 mt-0.5 font-mono" id="revSubmittedDate">2026-10-24</p>
+            </div>
+            <div>
+              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">SLA Target &amp; Benchmark</span>
+              <p class="font-medium text-emerald-700 mt-0.5" id="revSlaTarget">24h SLA · 18h Remaining</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Two-Column Workspace Layout (Balanced 67% / 33% desktop, 1 column on mobile/tablet) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- LEFT MAIN CONTENT COLUMN (lg:col-span-8) -->
+          <div class="lg:col-span-8 space-y-6">
+
+            <!-- Card 1: Target Institution & Destination Payload -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+              <div class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/50">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#0F5132] ring-4 ring-emerald-100 shrink-0"></span>
+                  <h2 class="text-sm sm:text-base font-medium text-slate-900">Target Institution &amp; Destination Payload</h2>
+                </div>
+                <span class="self-start sm:self-auto inline-flex items-center px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[11px] font-medium uppercase tracking-wider border border-slate-200" id="revDispatchCode">
+                  DISPATCH CODE: EXT-AU-MELB
+                </span>
+              </div>
+
+              <div class="p-4 sm:p-6 space-y-5">
+                <!-- Institution & Purpose Dual Matrix -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50/70 p-4 rounded-xl border border-slate-200/70">
+                  <div class="space-y-1">
+                    <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Destination University / Body</span>
+                    <p class="text-sm font-medium text-slate-900" id="revDestination">University of Melbourne (Australia)</p>
+                    <p class="text-xs text-slate-500">Faculty of Engineering &amp; IT Admissions Office</p>
+                  </div>
+                  <div class="space-y-1 pt-3 border-t border-slate-200/70 md:pt-0 md:border-t-0 md:border-l md:border-slate-200/70 md:pl-5">
+                    <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Application Purpose</span>
+                    <p class="text-sm font-medium text-slate-900" id="revPurpose">Undergraduate Scholarship &amp; AP Credit Transfer</p>
+                    <p class="text-xs text-slate-500 font-mono">Application ID: #UOM-2026-ENG-49110</p>
+                  </div>
+                </div>
+
+                <!-- Requested Document Package -->
+                <div class="space-y-3">
+                  <h3 class="text-xs font-medium text-slate-600 uppercase tracking-wider">Requested Document Package</h3>
+                  <div class="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white overflow-hidden">
+                    <!-- Package Item 1 -->
+                    <div class="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-slate-50/60 transition-colors">
+                      <div class="flex items-start sm:items-center gap-3 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                          <span class="material-symbols-outlined text-[19px]">description</span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <p class="text-xs sm:text-sm font-medium text-slate-900 leading-snug">Official Sealed Academic Transcript</p>
+                          <p class="text-[11px] sm:text-xs text-slate-500 leading-normal mt-0.5">Grades 9 through 12 Term 1 cumulative record (Certified envelope)</p>
+                        </div>
+                      </div>
+                      <div class="self-start sm:self-auto shrink-0 pl-11 sm:pl-0">
+                        <span class="doc-pill-neutral inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
+                          2 Hard Copies
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Package Item 2 -->
+                    <div class="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-slate-50/60 transition-colors">
+                      <div class="flex items-start sm:items-center gap-3 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-[#0F5132] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                          <span class="material-symbols-outlined text-[19px]">verified</span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <p class="text-xs sm:text-sm font-medium text-slate-900 leading-snug">NGIS Official Seal &amp; Principal Notarization Stamp</p>
+                          <p class="text-[11px] sm:text-xs text-slate-500 leading-normal mt-0.5">Embossed institutional dry stamp by Academic Registrar</p>
+                        </div>
+                      </div>
+                      <div class="self-start sm:self-auto shrink-0 pl-11 sm:pl-0">
+                        <span class="doc-pill-included inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
+                          Included
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Package Item 3 -->
+                    <div class="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-slate-50/60 transition-colors">
+                      <div class="flex items-start sm:items-center gap-3 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                          <span class="material-symbols-outlined text-[19px]">translate</span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <p class="text-xs sm:text-sm font-medium text-slate-900 leading-snug">Certified English Language Translation</p>
+                          <p class="text-[11px] sm:text-xs text-slate-500 leading-normal mt-0.5">Dual script: Khmer National Curriculum standard mapped to British/US scale</p>
+                        </div>
+                      </div>
+                      <div class="self-start sm:self-auto shrink-0 pl-11 sm:pl-0">
+                        <span class="doc-pill-verified inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
+                          Verified Bilingual
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Package Item 4 -->
+                    <div class="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 hover:bg-slate-50/60 transition-colors">
+                      <div class="flex items-start sm:items-center gap-3 min-w-0">
+                        <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                          <span class="material-symbols-outlined text-[19px]">local_shipping</span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <p class="text-xs sm:text-sm font-medium text-slate-900 leading-snug">Fulfillment &amp; Delivery Method</p>
+                          <p class="text-[11px] sm:text-xs text-slate-500 leading-normal mt-0.5">Campus Pickup · Sensok Front Office (Desk #02, Attn: Mrs. Sreyneath)</p>
+                        </div>
+                      </div>
+                      <div class="self-start sm:self-auto shrink-0 pl-11 sm:pl-0">
+                        <span class="doc-pill-neutral inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium">
+                          Collect in Person
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Student Submission Memo with Show More / Show Less -->
+                <div class="bg-amber-50/50 rounded-xl p-4 border border-amber-200/60">
+                  <div class="flex items-start gap-2.5">
+                    <span class="material-symbols-outlined text-amber-700 text-lg shrink-0 mt-0.5">format_quote</span>
+                    <div class="space-y-1.5 min-w-0 flex-1">
+                      <p class="text-[11px] font-medium text-amber-900 uppercase tracking-wider">Student Submission Memo</p>
+                      <div class="text-xs sm:text-sm text-slate-800 italic leading-relaxed break-words line-clamp-3" id="revMemoText">
+                        "I need this transcript sealed with an official wax/stamp envelope for submission before October 28th. The University of Melbourne Admissions Office requires English translations for both the Cambridge IGCSE and National Curriculum results. Fee was paid via ABA Pay."
+                      </div>
+                      <button type="button" class="text-xs font-medium text-[#0F5132] hover:underline inline-flex items-center gap-0.5 pt-1" onclick="toggleShowMore(this)" data-expanded="false">
+                        <span>Show More</span>
+                        <span class="material-symbols-outlined text-sm">expand_more</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Submitted Evidence & Verification Attachments -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+              <div class="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="material-symbols-outlined text-[#0F5132] text-xl">attachment</span>
+                  <h2 class="text-sm sm:text-base font-medium text-slate-900">Submitted Evidence &amp; Verification Attachments</h2>
+                </div>
+                <span class="text-xs font-medium text-slate-500">3 Files Validated</span>
+              </div>
+
+              <div class="p-4 sm:p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <!-- Attachment 1: Student ID Scan -->
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-emerald-300 transition-all flex flex-col overflow-hidden">
+                    <div class="relative h-32 sm:h-36 bg-slate-100 overflow-hidden flex items-center justify-center">
+                      <img alt="Student ID Card Preview" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80">
+                      <div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-medium text-white">
+                        JPG · 1.4 MB
+                      </div>
+                    </div>
+                    <div class="p-3.5 flex flex-col justify-between flex-1 gap-3">
+                      <div>
+                        <p class="text-xs font-medium text-slate-900 truncate" title="Student_ID_Scan.jpg">Student_ID_Scan.jpg</p>
+                        <p class="text-[11px] text-emerald-800 font-medium flex items-center gap-1 mt-0.5">
+                          <span class="material-symbols-outlined text-[13px]">check</span> Verified by NGIS SIS OCR
+                        </p>
+                      </div>
+                      <button class="btn-ngis-hold w-full py-1.5 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors active:scale-95" type="button" onclick="previewAttachment('Student_ID_Scan.jpg', 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80')">
+                        <span class="material-symbols-outlined text-sm">visibility</span> Preview Scan
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Attachment 2: ABA Payment Receipt -->
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-emerald-300 transition-all flex flex-col overflow-hidden">
+                    <div class="relative h-32 sm:h-36 bg-slate-100 overflow-hidden flex items-center justify-center">
+                      <img alt="ABA Receipt Preview" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=400&q=80">
+                      <div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-medium text-white">
+                        PDF · 480 KB
+                      </div>
+                    </div>
+                    <div class="p-3.5 flex flex-col justify-between flex-1 gap-3">
+                      <div>
+                        <p class="text-xs font-medium text-slate-900 truncate" title="ABA_Tx_Receipt_2026.pdf">ABA_Tx_Receipt_2026.pdf</p>
+                        <p class="text-[11px] text-slate-500 font-mono mt-0.5">Bank Ref: #TX-990812</p>
+                      </div>
+                      <button class="btn-ngis-hold w-full py-1.5 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors active:scale-95" type="button" onclick="previewAttachment('ABA_Tx_Receipt_2026.pdf', 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80')">
+                        <span class="material-symbols-outlined text-sm">receipt_long</span> Verify Bank
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Attachment 3: University Offer Letter -->
+                  <div class="rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-emerald-300 transition-all flex flex-col overflow-hidden">
+                    <div class="relative h-32 sm:h-36 bg-slate-100 overflow-hidden flex items-center justify-center">
+                      <img alt="Transcript Request Preview" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=400&q=80">
+                      <div class="absolute top-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-medium text-white">
+                        PDF · 2.1 MB
+                      </div>
+                    </div>
+                    <div class="p-3.5 flex flex-col justify-between flex-1 gap-3">
+                      <div>
+                        <p class="text-xs font-medium text-slate-900 truncate" title="UniMelb_Transcript_Request.pdf">UniMelb_Transcript_Request.pdf</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">External Letter of Request</p>
+                      </div>
+                      <button class="btn-ngis-hold w-full py-1.5 px-3 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors active:scale-95" type="button" onclick="previewAttachment('UniMelb_Transcript_Request.pdf', 'https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=800&q=80')">
+                        <span class="material-symbols-outlined text-sm">open_in_new</span> Open File
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT SECONDARY COLUMN (lg:col-span-4) -->
+          <div class="lg:col-span-4 space-y-6">
+
+            <!-- Card 1: Service Level Agreement (SLA) -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-2xs p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-emerald-700 text-xl">timer</span>
+                  <h2 class="text-sm font-medium text-slate-900">Service Level Agreement (SLA)</h2>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-wide uppercase bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  WITHIN TARGET
+                </span>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+                <div class="flex items-baseline justify-between">
+                  <div>
+                    <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Time Remaining</span>
+                    <p class="text-2xl font-medium text-slate-900 tracking-tight mt-0.5" id="revTimeRemaining">18h 42m</p>
+                  </div>
+                  <span class="text-xs font-medium text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded">78% Safe</span>
+                </div>
+                <!-- Clean Linear Track (Responsive, zero circular clip risk) -->
+                <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                  <div class="bg-[#0F5132] h-2 rounded-full" style="width: 78%;"></div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
+                  <span>Standard: 24h Express SLA</span>
+                  <span>Deadline: 5:00 PM ICT</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Administrative Decision Prerequisites -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-2xs p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-slate-700 text-xl">fact_check</span>
+                  <h2 class="text-sm font-medium text-slate-900">Decision Prerequisites</h2>
+                </div>
+                <span class="text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full" id="prereqCount">3 of 3 Verified</span>
+              </div>
+
+              <div class="space-y-2.5 text-xs text-slate-700">
+                <label class="flex items-start gap-2.5 cursor-pointer hover:text-slate-900 transition-colors">
+                  <input type="checkbox" checked class="mt-0.5 rounded border-slate-300 text-[#0F5132] focus:ring-[#0F5132]" id="chk-identity" onchange="updatePrereqCount()">
+                  <span>Requester student identity verified against SIS directory</span>
+                </label>
+                <label class="flex items-start gap-2.5 cursor-pointer hover:text-slate-900 transition-colors">
+                  <input type="checkbox" checked class="mt-0.5 rounded border-slate-300 text-[#0F5132] focus:ring-[#0F5132]" id="chk-fee" onchange="updatePrereqCount()">
+                  <span>Administrative document processing fee validated</span>
+                </label>
+                <label class="flex items-start gap-2.5 cursor-pointer hover:text-slate-900 transition-colors">
+                  <input type="checkbox" checked class="mt-0.5 rounded border-slate-300 text-[#0F5132] focus:ring-[#0F5132]" id="chk-seal" onchange="updatePrereqCount()">
+                  <span>Certified dry stamp and registrar signature applied</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Card 3: Internal Review Notes & Audit -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-2xs p-5 space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-slate-700 text-xl">rate_review</span>
+                  <h2 class="text-sm font-medium text-slate-900">Internal Review Notes &amp; Audit</h2>
+                </div>
+                <span class="text-[11px] text-slate-600 font-mono font-medium">Confidential</span>
+              </div>
+
+              <!-- Quick Snippet Tags -->
+              <div class="flex flex-wrap gap-1.5">
+                <button class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors active:scale-95" onclick="insertSnippet('+ Fast-Track Approval')" type="button">
+                  + Fast-Track Approval
+                </button>
+                <button class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors active:scale-95" onclick="insertSnippet('+ Translation Verified')" type="button">
+                  + Translation Verified
+                </button>
+                <button class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition-colors active:scale-95" onclick="insertSnippet('+ In Person Pickup')" type="button">
+                  + In Person Pickup
+                </button>
+              </div>
+
+              <!-- Textarea & Action -->
+              <div class="space-y-1.5">
+                <textarea class="w-full text-xs rounded-xl border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132] resize-none p-3 placeholder:text-slate-400 font-normal" id="reviewer-notes" oninput="updateCharCount(this)" placeholder="Enter internal registrar notes, notary references, or verification flags..." rows="3"></textarea>
+                <div class="flex items-center justify-between text-[11px] text-slate-500">
+                  <span id="char-counter">0 / 300 characters</span>
+                  <button type="button" class="text-[#0F5132] hover:underline font-medium" onclick="saveNoteFeedback()">Save Note</button>
+                </div>
+              </div>
+
+              <!-- Audit Timeline -->
+              <div class="pt-3 border-t border-slate-100 space-y-2">
+                <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Activity History</span>
+                <div id="revActivityLog" class="space-y-2 text-xs">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Mobile / Small Viewport Sticky Decision Action Bar (Opaque & Insulated) -->
+      <div id="mobileActionBottomBar" class="lg:hidden fixed bottom-0 inset-x-0 px-3 py-2.5 z-40">
+        <div class="max-w-md mx-auto flex items-center gap-2">
+          <button class="btn-ngis-reject flex-1 py-2 px-2 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-95 min-h-[40px]" id="btn-reject-mobile" type="button">
+            <span class="material-symbols-outlined text-[17px]">cancel</span>
+            <span>Reject</span>
+          </button>
+          <button class="btn-ngis-hold flex-1 py-2 px-2 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-95 min-h-[40px]" id="btn-hold-mobile" type="button">
+            <span class="material-symbols-outlined text-[17px]">pause_circle</span>
+            <span>Hold</span>
+          </button>
+          <button class="btn-ngis-approve flex-1 py-2 px-2 text-xs font-medium rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 min-h-[40px]" id="btn-approve-mobile" type="button">
+            <span class="material-symbols-outlined text-[17px]">task_alt</span>
+            <span>Approve</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: REJECTION CONFIRMATION                                         -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden flex items-center justify-center p-4" id="reject-modal">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col transform transition-all">
+      <div class="p-5 sm:p-6 border-b border-slate-100 flex items-start justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-2xl">gavel</span>
+          </div>
+          <div>
+            <h3 class="text-base font-medium text-slate-900" id="rejectModalHeader">Confirm Ticket Rejection</h3>
+            <p class="text-xs text-slate-500 mt-0.5" id="rejectModalSub">Ticket will be archived &amp; requester notified</p>
+          </div>
+        </div>
+        <button class="text-slate-400 hover:text-slate-600 transition-colors" onclick="closeRejectModal()" type="button">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div class="p-5 sm:p-6 space-y-4">
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium uppercase tracking-wider text-slate-600">Primary Rejection Cause</label>
+          <select class="w-full rounded-xl border border-slate-200 text-xs focus:border-rose-500 focus:ring-1 focus:ring-rose-500 py-2.5 px-3 font-medium text-slate-700" id="reject-reason-select">
+            <option value="Incomplete or unreadable attachments">Incomplete or unreadable attachments (e.g., blurred ID)</option>
+            <option value="Unsettled administrative or library dues">Unsettled administrative or library dues</option>
+            <option value="Course grade / transcript not yet finalized">Course grade / transcript not yet finalized for current term</option>
+            <option value="Duplicate active request already in processing">Duplicate active request already in processing</option>
+            <option value="Custom operational grounds">Custom operational grounds (specified below)</option>
+          </select>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-xs font-medium uppercase tracking-wider text-slate-600">Student Advisory Notice</label>
+          <textarea class="w-full rounded-xl border border-slate-200 text-xs focus:border-rose-500 focus:ring-1 focus:ring-rose-500 resize-none p-3 font-normal" id="reject-explanation" placeholder="Provide clear guidance for the requester to rectify and resubmit..." rows="3"></textarea>
+        </div>
+      </div>
+      <div class="p-4 sm:p-5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5">
+        <button class="px-4 py-2 text-xs font-medium text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors" onclick="closeRejectModal()" type="button">
+          Cancel
+        </button>
+        <button class="px-4 py-2 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition-colors shadow-xs active:scale-95" onclick="confirmRejection()" type="button">
+          Confirm Rejection &amp; Notify
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- MODAL: ATTACHMENT FILE PREVIEW                                        -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-xs hidden flex items-center justify-center p-4" id="attachmentModal">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-slate-600">description</span>
+          <h3 class="text-sm font-medium text-slate-900" id="attachmentTitle">File Preview</h3>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-slate-600" onclick="closeAttachmentPreview()">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div class="p-4 overflow-auto flex items-center justify-center bg-slate-100">
+        <img id="attachmentImage" src="" alt="Document Preview" class="max-h-[70vh] rounded-lg object-contain shadow-sm">
+      </div>
+      <div class="p-3 bg-white border-t border-slate-200 flex justify-end">
+        <button type="button" class="btn btn-secondary btn--compact" onclick="closeAttachmentPreview()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- DRAWER: CREATE NEW TICKET                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div class="drawer-overlay" data-drawer="svCreateDrawer">
+    <aside class="drawer w-[94vw] max-w-[560px] bg-white border-l border-slate-200 h-full shadow-2xl flex flex-col justify-between" role="dialog" aria-modal="true" aria-labelledby="svCreateTitle">
+      <div class="p-5 border-b border-slate-200 flex items-start justify-between">
+        <div>
+          <h3 class="text-base font-medium text-slate-900" id="svCreateTitle">Create New Ticket</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Filed on behalf of a student or faculty member</p>
+        </div>
+        <button type="button" class="text-slate-400 hover:text-slate-600 p-1" data-close-drawer aria-label="Close">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div class="p-5 overflow-y-auto flex-1 space-y-4">
+        <form id="svCreateForm" novalidate class="space-y-4 text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Requester ID *</label>
+              <input type="text" id="svNewRequesterId" name="requesterId" placeholder="e.g. 2026-STD-0142" required class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]">
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Requester Name *</label>
+              <input type="text" id="svNewRequesterName" name="requesterName" placeholder="Full name" required class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]">
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Category *</label>
+              <select id="svNewCategory" name="category" required class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]">
+                <option value="">Select category…</option>
+                <option value="academic">Academic</option>
+                <option value="administration">Administration</option>
+                <option value="document">Document</option>
+                <option value="facilities">Facilities</option>
+                <option value="it_support">IT Support</option>
+                <option value="supplies">Supplies</option>
+                <option value="support">Support</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Request Type *</label>
+              <input type="text" id="svNewType" name="type" placeholder="e.g. transcript, exam_stationery" required class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]">
+            </div>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Title *</label>
+            <input type="text" id="svNewTitle" name="title" placeholder="Short summary of the request" required class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Campus *</label>
+              <select id="svNewCampus" name="campus" required class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]">
+                <option value="Sensok">Sensok Campus</option>
+                <option value="TK">TK Campus</option>
+                <option value="Depo">Depo Campus</option>
+                <option value="Bak Touk">Bak Touk</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-slate-700 mb-1">Priority</label>
+              <select id="svNewPriority" name="priority" class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]">
+                <option value="normal" selected>Normal</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Description</label>
+            <textarea id="svNewDesc" name="description" placeholder="Details the requester provided…" rows="4" class="w-full text-xs rounded-lg border border-slate-200 focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132]"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2.5">
+        <button type="button" class="btn btn-ghost" data-close-drawer>Cancel</button>
+        <button type="button" class="btn btn-primary" id="svCreateSubmitBtn">Submit Ticket</button>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    window.PAGE = { role: "admin", active: "services" };
+    window.HERO_CONFIG = {
+      name: "Mr. Heng Samnang",
+      id: "Admin ID: ADM-2026-001",
+      grade: "School Administrator",
+      avatar: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160",
+      avatarSm: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80",
+      title: "Student Services & Support Desk",
+      greeting: "Review, approve, and track student and faculty service requests across campus.",
+      badge: "STUDENT SERVICES",
+      breadcrumbs: [{ label: "Student Services" }],
+      homeLink: "../../index.html",
+      signOutLink: "../../index.html",
+      profileLink: "admin-settings.html",
+      notifLink: "admin-logs.html",
+      notifCount: 4,
+      ddRows: [
+        { icon: 'admin_panel_settings', text: 'School Administration' },
+        { icon: 'groups', text: '5,200 active users' },
+        { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+        { icon: 'calendar_today', text: 'Since: Jan 2018' },
+        { icon: 'verified', text: 'Principal Administrator' }
+      ]
+    };
+  </script>
+  <script src="../../assets/js/hero.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+
+  <script>
+    (function initServicesApp() {
+      "use strict";
+
+      var ALL = [];
+      var currentTicket = null;
+      var currentPage = 1;
+      var pageSize = 10;
+      var state = { query: '', status: 'all', campus: 'all', priority: 'all', category: 'all', sort: 'newest' };
+
+      // DOM Elements
+      var queueView = document.getElementById('queueView');
+      var reviewView = document.getElementById('reviewView');
+      var tbody = document.getElementById('svTbody');
+      var emptyEl = document.getElementById('svEmpty');
+      var countEl = document.getElementById('svCountText');
+      var pagerEl = document.getElementById('svPager');
+      var pageSizeEl = document.getElementById('svPageSize');
+      var searchEl = document.getElementById('svSearch');
+      var categoryEl = document.getElementById('svCategory');
+      var campusEl = document.getElementById('svCampus');
+      var priorityEl = document.getElementById('svPriority');
+      var statusEl = document.getElementById('svStatus');
+      var sortEl = document.getElementById('svSort');
+      var resetBtn = document.getElementById('svReset');
+      var exportBtn = document.getElementById('svExport');
+      var createBtn = document.getElementById('svCreate');
+      var createSubmitBtn = document.getElementById('svCreateSubmitBtn');
+      var btnBackToQueue = document.getElementById('btnBackToQueue');
+
+      // KPIs
+      var kpiTotal = document.getElementById('kpiTotal');
+      var kpiTotalSub = document.getElementById('kpiTotalSub');
+      var kpiUrgent = document.getElementById('kpiUrgent');
+      var kpiUrgentSub = document.getElementById('kpiUrgentSub');
+      var kpiDemographics = document.getElementById('kpiDemographics');
+      var kpiDemographicsFaculty = document.getElementById('kpiDemographicsFaculty');
+
+      function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
+        });
+      }
+
+      function titleCase(s) {
+        return String(s == null ? '' : s).replace(/_/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+      }
+
+      function initials(name) {
+        var parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return '?';
+        return ((parts[0][0] || '') + (parts.length > 1 ? parts[parts.length - 1][0] : '')).toUpperCase();
+      }
+
+      // Priority styling helpers
+      function getPriorityDotCls(priority) {
+        var p = String(priority || 'normal').toLowerCase();
+        if (p === 'urgent') return 'bg-rose-600 ring-2 ring-rose-100';
+        if (p === 'high') return 'bg-amber-500';
+        return 'bg-slate-400';
+      }
+      function getPriorityTextCls(priority) {
+        var p = String(priority || 'normal').toLowerCase();
+        if (p === 'urgent') return 'text-rose-700 font-medium';
+        if (p === 'high') return 'text-amber-700 font-medium';
+        return 'text-slate-700';
+      }
+
+      // Status pill styling
+      function getStatusBadge(status) {
+        var s = String(status || 'open').toLowerCase();
+        if (s === 'completed') {
+          return {
+            cls: 'bg-emerald-50 text-emerald-800 border border-emerald-200/80',
+            dot: 'bg-emerald-600',
+            label: 'Completed'
+          };
+        }
+        if (s === 'pending') {
+          return {
+            cls: 'bg-amber-50 text-amber-800 border border-amber-200/80',
+            dot: 'bg-amber-500',
+            label: 'Pending Review'
+          };
+        }
+        if (s === 'in_progress') {
+          return {
+            cls: 'bg-blue-50 text-blue-800 border border-blue-200/80',
+            dot: 'bg-blue-500',
+            label: 'In Progress'
+          };
+        }
+        if (s === 'rejected') {
+          return {
+            cls: 'bg-rose-50 text-rose-800 border border-rose-200/80',
+            dot: 'bg-rose-600',
+            label: 'Rejected'
+          };
+        }
+        return {
+          cls: 'bg-slate-100 text-slate-800 border border-slate-200',
+          dot: 'bg-slate-500',
+          label: 'Open'
+        };
+      }
+
+      function filterAndSortData() {
+        var q = state.query.trim().toLowerCase();
+        var filtered = ALL.filter(function(r) {
+          var matchQuery = !q ||
+            String(r.id || '').toLowerCase().indexOf(q) !== -1 ||
+            String(r.studentName || '').toLowerCase().indexOf(q) !== -1 ||
+            String(r.title || '').toLowerCase().indexOf(q) !== -1 ||
+            String(r.studentId || '').toLowerCase().indexOf(q) !== -1;
+          var matchStatus = state.status === 'all' || r.status === state.status;
+          var matchCampus = state.campus === 'all' || String(r.campus || '').toLowerCase() === state.campus.toLowerCase();
+          var matchPriority = state.priority === 'all' || String(r.priority || '').toLowerCase() === state.priority.toLowerCase();
+          var matchCategory = state.category === 'all' || String(r.category || '').toLowerCase() === state.category.toLowerCase();
+          return matchQuery && matchStatus && matchCampus && matchPriority && matchCategory;
+        });
+
+        if (state.sort === 'priority-desc') {
+          var rank = { normal: 0, high: 1, urgent: 2 };
+          filtered.sort(function(a, b) {
+            return (rank[b.priority] || 0) - (rank[a.priority] || 0);
+          });
+        } else if (state.sort === 'oldest') {
+          filtered.sort(function(a, b) {
+            return String(a.date || '') < String(b.date || '') ? -1 : 1;
+          });
+        } else {
+          filtered.sort(function(a, b) {
+            return String(a.date || '') > String(b.date || '') ? -1 : 1;
+          });
+        }
+        return filtered;
+      }
+
+      function updateKPIs() {
+        if (!kpiTotal) return;
+        var total = ALL.length;
+        var completed = ALL.filter(function(r){ return r.status === 'completed'; }).length;
+        var urgentCount = ALL.filter(function(r){ return r.priority === 'urgent'; }).length;
+        var highCount = ALL.filter(function(r){ return r.priority === 'high'; }).length;
+        var students = ALL.filter(function(r){ return !r.role || r.role === 'student' || String(r.studentId||'').startsWith('2026-STD'); }).length;
+        var faculty = total - students;
+
+        kpiTotal.textContent = String(total);
+        var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+        kpiTotalSub.textContent = pct + '% Processed';
+
+        kpiUrgent.innerHTML = (urgentCount + highCount) + ' <span class="text-sm font-medium text-slate-500">Active/Done</span>';
+        kpiUrgentSub.textContent = urgentCount + ' Urgent';
+
+        kpiDemographics.innerHTML = students + ' <span class="text-xs font-normal text-slate-500">Students</span>';
+        if (kpiDemographicsFaculty) {
+          kpiDemographicsFaculty.innerHTML = faculty + ' <span class="text-xs font-normal text-slate-500">Faculty</span>';
+        }
+      }
+
+      function renderPager(total) {
+        var pages = Math.max(1, Math.ceil(total / pageSize));
+        if (currentPage > pages) currentPage = pages;
+        var html = '';
+
+        // Previous button
+        html += '<button aria-label="Previous Page" class="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-40 disabled:hover:text-slate-400 border-r border-slate-200 transition-colors" ' +
+          (currentPage <= 1 ? 'disabled' : '') + ' data-page="prev" type="button">' +
+          '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>' +
+          '</button>';
+
+        for (var p = 1; p <= pages; p++) {
+          if (p === currentPage) {
+            html += '<span class="px-3 py-1 font-medium text-[#0F5132] bg-emerald-50 text-xs">' + p + '</span>';
+          } else {
+            html += '<button class="px-3 py-1 font-medium text-slate-600 hover:text-slate-900 text-xs border-r border-slate-200 transition-colors" data-page="' + p + '" type="button">' + p + '</button>';
+          }
+        }
+
+        // Next button
+        html += '<button aria-label="Next Page" class="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-40 disabled:hover:text-slate-400 border-l border-slate-200 transition-colors" ' +
+          (currentPage >= pages ? 'disabled' : '') + ' data-page="next" type="button">' +
+          '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>' +
+          '</button>';
+
+        pagerEl.innerHTML = html;
+      }
+
+      function renderTable() {
+        var data = filterAndSortData();
+        var total = data.length;
+        updateKPIs();
+
+        if (total === 0) {
+          tbody.innerHTML = '';
+          emptyEl.classList.remove('hidden');
+          countEl.innerHTML = 'Showing <strong class="font-medium text-slate-700">0</strong> requests';
+          pagerEl.innerHTML = '';
+          return;
+        }
+
+        emptyEl.classList.add('hidden');
+        var pages = Math.max(1, Math.ceil(total / pageSize));
+        if (currentPage > pages) currentPage = pages;
+        var start = (currentPage - 1) * pageSize;
+        var end = Math.min(start + pageSize, total);
+        var pageRows = data.slice(start, end);
+
+        countEl.innerHTML = 'Showing <strong class="font-medium text-slate-700">' + (start + 1) + '–' + end + '</strong> of <strong class="font-medium text-slate-700">' + total + '</strong> requests';
+        renderPager(total);
+
+        tbody.innerHTML = pageRows.map(function(r) {
+          var sb = getStatusBadge(r.status);
+          var pDot = getPriorityDotCls(r.priority);
+          var pText = getPriorityTextCls(r.priority);
+
+          return '<tr class="hover:bg-slate-50/80 transition-colors group border-b border-slate-100">' +
+            '<!-- Select Checkbox -->' +
+            '<td class="py-3.5 pl-4 pr-2 text-center">' +
+              '<input class="row-select rounded border-slate-300 text-[#0F5132] focus:ring-[#0F5132] focus:ring-offset-0 cursor-pointer" type="checkbox" data-id="' + esc(r.id) + '">' +
+            '</td>' +
+            '<!-- Request & Ticket Details -->' +
+            '<td class="py-3.5 px-4">' +
+              '<div class="font-medium text-slate-900 group-hover:text-[#0F5132] transition-colors leading-snug cursor-pointer js-row-title" data-id="' + esc(r.id) + '">' +
+                esc(r.title || 'Untitled request') +
+              '</div>' +
+              '<div class="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">' +
+                '<span class="font-mono text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">#' + esc(r.id) + '</span>' +
+                '<span>·</span>' +
+                '<span>' + esc(titleCase(r.type || 'General')) + '</span>' +
+              '</div>' +
+            '</td>' +
+            '<!-- Requested By -->' +
+            '<td class="py-3.5 px-4">' +
+              '<div class="flex items-center gap-2.5">' +
+                '<div class="w-7 h-7 rounded-full bg-emerald-100 text-[#0F5132] font-medium text-[10px] flex items-center justify-center shrink-0">' +
+                  esc(initials(r.studentName)) +
+                '</div>' +
+                '<div>' +
+                  '<p class="font-medium text-slate-900 text-xs">' + esc(r.studentName || '—') + '</p>' +
+                  '<p class="text-[11px] text-slate-500 font-normal">' + esc(titleCase(r.role || 'Student')) + (r.studentId ? ' · ' + esc(r.studentId) : '') + '</p>' +
+                '</div>' +
+              '</div>' +
+            '</td>' +
+            '<!-- Category Column: NO BADGE per user instruction -->' +
+            '<td class="py-3.5 px-3">' +
+              '<span class="text-xs text-slate-700 font-medium">' + esc(titleCase(r.category || 'General')) + '</span>' +
+            '</td>' +
+            '<!-- Campus Column: NO BADGE per user instruction -->' +
+            '<td class="py-3.5 px-3">' +
+              '<span class="text-xs text-slate-600 font-normal">' + esc(r.campus || '—') + '</span>' +
+            '</td>' +
+            '<!-- Priority Column: Clean text with subtle dot, NO BOX BADGE per user instruction -->' +
+            '<td class="py-3.5 px-3">' +
+              '<span class="inline-flex items-center gap-1.5 text-xs ' + pText + '">' +
+                '<span class="w-1.5 h-1.5 rounded-full ' + pDot + '"></span>' +
+                '<span class="font-normal">' + esc(titleCase(r.priority || 'Normal')) + '</span>' +
+              '</span>' +
+            '</td>' +
+            '<!-- Status Column -->' +
+            '<td class="py-3.5 px-3">' +
+              '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium ' + sb.cls + '">' +
+                '<span class="w-1.5 h-1.5 rounded-full ' + sb.dot + '"></span>' +
+                esc(sb.label) +
+              '</span>' +
+            '</td>' +
+            '<!-- Submitted Date -->' +
+            '<td class="py-3.5 px-3 text-slate-600 font-mono text-[11px] whitespace-nowrap">' +
+              esc(r.date || '—') +
+            '</td>' +
+            '<!-- Actions: Review Link with arrow -->' +
+            '<td class="py-3.5 pl-3 pr-5 text-right whitespace-nowrap">' +
+              '<button type="button" class="inline-flex items-center gap-1 font-medium text-slate-700 hover:text-[#0F5132] group/link text-xs transition-colors js-review-btn active:scale-95" data-id="' + esc(r.id) + '">' +
+                '<span>Review</span>' +
+                '<svg class="w-3.5 h-3.5 text-slate-400 group-hover/link:text-[#0F5132] group-hover/link:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                  '<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>' +
+                '</svg>' +
+              '</button>' +
+            '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      function loadData() {
+        fetch('/api/service-requests', { cache: 'no-store' })
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function(res) {
+            ALL = res.data || [];
+            renderTable();
+            // Check if ticket ID is in URL search param
+            var params = new URLSearchParams(window.location.search);
+            var reqId = params.get('ticket') || params.get('id');
+            if (reqId) {
+              openReview(reqId);
+            }
+          })
+          .catch(function(err) {
+            console.warn('Could not load service requests from backend:', err);
+          });
+      }
+
+      // ═══════════════════════════════════════════════════════════════════════
+      // TICKET REVIEW CONSOLE HYDRATION & LOGIC
+      // ═══════════════════════════════════════════════════════════════════════
+      function openReview(id) {
+        var ticket = ALL.filter(function(r) { return r.id === id; })[0];
+        if (!ticket) return;
+        currentTicket = ticket;
+
+        // Populate Review Bar
+        document.getElementById('revTicketId').textContent = 'Ticket #' + ticket.id;
+        document.getElementById('revTicketTitle').textContent = ticket.title || 'Service Request';
+
+        var catName = (ticket.category || 'academic').replace(/_/g, ' ').replace(/\b\w/g, function(l){ return l.toUpperCase(); });
+        var intakeRef = document.getElementById('revIntakeRef');
+        if (intakeRef) {
+          intakeRef.textContent = catName + ' Operations Division · Intake Ref: ' + (ticket.id || 'N/A') + ' · Verified Intake';
+        }
+
+        var sPill = document.getElementById('revStatusPill');
+        var sb = getStatusBadge(ticket.status);
+        sPill.className = 'inline-flex items-center gap-1.5 text-xs font-medium text-slate-800';
+        sPill.innerHTML = '<span class="w-2 h-2 rounded-full ' + sb.dot + '"></span><span>Status: ' + sb.label + '</span>';
+
+        var pPill = document.getElementById('revPriorityPill');
+        var p = String(ticket.priority || 'normal').toLowerCase();
+        var pDot = 'bg-slate-400';
+        var pLabel = 'Normal';
+        var pText = 'text-slate-600';
+        if (p === 'urgent') {
+          pDot = 'bg-rose-600 animate-pulse';
+          pLabel = 'Urgent';
+          pText = 'text-rose-700';
+        } else if (p === 'high') {
+          pDot = 'bg-amber-600';
+          pLabel = 'High';
+          pText = 'text-amber-800';
+        }
+        pPill.className = 'inline-flex items-center gap-1 text-xs font-medium ' + pText;
+        pPill.innerHTML = '<span class="text-slate-300">·</span><span class="w-1.5 h-1.5 rounded-full ' + pDot + '"></span><span>Priority: ' + pLabel + '</span>';
+
+        // Requester Info Strip
+        document.getElementById('revAvatar').textContent = initials(ticket.studentName);
+        document.getElementById('revRequesterName').textContent = ticket.studentName || 'Requester';
+        var reqIdEl = document.getElementById('revRequesterId');
+        if (reqIdEl) reqIdEl.textContent = 'ID: ' + (ticket.studentId || ticket.requesterId || 'N/A');
+        var campEl = document.getElementById('revRequesterCampus');
+        if (campEl) campEl.textContent = (ticket.campus || 'Sensok') + ' Main Campus';
+        var roleBadge = document.getElementById('revRequesterRoleBadge');
+        var isFaculty = (ticket.role === 'teacher' || String(ticket.studentId||'').startsWith('TCH'));
+        if (roleBadge) roleBadge.textContent = isFaculty ? 'Faculty Member' : 'Student';
+
+        if (ticket.studentName === 'Nrinphouneta Hok') {
+          document.getElementById('revRequesterKhmer').textContent = '(ហុក និរិន្ទភូណេតា)';
+          document.getElementById('revCohort').textContent = 'Grade 12A · STEM Advanced AP';
+        } else if (isFaculty) {
+          document.getElementById('revRequesterKhmer').textContent = '(គ្រូបង្រៀន)';
+          document.getElementById('revCohort').textContent = 'Faculty · Science & Mathematics';
+        } else {
+          document.getElementById('revRequesterKhmer').textContent = '';
+          document.getElementById('revCohort').textContent = 'Student · Secondary Division';
+        }
+
+        var catDisp = document.getElementById('revCategoryDisplay');
+        if (catDisp) catDisp.textContent = catName;
+        var subDate = document.getElementById('revSubmittedDate');
+        if (subDate) subDate.textContent = ticket.createdAt || ticket.submittedDate || '2026-10-24';
+        var slaTgt = document.getElementById('revSlaTarget');
+        if (slaTgt) slaTgt.textContent = ticket.slaTarget || '24h Express SLA · 18h Remaining';
+
+        // Target Payload & Memo
+        document.getElementById('revMemoText').textContent = '"' + (ticket.description || 'Service request submitted for institutional review and fulfillment.') + '"';
+
+        // Activity log
+        var actContainer = document.getElementById('revActivityLog');
+        var comments = ticket.comments || [];
+        if (!comments.length) {
+          actContainer.innerHTML = '<p class="text-slate-400 italic">No notes recorded yet.</p>';
+        } else {
+          actContainer.innerHTML = comments.map(function(c) {
+            return '<div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">' +
+              '<div class="flex items-center justify-between text-[11px] text-slate-500 mb-1">' +
+                '<span class="font-medium text-[#0F5132]">' + esc(c.by || 'Administrator') + '</span>' +
+                '<span>' + esc(c.date || '') + '</span>' +
+              '</div>' +
+              '<p class="text-slate-700 text-xs">' + esc(c.text || '') + '</p>' +
+            '</div>';
+          }).join('');
+        }
+
+        // Reset note input
+        document.getElementById('reviewer-notes').value = '';
+        document.getElementById('char-counter').textContent = '0 / 300 characters';
+
+        // Reset decision button states
+        enableDecisionButtons();
+
+        // Switch View
+        var mbBar = document.getElementById('mobileMainAppbar');
+        if (mbBar) mbBar.classList.add('hidden');
+        queueView.classList.add('hidden');
+        reviewView.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function closeReview() {
+        var mbBar = document.getElementById('mobileMainAppbar');
+        if (mbBar) mbBar.classList.remove('hidden');
+        reviewView.classList.add('hidden');
+        queueView.classList.remove('hidden');
+        currentTicket = null;
+        renderTable();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function enableDecisionButtons() {
+        var ids = ['btn-approve-header', 'btn-reject-header', 'btn-hold-header', 'btn-approve-mobile', 'btn-reject-mobile', 'btn-hold-mobile'];
+        ids.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) {
+            el.disabled = false;
+            el.classList.remove('opacity-40', 'pointer-events-none', 'hidden');
+          }
+        });
+        var approveBtn = document.getElementById('btn-approve-header');
+        if (approveBtn) {
+          approveBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">task_alt</span><span>Approve &amp; Dispatch</span>';
+        }
+      }
+
+      function saveDecision(newStatus, noteText) {
+        if (!currentTicket) return;
+        var payload = {
+          status: newStatus,
+          priority: currentTicket.priority || 'normal',
+          commentBy: 'School Administrator'
+        };
+        if (noteText) payload.comment = noteText;
+
+        fetch('/api/service-requests/' + encodeURIComponent(currentTicket.id), {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function() {
+            // Update local object
+            currentTicket.status = newStatus;
+            if (noteText) {
+              if (!currentTicket.comments) currentTicket.comments = [];
+              currentTicket.comments.push({
+                by: 'School Administrator',
+                date: new Date().toISOString().split('T')[0],
+                text: noteText
+              });
+            }
+            renderTable();
+          })
+          .catch(function(err) {
+            console.warn('API update failed:', err);
+          });
+      }
+
+      // Action Handlers
+      window.approveAndDispatch = function() {
+        if (!currentTicket) return;
+        var note = document.getElementById('reviewer-notes').value.trim();
+        saveDecision('completed', note || 'Request approved and dispatched to front desk collection.');
+
+        showToast('Ticket #' + currentTicket.id + ' APPROVED. Official copies printed & dispatched.', 'bg-emerald-50 border-emerald-200 text-emerald-800', 'task_alt');
+
+        var sPill = document.getElementById('revStatusPill');
+        sPill.className = 'inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800';
+        sPill.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-600"></span><span>Status: Approved &amp; Dispatched</span>';
+
+        var approveBtn = document.getElementById('btn-approve-header');
+        if (approveBtn) {
+          approveBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">print</span><span>Print Dispatch Slip</span>';
+          approveBtn.onclick = function() { window.print(); };
+        }
+      };
+
+      window.toggleHoldState = function() {
+        if (!currentTicket) return;
+        var note = document.getElementById('reviewer-notes').value.trim();
+        saveDecision('pending', note || 'Placed on hold pending coordinator clarification.');
+
+        showToast('Ticket #' + currentTicket.id + ' marked ON HOLD. Clarification request sent.', 'bg-amber-50 border-amber-200 text-amber-800', 'pause_circle');
+
+        var sPill = document.getElementById('revStatusPill');
+        sPill.className = 'inline-flex items-center gap-1.5 text-xs font-medium text-amber-800';
+        sPill.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Status: On Hold · Pending Info</span>';
+      };
+
+      window.openRejectModal = function() {
+        if (!currentTicket) return;
+        document.getElementById('rejectModalHeader').textContent = 'Confirm Ticket Rejection #' + currentTicket.id;
+        document.getElementById('reject-modal').classList.remove('hidden');
+      };
+
+      window.closeRejectModal = function() {
+        document.getElementById('reject-modal').classList.add('hidden');
+      };
+
+      window.confirmRejection = function() {
+        if (!currentTicket) return;
+        var reason = document.getElementById('reject-reason-select').value;
+        var explanation = document.getElementById('reject-explanation').value.trim();
+        var fullNote = 'Rejected: ' + reason + (explanation ? ' (' + explanation + ')' : '');
+
+        closeRejectModal();
+        saveDecision('rejected', fullNote);
+
+        showToast('Ticket #' + currentTicket.id + ' has been REJECTED: ' + reason, 'bg-rose-50 border-rose-200 text-rose-800', 'cancel');
+
+        var sPill = document.getElementById('revStatusPill');
+        sPill.className = 'inline-flex items-center gap-1.5 text-xs font-medium text-rose-700';
+        sPill.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-600"></span><span>Status: Rejected by Administrator</span>';
+
+        // Disable decision buttons
+        var ids = ['btn-approve-header', 'btn-reject-header', 'btn-hold-header', 'btn-approve-mobile', 'btn-reject-mobile', 'btn-hold-mobile'];
+        ids.forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) {
+            el.disabled = true;
+            el.classList.add('opacity-40', 'pointer-events-none');
+          }
+        });
+      };
+
+      // Toast notification helper
+      window.showToast = function(text, styleClasses, iconName) {
+        var banner = document.getElementById('toast-banner');
+        var inner = document.getElementById('toast-inner');
+        var toastText = document.getElementById('toast-text');
+        var toastIcon = document.getElementById('toast-icon');
+
+        inner.className = 'flex items-center justify-between p-4 rounded-xl shadow-lg border backdrop-blur-md ' + styleClasses;
+        toastText.textContent = text;
+        toastIcon.textContent = iconName;
+        banner.classList.remove('hidden');
+
+        setTimeout(function() {
+          dismissToast();
+        }, 5000);
+      };
+
+      window.dismissToast = function() {
+        var banner = document.getElementById('toast-banner');
+        if (banner) banner.classList.add('hidden');
+      };
+
+      window.insertSnippet = function(snippet) {
+        var ta = document.getElementById('reviewer-notes');
+        ta.value = (ta.value ? ta.value + " " : "") + snippet;
+        updateCharCount(ta);
+        ta.focus();
+      };
+
+      window.updateCharCount = function(el) {
+        document.getElementById('char-counter').textContent = el.value.length + ' / 300 characters';
+      };
+
+      window.toggleShowMore = function(btn) {
+        var memoEl = document.getElementById('revMemoText');
+        if (!memoEl) return;
+        var isExpanded = btn.getAttribute('data-expanded') === 'true';
+        if (isExpanded) {
+          memoEl.classList.add('line-clamp-3');
+          btn.setAttribute('data-expanded', 'false');
+          btn.innerHTML = '<span>Show More</span><span class="material-symbols-outlined text-sm">expand_more</span>';
+        } else {
+          memoEl.classList.remove('line-clamp-3');
+          btn.setAttribute('data-expanded', 'true');
+          btn.innerHTML = '<span>Show Less</span><span class="material-symbols-outlined text-sm">expand_less</span>';
+        }
+      };
+
+      window.saveNoteFeedback = function() {
+        var ta = document.getElementById('reviewer-notes');
+        if (!ta.value.trim()) {
+          showToast('Please type a note before saving.', 'bg-amber-50 border-amber-200 text-amber-800', 'warning');
+          return;
+        }
+        if (currentTicket) {
+          saveDecision(currentTicket.status, ta.value.trim());
+          showToast('Internal reviewer note saved to ticket audit ledger.', 'bg-slate-100 border-slate-300 text-slate-800', 'save');
+        }
+      };
+
+      window.updatePrereqCount = function() {
+        var ids = ['chk-identity', 'chk-fee', 'chk-seal'];
+        var checked = ids.filter(function(id){ var el = document.getElementById(id); return el && el.checked; }).length;
+        document.getElementById('prereqCount').textContent = checked + ' of ' + ids.length + ' Verified';
+      };
+
+      window.previewAttachment = function(title, src) {
+        document.getElementById('attachmentTitle').textContent = title;
+        document.getElementById('attachmentImage').src = src;
+        document.getElementById('attachmentModal').classList.remove('hidden');
+      };
+
+      window.closeAttachmentPreview = function() {
+        document.getElementById('attachmentModal').classList.add('hidden');
+      };
+
+      // Create new ticket submission
+      function createTicket() {
+        var f = document.getElementById('svCreateForm');
+        var req = ['requesterId', 'requesterName', 'category', 'type', 'title', 'campus'];
+        for (var i = 0; i < req.length; i++) {
+          var el = f.elements[req[i]];
+          if (!el || !String(el.value || '').trim()) {
+            showToast('Please fill in ' + req[i], 'bg-rose-50 border-rose-200 text-rose-800', 'error');
+            if (el) el.focus();
+            return;
+          }
+        }
+        var payload = {
+          studentId: f.elements['requesterId'].value.trim(),
+          studentName: f.elements['requesterName'].value.trim(),
+          role: String(f.elements['requesterId'].value.trim()).startsWith('TCH') ? 'teacher' : 'student',
+          category: f.elements['category'].value,
+          type: f.elements['type'].value.trim(),
+          title: f.elements['title'].value.trim(),
+          description: f.elements['description'].value.trim(),
+          priority: f.elements['priority'].value,
+          campus: f.elements['campus'].value
+        };
+
+        createSubmitBtn.disabled = true;
+        fetch('/api/service-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function() {
+            showToast('Ticket created successfully and added to queue.', 'bg-emerald-50 border-emerald-200 text-emerald-800', 'task_alt');
+            document.querySelector('[data-drawer="svCreateDrawer"]').classList.remove('show');
+            f.reset();
+            loadData();
+          })
+          .catch(function(err) {
+            showToast('Failed to create ticket: ' + err.message, 'bg-rose-50 border-rose-200 text-rose-800', 'error');
+          })
+          .finally(function() {
+            createSubmitBtn.disabled = false;
+          });
+      }
+
+      // Event Listeners
+      searchEl.addEventListener('input', function(e) { state.query = e.target.value; currentPage = 1; renderTable(); });
+      categoryEl.addEventListener('change', function(e) { state.category = e.target.value; currentPage = 1; renderTable(); });
+      campusEl.addEventListener('change', function(e) { state.campus = e.target.value; currentPage = 1; renderTable(); });
+      priorityEl.addEventListener('change', function(e) { state.priority = e.target.value; currentPage = 1; renderTable(); });
+      statusEl.addEventListener('change', function(e) { state.status = e.target.value; currentPage = 1; renderTable(); });
+      sortEl.addEventListener('change', function(e) { state.sort = e.target.value; renderTable(); });
+      pageSizeEl.addEventListener('change', function(e) { pageSize = parseInt(e.target.value, 10) || 10; currentPage = 1; renderTable(); });
+
+      resetBtn.addEventListener('click', function() {
+        state = { query: '', status: 'all', campus: 'all', priority: 'all', category: 'all', sort: 'newest' };
+        currentPage = 1;
+        searchEl.value = '';
+        categoryEl.value = 'all';
+        campusEl.value = 'all';
+        priorityEl.value = 'all';
+        statusEl.value = 'all';
+        sortEl.value = 'newest';
+        renderTable();
+      });
+
+      pagerEl.addEventListener('click', function(e) {
+        var btn = e.target.closest('button[data-page]');
+        if (!btn || btn.disabled) return;
+        var p = btn.getAttribute('data-page');
+        var data = filterAndSortData();
+        var totalPages = Math.max(1, Math.ceil(data.length / pageSize));
+        if (p === 'prev') {
+          currentPage = Math.max(1, currentPage - 1);
+        } else if (p === 'next') {
+          currentPage = Math.min(totalPages, currentPage + 1);
+        } else {
+          currentPage = parseInt(p, 10) || 1;
+        }
+        renderTable();
+      });
+
+      // Table action delegation
+      tbody.addEventListener('click', function(e) {
+        var reviewBtn = e.target.closest('.js-review-btn');
+        var titleEl = e.target.closest('.js-row-title');
+        var targetEl = reviewBtn || titleEl;
+        if (!targetEl) return;
+        var id = targetEl.getAttribute('data-id');
+        if (id) openReview(id);
+      });
+
+      // Select all checkboxes
+      var selectAll = document.getElementById('selectAllCheckbox');
+      if (selectAll) {
+        selectAll.addEventListener('change', function() {
+          var checkboxes = tbody.querySelectorAll('.row-select');
+          checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+        });
+      }
+
+      // Review View button bindings
+      btnBackToQueue.addEventListener('click', closeReview);
+      document.getElementById('btn-approve-header').addEventListener('click', window.approveAndDispatch);
+      document.getElementById('btn-approve-mobile').addEventListener('click', window.approveAndDispatch);
+      document.getElementById('btn-hold-header').addEventListener('click', window.toggleHoldState);
+      document.getElementById('btn-hold-mobile').addEventListener('click', window.toggleHoldState);
+      document.getElementById('btn-reject-header').addEventListener('click', window.openRejectModal);
+      document.getElementById('btn-reject-mobile').addEventListener('click', window.openRejectModal);
+
+      // Create modal trigger
+      createBtn.addEventListener('click', function() {
+        document.querySelector('[data-drawer="svCreateDrawer"]').classList.add('show');
+      });
+      createSubmitBtn.addEventListener('click', createTicket);
+
+      // Close drawer triggers
+      document.querySelectorAll('[data-close-drawer]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var overlay = btn.closest('.drawer-overlay');
+          if (overlay) overlay.classList.remove('show');
+        });
+      });
+
+      // Export CSV
+      exportBtn.addEventListener('click', function() {
+        var rows = filterAndSortData();
+        var headers = ['Ticket ID', 'Title', 'Requester', 'Requester ID', 'Role', 'Category', 'Campus', 'Priority', 'Status', 'Submitted'];
+        var csvLines = [headers.join(',')];
+        rows.forEach(function(r) {
+          csvLines.push([
+            r.id,
+            r.title,
+            r.studentName,
+            r.studentId,
+            r.role,
+            r.category,
+            r.campus,
+            r.priority,
+            r.status,
+            r.date
+          ].map(function(val) {
+            return '"' + String(val == null ? '' : val).replace(/"/g, '""') + '"';
+          }).join(','));
+        });
+        var blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'ngis-service-requests.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Service request log exported as CSV.', 'bg-emerald-50 border-emerald-200 text-emerald-800', 'download');
+      });
+
+      // Initial load
+      loadData();
+    })();
+  </script>
 </body>
 </html>

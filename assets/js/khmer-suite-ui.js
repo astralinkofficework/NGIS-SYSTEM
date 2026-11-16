@@ -55,6 +55,38 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+  function confirmModal(opts, onYes) {
+    if (global.NGISKit && typeof global.NGISKit.confirmAction === 'function') {
+      global.NGISKit.confirmAction({
+        title: opts.title,
+        description: opts.description,
+        consequence: opts.consequence || '',
+        confirmLabel: opts.confirmLabel || 'Confirm',
+        cancelLabel: opts.cancelLabel || 'Cancel',
+        isDestructive: !!opts.isDestructive,
+        onConfirm: onYes
+      });
+      return;
+    }
+    var bd = document.createElement('div');
+    bd.className = 'ngis-modal-backdrop open';
+    bd.setAttribute('role', 'dialog');
+    bd.setAttribute('aria-modal', 'true');
+    bd.innerHTML =
+      '<div class="ngis-modal-box">' +
+        '<h3 class="ngis-confirm-title">' + esc(opts.title || 'Confirm action') + '</h3>' +
+        '<p class="ngis-confirm-desc">' + esc(opts.description || '') + (opts.consequence ? '<br>' + esc(opts.consequence) : '') + '</p>' +
+        '<div class="ngis-confirm-actions">' +
+          '<button type="button" class="ngis-btn ngis-btn-secondary" data-cm="cancel">' + esc(opts.cancelLabel || 'Cancel') + '</button>' +
+          '<button type="button" class="ngis-btn ' + (opts.isDestructive ? 'ngis-btn-danger' : 'ngis-btn-primary') + '" data-cm="ok">' + esc(opts.confirmLabel || 'Confirm') + '</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(bd);
+    function close() { if (bd.parentNode) bd.parentNode.removeChild(bd); }
+    bd.querySelector('[data-cm="cancel"]').onclick = close;
+    bd.querySelector('[data-cm="ok"]').onclick = function () { close(); if (typeof onYes === 'function') onYes(); };
+    bd.onclick = function (ev) { if (ev.target === bd) close(); };
+  }
   function kh(v) { return D.kh(v); }
   function clsMap(state) {
     var m = {}; (state.classes || []).forEach(function (c) { m[c.id] = c.display; }); return m;
@@ -118,6 +150,27 @@
     });
     var m = raw.match(/(20\d{2})\s*[-–]\s*(20\d{2})/);
     return m ? 'AY ' + m[1] + '–' + m[2] : 'AY 2026–2027';
+  }
+
+  // Sticky-bar save/publication status chip, driven by the engine's save state.
+  function saveStatusChipHtml(saveStatus, lastSavedAt) {
+    var savedTime = lastSavedAt;
+    if (!savedTime && ctx && ctx.state && ctx.state.updated_at) {
+      try {
+        savedTime = new Date(ctx.state.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch (e) {}
+    }
+    var map = {
+      saved:     { icon: 'check_circle', tone: 'text-emerald-700 bg-emerald-50 border-emerald-200/60', label: savedTime ? 'Saved ' + savedTime : 'Saved' },
+      dirty:     { icon: 'edit_note',    tone: 'text-amber-700 bg-amber-50 border-amber-200',         label: 'Unsaved changes' },
+      saving:    { icon: 'progress_activity', tone: 'text-sky-700 bg-sky-50 border-sky-200',      label: 'Saving…' },
+      offline:   { icon: 'cloud_off',    tone: 'text-slate-600 bg-slate-100 border-slate-200',        label: 'Offline — saved locally' },
+      conflict:  { icon: 'sync_problem', tone: 'text-red-700 bg-red-50 border-red-200',               label: 'Save conflict — reload' }
+    };
+    var cfg = map[saveStatus] || map.saved;
+    return '<span id="saveStatusIndicator" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium shrink-0 ' + cfg.tone + '">' +
+      '<span class="material-symbols-outlined text-[14px]">' + cfg.icon + '</span>' +
+      '<span>' + esc(cfg.label) + '</span></span>';
   }
 
   function executiveHeadHtml() {
@@ -427,9 +480,9 @@
       var subEn = s.name_en || D.toEnSubject(s.name_kh);
       return '<tr>' +
         '<td class="center">' + kh(i + 1) + '</td>' +
-        '<td><span class="ks-subject-chip" style="background:' + esc(s.color) + '33">' +
+        '<td><span class="ks-subject-name" style="color:' + esc(s.color) + '">' +
           '<i class="swatch" style="background:' + esc(s.color) + '"></i>' + esc(subEn) +
-          ' <small>(' + esc(s.code) + ')</small></span></td>' +
+          ' <small class="ks-muted-code">(' + esc(s.code) + ')</small></span></td>' +
         '<td>' + esc(s.department || 'General') + '</td>' +
         '<td class="center"><input type="number" min="0" max="15" value="' + (s.lessons_per_week || 2) + '" data-change="subject-grade-hours" data-id="' + esc(s.id) + '" style="width:55px;text-align:center"></td>' +
         '<td class="center"><select class="ks-select" data-change="subject-consec" data-id="' + esc(s.id) + '">' +
@@ -875,7 +928,7 @@
             '<span class="text-slate-300">/</span>' +
             '<span class="text-slate-700 font-medium">Teacher Assignment</span>' +
           '</div>' +
-          '<h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight flex items-center gap-2.5" style="font-family:\'Manrope\',sans-serif;">' +
+          '<h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight flex items-center gap-2.5" style="font-family:\'Inter\',sans-serif;">' +
             '<span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-200/60 shrink-0">' +
               '<span class="material-symbols-outlined text-[20px]">swap_horiz</span>' +
             '</span>' +
@@ -1253,6 +1306,15 @@
     var undoDepth = E.undoDepth ? E.undoDepth() : 0;
     var redoDepth = E.redoDepth ? E.redoDepth() : 0;
     var conflictsCount = stats.conflicts || 0;
+    var timetableName = isSchoolView
+      ? 'Master Timetable'
+      : (isTeacherView
+          ? (curTeacher.name_en || D.toEnTeacher(curTeacher.name_kh) || curTeacher.code) + ' Schedule'
+          : 'Class ' + D.toEnClass(curClass.display || curClass.id) + ' Timetable');
+    var campusName = (curClass && curClass.campus) ||
+                     (state.classes && state.classes[0] && state.classes[0].campus) ||
+                     'Tuol Kork Campus';
+    var isPublished = !!(state.published && state.published.version);
 
     var toolbarHtml =
       '<div class="ks-builder-toolbar bg-white rounded-2xl border border-slate-200/80 shadow-xs p-3.5 sm:p-4 mb-4">' +
@@ -1299,15 +1361,36 @@
                 '</div>')
             ) +
 
-            '<!-- Academic Context Pill -->' +
-            '<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-xs font-medium shrink-0">' +
-              '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>' +
-              '<span>Main Campus · AY 2026-2027 · Term 1</span>' +
+            '<!-- Timetable Name & Academic Context -->' +
+            '<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200/80 text-slate-800 text-xs font-medium shrink-0">' +
+              '<span class="material-symbols-outlined text-[15px] text-[#176B45]">calendar_month</span>' +
+              '<span>' + esc(timetableName) + '</span>' +
             '</div>' +
 
-            (local.lastSavedAt
-              ? '<span id="saveStatusIndicator" class="inline-flex items-center gap-1 text-[11px] text-slate-500 font-normal"><span class="material-symbols-outlined text-[13px] text-emerald-600">check</span><span>Saved ' + esc(local.lastSavedAt) + '</span></span>'
-              : '') +
+            '<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-xs font-medium shrink-0">' +
+              '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>' +
+              '<span>' + esc(campusName) + ' · ' + esc(academicYearLabel(state.institution)) + '</span>' +
+            '</div>' +
+
+            '<!-- Draft / Published Status Badge -->' +
+            (isPublished
+              ? ('<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-[#176B45] border border-emerald-200/60 shrink-0">' +
+                  '<span class="material-symbols-outlined text-[14px]">verified</span>' +
+                  '<span>Published (v' + esc(state.published.version) + ')</span></span>')
+              : ('<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200/60 shrink-0">' +
+                  '<span class="material-symbols-outlined text-[14px]">edit_document</span>' +
+                  '<span>Draft</span></span>')
+            ) +
+
+            saveStatusChipHtml(ctx.saveStatus, local.lastSavedAt) +
+
+            '<!-- Conflict Chip -->' +
+            '<button type="button" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium shrink-0 cursor-pointer ' +
+              (conflictsCount ? 'bg-red-50 border border-red-200 text-red-700 hover:bg-red-100' : 'bg-emerald-50 border border-emerald-200/60 text-emerald-800') + '" ' +
+              'data-act="conflicts" title="Review timetable conflicts">' +
+              '<span class="material-symbols-outlined text-[14px]">' + (conflictsCount ? 'error' : 'check_circle') + '</span>' +
+              '<span>' + (conflictsCount ? conflictsCount + ' conflicts' : 'Zero conflicts') + '</span>' +
+            '</button>' +
           '</div>' +
 
           '<!-- Right: Actions Toolbar -->' +
@@ -1328,8 +1411,27 @@
               '<span>Save Draft</span>' +
             '</button>' +
 
+            '<!-- Preview -->' +
+            '<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-colors shadow-xs cursor-pointer ' +
+              (local.preview ? 'bg-slate-900 border-slate-900 text-white' : 'border-slate-200 text-slate-700 bg-white hover:bg-slate-50') + '" data-act="preview-toggle" title="' + (local.preview ? 'Exit read-only preview' : 'Preview the draft as read-only') + '">' +
+              '<span class="material-symbols-outlined text-[16px] ' + (local.preview ? 'text-white' : 'text-slate-500') + '">visibility</span>' +
+              '<span>' + (local.preview ? 'Exit Preview' : 'Preview') + '</span>' +
+            '</button>' +
+
+            '<!-- Compare Draft vs Published -->' +
+            '<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 text-xs font-medium transition-colors shadow-xs cursor-pointer" data-act="compare-publication" title="Compare draft changes against the published version">' +
+              '<span class="material-symbols-outlined text-[16px] text-slate-500">difference</span>' +
+              '<span>Compare</span>' +
+            '</button>' +
+
+            '<!-- Publication History -->' +
+            '<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 text-xs font-medium transition-colors shadow-xs cursor-pointer" data-act="publication-history" title="Publication history & restore">' +
+              '<span class="material-symbols-outlined text-[16px] text-slate-500">history</span>' +
+              '<span>History</span>' +
+            '</button>' +
+
             '<!-- Publish Timetable -->' +
-            '<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#006C49] text-white hover:bg-[#005236] text-xs font-medium transition-all shadow-xs cursor-pointer" data-act="open-publish-modal" title="Publish official schedule to teacher and student portals">' +
+            '<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#176B45] text-white hover:bg-[#14532D] text-xs font-medium transition-all shadow-xs cursor-pointer" data-act="open-publish-modal" title="Publish official schedule to teacher and student portals">' +
               '<span class="material-symbols-outlined text-[16px]">rocket_launch</span>' +
               '<span>Publish Timetable</span>' +
             '</button>' +
@@ -1343,7 +1445,7 @@
               state.classes.map(function (c) {
                 var isSel = (c.id === curClass.id);
                 return '<button class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-colors cursor-pointer ' +
-                  (isSel ? 'bg-[#006C49] text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200') + '" ' +
+                  (isSel ? 'bg-[#176B45] text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200') + '" ' +
                   'data-act="set-class-cohort" data-id="' + esc(c.id) + '">' +
                   esc(D.toEnClass(c.display || c.id)) +
                 '</button>';
@@ -1357,7 +1459,7 @@
       '<div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-3.5 sm:p-4 mb-4">' +
         '<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-100">' +
           '<div class="flex items-center gap-2">' +
-            '<span class="material-symbols-outlined text-[#006C49] text-[20px]">touch_app</span>' +
+            '<span class="material-symbols-outlined text-[#176B45] text-[20px]">touch_app</span>' +
             '<span class="text-xs sm:text-sm font-medium text-slate-900">' +
               'Remaining Lessons (' + totalRemaining + '):' +
             '</span>' +
@@ -1366,7 +1468,7 @@
             '</span>' +
           '</div>' +
           '<div class="flex items-center gap-2">' +
-            '<button class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-xs flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer" ' +
+            '<button class="px-3 py-1.5 rounded-lg bg-[#176B45] hover:bg-[#125638] text-white font-medium text-xs flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer" ' +
               'data-act="auto-schedule-current" title="Auto-schedule unplaced lessons for this ' + (isTeacherView ? 'teacher' : 'class') + '">' +
               '<span class="material-symbols-outlined text-[15px]">auto_fix_high</span>' +
               '<span>' + (isTeacherView ? 'Auto-Schedule Teacher' : 'Auto-Schedule Class') + '</span>' +
@@ -1396,7 +1498,7 @@
       var tchrName = tchr ? (tchr.name_en || D.toEnTeacher(tchr.name_kh) || tchr.code) : (tCell.teacher_code || '');
       var clName = D.toEnClass(clsMap(ctx.state)[p.class_id] || p.class_id);
 
-      moveBarHtml = '<div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-2xl border border-blue-200 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-6 z-50" style="max-width: 680px; width: 92%;">' +
+      moveBarHtml = '<div class="fixed bottom-44 md:bottom-6 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-2xl border border-emerald-200 px-5 py-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-6 z-50" style="max-width: 680px; width: 92%;">' +
         '<div class="min-w-0 flex-1">' +
           '<div class="text-xs font-medium text-blue-700 flex items-center gap-1.5">' +
             '<span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>' +
@@ -1427,7 +1529,25 @@
       moduleNavHtml() +
     '</div>';
 
-    return '<div class="relative w-full overflow-x-hidden pb-12">' +
+    // Compact sticky bottom action bar (mobile only; CSS hides it elsewhere).
+    var pub = ctx.state.published || null;
+    var mobileActionHtml =
+      '<div class="ks-mobile-actionbar ks-no-print">' +
+        '<div class="ks-mobile-status">' +
+          '<span class="lbl">' + esc(timetableName) + ' · ' + esc(campusName) + '</span>' +
+          '<span class="val">' + (pub ? 'Published v' + pub.version : 'Draft') +
+            (ctx.saveStatus === 'dirty' ? ' · Unsaved' : (local.lastSavedAt ? ' · ' + local.lastSavedAt : '')) +
+            (conflictsCount ? ' · ' + conflictsCount + ' conflicts' : '') + '</span>' +
+        '</div>' +
+        '<button class="ks-btn" data-act="preview-toggle" title="Preview">' +
+          '<span class="material-symbols-outlined text-[16px]">visibility</span><span>Preview</span></button>' +
+        '<button class="ks-btn" data-act="save-draft" title="Save Draft">' +
+          '<span class="material-symbols-outlined text-[16px]">save</span><span>Save</span></button>' +
+        '<button class="ks-btn publish" data-act="open-publish-modal" title="Publish Timetable">' +
+          '<span class="material-symbols-outlined text-[16px]">rocket_launch</span><span>Publish</span></button>' +
+      '</div>';
+
+    return '<div class="relative w-full pb-28 md:pb-12">' +
       '<div class="max-w-[1680px] w-full mx-auto px-3 sm:px-4 lg:px-6 space-y-4 pt-2 sm:pt-4">' +
         pageChromeHtml +
         toolbarHtml +
@@ -1436,6 +1556,7 @@
         insightsHtml() +
       '</div>' +
       moveBarHtml +
+      mobileActionHtml +
     '</div>';
   }
 
@@ -1490,14 +1611,14 @@
             '</span>' +
           '</div>' +
           '<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">' +
-            '<div class="h-full rounded-full transition-all ' + (rem ? 'bg-[#006C49]' : 'bg-emerald-500') + '" style="width:' + pct + '%;"></div>' +
+            '<div class="h-full rounded-full transition-all ' + (rem ? 'bg-[#176B45]' : 'bg-emerald-500') + '" style="width:' + pct + '%;"></div>' +
           '</div>' +
           '<div class="flex items-center justify-between pt-1 text-[11px]">' +
             '<button class="px-2 py-1 rounded text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors font-medium cursor-pointer" ' +
               'data-act="select-right-lesson" data-chip-id="' + esc(chipId) + '">' +
               'Select Lesson' +
             '</button>' +
-            '<button class="px-2 py-1 rounded text-[#006C49] hover:bg-emerald-50 transition-colors font-medium cursor-pointer" ' +
+            '<button class="px-2 py-1 rounded text-[#176B45] hover:bg-emerald-50 transition-colors font-medium cursor-pointer" ' +
               'data-act="find-slot" data-chip-id="' + esc(chipId) + '">' +
               'Find Slot' +
             '</button>' +
@@ -1620,7 +1741,7 @@
             '<span class="font-mono text-slate-600">' + classPlaced + ' / ' + classCapacity + ' Periods</span>' +
           '</div>' +
           '<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">' +
-            '<div class="h-full bg-[#006C49] rounded-full transition-all" style="width:' + classPct + '%;"></div>' +
+            '<div class="h-full bg-[#176B45] rounded-full transition-all" style="width:' + classPct + '%;"></div>' +
           '</div>' +
           '<div class="flex items-center justify-between text-[11px] text-slate-500">' +
             '<span>' + classPct + '% Scheduled</span>' +
@@ -1632,7 +1753,7 @@
         '<div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">' +
           '<div class="flex items-center justify-between pb-2 border-b border-slate-100">' +
             '<div class="flex items-center gap-1.5">' +
-              '<span class="material-symbols-outlined text-[18px] text-[#006C49]">list_alt</span>' +
+              '<span class="material-symbols-outlined text-[18px] text-[#176B45]">list_alt</span>' +
               '<h4 class="text-xs sm:text-sm font-medium text-slate-900">Remaining Assignments</h4>' +
             '</div>' +
             '<span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-slate-100 text-slate-700">' +
@@ -1651,7 +1772,7 @@
               '<span class="material-symbols-outlined text-[18px] ' + (E.conflicts().length ? 'text-rose-600' : 'text-emerald-600') + '">verified</span>' +
               '<h4 class="text-xs sm:text-sm font-medium text-slate-900">Conflict Audit</h4>' +
             '</div>' +
-            '<button class="text-xs text-[#006C49] hover:underline font-medium cursor-pointer" data-act="conflicts">' +
+            '<button class="text-xs text-[#176B45] hover:underline font-medium cursor-pointer" data-act="conflicts">' +
               'View All' +
             '</button>' +
           '</div>' +
@@ -1727,14 +1848,14 @@
             '</span>' +
           '</div>' +
           '<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">' +
-            '<div class="h-full rounded-full transition-all ' + (rem ? 'bg-[#006C49]' : 'bg-emerald-500') + '" style="width:' + pct + '%;"></div>' +
+            '<div class="h-full rounded-full transition-all ' + (rem ? 'bg-[#176B45]' : 'bg-emerald-500') + '" style="width:' + pct + '%;"></div>' +
           '</div>' +
           '<div class="flex items-center justify-between pt-1 text-[11px]">' +
             '<button class="px-2 py-1 rounded text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors font-medium cursor-pointer" ' +
               'data-act="select-right-lesson" data-chip-id="' + esc(chipId) + '">' +
               'Select Lesson' +
             '</button>' +
-            '<button class="px-2 py-1 rounded text-[#006C49] hover:bg-emerald-50 transition-colors font-medium cursor-pointer" ' +
+            '<button class="px-2 py-1 rounded text-[#176B45] hover:bg-emerald-50 transition-colors font-medium cursor-pointer" ' +
               'data-act="find-slot" data-chip-id="' + esc(chipId) + '">' +
               'Find Slot' +
             '</button>' +
@@ -1855,7 +1976,7 @@
             '<span class="font-mono text-slate-600">' + classPlaced + ' / ' + classCapacity + ' Periods</span>' +
           '</div>' +
           '<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">' +
-            '<div class="h-full bg-[#006C49] rounded-full transition-all" style="width:' + classPct + '%;"></div>' +
+            '<div class="h-full bg-[#176B45] rounded-full transition-all" style="width:' + classPct + '%;"></div>' +
           '</div>' +
           '<div class="flex items-center justify-between text-[11px] text-slate-500">' +
             '<span>' + classPct + '% Scheduled</span>' +
@@ -1867,7 +1988,7 @@
         '<div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">' +
           '<div class="flex items-center justify-between pb-2 border-b border-slate-100">' +
             '<div class="flex items-center gap-1.5">' +
-              '<span class="material-symbols-outlined text-[18px] text-[#006C49]">list_alt</span>' +
+              '<span class="material-symbols-outlined text-[18px] text-[#176B45]">list_alt</span>' +
               '<h4 class="text-xs sm:text-sm font-medium text-slate-900">Remaining Assignments</h4>' +
             '</div>' +
             '<span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-slate-100 text-slate-700">' +
@@ -1886,7 +2007,7 @@
               '<span class="material-symbols-outlined text-[18px] ' + (E.conflicts().length ? 'text-rose-600' : 'text-emerald-600') + '">verified</span>' +
               '<h4 class="text-xs sm:text-sm font-medium text-slate-900">Conflict Audit</h4>' +
             '</div>' +
-            '<button class="text-xs text-[#006C49] hover:underline font-medium cursor-pointer" data-act="conflicts">' +
+            '<button class="text-xs text-[#176B45] hover:underline font-medium cursor-pointer" data-act="conflicts">' +
               'View All' +
             '</button>' +
           '</div>' +
@@ -1962,14 +2083,14 @@
             '</span>' +
           '</div>' +
           '<div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">' +
-            '<div class="h-full rounded-full transition-all ' + (rem ? 'bg-[#006C49]' : 'bg-emerald-500') + '" style="width:' + pct + '%;"></div>' +
+            '<div class="h-full rounded-full transition-all ' + (rem ? 'bg-[#176B45]' : 'bg-emerald-500') + '" style="width:' + pct + '%;"></div>' +
           '</div>' +
           '<div class="flex items-center justify-between pt-1 text-[11px]">' +
             '<button class="px-2 py-1 rounded text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors font-medium cursor-pointer" ' +
               'data-act="select-right-lesson" data-chip-id="' + esc(chipId) + '">' +
               'Select Lesson' +
             '</button>' +
-            '<button class="px-2 py-1 rounded text-[#006C49] hover:bg-emerald-50 transition-colors font-medium cursor-pointer" ' +
+            '<button class="px-2 py-1 rounded text-[#176B45] hover:bg-emerald-50 transition-colors font-medium cursor-pointer" ' +
               'data-act="find-slot" data-chip-id="' + esc(chipId) + '">' +
               'Find Slot' +
             '</button>' +
@@ -2066,7 +2187,7 @@
         '<!-- Teacher Header Banner -->' +
         '<div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">' +
           '<div class="flex items-center gap-3 min-w-0">' +
-            '<div class="w-11 h-11 rounded-xl bg-[#006C49] text-white flex items-center justify-center font-medium text-base sm:text-lg shrink-0 shadow-xs">' +
+            '<div class="w-11 h-11 rounded-xl bg-[#176B45] text-white flex items-center justify-center font-medium text-base sm:text-lg shrink-0 shadow-xs">' +
               esc(t.code) +
             '</div>' +
             '<div class="min-w-0">' +
@@ -2119,7 +2240,7 @@
             '<span class="font-mono text-slate-600">' + teacherPlacedCount + ' / ' + targetHours + ' hrs</span>' +
           '</div>' +
           '<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">' +
-            '<div class="h-full bg-[#006C49] rounded-full transition-all" style="width:' + teacherPct + '%;"></div>' +
+            '<div class="h-full bg-[#176B45] rounded-full transition-all" style="width:' + teacherPct + '%;"></div>' +
           '</div>' +
           '<div class="flex items-center justify-between text-[11px] text-slate-500">' +
             '<span>' + teacherPct + '% Scheduled</span>' +
@@ -2131,7 +2252,7 @@
         '<div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">' +
           '<div class="flex items-center justify-between pb-2 border-b border-slate-100">' +
             '<div class="flex items-center gap-1.5">' +
-              '<span class="material-symbols-outlined text-[18px] text-[#006C49]">list_alt</span>' +
+              '<span class="material-symbols-outlined text-[18px] text-[#176B45]">list_alt</span>' +
               '<h4 class="text-xs sm:text-sm font-medium text-slate-900">Assigned Cohorts</h4>' +
             '</div>' +
             '<span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-medium bg-slate-100 text-slate-700">' +
@@ -2150,7 +2271,7 @@
               '<span class="material-symbols-outlined text-[18px] ' + (E.conflicts().length ? 'text-rose-600' : 'text-emerald-600') + '">verified</span>' +
               '<h4 class="text-xs sm:text-sm font-medium text-slate-900">Conflict Audit</h4>' +
             '</div>' +
-            '<button class="text-xs text-[#006C49] hover:underline font-medium cursor-pointer" data-act="conflicts">' +
+            '<button class="text-xs text-[#176B45] hover:underline font-medium cursor-pointer" data-act="conflicts">' +
               'View All' +
             '</button>' +
           '</div>' +
@@ -2209,7 +2330,7 @@
       }).join('');
 
       return '<tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">' +
-        '<td class="py-2 px-4 text-[13px] font-medium text-[#006C49] sticky left-0 bg-white z-10 whitespace-nowrap">' +
+        '<td class="py-2 px-4 text-[13px] font-medium text-[#176B45] sticky left-0 bg-white z-10 whitespace-nowrap">' +
           'Class ' + esc(D.toEnClass(c.display || c.id)) +
         '</td>' +
         cells +
@@ -2219,10 +2340,10 @@
     return '<div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 space-y-4">' +
       '<div class="flex items-center justify-between pb-3 border-b border-slate-100">' +
         '<div class="flex items-center gap-2">' +
-          '<span class="material-symbols-outlined text-[22px] text-[#006C49]">table_chart</span>' +
+          '<span class="material-symbols-outlined text-[22px] text-[#176B45]">table_chart</span>' +
           '<h3 class="text-base font-medium text-slate-900">School Master Preview Matrix</h3>' +
         '</div>' +
-        '<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#006C49] text-white text-xs font-medium hover:bg-[#005236] transition-colors shadow-xs cursor-pointer" data-act="open-publish-modal">' +
+        '<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] transition-colors shadow-xs cursor-pointer" data-act="open-publish-modal">' +
           '<span class="material-symbols-outlined text-[16px]">rocket_launch</span>' +
           '<span>Publish to Teacher &amp; Student</span>' +
         '</button>' +
@@ -2572,6 +2693,7 @@
       var hoursVal = parseInt(s.lessons_per_week, 10) || 2;
       var allocatedHours = hoursVal * 12;
       var isLocked = !!s.is_locked;
+      var assignedClasses = (state.assignments || []).filter(function (a) { return a.subject_id === s.id; }).length;
 
       return '<tr class="hover:bg-surface-container-low/60 transition-colors group" data-id="' + esc(s.id) + '" data-stream="' + esc(meta.stream) + '">' +
         '<td class="py-3.5 pl-5 pr-2 text-center font-label-md text-on-surface-variant">' +
@@ -2580,14 +2702,16 @@
         '<td class="py-3.5 px-3">' +
           '<div class="flex items-center gap-2">' +
             '<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">' + esc(meta.icon) + '</span>' +
-            '<input class="subject-name-input w-full px-2.5 py-1.5 bg-transparent hover:bg-surface-container-low focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container rounded-lg font-headline-sm text-headline-sm text-on-surface transition-all font-medium" data-id="' + esc(s.id) + '" type="text" value="' + esc(displayName) + '">' +
+            '<input class="subject-name-input ngx-inline-edit w-full px-2.5 py-1.5 font-headline-sm text-headline-sm text-on-surface transition-all font-medium" data-id="' + esc(s.id) + '" type="text" value="' + esc(displayName) + '" aria-label="Subject name">' +
           '</div>' +
+          '<div class="text-[11px] text-slate-400 mt-0.5 pl-7 truncate">' + esc(s.department || '—') +
+            ' · ' + kh(assignedClasses) + (assignedClasses === 1 ? ' class' : ' classes') + '</div>' +
         '</td>' +
         '<td class="py-3.5 px-3">' +
-          '<input class="subject-short-input w-full px-2.5 py-1.5 bg-transparent hover:bg-surface-container-low focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container rounded-lg font-body-md text-on-surface transition-all font-normal" data-id="' + esc(s.id) + '" type="text" value="' + esc(shortName) + '">' +
+          '<input class="subject-short-input ngx-inline-edit w-full px-2.5 py-1.5 font-body-md text-on-surface transition-all font-normal" data-id="' + esc(s.id) + '" type="text" value="' + esc(shortName) + '" aria-label="Short name">' +
         '</td>' +
         '<td class="py-3.5 px-3 text-center">' +
-          '<span class="inline-block px-2.5 py-1 bg-surface-container text-on-surface font-mono font-medium text-label-sm rounded-md">' + esc(meta.idBadge) + '</span>' +
+          '<span class="ngx-meta-text font-mono">' + esc(meta.idBadge) + '</span>' +
         '</td>' +
         '<td class="py-3.5 px-3">' +
           '<div class="flex items-center gap-2">' +
@@ -2598,7 +2722,7 @@
         '<td class="py-3.5 px-3 text-center">' +
           '<div class="inline-flex items-center bg-surface-container-low rounded-lg p-0.5">' +
             '<button class="step-minus-btn w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors text-sm" data-id="' + esc(s.id) + '" type="button">−</button>' +
-            '<input class="subject-hours-input w-9 text-center bg-transparent font-headline-sm text-headline-sm text-primary font-medium focus:outline-none" data-id="' + esc(s.id) + '" type="text" value="' + hoursVal + '">' +
+            '<input class="subject-hours-input ngx-inline-edit w-9 text-center font-headline-sm text-headline-sm text-primary font-medium" data-id="' + esc(s.id) + '" type="text" value="' + hoursVal + '" aria-label="Periods per week">' +
             '<button class="step-plus-btn w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors text-sm" data-id="' + esc(s.id) + '" type="button">+</button>' +
           '</div>' +
         '</td>' +
@@ -2610,6 +2734,9 @@
         '</td>' +
         '<td class="py-3.5 pl-3 pr-5 text-right">' +
           '<div class="flex items-center justify-end gap-1">' +
+            '<button class="subject-edit-btn p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-surface-container transition-colors" data-id="' + esc(s.id) + '" title="Edit details, department & assigned classes" type="button">' +
+              '<span class="material-symbols-outlined text-[18px]">tune</span>' +
+            '</button>' +
             '<button class="subject-lock-btn p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-surface-container transition-colors ' + (isLocked ? 'text-primary' : '') + '" data-id="' + esc(s.id) + '" title="' + (isLocked ? 'Locked' : 'Unlocked') + '" type="button">' +
               '<span class="material-symbols-outlined text-[18px]">' + (isLocked ? 'lock' : 'lock_open') + '</span>' +
             '</button>' +
@@ -2793,7 +2920,7 @@
       '<div class="fixed bottom-6 right-6 bg-primary text-on-primary px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50" id="toastNotification">' +
         '<span class="material-symbols-outlined text-[22px] text-secondary-container">check_circle</span>' +
         '<div class="text-left font-body-sm">' +
-          '<div class="font-label-md text-label-md font-medium">Saved successfully!</div>' +
+          '<div class="font-label-md text-label-md font-medium">Saved!</div>' +
           '<div class="text-on-primary/80">Subject directory configuration synchronized.</div>' +
         '</div>' +
       '</div>' +
@@ -2812,6 +2939,7 @@
     if (saveBtn) {
       saveBtn.onclick = function () {
         var rows = document.querySelectorAll('#subjectTableBody tr');
+        var changed = [];
         rows.forEach(function (r) {
           var id = r.dataset.id;
           var sub = (ctx.state.subjects || []).find(function (x) { return x.id === id; });
@@ -2824,18 +2952,48 @@
           if (shortInp) sub.short_name = shortInp.value;
           if (hoursInp) sub.lessons_per_week = parseInt(hoursInp.value, 10) || 2;
           if (colorInp) sub.color = colorInp.value;
+          changed.push(sub);
         });
 
-        E.flushSave().then(function () {
-          if (toastEl) {
-            toastEl.classList.remove('translate-y-20', 'opacity-0');
-            toastEl.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(function () {
-              toastEl.classList.remove('translate-y-0', 'opacity-100');
-              toastEl.classList.add('translate-y-20', 'opacity-0');
-            }, 3200);
+        // Persist inline edits per-subject through the subject API (the
+        // whole-state autosave is read-only for admins by design).
+        var token = (window.NGISAuth && NGISAuth.getToken) ? NGISAuth.getToken() : '';
+        var queue = changed.slice();
+        var failures = 0;
+        function nextSave() {
+          if (!queue.length) {
+            if (failures) {
+              toast(failures + ' subject(s) could not be saved — check your connection', 'error');
+            } else {
+              if (toastEl) {
+                toastEl.classList.remove('translate-y-20', 'opacity-0');
+                toastEl.classList.add('translate-y-0', 'opacity-100');
+                setTimeout(function () {
+                  toastEl.classList.remove('translate-y-0', 'opacity-100');
+                  toastEl.classList.add('translate-y-20', 'opacity-0');
+                }, 3200);
+              }
+              toast('Subject directory saved to the school database', 'success');
+            }
+            E.reloadFromServer();
+            return;
           }
-        });
+          var s = queue.shift();
+          fetch('/api/timetable/subjects/' + encodeURIComponent(s.id), {
+            method: 'PUT',
+            headers: Object.assign({ 'Content-Type': 'application/json' },
+              token ? { 'Authorization': 'Bearer ' + token } : {}),
+            body: JSON.stringify({ subject: {
+              name_kh: s.name_kh, short_name: s.short_name,
+              lessons_per_week: s.lessons_per_week, color: s.color
+            } })
+          }).then(function (r) {
+            if (!r.ok) failures++;
+            return r.json();
+          }).then(function () { nextSave(); })
+            .catch(function () { failures++; nextSave(); });
+        }
+        nextSave();
       };
     }
 
@@ -2948,6 +3106,11 @@
         };
       }
 
+      var editBtn = r.querySelector('.subject-edit-btn');
+      if (editBtn) {
+        editBtn.onclick = function () { SubjectForm.open(id, editBtn); };
+      }
+
       if (lockBtn) {
         lockBtn.onclick = function () {
           if (!sub) return;
@@ -2969,31 +3132,44 @@
 
       if (delBtn) {
         delBtn.onclick = function () {
-          if (!confirm('Are you sure you want to delete this subject?')) return;
-          r.remove();
-          if (sub) {
-            ctx.state.subjects = ctx.state.subjects.filter(function (x) { return x.id !== id; });
-            E.commit('Delete subject ' + id, function (s) {
-              s.subjects = s.subjects.filter(function (x) { return x.id !== id; });
-              s.assignments = s.assignments.filter(function (a) { return a.subject_id !== id; });
-              Object.keys(s.grid).forEach(function (k) { if (s.grid[k].subject_id === id) delete s.grid[k]; });
-            });
-            E.scheduleSave();
-          }
-          var count = ctx.state.subjects ? ctx.state.subjects.length : 0;
-          var kpiTotal = document.getElementById('kpiTotalSubjects');
-          if (kpiTotal) kpiTotal.textContent = count;
-          var countFooter = document.getElementById('subjectCountFooter');
-          if (countFooter) countFooter.textContent = 'Showing 1–' + count + ' of ' + count + ' subjects';
-
-          var total = 0;
-          document.querySelectorAll('#subjectTableBody .subject-hours-input').forEach(function (inp) {
-            total += parseInt(inp.value, 10) || 0;
+          confirmModal({
+            title: 'Delete subject?',
+            description: 'Remove "' + (sub ? (sub.name_en || sub.name_kh || id) : id) + '" from this curriculum list.',
+            consequence: 'Assigned lessons using this subject will also be cleared from the grid.',
+            confirmLabel: 'Delete subject',
+            isDestructive: true
+          }, function () {
+            // Persist through the subject API (whole-state autosave is
+            // read-only for admins); mirror locally for instant feedback.
+            r.remove();
+            if (sub) {
+              ctx.state.subjects = ctx.state.subjects.filter(function (x) { return x.id !== id; });
+              ctx.state.assignments = (ctx.state.assignments || []).filter(function (a) { return a.subject_id !== id; });
+              Object.keys(ctx.state.grid || {}).forEach(function (k) {
+                if (ctx.state.grid[k] && ctx.state.grid[k].subject_id === id) delete ctx.state.grid[k];
+              });
+              var token = (window.NGISAuth && NGISAuth.getToken) ? NGISAuth.getToken() : '';
+              fetch('/api/timetable/subjects/' + encodeURIComponent(id), {
+                method: 'DELETE',
+                headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+              }).then(function (r) { return r.json(); }).then(function (j) {
+                if (j && j.success === false) {
+                  toast(String(j.message || j.error || 'Delete failed on the server'), 'error');
+                } else {
+                  toast('Subject deleted — saved to the school database', 'success');
+                }
+                E.reloadFromServer();
+              }).catch(function () {
+                toast('Deleted locally — the server could not be reached', 'error');
+              });
+            }
+            var count = ctx.state.subjects ? ctx.state.subjects.length : 0;
+            var kpiTotal = document.getElementById('kpiTotalSubjects');
+            if (kpiTotal) kpiTotal.textContent = count;
+            var countFooter = document.getElementById('subjectCountFooter');
+            if (countFooter) countFooter.textContent = count;
+            toast('Subject deleted');
           });
-          var kpiHours = document.getElementById('kpiWeeklyHours');
-          if (kpiHours) kpiHours.textContent = total;
-
-          toast('Subject removed from curriculum');
         };
       }
 
@@ -3008,98 +3184,12 @@
       tbody.querySelectorAll('tr').forEach(bindRow);
     }
 
-    // 4. Add New Subject
-    if (addBtn && tbody) {
-      addBtn.onclick = function () {
-        var count = (ctx.state.subjects ? ctx.state.subjects.length : 0) + 1;
-        var newId = 'sub_new_' + Date.now();
-        var codeId = 'NEW-' + (count < 10 ? '0' + count : count);
-        var newSub = {
-          id: newId,
-          name_kh: 'New Subject ' + count,
-          name_en: 'New Subject ' + count,
-          short_name: 'New ' + count,
-          code: codeId,
-          color: '#006C49',
-          lessons_per_week: 2,
-          is_locked: false,
-          department: 'General'
-        };
-        ctx.state.subjects.push(newSub);
-        E.commit('Add subject ' + codeId, function (s) {
-          s.subjects.push(newSub);
-        });
-        E.scheduleSave();
-
-        var tr = document.createElement('tr');
-        tr.className = 'hover:bg-surface-container-low/60 transition-colors group animate-fade-in';
-        tr.dataset.id = newId;
-        tr.dataset.stream = 'general';
-        tr.innerHTML = '<td class="py-3.5 pl-5 pr-2 text-center font-label-md text-on-surface-variant">' +
-          '<span class="w-6 h-6 rounded-full inline-flex items-center justify-center bg-primary-fixed/50 text-primary text-[12px] font-mono">' + kh(count) + '</span>' +
-        '</td>' +
-        '<td class="py-3.5 px-3">' +
-          '<div class="flex items-center gap-2">' +
-            '<span class="material-symbols-outlined text-[18px] text-primary">edit_note</span>' +
-            '<input class="subject-name-input w-full px-2.5 py-1.5 bg-surface-container-low focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container rounded-lg font-headline-sm text-headline-sm text-on-surface font-medium" data-id="' + newId + '" type="text" value="' + esc(newSub.name_en) + '">' +
-          '</div>' +
-        '</td>' +
-        '<td class="py-3.5 px-3">' +
-          '<input class="subject-short-input w-full px-2.5 py-1.5 bg-surface-container-low focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary-container rounded-lg font-body-md text-on-surface" data-id="' + newId + '" type="text" value="' + esc(newSub.short_name) + '">' +
-        '</td>' +
-        '<td class="py-3.5 px-3 text-center">' +
-          '<span class="inline-block px-2.5 py-1 bg-surface-container text-on-surface font-mono font-medium text-label-sm rounded-md">' + esc(codeId) + '</span>' +
-        '</td>' +
-        '<td class="py-3.5 px-3">' +
-          '<div class="flex items-center gap-2">' +
-            '<input class="subject-color-input w-7 h-7 rounded-md cursor-pointer border-0 p-0 bg-transparent shadow-sm" data-id="' + newId + '" type="color" value="#006C49">' +
-            '<span class="color-hex-label font-mono text-label-sm text-on-surface-variant font-medium">#006C49</span>' +
-          '</div>' +
-        '</td>' +
-        '<td class="py-3.5 px-3 text-center">' +
-          '<div class="inline-flex items-center bg-surface-container-low rounded-lg p-0.5">' +
-            '<button class="step-minus-btn w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors text-sm" data-id="' + newId + '" type="button">−</button>' +
-            '<input class="subject-hours-input w-9 text-center bg-transparent font-headline-sm text-headline-sm text-primary font-medium focus:outline-none" data-id="' + newId + '" type="text" value="2">' +
-            '<button class="step-plus-btn w-6 h-6 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded transition-colors text-sm" data-id="' + newId + '" type="button">+</button>' +
-          '</div>' +
-        '</td>' +
-        '<td class="py-3.5 px-3 text-center">' +
-          '<button class="view-periods-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-secondary-container/20 text-on-secondary-container hover:bg-secondary-container/40 font-label-sm text-label-sm transition-colors font-medium" data-id="' + newId + '" type="button">' +
-            '<span class="material-symbols-outlined text-[15px]">event_note</span>' +
-            '<span class="allocated-label">View 24h</span>' +
-          '</button>' +
-        '</td>' +
-        '<td class="py-3.5 pl-3 pr-5 text-right">' +
-          '<div class="flex items-center justify-end gap-1">' +
-            '<button class="subject-lock-btn p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-surface-container transition-colors" data-id="' + newId + '" title="Unlocked" type="button">' +
-              '<span class="material-symbols-outlined text-[18px]">lock_open</span>' +
-            '</button>' +
-            '<button class="subject-delete-btn p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container/40 transition-colors" data-id="' + newId + '" title="Delete" type="button">' +
-              '<span class="material-symbols-outlined text-[18px]">delete</span>' +
-            '</button>' +
-          '</div>' +
-        '</td>';
-
-        tbody.prepend(tr);
-        bindRow(tr);
-
-        var kpiTotal = document.getElementById('kpiTotalSubjects');
-        if (kpiTotal) kpiTotal.textContent = count;
-        var countFooter = document.getElementById('subjectCountFooter');
-        if (countFooter) countFooter.textContent = 'Showing 1–' + count + ' of ' + count + ' subjects';
-
-        var total = 0;
-        document.querySelectorAll('#subjectTableBody .subject-hours-input').forEach(function (inp) {
-          total += parseInt(inp.value, 10) || 0;
-        });
-        var kpiHours = document.getElementById('kpiWeeklyHours');
-        if (kpiHours) kpiHours.textContent = total;
-
-        var firstInput = tr.querySelector('.subject-name-input');
-        if (firstInput) firstInput.focus();
-
-        toast('Added new subject', 'success');
-      };
+    // 4. Add New Subject — opens the shared subject modal (root-cause fix:
+    //    the button previously appended an unnamed placeholder row inline
+    //    via TWO duplicate handlers, and could never persist server-side
+    //    because PUT /api/timetable/state is read-only for admins).
+    if (addBtn) {
+      addBtn.onclick = function () { SubjectForm.open(null, addBtn); };
     }
 
     // 5. Search Filter
@@ -3144,6 +3234,525 @@
       };
     });
   }
+
+  /* ==========================================================================
+     SUBJECT FORM MODAL — shared Add/Edit subject dialog (Admin & Principal)
+     Root-cause repair for the broken "Add New Subject" flow: the button
+     previously appended an unnamed placeholder row inline (twice — a direct
+     handler AND a delegated handler) and could never persist server-side
+     because /api/timetable/state is read-only for admins. This modal persists
+     through /api/timetable/subjects (authoritative timetable_state.json).
+     ========================================================================== */
+
+  var SubjectForm = (function () {
+    var el = null;            // modal root (appended to document.body)
+    var cur = null;           // {mode, subjectId, opener, selected, origClasses, gridProtected}
+    var lastFocus = null;
+
+    function escLocal(v) { return esc(v); }
+
+    function uniq(list) {
+      var seen = {}, out = [];
+      (list || []).forEach(function (x) {
+        if (x && !seen[x]) { seen[x] = 1; out.push(x); }
+      });
+      return out;
+    }
+
+    function teacherLabel(t) {
+      var name = t.name_en || D.toEnTeacher(t.name_kh) || t.name_kh || '';
+      return t.code + ' — ' + name;
+    }
+
+    function allTeachers() {
+      return (ctx.state.teachers || []).slice().sort(function (a, b) {
+        return String(a.code || '').localeCompare(String(b.code || ''));
+      });
+    }
+
+    function subjectDepartments() {
+      var deps = (ctx.state.subjects || []).map(function (s) { return s.department; })
+        .filter(function (d) { return d && String(d).trim(); });
+      var list = uniq(deps.map(function (d) { return String(d).trim(); }));
+      if (list.indexOf('General') === -1) list.push('General');
+      return list.sort(function (a, b) { return a.localeCompare(b); });
+    }
+
+    function campuses() {
+      return uniq((ctx.state.classes || [])
+        .map(function (c) { return c.campus; }).filter(Boolean)).sort();
+    }
+
+    function grades() {
+      var set = {};
+      (ctx.state.classes || []).forEach(function (c) { set[c.grade] = 1; });
+      return Object.keys(set).map(Number).sort(function (a, b) { return a - b; });
+    }
+
+    /* classes a subject may be assigned to, per current filters */
+    function eligibleClasses() {
+      var grade = el.querySelector('#sfGradeFilter').value;
+      var campus = el.querySelector('#sfCampusFilter').value;
+      var q = el.querySelector('#sfClassSearch').value.toLowerCase().trim();
+      return (ctx.state.classes || []).filter(function (c) {
+        if (grade && String(c.grade) !== grade) return false;
+        if (campus && c.campus !== campus) return false;
+        if (q && String(c.display + ' ' + (c.campus || '') + ' ' + (c.department || ''))
+              .toLowerCase().indexOf(q) === -1) return false;
+        return true;
+      });
+    }
+
+    function ensureStyles() {
+      if (document.getElementById('subject-form-styles')) return;
+      var st = document.createElement('style');
+      st.id = 'subject-form-styles';
+      st.textContent = [
+        '#subjectModalRoot .sf-spin { width:16px; height:16px; border:2px solid rgba(255,255,255,.4);',
+        '  border-top-color:#fff; border-radius:50%; animation:sfSpin .7s linear infinite; display:inline-block; }',
+        '@keyframes sfSpin { to { transform: rotate(360deg); } }',
+        '@media (prefers-reduced-motion: reduce) { #subjectModalRoot .sf-spin { animation:none; } }',
+        '#subjectModalRoot input[type="checkbox"] { accent-color:#176B45; width:16px; height:16px; cursor:pointer; }',
+        '#subjectModalRoot .sf-field-error { color:#ba1a1a; font-size:12px; margin-top:4px; display:none; }',
+        '#subjectModalRoot .sf-invalid .sf-field-error { display:block; }',
+        '#subjectModalRoot .sf-invalid input, #subjectModalRoot .sf-invalid select',
+        '  { border-color:#ba1a1a !important; }'
+      ].join('\n');
+      document.head.appendChild(st);
+    }
+
+    function optionsHtml(list, selectedVal) {
+      return list.map(function (o) {
+        return '<option value="' + escLocal(o.v) + '"' + (o.v === selectedVal ? ' selected' : '') + '>' +
+          escLocal(o.label) + '</option>';
+      }).join('');
+    }
+
+    function fieldWrap(label, inputHtml, errId, required) {
+      return '<div class="sf-field">' +
+        '<label class="block text-xs font-medium text-slate-600 mb-1">' + escLocal(label) +
+        (required ? ' <span class="text-error">*</span>' : '') + '</label>' +
+        inputHtml +
+        '<div class="sf-field-error" id="' + errId + '"></div></div>';
+    }
+
+    function buildModal(mode, sub) {
+      var isEdit = mode === 'edit';
+      var title = isEdit ? 'Edit Subject' : 'Add New Subject';
+      var subtitle = isEdit
+        ? 'Update the subject, its department and assigned classes.'
+        : 'Create a subject and assign it to the appropriate department and classes.';
+      var departments = subjectDepartments();
+      var deptList = departments.map(function (d) { return { v: d, label: d }; });
+      if (isEdit && sub.department && departments.indexOf(sub.department) === -1) {
+        deptList.unshift({ v: sub.department, label: sub.department });
+      }
+
+      var classesCount = cur.selectedKeys().length;
+
+      return '' +
+        '<div class="fixed inset-0 z-[100] overflow-y-auto open is-open" id="sfBackdrop">' +
+          '<div class="fixed inset-0 bg-slate-900/40" data-sf-close></div>' +
+          '<div class="relative mx-auto my-4 sm:my-8 w-full max-w-3xl bg-surface-container-lowest rounded-2xl shadow-lg border border-slate-200/70 flex flex-col" style="max-height:calc(100vh - 4rem);">' +
+            '<!-- Header -->' +
+            '<div class="shrink-0 flex items-start justify-between gap-3 px-5 py-4 border-b border-slate-100 rounded-t-2xl bg-white rounded-t-2xl">' +
+              '<div class="flex items-start gap-3 min-w-0">' +
+                '<span class="w-9 h-9 rounded-xl bg-primary-fixed/40 text-primary flex items-center justify-center shrink-0">' +
+                  '<span class="material-symbols-outlined text-[20px]">' + (isEdit ? 'edit_note' : 'add_circle') + '</span></span>' +
+                '<div class="min-w-0">' +
+                  '<h3 class="text-base sm:text-lg font-medium text-primary font-headline-md truncate">' + escLocal(title) + '</h3>' +
+                  '<p class="text-xs text-slate-500 mt-0.5">' + escLocal(subtitle) + '</p>' +
+                '</div>' +
+              '</div>' +
+              '<button type="button" data-sf-close aria-label="Close" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors shrink-0">' +
+                '<span class="material-symbols-outlined text-[20px]">close</span></button>' +
+            '</div>' +
+            '<!-- Body -->' +
+            '<div class="overflow-y-auto px-5 py-4 space-y-5">' +
+              '<section>' +
+                '<div class="flex items-center gap-2 mb-3">' +
+                  '<span class="material-symbols-outlined text-[16px] text-secondary">menu_book</span>' +
+                  '<h4 class="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Subject Information</h4>' +
+                '</div>' +
+                '<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">' +
+                  fieldWrap('Subject Name (Khmer)',
+                    '<input id="sfNameKh" type="text" value="' + escLocal(sub.name_kh || '') + '" class="w-full px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary focus:bg-white" placeholder="គណិតវិទ្យា">', 'sfErrNameKh', false) +
+                  fieldWrap('Subject Name (English)',
+                    '<input id="sfNameEn" type="text" value="' + escLocal(sub.name_en || '') + '" class="w-full px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary focus:bg-white" placeholder="Mathematics">', 'sfErrNameEn', true) +
+                  fieldWrap('Short Name (grid label)',
+                    '<input id="sfShort" type="text" value="' + escLocal(sub.short_name || '') + '" class="w-full px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary focus:bg-white" placeholder="Math">', 'sfErrShort', false) +
+                  fieldWrap('Subject Code',
+                    '<input id="sfCode" type="text" value="' + escLocal(sub.code || '') + '" maxlength="10" class="w-full px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary focus:bg-white font-mono uppercase" placeholder="MATH">', 'sfErrCode', true) +
+                  fieldWrap('Academic Department',
+                    '<select id="sfDept" class="w-full px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary focus:bg-white">' +
+                      '<option value="">Select department…</option>' + optionsHtml(deptList, sub.department || '') + '</select>', 'sfErrDept', true) +
+                  fieldWrap('Lessons per Week',
+                    '<input id="sfLessons" type="number" min="1" max="15" value="' + escLocal(sub.lessons_per_week || 2) + '" class="w-full px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary focus:bg-white">', 'sfErrLessons', false) +
+                  fieldWrap('Status',
+                    '<label class="inline-flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 w-full cursor-pointer">' +
+                      '<input id="sfActive" type="checkbox" ' + (sub.active === false ? '' : 'checked') + '>' +
+                      '<span id="sfActiveLabel" class="text-sm text-slate-900">' + (sub.active === false ? 'Inactive' : 'Active') + '</span></label>', 'sfErrActive', false) +
+                  fieldWrap('Timetable Color',
+                    '<div class="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-200">' +
+                      '<input id="sfColor" type="color" value="' + escLocal(sub.color || '#FED766') + '" class="w-7 h-7 rounded-md cursor-pointer border-0 p-0 bg-transparent">' +
+                      '<span id="sfColorHex" class="font-mono text-xs text-slate-500">' + escLocal(sub.color || '#FED766') + '</span>' +
+                      '<span class="text-[11px] text-slate-400 ml-auto">auto from name</span></div>', 'sfErrColor', false) +
+                '</div>' +
+              '</section>' +
+              '<section>' +
+                '<div class="flex items-center justify-between gap-2 mb-3 flex-wrap">' +
+                  '<div class="flex items-center gap-2">' +
+                    '<span class="material-symbols-outlined text-[16px] text-secondary">school</span>' +
+                    '<h4 class="text-xs font-medium uppercase tracking-wider text-on-surface-variant">Assigned Classes</h4>' +
+                    '<span class="px-2 py-0.5 rounded-full bg-primary-fixed/40 text-primary text-[11px] font-medium" id="sfSelCount">' + kh(classesCount) + ' selected</span>' +
+                  '</div>' +
+                  '<div class="text-[11px] text-slate-400">A teacher is required for every class — the timetable engine needs one.</div>' +
+                '</div>' +
+                '<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">' +
+                  '<select id="sfGradeFilter" class="px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary">' +
+                    '<option value="">All grade levels</option>' +
+                    grades().map(function (g) { return '<option value="' + g + '">Grade ' + g + '</option>'; }).join('') + '</select>' +
+                  '<select id="sfCampusFilter" class="px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary">' +
+                    '<option value="">All campuses</option>' +
+                    campuses().map(function (c) { return '<option value="' + escLocal(c) + '">' + escLocal(c) + '</option>'; }).join('') + '</select>' +
+                  '<input id="sfClassSearch" type="text" placeholder="Search classes…" class="px-3 py-2 bg-slate-50 rounded-xl text-sm text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary">' +
+                '</div>' +
+                '<div id="sfClassList" class="max-h-44 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100"></div>' +
+                '<div id="sfSelectedWrap" class="mt-3 space-y-2"></div>' +
+                '<div id="sfErrClasses" class="sf-field-error"></div>' +
+              '</section>' +
+            '</div>' +
+            '<!-- Footer -->' +
+            '<div class="shrink-0 flex items-center justify-end gap-2 px-5 py-3.5 border-t border-slate-100 bg-white rounded-b-2xl">' +
+              '<button type="button" data-sf-close class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors">Cancel</button>' +
+              '<button type="button" id="sfSubmit" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-on-primary hover:bg-primary-container rounded-xl text-sm font-medium shadow-xs transition-all disabled:opacity-60 disabled:cursor-not-allowed">' +
+                '<span class="material-symbols-outlined text-[18px]">check_circle</span>' +
+                '<span id="sfSubmitLabel">' + (isEdit ? 'Save Changes' : 'Create Subject') + '</span></button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function renderClassList() {
+      var list = eligibleClasses();
+      var wrap = el.querySelector('#sfClassList');
+      if (!list.length) {
+        wrap.innerHTML = '<div class="py-6 text-center text-slate-400 text-sm">' +
+          '<span class="material-symbols-outlined text-[26px] block mb-1 opacity-40">search_off</span>' +
+          'No eligible classes for these filters</div>';
+        return;
+      }
+      wrap.innerHTML = list.map(function (c) {
+        var checked = !!cur.selected[c.id];
+        return '<label class="flex items-center gap-3 px-3 py-2.5 hover:bg-surface-container-low/60 cursor-pointer transition-colors">' +
+          '<input type="checkbox" data-sf-class="' + escLocal(c.id) + '" ' + (checked ? 'checked' : '') + '>' +
+          '<span class="text-sm font-medium text-slate-900">' + escLocal(c.display) + '</span>' +
+          '<span class="text-[11px] px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">Shift ' + escLocal(D.toEnShift(c.shift || '')) + '</span>' +
+          (c.campus ? '<span class="text-[11px] text-slate-400 truncate">' + escLocal(c.campus) + '</span>' : '') +
+          (c.department ? '<span class="text-[11px] text-slate-400 ml-auto hidden sm:inline truncate">' + escLocal(c.department) + '</span>' : '') +
+          '</label>';
+      }).join('');
+    }
+
+    function teacherOptionsHtml(selectedId) {
+      var q = (el.querySelector('#sfTeacherSearch') ? el.querySelector('#sfTeacherSearch').value : '').toLowerCase().trim();
+      var list = allTeachers().filter(function (t) {
+        if (!q) return true;
+        return (t.code + ' ' + teacherLabel(t)).toLowerCase().indexOf(q) !== -1;
+      });
+      return '<option value="">Select teacher…</option>' + list.map(function (t) {
+        return '<option value="' + escLocal(t.id) + '"' + (t.id === selectedId ? ' selected' : '') + '>' +
+          escLocal(teacherLabel(t)) + '</option>';
+      }).join('');
+    }
+
+    function renderSelected() {
+      var wrap = el.querySelector('#sfSelectedWrap');
+      var keys = Object.keys(cur.selected);
+      el.querySelector('#sfSelCount').textContent = kh(keys.length) + ' selected';
+      if (!keys.length) {
+        wrap.innerHTML = '<div class="rounded-xl border border-dashed border-slate-200 px-4 py-3 text-center text-slate-400 text-sm">' +
+          'Select at least one class above, then assign a teacher to each</div>';
+        return;
+      }
+      var classById = {};
+      (ctx.state.classes || []).forEach(function (c) { classById[c.id] = c; });
+      wrap.innerHTML = keys.map(function (cid) {
+        var c = classById[cid] || { display: cid };
+        var prot = cur.gridProtected[cid];
+        return '<div class="flex flex-wrap items-center gap-2 px-3 py-2 rounded-xl bg-primary-fixed/20 border border-primary-fixed" data-sf-sel="' + escLocal(cid) + '">' +
+          '<span class="text-sm font-medium text-primary">' + escLocal(c.display) + '</span>' +
+          (c.campus ? '<span class="text-[11px] text-slate-500 truncate hidden sm:inline">' + escLocal(c.campus) + '</span>' : '') +
+          (prot ? '<span class="material-symbols-outlined text-[14px] text-amber-600" title="This class already has scheduled lessons for the subject — the assignment is protected">lock</span>' : '') +
+          '<select data-sf-teacher="' + escLocal(cid) + '" class="ml-auto px-2.5 py-1.5 bg-white rounded-lg text-xs text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary max-w-[240px]">' +
+            teacherOptionsHtml(cur.selected[cid]) + '</select>' +
+          '<button type="button" data-sf-remove="' + escLocal(cid) + '" class="p-1 rounded-md text-slate-400 hover:text-error hover:bg-error-container/40 transition-colors" title="Remove class">' +
+            '<span class="material-symbols-outlined text-[16px]">close</span></button>' +
+        '</div>';
+      }).join('');
+      if (!el.querySelector('#sfTeacherSearch')) {
+        var searchRow = document.createElement('div');
+        searchRow.className = 'flex items-center gap-2 px-1';
+        searchRow.innerHTML = '<span class="material-symbols-outlined text-[15px] text-slate-400">search</span>' +
+          '<input id="sfTeacherSearch" type="text" placeholder="Filter teachers…" class="flex-1 px-3 py-1.5 bg-slate-50 rounded-lg text-xs text-slate-900 border border-slate-200 focus:ring-1 focus:ring-primary">';
+        wrap.parentNode.insertBefore(searchRow, wrap);
+      }
+    }
+
+    function setFieldError(id, msg) {
+      var field = el.querySelector('#' + id);
+      if (!field) return;
+      var wrapEl = field.closest('.sf-field') || field.closest('section');
+      if (msg) {
+        if (wrapEl) wrapEl.classList.add('sf-invalid');
+        var err = wrapEl ? wrapEl.querySelector('.sf-field-error') : null;
+        if (err) { err.textContent = msg; err.style.display = 'block'; }
+      } else if (wrapEl) {
+        wrapEl.classList.remove('sf-invalid');
+        var err2 = wrapEl.querySelector('.sf-field-error');
+        if (err2) { err2.textContent = ''; err2.style.display = 'none'; }
+      }
+    }
+
+    function validate() {
+      var ok = true, firstBad = null;
+      function bad(inputId, errId, msg) {
+        ok = false;
+        setFieldError(errId, msg);
+        if (!firstBad) firstBad = el.querySelector('#' + inputId) || el.querySelector('#' + errId);
+      }
+      var nameEn = el.querySelector('#sfNameEn').value.trim();
+      var nameKh = el.querySelector('#sfNameKh').value.trim();
+      var code = el.querySelector('#sfCode').value.trim().toUpperCase();
+      var dept = el.querySelector('#sfDept').value;
+      var lessons = el.querySelector('#sfLessons').value;
+      ['sfErrNameEn', 'sfErrNameKh', 'sfErrShort', 'sfErrCode', 'sfErrDept', 'sfErrLessons', 'sfErrActive', 'sfErrColor']
+        .forEach(function (id) { setFieldError(id.replace('sfErr', 'sf'), ''); });
+
+      if (!nameEn && !nameKh) bad('sfNameEn', 'sfErrNameEn', 'Subject name is required');
+      if (!code) bad('sfCode', 'sfErrCode', 'Subject code is required');
+      else if (!/^[A-Z0-9][A-Z0-9_-]{0,9}$/.test(code)) bad('sfCode', 'sfErrCode', 'Use 1-10 letters, digits, dash or underscore');
+      if (!dept) bad('sfDept', 'sfErrDept', 'Academic department is required');
+      if (lessons === '' || parseInt(lessons, 10) < 1 || parseInt(lessons, 10) > 15) {
+        bad('sfLessons', 'sfErrLessons', 'Lessons per week must be 1–15');
+      }
+      var keys = Object.keys(cur.selected);
+      if (!keys.length) {
+        ok = false;
+        var errC = el.querySelector('#sfErrClasses');
+        errC.textContent = 'Select at least one class';
+        errC.style.display = 'block';
+        if (!firstBad) firstBad = el.querySelector('#sfClassSearch');
+      } else {
+        var missing = keys.filter(function (cid) { return !cur.selected[cid]; });
+        if (missing.length) {
+          ok = false;
+          var errC2 = el.querySelector('#sfErrClasses');
+          errC2.textContent = 'Assign a teacher for every selected class';
+          errC2.style.display = 'block';
+        }
+      }
+      if (firstBad && firstBad.focus) firstBad.focus();
+      return ok;
+    }
+
+    function submit() {
+      if (!validate()) return;
+      var btn = el.querySelector('#sfSubmit');
+      if (btn.disabled) return;               // prevent duplicate submissions
+      btn.disabled = true;
+      el.querySelector('#sfSubmitLabel').textContent = 'Saving…';
+      var spin = document.createElement('span');
+      spin.className = 'sf-spin';
+      btn.appendChild(spin);
+
+      var subject = {
+        name_kh: el.querySelector('#sfNameKh').value.trim(),
+        name_en: el.querySelector('#sfNameEn').value.trim(),
+        short_name: el.querySelector('#sfShort').value.trim(),
+        code: el.querySelector('#sfCode').value.trim().toUpperCase(),
+        department: el.querySelector('#sfDept').value,
+        lessons_per_week: parseInt(el.querySelector('#sfLessons').value, 10) || 2,
+        color: el.querySelector('#sfColor').value,
+        active: el.querySelector('#sfActive').checked
+      };
+      var assignments = Object.keys(cur.selected).map(function (cid) {
+        return { class_id: cid, teacher_id: cur.selected[cid] };
+      });
+      var isEdit = cur.mode === 'edit';
+      var url = isEdit ? '/api/timetable/subjects/' + encodeURIComponent(cur.subjectId)
+                       : '/api/timetable/subjects';
+      var token = (window.NGISAuth && NGISAuth.getToken) ? NGISAuth.getToken() : '';
+
+      fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: Object.assign({ 'Content-Type': 'application/json' },
+          token ? { 'Authorization': 'Bearer ' + token } : {}),
+        body: JSON.stringify({ subject: subject, assignments: assignments })
+      }).then(function (r) {
+        return r.json().then(function (j) { return { ok: r.ok, data: j }; });
+      }).then(function (res) {
+        btn.disabled = false;
+        spin.remove();
+        el.querySelector('#sfSubmitLabel').textContent = isEdit ? 'Save Changes' : 'Create Subject';
+        if (!res.ok) {
+          var msg = (res.data && (res.data.message || res.data.error)) || 'Could not save the subject';
+          toast(String(msg), 'error');
+          if (/already (exists|used)/i.test(String(msg))) {
+            setFieldError('sfCode', String(msg));
+            el.querySelector('#sfCode').closest('.sf-field').classList.add('sf-invalid');
+          }
+          return;
+        }
+        var warnings = (res.data && res.data.warnings) || [];
+        close(true);  // saved successfully — never prompt "discard changes"
+        toast((isEdit ? 'Subject "' + (subject.name_en || subject.name_kh) + '" updated'
+                      : 'Subject "' + (subject.name_en || subject.name_kh) + '" created') +
+              ' — saved to the school database', 'success');
+        warnings.forEach(function (w) { toast(String(w), 'warning'); });
+        E.reloadFromServer().then(function (refreshed) {
+          if (!refreshed) toast('Saved — refresh the page to see the latest directory', 'info');
+        });
+      }).catch(function (err) {
+        btn.disabled = false;
+        spin.remove();
+        el.querySelector('#sfSubmitLabel').textContent = isEdit ? 'Save Changes' : 'Create Subject';
+        toast('Network error while saving: ' + (err && err.message ? err.message : 'unknown'), 'error');
+      });
+    }
+
+    function markDirty() { if (cur) cur.dirty = true; }
+
+    function close(force) {
+      if (!el) return;
+      var doClose = function () {
+        document.removeEventListener('keydown', onKey, true);
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+        el = null; cur = null;
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+      };
+      if (force || !cur || !cur.dirty) { doClose(); return; }
+      confirmModal({
+        title: 'Discard unsaved changes?',
+        description: 'The subject form has unsaved changes.',
+        confirmLabel: 'Discard',
+        isDestructive: true
+      }, doClose);
+    }
+
+    function onKey(e) {
+      if (e.key === 'Escape' && el) { e.stopPropagation(); close(); }
+    }
+
+    function open(subjectId, opener) {
+      if (el) return;                                   // no duplicate overlays
+      var state = ctx.state || {};
+      var subjects = state.subjects || [];
+      var sub = subjectId ? (subjects.filter(function (s) { return s.id === subjectId; })[0] || {}) : {};
+      var mode = subjectId ? 'edit' : 'add';
+      cur = {
+        mode: mode, subjectId: subjectId || null,
+        opener: opener || null,
+        selected: {}, gridProtected: {}, dirty: false,
+        selectedKeys: function () { return Object.keys(cur.selected); }
+      };
+      if (mode === 'edit') {
+        (state.assignments || []).forEach(function (a) {
+          if (a.subject_id === subjectId) {
+            cur.selected[a.class_id] = a.teacher_id || '';
+            var hasCell = Object.keys(state.grid || {}).some(function (k) {
+              var cell = state.grid[k];
+              return cell && cell.subject_id === subjectId && cell.class_id === a.class_id;
+            });
+            if (hasCell) cur.gridProtected[a.class_id] = 1;
+          }
+        });
+        if (!sub.color) sub.color = D.getSubjectColor ? D.getSubjectColor(sub.id, sub.name_en || sub.name_kh) : '#FED766';
+      } else {
+        var autoColor = D.getSubjectColor ? D.getSubjectColor('', sub.name_en || '') : '#FED766';
+        sub = Object.assign({ color: autoColor, lessons_per_week: 2, active: true }, sub);
+      }
+
+      ensureStyles();
+      lastFocus = opener || document.activeElement;
+      el = document.createElement('div');
+      el.id = 'subjectModalRoot';
+      el.innerHTML = buildModal(mode, sub);
+      document.body.appendChild(el);
+
+      renderClassList();
+      renderSelected();
+
+      /* interactions */
+      el.addEventListener('click', function (e) {
+        var closeBtn = e.target.closest('[data-sf-close]');
+        if (closeBtn) { close(); return; }
+        var rm = e.target.closest('[data-sf-remove]');
+        if (rm) {
+          delete cur.selected[rm.getAttribute('data-sf-remove')];
+          cur.dirty = true;
+          renderClassList(); renderSelected();
+          return;
+        }
+        var cb = e.target.closest('input[data-sf-class]');
+        if (cb) {
+          var cid = cb.getAttribute('data-sf-class');
+          if (cb.checked) {
+            cur.selected[cid] = cur.selected[cid] || '';   // teacher chosen next
+          } else {
+            delete cur.selected[cid];
+          }
+          cur.dirty = true;
+          renderSelected();
+        }
+      });
+      el.addEventListener('change', function (e) {
+        var t = e.target;
+        if (t.id === 'sfGradeFilter' || t.id === 'sfCampusFilter') { renderClassList(); return; }
+        if (t.id === 'sfDept') { markDirty(); return; }
+        if (t.id === 'sfActive') {
+          el.querySelector('#sfActiveLabel').textContent = t.checked ? 'Active' : 'Inactive';
+          markDirty(); return;
+        }
+        if (t.id === 'sfColor') {
+          el.querySelector('#sfColorHex').textContent = t.value;
+          markDirty(); return;
+        }
+        if (t.hasAttribute && t.hasAttribute('data-sf-teacher')) {
+          cur.selected[t.getAttribute('data-sf-teacher')] = t.value;
+          cur.dirty = true;
+        }
+      });
+      el.addEventListener('input', function (e) {
+        var t = e.target;
+        if (t.id === 'sfClassSearch') { renderClassList(); return; }
+        if (t.id === 'sfTeacherSearch') { renderSelected(); return; }
+        if (t.id === 'sfNameEn' || t.id === 'sfNameKh') {
+          // auto color suggestion until the user picks one manually
+          var colorInp = el.querySelector('#sfColor');
+          if (colorInp && !colorInp.dataset.touched && D.getSubjectColor) {
+            var c = D.getSubjectColor('', t.value);
+            colorInp.value = c;
+            el.querySelector('#sfColorHex').textContent = c;
+          }
+          if (t.id === 'sfCode') markDirty();
+          markDirty();
+          return;
+        }
+        if (/^sf(Name|Short|Code|Lessons)/.test(t.id)) markDirty();
+      });
+      el.addEventListener('change', function (e) {
+        if (e.target.id === 'sfColor') e.target.dataset.touched = '1';
+      }, true);
+      el.querySelector('#sfSubmit').addEventListener('click', submit);
+      document.addEventListener('keydown', onKey, true);
+
+      var first = el.querySelector('#sfNameKh');
+      if (first) first.focus();
+    }
+
+    return { open: open, close: close, isOpen: function () { return !!el; } };
+  })();
 
   /* ==========================================================================
      TIMETABLE VIEWER — Master Timetable & Teacher Distribution Matrix
@@ -3878,7 +4487,7 @@
                 '<span class="material-symbols-outlined text-[15px]">drag_indicator</span>' +
                 '<span>Move</span>' +
               '</button>' +
-              '<button class="px-4 py-1.5 rounded-lg bg-[#006C49] hover:bg-[#005236] text-white text-xs font-medium transition-colors shadow-xs cursor-pointer" ' +
+              '<button class="px-4 py-1.5 rounded-lg bg-[#176B45] hover:bg-[#125638] text-white text-xs font-medium transition-colors shadow-xs cursor-pointer" ' +
                 'data-act="quick-edit-save" data-key="' + esc(k) + '">' +
                 'Save Changes' +
               '</button>' +
@@ -4016,12 +4625,12 @@
         '</div>' +
         '<div class="ks-modal-body">' +
           '<p style="font-size:13.5px;line-height:1.6;margin-bottom:14px">' +
-            'Are you sure you want to reassign <b>' + esc(subNameR) + '</b> for Class ' + esc(clNameR) + ' from <b>' + esc(oldT.code + ' - ' + oldName) + '</b> to <b>' + esc(newT.code + ' - ' + newName) + '</b>?' +
+            'Are you sure you want to reassign <span class="font-medium">' + esc(subNameR) + '</span> for Class ' + esc(clNameR) + ' from <span class="font-medium">' + esc(oldT.code + ' - ' + oldName) + '</span> to <span class="font-medium">' + esc(newT.code + ' - ' + newName) + '</span>?' +
           '</p>' +
           '<div class="ks-hint" style="background:#FFF9F2;border:1px solid #FCD9BD;border-radius:8px;padding:10px 12px;margin-bottom:14px">' +
-            '<b>Section 8 Safety Rules:</b><br>' +
-            '• Existing scheduled lessons where the new teacher is available are <b>PRESERVED</b> in-place.<br>' +
-            '• Conflicting lessons (already teaching or unavailable) are automatically <b>DISPLACED to the unscheduled pool</b>.' +
+            '<span class="font-medium">Section 8 Safety Rules:</span><br>' +
+            '• Existing scheduled lessons where the new teacher is available are <span class="font-medium">PRESERVED</span> in-place.<br>' +
+            '• Conflicting lessons (already teaching or unavailable) are automatically <span class="font-medium">DISPLACED to the unscheduled pool</span>.' +
           '</div>' +
           '<div style="display:flex;justify-content:flex-end;gap:8px">' +
             '<button class="ks-btn" data-act="modal-close">Cancel</button>' +
@@ -4034,33 +4643,127 @@
     if (m.type === 'publish-confirm') {
       var conflicts = E.conflicts().filter(function (c) { return c.severity === 'error'; });
       var canPublish = conflicts.length === 0;
+      var st = E.stats();
+      var inst = ctx.state.institution || {};
+      var studentsAffected = (ctx.state.classes || []).reduce(function (sum, c) {
+        return sum + (parseInt(c.student_count, 10) || 0);
+      }, 0);
+      var pub = m.pub || null;
+      var diffInfo = pub ? pub.diff : null;
+      var unassigned = st.unassigned || 0;
+      var needsConfirm = unassigned > 0;
+      var today = new Date().toISOString().slice(0, 10);
 
-      return '<div class="ks-backdrop" data-act="modal-backdrop"><div class="ks-modal" style="max-width:540px">' +
+      return '<div class="ks-backdrop" data-act="modal-backdrop"><div class="ks-modal" style="max-width:560px">' +
         '<div class="ks-modal-head">' +
-          '<div class="ks-modal-title">Publish Timetable to School Portals</div>' +
+          '<div class="ks-modal-title">Publish Timetable</div>' +
           '<button class="ks-close" data-act="modal-close"><span class="material-symbols-outlined text-[14px]">close</span></button>' +
         '</div>' +
         '<div class="ks-modal-body">' +
           '<p style="font-size:13.5px;line-height:1.6;margin-bottom:14px">' +
-            'Publishing will immediately activate this timetable on both the <b>Teacher Portal</b> and <b>Student Portal</b> for all teachers and students.' +
+            'This will make the selected timetable available to the assigned teachers and enrolled students.' +
           '</p>' +
           '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;font-size:12px">' +
-            '<div class="ks-diff-stat"><div class="v">' + kh(ctx.state.classes.length) + '</div><div class="l">Total Classes</div></div>' +
-            '<div class="ks-diff-stat"><div class="v">' + kh(ctx.state.teachers.length) + '</div><div class="l">Total Teachers</div></div>' +
-            '<div class="ks-diff-stat"><div class="v">' + kh(E.stats().placed) + '</div><div class="l">Placed Periods</div></div>' +
-            '<div class="ks-diff-stat"><div class="v">' + kh(E.stats().unassigned) + '</div><div class="l">Unscheduled Periods</div></div>' +
+            '<div class="ks-diff-stat"><div class="v">' + esc((ctx.state.classes || []).length) + '</div><div class="l">Classes Affected</div></div>' +
+            '<div class="ks-diff-stat"><div class="v">' + esc((ctx.state.teachers || []).length) + '</div><div class="l">Teachers Affected</div></div>' +
+            '<div class="ks-diff-stat"><div class="v">' + kh(studentsAffected) + '</div><div class="l">Students Affected</div></div>' +
+            '<div class="ks-diff-stat"><div class="v">' + kh(st.placed || 0) + '</div><div class="l">Placed Periods</div></div>' +
           '</div>' +
-          (canPublish ?
+          '<div style="font-size:12px;color:var(--ks-muted);margin-bottom:12px">' +
+            esc(inst.name_en || 'New Gateway International School') + ' · ' + esc(academicYearLabel(inst)) +
+            (diffInfo && diffInfo.has_published
+              ? ' · <span style="color:var(--ks-text)">' + kh(diffInfo.changed) + ' draft change' + (diffInfo.changed === 1 ? '' : 's') + ' since v' + kh(diffInfo.published_version) + '</span>'
+              : (diffInfo ? ' · first publication' : '')) +
+          '</div>' +
+          '<div style="margin-bottom:12px">' +
+            '<label for="ks-publish-date" style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ks-muted);margin-bottom:4px">Effective Date</label>' +
+            '<input id="ks-publish-date" type="date" value="' + esc(m.effectiveFrom || today) + '" ' +
+              'style="height:38px;border:1px solid var(--ks-border);border-radius:10px;padding:0 10px;font-size:13px;width:100%;background:var(--ks-surface);color:var(--ks-text)">' +
+          '</div>' +
+          '<div style="margin-bottom:12px">' +
+            '<label for="ks-publish-note" style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ks-muted);margin-bottom:4px">Publication Note</label>' +
+            '<input id="ks-publish-note" type="text" placeholder="e.g. Semester 1 official schedule" ' +
+              'style="height:38px;border:1px solid var(--ks-border);border-radius:10px;padding:0 10px;font-size:13px;width:100%;background:var(--ks-surface);color:var(--ks-text)">' +
+          '</div>' +
+          (canPublish && !needsConfirm ?
             '<div class="ks-hint" style="background:#E8F3ED;border:1px solid #BEE1CE;border-radius:8px;padding:10px 12px;margin-bottom:14px;color:var(--ks-green)">' +
-              'Zero timetable conflicts · Ready for immediate publication' +
-            '</div>' :
+              'Zero timetable conflicts · All required lessons scheduled · Ready for publication' +
+            '</div>' : '') +
+          (canPublish && needsConfirm ?
+            '<label class="ks-hint" style="display:flex;gap:10px;align-items:flex-start;background:#FFF9F2;border:1px solid #FCD9BD;border-radius:8px;padding:10px 12px;margin-bottom:14px;color:#A9570B;cursor:pointer">' +
+              '<input type="checkbox" id="ks-publish-force" style="margin-top:2px;accent-color:#F28C28">' +
+              '<span>The timetable is incomplete — ' + kh(unassigned) + ' required lesson' + (unassigned === 1 ? '' : 's') +
+              ' still unscheduled. Confirm publishing this incomplete version to the portals anyway.</span></label>' : '') +
+          (!canPublish ?
             '<div class="ks-hint" style="background:#FFECEB;border:1px solid #FFC9C6;border-radius:8px;padding:10px 12px;margin-bottom:14px;color:var(--ks-red)">' +
-              'Cannot publish: ' + kh(conflicts.length) + ' hard conflicts exist. Please resolve conflicts before publishing.' +
-            '</div>') +
+              'Cannot publish: ' + kh(conflicts.length) + ' hard conflict' + (conflicts.length === 1 ? '' : 's') + ' exist. Please resolve conflicts before publishing.' +
+            '</div>' : '') +
           '<div style="display:flex;justify-content:flex-end;gap:8px">' +
             '<button class="ks-btn" data-act="modal-close">Cancel</button>' +
-            '<button class="ks-btn primary" data-act="execute-publish" ' + (canPublish ? '' : 'disabled') + ' style="background:#137A45;border-color:#137A45">Publish Now</button>' +
+            '<button class="ks-btn primary" data-act="execute-publish" ' +
+              ' style="background:#137A45;border-color:#137A45">Publish Now</button>' +
           '</div>' +
+        '</div></div></div>';
+    }
+
+    // 3b. Draft vs Published diff modal
+    if (m.type === 'publication-diff') {
+      var diff = m.diff || { has_published: false, changed: 0, changes: [] };
+      var kindLabel = { added: 'Added', removed: 'Removed', modified: 'Changed' };
+      var kindTone = { added: 'var(--ks-green)', removed: 'var(--ks-red)', modified: '#A9570B' };
+      return '<div class="ks-backdrop" data-act="modal-backdrop"><div class="ks-modal" style="max-width:600px">' +
+        '<div class="ks-modal-head">' +
+          '<div class="ks-modal-title">Draft vs Published (v' + kh(diff.published_version || 1) + ')</div>' +
+          '<button class="ks-close" data-act="modal-close"><span class="material-symbols-outlined text-[14px]">close</span></button>' +
+        '</div>' +
+        '<div class="ks-modal-body ks-scroll" style="max-height:60vh;font-size:12.5px">' +
+          (!diff.has_published
+            ? '<div class="ks-empty">Nothing published yet — the whole draft will become version 1.</div>'
+            : (diff.changed === 0
+              ? '<div class="ks-empty">The draft matches the published version exactly.</div>'
+              : '<div style="margin-bottom:10px;color:var(--ks-muted)">' + kh(diff.changed) + ' change' + (diff.changed === 1 ? '' : 's') +
+                ' · ' + kh(diff.added) + ' added · ' + kh(diff.modified) + ' changed · ' + kh(diff.removed) + ' removed</div>' +
+                diff.changes.slice(0, 60).map(function (c) {
+                  var parts = (c.key || '').split('|');
+                  return '<div style="display:flex;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--ks-border-soft)">' +
+                    '<span style="color:' + kindTone[c.kind] + ';min-width:70px">' + (kindLabel[c.kind] || c.kind) + '</span>' +
+                    '<span style="min-width:150px">' + esc(D.toEnDay(parts[0]) || parts[0]) + ' · ' + esc(D.toEnClass(parts[3] || '')) + ' · P' + esc(parts[2] || '') + '</span>' +
+                    '<span style="color:var(--ks-muted)">' +
+                      (c.kind === 'removed'
+                        ? esc((c.published || {}).subject_id || '')
+                        : esc((c.draft || {}).subject_id || '') + ' → ' + esc((c.draft || {}).teacher_id || '')) +
+                    '</span></div>';
+                }).join(''))) +
+          '<div style="text-align:right;margin-top:14px"><button class="ks-btn" data-act="modal-close">Close</button></div>' +
+        '</div></div></div>';
+    }
+
+    // 3c. Publication history & restore modal
+    if (m.type === 'publication-history') {
+      var hist = m.history || [];
+      var currentV = (E.get().published || {}).version || 0;
+      return '<div class="ks-backdrop" data-act="modal-backdrop"><div class="ks-modal" style="max-width:600px">' +
+        '<div class="ks-modal-head">' +
+          '<div class="ks-modal-title">Publication History</div>' +
+          '<button class="ks-close" data-act="modal-close"><span class="material-symbols-outlined text-[14px]">close</span></button>' +
+        '</div>' +
+        '<div class="ks-modal-body ks-scroll" style="max-height:60vh;font-size:12.5px">' +
+          (hist.length === 0
+            ? '<div class="ks-empty">No publications yet. The published timetable will appear here with full audit history.</div>'
+            : hist.map(function (h) {
+                return '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--ks-border-soft)">' +
+                  '<span class="ks-tag">v' + kh(h.version) + '</span>' +
+                  '<span>' + (h.action === 'rollback' ? 'Rollback' : 'Publish') +
+                    (h.restored_from ? ' (from v' + kh(h.restored_from) + ')' : '') + '</span>' +
+                  '<span style="color:var(--ks-muted)">' + esc(h.published_at || '') + ' · by ' + esc(h.published_by || '') +
+                    (h.effective_from ? ' · effective ' + esc(h.effective_from) : '') + '</span>' +
+                  '<span style="color:var(--ks-muted)">' + kh(h.placed || 0) + ' placed · ' + kh(h.unassigned || 0) + ' unscheduled</span>' +
+                  (h.version === currentV
+                    ? '<span class="ks-badge ok" style="margin-left:auto">Live version</span>'
+                    : '<button class="ks-btn sm" style="margin-left:auto" data-act="restore-version" data-id="' + esc(h.version) + '">Restore</button>') +
+                  '</div>';
+              }).join('')) +
+          '<div style="text-align:right;margin-top:14px"><button class="ks-btn" data-act="modal-close">Close</button></div>' +
         '</div></div></div>';
     }
 
@@ -4091,9 +4794,9 @@
           '<button class="ks-close" data-act="modal-close"><span class="material-symbols-outlined text-[14px]">close</span></button>' +
         '</div>' +
         '<div class="ks-modal-body" style="font-size:13px;line-height:1.6">' +
-          '<p>1. Open your <b>Microsoft Excel</b> or <b>Google Sheets</b> document.</p>' +
-          '<p>2. Select the teacher data rows and press <b>Ctrl+C</b> (Copy).</p>' +
-          '<p>3. Return to this page, click the target cell in the spreadsheet, and press <b>Ctrl+V</b> (Paste).</p>' +
+          '<p>1. Open your <span class="font-medium">Microsoft Excel</span> or <span class="font-medium">Google Sheets</span> document.</p>' +
+          '<p>2. Select the teacher data rows and press <span class="font-medium">Ctrl+C</span> (Copy).</p>' +
+          '<p>3. Return to this page, click the target cell in the spreadsheet, and press <span class="font-medium">Ctrl+V</span> (Paste).</p>' +
           '<p>4. The system automatically parses tab-separated columns and preserves Khmer Unicode names accurately.</p>' +
           '<div style="text-align:right;margin-top:14px"><button class="ks-btn primary" data-act="modal-close">Got It</button></div>' +
         '</div></div></div>';
@@ -4102,20 +4805,22 @@
     return '';
   }
 
-  function toast(msg, tone) {
-    var el = document.createElement('div');
-    el.className = 'ks-toast ' + (tone || '');
-    el.textContent = msg;
-    var c = document.getElementById('ks-toasts');
-    if (!c) {
-      c = document.createElement('div');
-      c.id = 'ks-toasts';
-      c.className = 'ks-toasts';
-      document.body.appendChild(c);
-    }
-    c.appendChild(el);
-    setTimeout(function () { el.remove(); }, 3200);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
   }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
 
   /* ── Event delegation ─────────────────────────────────────────────────── */
 
@@ -4129,7 +4834,7 @@
       case 'undo': E.undo(); toast('↶ Undone'); break;
       case 'redo': E.redo(); toast('↷ Redone'); break;
       case 'history': local.modal = { type: 'history' }; render(); break;
-      case 'save': E.flushSave().then(function () { toast('Changes saved successfully', 'success'); }); break;
+      case 'save': E.flushSave().then(function () { toast('Changes saved', 'success'); }); break;
       case 'modal-close': local.modal = null; render(); break;
       case 'modal-backdrop': local.modal = null; render(); break;
       case 'conflicts': local.modal = { type: 'conflicts' }; render(); break;
@@ -4183,12 +4888,19 @@
         break;
       }
       case 'reset-teachers-data':
-        if (confirm('Are you sure you want to reset teacher data?')) {
-          E.reset(); toast('Data reset successfully', 'success');
-        }
+        confirmModal({
+          title: 'Reset teacher data?',
+          description: 'Restore default faculty timetable data for this workspace.',
+          consequence: 'Unsaved custom teacher edits in the active session will be lost.',
+          confirmLabel: 'Reset data',
+          isDestructive: true
+        }, function () {
+          E.reset();
+          toast('Data reset', 'success');
+        });
         break;
       case 'save-teachers-spreadsheet':
-        E.flushSave().then(function () { toast('Saved teacher spreadsheet successfully', 'success'); });
+        E.flushSave().then(function () { toast('Saved teacher spreadsheet', 'success'); });
         break;
 
       // Teacher Unavailability Matrix Toggle
@@ -4278,7 +4990,7 @@
       }
       case 'wizard-save': {
         E.flushSave().then(function () {
-          toast('Changes saved successfully', 'success');
+          toast('Changes saved', 'success');
         });
         break;
       }
@@ -4306,7 +5018,13 @@
       }
       case 'clear-assignment': {
         var cid = target.dataset.cid, sid = target.dataset.sid;
-        if (confirm('Clear this subject assignment from the class?')) {
+        confirmModal({
+          title: 'Clear subject assignment?',
+          description: 'Remove this subject assignment from the class schedule.',
+          consequence: 'Placed timetable periods for this subject in this class will also be removed.',
+          confirmLabel: 'Clear assignment',
+          isDestructive: true
+        }, function () {
           E.commit('Clear assignment ' + cid + ' ' + sid, function (s) {
             s.assignments = s.assignments.filter(function (a) {
               return !(a.class_id === cid && a.subject_id === sid);
@@ -4321,7 +5039,7 @@
           E.scheduleSave();
           toast('Subject assignment removed from cohort', 'info');
           render();
-        }
+        });
         break;
       }
       case 'execute-assign-subject': {
@@ -4374,7 +5092,7 @@
         E.flushSave().then(function () {
           local.lastSavedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
           render();
-          toast('Draft saved to database successfully', 'success');
+          toast('Draft saved to database', 'success');
         });
         break;
       case 'auto-schedule-current':
@@ -4452,7 +5170,7 @@
           });
           local.modal = null;
           render();
-          toast('Slot lock toggled successfully', 'success');
+          toast('Slot lock toggled', 'success');
         }
         break;
       }
@@ -4480,13 +5198,13 @@
           });
           local.modal = null;
           render();
-          toast('Lesson details updated successfully', 'success');
+          toast('Lesson details updated', 'success');
         }
         break;
       }
       case 'export':
         E.exportXlsx(target.dataset.type || 'all', local.selectedClass);
-        toast('Timetable exported successfully', 'success');
+        toast('Timetable exported', 'success');
         break;
       case 'chip':
         local.selectedChip = local.selectedChip === id ? null : id;
@@ -4568,7 +5286,7 @@
           return;
         }
         local.modal = null; local.targetKey = null; local.selectedChip = null;
-        toast('Period scheduled successfully', 'success');
+        toast('Period scheduled', 'success');
         render();
         break;
       }
@@ -4592,32 +5310,93 @@
         local.preview = !local.preview;
         render();
         break;
-      case 'open-publish-modal':
+      case 'open-publish-modal': {
         local.modal = { type: 'publish-confirm' };
         render();
+        // Enrich the modal with live publication status (diff + history).
+        E.publicationStatus().then(function (data) {
+          if (local.modal && local.modal.type === 'publish-confirm') {
+            local.modal.pub = { diff: data.diff, history: data.history };
+            render();
+          }
+        }).catch(function () { /* modal still usable without enrichment */ });
         break;
+      }
+      case 'compare-publication': {
+        local.modal = { type: 'publication-diff' };
+        render();
+        E.publicationDiff().then(function (diff) {
+          if (local.modal && local.modal.type === 'publication-diff') {
+            local.modal.diff = diff;
+            render();
+          }
+        }).catch(function (err) { toast(err.message || 'Could not load diff', 'error'); });
+        break;
+      }
+      case 'publication-history': {
+        local.modal = { type: 'publication-history' };
+        render();
+        E.publicationStatus().then(function (data) {
+          if (local.modal && local.modal.type === 'publication-history') {
+            local.modal.history = data.history || [];
+            render();
+          }
+        }).catch(function (err) { toast(err.message || 'Could not load history', 'error'); });
+        break;
+      }
+      case 'restore-version': {
+        var restoreV = parseInt(id, 10);
+        if (!restoreV) return;
+        confirmModal({
+          title: 'Restore timetable v' + restoreV + '?',
+          description: 'Switch live teacher and student portals back to timetable version ' + restoreV + '.',
+          consequence: 'This creates a new rollback entry in the publication audit log.',
+          confirmLabel: 'Restore v' + restoreV,
+          isDestructive: true
+        }, function () {
+          E.rollback(restoreV, ROLE === 'principal' ? 'Principal' : 'Admin')
+            .then(function (res) {
+              local.modal = null;
+              toast('Version ' + restoreV + ' restored as v' + res.published.version + ' — portals updated', 'success');
+              render();
+            })
+            .catch(function (err) { toast(err.message || 'Rollback failed', 'error'); });
+        });
+        break;
+      }
       case 'execute-publish': {
-        E.publish(ROLE === 'principal' ? 'Principal' : 'Admin', 'AY 2026-2027 Official')
+        var dateInput = document.getElementById('ks-publish-date');
+        var noteInput = document.getElementById('ks-publish-note');
+        var forceInput = document.getElementById('ks-publish-force');
+        var unassignedNow = E.stats().unassigned || 0;
+        if (unassignedNow > 0 && forceInput && !forceInput.checked) {
+          toast('The timetable is incomplete — tick the confirmation box to publish anyway.', 'error');
+          return;
+        }
+        E.publish(ROLE === 'principal' ? 'Principal' : 'Admin',
+                  (noteInput && noteInput.value) || 'AY Official',
+                  { effectiveFrom: (dateInput && dateInput.value) || null,
+                    force: !!(forceInput && forceInput.checked) })
           .then(function (res) {
             local.modal = null;
-            toast('Timetable v' + (res.published.version || 1) + ' published successfully to all portals!', 'success');
+            var aff = res.affected || {};
+            toast('Timetable v' + (res.published.version || 1) + ' published — ' +
+                  (aff.classes || 0) + ' classes, ' + (aff.teachers || 0) + ' teachers, ' +
+                  (aff.students || 0) + ' students now see the live schedule', 'success');
             render();
           })
           .catch(function (err) {
-            toast(err.message || 'Publishing error', 'error');
+            if (err && err.requiresConfirmation) {
+              toast(err.message + ' (' + (err.unassigned || 0) + ' unscheduled) — tick the confirmation box', 'error');
+            } else {
+              toast(err.message || 'Publishing error', 'error');
+            }
           });
         break;
       }
       case 'subject-add': {
-        var n = ctx.state.subjects.length + 1;
-        E.commit('Add subject', function (s) {
-          s.subjects.push({
-            id: 'sub_new_' + Date.now(), name_kh: 'New Subject ' + n,
-            name_en: 'New Subject ' + n, short_name: 'New ' + n, code: 'N' + n, color: '#B6A6E0',
-            lessons_per_week: 2, is_locked: false, department: 'General', active: true
-          });
-        });
-        toast('New subject added', 'success'); break;
+        SubjectForm.open(null, target);
+        break;
       }
       case 'subject-lock':
         E.commit('Toggle lock', function (s) {
@@ -4625,13 +5404,21 @@
         });
         break;
       case 'subject-delete':
-        if (!confirm('Delete this subject?')) return;
-        E.commit('Delete subject', function (s) {
-          s.subjects = s.subjects.filter(function (x) { return x.id !== id; });
-          s.assignments = s.assignments.filter(function (a) { return a.subject_id !== id; });
-          Object.keys(s.grid).forEach(function (k) { if (s.grid[k].subject_id === id) delete s.grid[k]; });
+        confirmModal({
+          title: 'Delete subject?',
+          description: 'Remove this subject and clear its assignments from the timetable.',
+          consequence: 'All scheduled grid periods for this subject will be cleared.',
+          confirmLabel: 'Delete subject',
+          isDestructive: true
+        }, function () {
+          E.commit('Delete subject', function (s) {
+            s.subjects = s.subjects.filter(function (x) { return x.id !== id; });
+            s.assignments = s.assignments.filter(function (a) { return a.subject_id !== id; });
+            Object.keys(s.grid).forEach(function (k) { if (s.grid[k].subject_id === id) delete s.grid[k]; });
+          });
+          toast('Subject deleted');
         });
-        toast('Subject deleted'); break;
+        break;
     }
   }
 

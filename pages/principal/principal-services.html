@@ -8,7 +8,7 @@
 <!-- Google Fonts: Plus Jakarta Sans & Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- NGIS Stylesheets -->
@@ -20,8 +20,9 @@
 <link rel="stylesheet" href="../../assets/css/ui-states.css">
 
 <!-- Global Action Icons Engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 
 <!-- Phosphor Icons & Tailwind CSS -->
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -273,11 +274,7 @@ tailwind.config = {
       <!-- Search & Select Filtering Row -->
       <div class="p-3 sm:p-3.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-2.5 sm:gap-3 items-center">
         <!-- Search Input -->
-        <div class="sm:col-span-2 md:col-span-5 relative">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
-          <input class="w-full !pl-10 pr-12 py-2 bg-[#F7F9F7] border border-[#E1E9E3] rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all min-h-[40px]" id="searchInput" oninput="handleSearch(this.value)" placeholder="Filter by ID, requester, or keywords... (⌘K)" type="text">
-          <kbd class="hidden sm:inline-block absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-[#E1E9E3] text-slate-500">⌘K</kbd>
-        </div>
+        <div class="sm:col-span-2 md:col-span-5 ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input class="w-full ngis-search-input" id="searchInput" oninput="handleSearch(this.value)" placeholder="Filter by ID, requester, or keywords... (⌘K)" type="text"><kbd class="hidden sm:inline-block ngis-search-kbd">⌘K</kbd></div>
 
         <!-- Category Dropdown -->
         <div class="sm:col-span-1 md:col-span-3">
@@ -393,9 +390,7 @@ tailwind.config = {
           <button class="w-7 h-7 rounded-md bg-[#176B45] text-white text-xs flex items-center justify-center font-medium" type="button">
             1
           </button>
-          <button class="px-2.5 py-1.5 rounded-md bg-white border border-[#E1E9E3] text-slate-500 hover:text-slate-800 text-xs font-medium transition-all cursor-pointer" type="button">
-            Next
-          </button>
+          <button class="px-2.5 py-1.5 rounded-md bg-white border border-[#E1E9E3] text-slate-500 hover:text-slate-800 text-xs font-medium transition-all cursor-pointer" type="button">Next Page</button>
         </nav>
       </div>
     </section>
@@ -582,16 +577,21 @@ const DEFAULT_REQUESTS = [
 async function loadRequests() {
   const tbody = document.getElementById("requestRowsBody");
   if (!allRequests.length) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" class="py-8 text-center text-xs text-slate-400">
-          <div class="inline-flex items-center gap-2">
-            <span class="w-4 h-4 border-2 border-[#176B45] border-t-transparent rounded-full animate-spin"></span>
-            <span>Loading student service requests...</span>
-          </div>
-        </td>
-      </tr>
-    `;
+    tbody.innerHTML = (function() {
+      if (window.NGIS_SKELETON) {
+        var out = '';
+        for (var k = 0; k < 5; k++) {
+          out += '<tr><td colspan="7" class="p-3">' +
+            '<div class="flex items-center gap-3">' +
+              window.NGIS_SKELETON.text({ width: "30%", size: "sm" }) +
+              window.NGIS_SKELETON.badge({ width: "70px" }) +
+              window.NGIS_SKELETON.text({ width: "20%", size: "xs" }) +
+            '</div></td></tr>';
+        }
+        return out;
+      }
+      return '<tr><td colspan="7" class="py-6"></td></tr>';
+    })();
   }
 
   try {
@@ -992,7 +992,7 @@ async function batchApprovePending() {
   }
 
   document.getElementById("selectAllCheckbox").checked = false;
-  showToast(`Successfully approved ${targetIds.length} request(s)`);
+  showToast(`Approved ${targetIds.length} request(s)`);
 }
 
 function openDetailsModal(id) {

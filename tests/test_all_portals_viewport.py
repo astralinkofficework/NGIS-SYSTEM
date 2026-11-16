@@ -4,7 +4,7 @@ from playwright.async_api import async_playwright
 TEST_PAGES = [
     ("Student Dashboard", "student", "http://localhost:3000/pages/student/student.html"),
     ("Admin Dashboard", "admin", "http://localhost:3000/pages/admin/admin.html"),
-    ("Admin Users", "admin", "http://localhost:3000/pages/admin/admin-users.html"),
+    ("Admin Users", "admin", "http://localhost:3000/pages/admin/admin-users-students.html"),
     ("Admin Classes", "admin", "http://localhost:3000/pages/admin/admin-classes.html"),
     ("Teacher Dashboard", "teacher", "http://localhost:3000/pages/teacher/teacher.html"),
     ("Principal Dashboard", "principal", "http://localhost:3000/pages/principal/principal.html"),

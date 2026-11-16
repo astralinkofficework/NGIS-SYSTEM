@@ -97,27 +97,39 @@
 /* ── Selectors & Status Pills ── */
 .cms-select-group {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
   background: var(--cms-off-white);
   border: 1px solid var(--cms-border);
   border-radius: 9px;
-  padding: 4px 8px;
+  padding: 5px 10px;
+  min-width: 148px;
 }
 
 .cms-select-label {
-  font-size: 11.5px;
+  font-size: 11px;
+  line-height: 1.2;
   color: var(--cms-slate-muted);
 }
 
 .cms-select {
+  width: 100%;
   border: none;
   background: transparent;
   font-size: 12.5px;
   color: var(--cms-charcoal);
   outline: none;
   cursor: pointer;
-  padding: 2px 4px;
+  padding: 1px 0;
+}
+
+@media (max-width: 767px) {
+  .cms-select-group {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 .cms-status-pill {
@@ -213,7 +225,7 @@
   border: 1px solid var(--cms-border);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   position: sticky;
   top: 16px;
 }
@@ -223,39 +235,42 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 11px 12px 11px 14px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--cms-border);
 }
 
 .cms-nav-heading {
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--cms-slate-muted);
+  font-weight: 500;
 }
 
 .cms-nav-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px;
+  gap: 3px;
+  padding: 10px;
 }
 
 .cms-nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 9px 10px;
-  border-radius: 9px;
-  border: none;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--cms-slate-muted);
-  font-size: 12.5px;
+  font-size: 13px;
+  font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
+  min-height: 42px;
 }
 
 .cms-nav-item:hover {
@@ -271,11 +286,17 @@
 .cms-nav-item.active {
   background: var(--cms-soft-mint);
   color: var(--cms-forest-green);
+  border-color: rgba(23, 107, 69, 0.15);
+}
+
+.cms-nav-item.active .cms-nav-icon {
+  color: var(--cms-forest-green);
 }
 
 .cms-nav-icon {
-  font-size: 19px;
+  font-size: 20px;
   flex-shrink: 0;
+  color: inherit;
 }
 
 .cms-nav-label {
@@ -813,7 +834,7 @@
 }
 
 .cms-visual-mode .cms-editable-block::after {
-  content: '✎ Click to edit';
+  content: 'Click to edit';
   position: absolute;
   top: 6px;
   right: 8px;
@@ -1055,6 +1076,11 @@
   .cms-topbar {
     padding: 12px 14px;
   }
+  .cms-topbar-left {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
   .cms-topbar-controls {
     width: 100%;
     justify-content: flex-start;
@@ -1171,7 +1197,7 @@
 /* ── Three-region manager grid ── */
 .sgm-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr) minmax(0, 0.96fr);
+  grid-template-columns: minmax(290px, 1.2fr) minmax(260px, 0.95fr) minmax(280px, 0.95fr);
   gap: 14px;
   align-items: start;
 }
@@ -1380,16 +1406,15 @@
   text-decoration: line-through;
 }
 .sgm-node-actions {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 1px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
+  flex-shrink: 0;
 }
 .sgm-node:hover .sgm-node-actions,
 .sgm-node.selected .sgm-node-actions,
 .sgm-node:focus-within .sgm-node-actions {
-  opacity: 1;
+  display: flex;
 }
 .sgm-node-children {
   padding-left: 14px;
@@ -1716,6 +1741,29 @@
   gap: 8px;
 }
 
+/* ── Mobile Segmented Tabs for Global Sidebar Manager ── */
+.sgm-mobile-tabs {
+  background: var(--cms-soft-mint);
+  border: 1px solid rgba(23, 107, 69, 0.15);
+}
+.sgm-mobile-tab-btn {
+  background: transparent;
+  color: var(--cms-slate-muted);
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  min-height: 38px;
+}
+.sgm-mobile-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--cms-forest-green);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
 /* ── Manager responsive ── */
 @media (max-width: 1279px) {
   .cms-workspace.cms-sgm-active {
@@ -1725,7 +1773,7 @@
     grid-template-columns: 68px minmax(0, 1fr);
   }
   .sgm-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(290px, 1fr) minmax(260px, 1fr);
   }
   .sgm-col-preview {
     grid-column: 1 / -1;
@@ -1738,15 +1786,65 @@
   }
   .sgm-grid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
   }
   .sgm-col-preview {
     grid-column: auto;
   }
-  .sgm-search-input {
-    width: 120px;
+  .sgm-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .sgm-toolbar-left {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
   }
   .sgm-toolbar-right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
     width: 100%;
+  }
+  .sgm-toolbar-right .cms-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 8px 10px;
+    font-size: 11.5px;
+    min-height: 40px;
+  }
+  .sgm-search {
+    flex: 1 1 100%;
+  }
+  .sgm-search-input {
+    width: 100%;
+  }
+
+  /* Segmented column view switching on mobile */
+  .sgm-grid.sgm-mobile-active-tree .sgm-col-preview,
+  .sgm-grid.sgm-mobile-active-tree .sgm-col-settings {
+    display: none !important;
+  }
+  .sgm-grid.sgm-mobile-active-tree .sgm-col-tree {
+    display: flex !important;
+  }
+
+  .sgm-grid.sgm-mobile-active-preview .sgm-col-tree,
+  .sgm-grid.sgm-mobile-active-preview .sgm-col-settings {
+    display: none !important;
+  }
+  .sgm-grid.sgm-mobile-active-preview .sgm-col-preview {
+    display: flex !important;
+  }
+
+  .sgm-grid.sgm-mobile-active-settings .sgm-col-tree,
+  .sgm-grid.sgm-mobile-active-settings .sgm-col-preview {
+    display: none !important;
+  }
+  .sgm-grid.sgm-mobile-active-settings .sgm-col-settings {
+    display: flex !important;
   }
 }
 

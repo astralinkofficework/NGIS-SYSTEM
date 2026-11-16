@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NGIS · Security & Access Control Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+<link rel="stylesheet" href="../../assets/css/semantic-states.css?v=1.0">
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+<style>
+  /* ── Security Center scoped styles ─────────────────────────────── */
+  .sec-tabs { display:flex; gap:2px; border-bottom:1px solid var(--token-border, var(--border)); margin-bottom:20px; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .sec-tab { display:inline-flex; align-items:center; gap:6px; min-height:42px; padding:0 16px; font-size:14px; font-weight:500;
+             color:var(--token-text-muted, #5b6b7c); background:transparent; border:none; border-bottom:2px solid transparent;
+             cursor:pointer; white-space:nowrap; transition:color .15s, border-color .15s; }
+  .sec-tab:hover { color:var(--color-navy, #16324f); }
+  .sec-tab.active { color:var(--color-navy, #16324f); border-bottom-color:var(--color-navy, #16324f); }
+  .sec-tab .material-symbols-outlined { font-size:18px; }
+  .sec-pane { display:none; }
+  .sec-pane.active { display:block; }
+
+  /* severity + status badges (semantic color system) */
+  .sev-badge { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:999px; font-size:11.5px; font-weight:500; line-height:1.5; white-space:nowrap; }
+  .sev-critical, .sev-high  { background:#fbe9ec; color:#DC3545; }
+  .sev-medium               { background:#fdf1e3; color:#B26A10; }
+  .sev-low                  { background:#eef2f6; color:#5b6b7c; }
+  .sev-informational        { background:#e7effd; color:#2563EB; }
+  .st-active                { background:#e6f2ea; color:#176B45; }
+  .st-suspended, .st-banned { background:#fbe9ec; color:#DC3545; }
+  .st-locked, .st-disabled  { background:#ececec; color:#6b6b6b; }
+  .st-pending_activation    { background:#fdf1e3; color:#B26A10; }
+  .out-success, .out-updated{ background:#e6f2ea; color:#176B45; }
+  .out-blocked, .out-rejected, .out-failed { background:#fbe9ec; color:#DC3545; }
+
+  .mono { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; }
+  .sec-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .sec-toolbar .input, .sec-toolbar .select { height:38px; }
+  .sec-count-chip { display:inline-flex; align-items:center; padding:1px 8px; border-radius:999px; background:#eef2f6; color:#5b6b7c; font-size:11.5px; }
+  .row-actions { display:flex; gap:6px; justify-content:flex-end; }
+  .btn-xs { padding:4px 10px; font-size:12.5px; border-radius:8px; }
+
+  /* modal */
+  .sec-modal-backdrop { position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:flex-start; justify-content:center;
+                        padding:48px 16px; z-index:1000; overflow-y:auto; }
+  .sec-modal-backdrop.open { display:flex; }
+  .sec-modal { background:#fff; border-radius:14px; width:100%; max-width:560px; box-shadow:0 20px 60px rgba(0,0,0,.25); animation:secPop .18s ease; }
+  .sec-modal.wide { max-width:720px; }
+  @keyframes secPop { from { opacity:0; transform:translateY(10px) scale(.98);} to { opacity:1; transform:none; } }
+  .sec-modal-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border, #e5e9ef); }
+  .sec-modal-head h3 { margin:0; font-size:16px; font-weight:600; color:var(--color-navy, #16324f); }
+  .sec-modal-body { padding:20px; max-height:60vh; overflow-y:auto; }
+  .sec-modal-foot { display:flex; justify-content:flex-end; gap:8px; padding:14px 20px; border-top:1px solid var(--border, #e5e9ef); }
+  .sec-field { margin-bottom:14px; }
+  .sec-field label { display:block; font-size:13px; font-weight:500; color:var(--color-navy, #16324f); margin-bottom:6px; }
+  .sec-field .req { color:#DC3545; }
+  .sec-field .hint { font-size:12px; color:#5b6b7c; margin-top:4px; }
+  .sec-field input, .sec-field select, .sec-field textarea { width:100%; box-sizing:border-box; padding:9px 12px; border:1px solid var(--border, #d9e0e8); border-radius:9px; font-size:14px; font-family:inherit; }
+  .sec-field textarea { min-height:72px; resize:vertical; }
+  .sec-field input:focus, .sec-field select:focus, .sec-field textarea:focus { outline:2px solid rgba(37,99,235,.25); border-color:#2563EB; }
+
+  .kv-grid { display:grid; grid-template-columns:150px 1fr; gap:8px 14px; font-size:13.5px; }
+  .kv-grid dt { color:#5b6b7c; } .kv-grid dd { margin:0; color:var(--color-navy, #16324f); word-break:break-word; }
+
+  .info-banner { display:flex; gap:10px; align-items:flex-start; padding:12px 14px; border-radius:10px; font-size:13px; line-height:1.55; }
+  .info-banner.blue { background:#e7effd; color:#1e4fc0; }
+  .info-banner.amber { background:#fdf1e3; color:#8a5410; }
+  .info-banner .material-symbols-outlined { font-size:19px; flex-shrink:0; margin-top:1px; }
+
+  .empty-state { text-align:center; padding:44px 16px; color:#5b6b7c; font-size:14px; }
+  .empty-state .material-symbols-outlined { font-size:34px; opacity:.4; margin-bottom:8px; display:block; }
+  .spinner-wrap { display:flex; align-items:center; justify-content:center; gap:10px; padding:36px; color:#5b6b7c; font-size:13.5px; }
+  .sec-spinner { width:20px; height:20px; border:2.5px solid #d9e0e8; border-top-color:#2563EB; border-radius:50%; animation:secSpin .7s linear infinite; }
+  @keyframes secSpin { to { transform:rotate(360deg); } }
+
+  .pager { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 16px; border-top:1px solid var(--border, #e5e9ef); flex-wrap:wrap; }
+  .pager .pg-info { font-size:13px; color:#5b6b7c; }
+
+  .toggle-row { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 0; border-bottom:1px dashed var(--border, #e5e9ef); }
+  .toggle-row:last-child { border-bottom:none; }
+  .switch { position:relative; width:42px; height:24px; flex-shrink:0; }
+  .switch input { opacity:0; width:0; height:0; }
+  .switch .track { position:absolute; inset:0; background:#c9d2dc; border-radius:999px; transition:.2s; cursor:pointer; }
+  .switch .track::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+  .switch input:checked + .track { background:#176B45; }
+  .switch input:checked + .track::after { transform:translateX(18px); }
+  .switch input:disabled + .track { opacity:.5; cursor:not-allowed; }
+
+  .rule-live { font-size:12px; color:#5b6b7c; }
+  .suspicious-chip { display:inline-flex; padding:1px 8px; border-radius:999px; background:#fbe9ec; color:#DC3545; font-size:11.5px; }
+
+  @media (max-width:640px) {
+    .kv-grid { grid-template-columns:1fr; gap:2px 0; }
+    .kv-grid dd { margin-bottom:8px; }
+    .tbl-wrap { overflow-x:auto; }
+    .sec-modal-body { max-height:70vh; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sec-modal, .sec-spinner { animation:none; }
+    .switch .track, .switch .track::after { transition:none; }
+  }
+</style>
+</head>
+<body data-role="admin" data-portal="admin">
+<main class="main">
+<header id="heroBanner" role="banner"></header>
+<div class="page">
+
+  <!-- ══ TABS ══ -->
+  <div class="sec-tabs" role="tablist" aria-label="Security Center sections">
+    <button class="sec-tab active" role="tab" aria-selected="true" data-tab="overview"><span class="material-symbols-outlined">dashboard</span>Overview</button>
+    <button class="sec-tab" role="tab" aria-selected="false" data-tab="users"><span class="material-symbols-outlined">block</span>User Restrictions</button>
+    <button class="sec-tab" role="tab" aria-selected="false" data-tab="events"><span class="material-symbols-outlined">monitor_heart</span>Security Events</button>
+    <button class="sec-tab" role="tab" aria-selected="false" data-tab="ratelimit"><span class="material-symbols-outlined">speed</span>Rate Limiting</button>
+    <button class="sec-tab" role="tab" aria-selected="false" data-tab="ip"><span class="material-symbols-outlined">public</span>IP Activity</button>
+    <button class="sec-tab" role="tab" aria-selected="false" data-tab="audit"><span class="material-symbols-outlined">history</span>Audit History</button>
+    <button class="sec-tab" role="tab" aria-selected="false" data-tab="settings"><span class="material-symbols-outlined">tune</span>Security Settings</button>
+  </div>
+
+  <!-- ══ OVERVIEW ══ -->
+  <section class="sec-pane active" id="pane-overview">
+    <div class="flex between center mb12" style="flex-wrap:wrap; gap:8px;">
+      <div class="flex gap8 center">
+        <select id="ovHours" class="select" style="width:auto">
+          <option value="24" selected>Last 24 hours</option>
+          <option value="168">Last 7 days</option>
+          <option value="720">Last 30 days</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="ovRefresh"><span class="material-symbols-outlined" style="font-size:16px">refresh</span>Refresh</button>
+      </div>
+      <span class="faint" style="font-size:12.5px" id="ovUpdated"></span>
+    </div>
+    <div class="grid g-4">
+      <div class="stat"><div class="stat-top"><div class="stat-ico t-green"><span class="material-symbols-outlined fill">verified_user</span></div></div><div class="stat-val" id="ovActive">—</div><div class="stat-label">Active Accounts <span class="sec-count-chip" id="ovActiveLbl">lifetime</span></div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">gpp_bad</span></div></div><div class="stat-val" id="ovFailed">—</div><div class="stat-label">Failed Sign-ins <span class="sec-count-chip" id="ovFailedLbl">24h</span></div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">block</span></div></div><div class="stat-val" id="ovRestricted">—</div><div class="stat-label">Restricted Accounts <span class="sec-count-chip" id="ovRestrictedLbl">current</span></div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">speed</span></div></div><div class="stat-val" id="ovRate">—</div><div class="stat-label">Rate-limited Requests <span class="sec-count-chip" id="ovRateLbl">24h</span></div></div>
+    </div>
+    <div class="grid g-2 mt16" style="grid-template-columns:2fr 1fr;">
+      <div class="card">
+        <div class="card-head"><div><h3>Latest Security Events</h3><div class="sub">Most recent recorded activity</div></div>
+          <button class="btn btn-ghost btn-sm" data-goto="events">View all</button></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Time</th><th>Event</th><th>Severity</th><th>Detail</th></tr></thead>
+          <tbody id="ovRecent"><tr><td colspan="4" class="empty-state"><span class="material-symbols-outlined">hourglass_top</span>Loading…</td></tr></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h3>Protection Scope</h3><div class="sub">What this center monitors</div></div></div>
+        <div class="card-pad" style="font-size:13.5px; line-height:1.7; color:var(--token-text-muted,#5b6b7c)">
+          <p style="margin:0 0 8px"><strong style="color:var(--color-navy)">Account restrictions</strong> — suspend or ban accounts; enforced server-side at sign-in before credentials are checked.</p>
+          <p style="margin:0 0 8px"><strong style="color:var(--color-navy)">Event monitoring</strong> — rule-based detection across sign-ins, permission denials, rate-limit hits and IP blocks, with a documented severity taxonomy.</p>
+          <p style="margin:0 0 8px"><strong style="color:var(--color-navy)">Rate limiting</strong> — per-endpoint-class budgets that return HTTP 429 with <span class="mono">Retry-After</span>.</p>
+          <p style="margin:0"><strong style="color:var(--color-navy)">Audit history</strong> — append-only record of every security action, who did it, when and why.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ USER RESTRICTIONS ══ -->
+  <section class="sec-pane" id="pane-users">
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Account Restrictions</h3><div class="sub">Suspend, ban or restore access — enforced at sign-in, server-side</div></div>
+        <div class="sec-toolbar">
+          <input class="input" id="usSearch" placeholder="Search name, email, ID…" style="width:200px">
+          <select class="select" id="usRole" style="width:auto"><option value="">All roles</option></select>
+          <select class="select" id="usStatus" style="width:auto">
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="suspended">Suspended</option>
+            <option value="banned">Banned</option>
+            <option value="locked">Locked</option>
+            <option value="disabled">Disabled</option>
+            <option value="pending_activation">Pending activation</option>
+          </select>
+        </div>
+      </div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Account</th><th>Role</th><th>Campus</th><th>Status</th><th>Restriction</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="usRows"><tr><td colspan="6" class="empty-state"><span class="material-symbols-outlined">hourglass_top</span>Loading…</td></tr></tbody>
+      </table></div>
+      <div class="pager"><span class="pg-info" id="usInfo">—</span>
+        <div class="flex gap4"><button class="btn btn-ghost btn-sm" id="usPrev">Previous</button><button class="btn btn-ghost btn-sm" id="usNext">Next</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECURITY EVENTS ══ -->
+  <section class="sec-pane" id="pane-events">
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Security Events</h3><div class="sub">Documented taxonomy — unknown event types are never recorded</div></div>
+        <div class="sec-toolbar">
+          <select class="select" id="evSeverity" style="width:auto">
+            <option value="">All severities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+            <option value="informational">Informational</option>
+          </select>
+          <select class="select" id="evType" style="width:auto"><option value="">All types</option></select>
+          <button class="btn btn-ghost btn-sm" id="evRefresh"><span class="material-symbols-outlined" style="font-size:16px">refresh</span></button>
+        </div>
+      </div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Time</th><th>Type</th><th>Severity</th><th>Actor</th><th>Endpoint</th><th>Source IP</th><th>Outcome</th></tr></thead>
+        <tbody id="evRows"><tr><td colspan="7" class="empty-state"><span class="material-symbols-outlined">hourglass_top</span>Loading…</td></tr></tbody>
+      </table></div>
+      <div class="pager"><span class="pg-info" id="evInfo">—</span>
+        <div class="flex gap4"><button class="btn btn-ghost btn-sm" id="evPrev">Previous</button><button class="btn btn-ghost btn-sm" id="evNext">Next</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ RATE LIMITING ══ -->
+  <section class="sec-pane" id="pane-ratelimit">
+    <div class="info-banner blue mb16"><span class="material-symbols-outlined">info</span>
+      <span id="rlDeploy">Counters are per-process and in-memory. Before scaling to multiple server processes, move counters to a shared store (e.g. Redis) so budgets stay accurate.</span></div>
+    <div class="grid g-4">
+      <div class="stat"><div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">speed</span></div></div><div class="stat-val" id="rlViolations">—</div><div class="stat-label">Violations (24h)</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">rule</span></div></div><div class="stat-val" id="rlRuleCount">—</div><div class="stat-label">Active rules</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">public</span></div></div><div class="stat-val" id="rlTopIp">—</div><div class="stat-label">Top offending IP (24h)</div></div>
+    </div>
+    <div class="card mt16">
+      <div class="card-head"><div><h3>Endpoint Rules</h3><div class="sub">HTTP 429 + Retry-After on breach · per-identifier brute-force guard on sign-in</div></div></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Rule</th><th>Scope</th><th>Methods</th><th>Budget</th><th>Live</th><th>Purpose</th></tr></thead>
+        <tbody id="rlRules"><tr><td colspan="6" class="empty-state"><span class="material-symbols-outlined">hourglass_top</span>Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+    <div class="card mt16">
+      <div class="card-head"><div><h3>Recent Violations</h3><div class="sub">Latest rate-limit breaches</div></div></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Time</th><th>Rule detail</th><th>Endpoint</th><th>Source IP</th></tr></thead>
+        <tbody id="rlRecent"><tr><td colspan="4" class="empty-state"><span class="material-symbols-outlined">hourglass_top</span>Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ══ IP ACTIVITY ══ -->
+  <section class="sec-pane" id="pane-ip">
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Source IP Activity</h3><div class="sub">Derived from recorded security events · short-lived restrictions (max 72h)</div></div>
+      </div>
+      <div id="ipActiveWrap" style="padding:0 16px;"></div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>IP</th><th>Requests</th><th>Failed auth</th><th>Rate hits</th><th>Related accounts</th><th>Mitigation</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="ipRows"><tr><td colspan="7" class="empty-state"><span class="material-symbols-outlined">hourglass_top</span>Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ══ AUDIT HISTORY ══ -->
+  <section class="sec-pane" id="pane-audit">
+    <div class="card">
+      <div class="card-head">
+        <div><h3>Security Audit History</h3><div class="sub">Append-only — every recorded action with actor, target and reason</div></div>
+        <div class="sec-toolbar">
+          <select class="select" id="auAction" style="width:auto"><option value="">All actions</option></select>
+          <button class="btn btn-ghost btn-sm" id="auRefresh"><span class="material-symbols-outlined" style="font-size:16px">refresh</span></button>
+        </div>
+      </div>
+      <div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Target</th><th>Reason</th><th>Outcome</th></tr></thead>
+        <tbody id="auRows"><tr><td colspan="6" class="empty-state"><span class="material-symbols-outlined">hourglass_top</span>Loading…</td></tr></tbody>
+      </table></div>
+      <div class="pager"><span class="pg-info" id="auInfo">—</span>
+        <div class="flex gap4"><button class="btn btn-ghost btn-sm" id="auPrev">Previous</button><button class="btn btn-ghost btn-sm" id="auNext">Next</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECURITY SETTINGS ══ -->
+  <section class="sec-pane" id="pane-settings">
+    <div class="card" style="max-width:760px;">
+      <div class="card-head"><div><h3>Security Settings</h3><div class="sub">Changes are audited and attributed · SUPER_ADMIN only</div></div></div>
+      <div class="card-pad">
+        <div id="setBanner"></div>
+        <div id="setForm"></div>
+        <div class="sec-field" style="margin-top:16px;">
+          <label>Reason for this change <span class="req">*</span></label>
+          <input id="setReason" placeholder="e.g. tighten sign-in throttling before exam week">
+        </div>
+        <div class="flex gap8" style="justify-content:flex-end; margin-top:8px;">
+          <button class="btn btn-ghost btn-sm" id="setReload">Discard</button>
+          <button class="btn btn-primary btn-sm" id="setSave">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page -->
+</main>
+
+<!-- ══ MODAL ══ -->
+<div class="sec-modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+  <div class="sec-modal" id="modalBox">
+    <div class="sec-modal-head"><h3 id="modalTitle">—</h3>
+      <button class="btn btn-ghost btn-sm" id="modalClose" aria-label="Close"><span class="material-symbols-outlined">close</span></button></div>
+    <div class="sec-modal-body" id="modalBody"></div>
+    <div class="sec-modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<script>window.PAGE={"role":"admin","active":"security"};</script>
+<script>window.HERO_CONFIG = {
+  name: 'Mr. Heng Samnang',
+  id: 'Admin ID: ADM-2026-001',
+  grade: 'School Administrator',
+  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+  title: 'Security & Access Control Center',
+  greeting: 'Monitor threats, manage restrictions and review the audit trail.',
+  breadcrumbs: [{ label: 'Security Center' }],
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'admin-settings.html',
+  notifLink: 'admin-security.html',
+  notifCount: 0,
+  ddRows: [
+    { icon: 'security', text: 'Security & Access Control' },
+    { icon: 'shield', text: 'Server-side enforcement' },
+    { icon: 'history', text: 'Append-only audit trail' },
+    { icon: 'verified', text: 'Documented event taxonomy' }
+  ]
+};</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ── helpers ─────────────────────────────────────────────────── */
+  const $ = (sel) => document.querySelector(sel);
+  const esc = (s) => String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const toast = (msg, kind) => {
+    try { if (window.NGISUI && NGISUI.toast) { NGISUI.toast(msg, kind || "info"); return; } } catch (e) {}
+    console.log("[toast]", kind || "info", msg);
+  };
+  async function api(path, opts) {
+    const res = await NGISAuth.api(path, opts);
+    return res.data || res;
+  }
+  const SEV_CLASS = { critical: "sev-critical", high: "sev-high", medium: "sev-medium", low: "sev-low", informational: "sev-informational" };
+  const sevBadge = (s) => `<span class="sev-badge ${SEV_CLASS[s] || "sev-low"}">${esc(s || "low")}</span>`;
+  const statusBadge = (st) => `<span class="sev-badge st-${esc(st || "active")}">${esc((st || "active").replace("_", " "))}</span>`;
+  const outcomeBadge = (o) => {
+    const cls = ["success", "updated"].includes(o) ? "out-success" : (["blocked", "rejected", "failed"].includes(o) ? "out-blocked" : "sev-low");
+    return `<span class="sev-badge ${cls}">${esc(o || "—")}</span>`;
+  };
+
+  /* ── modal ───────────────────────────────────────────────────── */
+  const backdrop = $("#modalBackdrop");
+  function openModal(title, bodyHTML, footHTML, wide) {
+    $("#modalTitle").textContent = title;
+    $("#modalBody").innerHTML = bodyHTML;
+    $("#modalFoot").innerHTML = footHTML || `<button class="btn btn-ghost btn-sm" onclick="document.getElementById('modalBackdrop').classList.remove('open')">Close</button>`;
+    $("#modalBox").classList.toggle("wide", !!wide);
+    backdrop.classList.add("open");
+  }
+  function closeModal() { backdrop.classList.remove("open"); }
+  $("#modalClose").addEventListener("click", closeModal);
+  backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+  /* ── tabs ────────────────────────────────────────────────────── */
+  const loaders = {
+    overview: loadOverview, users: loadUsers, events: loadEvents,
+    ratelimit: loadRatelimit, ip: loadIps, audit: loadAudit, settings: loadSettings
+  };
+  const loadedOnce = {};
+  document.querySelectorAll(".sec-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".sec-tab").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
+      btn.classList.add("active"); btn.setAttribute("aria-selected", "true");
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".sec-pane").forEach(p => p.classList.remove("active"));
+      $("#pane-" + tab).classList.add("active");
+      if (!loadedOnce[tab]) { loadedOnce[tab] = true; loaders[tab](); }
+    });
+  });
+  document.querySelectorAll("[data-goto]").forEach(el => el.addEventListener("click", () => {
+    $(`.sec-tab[data-tab="${el.dataset.goto}"]`).click();
+  }));
+
+  /* ══ OVERVIEW ══════════════════════════════════════════════════ */
+  async function loadOverview() {
+    const hours = $("#ovHours").value;
+    try {
+      const d = await api(`/api/security/overview?hours=${hours}`);
+      $("#ovActive").textContent = d.activeAccounts ?? "—";
+      $("#ovFailed").textContent = d.failedLogins ?? "—";
+      $("#ovRestricted").textContent = (d.restrictedAccounts ?? 0) + (d.securityLocked ? ` (+${d.securityLocked} locked)` : "");
+      $("#ovRate").textContent = d.rateLimited ?? "—";
+      $("#ovActiveLbl").textContent = d.labels?.activeAccounts || "lifetime";
+      $("#ovFailedLbl").textContent = d.labels?.failedLogins || "24h";
+      $("#ovRestrictedLbl").textContent = d.labels?.restrictedAccounts || "current";
+      $("#ovRateLbl").textContent = d.labels?.rateLimited || "24h";
+      $("#ovUpdated").textContent = "Updated " + new Date().toLocaleTimeString();
+      const ev = await api(`/api/security/events?page_size=8&page=1`);
+      const rows = ev.rows || [];
+      $("#ovRecent").innerHTML = rows.length ? rows.map(r => `
+        <tr><td class="faint mono">${esc((r.ts || "").slice(5, 16))}</td>
+        <td class="mono">${esc(r.event_type)}</td><td>${sevBadge(r.severity)}</td>
+        <td style="max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(r.detail)}</td></tr>`).join("")
+        : `<tr><td colspan="4" class="empty-state"><span class="material-symbols-outlined">event_available</span>No events recorded yet</td></tr>`;
+    } catch (e) { toast("Failed to load overview: " + e.message, "error"); }
+  }
+  $("#ovHours").addEventListener("change", loadOverview);
+  $("#ovRefresh").addEventListener("click", loadOverview);
+
+  /* ══ USER RESTRICTIONS ═════════════════════════════════════════ */
+  const us = { page: 1, size: 8, total: 0, pages: 1, facets: null };
+  async function loadUsers(keepPage) {
+    if (!keepPage) us.page = 1;
+    const q = new URLSearchParams({ page: us.page, page_size: us.size });
+    const search = $("#usSearch").value.trim(); if (search) q.set("search", search);
+    if ($("#usRole").value) q.set("role", $("#usRole").value);
+    if ($("#usStatus").value) q.set("status", $("#usStatus").value);
+    try {
+      const d = await api("/api/security/users?" + q.toString());
+      if (d.facets && !us.facets) {
+        us.facets = true;
+        $("#usRole").innerHTML = `<option value="">All roles</option>` + (d.facets.roles || []).map(r => `<option value="${esc(r)}">${esc(r)}</option>`).join("");
+      }
+      us.total = d.total; us.pages = d.pages;
+      $("#usInfo").textContent = `Showing ${(d.rows || []).length} of ${d.total} accounts · page ${d.page}/${d.pages}`;
+      $("#usRows").innerHTML = (d.rows || []).length ? d.rows.map(r => {
+        const res = r.restriction || {};
+        const canManage = r.canManage !== false;
+        const resTxt = res.type
+          ? `<span class="sev-badge ${res.type === "ban" ? "sev-high" : "sev-medium"}">${esc(res.type)}</span>`
+            + (res.until ? ` <span class="faint" style="font-size:11.5px">until ${esc(res.until.slice(0, 16).replace("T", " "))}</span>` : ` <span class="faint" style="font-size:11.5px">no expiry</span>`)
+            + (res.reason ? `<div class="faint" style="font-size:11.5px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${esc(res.reason)}">${esc(res.reason)}</div>` : "")
+          : `<span class="faint">—</span>`;
+        const act = r.recentSecurityActivity > 0 ? `<span class="suspicious-chip">${r.recentSecurityActivity} recent</span>` : `<span class="faint" style="font-size:12px">quiet</span>`;
+        return `<tr>
+          <td><strong>${esc(r.name)}</strong><div class="faint mono" style="font-size:11.5px">${esc(r.id)}</div></td>
+          <td>${esc(r.role)}</td><td style="font-size:12.5px">${esc(r.campus || "—")}</td>
+          <td>${statusBadge(r.displayStatus || r.status)}</td>
+          <td>${resTxt}</td>
+          <td style="text-align:center">${act}</td>
+          <td><div class="row-actions">
+            ${canManage && !res.type && !["locked", "disabled"].includes(r.status) ? `<button class="btn btn-sm btn-ghost btn-xs" data-act="restrict" data-id="${esc(r.id)}" data-name="${esc(r.name)}">Restrict</button>` : ""}
+            ${canManage && res.type ? `<button class="btn btn-sm btn-ghost btn-xs" data-act="unrestrict" data-id="${esc(r.id)}" data-name="${esc(r.name)}">Restore</button>` : ""}
+            <button class="btn btn-sm btn-ghost btn-xs" data-act="detail" data-id="${esc(r.id)}">Detail</button>
+          </div></td></tr>`;
+      }).join("") : `<tr><td colspan="7" class="empty-state"><span class="material-symbols-outlined">search_off</span>No accounts match these filters</td></tr>`;
+    } catch (e) { $("#usRows").innerHTML = `<tr><td colspan="7" class="empty-state">Failed to load: ${esc(e.message)}</td></tr>`; }
+  }
+  $("#usSearch").addEventListener("input", () => { clearTimeout(us._t); us._t = setTimeout(() => loadUsers(), 350); });
+  $("#usRole").addEventListener("change", () => loadUsers());
+  $("#usStatus").addEventListener("change", () => loadUsers());
+  $("#usPrev").addEventListener("click", () => { if (us.page > 1) { us.page--; loadUsers(true); } });
+  $("#usNext").addEventListener("click", () => { if (us.page < us.pages) { us.page++; loadUsers(true); } });
+
+  document.addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-act]");
+    if (!btn) return;
+    const id = btn.dataset.id, name = btn.dataset.name || id;
+    if (btn.dataset.act === "detail") return userDetail(id);
+    if (btn.dataset.act === "restrict") return restrictDialog(id, name);
+    if (btn.dataset.act === "unrestrict") return unrestrictFlow(id, name);
+    if (btn.dataset.act === "iprestrict") return ipRestrictDialog(btn.dataset.ip);
+    if (btn.dataset.act === "ipunrestrict") return ipUnrestrictFlow(btn.dataset.ip);
+  });
+
+  function restrictDialog(id, name) {
+    openModal(`Restrict ${name}`, `
+      <div class="info-banner amber mb16"><span class="material-symbols-outlined">warning</span>
+        <span>Suspension blocks sign-in immediately (enforced before credential checks). Permanent bans require SUPER_ADMIN. Protected accounts (admins, principals, the super admin) can only be restricted by SUPER_ADMIN actors.</span></div>
+      <div class="sec-field"><label>Type <span class="req">*</span></label>
+        <select id="rdType"><option value="suspend">Suspend (temporary)</option><option value="ban">Ban (permanent — SUPER_ADMIN only)</option></select></div>
+      <div class="sec-field" id="rdDurWrap"><label>Duration</label>
+        <select id="rdDuration"><option value="1">1 hour</option><option value="4" selected>4 hours</option><option value="24">24 hours</option><option value="72">72 hours (max)</option></select>
+        <div class="hint">Access restores automatically when the duration elapses.</div></div>
+      <div class="sec-field"><label>Reason <span class="req">*</span></label>
+        <textarea id="rdReason" placeholder="Documented reason — stored in the audit trail"></textarea></div>
+      <div class="sec-field"><label>Internal notes (optional)</label>
+        <input id="rdNotes" placeholder="Context for other administrators"></div>`,
+      `<button class="btn btn-ghost btn-sm" onclick="document.getElementById('modalBackdrop').classList.remove('open')">Cancel</button>
+       <button class="btn btn-primary btn-sm" id="rdConfirm">Apply restriction</button>`);
+    $("#rdType").addEventListener("change", () => { $("#rdDurWrap").style.display = $("#rdType").value === "ban" ? "none" : "block"; });
+    $("#rdConfirm").addEventListener("click", async () => {
+      const type = $("#rdType").value, reason = $("#rdReason").value.trim();
+      if (!reason) { toast("A reason is required for every restriction.", "error"); return; }
+      try {
+        const payload = { type, reason, notes: $("#rdNotes").value.trim() };
+        if (type === "suspend") payload.duration = Number($("#rdDuration").value) || 24;
+        await api(`/api/security/users/${encodeURIComponent(id)}/restrict`, { method: "POST", body: JSON.stringify(payload) });
+        closeModal(); toast(`${name} restricted (${type}).`, "success"); loadUsers(true); loadOverview();
+      } catch (err) {
+        let msg = err.message;
+        try { const j = JSON.parse(err.message); msg = j.error?.message || msg; } catch (x) {}
+        toast(msg, "error");
+      }
+    });
+  }
+
+  async function unrestrictFlow(id, name) {
+    openModal(`Restore ${name}`, `
+      <p style="font-size:14px; margin:0 0 12px;">Lift the security restriction on this account? Only <strong>security-center</strong> restrictions are lifted — disabled, locked and pending-activation states are managed in User Management and are left untouched.</p>
+      <div class="sec-field"><label>Note (optional)</label><input id="urNote" placeholder="Context for the audit trail"></div>`,
+      `<button class="btn btn-ghost btn-sm" onclick="document.getElementById('modalBackdrop').classList.remove('open')">Cancel</button>
+       <button class="btn btn-primary btn-sm" id="urConfirm">Restore access</button>`);
+    $("#urConfirm").addEventListener("click", async () => {
+      try {
+        await api(`/api/security/users/${encodeURIComponent(id)}/unrestrict`, { method: "POST", body: JSON.stringify({ note: $("#urNote").value.trim() }) });
+        closeModal(); toast(`${name} restored to active.`, "success"); loadUsers(true); loadOverview();
+      } catch (err) { toast(err.message, "error"); }
+    });
+  }
+
+  async function userDetail(id) {
+    try {
+      const d = await api(`/api/security/users/${encodeURIComponent(id)}`);
+      const acc = d.account || d;
+      const res = acc.restriction || {};
+      const hist = acc.restrictionHistory || [];
+      const logins = (d.loginHistory || []).slice(-6).reverse();
+      const evs = (d.securityEvents || []).slice(0, 6);
+      openModal(`Account detail — ${acc.name || id}`, `
+        <dl class="kv-grid">
+          <dt>Account ID</dt><dd class="mono">${esc(acc.id)}</dd>
+          <dt>Role</dt><dd>${esc(acc.role)}</dd>
+          <dt>Status</dt><dd>${statusBadge(acc.displayStatus || acc.status)}</dd>
+          <dt>Email / username</dt><dd class="mono">${esc(acc.email || acc.username || "—")}</dd>
+          <dt>Campus</dt><dd>${esc(acc.campus || "—")}</dd>
+          <dt>Failed attempts</dt><dd>${esc(acc.failedAttempts ?? 0)}</dd>
+        </dl>
+        ${res.type ? `<h4 style="margin:16px 0 8px; font-size:13.5px; color:#DC3545;">Active restriction</h4>
+          <dl class="kv-grid">
+            <dt>Type</dt><dd>${esc(res.type)}${res.until ? ` — until ${esc(res.until)}` : " — no expiry"}</dd>
+            <dt>Reason</dt><dd>${esc(res.reason || "—")}</dd>
+            <dt>Applied by</dt><dd>${esc(res.by_name || res.by || "—")} at ${esc(res.at || "—")}</dd>
+            <dt>Notes</dt><dd>${esc(res.notes || "—")}</dd>
+          </dl>` : ""}
+        ${hist.length ? `<h4 style="margin:16px 0 8px; font-size:13.5px;">Restriction history</h4>
+          ${hist.map(h => `<div style="font-size:12.5px; padding:6px 0; border-bottom:1px dashed var(--border,#e5e9ef);">
+            ${esc(h.type)} — ${esc(h.reason || "")} <span class="faint">by ${esc(h.by_name || h.by || "?")}${h.lifted_at ? ` · lifted ${esc(h.lifted_at)}` : ""}</span></div>`).join("")}` : ""}
+        ${logins.length ? `<h4 style="margin:16px 0 8px; font-size:13.5px;">Recent sign-ins</h4>
+          ${logins.map(l => `<div style="font-size:12.5px; padding:6px 0; border-bottom:1px dashed var(--border,#e5e9ef);">
+            ${esc(l.ts || l.time || "")} — ${esc(l.event || l.detail || "")}</div>`).join("")}` : ""}
+        ${evs.length ? `<h4 style="margin:16px 0 8px; font-size:13.5px;">Related security events</h4>
+          ${evs.map(v => `<div style="font-size:12.5px; padding:6px 0; border-bottom:1px dashed var(--border,#e5e9ef);">
+            ${sevBadge(v.severity)} <span class="mono">${esc(v.event_type)}</span> — ${esc((v.detail || "").slice(0, 90))}</div>`).join("")}` : ""}`);
+    } catch (err) { toast(err.message, "error"); }
+  }
+
+  /* ══ SECURITY EVENTS ═══════════════════════════════════════════ */
+  const ev = { page: 1, size: 12, pages: 1 };
+  const EVENT_TYPES = ["auth.login_failed", "auth.account_rejected", "auth.login_success", "auth.unauthorized",
+    "auth.permission_denied", "rate_limit.violation", "ip.blocked", "restriction.applied", "restriction.removed",
+    "restriction.auto_expired", "security.setting_changed"];
+  $("#evType").innerHTML = `<option value="">All types</option>` + EVENT_TYPES.map(t => `<option value="${t}">${t}</option>`).join("");
+
+  async function loadEvents(keepPage) {
+    if (!keepPage) ev.page = 1;
+    const q = new URLSearchParams({ page: ev.page, page_size: ev.size });
+    if ($("#evSeverity").value) q.set("severity", $("#evSeverity").value);
+    if ($("#evType").value) q.set("type", $("#evType").value);
+    try {
+      const d = await api("/api/security/events?" + q.toString());
+      ev.pages = d.pages;
+      $("#evInfo").textContent = `${d.total} events · page ${d.page}/${d.pages}`;
+      $("#evRows").innerHTML = (d.rows || []).length ? d.rows.map(r => `
+        <tr style="cursor:pointer" data-event="${r.id}">
+          <td class="faint mono">${esc((r.ts || "").slice(5, 16))}</td>
+          <td class="mono" style="font-size:12px">${esc(r.event_type)}</td>
+          <td>${sevBadge(r.severity)}</td>
+          <td style="font-size:12.5px; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${esc(r.actor_account || "system")}</td>
+          <td class="mono" style="font-size:11.5px">${esc(r.method)} ${esc(r.endpoint)}</td>
+          <td class="mono">${esc(r.source_ip || "—")}</td>
+          <td>${outcomeBadge(r.outcome)}</td></tr>`).join("")
+        : `<tr><td colspan="7" class="empty-state"><span class="material-symbols-outlined">event_available</span>No events match these filters</td></tr>`;
+    } catch (e) { $("#evRows").innerHTML = `<tr><td colspan="7" class="empty-state">Failed to load: ${esc(e.message)}</td></tr>`; }
+  }
+  $("#evSeverity").addEventListener("change", () => loadEvents());
+  $("#evType").addEventListener("change", () => loadEvents());
+  $("#evRefresh").addEventListener("click", () => loadEvents(true));
+  $("#evPrev").addEventListener("click", () => { if (ev.page > 1) { ev.page--; loadEvents(true); } });
+  $("#evNext").addEventListener("click", () => { if (ev.page < ev.pages) { ev.page++; loadEvents(true); } });
+
+  document.addEventListener("click", async (e2) => {
+    const row = e2.target.closest("[data-event]");
+    if (!row) return;
+    try {
+      const d = await api(`/api/security/events/${row.dataset.event}`);
+      const r = d.event || d;
+      const rel = d.related || r.related || [];
+      openModal(`Event #${r.id} — ${r.event_type}`, `
+        <dl class="kv-grid">
+          <dt>Severity</dt><dd>${sevBadge(r.severity)}</dd>
+          <dt>Time</dt><dd>${esc(r.ts)}</dd>
+          <dt>Actor</dt><dd class="mono">${esc(r.actor_account || "system")} ${r.actor_role ? `(${esc(r.actor_role)})` : ""}</dd>
+          <dt>Request</dt><dd class="mono">${esc(r.method)} ${esc(r.endpoint)}${r.status_code ? ` → ${esc(r.status_code)}` : ""}</dd>
+          <dt>Source IP</dt><dd class="mono">${esc(r.source_ip || "—")}</dd>
+          <dt>Outcome</dt><dd>${outcomeBadge(r.outcome)}</dd>
+          <dt>Correlation ID</dt><dd class="mono">${esc(r.correlation_id || "—")}</dd>
+          <dt>Detail</dt><dd>${esc(r.detail)}</dd>
+        </dl>
+        ${r.explanation ? `<div class="info-banner blue mt16"><span class="material-symbols-outlined">lightbulb</span><span>${esc(r.explanation)}</span></div>` : ""}
+        ${rel.length ? `<h4 style="margin:16px 0 8px; font-size:13.5px;">Related events (same correlation or source)</h4>
+          ${rel.slice(0, 6).map(v => `<div style="font-size:12.5px; padding:6px 0; border-bottom:1px dashed var(--border,#e5e9ef);">
+            ${sevBadge(v.severity)} <span class="mono">${esc(v.event_type)}</span> — ${esc((v.ts || ""))}</div>`).join("")}` : ""}`, "", true);
+    } catch (err) { toast(err.message, "error"); }
+  });
+
+  /* ══ RATE LIMITING ═════════════════════════════════════════════ */
+  async function loadRatelimit() {
+    try {
+      const d = await api("/api/security/ratelimit");
+      $("#rlDeploy").textContent = d.deployment || "";
+      $("#rlViolations").textContent = d.violations24h ?? 0;
+      $("#rlRuleCount").textContent = (d.rules || []).length;
+      const top = (d.topIps || [])[0];
+      $("#rlTopIp").textContent = top ? top.source_ip : "—";
+      $("#rlRules").innerHTML = (d.rules || []).map(r => `
+        <tr><td><strong class="mono" style="font-size:12.5px">${esc(r.id)}</strong></td>
+        <td class="mono" style="font-size:11.5px">${esc(r.prefix)}</td>
+        <td style="font-size:12px">${esc(r.methods === "ALL" ? "all" : (r.methods || []).join(", "))}</td>
+        <td><strong>${r.limit}</strong> / ${r.windowSeconds >= 300 ? (r.windowSeconds / 60) + " min" : r.windowSeconds + "s"}</td>
+        <td>${r.live ? `<span class="rule-live">${r.live.activeSources ?? 0} active sources</span>` : `<span class="rule-live">idle</span>`}</td>
+        <td style="font-size:12.5px; max-width:260px;">${esc(r.note)}</td></tr>`).join("");
+      const recent = d.recent || [];
+      $("#rlRecent").innerHTML = recent.length ? recent.slice(0, 8).map(r => `
+        <tr><td class="faint mono">${esc((r.ts || "").slice(5, 16))}</td><td style="font-size:12.5px">${esc(r.detail)}</td>
+        <td class="mono" style="font-size:11.5px">${esc(r.endpoint)}</td><td class="mono">${esc(r.source_ip)}</td></tr>`).join("")
+        : `<tr><td colspan="4" class="empty-state"><span class="material-symbols-outlined">thumb_up</span>No violations in the last 24 hours</td></tr>`;
+    } catch (e) { toast("Failed to load rate limiting: " + e.message, "error"); }
+  }
+
+  /* ══ IP ACTIVITY ═══════════════════════════════════════════════ */
+  async function loadIps() {
+    try {
+      const d = await api("/api/security/ip");
+      const act = d.activeRestrictions || [];
+      $("#ipActiveWrap").innerHTML = act.length ? `
+        <div class="info-banner amber" style="margin-bottom:14px;"><span class="material-symbols-outlined">block</span>
+          <span><strong>${act.length} active IP restriction${act.length > 1 ? "s" : ""}:</strong> ${act.map(r =>
+            `${esc(r.ip)} (${esc(r.reason || "")}${r.expires_at ? `, until ${esc(r.expires_at)}` : ""})`).join("; ")}</span></div>`
+        : `<div class="info-banner blue" style="margin-bottom:14px;"><span class="material-symbols-outlined">check_circle</span>
+            <span>No active IP restrictions. Blocks skip /api/security so administrators can always undo.</span></div>`;
+      $("#ipRows").innerHTML = (d.rows || []).length ? (d.rows || []).map(r => {
+        const m = r.mitigation || {};
+        return `<tr>
+          <td class="mono"><strong>${esc(r.ip)}</strong></td>
+          <td>${r.requests ?? 0}</td>
+          <td>${r.failedAuth ? `<span class="sev-badge sev-medium">${r.failedAuth}</span>` : "0"}</td>
+          <td>${r.rateViolations ? `<span class="sev-badge sev-medium">${r.rateViolations}</span>` : "0"}</td>
+          <td style="font-size:12px" title="${esc((r.relatedAccounts || []).join(", "))}">${(r.relatedAccounts || []).length}</td>
+          <td>${m.restricted ? `<span class="sev-badge sev-high">restricted</span>` : `<span class="faint" style="font-size:12px">none</span>`}</td>
+          <td><div class="row-actions">
+            ${m.restricted
+              ? `<button class="btn btn-sm btn-ghost btn-xs" data-act="ipunrestrict" data-ip="${esc(r.ip)}">Unblock</button>`
+              : `<button class="btn btn-sm btn-ghost btn-xs" data-act="iprestrict" data-ip="${esc(r.ip)}">Restrict</button>`}
+          </div></td></tr>`;
+      }).join("") : `<tr><td colspan="7" class="empty-state"><span class="material-symbols-outlined">public_off</span>No IP activity recorded yet</td></tr>`;
+    } catch (e) { $("#ipRows").innerHTML = `<tr><td colspan="7" class="empty-state">Failed to load: ${esc(e.message)}</td></tr>`; }
+  }
+
+  function ipRestrictDialog(ip) {
+    openModal(`Restrict IP ${ip}`, `
+      <div class="info-banner amber mb16"><span class="material-symbols-outlined">warning</span>
+        <span>Blocks are short-lived (max 72 hours) and never affect /api/security, so an admin can always undo. Use carefully on shared campus networks — one IP may serve many users.</span></div>
+      <div class="sec-field"><label>IP address</label><input id="irIp" value="${esc(ip)}"></div>
+      <div class="sec-field"><label>Duration (hours)</label>
+        <select id="irHours"><option>1</option><option>4</option><option value="" selected>24 (default)</option><option>48</option><option>72</option></select></div>
+      <div class="sec-field"><label>Reason <span class="req">*</span></label>
+        <textarea id="irReason" placeholder="Why this source is being restricted"></textarea></div>`,
+      `<button class="btn btn-ghost btn-sm" onclick="document.getElementById('modalBackdrop').classList.remove('open')">Cancel</button>
+       <button class="btn btn-primary btn-sm" id="irConfirm">Restrict IP</button>`);
+    $("#irConfirm").addEventListener("click", async () => {
+      const ipv = $("#irIp").value.trim(), reason = $("#irReason").value.trim(), hours = $("#irHours").value;
+      if (!reason) { toast("A reason is required.", "error"); return; }
+      try {
+        await api("/api/security/ip/restrict", { method: "POST", body: JSON.stringify({ ip: ipv, reason, hours: hours ? Number(hours) : undefined }) });
+        closeModal(); toast(`IP ${ipv} restricted.`, "success"); loadIps(); loadOverview();
+      } catch (err) { toast(err.message, "error"); }
+    });
+  }
+
+  async function ipUnrestrictFlow(ip) {
+    try {
+      await api("/api/security/ip/unrestrict", { method: "POST", body: JSON.stringify({ ip, note: "unblocked from Security Center" }) });
+      toast(`IP ${ip} unblocked.`, "success"); loadIps();
+    } catch (err) { toast(err.message, "error"); }
+  }
+
+  /* ══ AUDIT HISTORY ═════════════════════════════════════════════ */
+  const au = { page: 1, size: 12, pages: 1 };
+  async function loadAudit(keepPage) {
+    if (!keepPage) au.page = 1;
+    const q = new URLSearchParams({ page: au.page, page_size: au.size });
+    if ($("#auAction").value) q.set("action", $("#auAction").value);
+    try {
+      const d = await api("/api/security/audit?" + q.toString());
+      au.pages = d.pages;
+      if (!au._actionsLoaded && d.actions) {
+        au._actionsLoaded = true;
+        $("#auAction").innerHTML = `<option value="">All actions</option>` + d.actions.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join("");
+      }
+      $("#auInfo").textContent = `${d.total} audit entries · page ${d.page}/${d.pages}`;
+      $("#auRows").innerHTML = (d.rows || []).length ? d.rows.map(r => `
+        <tr><td class="faint mono">${esc((r.ts || "").slice(5, 16))}</td>
+        <td class="mono" style="font-size:12px">${esc(r.actor)}${r.actor_role ? `<div class="faint" style="font-size:10.5px">${esc(r.actor_role)}</div>` : ""}</td>
+        <td style="font-size:12.5px">${esc(r.action)}</td>
+        <td class="mono" style="font-size:11.5px">${esc(r.target)}</td>
+        <td style="font-size:12.5px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${esc(r.reason)}">${esc(r.reason || "—")}</td>
+        <td>${outcomeBadge(r.outcome)}</td></tr>`).join("")
+        : `<tr><td colspan="6" class="empty-state"><span class="material-symbols-outlined">history</span>No audit entries yet</td></tr>`;
+    } catch (e) { $("#auRows").innerHTML = `<tr><td colspan="6" class="empty-state">Failed to load: ${esc(e.message)}</td></tr>`; }
+  }
+  $("#auAction").addEventListener("change", () => loadAudit());
+  $("#auRefresh").addEventListener("click", () => loadAudit(true));
+  $("#auPrev").addEventListener("click", () => { if (au.page > 1) { au.page--; loadAudit(true); } });
+  $("#auNext").addEventListener("click", () => { if (au.page < au.pages) { au.page++; loadAudit(true); } });
+
+  /* ══ SETTINGS ══════════════════════════════════════════════════ */
+  const SET_META = [
+    { key: "trust_proxy", label: "Trust X-Forwarded-For header", type: "bool", hint: "Enable ONLY behind a trusted reverse proxy; otherwise clients can spoof their IP." },
+    { key: "login_ip_limit", label: "Sign-in attempts per IP", type: "num", range: "1–100000", hint: "Per 5 minutes. Generous for shared campus networks." },
+    { key: "login_identifier_limit", label: "Sign-in attempts per account", type: "num", range: "1–100000", hint: "Per 5 minutes — the brute-force guard (NAT-safe)." },
+    { key: "auth_ip_limit", label: "Other auth endpoints per IP", type: "num", range: "1–100000", hint: "Per minute." },
+    { key: "write_api_limit", label: "Write API requests per IP", type: "num", range: "1–100000", hint: "Per minute, school-wide NAT safe." },
+    { key: "security_api_limit", label: "Security API requests per IP", type: "num", range: "1–100000", hint: "Per minute." },
+    { key: "ip_restriction_default_hours", label: "Default IP restriction duration", type: "num", range: "1–72", hint: "Hours; max 72." },
+    { key: "event_retention_days", label: "Event retention", type: "num", range: "7–365", hint: "Days before automatic cleanup." },
+    { key: "suspicious_failed_login_threshold", label: "Suspicious failed-login threshold", type: "num", range: "3–50", hint: "Failures from one IP that flag suspicion." }
+  ];
+  async function loadSettings() {
+    try {
+      const d = await api("/api/security/settings");
+      const s = d.settings || {}, canEdit = !!d.canEdit;
+      $("#setBanner").innerHTML = canEdit
+        ? `<div class="info-banner blue mb16"><span class="material-symbols-outlined">admin_panel_settings</span><span>You are signed in as SUPER_ADMIN — changes are allowed and will be audited.</span></div>`
+        : `<div class="info-banner amber mb16"><span class="material-symbols-outlined">lock</span><span>Only <strong>SUPER_ADMIN</strong> actors can change security settings. Current viewer role: <strong>${esc(d.viewerRole)}</strong>. Fields are read-only.</span></div>`;
+      $("#setForm").innerHTML = SET_META.map(m => {
+        if (m.type === "bool") {
+          return `<div class="toggle-row"><div><div style="font-size:14px; font-weight:500;">${esc(m.label)}</div><div class="hint" style="font-size:12px; color:#5b6b7c;">${esc(m.hint)}</div></div>
+            <label class="switch"><input type="checkbox" id="set-${m.key}" ${s[m.key] ? "checked" : ""} ${canEdit ? "" : "disabled"}><span class="track"></span></label></div>`;
+        }
+        return `<div class="sec-field"><label>${esc(m.label)} <span class="faint" style="font-weight:400">(${m.range})</span></label>
+          <input type="number" id="set-${m.key}" value="${esc(s[m.key] ?? "")}" ${canEdit ? "" : "disabled"}>
+          <div class="hint">${esc(m.hint)}</div></div>`;
+      }).join("");
+      $("#setSave").disabled = !canEdit;
+    } catch (e) { $("#setForm").innerHTML = `<div class="empty-state">Failed to load settings: ${esc(e.message)}</div>`; }
+  }
+  $("#setReload").addEventListener("click", loadSettings);
+  $("#setSave").addEventListener("click", async () => {
+    const reason = $("#setReason").value.trim();
+    if (!reason) { toast("A reason is required for settings changes.", "error"); return; }
+    const settings = {};
+    SET_META.forEach(m => {
+      const el = $("#set-" + m.key);
+      if (!el) return;
+      settings[m.key] = m.type === "bool" ? el.checked : Number(el.value);
+    });
+    try {
+      const d = await api("/api/security/settings", { method: "PUT", body: JSON.stringify({ settings, reason }) });
+      toast("Settings saved: " + (d.changed || []).join(", "), "success");
+      loadSettings();
+    } catch (err) { toast(err.message, "error"); }
+  });
+
+  /* ── boot ────────────────────────────────────────────────────── */
+  loadedOnce.overview = true;
+  loadOverview();
+})();
+</script>
+</body>
+</html>

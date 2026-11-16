@@ -53,12 +53,28 @@
 
       const deadPanel = document.querySelector(".ov-deadline-panel");
       if (deadPanel && items.length) {
+        /* Urgency derived from the real due date via the central classifier:
+           overdue → red, ≤24h → orange, ≤6h → red-urgent, else neutral. */
+        const dotColor = (a) => {
+          if (window.NGISStates) {
+            const lv = NGISStates.classify({
+              status: a.submission_status || "pending",
+              dueDate: a.due_date,
+              lateAllowed: a.late_submission_allowed !== false
+            });
+            if (lv === "overdue" || lv === "urgent") return "#DC3545";
+            if (lv === "approaching") return "#F28C28";
+            if (lv === "complete") return "#176B45";
+            return "#64746A";
+          }
+          return "#64746A";
+        };
         deadPanel.innerHTML =
-          '<div class="ov-deadline-head"><span class="mi" style="color:#e11d48">assignment</span>Assessments</div>' +
+          '<div class="ov-deadline-head"><span class="mi" style="color:#DC3545">assignment</span>Assessments</div>' +
           items
             .map(
               (a) =>
-                `<div class="ov-deadline-item"><div class="ov-deadline-dot" style="background:#e11d48"></div><div><div class="ov-deadline-item-t">${esc(
+                `<div class="ov-deadline-item"><div class="ov-deadline-dot" style="background:${dotColor(a)}"></div><div><div class="ov-deadline-item-t">${esc(
                   a.title
                 )}</div><div class="ov-deadline-item-s">Due ${esc((a.due_date || "").slice(0, 10))}</div></div></div>`
             )

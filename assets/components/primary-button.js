@@ -37,7 +37,7 @@
     /**
      * Set a button to a temporary success confirmation state
      */
-    setSuccess(button, successText = "Saved Successfully", revertDelay = 1500) {
+    setSuccess(button, successText = "Saved", revertDelay = 1500) {
       if (!button) return;
       const originalHtml = button.dataset.originalHtml || button.innerHTML;
 

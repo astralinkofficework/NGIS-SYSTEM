@@ -18,7 +18,7 @@
 
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 
@@ -31,7 +31,7 @@
 
 <!-- NGIS Stylesheets -->
 
-<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.2">
 
 <link rel="stylesheet" href="../../assets/css/hero.css">
 
@@ -357,8 +357,9 @@ try {
 
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 
 
@@ -429,7 +430,7 @@ try {
 
        ═══════════════════════════════════════════════════════════════════ -->
 
-  <div class="page p-space-md lg:p-space-xl max-w-7xl mx-auto flex flex-col gap-space-lg pb-28 lg:pb-12">
+  <div class="page p-space-md lg:p-space-xl max-w-[1760px] mx-auto flex flex-col gap-space-lg pb-28 lg:pb-12">
 
 
 
@@ -653,13 +654,7 @@ try {
 
         <!-- Search Input -->
 
-        <div class="relative flex-1 max-w-lg">
-
-          <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-
-          <input id="rosterSearchInput" class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-outline border border-transparent focus:border-secondary focus:bg-surface-container-lowest focus:outline-none transition-all" placeholder="Search student name, ID, or email..." type="text">
-
-        </div>
+        <div class="flex-1 max-w-lg ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="rosterSearchInput" class="w-full ngis-search-input" placeholder="Search student name, ID, or email..." type="text"></div>
 
 
 
@@ -863,7 +858,7 @@ try {
 
           <button type="button" id="btnNextPage" onclick="changePage(currentPage + 1)" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
 
-            <span>Next</span>
+            <span>Next Page</span>
 
             <span data-ngis-icon="chevronRight" class="text-[16px]"></span>
 
@@ -1390,18 +1385,39 @@ window.HERO_CONFIG = {
     try {
 
       const token = (window.getToken && window.getToken()) || localStorage.getItem('ngis_token');
+      const params = new URLSearchParams(window.location.search);
+      const classIdParam = params.get('classId') || params.get('class');
+      const fetchUrl = classIdParam ? `/api/teacher/classes/${encodeURIComponent(classIdParam)}/students` : '/api/students';
 
-      const res = await fetch('/api/students', {
+      const res = await fetch(fetchUrl, {
 
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
 
       });
+
+      if (res.status === 403) {
+        const tableCard = document.querySelector('[data-purpose="roster-table"]') || document.querySelector('table');
+        if (tableCard) {
+          tableCard.innerHTML = `
+            <div class="p-12 text-center bg-rose-50 border border-rose-200 rounded-2xl my-6">
+              <span class="material-symbols-outlined text-4xl mb-2 text-rose-500">lock</span>
+              <h3 class="text-base font-medium text-rose-800">403 Forbidden — Access Restricted</h3>
+              <p class="text-xs text-rose-600 mt-1 max-w-md mx-auto">You are not assigned to teach this class section. Faculty members are only permitted to view academic records and rosters for classes they are assigned to teach.</p>
+              <a href="teacher.html" class="inline-flex items-center gap-1.5 mt-4 px-4 py-2 bg-white border border-rose-200 text-rose-700 text-xs font-medium rounded-lg hover:bg-rose-100 transition">
+                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                <span>Return to My Classes</span>
+              </a>
+            </div>
+          `;
+        }
+        return [];
+      }
 
       if (res.ok) {
 
         const json = await res.json();
 
-        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+        if (json.data && Array.isArray(json.data)) {
 
           return json.data;
 
@@ -1411,7 +1427,7 @@ window.HERO_CONFIG = {
 
     } catch(err) {
 
-      console.warn('API /api/students fetch failed, using fallback records:', err);
+      console.warn('API students fetch failed, using fallback records:', err);
 
     }
 

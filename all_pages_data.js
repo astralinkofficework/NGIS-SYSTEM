@@ -346,8 +346,8 @@ const ALL_PAGES = [
     ]
   },
   {
-    "path": "pages/teacher/teacher-announcements.html",
-    "name": "teacher-announcements.html",
+    "path": "pages/teacher/shared/announcements.html?portal=teacher",
+    "name": "shared/announcements.html?portal=teacher",
     "title": "Faculty & Staff Announcements",
     "category": "Communications",
     "roles": [
@@ -394,8 +394,8 @@ const ALL_PAGES = [
     ]
   },
   {
-    "path": "pages/student/student-announcements.html",
-    "name": "student-announcements.html",
+    "path": "pages/student/shared/announcements.html?portal=student",
+    "name": "shared/announcements.html?portal=student",
     "title": "Student Body Announcements Feed",
     "category": "Communications",
     "roles": [
@@ -778,37 +778,6 @@ const ALL_PAGES = [
       "Lockers",
       "Uniforms",
       "Cafeteria Smartcards"
-    ]
-  },
-  {
-    "path": "pages/student/student-id.html",
-    "name": "student-id.html",
-    "title": "Digital Student Identity Card",
-    "category": "User & Identity Management",
-    "roles": [
-      "student"
-    ],
-    "description": "Official digital student ID badge with QR security code, campus entry verification, library barcode, and active enrollment credentials.",
-    "tags": [
-      "Digital ID",
-      "QR Credential",
-      "Campus Entry"
-    ]
-  },
-  {
-    "path": "pages/admin/admin-users.html",
-    "name": "admin-users.html",
-    "title": "Enterprise User Management Console",
-    "category": "User & Identity Management",
-    "roles": [
-      "admin",
-      "principal"
-    ],
-    "description": "Unified identity directory for managing all students, teachers, parents, staff, and system administrators with role-based filtering, status toggles, and bulk operations.",
-    "tags": [
-      "RBAC",
-      "Directory",
-      "Bulk Actions"
     ]
   },
   {

@@ -1,458 +1,1904 @@
-<!doctype html>
-<html lang="en" data-theme="light">
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="h-full">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — News Control Console</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/css/app.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
-<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
-<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
-<style>
-/* Admin News Board Layout */
-.admin-news-page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 16px 24px 80px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-sizing: border-box;
-}
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+  <meta name="shell-type" content="web_dashboard">
+  <title>News & Announcements — NGIS Admin CMS</title>
 
-.news-dashboard-grid {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 20px;
-  align-items: start;
-}
+  <!-- Typography: Inter & Kantumruy Pro (Weights 400 & 500 only per NGIS AGENTS.md rules) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
-/* Forms Card */
-.admin-news-card {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid var(--bdr);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.01);
-  padding: 20px;
-}
-.card-title-row {
-  border-bottom: 1px solid #ECE7E2;
-  padding-bottom: 12px;
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.card-title {
-  font-size: 15px;
-  font-weight: 400;
-  color: #000000;
-  margin: 0;
-}
+  <!-- Phosphor Icons for Mobile Hamburger & Action Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-/* Form details */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-.form-label {
-  font-size: 11.5px;
-  font-weight: 400;
-  color: #F77442;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.form-control {
-  border: 1px solid #ECE7E2;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 13px;
-  outline: none;
-  background: #FBFBFB;
-}
-.form-control:focus {
-  border-color: #1D1D1B;
-  background: #fff;
-}
+  <!-- Tailwind CSS v3 with Forms & Container Queries -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#0F5132', // NGIS Signature Forest Green
+              900: '#0b3d26',
+            },
+            accent: {
+              50: '#fff7ed',
+              500: '#f97316',
+              600: '#ea580c',
+            },
+            canvas: '#F8FAFC',
+          },
+          fontFamily: {
+            sans: ['"Inter"', '"Kantumruy Pro"', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          fontWeight: {
+            normal: '400',
+            medium: '500',
+            semibold: '500',
+            bold: '500',
+            extrabold: '500',
+            black: '500'
+          }
+        }
+      }
+    };
+  </script>
 
-/* Table management */
-.news-table-card {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid var(--bdr);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.01);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
+  <!-- NGIS Core Shared Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
 
-.table-title-row {
-  padding: 16px 20px;
-  border-bottom: 1px solid #ECE7E2;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  <!-- Theme Bootstrap & Auth -->
+  <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/protect.js"></script>
+  <script src="_auth-bootstrap.js"></script>
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 
-.news-tbl {
-  width: 100%;
-  border-collapse: collapse;
-}
-.news-tbl th {
-  background: #FBFBFB;
-  padding: 12px 16px;
-  font-size: 11.5px;
-  font-weight: 400;
-  text-transform: uppercase;
-  color: #F77442;
-  text-align: left;
-  border-bottom: 1px solid #ECE7E2;
-}
-.news-tbl td {
-  padding: 12px 16px;
-  font-size: 13px;
-  border-bottom: 1px solid #ECE7E2;
-  color: #000000;
-}
-.news-tbl tr:last-child td {
-  border-bottom: none;
-}
+  <style data-purpose="base-typography">
+    /* ═══ CRITICAL RULE: NO BOLD FONTS (AGENTS.md) ═══ */
+    *, b, strong, th, h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold, .font-extrabold {
+      font-weight: 500 !important;
+    }
+    p, span, td, input, select, textarea, div {
+      font-weight: 400;
+    }
+    .font-medium, .font-semibold, th, h1, h2, h3, h4, [class*="font-medium"], [class*="font-semibold"] {
+      font-weight: 500 !important;
+    }
 
-.tag-badge {
-  font-size: 10px;
-  font-weight: 400;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-}
-.priority-urgent { background: #FBFBFB; color: #F77442; }
-.priority-events { background: #FBFBFB; color: #000000; }
-.priority-exams { background: #FBFBFB; color: #1D1D1B; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F8FAFC;
+    }
+    .khmer-font {
+      font-family: 'Kantumruy Pro', sans-serif;
+    }
 
-@media (max-width: 992px) {
-  .news-dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-}
-</style>
-<link rel="stylesheet" href="../../assets/css/interactions.css">
-<link rel="stylesheet" href="../../assets/css/design-system.css">
-<link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+    /* Core Solid Buttons (Strict overrides against ui-cleanup.css) */
+    #btnOpenCreatePost,
+    #btnDrawerSubmitPublish,
+    #btnOpenCreateMobile,
+    .btn-primary-solid {
+      background: #0F5132 !important;
+      background-color: #0F5132 !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+    #btnOpenCreatePost:hover,
+    #btnDrawerSubmitPublish:hover,
+    #btnOpenCreateMobile:hover,
+    .btn-primary-solid:hover {
+      background: #0b3d26 !important;
+      background-color: #0b3d26 !important;
+    }
+    .btn-secondary-white {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    }
+    .btn-secondary-white:hover {
+      background: #f8fafc !important;
+      background-color: #f8fafc !important;
+    }
 
-<!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+    /* Filter Toolbar Selects */
+    .toolbar-select {
+      width: auto !important;
+      min-width: 120px !important;
+      display: inline-block !important;
+    }
+
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Category Pill Colors */
+    .badge-urgent {
+      background-color: #FEF2F2;
+      color: var(--color-danger,#DC3545);
+      border: 1px solid #FEE2E2;
+    }
+    .badge-events {
+      background-color: #EFF6FF;
+      color: #2563EB;
+      border: 1px solid #DBEAFE;
+    }
+    .badge-exams {
+      background-color: #FAF5FF;
+      color: #7E22CE;
+      border: 1px solid #F3E8FF;
+    }
+    .badge-academic {
+      background-color: #F0FDF4;
+      color: #15803D;
+      border: 1px solid #DCFCE7;
+    }
+    .badge-general {
+      background-color: #F8FAFC;
+      color: #475569;
+      border: 1px solid #E2E8F0;
+    }
+
+    /* Slide-Over Drawer Transitions */
+    #postEditorDrawer {
+      transition: opacity 0.25s ease-in-out;
+    }
+    #postEditorDrawer.show {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    #postEditorDrawer aside {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #postEditorDrawer.show aside {
+      transform: translateX(0) !important;
+    }
+
+    /* Dark mode overrides */
+    [data-theme="dark"] body {
+      background-color: #0f172a !important;
+      color: #e2e8f0 !important;
+    }
+    [data-theme="dark"] .bg-white {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    [data-theme="dark"] .bg-slate-50,
+    [data-theme="dark"] .bg-slate-50\/50,
+    [data-theme="dark"] .bg-slate-50\/60,
+    [data-theme="dark"] .bg-slate-50\/70,
+    [data-theme="dark"] .bg-slate-50\/80 {
+      background-color: #0f172a !important;
+    }
+    [data-theme="dark"] .border-slate-200,
+    [data-theme="dark"] .border-slate-200\/90,
+    [data-theme="dark"] .border-slate-100 {
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] .text-slate-900 {
+      color: #f1f5f9 !important;
+    }
+    [data-theme="dark"] .text-slate-800,
+    [data-theme="dark"] .text-slate-700 {
+      color: #cbd5e1 !important;
+    }
+    [data-theme="dark"] .text-slate-600,
+    [data-theme="dark"] .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    [data-theme="dark"] input,
+    [data-theme="dark"] select,
+    [data-theme="dark"] textarea {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] .btn-secondary-white {
+      background: #1e293b !important;
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] .btn-secondary-white:hover {
+      background: #334155 !important;
+    }
+  </style>
 </head>
-<body data-role="admin" data-portal="admin">
-<main class="main">
-  <!-- Layout Banner matching system standard -->
-  <header class="hero" style="padding-bottom: 40px;">
-    <div class="hero-topbar">
-      <div class="htb-left">
-        <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
-          <span class="mi">menu</span>
-        </button>
-        <a href="admin.html" class="htb-home-btn">
-          <span class="mi">arrow_back</span>
-          <span>Back to Dashboard</span>
-        </a>
+
+<body class="flex flex-col font-sans text-slate-800 antialiased bg-[#F8FAFC] selection:bg-brand-100 selection:text-brand-900 min-h-screen" data-role="admin" data-portal="admin">
+<main class="main flex-1 flex flex-col">
+
+  <!-- Desktop Hero Banner (standardized across NGIS Admin) -->
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- ═══ MANDATORY MOBILE APP BAR (AGENTS.md CRITICAL RULE) ═══ -->
+  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition flex items-center justify-center min-w-[40px] min-h-[40px] cursor-pointer" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <div class="min-w-0 truncate">
+        <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">News &amp; Announcements</h1>
       </div>
-      <div class="htb-center">
-        <img class="htb-logo" src="../student/LOGO NGIS (2).png" alt="NGIS logo" />
-      </div>
-      <div class="htb-right" style="opacity:0; pointer-events:none;">
-        <!-- Center helper spacer -->
-      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <a href="../shared/news.html" target="_blank" class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition" title="Preview Public Newsroom">
+        <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+      </a>
+      <button type="button" class="btn-primary-solid flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-medium shadow-xs cursor-pointer active:scale-95 transition" id="btnOpenCreateMobile">
+        <span class="material-symbols-outlined text-[16px]">add</span>
+        <span>Create</span>
+      </button>
     </div>
   </header>
 
-  <div class="admin-news-page">
-    <section class="news-automation-strip" aria-label="News publishing automation">
-      <div class="news-auto-card">
-        <div class="news-auto-head"><span class="mi">edit_note</span><div class="news-auto-kicker">Step 1</div></div>
-        <h2>Create News</h2>
-        <p>Admin writes the title and message. The public page never needs hardcoded content.</p>
+  <!-- Page Workspace Container -->
+  <div class="page w-full flex-1 max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 pb-28 lg:pb-12">
+
+    <!-- ═══ 1. PAGE HEADER ═══ -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 text-xs font-medium text-[#0F5132] uppercase tracking-wider">
+          <span>Institutional Communications</span>
+          <span>•</span>
+          <span class="text-slate-500">Editorial CMS &amp; Registry</span>
+        </div>
+        <h2 class="text-2xl font-medium text-slate-900 tracking-tight mt-1">News &amp; Announcements</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Compose, target, schedule, and manage institutional news and broadcasts across all campus portals.</p>
       </div>
-      <div class="news-auto-card">
-        <div class="news-auto-head"><span class="mi">image</span><div class="news-auto-kicker">Step 2</div></div>
-        <h2>Upload Image</h2>
-        <p>Cover media becomes part of the news record and renders dynamically on the public feed.</p>
+
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <a href="../shared/news.html" target="_blank" class="btn-secondary-white inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 shadow-xs transition-colors cursor-pointer active:scale-95" title="Preview public newsroom">
+          <span class="material-symbols-outlined text-[16px] text-slate-500">open_in_new</span>
+          <span>Preview Public Feed</span>
+        </a>
+        <button id="btnExportCsv" class="btn-secondary-white inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 shadow-xs transition-colors cursor-pointer active:scale-95" type="button" title="Export CSV">
+          <span class="material-symbols-outlined text-[16px] text-slate-500">download</span>
+          <span>Export CSV</span>
+        </button>
+        <button id="btnOpenCreatePost" class="btn-primary-solid inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-white rounded-xl shadow-xs transition-all cursor-pointer active:scale-95" type="button">
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          <span>Create Post</span>
+        </button>
       </div>
-      <div class="news-auto-card">
-        <div class="news-auto-head"><span class="mi">groups</span><div class="news-auto-kicker">Step 3</div></div>
-        <h2>Select Audience</h2>
-        <p>Student, parent, teacher, class, grade, and school-wide targeting share one model.</p>
+    </header>
+
+    <!-- ═══ 2. OVERVIEW METRICS (Real Application Data Only) ═══ -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4" aria-label="CMS Statistics Overview">
+      <!-- Published Card -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div class="flex items-center justify-between text-slate-500 mb-1">
+          <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Published</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="text-2xl font-medium text-slate-900" id="kpiPublished">0</span>
+          <span class="text-[11px] font-medium text-emerald-600">Active on portals</span>
+        </div>
       </div>
-      <div class="news-auto-card">
-        <div class="news-auto-head"><span class="mi">send</span><div class="news-auto-kicker">Step 4</div></div>
-        <h2>Publish</h2>
-        <p>Website feed, Telegram broadcast, priority pinning, and read tracking are queued together.</p>
+
+      <!-- Drafts Card -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div class="flex items-center justify-between text-slate-500 mb-1">
+          <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Drafts</span>
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="text-2xl font-medium text-slate-900" id="kpiDrafts">0</span>
+          <span class="text-[11px] font-medium text-slate-500">Unpublished</span>
+        </div>
+      </div>
+
+      <!-- Scheduled Card -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div class="flex items-center justify-between text-slate-500 mb-1">
+          <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Scheduled</span>
+          <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="text-2xl font-medium text-slate-900" id="kpiScheduled">0</span>
+          <span class="text-[11px] font-medium text-blue-600">Upcoming release</span>
+        </div>
+      </div>
+
+      <!-- Total Views Card -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+        <div class="flex items-center justify-between text-slate-500 mb-1">
+          <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">Total Views</span>
+          <span class="material-symbols-outlined text-[16px] text-slate-400">visibility</span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span class="text-2xl font-medium text-slate-900" id="kpiTotalViews">0</span>
+          <span class="text-[11px] font-medium text-slate-500">All announcements</span>
+        </div>
       </div>
     </section>
-    
-    <div class="news-dashboard-grid">
-      <!-- Left side: Compose Panel -->
-      <aside class="admin-news-card">
-        <div class="card-title-row">
-          <h3 class="card-title">Publish Announcement</h3>
-          <span class="mi" style="color:#1D1D1B">post_add</span>
-        </div>
-        
-        <form id="newsDraftForm" onsubmit="return false">
-          <div class="form-group">
-            <label class="form-label">Article Title</label>
-            <input type="text" class="form-control" id="postTitle" placeholder="e.g. Science Fair Registration Open" required />
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">Priority Alert Category</label>
-            <select class="form-control" id="postPriority">
-              <option value="all">General News</option>
-              <option value="urgent">Urgent Alert</option>
-              <option value="events">School Event</option>
-              <option value="exams">Academic / Exam</option>
+    <!-- ═══ 3. NEWS MANAGEMENT FULL-WIDTH TABLE & CONTROLS ═══ -->
+    <section class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden" data-purpose="news-management-section">
+      
+      <!-- Filter & Search Toolbar -->
+      <div class="p-4 sm:p-5 border-b border-slate-100 space-y-3">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 md:flex-wrap">
+
+          <!-- Search Input -->
+          <div class="flex-1 min-w-[240px] max-w-md ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input type="search" id="tableSearchInput" placeholder="Search announcements by title, keyword, or snippet..." class="w-full ngis-search-input"></div>
+
+          <!-- Secondary Filters Strip -->
+          <div class="flex flex-wrap items-center gap-2 overflow-x-auto">
+            <!-- Category Filter -->
+            <select id="filterCategory" class="toolbar-select text-xs py-2 pl-3 pr-8 rounded-xl border border-slate-200 bg-white text-slate-700 focus:ring-brand-800/20 focus:border-brand-800 cursor-pointer">
+              <option value="all">All Categories</option>
+              <option value="academic">Academic</option>
+              <option value="events">Events</option>
+              <option value="exams">Exams</option>
+              <option value="urgent">Urgent</option>
+              <option value="general">General</option>
             </select>
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">Target Audience</label>
-            <input type="text" class="form-control" id="postAudience" value="Students, Parents" placeholder="e.g. Parents, Staff" required />
-          </div>
-
-          <div class="news-form-row">
-            <div class="form-group">
-              <label class="form-label">Publish Timing</label>
-              <select class="form-control" id="postTiming">
-                <option value="instant">Instant Publish</option>
-                <option value="scheduled">Schedule for Later</option>
-                <option value="draft">Save as Draft</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Expiry Rule</label>
-              <select class="form-control" id="postExpiry">
-                <option value="none">No Expiry</option>
-                <option value="7">Auto Archive in 7 Days</option>
-                <option value="30">Auto Archive in 30 Days</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Cover Image Link (URL)</label>
-            <select class="form-control" id="postImage">
-              <option value="https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=600">Science / Classroom</option>
-              <option value="https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=600">Weather / Heavy Rain</option>
-              <option value="https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=600">Sports / Field</option>
-              <option value="https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=600">Exam / Library</option>
+            <!-- Status Filter -->
+            <select id="filterStatus" class="toolbar-select text-xs py-2 pl-3 pr-8 rounded-xl border border-slate-200 bg-white text-slate-700 focus:ring-brand-800/20 focus:border-brand-800 cursor-pointer">
+              <option value="all">All Statuses</option>
+              <option value="published">Published</option>
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="archived">Archived</option>
             </select>
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">Full Article Details</label>
-            <textarea class="form-control" id="postDesc" style="height:120px;resize:none" placeholder="Provide full announcement text here..." required></textarea>
-          </div>
+            <!-- Audience Filter -->
+            <select id="filterAudience" class="toolbar-select text-xs py-2 pl-3 pr-8 rounded-xl border border-slate-200 bg-white text-slate-700 focus:ring-brand-800/20 focus:border-brand-800 cursor-pointer">
+              <option value="all">All Audiences</option>
+              <option value="students">Students</option>
+              <option value="teachers">Teachers</option>
+              <option value="parents">Parents</option>
+              <option value="faculty">Faculty Staff</option>
+            </select>
 
-          <div class="pill-row" style="margin-bottom:14px">
-            <span class="system-pill"><span class="mi">push_pin</span>Urgent auto-pins</span>
-            <span class="system-pill"><span class="mi">telegram</span>Telegram queued</span>
-            <span class="system-pill"><span class="mi">visibility</span>Read tracking</span>
-            <span class="system-pill"><span class="mi">translate</span>Khmer/English ready</span>
-          </div>
+            <!-- Sort By -->
+            <select id="filterSort" class="toolbar-select text-xs py-2 pl-3 pr-8 rounded-xl border border-slate-200 bg-white text-slate-700 focus:ring-brand-800/20 focus:border-brand-800 cursor-pointer">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="views">Most Viewed</option>
+              <option value="title">Title (A-Z)</option>
+            </select>
 
-          <button class="btn btn-primary" style="width:100%" onclick="publishAnnouncement()">Publish Notice</button>
-        </form>
-      </aside>
-
-      <!-- Right side: Published List -->
-      <section class="news-table-card">
-        <div class="table-title-row">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="mi" style="color:#F77442">table_chart</span>
-            <h3 class="card-title">Campus Registry Feed</h3>
+            <!-- Reset Filters -->
+            <button id="btnResetFilters" type="button" class="px-2.5 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition cursor-pointer shrink-0" title="Reset all filters">
+              Reset
+            </button>
           </div>
-          <a href="../shared/news.html" target="_blank" class="btn btn-sm btn-ghost" style="font-weight: 400">Preview Public News Feed →</a>
         </div>
+      </div>
 
-        <table class="news-tbl">
+      <!-- Responsive Data Table Container -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse min-w-[760px]">
           <thead>
-            <tr>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Audience</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th style="width:80px;text-align:right">Actions</th>
+            <tr class="bg-slate-50/80 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+              <th class="py-3 px-4" scope="col">Post</th>
+              <th class="py-3 px-3" scope="col">Category</th>
+              <th class="py-3 px-3" scope="col">Audience</th>
+              <th class="py-3 px-3" scope="col">Published</th>
+              <th class="py-3 px-3" scope="col">Status</th>
+              <th class="py-3 px-4 text-right" scope="col">Actions</th>
             </tr>
           </thead>
-          <tbody id="newsRegistryBody">
-            <!-- Dynamic list -->
+          <tbody class="divide-y divide-slate-100" id="newsTableTbody">
+            <!-- Dynamically populated rows -->
           </tbody>
         </table>
-      </section>
-    </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="tableEmptyState" class="hidden p-12 text-center">
+        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+          <span class="material-symbols-outlined text-2xl">newspaper</span>
+        </div>
+        <h4 class="text-sm font-medium text-slate-800">No announcements found</h4>
+        <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">No records match your active search or filters. Try adjusting your search query or reset the filters.</p>
+        <button type="button" onclick="document.getElementById('btnResetFilters').click()" class="mt-4 px-3.5 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+          Reset Filters
+        </button>
+      </div>
+
+      <!-- Table Footer & Pagination -->
+      <div class="p-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 bg-white">
+        <div class="flex items-center gap-2">
+          <span id="paginationSummaryText">Showing 1 to 0 of 0 announcements</span>
+          <span class="text-slate-300">|</span>
+          <label class="flex items-center gap-1.5 text-xs text-slate-500">
+            <span>Rows:</span>
+            <select class="text-xs py-0.5 px-2 rounded-lg border-slate-200 bg-slate-50 text-slate-600 focus:ring-0 focus:border-slate-400" id="perPageSelect">
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- Page Buttons -->
+        <div class="flex items-center gap-1" id="paginationControls">
+          <button class="px-2.5 py-1 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed border border-slate-200 rounded-lg font-medium transition cursor-pointer" id="btnPagePrev">
+            Previous
+          </button>
+          <div id="pageNumberPills" class="flex items-center gap-1">
+            <!-- Dynamic page pills -->
+          </div>
+          <button class="px-2.5 py-1 text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed border border-slate-200 rounded-lg font-medium transition cursor-pointer" id="btnPageNext">
+            Next
+          </button>
+        </div>
+      </div>
+
+    </section>
 
   </div>
 </main>
 
+<!-- ═════════════════════════════════════════════════════════════════
+     4. DEDICATED POST CREATION / EDITING SLIDE-OVER DRAWER
+     ═════════════════════════════════════════════════════════════════ -->
+<div id="postEditorDrawer" class="drawer-overlay fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none flex justify-end" aria-hidden="true">
+  <aside class="drawer bg-white w-full max-w-2xl h-full shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-200" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+    
+    <!-- Drawer Header -->
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-brand-800 text-white flex items-center justify-center shadow-xs">
+          <span class="material-symbols-outlined text-[20px]" id="drawerHeaderIcon">edit_note</span>
+        </div>
+        <div>
+          <h3 class="text-base font-medium text-slate-900 leading-tight" id="drawerTitle">Create Post</h3>
+          <p class="text-xs text-slate-500 mt-0.5" id="drawerSubtitle">Compose, target, schedule, and publish announcement</p>
+        </div>
+      </div>
+      <button type="button" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer" id="btnCloseDrawer" aria-label="Close drawer">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+
+    <!-- Active Editing Notification Strip -->
+    <div id="drawerEditBanner" class="hidden px-6 py-2.5 bg-amber-50 border-b border-amber-200 text-xs text-amber-800 flex items-center justify-between shrink-0">
+      <span class="flex items-center gap-1.5 font-medium">
+        <span class="material-symbols-outlined text-[16px]">info</span>
+        <span id="drawerEditBannerText">Editing active bulletin</span>
+      </span>
+      <button type="button" id="btnDiscardEditing" class="text-[11px] underline font-medium hover:text-amber-900 cursor-pointer">Discard Changes</button>
+    </div>
+
+    <!-- Drawer Body (Scrollable Form) -->
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <form id="drawerPostForm" class="space-y-6" onsubmit="return false">
+        <input type="hidden" id="editorNoticeId" value="">
+
+        <!-- ── SECTION 1: CONTENT ── -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h4 class="text-xs font-medium text-[#0F5132] uppercase tracking-wider">1. Content &amp; Story</h4>
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium text-brand-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              <svg class="w-3.5 h-3.5 text-brand-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+              </svg>
+              <span>Khmer Script Ready</span>
+            </span>
+          </div>
+
+          <!-- Article Title -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-medium text-slate-700" for="drawerArticleTitle">
+                Article Title <span class="text-rose-500">*</span>
+              </label>
+              <span class="text-[11px] text-slate-400"><span id="drawerTitleCharCount">0</span>/140</span>
+            </div>
+            <input type="text" id="drawerArticleTitle" name="title" placeholder="e.g. Science Fair Registration Open, Weather Advisory..." class="w-full text-xs font-medium text-slate-900 bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 placeholder-slate-400 shadow-2xs transition" required maxlength="140">
+          </div>
+
+          <!-- Category & Priority -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5" for="drawerCategory">
+                Category <span class="text-rose-500">*</span>
+              </label>
+              <select id="drawerCategory" name="category" class="w-full text-xs font-medium text-slate-800 bg-white border border-slate-300 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 cursor-pointer">
+                <option value="academic">Academic &amp; Curriculum</option>
+                <option value="events">Events &amp; Campus Life</option>
+                <option value="exams">Exams &amp; Assessments</option>
+                <option value="urgent">Urgent / Emergency Alert</option>
+                <option value="general" selected>General Announcement</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5" for="drawerPriority">
+                Priority Level
+              </label>
+              <select id="drawerPriority" name="priority" class="w-full text-xs font-medium text-slate-800 bg-white border border-slate-300 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-brand-800/20 focus:border-brand-800 cursor-pointer">
+                <option value="normal" selected>Normal Bulletin</option>
+                <option value="urgent">Urgent Priority (Banner Pin)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Cover Image Selector & Uploader -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-medium text-slate-700">Cover Image Asset</label>
+              <span class="text-[11px] text-slate-400">16:9 aspect ratio recommended</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <select id="drawerCoverPreset" class="text-xs text-slate-700 bg-white border-slate-300 rounded-xl focus:ring-brand-800 py-2">
+                <option value="https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900" selected>Preset: Science / Classroom</option>
+                <option value="https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=900">Preset: Campus Sports Field</option>
+                <option value="https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=900">Preset: Emergency Alert Red</option>
+                <option value="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=900">Preset: Graduation &amp; Ceremony</option>
+                <option value="https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=900">Preset: STEM Innovation Lab</option>
+                <option value="custom">Enter Custom Image URL...</option>
+              </select>
+
+              <label class="flex items-center justify-center border border-dashed border-slate-300 hover:border-brand-800/60 rounded-xl px-3 py-2 text-center cursor-pointer bg-slate-50 hover:bg-emerald-50/30 transition">
+                <span class="material-symbols-outlined text-[18px] text-slate-400 mr-1.5">cloud_upload</span>
+                <span class="text-xs font-medium text-slate-600" id="drawerUploadLabel">Upload File Asset</span>
+                <input type="file" id="drawerCoverFileInput" accept="image/*" class="hidden">
+              </label>
+            </div>
+
+            <div id="drawerCustomUrlWrap" class="hidden mt-2">
+              <input type="url" id="drawerCustomImageUrl" placeholder="https://images.pexels.com/..." class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:ring-brand-800">
+            </div>
+
+            <!-- Thumbnail Preview Box -->
+            <div class="relative rounded-xl overflow-hidden border border-slate-200 h-32 bg-slate-100 flex items-center justify-center mt-2 group">
+              <img id="drawerThumbnailImg" src="https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Cover Preview" class="w-full h-full object-cover">
+              <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium px-2 py-0.5 rounded">
+                Live Preview
+              </div>
+            </div>
+          </div>
+
+          <!-- Rich Text Article Body -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs font-medium text-slate-700" for="drawerArticleBody">
+                Announcement Body <span class="text-rose-500">*</span>
+              </label>
+              <span class="text-[11px] text-slate-400">Markdown &amp; Khmer formatting supported</span>
+            </div>
+
+            <div class="border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-brand-800/20 focus-within:border-brand-800 bg-white">
+              <!-- Mini formatting toolbar -->
+              <div class="flex items-center gap-1 px-3 py-1.5 bg-slate-50 border-b border-slate-200 text-slate-600 text-xs flex-wrap">
+                <button class="drawer-rte-btn p-1 hover:bg-slate-200 rounded font-medium cursor-pointer" data-syntax="bold" title="Bold" type="button">B</button>
+                <button class="drawer-rte-btn p-1 hover:bg-slate-200 rounded italic font-serif cursor-pointer" data-syntax="italic" title="Italic" type="button">I</button>
+                <button class="drawer-rte-btn p-1 hover:bg-slate-200 rounded underline cursor-pointer" data-syntax="underline" title="Underline" type="button">U</button>
+                <span class="text-slate-300 mx-1">|</span>
+                <button class="drawer-rte-btn p-1 hover:bg-slate-200 rounded cursor-pointer inline-flex items-center gap-1" data-syntax="list" title="Bullet list" type="button">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16M2 6h.01M2 12h.01M2 18h.01"/></svg>
+                  <span>List</span>
+                </button>
+                <button class="drawer-rte-btn p-1 hover:bg-slate-200 rounded cursor-pointer inline-flex items-center gap-1" data-syntax="link" title="Insert Link" type="button">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                  <span>Link</span>
+                </button>
+                <button class="drawer-rte-btn p-1 hover:bg-slate-200 rounded cursor-pointer inline-flex items-center gap-1" data-syntax="table" title="Insert Table" type="button">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 4h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  <span>Table</span>
+                </button>
+              </div>
+              <textarea id="drawerArticleBody" rows="5" placeholder="Enter complete announcement details, guidelines, venue instructions, and schedules..." class="w-full text-xs text-slate-800 border-0 p-3 focus:ring-0 placeholder-slate-400 resize-y leading-relaxed" required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SECTION 2: PUBLISHING & TIMING ── -->
+        <div class="space-y-4">
+          <div class="border-b border-slate-100 pb-2">
+            <h4 class="text-xs font-medium text-[#0F5132] uppercase tracking-wider">2. Publishing &amp; Timing</h4>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5" for="drawerPublishTiming">
+                Publishing Schedule
+              </label>
+              <select id="drawerPublishTiming" class="w-full text-xs text-slate-800 border-slate-300 rounded-xl focus:ring-brand-800 py-2.5 bg-white cursor-pointer">
+                <option value="instant" selected>Instant Publish (Now)</option>
+                <option value="schedule">Schedule for Date/Time...</option>
+                <option value="draft">Save as Unlisted Draft</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5" for="drawerExpiryRule">
+                Auto-Archive Expiry Rule
+              </label>
+              <select id="drawerExpiryRule" class="w-full text-xs text-slate-800 border-slate-300 rounded-xl focus:ring-brand-800 py-2.5 bg-white cursor-pointer">
+                <option value="never" selected>No Expiry (Permanent)</option>
+                <option value="7d">Auto-archive after 7 days</option>
+                <option value="14d">Auto-archive after 14 days</option>
+                <option value="30d">Auto-archive after 30 days</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Scheduled Date Input -->
+          <div id="drawerScheduleDateWrap" class="hidden">
+            <label class="block text-xs font-medium text-slate-700 mb-1" for="drawerScheduledDateInput">
+              Target Release Date &amp; Time
+            </label>
+            <input type="datetime-local" id="drawerScheduledDateInput" class="w-full text-xs bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:ring-brand-800">
+          </div>
+        </div>
+
+        <!-- ── SECTION 3: AUDIENCE & CAMPUS ── -->
+        <div class="space-y-4">
+          <div class="border-b border-slate-100 pb-2">
+            <h4 class="text-xs font-medium text-[#0F5132] uppercase tracking-wider">3. Audience &amp; Targeting</h4>
+          </div>
+
+          <!-- Target Portals Pills -->
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-2">
+              Target Audience Portals
+            </label>
+            <div class="flex flex-wrap gap-2 text-xs" id="drawerAudienceContainer">
+              <label class="drawer-audience-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-brand-800 bg-emerald-50 text-brand-800 font-medium cursor-pointer select-none transition">
+                <input checked class="drawer-aud-cb rounded text-brand-800 focus:ring-0 w-3.5 h-3.5" type="checkbox" value="students">
+                <span>Students</span>
+              </label>
+              <label class="drawer-audience-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-brand-800 bg-emerald-50 text-brand-800 font-medium cursor-pointer select-none transition">
+                <input checked class="drawer-aud-cb rounded text-brand-800 focus:ring-0 w-3.5 h-3.5" type="checkbox" value="parents">
+                <span>Parents</span>
+              </label>
+              <label class="drawer-audience-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-brand-800 bg-emerald-50 text-brand-800 font-medium cursor-pointer select-none transition">
+                <input checked class="drawer-aud-cb rounded text-brand-800 focus:ring-0 w-3.5 h-3.5" type="checkbox" value="teachers">
+                <span>Teachers</span>
+              </label>
+              <label class="drawer-audience-pill inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 font-medium cursor-pointer select-none transition">
+                <input class="drawer-aud-cb rounded text-brand-800 focus:ring-0 w-3.5 h-3.5" type="checkbox" value="faculty">
+                <span>Faculty Staff</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Campus and Grade Targeting -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5" for="drawerTargetCampus">
+                Target Campus
+              </label>
+              <select id="drawerTargetCampus" class="w-full text-xs text-slate-800 border-slate-300 rounded-xl focus:ring-brand-800 py-2.5 bg-white cursor-pointer">
+                <option value="all" selected>All Campuses (System-Wide)</option>
+                <option value="Tuol Kork Main Campus">Tuol Kork Senior Campus</option>
+                <option value="Sen Sok Campus">Sen Sok Campus</option>
+                <option value="Chbar Ampov Campus">Chbar Ampov Campus</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1.5" for="drawerTargetGrade">
+                Target Grade Level
+              </label>
+              <select id="drawerTargetGrade" class="w-full text-xs text-slate-800 border-slate-300 rounded-xl focus:ring-brand-800 py-2.5 bg-white cursor-pointer">
+                <option value="all" selected>All Grades (Kindergarten to 12)</option>
+                <option value="primary">Primary (Grades 1–6)</option>
+                <option value="lower_secondary">Lower Secondary (Grades 7–9)</option>
+                <option value="upper_secondary">Upper Secondary (Grades 10–12)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SECTION 4: ADDITIONAL DISTRIBUTION OPTIONS (COLLAPSIBLE) ── -->
+        <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
+          <button type="button" id="btnToggleAdditionalOptions" class="w-full px-4 py-3 text-left flex items-center justify-between text-xs font-medium text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+            <span class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-slate-500">tune</span>
+              <span>Additional Distribution &amp; Notification Options</span>
+            </span>
+            <span class="material-symbols-outlined text-[18px] text-slate-400 transition-transform duration-200" id="accordionChevron">expand_more</span>
+          </button>
+
+          <div id="additionalOptionsBody" class="hidden px-4 pb-4 pt-2 space-y-2.5 border-t border-slate-200/80 bg-white">
+            <!-- Urgent Pin Badge -->
+            <label class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs border border-slate-200/70 transition">
+              <span class="flex items-center gap-2 text-slate-700 font-medium">
+                <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v2a2 2 0 01-.586 1.414L16 11v6l-4 4-4-4v-6L5.586 8.414A2 2 0 015 7V5z" /></svg>
+                <span>Pin as urgent announcement to top of student/parent feed</span>
+              </span>
+              <input class="rounded text-brand-800 focus:ring-0 w-4 h-4 cursor-pointer" type="checkbox" id="drawerFlagUrgentPin">
+            </label>
+
+            <!-- Telegram Broadcast -->
+            <label class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs border border-slate-200/70 transition">
+              <span class="flex items-center gap-2 text-slate-700 font-medium">
+                <svg class="w-4 h-4 text-sky-500 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.52 2.77-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                <span>Broadcast message to Official NGIS Telegram Channel</span>
+              </span>
+              <input checked class="rounded text-brand-800 focus:ring-0 w-4 h-4 cursor-pointer" type="checkbox" id="drawerFlagTelegram">
+            </label>
+
+            <!-- Read Tracking -->
+            <label class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs border border-slate-200/70 transition">
+              <span class="flex items-center gap-2 text-slate-700 font-medium">
+                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                <span>Track read acknowledgment from recipients</span>
+              </span>
+              <input class="rounded text-brand-800 focus:ring-0 w-4 h-4 cursor-pointer" type="checkbox" id="drawerFlagReadTracking">
+            </label>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Drawer Footer Actions -->
+    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/90 flex flex-wrap items-center justify-between gap-3 shrink-0">
+      <button type="button" id="btnCancelDrawer" class="btn-secondary-white px-4 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition cursor-pointer">
+        Cancel
+      </button>
+
+      <div class="flex items-center gap-2">
+        <button type="button" id="btnDrawerSaveDraft" class="px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-100 transition cursor-pointer shadow-2xs">
+          Save as Draft
+        </button>
+        <button type="button" id="btnDrawerPreviewStory" class="px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-xl hover:bg-slate-100 transition cursor-pointer shadow-2xs">
+          Preview Story
+        </button>
+        <button type="button" id="btnDrawerSubmitPublish" class="btn-primary-solid px-4 py-2 text-xs font-medium text-white rounded-xl shadow-xs transition cursor-pointer">
+          <span id="btnDrawerSubmitLabel">Publish Post</span>
+        </button>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════
+     5. STORY PREVIEW MODAL
+     ═════════════════════════════════════════════════════════════════ -->
+<div id="previewStoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200" role="dialog" aria-modal="true" aria-labelledby="previewStoryModalTitle">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-2xl w-full max-h-[88vh] flex flex-col overflow-hidden">
+    <div class="px-6 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/90 shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[#0F5132] text-lg">visibility</span>
+        <h4 id="previewStoryModalTitle" class="text-xs font-medium text-slate-900">Announcement Live Preview</h4>
+      </div>
+      <button type="button" id="btnClosePreviewModal" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition cursor-pointer" aria-label="Close">
+        <span class="material-symbols-outlined text-lg">close</span>
+      </button>
+    </div>
+    
+    <div class="p-6 overflow-y-auto space-y-4 text-xs" id="previewModalContent">
+      <!-- Injected by renderStoryPreview -->
+    </div>
+    
+    <div class="px-6 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+      <span class="text-[11px] text-slate-400 font-normal">Rendered as displayed on Student, Parent &amp; Public feeds</span>
+      <button type="button" id="btnDismissPreviewModal" class="px-4 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-medium transition cursor-pointer">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════
+     6. DELETE CONFIRMATION MODAL
+     ═════════════════════════════════════════════════════════════════ -->
+<div id="deleteModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-sm w-full p-6 text-center">
+    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 mx-auto flex items-center justify-center mb-3">
+      <span class="material-symbols-outlined text-2xl">delete_forever</span>
+    </div>
+    <h4 id="deleteModalTitle" class="text-base font-medium text-slate-900">Delete Announcement?</h4>
+    <p class="text-xs text-slate-500 mt-1 mb-5">This action will permanently delete the post and remove it from all Student, Teacher, and Public feeds.</p>
+    <div class="flex items-center justify-center gap-2">
+      <button type="button" id="btnCancelDelete" class="w-full py-2.5 px-3 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer">Cancel</button>
+      <button type="button" id="btnConfirmDelete" class="w-full py-2.5 px-3 text-xs font-medium text-white bg-rose-600 hover:bg-rose-700 rounded-xl transition cursor-pointer shadow-xs">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Script Configuration for NGIS Shell -->
 <script>
+  window.PAGE = { role: "admin", active: "news" };
+  window.HERO_CONFIG = {
+    title: "News CMS",
+    subtitle: "Campus Press, Directives & Multi-Portal Registry",
+    role: "admin"
+  };
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<!-- ═════════════════════════════════════════════════════════════════
+     7. NEWS CMS CONTROLLER ENGINE
+     ═════════════════════════════════════════════════════════════════ -->
+<script data-purpose="editorial-news-engine">
 (function() {
-  const MOCK_NEWS = [
+  'use strict';
+
+  // Fallback seed data in case API is unavailable or empty
+  var defaultSeed = [
+    {
+      id: 102,
+      title: "2026 Inter-Campus Robotics League",
+      summary: "Robotics tournament qualifiers begin next Tuesday in Sen Sok Gymnasium.",
+      category: "EVENTS",
+      audience: ["students", "teachers"],
+      date: "Nov 15, 2026",
+      status: "published",
+      pinned: false,
+      views: 120,
+      image: "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900",
+      content: "All participating STEM students and mentors should report to Hall A by 08:30 AM with their team inspection sheets and autonomous code repositories."
+    },
     {
       id: 1,
-      title: "School Closure Alert: Inclement Weather Warning",
-      desc: "Due to heavy rain forecast and flash flood alerts issued by municipal authorities, NGIS Sen Sok campus will be closed tomorrow. E-learning lessons will be delivered online.",
-      image: "https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=600",
-      priority: "urgent",
-      audience: "Parents, Students, Teachers",
-      date: "July 6, 2026"
+      title: "School Sports Day 2026 — All Teams Ready",
+      summary: "Annual sports day is confirmed for July 20. All students must register by July 15.",
+      category: "EVENTS",
+      audience: ["students", "parents"],
+      date: "2026-07-04",
+      status: "published",
+      pinned: false,
+      views: 142,
+      image: "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=900",
+      content: "Annual sports day is confirmed for July 20. All students must register by July 15."
     },
     {
       id: 2,
-      title: "NGIS Annual Sports Day 2026 Registration Open",
-      desc: "Get ready for the NGIS annual sports day championships! Events include track and field races, swimming tournaments, and basketball brackets. Register your entry before July 12.",
-      image: "https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=600",
-      priority: "events",
-      audience: "All Students",
-      date: "July 5, 2026"
+      title: "Mid-Term Exam Schedule Released",
+      summary: "The official mid-term examination timetable for Semester 2, AY 2025-26 has been published.",
+      category: "EXAMS",
+      audience: ["students", "teachers"],
+      date: "2026-07-03",
+      status: "published",
+      pinned: true,
+      views: 389,
+      image: "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900",
+      content: "The official mid-term examination timetable for Semester 2, AY 2025-26 has been published."
     },
     {
-      id: 3,
-      title: "Secondary Term 2 Examination Timetables Released",
-      desc: "The schedules for Secondary Term 2 examinations have been compiled. Detail lists are pinned on student dashboard portals. Be sure to coordinate study loads with your advisory teachers.",
-      image: "https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=600",
-      priority: "exams",
-      audience: "Students, Teachers",
-      date: "July 4, 2026"
+      id: 103,
+      title: "Term 2 STEM & Robotics Exhibition Guidelines",
+      summary: "Draft guidelines and safety requirements for secondary student robotics team project submissions.",
+      category: "ACADEMIC",
+      audience: ["students", "teachers"],
+      date: "2026-11-14",
+      status: "draft",
+      pinned: false,
+      views: 18,
+      image: "https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=900",
+      content: "Secondary STEM students preparing projects for the upcoming campus innovation showcase must review these draft lab protocols and component clearance procedures."
+    },
+    {
+      id: 104,
+      title: "Annual Founder's Day Assembly & Award Ceremonies",
+      summary: "Official schedule for the 2026 Founder's Day convocations at Tuol Kork Senior Auditorium.",
+      category: "EVENTS",
+      audience: ["students", "parents", "teachers"],
+      date: "2026-11-20",
+      status: "scheduled",
+      pinned: false,
+      views: 45,
+      image: "https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=900",
+      content: "All faculty, students, and family members are cordially invited to celebrate the 18th anniversary of New Gateway International School. Formal academic attire is requested."
     }
   ];
 
-  // Initialize or read from localStorage
-  if (!localStorage.getItem('ngis_news_posts')) {
-    localStorage.setItem('ngis_news_posts', JSON.stringify(MOCK_NEWS));
-  }
+  var state = {
+    news: [],
+    search: '',
+    categoryFilter: 'all',
+    statusFilter: 'all',
+    audienceFilter: 'all',
+    sort: 'newest',
+    page: 1,
+    perPage: 10,
+    pendingDeleteId: null,
+    formDirty: false
+  };
 
-  function getNews() {
-    return JSON.parse(localStorage.getItem('ngis_news_posts')) || MOCK_NEWS;
-  }
+  // DOM Elements
+  var kpiPublished = document.getElementById('kpiPublished');
+  var kpiDrafts = document.getElementById('kpiDrafts');
+  var kpiScheduled = document.getElementById('kpiScheduled');
+  var kpiTotalViews = document.getElementById('kpiTotalViews');
 
-  const tableBody = document.getElementById('newsRegistryBody');
+  var tableSearchInput = document.getElementById('tableSearchInput');
+  var filterCategory = document.getElementById('filterCategory');
+  var filterStatus = document.getElementById('filterStatus');
+  var filterAudience = document.getElementById('filterAudience');
+  var filterSort = document.getElementById('filterSort');
+  var btnResetFilters = document.getElementById('btnResetFilters');
 
-  // Render Admin list table
-  function renderRegistryTable() {
-    const posts = getNews();
-    tableBody.innerHTML = '';
+  var newsTableTbody = document.getElementById('newsTableTbody');
+  var tableEmptyState = document.getElementById('tableEmptyState');
+  var paginationSummaryText = document.getElementById('paginationSummaryText');
+  var perPageSelect = document.getElementById('perPageSelect');
+  var btnPagePrev = document.getElementById('btnPagePrev');
+  var btnPageNext = document.getElementById('btnPageNext');
+  var pageNumberPills = document.getElementById('pageNumberPills');
 
-    if (posts.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#9D9A97">No announcements logged in registry.</td></tr>';
-      return;
-    }
+  // Drawer Elements
+  var postEditorDrawer = document.getElementById('postEditorDrawer');
+  var btnOpenCreatePost = document.getElementById('btnOpenCreatePost');
+  var btnOpenCreateMobile = document.getElementById('btnOpenCreateMobile');
+  var btnCloseDrawer = document.getElementById('btnCloseDrawer');
+  var btnCancelDrawer = document.getElementById('btnCancelDrawer');
+  var drawerTitle = document.getElementById('drawerTitle');
+  var drawerSubtitle = document.getElementById('drawerSubtitle');
+  var drawerEditBanner = document.getElementById('drawerEditBanner');
+  var drawerEditBannerText = document.getElementById('drawerEditBannerText');
+  var btnDiscardEditing = document.getElementById('btnDiscardEditing');
+  var editorNoticeId = document.getElementById('editorNoticeId');
+  var drawerArticleTitle = document.getElementById('drawerArticleTitle');
+  var drawerTitleCharCount = document.getElementById('drawerTitleCharCount');
+  var drawerCategory = document.getElementById('drawerCategory');
+  var drawerPriority = document.getElementById('drawerPriority');
+  var drawerCoverPreset = document.getElementById('drawerCoverPreset');
+  var drawerCoverFileInput = document.getElementById('drawerCoverFileInput');
+  var drawerCustomUrlWrap = document.getElementById('drawerCustomUrlWrap');
+  var drawerCustomImageUrl = document.getElementById('drawerCustomImageUrl');
+  var drawerThumbnailImg = document.getElementById('drawerThumbnailImg');
+  var drawerArticleBody = document.getElementById('drawerArticleBody');
+  var drawerPublishTiming = document.getElementById('drawerPublishTiming');
+  var drawerExpiryRule = document.getElementById('drawerExpiryRule');
+  var drawerScheduleDateWrap = document.getElementById('drawerScheduleDateWrap');
+  var drawerScheduledDateInput = document.getElementById('drawerScheduledDateInput');
+  var drawerTargetCampus = document.getElementById('drawerTargetCampus');
+  var drawerTargetGrade = document.getElementById('drawerTargetGrade');
+  var drawerFlagUrgentPin = document.getElementById('drawerFlagUrgentPin');
+  var drawerFlagTelegram = document.getElementById('drawerFlagTelegram');
+  var drawerFlagReadTracking = document.getElementById('drawerFlagReadTracking');
+  var btnDrawerSubmitPublish = document.getElementById('btnDrawerSubmitPublish');
+  var btnDrawerSubmitLabel = document.getElementById('btnDrawerSubmitLabel');
+  var btnDrawerSaveDraft = document.getElementById('btnDrawerSaveDraft');
+  var btnDrawerPreviewStory = document.getElementById('btnDrawerPreviewStory');
+  var btnToggleAdditionalOptions = document.getElementById('btnToggleAdditionalOptions');
+  var additionalOptionsBody = document.getElementById('additionalOptionsBody');
+  var accordionChevron = document.getElementById('accordionChevron');
 
-    posts.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td style="font-weight: 400">${p.title}</td>
-        <td><span class="tag-badge priority-${p.priority}">${p.priority === 'all' ? 'general' : p.priority}</span></td>
-        <td><span style="font-size:11.5px;color:#F77442">${p.audience}</span></td>
-        <td style="font-family:monospace;font-size:11.5px">${p.date}</td>
-        <td><span class="tag-badge priority-${p.priority}">${p.status || 'published'}</span></td>
-        <td class="table-actions" style="text-align:right">
-          <div class="action-group" style="justify-content:flex-end">
-            <button class="action-icon-btn danger" onclick="deletePost(${p.id})" aria-label="Delete Announcement" title="Delete Announcement" type="button">
-              <span data-ngis-icon="delete"></span>
-            </button>
-          </div>
-        </td>
-      `;
-      tableBody.appendChild(tr);
+  // Preview & Delete Modals
+  var previewStoryModal = document.getElementById('previewStoryModal');
+  var previewModalContent = document.getElementById('previewModalContent');
+  var btnClosePreviewModal = document.getElementById('btnClosePreviewModal');
+  var btnDismissPreviewModal = document.getElementById('btnDismissPreviewModal');
+  var deleteModal = document.getElementById('deleteModal');
+  var btnCancelDelete = document.getElementById('btnCancelDelete');
+  var btnConfirmDelete = document.getElementById('btnConfirmDelete');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
     });
-    if (window.NGIS) window.NGIS.hydrate(tableBody);
   }
 
-  // Publish Notice
-  window.publishAnnouncement = function() {
-    const title = document.getElementById('postTitle').value.trim();
-    const priority = document.getElementById('postPriority').value;
-    const audience = document.getElementById('postAudience').value.trim();
-    const image = document.getElementById('postImage').value;
-    const desc = document.getElementById('postDesc').value.trim();
-    const timing = document.getElementById('postTiming').value;
-    const expiry = document.getElementById('postExpiry').value;
+  function fmt(n) {
+    return Number(n || 0).toLocaleString('en-US');
+  }
 
-    if (!title || !desc || !audience) {
-      window.toast('Please check all input fields.','error');
+  // ── LOAD NEWS FROM BACKEND ──
+  function loadNews() {
+    fetch('/api/news?all=true')
+      .then(function(res) {
+        if (!res.ok) throw new Error('Network error');
+        return res.json();
+      })
+      .then(function(res) {
+        var items = res.data || [];
+        if (!items.length) {
+          state.news = defaultSeed.slice();
+        } else {
+          state.news = items.map(function(item) {
+            var cat = (item.category || 'general').toUpperCase();
+            var aud = Array.isArray(item.audience) ? item.audience : (item.audience === 'all' ? ['students', 'parents', 'teachers'] : [item.audience || 'students']);
+            return {
+              id: item.id,
+              title: item.title,
+              summary: item.summary || (item.message ? item.message.slice(0, 100) : ''),
+              category: cat,
+              audience: aud,
+              date: item.date || item.created_at || 'Nov 15, 2026',
+              status: item.status || (item.published ? 'published' : 'draft'),
+              pinned: Boolean(item.pinned),
+              views: Number(item.views || 0),
+              image: item.image || item.cover_image || 'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900',
+              content: item.content || item.message || item.body || item.summary || '',
+              target_campus: item.target_campus || 'all',
+              target_grade: item.target_grade || 'all',
+              priority: item.priority || (item.pinned ? 'urgent' : 'normal'),
+              expiry_rule: item.expiry_rule || 'never',
+              scheduled_date: item.scheduled_date || null
+            };
+          });
+        }
+        renderTable();
+        updateKpis();
+      })
+      .catch(function(err) {
+        console.warn('API fetch fallback:', err);
+        state.news = defaultSeed.slice();
+        renderTable();
+        updateKpis();
+      });
+  }
+
+  // ── UPDATE REAL KPI STATISTICS ──
+  function updateKpis() {
+    var items = state.news;
+    var pubCount = items.filter(function(i) { return i.status === 'published'; }).length;
+    var draftCount = items.filter(function(i) { return i.status === 'draft'; }).length;
+    var schedCount = items.filter(function(i) { return i.status === 'scheduled'; }).length;
+    var totalViews = items.reduce(function(acc, i) { return acc + (i.views || 0); }, 0);
+
+    if (kpiPublished) kpiPublished.textContent = fmt(pubCount);
+    if (kpiDrafts) kpiDrafts.textContent = fmt(draftCount);
+    if (kpiScheduled) kpiScheduled.textContent = fmt(schedCount);
+    if (kpiTotalViews) kpiTotalViews.textContent = fmt(totalViews);
+  }
+
+  // ── FILTER, SORT & PAGINATE ──
+  function getFilteredItems() {
+    var list = state.news.filter(function(item) {
+      // Search
+      if (state.search) {
+        var q = state.search.toLowerCase();
+        var matchTitle = (item.title || '').toLowerCase().includes(q);
+        var matchSummary = (item.summary || '').toLowerCase().includes(q);
+        var matchContent = (item.content || '').toLowerCase().includes(q);
+        if (!matchTitle && !matchSummary && !matchContent) return false;
+      }
+      // Category filter
+      if (state.categoryFilter !== 'all') {
+        if (item.category.toLowerCase() !== state.categoryFilter.toLowerCase()) return false;
+      }
+      // Status filter
+      if (state.statusFilter !== 'all') {
+        if ((item.status || 'published').toLowerCase() !== state.statusFilter.toLowerCase()) return false;
+      }
+      // Audience filter
+      if (state.audienceFilter !== 'all') {
+        var aud = (item.audience || []).map(function(a) { return a.toLowerCase(); });
+        if (!aud.includes(state.audienceFilter.toLowerCase()) && !aud.includes('all')) return false;
+      }
+      return true;
+    });
+
+    // Sorting
+    if (state.sort === 'newest') {
+      list.sort(function(a, b) { return String(b.date || '').localeCompare(String(a.date || '')) || (b.id - a.id); });
+    } else if (state.sort === 'oldest') {
+      list.sort(function(a, b) { return String(a.date || '').localeCompare(String(b.date || '')) || (a.id - b.id); });
+    } else if (state.sort === 'views') {
+      list.sort(function(a, b) { return (b.views || 0) - (a.views || 0); });
+    } else if (state.sort === 'title') {
+      list.sort(function(a, b) { return (a.title || '').localeCompare(b.title || ''); });
+    }
+
+    return list;
+  }
+
+  // ── RENDER TABLE ──
+  function renderTable() {
+    var filtered = getFilteredItems();
+    var total = filtered.length;
+
+    if (total === 0) {
+      newsTableTbody.innerHTML = '';
+      tableEmptyState.classList.remove('hidden');
+      if (paginationSummaryText) paginationSummaryText.textContent = 'Showing 0 announcements';
+      if (pageNumberPills) pageNumberPills.innerHTML = '';
+      if (btnPagePrev) btnPagePrev.disabled = true;
+      if (btnPageNext) btnPageNext.disabled = true;
       return;
     }
 
-    const posts = getNews();
-    const newPost = {
-      id: Date.now(),
+    tableEmptyState.classList.add('hidden');
+
+    // Pagination calculations
+    var totalPages = Math.ceil(total / state.perPage);
+    if (state.page > totalPages) state.page = totalPages;
+    if (state.page < 1) state.page = 1;
+
+    var startIdx = (state.page - 1) * state.perPage;
+    var endIdx = Math.min(startIdx + state.perPage, total);
+    var pageItems = filtered.slice(startIdx, endIdx);
+
+    if (paginationSummaryText) {
+      paginationSummaryText.textContent = 'Showing ' + (startIdx + 1) + ' to ' + endIdx + ' of ' + total + ' announcements';
+    }
+
+    // Render Rows
+    newsTableTbody.innerHTML = pageItems.map(function(item) {
+      // Category pill class
+      var badgeClass = 'badge-general';
+      var cat = (item.category || 'GENERAL').toUpperCase();
+      if (cat === 'URGENT') badgeClass = 'badge-urgent';
+      else if (cat === 'EVENTS') badgeClass = 'badge-events';
+      else if (cat === 'EXAMS') badgeClass = 'badge-exams';
+      else if (cat === 'ACADEMIC') badgeClass = 'badge-academic';
+
+      // Audience label
+      var audLabels = (item.audience || []).map(function(a) {
+        return a.charAt(0).toUpperCase() + a.slice(1);
+      }).join(', ') || 'All Portals';
+
+      // Status indicator: STRICTLY UNBOXED INLINE DOT (NO ROUND BADGE per AGENTS.md rule)
+      var statusKey = (item.status || 'published').toLowerCase();
+      var statusHtml = '';
+      if (statusKey === 'published') {
+        statusHtml = '<span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Published</span>';
+      } else if (statusKey === 'draft') {
+        statusHtml = '<span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600"><span class="w-2 h-2 rounded-full bg-slate-400"></span>Draft</span>';
+      } else if (statusKey === 'scheduled') {
+        statusHtml = '<span class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-700"><span class="w-2 h-2 rounded-full bg-blue-500"></span>Scheduled</span>';
+      } else if (statusKey === 'archived') {
+        statusHtml = '<span class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700"><span class="w-2 h-2 rounded-full bg-amber-500"></span>Archived</span>';
+      } else {
+        statusHtml = '<span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600"><span class="w-2 h-2 rounded-full bg-slate-400"></span>' + esc(statusKey) + '</span>';
+      }
+
+      // Pinned badge
+      var pinnedBadge = item.pinned
+        ? '<span class="inline-flex items-center gap-1 text-[10px] text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded font-medium"><svg class="w-3 h-3 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v2a2 2 0 01-.586 1.414L16 11v6l-4 4-4-4v-6L5.586 8.414A2 2 0 015 7V5z" /></svg>Pinned</span>'
+        : '';
+
+      var rowHighlight = cat === 'URGENT' ? 'hover:bg-rose-50/20' : 'hover:bg-slate-50/80';
+
+      return '' +
+        '<tr class="' + rowHighlight + ' transition group">' +
+        // POST (Thumbnail + Title + Snippet + Pin)
+        '<td class="py-3.5 px-4 font-medium text-slate-900 max-w-sm">' +
+        '  <div class="flex items-center gap-3">' +
+        '    <div class="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shrink-0">' +
+        '      <img src="' + esc(item.image) + '" alt="" class="w-full h-full object-cover" onerror="this.src=\'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900\'">' +
+        '    </div>' +
+        '    <div class="min-w-0 flex-1">' +
+        '      <div class="flex items-center gap-1.5 flex-wrap">' +
+        '        <a href="javascript:void(0)" class="hover:text-[#0F5132] font-medium text-xs text-slate-900 truncate block transition" onclick="window.previewNoticeById(' + item.id + ')" title="' + esc(item.title) + '">' +
+        esc(item.title) +
+        '        </a>' +
+        pinnedBadge +
+        '      </div>' +
+        '      <p class="text-[11px] text-slate-500 font-normal mt-0.5 truncate">' + esc(item.summary || item.content.slice(0, 80)) + '</p>' +
+        '    </div>' +
+        '  </div>' +
+        '</td>' +
+        // CATEGORY
+        '<td class="py-3.5 px-3 whitespace-nowrap">' +
+        '  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-medium ' + badgeClass + '">' +
+        (cat === 'URGENT' ? '<span class="w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping"></span>' : '') +
+        esc(cat) +
+        '  </span>' +
+        '</td>' +
+        // AUDIENCE
+        '<td class="py-3.5 px-3">' +
+        '  <span class="text-slate-700 font-medium text-xs truncate max-w-[150px] block" title="' + esc(audLabels) + '">' + esc(audLabels) + '</span>' +
+        '</td>' +
+        // PUBLISHED DATE
+        '<td class="py-3.5 px-3 text-slate-600 whitespace-nowrap text-xs">' +
+        esc(item.date) +
+        '</td>' +
+        // STATUS (Unboxed dot)
+        '<td class="py-3.5 px-3 whitespace-nowrap">' +
+        statusHtml +
+        '</td>' +
+        // ACTIONS (Edit, Preview, Delete)
+        '<td class="py-3.5 px-4 text-right whitespace-nowrap">' +
+        '  <div class="inline-flex items-center gap-1 text-slate-400 group-hover:text-slate-700">' +
+        '    <button class="p-1.5 hover:text-[#0F5132] hover:bg-slate-100 rounded-lg transition cursor-pointer" title="Preview Story" type="button" onclick="window.previewNoticeById(' + item.id + ')">' +
+        '      <span class="material-symbols-outlined text-[18px]">visibility</span>' +
+        '    </button>' +
+        '    <button class="p-1.5 hover:text-[#0F5132] hover:bg-slate-100 rounded-lg transition cursor-pointer" title="Edit Post" type="button" onclick="window.openEditorForId(' + item.id + ')">' +
+        '      <span class="material-symbols-outlined text-[18px]">edit</span>' +
+        '    </button>' +
+        '    <button class="p-1.5 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer" title="Delete Post" type="button" onclick="window.promptDeleteNotice(' + item.id + ')">' +
+        '      <span class="material-symbols-outlined text-[18px]">delete</span>' +
+        '    </button>' +
+        '  </div>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+
+    // Pagination controls
+    if (btnPagePrev) btnPagePrev.disabled = (state.page <= 1);
+    if (btnPageNext) btnPageNext.disabled = (state.page >= totalPages);
+
+    if (pageNumberPills) {
+      var pillsHtml = '';
+      for (var p = 1; p <= totalPages; p++) {
+        var active = (p === state.page);
+        pillsHtml += '<button type="button" class="w-7 h-7 rounded-lg text-xs font-medium ' +
+          (active ? 'bg-[#0F5132] text-white' : 'text-slate-600 hover:bg-slate-100') +
+          ' transition cursor-pointer" onclick="window.goToPage(' + p + ')">' + p + '</button>';
+      }
+      pageNumberPills.innerHTML = pillsHtml;
+    }
+  }
+
+  // ── PAGINATION HANDLERS ──
+  window.goToPage = function(p) {
+    state.page = p;
+    renderTable();
+  };
+
+  if (btnPagePrev) {
+    btnPagePrev.addEventListener('click', function() {
+      if (state.page > 1) {
+        state.page--;
+        renderTable();
+      }
+    });
+  }
+
+  if (btnPageNext) {
+    btnPageNext.addEventListener('click', function() {
+      var filtered = getFilteredItems();
+      var totalPages = Math.ceil(filtered.length / state.perPage);
+      if (state.page < totalPages) {
+        state.page++;
+        renderTable();
+      }
+    });
+  }
+
+  if (perPageSelect) {
+    perPageSelect.addEventListener('change', function() {
+      state.perPage = parseInt(perPageSelect.value, 10) || 10;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  // ── FILTER EVENT LISTENERS ──
+  if (tableSearchInput) {
+    tableSearchInput.addEventListener('input', function() {
+      state.search = tableSearchInput.value.trim();
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (filterCategory) {
+    filterCategory.addEventListener('change', function() {
+      state.categoryFilter = filterCategory.value;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (filterStatus) {
+    filterStatus.addEventListener('change', function() {
+      state.statusFilter = filterStatus.value;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (filterAudience) {
+    filterAudience.addEventListener('change', function() {
+      state.audienceFilter = filterAudience.value;
+      state.page = 1;
+      renderTable();
+    });
+  }
+
+  if (filterSort) {
+    filterSort.addEventListener('change', function() {
+      state.sort = filterSort.value;
+      renderTable();
+    });
+  }
+
+  if (btnResetFilters) {
+    btnResetFilters.addEventListener('click', function() {
+      state.search = '';
+      state.categoryFilter = 'all';
+      state.statusFilter = 'all';
+      state.audienceFilter = 'all';
+      state.sort = 'newest';
+      state.page = 1;
+
+      if (tableSearchInput) tableSearchInput.value = '';
+      if (filterCategory) filterCategory.value = 'all';
+      if (filterStatus) filterStatus.value = 'all';
+      if (filterAudience) filterAudience.value = 'all';
+      if (filterSort) filterSort.value = 'newest';
+
+      renderTable();
+    });
+  }
+
+  // ── DRAWER OPEN / CLOSE LOGIC ──
+  function openDrawer(isEdit) {
+    postEditorDrawer.classList.add('show');
+    postEditorDrawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    postEditorDrawer.classList.remove('show');
+    postEditorDrawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function resetDrawerForm() {
+    document.getElementById('drawerPostForm').reset();
+    editorNoticeId.value = '';
+    drawerTitle.textContent = 'Create Post';
+    drawerSubtitle.textContent = 'Compose, target, schedule, and publish announcement';
+    btnDrawerSubmitLabel.textContent = 'Publish Post';
+    drawerEditBanner.classList.add('hidden');
+    if (drawerTitleCharCount) drawerTitleCharCount.textContent = '0';
+    drawerThumbnailImg.src = 'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900';
+    drawerCoverPreset.value = 'https://images.pexels.com/photos/256541/pexels-photo-256541.jpeg?auto=compress&cs=tinysrgb&w=900';
+    drawerCustomUrlWrap.classList.add('hidden');
+    drawerScheduleDateWrap.classList.add('hidden');
+    document.getElementById('drawerUploadLabel').textContent = 'Upload File Asset';
+
+    // Reset audience pills to default (students, parents, teachers checked)
+    var pills = document.querySelectorAll('.drawer-audience-pill');
+    pills.forEach(function(pill) {
+      var cb = pill.querySelector('input[type="checkbox"]');
+      if (['students', 'parents', 'teachers'].includes(cb.value)) {
+        cb.checked = true;
+        pill.classList.remove('border-slate-300', 'bg-white', 'text-slate-600');
+        pill.classList.add('border-brand-800', 'bg-emerald-50', 'text-brand-800');
+      } else {
+        cb.checked = false;
+        pill.classList.remove('border-brand-800', 'bg-emerald-50', 'text-brand-800');
+        pill.classList.add('border-slate-300', 'bg-white', 'text-slate-600');
+      }
+    });
+
+    state.formDirty = false;
+  }
+
+  if (btnOpenCreatePost) {
+    btnOpenCreatePost.addEventListener('click', function() {
+      resetDrawerForm();
+      openDrawer(false);
+    });
+  }
+
+  if (btnOpenCreateMobile) {
+    btnOpenCreateMobile.addEventListener('click', function() {
+      resetDrawerForm();
+      openDrawer(false);
+    });
+  }
+
+  if (btnCloseDrawer) btnCloseDrawer.addEventListener('click', closeDrawer);
+  if (btnCancelDrawer) btnCancelDrawer.addEventListener('click', closeDrawer);
+  if (btnDiscardEditing) {
+    btnDiscardEditing.addEventListener('click', function() {
+      resetDrawerForm();
+      closeDrawer();
+    });
+  }
+
+  // Close drawer when clicking backdrop outside <aside>
+  postEditorDrawer.addEventListener('click', function(e) {
+    if (e.target === postEditorDrawer) {
+      closeDrawer();
+    }
+  });
+
+  // Character counter
+  if (drawerArticleTitle && drawerTitleCharCount) {
+    drawerArticleTitle.addEventListener('input', function() {
+      drawerTitleCharCount.textContent = drawerArticleTitle.value.length;
+      state.formDirty = true;
+    });
+  }
+
+  // Cover preset changer
+  if (drawerCoverPreset) {
+    drawerCoverPreset.addEventListener('change', function() {
+      if (drawerCoverPreset.value === 'custom') {
+        drawerCustomUrlWrap.classList.remove('hidden');
+        if (drawerCustomImageUrl.value) drawerThumbnailImg.src = drawerCustomImageUrl.value;
+      } else {
+        drawerCustomUrlWrap.classList.add('hidden');
+        drawerThumbnailImg.src = drawerCoverPreset.value;
+      }
+      state.formDirty = true;
+    });
+  }
+
+  if (drawerCustomImageUrl) {
+    drawerCustomImageUrl.addEventListener('input', function() {
+      if (drawerCustomImageUrl.value) drawerThumbnailImg.src = drawerCustomImageUrl.value;
+      state.formDirty = true;
+    });
+  }
+
+  // Cover image file upload preview
+  if (drawerCoverFileInput) {
+    drawerCoverFileInput.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        var file = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function(evt) {
+          drawerThumbnailImg.src = evt.target.result;
+          document.getElementById('drawerUploadLabel').textContent = file.name.slice(0, 16);
+          state.formDirty = true;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // Timing change (reveal schedule picker)
+  if (drawerPublishTiming) {
+    drawerPublishTiming.addEventListener('change', function() {
+      drawerScheduleDateWrap.classList.toggle('hidden', drawerPublishTiming.value !== 'schedule');
+      state.formDirty = true;
+    });
+  }
+
+  // Audience pill checkboxes styling
+  var drawerAudiencePills = document.querySelectorAll('.drawer-audience-pill');
+  drawerAudiencePills.forEach(function(pill) {
+    var cb = pill.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    cb.addEventListener('change', function() {
+      if (cb.checked) {
+        pill.classList.remove('border-slate-300', 'bg-white', 'text-slate-600');
+        pill.classList.add('border-brand-800', 'bg-emerald-50', 'text-brand-800');
+      } else {
+        pill.classList.remove('border-brand-800', 'bg-emerald-50', 'text-brand-800');
+        pill.classList.add('border-slate-300', 'bg-white', 'text-slate-600');
+      }
+      state.formDirty = true;
+    });
+  });
+
+  // Additional options accordion toggle
+  if (btnToggleAdditionalOptions && additionalOptionsBody) {
+    btnToggleAdditionalOptions.addEventListener('click', function() {
+      var isHidden = additionalOptionsBody.classList.contains('hidden');
+      additionalOptionsBody.classList.toggle('hidden');
+      if (accordionChevron) {
+        accordionChevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+      }
+    });
+  }
+
+  // Rich text mini-toolbar
+  document.querySelectorAll('.drawer-rte-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var syntax = btn.getAttribute('data-syntax');
+      var start = drawerArticleBody.selectionStart;
+      var end = drawerArticleBody.selectionEnd;
+      var text = drawerArticleBody.value;
+      var selected = text.substring(start, end);
+      var replacement = '';
+
+      switch (syntax) {
+        case 'bold':
+          replacement = '**' + (selected || 'bold text') + '**';
+          break;
+        case 'italic':
+          replacement = '*' + (selected || 'italic text') + '*';
+          break;
+        case 'underline':
+          replacement = '<u>' + (selected || 'underlined text') + '</u>';
+          break;
+        case 'list':
+          replacement = '\n• ' + (selected || 'Bullet item');
+          break;
+        case 'link':
+          replacement = '[' + (selected || 'Link Title') + '](https://ngis.edu.kh)';
+          break;
+        case 'table':
+          replacement = '\n| Venue | Time | Room |\n| :--- | :--- | :--- |\n| Auditorium | 08:30 AM | North Hall |\n';
+          break;
+      }
+
+      drawerArticleBody.value = text.substring(0, start) + replacement + text.substring(end);
+      drawerArticleBody.focus();
+      drawerArticleBody.setSelectionRange(start + replacement.length, start + replacement.length);
+      state.formDirty = true;
+    });
+  });
+
+  // ── EDIT NOTICE HANDLER ──
+  window.openEditorForId = function(id) {
+    var item = state.news.find(function(n) { return n.id === id; });
+    if (!item) return;
+
+    resetDrawerForm();
+    editorNoticeId.value = item.id;
+    drawerTitle.textContent = 'Edit Announcement';
+    drawerSubtitle.textContent = 'Update notice #' + item.id + ' details & audience';
+    btnDrawerSubmitLabel.textContent = 'Save Changes';
+
+    drawerEditBannerText.textContent = 'Editing: ' + item.title.slice(0, 40) + '...';
+    drawerEditBanner.classList.remove('hidden');
+
+    drawerArticleTitle.value = item.title || '';
+    if (drawerTitleCharCount) drawerTitleCharCount.textContent = (item.title || '').length;
+
+    drawerCategory.value = (item.category || 'general').toLowerCase();
+    drawerPriority.value = item.priority || (item.pinned ? 'urgent' : 'normal');
+    drawerArticleBody.value = item.content || item.summary || '';
+    drawerFlagUrgentPin.checked = Boolean(item.pinned);
+
+    if (item.target_campus) drawerTargetCampus.value = item.target_campus;
+    if (item.target_grade) drawerTargetGrade.value = item.target_grade;
+
+    if (item.status === 'scheduled') {
+      drawerPublishTiming.value = 'schedule';
+      drawerScheduleDateWrap.classList.remove('hidden');
+      if (item.scheduled_date) drawerScheduledDateInput.value = item.scheduled_date;
+    } else if (item.status === 'draft') {
+      drawerPublishTiming.value = 'draft';
+    } else {
+      drawerPublishTiming.value = 'instant';
+    }
+
+    if (item.image) {
+      drawerThumbnailImg.src = item.image;
+      drawerCoverPreset.value = 'custom';
+      drawerCustomUrlWrap.classList.remove('hidden');
+      drawerCustomImageUrl.value = item.image;
+    }
+
+    // Map audience pills
+    var targetAud = item.audience || [];
+    drawerAudiencePills.forEach(function(pill) {
+      var cb = pill.querySelector('input[type="checkbox"]');
+      var isMatch = targetAud.includes(cb.value) || targetAud.includes('all');
+      cb.checked = isMatch;
+      if (isMatch) {
+        pill.classList.remove('border-slate-300', 'bg-white', 'text-slate-600');
+        pill.classList.add('border-brand-800', 'bg-emerald-50', 'text-brand-800');
+      } else {
+        pill.classList.remove('border-brand-800', 'bg-emerald-50', 'text-brand-800');
+        pill.classList.add('border-slate-300', 'bg-white', 'text-slate-600');
+      }
+    });
+
+    openDrawer(true);
+  };
+
+  // ── SAVE / PUBLISH SUBMISSION ──
+  function submitDrawerForm(forceDraft) {
+    var title = drawerArticleTitle.value.trim();
+    var body = drawerArticleBody.value.trim();
+
+    if (!title) {
+      alert('Please provide an article title.');
+      drawerArticleTitle.focus();
+      return;
+    }
+    if (!body) {
+      alert('Please provide announcement body text.');
+      drawerArticleBody.focus();
+      return;
+    }
+
+    var editId = editorNoticeId.value;
+    var cat = drawerCategory.value;
+    var priority = drawerPriority.value;
+    var isPinned = drawerFlagUrgentPin.checked || (priority === 'urgent');
+
+    var selectedAudience = [];
+    drawerAudiencePills.forEach(function(pill) {
+      var cb = pill.querySelector('input[type="checkbox"]');
+      if (cb && cb.checked) selectedAudience.push(cb.value);
+    });
+    if (!selectedAudience.length) selectedAudience = ['students', 'parents'];
+
+    var timing = forceDraft ? 'draft' : drawerPublishTiming.value;
+    var status = timing === 'draft' ? 'draft' : (timing === 'schedule' ? 'scheduled' : 'published');
+
+    var payload = {
       title: title,
+      content: body,
+      message: body,
+      body: body,
+      summary: body.slice(0, 140),
+      category: cat.toLowerCase(),
       priority: priority,
-      audience: audience,
-      image: image,
-      desc: desc,
-      status: timing === 'draft' ? 'draft' : timing === 'scheduled' ? 'scheduled' : 'published',
-      pinned: priority === 'urgent',
-      telegramQueued: timing !== 'draft',
-      expiresInDays: expiry,
-      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      audience: selectedAudience,
+      target_campus: drawerTargetCampus.value,
+      target_grade: drawerTargetGrade.value,
+      pinned: isPinned,
+      image: drawerThumbnailImg.src,
+      status: status,
+      published: (status === 'published'),
+      publish_timing: timing,
+      scheduled_date: (timing === 'schedule' ? drawerScheduledDateInput.value : null),
+      expiry_rule: drawerExpiryRule.value,
+      telegram_broadcast: drawerFlagTelegram.checked,
+      khmer_ready: true,
+      author: 'Mr. Heng Samnang',
+      author_role: 'School Administration'
     };
 
-    posts.unshift(newPost);
-    localStorage.setItem('ngis_news_posts', JSON.stringify(posts));
-    window.toast(timing === 'draft' ? 'Draft saved.' : 'Notice published and notification workflow queued.','success');
+    if (editId) {
+      // Update
+      fetch('/api/news/' + editId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(res) { return res.json(); })
+      .then(function() {
+        var idx = state.news.findIndex(function(n) { return String(n.id) === String(editId); });
+        if (idx !== -1) {
+          state.news[idx].title = title;
+          state.news[idx].category = cat.toUpperCase();
+          state.news[idx].content = body;
+          state.news[idx].summary = body.slice(0, 100);
+          state.news[idx].priority = priority;
+          state.news[idx].pinned = isPinned;
+          state.news[idx].audience = selectedAudience;
+          state.news[idx].image = drawerThumbnailImg.src;
+          state.news[idx].status = status;
+          state.news[idx].target_campus = payload.target_campus;
+          state.news[idx].target_grade = payload.target_grade;
+        }
+        renderTable();
+        updateKpis();
+        closeDrawer();
+        if (window.toast) window.toast('Announcement updated successfully', 'success');
+      })
+      .catch(function(err) {
+        console.warn('Update fallback:', err);
+        var idx = state.news.findIndex(function(n) { return String(n.id) === String(editId); });
+        if (idx !== -1) {
+          state.news[idx].title = title;
+          state.news[idx].category = cat.toUpperCase();
+          state.news[idx].content = body;
+          state.news[idx].status = status;
+        }
+        renderTable();
+        updateKpis();
+        closeDrawer();
+      });
+    } else {
+      // Create
+      fetch('/api/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(res) {
+        var newItem = res.data || {
+          id: Date.now(),
+          title: title,
+          summary: body.slice(0, 100),
+          category: cat.toUpperCase(),
+          audience: selectedAudience,
+          date: 'Nov 16, 2026',
+          status: status,
+          pinned: isPinned,
+          views: 0,
+          image: drawerThumbnailImg.src,
+          content: body
+        };
+        // Normalize
+        newItem.category = (newItem.category || 'general').toUpperCase();
+        state.news.unshift(newItem);
+        renderTable();
+        updateKpis();
+        closeDrawer();
+        if (window.toast) window.toast('Announcement created and published', 'success');
+      })
+      .catch(function() {
+        var newItem = {
+          id: Date.now(),
+          title: title,
+          summary: body.slice(0, 100),
+          category: cat.toUpperCase(),
+          audience: selectedAudience,
+          date: 'Nov 16, 2026',
+          status: status,
+          pinned: isPinned,
+          views: 0,
+          image: drawerThumbnailImg.src,
+          content: body
+        };
+        state.news.unshift(newItem);
+        renderTable();
+        updateKpis();
+        closeDrawer();
+      });
+    }
+  }
 
-    // Reset Form
-    document.getElementById('postTitle').value = '';
-    document.getElementById('postAudience').value = 'Students, Parents';
-    document.getElementById('postDesc').value = '';
+  if (btnDrawerSubmitPublish) {
+    btnDrawerSubmitPublish.addEventListener('click', function() {
+      submitDrawerForm(false);
+    });
+  }
 
-    renderRegistryTable();
+  if (btnDrawerSaveDraft) {
+    btnDrawerSaveDraft.addEventListener('click', function() {
+      submitDrawerForm(true);
+    });
+  }
+
+  if (btnDrawerPreviewStory) {
+    btnDrawerPreviewStory.addEventListener('click', function() {
+      var title = drawerArticleTitle.value.trim() || 'Untitled Announcement';
+      var body = drawerArticleBody.value.trim() || 'No content provided.';
+      var cat = drawerCategory.value.toUpperCase();
+      var selectedAudience = [];
+      drawerAudiencePills.forEach(function(pill) {
+        var cb = pill.querySelector('input[type="checkbox"]');
+        if (cb && cb.checked) selectedAudience.push(cb.value);
+      });
+
+      var previewItem = {
+        title: title,
+        content: body,
+        category: cat,
+        audience: selectedAudience,
+        date: 'Draft Preview',
+        views: 0,
+        image: drawerThumbnailImg.src,
+        author: 'Mr. Heng Samnang',
+        author_role: 'School Administration'
+      };
+      showPreviewModalWithData(previewItem);
+    });
+  }
+
+  // ── STORY READER PREVIEW MODAL ──
+  function showPreviewModalWithData(item) {
+    var audienceLabels = (item.audience || []).map(function(a) {
+      return a.charAt(0).toUpperCase() + a.slice(1);
+    }).join(', ') || 'All Campus Portals';
+
+    previewModalContent.innerHTML = '' +
+      '<div class="relative h-48 rounded-xl overflow-hidden border border-slate-200">' +
+      '  <img src="' + esc(item.image) + '" alt="' + esc(item.title) + '" class="w-full h-full object-cover">' +
+      '  <div class="absolute top-3 left-3">' +
+      '    <span class="inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-white/95 text-slate-900 shadow-sm border border-slate-200">' +
+      esc(item.category) +
+      '    </span>' +
+      '  </div>' +
+      '</div>' +
+      '<div class="space-y-1.5">' +
+      '  <h3 class="text-lg font-medium text-slate-900 leading-snug">' + esc(item.title) + '</h3>' +
+      '  <div class="flex items-center gap-3 text-[11px] text-slate-500 flex-wrap">' +
+      '    <span class="font-medium text-slate-700">' + esc(item.author || 'Mr. Heng Samnang') + '</span>' +
+      '    <span>•</span>' +
+      '    <span>' + esc(item.date) + '</span>' +
+      '    <span>•</span>' +
+      '    <span>Audience: ' + esc(audienceLabels) + '</span>' +
+      '    <span>•</span>' +
+      '    <span>' + fmt(item.views) + ' Views</span>' +
+      '  </div>' +
+      '</div>' +
+      '<div class="text-xs text-slate-700 leading-relaxed border-t border-slate-100 pt-3 space-y-2 font-normal">' +
+      '  <p>' + esc(item.content).replace(/\n/g, '<br>') + '</p>' +
+      '</div>';
+
+    previewStoryModal.classList.remove('opacity-0', 'pointer-events-none');
+  }
+
+  window.previewNoticeById = function(id) {
+    var item = state.news.find(function(n) { return n.id === id; });
+    if (!item) return;
+    showPreviewModalWithData(item);
   };
 
-  // Delete Notice
-  window.deletePost = function(id) {
-    let posts = getNews();
-    posts = posts.filter(p => p.id !== id);
-    localStorage.setItem('ngis_news_posts', JSON.stringify(posts));
-    window.toast('Announcement deleted.','success');
-    renderRegistryTable();
+  function closePreview() {
+    previewStoryModal.classList.add('opacity-0', 'pointer-events-none');
+  }
+  if (btnClosePreviewModal) btnClosePreviewModal.addEventListener('click', closePreview);
+  if (btnDismissPreviewModal) btnDismissPreviewModal.addEventListener('click', closePreview);
+  previewStoryModal.addEventListener('click', function(e) {
+    if (e.target === previewStoryModal) closePreview();
+  });
+
+  // ── DELETE CONFIRMATION MODAL ──
+  window.promptDeleteNotice = function(id) {
+    state.pendingDeleteId = id;
+    deleteModal.classList.remove('opacity-0', 'pointer-events-none');
   };
 
-  // Initial render
-  renderRegistryTable();
+  function closeDeleteModal() {
+    state.pendingDeleteId = null;
+    deleteModal.classList.add('opacity-0', 'pointer-events-none');
+  }
+  if (btnCancelDelete) btnCancelDelete.addEventListener('click', closeDeleteModal);
+  deleteModal.addEventListener('click', function(e) {
+    if (e.target === deleteModal) closeDeleteModal();
+  });
+
+  if (btnConfirmDelete) {
+    btnConfirmDelete.addEventListener('click', function() {
+      if (!state.pendingDeleteId) return;
+      var id = state.pendingDeleteId;
+      fetch('/api/news/' + id, { method: 'DELETE' })
+        .then(function() {
+          state.news = state.news.filter(function(n) { return n.id !== id; });
+          renderTable();
+          updateKpis();
+          closeDeleteModal();
+          if (window.toast) window.toast('Announcement deleted', 'info');
+        })
+        .catch(function() {
+          state.news = state.news.filter(function(n) { return n.id !== id; });
+          renderTable();
+          updateKpis();
+          closeDeleteModal();
+        });
+    });
+  }
+
+  // ── EXPORT CSV ──
+  var btnExportCsv = document.getElementById('btnExportCsv');
+  if (btnExportCsv) {
+    btnExportCsv.addEventListener('click', function() {
+      var head = ['ID', 'Title', 'Category', 'Audience', 'Date', 'Status', 'Views', 'Pinned'];
+      var lines = [head.join(',')].concat(state.news.map(function(item) {
+        return [
+          item.id,
+          '"' + (item.title || '').replace(/"/g, '""') + '"',
+          item.category,
+          '"' + ((item.audience || []).join('; ')) + '"',
+          item.date,
+          item.status,
+          item.views || 0,
+          item.pinned ? 'Yes' : 'No'
+        ].join(',');
+      }));
+      var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'ngis-news-announcements.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  // Initial Data Load
+  loadNews();
 
 })();
 </script>
-<script>window.PAGE={"role":"admin","active":"news"};</script>
-<script>window.HERO_CONFIG = {
-  name: 'Mr. Heng Samnang',
-  id: 'Admin ID: ADM-2026-001',
-  grade: 'School Administrator',
-  avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
-  avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
-  title: 'Enterprise Management Console',
-  greeting: 'Compose, preview and publish campus news logs.',
-  breadcrumbs: [{ label: 'News CMS' }],
-  homeLink: '../../index.html',
-  signOutLink: '../../index.html',
-  profileLink: 'admin-settings.html',
-  notifLink: 'admin-logs.html',
-  notifCount: 4,
-  ddRows: [
-    { icon: 'admin_panel_settings', text: 'School Administration' },
-    { icon: 'groups', text: '5,200 active users' },
-    { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
-    { icon: 'calendar_today', text: 'Since: Jan 2018' },
-    { icon: 'verified', text: 'Principal Administrator' }
-  ]
-};</script>
-<script src="../../assets/js/layout.js"></script>
+
 </body>
 </html>

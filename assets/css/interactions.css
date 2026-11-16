@@ -134,37 +134,38 @@
 }
 
 
-/* Form field inputs - Explicitly exclude all search capsules and search inputs */
-select,
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]),
+/* Form field inputs - Explicitly exclude all search capsules, search inputs, ngx
+   inline-editable text and the self-themed registration wizard fields (.nrg-*) */
+select:not(.nrg-select),
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input),
 textarea,
 .score-cell-input,
 .edit-cell,
 .editable-field,
 [contenteditable="true"] {
-  border: 1.5px solid #E1E9E3 !important;
+  border: var(--input-border, 1.5px solid #E1E9E3) !important;
   border-radius: 8px;
-  background-color: #F7F9F7;
-  color: #000000;
+  background-color: var(--input-bg, #F7F9F7);
+  color: var(--color-text, #000000);
   transition: all 0.15s ease-in-out;
 }
 
-select:hover,
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):hover,
+select:not(.nrg-select):hover,
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input):hover,
 textarea:hover,
 .score-cell-input:hover,
 .edit-cell:hover {
   border-color: #77777F !important;
-  background-color: #ffffff !important;
+  background-color: var(--color-surface, #ffffff) !important;
 }
 
-select:focus,
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):focus,
+select:not(.nrg-select):focus,
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input):focus,
 textarea:focus,
 .score-cell-input:focus,
 .edit-cell:focus {
   border-color: #176B45 !important;
-  background-color: #ffffff !important;
+  background-color: var(--color-surface, #ffffff) !important;
   outline: none;
   box-shadow: 0 0 0 2px rgba(36, 85, 214, 0.15) !important;
 }
@@ -198,16 +199,10 @@ html body #sidebarCollapseBtn .side-collapse-svg {
   color: inherit !important;
 }
 
-/* Docked sidebar toggle button (boundary rail expand).
-   The button is the persistent open/collapse toggle on desktop; it must stay
-   reachable in BOTH states (see the master sidebar layer in app.css). */
+/* Docked sidebar toggle button suppressed in favor of #sidebarCollapseBtn inside .side-head */
 html body .sidebar-expand-btn,
 html body #sidebarExpandBtn {
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  background: #176B45 !important;
-  color: #77777F !important;
-  border-radius: 9999px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+  display: none !important;
 }
 html body .sidebar-expand-btn:hover,
 html body #sidebarExpandBtn:hover {
@@ -251,10 +246,7 @@ html[data-theme="dark"] body .sidebar-expand-btn,
 html[data-theme="dark"] body #sidebarExpandBtn,
 body[data-theme="dark"] .sidebar-expand-btn,
 body[data-theme="dark"] #sidebarExpandBtn {
-  border: 1px solid rgba(56, 189, 248, 0.4) !important;
-  background: #176B45 !important;
-  color: #ffffff !important;
-  border-radius: 9999px !important;
+  display: none !important;
 }
 html[data-theme="dark"] body .sidebar-expand-btn svg,
 html[data-theme="dark"] body .sidebar-expand-btn svg *,
@@ -546,7 +538,7 @@ body[data-portal="admin"] .user-id-badge::before {
   display: none !important;
 }
 
-/* 5. Subtle Status Indicator Dots */
+/* 5. Subtle Status Indicator Dots (Rule 9: Semantic status colors) */
 /* Green: Active / Present / Published / Approved / Success / Completed / Graded / Open */
 body[data-role="admin"] .badge.green,
 body[data-role="admin"] .badge-active,
@@ -558,7 +550,7 @@ body[data-portal="admin"] .badge-active,
 body[data-portal="admin"] .status-active,
 body[data-portal="admin"] .status-completed,
 body[data-portal="admin"] .status-open {
-  color: #333333 !important;
+  color: #176B45 !important;
 }
 body[data-role="admin"] .badge.green::before,
 body[data-role="admin"] .badge-active::before,
@@ -575,12 +567,12 @@ body[data-portal="admin"] .status-open::before {
   width: 6px !important;
   height: 6px !important;
   border-radius: 50% !important;
-  background-color: #000000 !important;
+  background-color: #176B45 !important;
   margin-right: 6px !important;
   flex-shrink: 0 !important;
 }
 
-/* Amber: Late / Pending / Review / In-Progress / Warning */
+/* Amber: Late / Pending / Review / In-Progress / Warning / Draft / On Hold */
 body[data-role="admin"] .badge.amber,
 body[data-role="admin"] .badge.yellow,
 body[data-role="admin"] .badge-review,
@@ -595,7 +587,7 @@ body[data-portal="admin"] .badge-review,
 body[data-portal="admin"] .badge-pending,
 body[data-portal="admin"] .status-pending,
 body[data-portal="admin"] .status-in_progress {
-  color: #333333 !important;
+  color: #B45309 !important;
 }
 body[data-role="admin"] .badge.amber::before,
 body[data-role="admin"] .badge.yellow::before,
@@ -616,30 +608,30 @@ body[data-portal="admin"] .status-in_progress::before {
   width: 6px !important;
   height: 6px !important;
   border-radius: 50% !important;
-  background-color: #000000 !important;
+  background-color: #D97706 !important;
   margin-right: 6px !important;
   flex-shrink: 0 !important;
 }
 
-/* Red / Gray: Absent / Suspended / Rejected / Blocked / Draft / Excused / Missing / Urgent */
+/* Red: Absent / Suspended / Rejected / Blocked / Expired / Missing / Urgent / Danger */
 body[data-role="admin"] .badge.red,
-body[data-role="admin"] .badge.gray,
+body[data-role="admin"] .badge-danger,
 body[data-role="admin"] .badge-suspended,
 body[data-role="admin"] .status-rejected,
 body[data-role="admin"] .priority-urgent,
 body[data-portal="admin"] .badge.red,
-body[data-portal="admin"] .badge.gray,
+body[data-portal="admin"] .badge-danger,
 body[data-portal="admin"] .badge-suspended,
 body[data-portal="admin"] .status-rejected {
-  color: #555555 !important;
+  color: var(--color-danger-text,#B02A37) !important;
 }
 body[data-role="admin"] .badge.red::before,
-body[data-role="admin"] .badge.gray::before,
+body[data-role="admin"] .badge-danger::before,
 body[data-role="admin"] .badge-suspended::before,
 body[data-role="admin"] .status-rejected::before,
 body[data-role="admin"] .priority-urgent::before,
 body[data-portal="admin"] .badge.red::before,
-body[data-portal="admin"] .badge.gray::before,
+body[data-portal="admin"] .badge-danger::before,
 body[data-portal="admin"] .badge-suspended::before,
 body[data-portal="admin"] .status-rejected::before {
   content: "" !important;
@@ -647,7 +639,49 @@ body[data-portal="admin"] .status-rejected::before {
   width: 6px !important;
   height: 6px !important;
   border-radius: 50% !important;
-  background-color: #77777F !important;
+  background-color: var(--color-danger,#DC3545) !important;
+  margin-right: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Blue: New / Scheduled / Info */
+body[data-role="admin"] .badge.blue,
+body[data-role="admin"] .badge-info,
+body[data-portal="admin"] .badge.blue,
+body[data-portal="admin"] .badge-info {
+  color: var(--color-info-text,#1D4ED8) !important;
+}
+body[data-role="admin"] .badge.blue::before,
+body[data-role="admin"] .badge-info::before,
+body[data-portal="admin"] .badge.blue::before,
+body[data-portal="admin"] .badge-info::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background-color: #0284C7 !important;
+  margin-right: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Gray: Neutral / Archived / Default */
+body[data-role="admin"] .badge.gray,
+body[data-role="admin"] .badge-neutral,
+body[data-portal="admin"] .badge.gray,
+body[data-portal="admin"] .badge-neutral {
+  color: #475569 !important;
+}
+body[data-role="admin"] .badge.gray::before,
+body[data-role="admin"] .badge-neutral::before,
+body[data-portal="admin"] .badge.gray::before,
+body[data-portal="admin"] .badge-neutral::before {
+  content: "" !important;
+  display: inline-block !important;
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background-color: #64748B !important;
   margin-right: 6px !important;
   flex-shrink: 0 !important;
 }
@@ -815,8 +849,8 @@ body[data-role="admin"] table .icon-btn:not(.action-icon-btn):hover,
 body[data-portal="admin"] table button:not(.btn):not(.action-icon-btn):hover,
 body[data-portal="admin"] table .sk-action-btn:not(.action-icon-btn):hover,
 body[data-portal="admin"] table .icon-btn:not(.action-icon-btn):hover {
-  color: #000000 !important;
-  background: #F7F9F7 !important;
+  color: inherit !important;
+  background: transparent !important;
 }
 
 body[data-role="admin"] table .link-btn,
@@ -1088,7 +1122,10 @@ html body .nav-link.active, html body .nav-group-label {
   background: transparent !important;
 }
 
-/* 3. Keep cards visually neutral and unmodified during hover, active, focus, and touch */
+/* 3. Keep cards visually neutral and unmodified during hover, active, focus, and touch.
+   Guarded with :not([style*="background"]) so cards that carry an intentional inline
+   background (dark highlight / KPI tiles) are never force-painted white — doing so made
+   their white text disappear the moment the card was hovered, clicked or focused. */
 :where(
   .card, .ws-card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
   .lesson-card, .ann-card, .exam-card, .candidate-card, .club-card, .cert-card,
@@ -1097,7 +1134,7 @@ html body .nav-link.active, html body .nav-group-label {
   .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel, .ov-deadline-panel,
   .ov-deadline-card, .ov-task-card, .dash-kpi-card, .sh-request-item,
   .box, .panel, .widget, .demo-pill, [class~="card"], [class*="-card"]
-):hover,
+):not([style*="background"]):hover,
 :where(
   .card, .ws-card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
   .lesson-card, .ann-card, .exam-card, .candidate-card, .club-card, .cert-card,
@@ -1106,7 +1143,7 @@ html body .nav-link.active, html body .nav-group-label {
   .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel, .ov-deadline-panel,
   .ov-deadline-card, .ov-task-card, .dash-kpi-card, .sh-request-item,
   .box, .panel, .widget, .demo-pill, [class~="card"], [class*="-card"]
-):active,
+):not([style*="background"]):active,
 :where(
   .card, .ws-card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
   .lesson-card, .ann-card, .exam-card, .candidate-card, .club-card, .cert-card,
@@ -1115,15 +1152,14 @@ html body .nav-link.active, html body .nav-group-label {
   .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel, .ov-deadline-panel,
   .ov-deadline-card, .ov-task-card, .dash-kpi-card, .sh-request-item,
   .box, .panel, .widget, .demo-pill, [class~="card"], [class*="-card"]
-):focus {
+):not([style*="background"]):focus {
   background: #ffffff !important;
   background-color: #ffffff !important;
   border-color: #E1E9E3 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+  box-shadow: none !important;
   transform: none !important;
   translate: none !important;
   scale: 1 !important;
-  outline: none !important;
   -webkit-tap-highlight-color: transparent !important;
 }
 

@@ -19,26 +19,33 @@
   var SM = window.STUDENT_MGMT = window.STUDENT_MGMT || {};
 
   // Simple Notification Toast
-  function toast(msg, type) {
-    type = type || 'success';
-    var t = document.getElementById('ngisToast');
-    if (!t) {
-      t = document.createElement('div');
-      t.id = 'ngisToast';
-      t.className = 'fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2.5 transition-all duration-300 transform translate-y-8 opacity-0 pointer-events-none';
-      document.body.appendChild(t);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
+  }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
+
+  /* Real async lifecycle helper: loading → actual result → animated success.
+     Errors surface in the feedback row with the server's real message. */
+  function op(title, promiseOrFn, successTitle) {
+    if (window.NGISUI && window.NGISUI.toast && window.NGISUI.toast.operation) {
+      var pr = window.NGISUI.toast.operation(title, promiseOrFn, { successTitle: successTitle });
+      pr.catch(function () { /* rendered by the feedback row */ });
+      return pr;
     }
-    var bg = type === 'success' ? 'bg-[#176B45] text-white' : (type === 'error' ? 'bg-rose-700 text-white' : 'bg-slate-800 text-white');
-    t.className = 'fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2.5 transition-all duration-300 pointer-events-auto ' + bg;
-    t.innerHTML = '<span class="material-symbols-outlined text-sm">' + (type === 'success' ? 'check_circle' : (type === 'error' ? 'error' : 'info')) + '</span><span>' + msg + '</span>';
-    t.style.opacity = '1';
-    t.style.transform = 'translateY(0)';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(function () {
-      t.style.opacity = '0';
-      t.style.transform = 'translateY(24px)';
-      t.className += ' pointer-events-none';
-    }, 3200);
+    return Promise.resolve(typeof promiseOrFn === 'function' ? promiseOrFn() : promiseOrFn)
+      .then(function (res) { toast(successTitle); return res; });
   }
   SM.toast = toast;
 
@@ -193,7 +200,7 @@
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      toast('Audit ledger exported successfully (.CSV)', 'success');
+      toast('Audit ledger exported (.CSV)', 'success');
     }
 
     function openRejectModal(item) {
@@ -205,7 +212,7 @@
         '<div class="bg-white dark:bg-[#1c2420] border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-150">' +
           '<div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60">' +
             '<div class="flex items-center gap-2">' +
-              '<span class="material-symbols-outlined text-rose-600 text-[22px]">warning</span>' +
+              '<span class="material-symbols-outlined text-[#DC3545] text-[22px]">warning</span>' +
               '<h2 class="text-sm font-medium text-slate-800 dark:text-slate-100">Reject Student Update Amendment</h2>' +
             '</div>' +
             '<button type="button" id="closeRejectModalBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">' +
@@ -219,12 +226,12 @@
             '</p>' +
             '<div>' +
               '<label for="rejectionReasonInput" class="block font-medium text-slate-700 dark:text-slate-300 mb-1.5">' +
-                'Reason for Rejection <span class="text-rose-600">*</span>' +
+                'Reason for Rejection <span class="text-[#DC3545]">*</span>' +
               '</label>' +
-              '<textarea id="rejectionReasonInput" rows="3" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors" placeholder="e.g., Missing official registry seal, invalid phone prefix..."></textarea>' +
+              '<textarea id="rejectionReasonInput" rows="3" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#DC3545] transition-colors" placeholder="e.g., Missing official registry seal, invalid phone prefix..."></textarea>' +
             '</div>' +
             '<div class="bg-slate-50 dark:bg-slate-800/40 p-3 rounded-lg text-slate-500 dark:text-slate-400 flex items-start gap-2 border border-slate-100 dark:border-slate-800">' +
-              '<span class="material-symbols-outlined text-[18px] text-amber-600 mt-0.5 shrink-0">info</span>' +
+              '<span class="material-symbols-outlined text-[18px] text-[#D9741A] mt-0.5 shrink-0">info</span>' +
               '<span>This rejection will be recorded on the student\'s audit trail and send a notification to the guardian.</span>' +
             '</div>' +
           '</div>' +
@@ -232,7 +239,7 @@
             '<button type="button" id="cancelRejectBtn" class="px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 text-xs font-medium transition-colors">' +
               'Cancel' +
             '</button>' +
-            '<button type="button" id="confirmRejectBtn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium shadow-xs transition-all">' +
+            '<button type="button" id="confirmRejectBtn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#DC3545] hover:bg-[#B02A37] text-white text-xs font-medium shadow-xs transition-all">' +
               '<span class="material-symbols-outlined text-[18px]">block</span>' +
               '<span>Confirm Rejection</span>' +
             '</button>' +
@@ -336,14 +343,14 @@
               '</div>' +
               '<div>' +
                 '<span class="text-[11px] font-medium text-[#176B45] dark:text-emerald-400 uppercase">Proposed Amendment</span>' +
-                '<div class="mt-1 font-medium text-[#176B45] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 p-1.5 rounded">' + escapeHtml(item.proposedValue) + '</div>' +
+                '<div class="mt-1 font-medium text-[#176B45] dark:text-emerald-400 bg-[#E8F3ED] dark:bg-emerald-950/40 p-1.5 rounded">' + escapeHtml(item.proposedValue) + '</div>' +
               '</div>' +
             '</div>' +
             '<div>' +
               '<span class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Supporting Documentation</span>' +
               '<div class="mt-1.5 flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">' +
                 '<div class="flex items-center gap-2"><span class="material-symbols-outlined text-slate-400 text-lg">attach_file</span><span class="font-mono text-slate-700 dark:text-slate-200 truncate">' + escapeHtml(item.supportingDoc || 'document.pdf') + '</span></div>' +
-                '<span class="text-[11px] text-[#176B45] dark:text-emerald-400 font-medium px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">Verified Attachment</span>' +
+                '<span class="text-[11px] text-[#176B45] dark:text-emerald-400 font-medium px-2 py-0.5 rounded bg-[#E8F3ED] dark:bg-emerald-950/40 border border-[#C8E3D3] dark:border-[#125638]">Verified Attachment</span>' +
               '</div>' +
             '</div>' +
             '<div>' +
@@ -352,7 +359,7 @@
             '</div>' +
           '</div>' +
           '<div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">' +
-            '<button type="button" id="btnRejectUpdateModal" class="px-3.5 py-2 rounded-lg border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-medium cursor-pointer transition-colors">' +
+            '<button type="button" id="btnRejectUpdateModal" class="px-3.5 py-2 rounded-lg border border-[#F5C2C7] dark:border-[#B02A37] text-[#B02A37] dark:text-rose-400 hover:bg-[#FDECEC] dark:hover:bg-rose-950/40 text-xs font-medium cursor-pointer transition-colors">' +
               'Reject Request' +
             '</button>' +
             '<div class="flex items-center gap-2">' +
@@ -405,7 +412,7 @@
             closeModal();
             computeFilteredItems();
             render();
-            toast('Update request ' + action + 'ed successfully!');
+            toast('Update request ' + action + 'ed!');
           } else {
             toast(res.error || 'Operation failed', 'error');
           }
@@ -426,30 +433,27 @@
     }
 
     function approveItemDirect(item) {
-      fetch('/api/student-mgmt/verify/' + item.id + '/action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'approve',
-          comments: 'Approved and synchronized with student record.',
-          reviewer: (portalRole === 'principal' ? 'Principal · Dr. Ly Bunheng' : 'Admin · Records Office')
+      op('Approving update request…',
+        fetch('/api/student-mgmt/verify/' + item.id + '/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'approve',
+            comments: 'Approved and synchronized with student record.',
+            reviewer: (portalRole === 'principal' ? 'Principal · Dr. Ly Bunheng' : 'Admin · Records Office')
+          })
         })
-      })
-      .then(function (res) { return res.json(); })
-      .then(function (res) {
-        if (res.success) {
+        .then(function (res) { return res.json(); })
+        .then(function (res) {
+          if (!res.success) throw new Error(res.error || 'Approval failed');
           item.status = 'approved';
           item.reviewedAt = 'Just now';
           computeFilteredItems();
           render();
-          toast('Update request approved and synchronized with student ledger!', 'success');
-        } else {
-          toast(res.error || 'Approval failed', 'error');
-        }
-      })
-      .catch(function () {
-        toast('Failed to approve request', 'error');
-      });
+          return res;
+        }),
+        'Update request approved and synchronized with student ledger'
+      );
     }
 
     function render() {
@@ -469,7 +473,7 @@
                 'Verify Student Profile Updates' +
               '</h1>' +
               '<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium">' +
-                '<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>' +
+                '<span class="w-1.5 h-1.5 rounded-full bg-[#176B45] animate-pulse"></span>' +
                 '<span>' + pendingCount + ' Pending Action</span>' +
               '</div>' +
             '</div>' +
@@ -493,14 +497,14 @@
           '<div class="bg-white dark:bg-[#1c2420] p-4 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col justify-between">' +
             '<div class="flex items-center justify-between">' +
               '<span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-medium">Pending Verification</span>' +
-              '<div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 flex items-center justify-center text-amber-700 dark:text-amber-400">' +
+              '<div class="w-8 h-8 rounded-lg bg-[#FEF0E3] dark:bg-amber-950/40 flex items-center justify-center text-[#B45309] dark:text-amber-400">' +
                 '<span class="material-symbols-outlined text-[18px]">pending_actions</span>' +
               '</div>' +
             '</div>' +
             '<div class="mt-3">' +
               '<div class="text-3xl font-medium text-slate-800 dark:text-slate-100 tracking-tight leading-none">' + pendingCount + '</div>' +
               '<div class="flex items-center gap-1.5 mt-2 text-xs text-slate-400">' +
-                '<span class="w-2 h-2 rounded-full bg-amber-500"></span>' +
+                '<span class="w-2 h-2 rounded-full bg-[#F28C28]"></span>' +
                 '<span>Requires Registrar Review</span>' +
               '</div>' +
             '</div>' +
@@ -510,14 +514,14 @@
           '<div class="bg-white dark:bg-[#1c2420] p-4 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col justify-between">' +
             '<div class="flex items-center justify-between">' +
               '<span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-medium">Approved &amp; Synced</span>' +
-              '<div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-[#176B45] dark:text-emerald-400">' +
+              '<div class="w-8 h-8 rounded-lg bg-[#E8F3ED] dark:bg-emerald-950/40 flex items-center justify-center text-[#176B45] dark:text-emerald-400">' +
                 '<span class="material-symbols-outlined text-[18px]">sync_saved_locally</span>' +
               '</div>' +
             '</div>' +
             '<div class="mt-3">' +
               '<div class="text-3xl font-medium text-slate-800 dark:text-slate-100 tracking-tight leading-none">' + approvedCount + '</div>' +
               '<div class="flex items-center gap-1.5 mt-2 text-xs text-slate-400">' +
-                '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>' +
+                '<span class="w-2 h-2 rounded-full bg-[#176B45]"></span>' +
                 '<span>Ledger Synchronized</span>' +
               '</div>' +
             '</div>' +
@@ -543,7 +547,7 @@
           '<div class="bg-white dark:bg-[#1c2420] p-4 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col justify-between">' +
             '<div class="flex items-center justify-between">' +
               '<span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-medium">Approval Turnaround</span>' +
-              '<div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center text-[#176B45] dark:text-emerald-400">' +
+              '<div class="w-8 h-8 rounded-lg bg-[#E8F3ED] dark:bg-emerald-950/40 flex items-center justify-center text-[#176B45] dark:text-emerald-400">' +
                 '<span class="material-symbols-outlined text-[18px]">avg_pace</span>' +
               '</div>' +
             '</div>' +
@@ -620,10 +624,10 @@
               'All Submissions <span class="ml-1 opacity-80">(' + totalCount + ')</span>' +
             '</button>' +
             '<button type="button" class="tab-pill px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ' + (state.activeTab === 'pending' ? 'bg-[#176B45] text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200') + '" data-tab="pending">' +
-              'Pending Review <span class="ml-1 px-1.5 py-0.2 rounded-full bg-amber-500 text-white font-medium">' + pendingCount + '</span>' +
+              'Pending Review <span class="ml-1 px-1.5 py-0.2 rounded-full bg-[#F28C28] text-white font-medium">' + pendingCount + '</span>' +
             '</button>' +
             '<button type="button" class="tab-pill px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ' + (state.activeTab === 'approved' ? 'bg-[#176B45] text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200') + '" data-tab="approved">' +
-              'Approved &amp; Ledger Synced <span class="ml-1 text-emerald-600 dark:text-emerald-400 font-medium">' + approvedCount + '</span>' +
+              'Approved &amp; Ledger Synced <span class="ml-1 text-[#176B45] dark:text-emerald-400 font-medium">' + approvedCount + '</span>' +
             '</button>' +
             '<button type="button" class="tab-pill px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ' + (state.activeTab === 'flagged' ? 'bg-[#176B45] text-white shadow-xs' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200') + '" data-tab="flagged">' +
               'Flagged Discrepancies <span class="ml-1 opacity-70">0</span>' +
@@ -675,21 +679,21 @@
           var statusHtml = '';
           if (r.status === 'pending') {
             statusHtml = '<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-medium">' +
-              '<span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>' +
+              '<span class="w-2 h-2 rounded-full bg-[#176B45] animate-pulse"></span>' +
               '<span>Pending Review</span>' +
             '</div>';
           } else if (r.status === 'approved') {
-            statusHtml = '<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 text-[11px] font-medium">' +
+            statusHtml = '<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E8F3ED] dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 border border-[#C8E3D3] dark:border-[#125638]/60 text-[11px] font-medium">' +
               '<span class="material-symbols-outlined text-[14px]">check_circle</span>' +
               '<span>Approved &amp; Synced</span>' +
             '</div>';
           } else if (r.status === 'rejected') {
-            statusHtml = '<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 text-[11px] font-medium">' +
+            statusHtml = '<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FDECEC] dark:bg-rose-950/40 text-[#B02A37] dark:text-rose-400 border border-[#F5C2C7] dark:border-[#B02A37]/60 text-[11px] font-medium">' +
               '<span class="material-symbols-outlined text-[14px]">cancel</span>' +
               '<span>Rejected</span>' +
             '</div>';
           } else {
-            statusHtml = '<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 text-[11px] font-medium">' +
+            statusHtml = '<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FEF0E3] dark:bg-amber-950/40 text-[#B45309] dark:text-amber-400 border border-[#FAD1A5] dark:border-[#8F4A07]/60 text-[11px] font-medium">' +
               '<span class="material-symbols-outlined text-[14px]">help</span>' +
               '<span>Needs Clarification</span>' +
             '</div>';
@@ -703,21 +707,21 @@
             '</button>';
 
           if (r.status === 'approved') {
-            actionsHtml += '<button type="button" class="btn-diff-reject inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-700 text-slate-400 text-xs font-medium transition-colors opacity-70" data-id="' + escapeHtml(r.id) + '" title="Reject amendment">' +
+            actionsHtml += '<button type="button" class="btn-diff-reject inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-[#FDECEC] hover:text-[#B02A37] text-slate-400 text-xs font-medium transition-colors opacity-70" data-id="' + escapeHtml(r.id) + '" title="Reject amendment">' +
               '<span class="material-symbols-outlined text-[16px]">close</span>' +
               '<span>Reject</span>' +
             '</button>' +
-            '<button type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 text-xs font-medium cursor-default" title="Already approved">' +
+            '<button type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#E8F3ED] dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 text-xs font-medium cursor-default" title="Already approved">' +
               '<span class="material-symbols-outlined text-[16px]">done_all</span>' +
               '<span>Approved</span>' +
             '</button>';
           } else if (r.status === 'rejected') {
-            actionsHtml += '<button type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-medium cursor-default" title="Already rejected">' +
+            actionsHtml += '<button type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FDECEC] text-[#B02A37] text-xs font-medium cursor-default" title="Already rejected">' +
               '<span class="material-symbols-outlined text-[16px]">block</span>' +
               '<span>Rejected</span>' +
             '</button>';
           } else {
-            actionsHtml += '<button type="button" class="btn-diff-reject inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-700 text-slate-500 text-xs font-medium transition-colors" data-id="' + escapeHtml(r.id) + '" title="Reject request">' +
+            actionsHtml += '<button type="button" class="btn-diff-reject inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-[#FDECEC] hover:text-[#B02A37] text-slate-500 text-xs font-medium transition-colors" data-id="' + escapeHtml(r.id) + '" title="Reject request">' +
               '<span class="material-symbols-outlined text-[16px]">close</span>' +
               '<span>Reject</span>' +
             '</button>' +
@@ -730,9 +734,9 @@
 
           // Proposed Display styling
           var isMedical = r.field && r.field.indexOf('Medical') !== -1;
-          var proposedDisplayClass = isMedical ? 'font-medium text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 px-1.5 py-0.5 rounded text-xs' : 'font-medium text-[#176B45] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded text-xs';
+          var proposedDisplayClass = isMedical ? 'font-medium text-[#B02A37] dark:text-rose-400 bg-[#FDECEC] dark:bg-rose-950/40 px-1.5 py-0.5 rounded text-xs' : 'font-medium text-[#176B45] dark:text-emerald-400 bg-[#E8F3ED] dark:bg-emerald-950/40 px-1.5 py-0.5 rounded text-xs';
 
-          html += '<tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group ' + (isChecked ? 'bg-emerald-50/20 dark:bg-emerald-950/20' : '') + '">' +
+          html += '<tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group ' + (isChecked ? 'bg-[#E8F3ED]/20 dark:bg-emerald-950/20' : '') + '">' +
             // Checkbox
             '<td class="py-4 px-4 text-center">' +
               '<input type="checkbox" class="verify-row-check rounded text-[#176B45] focus:ring-0 cursor-pointer" data-id="' + escapeHtml(r.id) + '" ' + (isChecked ? 'checked' : '') + ' aria-label="Select request ' + escapeHtml(r.id) + '">' +
@@ -780,7 +784,7 @@
                   '<span class="line-through">' + escapeHtml(r.previousValue) + '</span>' +
                 '</div>' +
                 '<div class="flex items-center gap-2 text-xs text-slate-800 dark:text-slate-100">' +
-                  '<span class="material-symbols-outlined text-[16px] text-emerald-600 shrink-0">arrow_forward</span>' +
+                  '<span class="material-symbols-outlined text-[16px] text-[#176B45] shrink-0">arrow_forward</span>' +
                   '<span class="' + proposedDisplayClass + '">' + escapeHtml(r.proposedValue) + '</span>' +
                   (r.proposedNote ? '<span class="text-[11px] text-slate-400 ml-1">' + escapeHtml(r.proposedNote) + '</span>' : '') +
                 '</div>' +
@@ -962,9 +966,9 @@
           var tr = e.target.closest('tr');
           if (tr) {
             if (e.target.checked) {
-              tr.classList.add('bg-emerald-50/20', 'dark:bg-emerald-950/20');
+              tr.classList.add('bg-[#E8F3ED]/20', 'dark:bg-emerald-950/20');
             } else {
-              tr.classList.remove('bg-emerald-50/20', 'dark:bg-emerald-950/20');
+              tr.classList.remove('bg-[#E8F3ED]/20', 'dark:bg-emerald-950/20');
             }
           }
         };
@@ -1076,14 +1080,14 @@
       state.classes.forEach(function (c) {
         var pct = Math.round((c.enrolled / c.capacity) * 100);
         var isSelected = state.selectedClass.toLowerCase() === c.code.toLowerCase();
-        html += '<div class="class-card p-3.5 rounded-xl border transition-all cursor-pointer ' + (isSelected ? 'border-[#176B45] bg-emerald-50/30 ring-1 ring-[#176B45]' : 'border-slate-200/80 bg-white hover:border-slate-300') + '" data-code="' + c.code + '">' +
+        html += '<div class="class-card p-3.5 rounded-xl border transition-all cursor-pointer ' + (isSelected ? 'border-[#176B45] bg-[#E8F3ED]/30 ring-1 ring-[#176B45]' : 'border-slate-200/80 bg-white hover:border-slate-300') + '" data-code="' + c.code + '">' +
           '<div class="flex items-center justify-between">' +
             '<span class="text-xs font-medium text-slate-800">' + c.name + '</span>' +
-            '<span class="text-[10px] px-1.5 py-0.2 rounded font-medium ' + (c.isFull ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600') + '">' + c.enrolled + '/' + c.capacity + '</span>' +
+            '<span class="text-[10px] px-1.5 py-0.2 rounded font-medium ' + (c.isFull ? 'bg-rose-100 text-[#B02A37]' : 'bg-slate-100 text-slate-600') + '">' + c.enrolled + '/' + c.capacity + '</span>' +
           '</div>' +
           '<div class="mt-2 text-[11px] text-slate-400 font-normal truncate">' + c.homeroomTeacher + '</div>' +
           '<div class="mt-2 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">' +
-            '<div class="h-full rounded-full ' + (c.isFull ? 'bg-rose-500' : 'bg-[#176B45]') + '" style="width: ' + pct + '%"></div>' +
+            '<div class="h-full rounded-full ' + (c.isFull ? 'bg-[#DC3545]' : 'bg-[#176B45]') + '" style="width: ' + pct + '%"></div>' +
           '</div>' +
         '</div>';
       });
@@ -1129,11 +1133,11 @@
           '<td class="px-4 py-3 font-mono text-[11px] text-slate-500">' + s.id + '</td>' +
           '<td class="px-4 py-3 font-medium text-slate-800">' + s.name + '</td>' +
           '<td class="px-4 py-3 text-slate-600">' + s.grade + '</td>' +
-          '<td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">' + s.class + '</span></td>' +
+          '<td class="px-4 py-3"><span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">' + s.class + '</span></td>' +
           '<td class="px-4 py-3 text-slate-500">' + (s.advisor || '—') + '</td>' +
           '<td class="px-4 py-3 font-medium text-slate-800">' + s.gpa + '</td>' +
           '<td class="px-4 py-3 text-right">' +
-            '<button type="button" class="btn-single-transfer p-1.5 text-slate-500 hover:text-[#176B45] hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer" data-id="' + s.id + '" title="Transfer Class">' +
+            '<button type="button" class="btn-single-transfer p-1.5 text-slate-500 hover:text-[#176B45] hover:bg-[#E8F3ED] rounded-lg transition-colors cursor-pointer" data-id="' + s.id + '" title="Transfer Class">' +
               '<span class="material-symbols-outlined text-lg">drive_file_move</span>' +
             '</button>' +
           '</td>' +
@@ -1213,8 +1217,8 @@
             '<label class="block text-[11px] font-medium uppercase tracking-wider text-slate-500 mb-1">Transfer Rationale</label>' +
             '<input type="text" id="modalTransferReason" value="Administrative placement optimization" class="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:ring-1 focus:ring-[#176B45]">' +
           '</div>' +
-          '<div class="p-3 bg-amber-50/70 border border-amber-200/60 rounded-xl text-[11px] text-amber-800 flex items-start gap-2">' +
-            '<span class="material-symbols-outlined text-amber-600 text-sm mt-0.5">info</span>' +
+          '<div class="p-3 bg-[#FEF0E3]/70 border border-[#FAD1A5]/60 rounded-xl text-[11px] text-[#8F4A07] flex items-start gap-2">' +
+            '<span class="material-symbols-outlined text-[#D9741A] text-sm mt-0.5">info</span>' +
             '<span>Class assignment automatically syncs student gradebook, exam schedule, and attendance ledger.</span>' +
           '</div>' +
         '</div>' +
@@ -1319,8 +1323,8 @@
 
       state.items.forEach(function (e) {
         var statusBadge = e.status === 'active' ?
-          '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">Active Exemption</span>' :
-          '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Under Review</span>';
+          '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">Active Exemption</span>' :
+          '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">Under Review</span>';
 
         html += '<tr class="hover:bg-slate-50/60 transition-colors">' +
           '<td class="px-4 py-3 font-mono text-[11px] text-slate-500">' + e.id + '</td>' +
@@ -1432,7 +1436,7 @@
           '</div>' +
           '<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">' +
             '<p class="text-xs text-slate-500">Highest Score</p>' +
-            '<p class="text-2xl font-medium text-emerald-700 mt-1">' + (state.summary.highestScore || '—') + '%</p>' +
+            '<p class="text-2xl font-medium text-[#176B45] mt-1">' + (state.summary.highestScore || '—') + '%</p>' +
           '</div>' +
           '<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">' +
             '<p class="text-xs text-slate-500">Lowest Score</p>' +
@@ -1488,9 +1492,9 @@
           '<td class="px-4 py-3 font-mono text-[11px] text-slate-400">' + r.studentId + '</td>' +
           '<td class="px-4 py-3">' + r.class + '</td>' +
           '<td class="px-4 py-3 font-medium text-slate-800">' + r.rawScore + '%</td>' +
-          '<td class="px-4 py-3"><span class="px-2 py-0.5 rounded font-medium ' + (r.letterGrade === 'A' ? 'bg-emerald-50 text-[#176B45]' : (r.letterGrade === 'F' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-700')) + '">' + r.letterGrade + '</span></td>' +
+          '<td class="px-4 py-3"><span class="px-2 py-0.5 rounded font-medium ' + (r.letterGrade === 'A' ? 'bg-[#E8F3ED] text-[#176B45]' : (r.letterGrade === 'F' ? 'bg-[#FDECEC] text-[#B02A37]' : 'bg-slate-100 text-slate-700')) + '">' + r.letterGrade + '</span></td>' +
           '<td class="px-4 py-3 font-medium text-slate-800">' + r.gradePoints.toFixed(1) + '</td>' +
-          '<td class="px-4 py-3">' + (r.isPassed ? '<span class="text-[#176B45] font-medium">Passed</span>' : '<span class="text-rose-600 font-medium">Failed</span>') + '</td>' +
+          '<td class="px-4 py-3">' + (r.isPassed ? '<span class="text-[#176B45] font-medium">Passed</span>' : '<span class="text-[#DC3545] font-medium">Failed</span>') + '</td>' +
         '</tr>';
       });
 
@@ -1522,7 +1526,7 @@
           '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">' +
             '<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs"><p class="text-xs text-slate-500">Enrolled Students</p><p class="text-2xl font-medium text-slate-800 mt-1">' + summary.totalStudents + '</p></div>' +
             '<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs"><p class="text-xs text-slate-500">Average Semester GPA</p><p class="text-2xl font-medium text-[#176B45] mt-1">' + summary.averageGpa + '</p></div>' +
-            '<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs"><p class="text-xs text-slate-500">Highest GPA</p><p class="text-2xl font-medium text-emerald-700 mt-1">' + summary.highestGpa + '</p></div>' +
+            '<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs"><p class="text-xs text-slate-500">Highest GPA</p><p class="text-2xl font-medium text-[#176B45] mt-1">' + summary.highestGpa + '</p></div>' +
             '<div class="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs"><p class="text-xs text-slate-500">Academic Standing</p><p class="text-sm font-medium text-slate-700 mt-2">100% Good / Honors</p></div>' +
           '</div>' +
           '<div class="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">' +
@@ -1547,8 +1551,8 @@
             '<td class="px-4 py-3">' + r.class + '</td>' +
             '<td class="px-4 py-3">' + r.creditsEarned + ' / ' + r.creditsAttempted + '</td>' +
             '<td class="px-4 py-3 font-medium text-slate-900">' + r.unweightedGpa.toFixed(2) + '</td>' +
-            '<td class="px-4 py-3 font-medium text-emerald-800">' + r.weightedGpa.toFixed(2) + '</td>' +
-            '<td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">' + r.standing + '</span></td>' +
+            '<td class="px-4 py-3 font-medium text-[#125638]">' + r.weightedGpa.toFixed(2) + '</td>' +
+            '<td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">' + r.standing + '</span></td>' +
           '</tr>';
         });
 
@@ -1571,11 +1575,11 @@
         var summary = res.summary || {};
 
         var html = '<div class="space-y-6">' +
-          '<div class="p-4 bg-amber-50/70 border border-amber-200/80 rounded-xl flex items-start gap-3">' +
-            '<span class="material-symbols-outlined text-amber-600">gavel</span>' +
+          '<div class="p-4 bg-[#FEF0E3]/70 border border-[#FAD1A5]/80 rounded-xl flex items-start gap-3">' +
+            '<span class="material-symbols-outlined text-[#D9741A]">gavel</span>' +
             '<div class="text-xs text-amber-900">' +
               '<p class="font-medium">Official Failing Criteria: ' + summary.failingThreshold + '</p>' +
-              '<p class="text-[11px] text-amber-700 mt-0.5">Students listed below have an active academic failure in at least one subject or cumulative semester GPA below the graduation threshold.</p>' +
+              '<p class="text-[11px] text-[#B45309] mt-0.5">Students listed below have an active academic failure in at least one subject or cumulative semester GPA below the graduation threshold.</p>' +
             '</div>' +
           '</div>' +
           '<div class="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">' +
@@ -1594,15 +1598,15 @@
 
         failedList.forEach(function (f) {
           var subjectsHtml = f.failedSubjects.map(function (s) {
-            return '<div class="text-[11px] text-rose-700 font-medium">' + s.subject + ': ' + s.score + '% (' + s.grade + ')</div>';
+            return '<div class="text-[11px] text-[#B02A37] font-medium">' + s.subject + ': ' + s.score + '% (' + s.grade + ')</div>';
           }).join('');
 
           html += '<tr class="hover:bg-slate-50/60">' +
             '<td class="px-4 py-3"><div class="font-medium text-slate-800">' + f.studentName + '</div><div class="text-[11px] text-slate-400 font-mono">' + f.studentId + '</div></td>' +
             '<td class="px-4 py-3">' + f.class + '</td>' +
-            '<td class="px-4 py-3 font-medium text-rose-700">' + f.gpa + '</td>' +
+            '<td class="px-4 py-3 font-medium text-[#B02A37]">' + f.gpa + '</td>' +
             '<td class="px-4 py-3">' + subjectsHtml + '</td>' +
-            '<td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">' + f.remedialStatus + '</span></td>' +
+            '<td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">' + f.remedialStatus + '</span></td>' +
             '<td class="px-4 py-3 text-slate-600">' + f.interventionAction + '</td>' +
           '</tr>';
         });
@@ -1754,7 +1758,7 @@
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      toast('Risk audit exported successfully (.CSV)', 'success');
+      toast('Risk audit exported (.CSV)', 'success');
     }
 
     function openStudentLogModal(student) {
@@ -1773,7 +1777,7 @@
           // Header
           '<div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">' +
             '<div class="flex items-center gap-3">' +
-              '<div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 flex items-center justify-center font-medium text-sm">' +
+              '<div class="w-10 h-10 rounded-xl bg-[#E8F3ED] dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 flex items-center justify-center font-medium text-sm">' +
                 escapeHtml(student.initials || 'ST') +
               '</div>' +
               '<div class="flex flex-col">' +
@@ -1803,11 +1807,11 @@
               '</div>' +
               '<div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800 text-center">' +
                 '<span class="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Excused Leaves</span>' +
-                '<p class="text-lg font-medium text-emerald-700 dark:text-emerald-400 mt-0.5">' + student.excusedAbsences + ' days</p>' +
+                '<p class="text-lg font-medium text-[#176B45] dark:text-emerald-400 mt-0.5">' + student.excusedAbsences + ' days</p>' +
               '</div>' +
               '<div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-100 dark:border-slate-800 text-center">' +
                 '<span class="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Unexcused</span>' +
-                '<p class="text-lg font-medium text-rose-700 dark:text-rose-400 mt-0.5">' + student.unexcusedAbsences + ' days</p>' +
+                '<p class="text-lg font-medium text-[#B02A37] dark:text-rose-400 mt-0.5">' + student.unexcusedAbsences + ' days</p>' +
               '</div>' +
             '</div>' +
 
@@ -1837,8 +1841,8 @@
           '<td class="px-3.5 py-2.5 text-slate-500">' + escapeHtml(log.session) + '</td>' +
           '<td class="px-3.5 py-2.5">' +
             (isUnexcused ?
-              '<span class="inline-flex items-center gap-1 text-rose-700 dark:text-rose-400 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>' + escapeHtml(log.category) + '</span>' :
-              '<span class="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>' + escapeHtml(log.category) + '</span>') +
+              '<span class="inline-flex items-center gap-1 text-[#B02A37] dark:text-rose-400 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-[#DC3545]"></span>' + escapeHtml(log.category) + '</span>' :
+              '<span class="inline-flex items-center gap-1 text-[#176B45] dark:text-emerald-400 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-[#176B45]"></span>' + escapeHtml(log.category) + '</span>') +
           '</td>' +
           '<td class="px-3.5 py-2.5 text-slate-500 dark:text-slate-400">' + escapeHtml(log.verification) + '</td>' +
           '<td class="px-3.5 py-2.5 text-right text-slate-600 dark:text-slate-300 font-medium">' + escapeHtml(log.action) + '</td>' +
@@ -1849,7 +1853,7 @@
 
           // Footer
           '<div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">' +
-            '<button type="button" id="modalContactGuardianBtn" class="px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-xs font-medium flex items-center gap-1.5 transition-colors">' +
+            '<button type="button" id="modalContactGuardianBtn" class="px-3 py-1.5 rounded-lg bg-[#E8F3ED] dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 hover:bg-[#E8F3ED] dark:hover:bg-emerald-900/50 text-xs font-medium flex items-center gap-1.5 transition-colors">' +
               '<span class="material-symbols-outlined text-[16px]">outgoing_mail</span>' +
               '<span>Dispatch Notice</span>' +
             '</button>' +
@@ -2000,7 +2004,7 @@
             student.noticeDate = 'Today, ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             closeModal();
             renderTableSection();
-            toast('Notice successfully dispatched to ' + g.name + ' (' + g.phone + ')', 'success');
+            toast('Notice dispatched to ' + g.name + ' (' + g.phone + ')', 'success');
           })
           .catch(function () {
             closeModal();
@@ -2058,12 +2062,12 @@
                 '<span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Overall Attendance Rate</span>' +
                 '<div class="flex items-baseline gap-2 mt-1">' +
                   '<span class="text-3xl font-medium text-[#176B45] dark:text-emerald-400 tracking-tight">' + k.overallRate + '%</span>' +
-                  '<span class="inline-flex items-center text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-1.5 py-0.5 rounded">' +
+                  '<span class="inline-flex items-center text-xs font-medium text-[#176B45] dark:text-emerald-400 bg-[#E8F3ED] dark:bg-emerald-950/50 px-1.5 py-0.5 rounded">' +
                     '<span class="material-symbols-outlined text-[14px]">arrow_upward</span>+0.4%' +
                   '</span>' +
                 '</div>' +
               '</div>' +
-              '<div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 flex items-center justify-center">' +
+              '<div class="w-10 h-10 rounded-xl bg-[#E8F3ED] dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 flex items-center justify-center">' +
                 '<span class="material-symbols-outlined text-[22px]">verified_user</span>' +
               '</div>' +
             '</div>' +
@@ -2073,7 +2077,7 @@
               '</div>' +
               '<div class="flex justify-between items-center text-slate-400 text-[11px] pt-1">' +
                 '<span>Benchmark Target: 95.0%</span>' +
-                '<span class="text-emerald-700 dark:text-emerald-400 font-medium">On Target</span>' +
+                '<span class="text-[#176B45] dark:text-emerald-400 font-medium">On Target</span>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -2094,12 +2098,12 @@
             '</div>' +
             '<div class="mt-4 pt-3 flex flex-col gap-1.5 border-t border-slate-100 dark:border-slate-800/60">' +
               '<div class="flex h-2 w-full rounded-full overflow-hidden bg-slate-100 dark:bg-slate-800">' +
-                '<div class="bg-emerald-600 h-full" style="width: 65.2%" title="Excused: 65.2%"></div>' +
-                '<div class="bg-amber-500 h-full" style="width: 34.8%" title="Unexcused: 34.8%"></div>' +
+                '<div class="bg-[#176B45] h-full" style="width: 65.2%" title="Excused: 65.2%"></div>' +
+                '<div class="bg-[#F28C28] h-full" style="width: 34.8%" title="Unexcused: 34.8%"></div>' +
               '</div>' +
               '<div class="flex justify-between items-center text-slate-400 text-[11px] pt-1">' +
-                '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-600"></span>65% Excused</span>' +
-                '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-500"></span>35% Unexcused</span>' +
+                '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#176B45]"></span>65% Excused</span>' +
+                '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#F28C28]"></span>35% Unexcused</span>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -2110,17 +2114,17 @@
               '<div class="flex flex-col">' +
                 '<span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">Unexcused Absences</span>' +
                 '<div class="flex items-baseline gap-2 mt-1">' +
-                  '<span class="text-3xl font-medium text-amber-700 dark:text-amber-400 tracking-tight">' + k.unexcusedTotal + '</span>' +
+                  '<span class="text-3xl font-medium text-[#B45309] dark:text-amber-400 tracking-tight">' + k.unexcusedTotal + '</span>' +
                   '<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">days</span>' +
                 '</div>' +
               '</div>' +
-              '<div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">' +
+              '<div class="w-10 h-10 rounded-xl bg-[#FEF0E3] dark:bg-amber-950/40 text-[#D9741A] dark:text-amber-400 flex items-center justify-center">' +
                 '<span class="material-symbols-outlined text-[22px]">warning</span>' +
               '</div>' +
             '</div>' +
             '<div class="mt-4 pt-3 flex items-center justify-between text-[11px] border-t border-slate-100 dark:border-slate-800/60">' +
               '<span class="text-slate-500 dark:text-slate-400">Policy Threshold: &gt;3 Days</span>' +
-              '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">Action Required</span>' +
+              '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-[#FEF0E3] dark:bg-amber-950/60 text-[#B45309] dark:text-amber-400 border border-[#FAD1A5] dark:border-[#8F4A07]/60">Action Required</span>' +
             '</div>' +
           '</div>' +
 
@@ -2128,19 +2132,19 @@
           '<div class="bg-white dark:bg-[#1c2420] border border-slate-200/80 dark:border-slate-800/80 rounded-xl p-5 shadow-xs flex flex-col justify-between">' +
             '<div class="flex items-start justify-between">' +
               '<div class="flex flex-col">' +
-                '<span class="text-[11px] font-medium uppercase tracking-wider text-rose-700 dark:text-rose-400">Chronic Absenteeism Flag</span>' +
+                '<span class="text-[11px] font-medium uppercase tracking-wider text-[#B02A37] dark:text-rose-400">Chronic Absenteeism Flag</span>' +
                 '<div class="flex items-baseline gap-2 mt-1">' +
-                  '<span class="text-3xl font-medium text-rose-700 dark:text-rose-400 tracking-tight">' + k.chronicAbsentees + '</span>' +
-                  '<span class="text-xs text-rose-600 dark:text-rose-400 font-medium">students flagged</span>' +
+                  '<span class="text-3xl font-medium text-[#B02A37] dark:text-rose-400 tracking-tight">' + k.chronicAbsentees + '</span>' +
+                  '<span class="text-xs text-[#DC3545] dark:text-rose-400 font-medium">students flagged</span>' +
                 '</div>' +
               '</div>' +
-              '<div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">' +
+              '<div class="w-10 h-10 rounded-xl bg-[#FDECEC] dark:bg-rose-950/40 text-[#DC3545] dark:text-rose-400 flex items-center justify-center">' +
                 '<span class="material-symbols-outlined text-[22px]">emergency_home</span>' +
               '</div>' +
             '</div>' +
             '<div class="mt-4 pt-3 flex items-center justify-between text-[11px] border-t border-slate-100 dark:border-slate-800/60">' +
               '<span class="text-slate-500 dark:text-slate-400">&ge; 10% School Term Days</span>' +
-              '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60">Protocol Active</span>' +
+              '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-[#FDECEC] dark:bg-rose-950/60 text-[#B02A37] dark:text-rose-400 border border-[#F5C2C7] dark:border-[#B02A37]/60">Protocol Active</span>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -2170,8 +2174,8 @@
       ];
 
       cohorts.forEach(function (c) {
-        var barColor = c.attendancePct >= 96 ? 'bg-[#176B45]' : (c.attendancePct >= 95 ? 'bg-emerald-600' : (c.attendancePct >= 94 ? 'bg-[#176B45]/80' : 'bg-amber-500'));
-        var textColor = c.attendancePct >= 95 ? 'text-[#176B45] dark:text-emerald-400' : (c.attendancePct >= 94 ? 'text-slate-800 dark:text-slate-200' : 'text-amber-700 dark:text-amber-400');
+        var barColor = c.attendancePct >= 96 ? 'bg-[#176B45]' : (c.attendancePct >= 95 ? 'bg-[#176B45]' : (c.attendancePct >= 94 ? 'bg-[#176B45]/80' : 'bg-[#F28C28]'));
+        var textColor = c.attendancePct >= 95 ? 'text-[#176B45] dark:text-emerald-400' : (c.attendancePct >= 94 ? 'text-slate-800 dark:text-slate-200' : 'text-[#B45309] dark:text-amber-400');
 
         html += '<div class="flex flex-col gap-1">' +
           '<div class="flex justify-between items-center text-xs">' +
@@ -2202,7 +2206,7 @@
             '<div class="flex items-center justify-between">' +
               '<div class="flex flex-col">' +
                 '<div class="flex items-center gap-2">' +
-                  '<span class="material-symbols-outlined text-[20px] text-emerald-600">pie_chart</span>' +
+                  '<span class="material-symbols-outlined text-[20px] text-[#176B45]">pie_chart</span>' +
                   '<h2 class="text-sm font-medium text-slate-800 dark:text-slate-100">Absence Classification</h2>' +
                 '</div>' +
                 '<span class="text-xs text-slate-400 mt-0.5">Verification status &amp; root causes breakdown</span>' +
@@ -2214,7 +2218,7 @@
               // Medical
               '<div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-lg flex items-center justify-between border border-slate-100 dark:border-slate-800">' +
                 '<div class="flex items-center gap-3">' +
-                  '<div class="w-3 h-3 rounded-full bg-emerald-600 shrink-0"></div>' +
+                  '<div class="w-3 h-3 rounded-full bg-[#176B45] shrink-0"></div>' +
                   '<div class="flex flex-col">' +
                     '<span class="text-xs font-medium text-slate-800 dark:text-slate-100">Medical &amp; Authorized Leaves</span>' +
                     '<span class="text-[11px] text-slate-400">Clinic notes &amp; guardian approvals</span>' +
@@ -2222,44 +2226,44 @@
                 '</div>' +
                 '<div class="text-right">' +
                   '<div class="text-xs font-medium text-slate-800 dark:text-slate-100">75 days</div>' +
-                  '<span class="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">65.2%</span>' +
+                  '<span class="text-[11px] font-medium text-[#176B45] dark:text-emerald-400">65.2%</span>' +
                 '</div>' +
               '</div>' +
 
               // Unexcused Truancy
               '<div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-lg flex items-center justify-between border border-slate-100 dark:border-slate-800">' +
                 '<div class="flex items-center gap-3">' +
-                  '<div class="w-3 h-3 rounded-full bg-rose-600 shrink-0"></div>' +
+                  '<div class="w-3 h-3 rounded-full bg-[#DC3545] shrink-0"></div>' +
                   '<div class="flex flex-col">' +
                     '<span class="text-xs font-medium text-slate-800 dark:text-slate-100">Unexcused Truancy</span>' +
                     '<span class="text-[11px] text-slate-400">Absent without prior notice</span>' +
                   '</div>' +
                 '</div>' +
                 '<div class="text-right">' +
-                  '<div class="text-xs font-medium text-rose-700 dark:text-rose-400">25 days</div>' +
-                  '<span class="text-[11px] font-medium text-rose-600 dark:text-rose-400">21.7%</span>' +
+                  '<div class="text-xs font-medium text-[#B02A37] dark:text-rose-400">25 days</div>' +
+                  '<span class="text-[11px] font-medium text-[#DC3545] dark:text-rose-400">21.7%</span>' +
                 '</div>' +
               '</div>' +
 
               // Unverified
               '<div class="p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-lg flex items-center justify-between border border-slate-100 dark:border-slate-800">' +
                 '<div class="flex items-center gap-3">' +
-                  '<div class="w-3 h-3 rounded-full bg-amber-500 shrink-0"></div>' +
+                  '<div class="w-3 h-3 rounded-full bg-[#F28C28] shrink-0"></div>' +
                   '<div class="flex flex-col">' +
                     '<span class="text-xs font-medium text-slate-800 dark:text-slate-100">Unverified / Late Submission</span>' +
                     '<span class="text-[11px] text-slate-400">Pending administrative review</span>' +
                   '</div>' +
                 '</div>' +
                 '<div class="text-right">' +
-                  '<div class="text-xs font-medium text-amber-700 dark:text-amber-400">15 days</div>' +
-                  '<span class="text-[11px] font-medium text-amber-600 dark:text-amber-400">13.1%</span>' +
+                  '<div class="text-xs font-medium text-[#B45309] dark:text-amber-400">15 days</div>' +
+                  '<span class="text-[11px] font-medium text-[#D9741A] dark:text-amber-400">13.1%</span>' +
                 '</div>' +
               '</div>' +
             '</div>' +
 
             '<div class="flex items-center justify-between pt-2 text-slate-400 text-[11px] border-t border-slate-100 dark:border-slate-800">' +
               '<span>Total 115 absence incidents recorded</span>' +
-              '<span class="text-emerald-700 dark:text-emerald-400 font-medium">Verified: 65.2%</span>' +
+              '<span class="text-[#176B45] dark:text-emerald-400 font-medium">Verified: 65.2%</span>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -2324,7 +2328,7 @@
           // Subheader Telemetry & Batch Action Bar
           '<div id="tableTelemetrySubheader" class="px-5 py-2.5 bg-slate-50/80 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">' +
             '<div class="flex items-center gap-2">' +
-              '<span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>' +
+              '<span class="w-2 h-2 rounded-full bg-[#DC3545] animate-pulse"></span>' +
               '<span class="text-slate-600 dark:text-slate-300 font-medium" id="tableFilterCountText">' +
                 'Showing ' + state.filteredStudents.length + ' student records requiring institutional oversight' +
               '</span>' +
@@ -2436,39 +2440,39 @@
         var rLevel = s.riskLevel || 'Normal';
         var riskBadge = '';
         if (rLevel.indexOf('Critical') !== -1) {
-          riskBadge = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60 text-[11px] font-medium">' +
-            '<span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Critical (&gt;5 Days)' +
+          riskBadge = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#FDECEC] dark:bg-rose-950/60 text-[#B02A37] dark:text-rose-400 border border-[#F5C2C7] dark:border-[#B02A37]/60 text-[11px] font-medium">' +
+            '<span class="w-1.5 h-1.5 rounded-full bg-[#DC3545]"></span> Critical (&gt;5 Days)' +
           '</span>';
         } else if (rLevel.indexOf('Moderate') !== -1) {
-          riskBadge = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 text-[11px] font-medium">' +
-            '<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Moderate' +
+          riskBadge = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#FEF0E3] dark:bg-amber-950/60 text-[#B45309] dark:text-amber-400 border border-[#FAD1A5] dark:border-[#8F4A07]/60 text-[11px] font-medium">' +
+            '<span class="w-1.5 h-1.5 rounded-full bg-[#F28C28]"></span> Moderate' +
           '</span>';
         } else {
-          riskBadge = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-50 dark:bg-emerald-950/60 text-[#176B45] dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 text-[11px] font-medium">' +
+          riskBadge = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#E8F3ED] dark:bg-emerald-950/60 text-[#176B45] dark:text-emerald-400 border border-[#C8E3D3] dark:border-[#125638]/60 text-[11px] font-medium">' +
             '<span class="w-1.5 h-1.5 rounded-full bg-[#176B45]"></span> Normal' +
           '</span>';
         }
 
         // Attendance rate color
-        var rateColor = s.attendancePct < 90 ? 'text-rose-700 dark:text-rose-400' : (s.attendancePct < 93 ? 'text-amber-700 dark:text-amber-400' : 'text-slate-800 dark:text-slate-100');
-        var barColor = s.attendancePct < 90 ? 'bg-rose-500' : (s.attendancePct < 93 ? 'bg-amber-500' : 'bg-[#176B45]');
+        var rateColor = s.attendancePct < 90 ? 'text-[#B02A37] dark:text-rose-400' : (s.attendancePct < 93 ? 'text-[#B45309] dark:text-amber-400' : 'text-slate-800 dark:text-slate-100');
+        var barColor = s.attendancePct < 90 ? 'bg-[#DC3545]' : (s.attendancePct < 93 ? 'bg-[#F28C28]' : 'bg-[#176B45]');
 
         // Unexcused color
-        var unexcusedColor = s.unexcusedAbsences >= 3 ? 'text-rose-700 dark:text-rose-400 font-medium' : 'text-slate-800 dark:text-slate-200 font-medium';
+        var unexcusedColor = s.unexcusedAbsences >= 3 ? 'text-[#B02A37] dark:text-rose-400 font-medium' : 'text-slate-800 dark:text-slate-200 font-medium';
 
         // Notice column
         var isDispatched = s.noticeStatus === 'Dispatched' || s.parentNotified;
         var noticeCol = '';
         if (isDispatched) {
           noticeCol = '<div class="flex flex-col">' +
-            '<span class="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-1">' +
+            '<span class="text-[11px] text-[#176B45] dark:text-emerald-400 font-medium flex items-center gap-1">' +
               '<span class="material-symbols-outlined text-[14px]">done_all</span> Dispatched' +
             '</span>' +
             '<span class="text-[10px] text-slate-400">' + escapeHtml(s.noticeDate || 'Today, 08:30 AM') + '</span>' +
           '</div>';
         } else {
           noticeCol = '<div class="flex flex-col">' +
-            '<span class="text-[11px] text-amber-700 dark:text-amber-400 font-medium flex items-center gap-1">' +
+            '<span class="text-[11px] text-[#B45309] dark:text-amber-400 font-medium flex items-center gap-1">' +
               '<span class="material-symbols-outlined text-[14px]">schedule</span> Pending Dispatch' +
             '</span>' +
             '<span class="text-[10px] text-slate-400">Action Required</span>' +
@@ -2481,7 +2485,7 @@
           '</td>' +
           '<td class="py-3.5 px-4">' +
             '<div class="flex items-center gap-3">' +
-              '<div class="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 flex items-center justify-center font-medium text-[11px]">' +
+              '<div class="w-8 h-8 rounded-full bg-[#E8F3ED] dark:bg-emerald-950/40 text-[#176B45] dark:text-emerald-400 flex items-center justify-center font-medium text-[11px]">' +
                 escapeHtml(s.initials || 'ST') +
               '</div>' +
               '<div class="flex flex-col">' +
@@ -2510,7 +2514,7 @@
               '<button type="button" class="btn-view-log px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition-colors" data-id="' + escapeHtml(s.studentId) + '">' +
                 'View Log' +
               '</button>' +
-              '<button type="button" class="btn-contact-guardian w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#176B45] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors" data-id="' + escapeHtml(s.studentId) + '" title="Contact Guardian">' +
+              '<button type="button" class="btn-contact-guardian w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-[#176B45] hover:bg-[#E8F3ED] dark:hover:bg-emerald-950/40 transition-colors" data-id="' + escapeHtml(s.studentId) + '" title="Contact Guardian">' +
                 '<span class="material-symbols-outlined text-[18px]">contact_phone</span>' +
               '</button>' +
             '</div>' +
@@ -2793,7 +2797,7 @@
       })
       .catch(function (err) {
         console.error('Error fetching absence statistics:', err);
-        root.innerHTML = '<div class="p-8 text-center text-rose-600 bg-rose-50 dark:bg-rose-950/40 rounded-xl border border-rose-200">' +
+        root.innerHTML = '<div class="p-8 text-center text-[#DC3545] bg-[#FDECEC] dark:bg-rose-950/40 rounded-xl border border-[#F5C2C7]">' +
           '<p class="text-sm font-medium">Failed to load absence statistics. Please check server connectivity.</p>' +
         '</div>';
       });
@@ -2830,8 +2834,8 @@
 
           list.forEach(function (r) {
             var statusBadge = r.status === 'approved' ?
-              '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-[#176B45] border border-emerald-200">Approved & Enrolled</span>' :
-              (r.status === 'missing_docs' ? '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Missing Docs</span>' : '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Pending Review</span>');
+              '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">Approved & Enrolled</span>' :
+              (r.status === 'missing_docs' ? '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">Missing Docs</span>' : '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Pending Review</span>');
 
             html += '<tr class="hover:bg-slate-50/60">' +
               '<td class="px-4 py-3 font-mono text-[11px] text-slate-500">' + r.id + '</td>' +
@@ -2898,14 +2902,14 @@
             html += '<div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs flex flex-col justify-between space-y-3">' +
               '<div>' +
                 '<div class="flex items-center justify-between">' +
-                  '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">' + c.category + '</span>' +
+                  '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">' + c.category + '</span>' +
                   '<span class="text-[11px] text-slate-400 font-mono">' + c.dateAwarded + '</span>' +
                 '</div>' +
                 '<h4 class="text-sm font-medium text-slate-800 mt-2">' + c.title + '</h4>' +
                 '<p class="text-xs text-slate-600 mt-1 leading-relaxed">' + c.citation + '</p>' +
               '</div>' +
               '<div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">' +
-                '<div>Honoree: <strong class="font-medium text-slate-800">' + c.studentName + '</strong> (' + c.class + ')</div>' +
+                '<div>Honoree: <span class="font-medium text-slate-800">' + c.studentName + '</span> (' + c.class + ')</div>' +
                 '<div class="text-[#176B45] font-medium">' + c.awardedBy + '</div>' +
               '</div>' +
             '</div>';
@@ -2979,7 +2983,7 @@
           items.forEach(function (d) {
             var sevBadge = d.severity === 'Minor' ?
               '<span class="px-2 py-0.5 rounded text-[11px] bg-slate-100 text-slate-700">Minor</span>' :
-              '<span class="px-2 py-0.5 rounded text-[11px] bg-amber-100 text-amber-800 font-medium">Moderate</span>';
+              '<span class="px-2 py-0.5 rounded text-[11px] bg-[#FEF0E3] text-[#8F4A07] font-medium">Moderate</span>';
 
             html += '<tr class="hover:bg-slate-50/60">' +
               '<td class="px-4 py-3 font-mono text-[11px] text-slate-500">' + d.id + '</td>' +
@@ -2988,7 +2992,7 @@
               '<td class="px-4 py-3 font-medium text-slate-800">' + d.category + '</td>' +
               '<td class="px-4 py-3">' + sevBadge + '</td>' +
               '<td class="px-4 py-3 text-slate-600 max-w-xs truncate">' + d.actionTaken + '</td>' +
-              '<td class="px-4 py-3">' + (d.status === 'resolved' ? '<span class="text-[#176B45] font-medium">Resolved</span>' : '<span class="text-amber-600 font-medium">Under Review</span>') + '</td>' +
+              '<td class="px-4 py-3">' + (d.status === 'resolved' ? '<span class="text-[#176B45] font-medium">Resolved</span>' : '<span class="text-[#D9741A] font-medium">Under Review</span>') + '</td>' +
               '<td class="px-4 py-3 text-right">' +
                 (d.status !== 'resolved' ?
                   '<button type="button" class="btn-resolve px-2.5 py-1 rounded bg-[#176B45] text-white hover:bg-[#125638] font-medium text-[11px] cursor-pointer" data-id="' + d.id + '">Adjudicate</button>' :

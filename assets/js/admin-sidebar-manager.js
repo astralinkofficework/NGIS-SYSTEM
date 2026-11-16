@@ -15,10 +15,12 @@
   'use strict';
 
   var PORTAL_ROLE_SCOPE = {
+    superadmin: 'Super Admin, System Administrator',
     admin: 'Admin, Super Admin',
     principal: 'Principal',
     teacher: 'Teacher',
-    student: 'Student'
+    student: 'Student',
+    staff: 'Staff, Operations'
   };
 
   var COMMON_ICONS = [
@@ -106,7 +108,8 @@
         settings: document.getElementById('sgmSettings'),
         health: document.getElementById('sgmHealth'),
         viewportBtns: document.querySelectorAll('[data-sgm-viewport]'),
-        previewCollapseBtn: document.getElementById('sgmPreviewCollapse')
+        previewCollapseBtn: document.getElementById('sgmPreviewCollapse'),
+        mobileTabBtns: document.querySelectorAll('.sgm-mobile-tab-btn')
       };
 
       this.bindEvents();
@@ -188,6 +191,28 @@
         });
         d.settings.addEventListener('focusout', function () { self.editSessionOpen = false; });
       }
+
+      // Mobile column tabs switcher
+      if (d.mobileTabBtns && d.mobileTabBtns.length) {
+        Array.prototype.forEach.call(d.mobileTabBtns, function (btn) {
+          btn.addEventListener('click', function () {
+            self.setMobileTab(btn.dataset.sgmTab);
+          });
+        });
+      }
+    },
+
+    setMobileTab: function (tab) {
+      if (!tab) return;
+      var grid = document.querySelector('.sgm-grid');
+      if (grid) {
+        grid.classList.remove('sgm-mobile-active-tree', 'sgm-mobile-active-preview', 'sgm-mobile-active-settings');
+        grid.classList.add('sgm-mobile-active-' + tab);
+      }
+      var btns = document.querySelectorAll('.sgm-mobile-tab-btn');
+      Array.prototype.forEach.call(btns, function (b) {
+        b.classList.toggle('active', b.dataset.sgmTab === tab);
+      });
     },
 
     // ────────────────────────────────────────────────────────────
@@ -236,7 +261,9 @@
       this.dirty = false;
       if (this.dom.portalSelect) this.dom.portalSelect.value = portal;
       if (this.dom.tree) {
-        this.dom.tree.innerHTML = '<div class="cms-loading"><span class="cms-spinner" aria-hidden="true"></span><span>Loading navigation…</span></div>';
+        this.dom.tree.innerHTML = window.NGIS_SKELETON
+          ? window.NGIS_SKELETON.table({ rows: 5 })
+          : '<div class="ngis-sk-table-container p-4"></div>';
       }
 
       return fetch('/api/nav/config?portal=' + encodeURIComponent(portal))
@@ -612,6 +639,9 @@
       });
       this.renderPreview();
       this.renderSettings();
+      if (typeof window !== 'undefined' && window.innerWidth < 768) {
+        this.setMobileTab('settings');
+      }
     },
 
     toggleGroup: function (gid) {
@@ -673,17 +703,34 @@
     },
 
     renameGroup: function (gid) {
+      var self = this;
       var loc = this.findGroup(gid);
       if (!loc) return;
-      var name = window.prompt('Group name', loc.group.label || '');
-      if (name == null) return;
-      name = name.trim();
-      if (!name || name === loc.group.label) return;
-      this.pushUndo();
-      loc.group.label = name;
-      this.markDirty();
-      this.renderTree();
-      this.renderPreview();
+      var html =
+        '<div class="cms-form-group">' +
+          '<label class="cms-label" for="sgmRenameGroupInput">Group name</label>' +
+          '<input id="sgmRenameGroupInput" class="cms-input" type="text" placeholder="e.g. Academics">' +
+        '</div>';
+      window.CMS.openModal('Rename navigation group', html, function () {
+        var inp = document.getElementById('sgmRenameGroupInput');
+        var name = inp ? inp.value.trim() : '';
+        if (!name) {
+          if (window.NGISKit && inp) window.NGISKit.setFieldError(inp, 'Enter a group name to continue.');
+          return;
+        }
+        if (window.NGISKit && inp) window.NGISKit.clearFieldError(inp);
+        window.CMS.closeModal();
+        if (name === loc.group.label) return;
+        self.pushUndo();
+        loc.group.label = name;
+        self.markDirty();
+        self.renderTree();
+        self.renderPreview();
+      }, 'Save name');
+      setTimeout(function () {
+        var inp = document.getElementById('sgmRenameGroupInput');
+        if (inp) { inp.value = loc.group.label || ''; inp.focus(); inp.select(); }
+      }, 20);
     },
 
     deleteGroup: function (gid) {
@@ -696,53 +743,93 @@
           if (it.children) rec(it.children);
         });
       })(loc.group.links || []);
+      var self = this;
       if (hasLocked) {
-        window.alert('This group contains mandatory navigation items and cannot be removed.');
+        window.CMS.showToast('This group contains locked system items and cannot be removed.');
         return;
       }
-      if (!window.confirm('Remove the group “' + (loc.group.label || gid) + '” and all its items from the draft navigation?')) return;
-      this.pushUndo();
-      this.working.groups.splice(loc.index, 1);
-      this.markDirty();
-      this.renderTree();
-      this.renderPreview();
-      this.renderSettings();
+      var runDeleteGroup = function () {
+        self.pushUndo();
+        self.working.groups.splice(loc.index, 1);
+        self.markDirty();
+        self.renderTree();
+        self.renderPreview();
+        self.renderSettings();
+      };
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Remove navigation group?',
+          description: 'Remove "' + (loc.group.label || gid) + '" and all items inside it from this draft.',
+          consequence: 'This only edits your navigation draft until you publish.',
+          confirmLabel: 'Remove group',
+          isDestructive: true,
+          onConfirm: runDeleteGroup
+        });
+      }
     },
 
     deleteItem: function (id) {
+      var self = this;
       var loc = this.findNode(id);
       if (!loc) return;
       if (loc.item.locked) {
-        window.alert('This is mandatory system navigation and cannot be removed. You can reorder it, but it must remain.');
+        window.CMS.showToast('This system item is required and cannot be removed. You can reorder it instead.');
         return;
       }
-      if (!window.confirm('Remove “' + (loc.item.label || id) + '” from the draft navigation? Backend modules and records are not deleted.')) return;
-      this.pushUndo();
-      loc.meta.siblings.splice(loc.meta.index, 1);
-      if (this.selectedId === id) this.selectedId = null;
-      this.markDirty();
-      this.renderTree();
-      this.renderPreview();
-      this.renderSettings();
+      var runDeleteItem = function () {
+        self.pushUndo();
+        loc.meta.siblings.splice(loc.meta.index, 1);
+        if (self.selectedId === id) self.selectedId = null;
+        self.markDirty();
+        self.renderTree();
+        self.renderPreview();
+        self.renderSettings();
+      };
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Remove navigation item?',
+          description: 'Remove "' + (loc.item.label || id) + '" from the draft sidebar.',
+          consequence: 'Underlying pages and data records stay intact.',
+          confirmLabel: 'Remove item',
+          isDestructive: true,
+          onConfirm: runDeleteItem
+        });
+      }
     },
 
     addGroup: function () {
-      var name = window.prompt('New navigation group name', 'New Group');
-      if (name == null) return;
-      name = name.trim();
-      if (!name) return;
-      this.pushUndo();
-      this.working.groups = this.working.groups || [];
-      this.working.groups.push({ id: uid('grp'), label: name, links: [] });
-      this.markDirty();
-      this.renderTree();
-      this.renderPreview();
+      var self = this;
+      var html =
+        '<div class="cms-form-group">' +
+          '<label class="cms-label" for="sgmAddGroupInput">New navigation group name</label>' +
+          '<input id="sgmAddGroupInput" class="cms-input" type="text" placeholder="e.g. Operations">' +
+        '</div>';
+      window.CMS.openModal('Add navigation group', html, function () {
+        var inp = document.getElementById('sgmAddGroupInput');
+        var name = inp ? inp.value.trim() : '';
+        if (!name) {
+          if (window.NGISKit && inp) window.NGISKit.setFieldError(inp, 'Enter a name for the new group.');
+          return;
+        }
+        if (window.NGISKit && inp) window.NGISKit.clearFieldError(inp);
+        window.CMS.closeModal();
+        self.pushUndo();
+        self.working.groups = self.working.groups || [];
+        self.working.groups.push({ id: uid('grp'), label: name, links: [] });
+        self.markDirty();
+        self.renderTree();
+        self.renderPreview();
+      }, 'Create group');
+      setTimeout(function () {
+        var inp = document.getElementById('sgmAddGroupInput');
+        if (inp) { inp.value = 'New Group'; inp.focus(); inp.select(); }
+      }, 20);
     },
 
     addItem: function (groupId, parentId) {
       var groups = this.working.groups || [];
       if (!groups.length) {
-        window.alert('Create a navigation group first.');
+        window.CMS.showToast('Create a navigation group before adding items.');
         return;
       }
       var gid = groupId;
@@ -1364,51 +1451,61 @@
           if (res.data) { self.state = res.data; self.updateStatusChip(res.data.status); }
           if (!silent) window.CMS.showToast('Navigation draft saved for the ' + self.portalLabel() + '.');
         } else if (!silent) {
-          window.alert('Failed to save draft: ' + ((res && res.error) || 'Server error'));
+          window.CMS.showToast('Could not save draft: ' + ((res && res.error) || 'Please try again.'));
         }
         return res;
       })
       .catch(function (err) {
-        if (!silent) window.alert('Network error saving draft.');
+        if (!silent) window.CMS.showToast('Network error while saving navigation draft.');
         throw err;
       });
     },
 
     publish: function () {
       var self = this;
-      if (!window.confirm('Validate and publish the navigation changes to the live ' + this.portalLabel() + '?')) return;
+      var runPublish = function () {
+        var doPublish = function () {
+          return fetch('/api/nav/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ portal: self.portal, summary: 'Published navigation updates for ' + self.portal })
+          }).then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); });
+        };
 
-      var doPublish = function () {
-        return fetch('/api/nav/publish', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ portal: self.portal, summary: 'Published navigation updates for ' + self.portal })
-        }).then(function (r) { return r.json().then(function (body) { return { ok: r.ok, body: body }; }); });
+        var chain = self.dirty ? self.saveDraft(true) : Promise.resolve();
+        chain.then(doPublish).then(function (out) {
+          var res = out.body;
+          if (res && res.success) {
+            self.dirty = false;
+            self.undoStack = [];
+            self.updateUndoBtn();
+            if (res.state) { self.state = res.state; self.updateStatusChip('published'); }
+            window.CMS.showToast('Published live. Version ' + ((res.data && res.data.version_id) || '') + '.');
+            self.hideHealth();
+            return self.reloadState();
+          }
+          // Publication blocked by validation
+          var err = res && res.error;
+          if (err && typeof err === 'object' && err.findings) {
+            self.renderFindings('Publication blocked · ' + self.portalLabel(), err.findings);
+            window.CMS.showToast('Publication blocked: resolve the high-severity findings.');
+          } else {
+            window.CMS.showToast('Publish failed: ' + ((err && err.message) || err || 'Please try again.'));
+          }
+        }).catch(function () {
+          window.CMS.showToast('Network error while publishing navigation.');
+        });
       };
-
-      var chain = this.dirty ? this.saveDraft(true) : Promise.resolve();
-      chain.then(doPublish).then(function (out) {
-        var res = out.body;
-        if (res && res.success) {
-          self.dirty = false;
-          self.undoStack = [];
-          self.updateUndoBtn();
-          if (res.state) { self.state = res.state; self.updateStatusChip('published'); }
-          window.CMS.showToast('Published live. Version ' + ((res.data && res.data.version_id) || '') + '.');
-          self.hideHealth();
-          return self.reloadState();
-        }
-        // Publication blocked by validation
-        var err = res && res.error;
-        if (err && typeof err === 'object' && err.findings) {
-          self.renderFindings('Publication blocked · ' + self.portalLabel(), err.findings);
-          window.CMS.showToast('Publication blocked: resolve the high-severity findings.');
-        } else {
-          window.alert('Publish failed: ' + ((err && err.message) || err || 'Unknown error'));
-        }
-      }).catch(function () {
-        window.alert('Network error during publish.');
-      });
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Publish navigation updates?',
+          description: 'Validate and publish your draft sidebar to the live ' + this.portalLabel() + '.',
+          consequence: 'Signed-in portal users will see the updated sidebar navigation immediately.',
+          confirmLabel: 'Publish navigation',
+          isDestructive: false,
+          onConfirm: runPublish
+        });
+      }
     },
 
     openVersions: function () {
@@ -1448,41 +1545,63 @@
 
     restoreVersion: function (versionId) {
       var self = this;
-      if (!window.confirm('Restore the ' + this.portalLabel() + ' navigation from version ' + versionId + '?')) return;
-      fetch('/api/nav/restore', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version_id: versionId })
-      })
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        if (res && res.success) {
-          window.CMS.closeModal();
-          window.CMS.showToast('Restored navigation from ' + versionId + '.');
-          self.selectPortal(self.portal);
-        } else {
-          window.alert('Restore failed: ' + ((res && res.error) || 'Server error'));
-        }
-      });
+      var runRestore = function () {
+        fetch('/api/nav/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ version_id: versionId })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && res.success) {
+            window.CMS.closeModal();
+            window.CMS.showToast('Restored navigation from ' + versionId + '.');
+            self.selectPortal(self.portal);
+          } else {
+            window.CMS.showToast('Restore failed: ' + ((res && res.error) || 'Please try again.'));
+          }
+        });
+      };
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Restore version ' + versionId + '?',
+          description: 'Revert the ' + this.portalLabel() + ' sidebar navigation to this snapshot.',
+          consequence: 'Any unpublished draft changes will be replaced.',
+          confirmLabel: 'Restore version',
+          isDestructive: true,
+          onConfirm: runRestore
+        });
+      }
     },
 
     restoreDefaults: function () {
       var self = this;
-      if (!window.confirm('Restore the factory navigation for the ' + this.portalLabel() + '? Unpublished draft changes will be discarded.')) return;
-      fetch('/api/nav/defaults', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ portal: this.portal })
-      })
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        if (res && res.success) {
-          window.CMS.showToast('Factory navigation restored for the ' + self.portalLabel() + '.');
-          self.selectPortal(self.portal);
-        } else {
-          window.alert('Reset failed: ' + ((res && res.error) || 'Server error'));
-        }
-      });
+      var runReset = function () {
+        fetch('/api/nav/defaults', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ portal: self.portal })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && res.success) {
+            window.CMS.showToast('Factory navigation restored for the ' + self.portalLabel() + '.');
+            self.selectPortal(self.portal);
+          } else {
+            window.CMS.showToast('Reset failed: ' + ((res && res.error) || 'Please try again.'));
+          }
+        });
+      };
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Reset to default navigation?',
+          description: 'Restore the factory sidebar navigation for the ' + this.portalLabel() + '.',
+          consequence: 'Any unpublished draft changes will be discarded.',
+          confirmLabel: 'Reset navigation',
+          isDestructive: true,
+          onConfirm: runReset
+        });
+      }
     },
 
     // ────────────────────────────────────────────────────────────

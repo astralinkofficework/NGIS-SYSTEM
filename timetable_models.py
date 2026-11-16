@@ -23,6 +23,7 @@ import os
 import random
 import sys
 import threading
+import time
 from copy import deepcopy
 
 # The DFS visits one frame per lesson (12 classes x 34 lessons = 408 by default).
@@ -35,6 +36,18 @@ STATE_PATH = os.path.join(ROOT, "data", "timetable_state.json")
 # Bump whenever the seed shape changes; old documents are rebuilt on load so a
 # stale file can never leave the UI with impossible counts.
 SCHEMA_VERSION = 4
+
+
+class RevisionConflict(Exception):
+    """Raised when a save arrives against a stale document revision."""
+
+    def __init__(self, current_revision: int):
+        self.current_revision = current_revision
+        super().__init__(f"stale revision (server at {current_revision})")
+
+
+class SubjectValidationError(Exception):
+    """Raised when a subject create/update payload fails validation."""
 
 # ── Static configuration ───────────────────────────────────────────────────
 
@@ -152,10 +165,29 @@ def _seed_subjects() -> List[Dict[str, Any]]:
 
 def _seed_classes() -> List[Dict[str, Any]]:
     classes = []
+    campus_dept_map = {
+        7: ("Tuol Kork Main Campus", "Khmer Program", "English Program"),
+        8: ("Tuol Kork Main Campus", "Khmer Program", "English Program"),
+        9: ("Tuol Kork Main Campus", "Khmer Program", "English Program"),
+        10: ("Depo Campus", "Khmer Program", "English Program"),
+        11: ("Sen Sok Campus", "Khmer Program", "English Program"),
+        12: ("Sen Sok Campus", "Khmer Program", "English Program"),
+    }
+    editor_map = {
+        "class_11A": {"id": "TCH-2024-042", "name": "Dr. Sarah Jenkins", "role": "Teacher", "email": "teacher@ngis.edu.kh"},
+        "class_11B": {"id": "PRIN-2024-001", "name": "Dr. Ly Bunheng", "role": "Principal", "email": "principal@ngis.edu.kh"},
+        "class_10A": {"id": "TCH-2024-015", "name": "Chhun Vichea", "role": "Teacher", "email": "vichea.chhun@ngis.edu.kh"},
+        "class_10B": {"id": "PRIN-2024-001", "name": "Dr. Ly Bunheng", "role": "Principal", "email": "principal@ngis.edu.kh"},
+        "class_7A": {"id": "PRIN-2024-001", "name": "Dr. Ly Bunheng", "role": "Principal", "email": "principal@ngis.edu.kh"},
+        "class_8A": {"id": "PRIN-2024-001", "name": "Dr. Ly Bunheng", "role": "Principal", "email": "principal@ngis.edu.kh"},
+    }
     for grade in range(7, 13):
+        campus_name, kh_dept, en_dept = campus_dept_map[grade]
         for section in ("A", "B"):
+            cid = f"class_{grade}{section}"
+            dept = kh_dept if section == "A" else en_dept
             classes.append({
-                "id": f"class_{grade}{section}",
+                "id": cid,
                 "grade": grade,
                 "section": section,
                 "display": f"{grade}{section}",
@@ -165,8 +197,9 @@ def _seed_classes() -> List[Dict[str, Any]]:
                 "capacity": CLASS_CAPACITY,
                 "room": f"បន្ទប់ {grade * 10 + (1 if section == 'A' else 2)}",
                 "student_count": 32,
-                "campus": "Sensok",
-                "department": "មធ្យមសិក្សា",
+                "campus": campus_name,
+                "department": dept,
+                "assigned_editor": editor_map.get(cid),
             })
     return classes
 
@@ -469,8 +502,10 @@ def scan_conflicts(state: Dict[str, Any]) -> List[Dict[str, Any]]:
         p = parse_grid_key(key)
         tkey = (cell.get("teacher_id", ""), p["day"], p["shift"], p["period"])
         if cell.get("teacher_id") and tkey in teacher_slots:
+            conflicting_key = teacher_slots[tkey]
             found.append({
                 "type": "teacher_double_booked", "severity": "error", "key": key,
+                "conflicting_key": conflicting_key,
                 "message_kh": "គ្រូកំពុងបង្រៀនពីរថ្នាក់ក្នុងម៉ោងតែមួយ",
                 "message_en": "Teacher double-booked in this period",
             })
@@ -781,10 +816,12 @@ def reassign_teacher_in_class(state: Dict[str, Any], class_id: str, subject_id: 
 
 # ── Timetable Publishing & Downstream Queries (Section 18) ────────────────
 
-def publish_timetable(state: Dict[str, Any], published_by: str = "Admin", note: str = "") -> Dict[str, Any]:
+def publish_timetable(state: Dict[str, Any], published_by: str = "Admin", note: str = "",
+                      effective_from: Optional[str] = None) -> Dict[str, Any]:
     """
     Publish the active draft timetable to live Teacher and Student portals.
-    Blocks if hard conflicts exist. Records version history.
+    Blocks if hard conflicts exist. Records version history with full snapshots
+    so any previous version can be restored later (audited rollback).
     """
     conflicts = [c for c in scan_conflicts(state) if c["severity"] == "error"]
     if conflicts:
@@ -798,6 +835,7 @@ def publish_timetable(state: Dict[str, Any], published_by: str = "Admin", note: 
         "published_at": utc_now(),
         "published_by": published_by,
         "note": note,
+        "effective_from": effective_from or utc_now()[:10],
         "academic_year": state.get("institution", {}).get("academic_year", "ឆ្នាំសិក្សា ២០២៦–២០២៧"),
         "grid": deepcopy(state.get("grid", {})),
         "assignments": deepcopy(state.get("assignments", [])),
@@ -815,8 +853,83 @@ def publish_timetable(state: Dict[str, Any], published_by: str = "Admin", note: 
         "published_at": snapshot["published_at"],
         "published_by": published_by,
         "note": note,
+        "effective_from": snapshot["effective_from"],
         "placed": len(snapshot["grid"]),
         "unassigned": snapshot["stats"]["unassigned"],
+        "action": "publish",
+        # Full snapshot kept so this version can be restored (audited rollback).
+        "snapshot": deepcopy(snapshot),
+    })
+    return snapshot
+
+
+def diff_publication(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Compare the editable draft grid against the published snapshot.
+    Returns per-cell changes so editors can review exactly what a new
+    publication would change on the live portals.
+    """
+    published = state.get("published")
+    if not published:
+        return {"has_published": False, "changed": 0, "added": 0,
+                "removed": 0, "modified": 0, "changes": []}
+    draft_grid = state.get("grid", {})
+    pub_grid = published.get("grid", {})
+    changes = []
+    for key in sorted(set(draft_grid) | set(pub_grid)):
+        d = draft_grid.get(key)
+        p = pub_grid.get(key)
+        if d and not p:
+            changes.append({"key": key, "kind": "added", "draft": d})
+        elif p and not d:
+            changes.append({"key": key, "kind": "removed", "published": p})
+        elif (d.get("subject_id"), d.get("teacher_id")) != (p.get("subject_id"), p.get("teacher_id")):
+            changes.append({"key": key, "kind": "modified",
+                            "published": p, "draft": d})
+    return {
+        "has_published": True,
+        "published_version": published.get("version"),
+        "changed": len(changes),
+        "added": sum(1 for c in changes if c["kind"] == "added"),
+        "removed": sum(1 for c in changes if c["kind"] == "removed"),
+        "modified": sum(1 for c in changes if c["kind"] == "modified"),
+        "changes": changes,
+    }
+
+
+def restore_version(state: Dict[str, Any], version: int,
+                    actor: str = "Admin") -> Dict[str, Any]:
+    """
+    Audited rollback: republish a previous version's snapshot as the newest
+    version and rebase the editable draft on it, so portals immediately show
+    the restored timetable and the editor continues from the same state.
+    """
+    pub_history = state.get("published_history", [])
+    entry = next((h for h in pub_history if h.get("version") == version), None)
+    if not entry or not entry.get("snapshot"):
+        raise ValueError(f"Version {version} not found in publication history")
+    current_pub = state.get("published")
+    next_ver = (current_pub.get("version", 0) + 1) if current_pub else 1
+
+    snapshot = deepcopy(entry["snapshot"])
+    snapshot["version"] = next_ver
+    snapshot["published_at"] = utc_now()
+    snapshot["published_by"] = actor
+    snapshot["restored_from"] = version
+    snapshot["note"] = f"Restore of version {version} (rollback)"
+    state["published"] = snapshot
+    state["grid"] = deepcopy(snapshot["grid"])  # draft rebased on restored live timetable
+    pub_history.append({
+        "version": next_ver,
+        "published_at": snapshot["published_at"],
+        "published_by": actor,
+        "note": snapshot["note"],
+        "effective_from": snapshot.get("effective_from", utc_now()[:10]),
+        "placed": len(snapshot["grid"]),
+        "unassigned": snapshot.get("stats", {}).get("unassigned", 0),
+        "action": "rollback",
+        "restored_from": version,
+        "snapshot": deepcopy(snapshot),
     })
     return snapshot
 
@@ -869,6 +982,9 @@ def get_teacher_timetable(state: Dict[str, Any], teacher_id_or_code: str, use_pu
         "total_lessons": len(lessons),
         "target": teacher.get("target", 17),
         "version": source.get("version", 1),
+        "effective_from": source.get("effective_from"),
+        "published_at": source.get("published_at") if use_published else None,
+        "is_published": bool(use_published and state.get("published")),
     }
 
 
@@ -915,6 +1031,9 @@ def get_class_timetable(state: Dict[str, Any], class_id_or_display: str, use_pub
         "lessons": lessons,
         "total_lessons": len(lessons),
         "version": source.get("version", 1),
+        "effective_from": source.get("effective_from"),
+        "published_at": source.get("published_at") if use_published else None,
+        "is_published": bool(use_published and state.get("published")),
     }
 
 
@@ -953,19 +1072,50 @@ class TimetableStore:
         tmp = self.path + ".tmp"
         with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(self._state, fh, ensure_ascii=False, separators=(",", ":"))
-        os.replace(tmp, self.path)
+        for attempt in range(5):
+            try:
+                os.replace(tmp, self.path)
+                return
+            except PermissionError:
+                time.sleep(0.05 * (attempt + 1))
+        try:
+            with open(self.path, "w", encoding="utf-8") as fh:
+                json.dump(self._state, fh, ensure_ascii=False, separators=(",", ":"))
+            if os.path.exists(tmp):
+                try:
+                    os.remove(tmp)
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
-    def replace(self, state: Dict[str, Any], label: str = "រក្សាទុក") -> Dict[str, Any]:
+    def replace(self, state: Dict[str, Any], label: str = "រក្សាទុក",
+                base_revision: Optional[int] = None,
+                actor: Optional[str] = None) -> Dict[str, Any]:
         with self._lock:
+            if base_revision is not None \
+                    and int(base_revision) != int(self._state.get("revision", 0)):
+                # Concurrent-editor guard: never silently overwrite someone
+                # else's saved draft.
+                raise RevisionConflict(int(self._state.get("revision", 0)))
+            old_grid = self._state.get("grid", {})
             self._state = deepcopy(state)
             self._state["revision"] = int(self._state.get("revision", 0)) + 1
             self._state["updated_at"] = utc_now()
-            self._log(label)
+            # Per-class edit tracking: every class whose cells changed in this
+            # save gets a fresh last-edited stamp (server-maintained metadata).
+            new_grid = self._state.get("grid", {})
+            touched = {k for k in set(old_grid) | set(new_grid)
+                       if old_grid.get(k) != new_grid.get(k)
+                       and isinstance(k, str) and len(k.split("|")) == 4}
+            self._touch_class_meta({k.split("|")[3] for k in touched}, actor)
+            self._log(label, actor=actor)
             self._persist()
             return self.state()
 
     def patch_grid(self, key: str, cell: Optional[Dict[str, Any]],
-                   label: str = "កំណត់ម៉ោង") -> Dict[str, Any]:
+                   label: str = "កំណត់ម៉ោង",
+                   actor: Optional[str] = None) -> Dict[str, Any]:
         with self._lock:
             if cell is None:
                 self._state["grid"].pop(key, None)
@@ -973,16 +1123,275 @@ class TimetableStore:
                 self._state["grid"][key] = cell
             self._state["revision"] = int(self._state.get("revision", 0)) + 1
             self._state["updated_at"] = utc_now()
-            self._log(label, {"key": key, "cell": cell})
+            if isinstance(key, str) and len(key.split("|")) == 4:
+                self._touch_class_meta({key.split("|")[3]}, actor)
+            self._log(label, {"key": key, "cell": cell}, actor=actor)
             self._persist()
             return self.state()
 
-    def _log(self, label: str, detail: Optional[Dict[str, Any]] = None) -> None:
+    # ── Subject directory management (Admin/Principal — surgical, audited) ──
+
+    @staticmethod
+    def _validate_subject_payload(subject: Dict[str, Any], subjects: List[Dict[str, Any]],
+                                  exclude_id: Optional[str] = None) -> Dict[str, Any]:
+        """Normalize + validate a subject payload against the existing directory."""
+        import re as _re
+        name_en = str(subject.get("name_en") or "").strip()
+        name_kh = str(subject.get("name_kh") or "").strip()
+        if not name_en and not name_kh:
+            raise SubjectValidationError("Subject name is required (English or Khmer)")
+        code = str(subject.get("code") or "").strip().upper()
+        if not code:
+            raise SubjectValidationError("Subject code is required")
+        if not _re.fullmatch(r"[A-Z0-9][A-Z0-9_-]{0,9}", code):
+            raise SubjectValidationError(
+                "Subject code must be 1-10 characters: letters, digits, dash or underscore")
+        department = str(subject.get("department") or "").strip()
+        if not department:
+            raise SubjectValidationError("Academic department is required")
+        try:
+            lessons = int(subject.get("lessons_per_week", 2))
+        except (TypeError, ValueError):
+            raise SubjectValidationError("Lessons per week must be a number")
+        if lessons < 1 or lessons > 15:
+            raise SubjectValidationError("Lessons per week must be between 1 and 15")
+        color = str(subject.get("color") or "").strip() or "#FED766"
+        if not _re.fullmatch(r"#[0-9A-Fa-f]{6}", color):
+            raise SubjectValidationError("Color must be a hex value like #FED766")
+        for field, limit in (("name_en", 80), ("name_kh", 80), ("short_name", 24),
+                             ("department", 60)):
+            val = str(subject.get(field) or "").strip()
+            if len(val) > limit:
+                raise SubjectValidationError(f"{field} is too long (max {limit} characters)")
+        for s in subjects:
+            if exclude_id and s.get("id") == exclude_id:
+                continue
+            if str(s.get("code") or "").strip().upper() == code:
+                raise SubjectValidationError(
+                    f"Subject code {code} is already used by "
+                    f"{s.get('name_en') or s.get('name_kh') or s.get('id')}")
+            if name_en and str(s.get("name_en") or "").strip().lower() == name_en.lower():
+                raise SubjectValidationError(
+                    f"A subject named \"{name_en}\" already exists "
+                    f"(code {s.get('code')})")
+        normalized = {
+            "id": subject.get("id"), "name_kh": name_kh or name_en,
+            "name_en": name_en or name_kh,
+            "short_name": str(subject.get("short_name") or "").strip() or (name_en[:8] or name_kh[:8]),
+            "code": code, "color": color, "lessons_per_week": lessons,
+            "is_locked": bool(subject.get("is_locked", False)),
+            "department": department,
+            "active": bool(subject.get("active", True)),
+        }
+        if subject.get("consecutive_preference"):
+            normalized["consecutive_preference"] = str(subject["consecutive_preference"])
+        return normalized
+
+    def _next_subject_id(self, code: str) -> str:
+        subjects = self._state.setdefault("subjects", [])
+        base = "sub_" + code
+        if not any(s.get("id") == base for s in subjects):
+            return base
+        n = 2
+        while any(s.get("id") == f"{base}_{n}" for s in subjects):
+            n += 1
+        return f"{base}_{n}"
+
+    def add_subject(self, subject: Dict[str, Any],
+                    assignments: Optional[List[Dict[str, Any]]] = None,
+                    actor: Optional[str] = None) -> Dict[str, Any]:
+        """Create a subject (+ optional class assignments) in the authoritative
+        state document. Validated, revision-bumped, history-logged, persisted."""
+        assignments = assignments or []
+        with self._lock:
+            subjects = self._state.setdefault("subjects", [])
+            classes = {c.get("id"): c for c in self._state.setdefault("classes", [])}
+            teachers = {t.get("id"): t for t in self._state.setdefault("teachers", [])}
+            normalized = self._validate_subject_payload(subject, subjects)
+            normalized["id"] = self._next_subject_id(normalized["code"])
+
+            seen_classes: set = set()
+            created: List[Dict[str, Any]] = []
+            for a in assignments:
+                cid = str((a or {}).get("class_id") or "").strip()
+                tid = str((a or {}).get("teacher_id") or "").strip()
+                if not cid:
+                    raise SubjectValidationError("Every assignment needs a class")
+                if cid in seen_classes:
+                    raise SubjectValidationError(
+                        f"Class {classes.get(cid, {}).get('display', cid)} is selected more than once")
+                seen_classes.add(cid)
+                if cid not in classes:
+                    raise SubjectValidationError(f"Unknown class: {cid}")
+                if not tid:
+                    raise SubjectValidationError(
+                        f"A teacher must be assigned for class "
+                        f"{classes.get(cid, {}).get('display', cid)} — the timetable "
+                        f"engine requires a teacher on every class assignment")
+                if tid not in teachers:
+                    raise SubjectValidationError(f"Unknown teacher: {tid}")
+                aid = f"asg_{cid}_{normalized['id']}"
+                created.append({
+                    "id": aid, "class_id": cid, "subject_id": normalized["id"],
+                    "teacher_id": tid, "lessons": normalized["lessons_per_week"],
+                    "shift": classes[cid].get("shift") or "ព្រឹក",
+                })
+
+            subjects.append(normalized)
+            self._state.setdefault("assignments", []).extend(created)
+            self._state["revision"] = int(self._state.get("revision", 0)) + 1
+            self._state["updated_at"] = utc_now()
+            self._log(f"Add subject {normalized['code']}",
+                      {"subject_id": normalized["id"],
+                       "assignments": [c["class_id"] for c in created]}, actor=actor)
+            self._persist()
+            return {"subject": deepcopy(normalized),
+                    "assignments": deepcopy(created), "state": self.state()}
+
+    def update_subject(self, subject_id: str, patch: Dict[str, Any],
+                       assignments: Optional[List[Dict[str, Any]]] = None,
+                       actor: Optional[str] = None) -> Dict[str, Any]:
+        """Update subject fields and reconcile its class assignments.
+
+        Grid-protected: an assignment for a class that already has scheduled
+        lessons for this subject is never removed — removals only apply to
+        classes whose subject lessons exist purely as assignments."""
+        with self._lock:
+            subjects = self._state.setdefault("subjects", [])
+            target = next((s for s in subjects if s.get("id") == subject_id), None)
+            if not target:
+                raise LookupError(f"subject not found: {subject_id}")
+            classes = {c.get("id"): c for c in self._state.setdefault("classes", [])}
+            teachers = {t.get("id"): t for t in self._state.setdefault("teachers", [])}
+            all_assignments = self._state.setdefault("assignments", [])
+            grid = self._state.setdefault("grid", {})
+
+            merged = {k: target.get(k) for k in
+                      ("name_kh", "name_en", "short_name", "code", "color",
+                       "lessons_per_week", "department", "active")}
+            merged.update({k: v for k, v in (patch or {}).items() if k in merged})
+            normalized = self._validate_subject_payload(merged, subjects, exclude_id=subject_id)
+            old_code = target.get("code")
+            for key, val in normalized.items():
+                if key != "id":
+                    target[key] = val
+            if target.get("code") != old_code and not str(subject_id).startswith("sub_"):
+                pass  # legacy ids keep their identifier even if the code changes
+
+            warnings: List[str] = []
+            added, removed, kept_protected = 0, 0, []
+
+            if assignments is not None:
+                desired: Dict[str, str] = {}
+                for a in assignments:
+                    cid = str((a or {}).get("class_id") or "").strip()
+                    tid = str((a or {}).get("teacher_id") or "").strip()
+                    if not cid:
+                        raise SubjectValidationError("Every assignment needs a class")
+                    if cid in desired:
+                        raise SubjectValidationError(
+                            f"Class {classes.get(cid, {}).get('display', cid)} is selected more than once")
+                    if cid not in classes:
+                        raise SubjectValidationError(f"Unknown class: {cid}")
+                    if not tid:
+                        raise SubjectValidationError(
+                            f"A teacher must be assigned for class "
+                            f"{classes.get(cid, {}).get('display', cid)}")
+                    if tid not in teachers:
+                        raise SubjectValidationError(f"Unknown teacher: {tid}")
+                    desired[cid] = tid
+
+                def has_grid_cells(cid: str) -> bool:
+                    return any(c.get("subject_id") == subject_id and c.get("class_id") == cid
+                               for c in grid.values() if isinstance(c, dict))
+
+                existing = [a for a in all_assignments if a.get("subject_id") == subject_id]
+                for a in existing:
+                    cid = a.get("class_id")
+                    if cid in desired:
+                        if a.get("teacher_id") != desired[cid]:
+                            if has_grid_cells(cid):
+                                kept_protected.append(cid)
+                            else:
+                                a["teacher_id"] = desired[cid]
+                    elif not has_grid_cells(cid):
+                        all_assignments.remove(a)
+                        removed += 1
+                    else:
+                        kept_protected.append(cid)
+                        warnings.append(
+                            f"Class {classes.get(cid, {}).get('display', cid)} keeps its "
+                            f"assignment because scheduled lessons already exist for it")
+                for cid, tid in desired.items():
+                    if not any(a.get("class_id") == cid and a.get("subject_id") == subject_id
+                               for a in all_assignments):
+                        aid = f"asg_{cid}_{subject_id}"
+                        all_assignments.append({
+                            "id": aid, "class_id": cid, "subject_id": subject_id,
+                            "teacher_id": tid, "lessons": target.get("lessons_per_week", 2),
+                            "shift": classes[cid].get("shift") or "ព្រឹក",
+                        })
+                        added += 1
+
+            self._state["revision"] = int(self._state.get("revision", 0)) + 1
+            self._state["updated_at"] = utc_now()
+            self._log(f"Update subject {target.get('code')}",
+                      {"subject_id": subject_id, "added": added, "removed": removed,
+                       "kept_protected": kept_protected}, actor=actor)
+            self._persist()
+            return {"subject": deepcopy(target), "added": added, "removed": removed,
+                    "warnings": warnings, "state": self.state()}
+
+    def delete_subject(self, subject_id: str, actor: Optional[str] = None) -> Dict[str, Any]:
+        """Delete a subject, its assignments and its scheduled grid cells —
+        mirroring the pre-existing client-side delete semantics, but persisted."""
+        with self._lock:
+            subjects = self._state.setdefault("subjects", [])
+            target = next((s for s in subjects if s.get("id") == subject_id), None)
+            if not target:
+                raise LookupError(f"subject not found: {subject_id}")
+            self._state["subjects"] = [s for s in subjects if s.get("id") != subject_id]
+            state_assignments = self._state.setdefault("assignments", [])
+            self._state["assignments"] = [a for a in state_assignments
+                                          if a.get("subject_id") != subject_id]
+            grid = self._state.setdefault("grid", {})
+            removed_keys = [k for k, c in grid.items()
+                            if isinstance(c, dict) and c.get("subject_id") == subject_id]
+            for k in removed_keys:
+                del grid[k]
+            self._state["revision"] = int(self._state.get("revision", 0)) + 1
+            self._state["updated_at"] = utc_now()
+            self._log(f"Delete subject {target.get('code')}",
+                      {"subject_id": subject_id, "grid_cells_removed": len(removed_keys)},
+                      actor=actor)
+            self._persist()
+            return {"subject": deepcopy(target), "grid_cells_removed": len(removed_keys),
+                    "state": self.state()}
+
+    def _touch_class_meta(self, class_ids: Any, actor: Optional[str]) -> None:
+        """Record who last edited each affected class (audit metadata only)."""
+        if not class_ids:
+            return
+        meta = self._state.setdefault("class_meta", {})
+        now = utc_now()
+        for cid in class_ids:
+            if not cid:
+                continue
+            entry = meta.setdefault(cid, {})
+            entry["last_edited_at"] = now
+            if actor:
+                entry["last_edited_by"] = actor
+
+    def _log(self, label: str, detail: Optional[Dict[str, Any]] = None,
+             actor: Optional[str] = None) -> None:
         history = self._state.setdefault("history", [])
-        history.append({
+        entry = {
             "id": f"h{len(history) + 1}", "at": utc_now(),
             "label": label, "detail": detail or {},
-        })
+        }
+        if actor:
+            entry["actor"] = actor
+        history.append(entry)
         del history[:-100]  # keep the last 100 changes
 
     def history(self) -> List[Dict[str, Any]]:
@@ -998,14 +1407,39 @@ class TimetableStore:
             self._persist()
             return result
 
-    def publish(self, published_by: str = "Admin", note: str = "") -> Dict[str, Any]:
+    def publish(self, published_by: str = "Admin", note: str = "",
+                effective_from: Optional[str] = None) -> Dict[str, Any]:
         with self._lock:
-            published = publish_timetable(self._state, published_by=published_by, note=note)
+            published = publish_timetable(self._state, published_by=published_by,
+                                          note=note, effective_from=effective_from)
             self._state["revision"] = int(self._state.get("revision", 0)) + 1
             self._state["updated_at"] = utc_now()
             self._log(f"បោះពុម្ពផ្សាយកាលវិភាគ v{published['version']}", {"published_by": published_by})
             self._persist()
             return published
+
+    def publication_history(self) -> List[Dict[str, Any]]:
+        """Publication history metadata, newest first (snapshots stripped)."""
+        with self._lock:
+            out = []
+            for h in reversed(self._state.get("published_history", [])):
+                item = {k: v for k, v in h.items() if k != "snapshot"}
+                out.append(item)
+            return out
+
+    def rollback(self, version: int, actor: str = "Admin") -> Dict[str, Any]:
+        """Audited rollback: republish a previous version and rebase the draft."""
+        with self._lock:
+            snapshot = restore_version(self._state, version, actor=actor)
+            self._state["revision"] = int(self._state.get("revision", 0)) + 1
+            self._state["updated_at"] = utc_now()
+            self._log(f"restore version {version}", {"restored_by": actor})
+            self._persist()
+            return snapshot
+
+    def publication_diff(self) -> Dict[str, Any]:
+        with self._lock:
+            return diff_publication(self._state)
 
     def published(self) -> Optional[Dict[str, Any]]:
         with self._lock:

@@ -25,10 +25,10 @@
 
   var TEACHER_TABS = ['Personal Information', 'Employment', 'Academic & Teaching',
     'Education & Qualifications', 'Documents', 'Activity & History'];
-  var STUDENT_TABS = ['Personal Information', 'Academic Record', 'Guardian & Contact',
-    'Academic Performance', 'Attendance', 'Student Services', 'Documents', 'Activity & History'];
+  var STUDENT_TABS = ['Personal Information', 'Academic Record', 'Attendance',
+    'Student Services', 'Documents', 'Guardian & Contact', 'Activity & History'];
   var TABS = IS_TEACHER ? TEACHER_TABS : STUDENT_TABS;
-  var DOCS_TAB_INDEX = TABS.length - 2;
+  var DOCS_TAB_INDEX = TABS.indexOf('Documents');
   var DOC_CATEGORIES = IS_TEACHER
     ? ['General', 'Employment Contract', 'Certification', 'Compliance', 'Other']
     : ['General', 'Transcript', 'Medical', 'ID Document', 'Consent Form', 'Other'];
@@ -78,15 +78,22 @@
   }
 
   var toastTimer = null;
-  function toast(msg, isError) {
-    var t = $id('ngisToast');
-    if (!t) return;
-    t.textContent = msg;
-    t.className = isError ? 'is-error' : '';
-    t.style.display = 'block';
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.style.display = 'none'; }, 3200);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
   }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
 
   /* ---------- confirm / reason dialog ---------- */
   var confirmResolve = null;
@@ -205,10 +212,9 @@
     root.innerHTML = [
       '<div class="space-y-6 w-full">',
       // Section 1: Header Page Title & Top Actions
-      '  <section class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2">',
-      '    <div>',
-      '      <h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight">' + pageTitle + '</h1>',
-      '      <p class="text-xs text-slate-500 mt-1 font-normal">' + (IS_TEACHER ? 'Modern row-based faculty registry & academic configuration' : 'Student directory and academic standing') + '</p>',
+      '  <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">',
+      '    <div class="min-w-0">',
+      '      <h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight leading-tight">' + pageTitle + '</h1>',
       '    </div>',
       '    <div class="flex items-center flex-wrap gap-2.5 shrink-0">',
       '      <button type="button" id="btnRefresh" class="' + BTN_SECONDARY + '">',
@@ -642,7 +648,7 @@
       html += '<span class="text-[#94a3b8] ml-1 text-xs font-medium">None applied</span>';
     }
     box.innerHTML = html;
-    $id('dirCount').innerHTML = 'Showing <strong class="text-slate-800 font-medium">' + state.filtered.length + '</strong> of <strong class="text-slate-800 font-medium">' + state.all.length + '</strong> ' + PLURAL_LABEL.toLowerCase();
+    $id('dirCount').innerHTML = 'Showing <span class="text-slate-800 font-medium">' + state.filtered.length + '</span> of <span class="text-slate-800 font-medium">' + state.all.length + '</span> ' + PLURAL_LABEL.toLowerCase();
     var st = $id('filterStatusText');
     if (st) st.textContent = state.filtered.length + ' ' + PLURAL_LABEL.toLowerCase();
   }
@@ -676,14 +682,39 @@
   function teacherRowHtml(r) {
     var teacherCode = r.code || r.id || 'TCH';
     var subjectColor = getSubjectColor(r.subject);
-    var targetHours = r.target || (r.classesAssigned ? r.classesAssigned * 3 : 17);
+    var classesAssigned = (r.assignments && r.assignments.length) ? r.assignments.length : (r.classesAssigned != null ? r.classesAssigned : (r.classes ? r.classes.length : 0));
+    var targetHours = r.target || (classesAssigned ? classesAssigned * 3 : 17);
     var maxDaily = r.max_daily || 5;
-    var classesAssigned = r.classesAssigned != null ? r.classesAssigned : 0;
     var isActive = String(r.status || '').toLowerCase() === 'active';
     var isLeave = String(r.status || '').toLowerCase().indexOf('leave') !== -1;
     var statusTone = isActive ? 'bg-[#E8F3ED] text-[#176B45]' : (isLeave ? 'bg-[#ffeadb] text-[#822714]' : 'bg-slate-100 text-slate-600');
     var statusDot = isActive ? 'bg-[#176B45]' : (isLeave ? 'bg-[#b8541f]' : 'bg-slate-400');
     var gender = r.gender || 'Male';
+
+    var deptSummary = esc(r.department || 'MoEYS Faculty');
+    var subjectLabel = esc(r.subject || 'General');
+    if (r.assignments && r.assignments.length > 0) {
+      var dMap = {};
+      r.assignments.forEach(function (a) {
+        var d = (a.department || '').replace(' Studies', '').replace(' Language', '').replace(' Department', '');
+        dMap[d] = dMap[d] || [];
+        var c = (a.class || '').replace('Grade ', '');
+        if (c && dMap[d].indexOf(c) === -1) dMap[d].push(c);
+      });
+      var dKeys = Object.keys(dMap);
+      if (dKeys.length > 1) {
+        deptSummary = dKeys.map(function (k) { return k + ': ' + dMap[k].join(', '); }).join(' · ');
+      } else if (dKeys.length === 1 && dMap[dKeys[0]].length > 0) {
+        deptSummary = dKeys[0] + ': ' + dMap[dKeys[0]].join(', ');
+      }
+      var distinctSubjs = [];
+      r.assignments.forEach(function (a) {
+        if (a.subject && distinctSubjs.indexOf(a.subject) === -1) distinctSubjs.push(a.subject);
+      });
+      if (distinctSubjs.length > 1) {
+        subjectLabel = esc(distinctSubjs.slice(0, 2).join(', ')) + (distinctSubjs.length > 2 ? ' +' + (distinctSubjs.length - 2) : '');
+      }
+    }
 
     return [
       '<div class="teacher-row-card bg-white rounded-xl border border-[#E1E9E3] hover:border-slate-300 transition-all shadow-2xs overflow-hidden" data-id="' + esc(r.id) + '" id="teacherCard_' + esc(r.id) + '">',
@@ -711,9 +742,9 @@
       '    <div class="lg:col-span-3 min-w-0 w-full flex flex-col justify-center">',
       '      <div class="flex items-center gap-1.5">',
       '        <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ' + subjectColor + ';"></span>',
-      '        <span class="font-medium text-xs text-slate-800 truncate">' + esc(r.subject || 'General') + '</span>',
+      '        <span class="font-medium text-xs text-slate-800 truncate">' + subjectLabel + '</span>',
       '      </div>',
-      '      <span class="text-[11px] text-slate-500 truncate ml-3.5">' + esc(r.department || 'MoEYS Faculty') + '</span>',
+      '      <span class="text-[11px] text-slate-500 truncate ml-3.5">' + deptSummary + '</span>',
       '    </div>',
 
       '    <!-- Col 3: Workload & Classes -->',
@@ -1015,7 +1046,7 @@
         closeRowEditor(id);
         renderTable();
         renderKpis();
-        toast('Record for ' + payload.name + ' saved successfully.');
+        toast('Record for ' + payload.name + ' saved.');
       })
       .catch(function (err) {
         if (btn) btn.disabled = false;
@@ -1036,7 +1067,7 @@
       '<div class="bg-white rounded-xl border-2 border-[#176B45]/40 p-5 shadow-sm space-y-4 mb-3 animate-fade-in">',
       '  <div class="flex items-center justify-between pb-3 border-b border-slate-200">',
       '    <div class="flex items-center gap-2">',
-      '      <span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping"></span>',
+      '      <span class="w-2.5 h-2.5 rounded-full bg-[#176B45]"></span>',
       '      <h3 class="text-sm font-medium text-slate-900">Register New Faculty Member</h3>',
       '    </div>',
       '    <button type="button" id="btnCancelNewTeacher" class="text-slate-400 hover:text-slate-600 cursor-pointer p-1 rounded-lg hover:bg-slate-100">',
@@ -1133,7 +1164,7 @@
         state.all.unshift(newRec);
         $id('newTeacherRowWrap').classList.add('hidden');
         applyFilters();
-        toast('Teacher ' + name + ' registered successfully.');
+        toast('Teacher ' + name + ' registered.');
       })
       .catch(function (err) {
         if (btn) btn.disabled = false;
@@ -1165,7 +1196,9 @@
       var rowsContainer = $id('dirRows');
       if (!rowsContainer) return;
       if (state.loading) {
-        rowsContainer.innerHTML = '<div class="py-12 text-center text-slate-500 bg-white rounded-xl border border-[#E1E9E3]"><div class="flex flex-col items-center justify-center gap-2"><span class="material-symbols-outlined text-4xl text-[#94a3b8] animate-spin opacity-60">progress_active</span><p class="font-medium text-sm">Loading live directory...</p></div></div>';
+        rowsContainer.innerHTML = window.NGIS_SKELETON
+          ? window.NGIS_SKELETON.table({ rows: 5 })
+          : '<div class="ngis-sk-table-container p-6"></div>';
         renderPager(); return;
       }
       if (state.error) {
@@ -1188,7 +1221,25 @@
     var body = $id('dirBody');
     if (!body) return;
     if (state.loading) {
-      body.innerHTML = '<tr><td colspan="9" class="py-12 text-center text-slate-500"><div class="flex flex-col items-center justify-center gap-2"><span class="material-symbols-outlined text-4xl text-[#94a3b8] animate-spin opacity-60">progress_active</span><p class="font-medium text-sm">Loading live directory...</p></div></td></tr>';
+      body.innerHTML = (function() {
+        if (window.NGIS_SKELETON) {
+          var out = '';
+          for (var k = 0; k < 6; k++) {
+            out += '<tr><td colspan="9" class="p-3">' +
+              '<div class="flex items-center gap-3">' +
+                window.NGIS_SKELETON.avatar({ size: "sm" }) +
+                '<div class="flex-1 flex flex-col gap-1">' +
+                  window.NGIS_SKELETON.text({ width: (40 + (k % 3) * 20) + "%", size: "sm" }) +
+                  window.NGIS_SKELETON.text({ width: "25%", size: "xs" }) +
+                '</div>' +
+                window.NGIS_SKELETON.badge({ width: "70px" }) +
+              '</div>' +
+            '</td></tr>';
+          }
+          return out;
+        }
+        return '<tr><td colspan="9" class="p-4"></td></tr>';
+      })();
       renderPager(); return;
     }
     if (state.error) {
@@ -1261,7 +1312,10 @@
   function openProfile(id) {
     state.profileId = id; state.tab = 0; state.profile = null; state.profileLoading = true;
     var m = $id('profileModal');
-    m.classList.remove('hidden');
+    if (m) {
+      m.classList.remove('hidden');
+      m.classList.add('open', 'is-open');
+    }
     renderProfileShell(null);
     api(API_BASE + '/' + encodeURIComponent(id)).then(function (res) {
       state.profile = (res && res.data) || null;
@@ -1272,38 +1326,92 @@
       renderProfileShell({ __error: apiError(err, 'Profile could not be loaded') });
     });
   }
-  function closeProfile() { $id('profileModal').classList.add('hidden'); state.profile = null; }
+  function closeProfile() {
+    var m = $id('profileModal');
+    if (m) {
+      m.classList.add('hidden');
+      m.classList.remove('open', 'is-open');
+    }
+    state.profile = null;
+  }
 
   function renderProfileShell(p) {
     var box = $id('profileModalInner');
     var err = p && p.__error;
-    var head = '<div class="px-6 sm:px-7 pt-6 pb-5 border-b border-[#E1E9E3] flex items-center justify-between gap-3 bg-[#F7F9F7]/50">' +
-      '<div class="flex items-center gap-3 min-w-0">' +
-      '<div class="w-12 h-12 rounded-full overflow-hidden shadow-xs flex items-center justify-center bg-[#E8F3ED] text-[#176B45] font-medium text-base shrink-0">' + (p && !err ? esc(initials(p.name)) : '—') + '</div>' +
-      '<div class="min-w-0"><h3 class="text-base font-medium text-slate-900 leading-tight truncate">' + (p && !err ? esc(p.name) : KIND_LABEL + ' Profile') + '</h3>' +
-      '<p class="text-[11px] text-slate-500 mt-0.5 truncate">' + (p && !err ? esc((IS_TEACHER ? (p.department || '') + ' · ' + (p.subject || '') : (p.grade || '') + ' · ' + (p.class || '')) + ' · ' + (p.id || '')) : 'Loading from live records…') + '</p></div></div>' +
-      '<div class="flex items-center gap-2 shrink-0">' +
-      (p && !err ? '<button type="button" id="pfEditBtn" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 text-xs font-medium shadow-sm hover:bg-[#F7F9F7] transition cursor-pointer"><span class="material-symbols-outlined text-[16px] text-slate-400">edit</span><span>Edit</span></button>' : '') +
-      '<button type="button" onclick="window.__ngisCloseProfile()" class="w-8 h-8 rounded-lg bg-[#F7F9F7] hover:bg-slate-100 text-slate-600 flex items-center justify-center transition cursor-pointer"><span class="material-symbols-outlined text-base">close</span></button>' +
-      '</div></div>';
+
+    var khmerName = (p && (p.khmerName || p.khmer_name)) || '';
+    var gradeText = (p && p.grade) || '';
+    var classText = (p && p.class ? 'Section ' + p.class : '');
+    var idText = (p && p.id) || '';
+
+    var head = '<div class="h-1 bg-[#176B45] shrink-0"></div>' +
+      '<header class="px-5 sm:px-8 pt-5 sm:pt-6 pb-4 border-b border-slate-100 bg-white sticky top-0 z-20 shrink-0">' +
+        '<div class="flex items-start justify-between gap-3 sm:gap-4">' +
+          '<div class="flex items-center gap-3 sm:gap-4 min-w-0">' +
+            '<div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-50 border-2 border-emerald-100/80 text-emerald-800 flex items-center justify-center font-medium text-base sm:text-lg shrink-0 tracking-tight shadow-sm" data-purpose="student-avatar">' +
+              (p && !err ? esc(initials(p.name)) : '—') +
+            '</div>' +
+            '<div class="min-w-0">' +
+              '<div class="flex flex-wrap items-baseline gap-2">' +
+                '<h2 id="profileModalTitle" class="text-lg sm:text-2xl font-medium text-slate-900 tracking-tight truncate">' +
+                  (p && !err ? esc(p.name) : KIND_LABEL + ' Profile') +
+                '</h2>' +
+                (khmerName ? '<span class="text-sm sm:text-base text-slate-400 font-khmer font-normal">' + esc(khmerName) + '</span>' : '') +
+              '</div>' +
+              '<div class="flex flex-wrap items-center text-xs text-slate-500 font-normal gap-x-2 mt-0.5">' +
+                (p && !err ? (
+                  IS_TEACHER
+                    ? '<span>' + esc(p.department || '') + '</span><span class="text-slate-300">•</span><span>' + esc(p.subject || '') + '</span><span class="text-slate-300">•</span><span class="font-mono text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded text-[11px]">' + esc(p.id) + '</span>'
+                    : '<span>' + esc(gradeText) + '</span><span class="text-slate-300">•</span><span>' + esc(classText) + '</span><span class="text-slate-300">•</span><span class="font-mono text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded text-[11px]">' + esc(idText) + '</span>'
+                ) : 'Loading from live records…') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="flex items-center gap-2 shrink-0">' +
+            (p && !err ? '<button type="button" id="pfEditBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-[#E1E9E3] rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-colors shadow-2xs active:scale-95 cursor-pointer" title="Edit Student Record"><span class="material-symbols-outlined text-[16px] text-slate-500">edit</span><span class="hidden sm:inline">Edit Record</span></button>' : '') +
+            '<button type="button" onclick="window.__ngisCloseProfile()" class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer active:scale-95" aria-label="Close dialog"><span class="material-symbols-outlined text-[20px]">close</span></button>' +
+          '</div>' +
+        '</div>' +
+        (p && !err ? (
+          '<nav aria-label="Student details tabs" class="flex items-center gap-1 sm:gap-2.5 lg:gap-3.5 mt-4 sm:mt-5 overflow-x-auto border-b border-slate-200 pf-scroll" id="pfTabBar">' +
+          TABS.map(function (t, i) {
+            var isActive = i === state.tab;
+            return '<button type="button" class="tab-button text-xs sm:text-[13px] px-1 sm:px-1.5 pb-2.5 sm:pb-3 border-b-2 whitespace-nowrap transition-colors focus:outline-none cursor-pointer ' +
+              (isActive ? 'border-[#176B45] text-[#176B45] font-medium' : 'border-transparent text-slate-500 font-normal hover:text-slate-700 hover:border-slate-300') +
+              '" data-tab="' + i + '">' + esc(t) +
+              (i === DOCS_TAB_INDEX ? ' <span class="text-[11px] text-slate-400 font-normal ml-0.5" id="docsCountChip">' + ((p.documents || []).length) + '</span>' : '') +
+              '</button>';
+          }).join('') +
+          '</nav>'
+        ) : '') +
+      '</header>';
 
     var body;
     if (!p || err) {
-      body = '<div class="p-10 text-center font-medium text-sm text-slate-500">' +
-        (err ? '<span class="material-symbols-outlined text-[24px] block mx-auto mb-2 text-[#B3261E]">error</span>' + esc(err)
-             : '<span class="material-symbols-outlined text-[24px] animate-spin block mx-auto mb-2 text-[#94a3b8]">progress_active</span>Loading full profile…') + '</div>';
+      body = err
+        ? '<div class="p-10 text-center font-normal text-sm text-slate-500"><span class="material-symbols-outlined text-[24px] block mx-auto mb-2 text-[#B3261E]">error</span>' + esc(err) + '</div>'
+        : '<div class="p-6">' + (window.NGIS_SKELETON ? window.NGIS_SKELETON.form({ fields: 4 }) : '<div class="py-12 text-center text-xs text-slate-400">Loading profile…</div>') + '</div>';
     } else {
-      var tabs = '<div class="px-4 border-b border-[#E1E9E3] bg-[#F7F9F7]/40 overflow-x-auto pf-scroll"><div class="flex min-w-max" id="pfTabBar">' +
-        TABS.map(function (t, i) {
-          return '<button type="button" class="pf-tab' + (i === state.tab ? ' is-active' : '') + '" data-tab="' + i + '">' + esc(t) + (i === DOCS_TAB_INDEX ? ' <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600" id="docsCountChip">' + ((p.documents || []).length) + '</span>' : '') + '</button>';
-        }).join('') + '</div></div>';
-      body = tabs + '<div class="p-4 sm:p-6 overflow-y-auto pf-scroll" style="max-height:62vh" id="pfTabBody">' + tabBody(p, state.tab) + '</div>';
+      body = '<main class="px-5 sm:px-8 py-5 sm:py-6 overflow-y-auto pf-scroll flex-1 bg-white" style="max-height: 65vh" id="pfTabBody">' +
+        tabBody(p, state.tab) +
+        '</main>';
     }
+
     box.innerHTML = head + (body || '') +
-      '<div class="px-4 py-3 border-t border-[#E1E9E3] bg-[#F7F9F7]/40 flex items-center justify-between gap-2">' +
-      '<span class="text-[11px] text-slate-500 font-medium">All records are read live from the NGIS academic store.</span>' +
-      '<button type="button" onclick="window.__ngisCloseProfile()" class="px-4 py-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 text-xs font-medium hover:bg-[#F7F9F7] transition cursor-pointer">Close</button>' +
-      '</div>';
+      '<footer class="px-5 sm:px-8 py-3.5 sm:py-4 bg-slate-50 border-t border-[#E1E9E3] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shrink-0">' +
+        '<div class="flex items-center gap-2 text-slate-500 font-normal text-[11px]">' +
+          '<span class="material-symbols-outlined text-[15px] text-[#176B45]">verified</span>' +
+          '<span>All records are read live from the NGIS academic store.</span>' +
+        '</div>' +
+        '<div class="flex items-center gap-2.5 self-end sm:self-auto">' +
+          '<button type="button" onclick="window.print()" class="px-3.5 py-2 font-medium text-slate-700 bg-white border border-[#E1E9E3] rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-colors shadow-2xs active:scale-95 cursor-pointer">' +
+            'Print Summary' +
+          '</button>' +
+          '<button type="button" onclick="window.__ngisCloseProfile()" class="px-5 py-2 font-medium text-white bg-[#176B45] hover:bg-[#125638] rounded-xl transition-colors shadow-xs active:scale-95 cursor-pointer">' +
+            'Close' +
+          '</button>' +
+        '</div>' +
+      '</footer>';
 
     var editBtn = $id('pfEditBtn');
     if (editBtn) editBtn.addEventListener('click', function () { openForm(state.profileId); });
@@ -1319,112 +1427,437 @@
   }
 
   function cell(label, valueHtml) {
-    return '<div class="grid grid-cols-2"><span class="text-[10px] font-medium uppercase tracking-wider text-slate-500">' + esc(label) + '</span><span class="text-sm font-medium text-slate-800 truncate">' + valueHtml + '</span></div>';
+    return '<div><span class="text-[11px] font-medium uppercase tracking-wider text-slate-400 block">' + esc(label) + '</span><span class="text-sm font-medium text-slate-900 mt-1 block truncate">' + valueHtml + '</span></div>';
   }
   function chips(list) {
     if (!list || !list.length) return '<span class="text-slate-400">—</span>';
-    return list.map(function (c) { return '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F7F9F7] border border-[#E1E9E3] text-xs font-medium text-slate-700">' + esc(c) + '</span>'; }).join('');
+    return list.map(function (c) { return '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">' + esc(c) + '</span>'; }).join('');
   }
   function miniTable(headRow, rows, emptyMsg) {
     if (!rows || !rows.length) return '<div class="p-6 text-center text-xs text-slate-500 border border-[#E1E9E3] rounded-xl bg-[#F7F9F7]/60">' + esc(emptyMsg) + '</div>';
-    return '<div class="border border-[#E1E9E3] rounded-xl overflow-hidden overflow-x-auto pf-scroll"><table class="w-full text-left text-xs min-w-[520px]"><thead><tr class="border-b border-[#E1E9E3] bg-[#F7F9F7] text-slate-500 font-medium tracking-wider text-[11px] uppercase"><tr class="bg-[#F7F9F7] text-slate-500 font-medium tracking-wider text-[11px] uppercase">' +
-      headRow + '</tr></thead><tbody class="divide-y divide-[#E1E9E3]">' + rows + '</tbody></table></div>';
+    return '<div class="border border-slate-200 rounded-2xl overflow-hidden overflow-x-auto pf-scroll"><table class="w-full text-left text-xs min-w-[520px]"><thead class="bg-slate-50 text-[11px] font-medium text-slate-500 uppercase tracking-wider border-b border-slate-200"><tr>' +
+      headRow + '</tr></thead><tbody class="divide-y divide-slate-100 bg-white">' + rows + '</tbody></table></div>';
   }
-  function td(txt, cls) { return '<td class="py-2.5 px-3 font-medium text-sm text-slate-800 ' + (cls || '') + '">' + txt + '</td>'; }
+  function td(txt, cls) { return '<td class="py-3 px-4 font-medium text-xs text-slate-800 ' + (cls || '') + '">' + txt + '</td>'; }
 
   function tabBody(p, i) {
     if (IS_TEACHER) {
-      if (i === 0) return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">' +
+      if (i === 0) return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 bg-slate-50/60 p-4 sm:p-5 rounded-2xl border border-slate-100">' +
         cell('Full name', esc(p.name)) + cell('Educator ID', esc(p.id)) + cell('Role', esc(p.role || 'Faculty')) +
         cell('Email', '<a class="text-[#176B45] hover:underline break-all" href="mailto:' + esc(p.email) + '">' + dash(p.email) + '</a>') +
         cell('Phone', dash(p.phone)) + cell('Languages', chips(p.languages)) + '</div>';
-      if (i === 1) return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">' +
+      if (i === 1) return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 bg-slate-50/60 p-4 sm:p-5 rounded-2xl border border-slate-100">' +
         cell('Department', dash(p.department)) + cell('Primary subject', dash(p.subject)) +
         cell('Employment type', dash(p.employmentType)) + cell('Contract end date', dash(p.contractEnd)) +
         cell('Years at school', dash(p.yearsAtSchool)) + cell('Registry status', statusBadge(p.status)) + '</div>';
-      if (i === 2) return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">' +
-        cell('Subjects taught', chips(p.subjects && p.subjects.length ? p.subjects : [p.subject])) +
-        cell('Homeroom', dash(p.homeroom)) + cell('Advisee count', dash(p.adviseeCount)) +
-        cell('Classes assigned', dash(p.classesAssigned)) +
-        cell('Pending grade records', '<span class="' + ((p.pendingGradeRecords || 0) > 0 ? 'text-[#B3261E]' : 'text-[#204F3A]') + '">' + (p.pendingGradeRecords || 0) + '</span>') +
-        cell('Published records', dash(p.publishedGradeRecords)) + '</div>' +
-        '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mb-2">Classes Taught</h4>' +
-        '<div class="flex flex-wrap gap-2">' + chips(p.classesTaught) + '</div>';
+      if (i === 2) {
+        var asgns = p.assignments || [];
+        var asgnRows = asgns.map(function (as) {
+          var dName = as.department || p.department || '—';
+          var gName = as.grade || '—';
+          var cName = as.class || '—';
+          var sName = as.subject || p.subject || '—';
+          return '<tr>' +
+            td('<span class="font-medium text-slate-800">' + esc(dName) + '</span>') +
+            td(esc(gName)) +
+            td('<span class="font-medium text-[#176B45]">' + esc(cName) + '</span>') +
+            td(esc(sName), 'text-slate-600') +
+            td('<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#E8F3ED] text-[#176B45]">Active</span>') +
+            '</tr>';
+        });
+
+        var asgnSection = '<div class="mb-5">' +
+          '<div class="flex items-center justify-between mb-2">' +
+            '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600">Assigned Classes &amp; Subjects (' + asgns.length + ')</h4>' +
+          '</div>' +
+          miniTable('<th class="py-2.5 px-3 font-medium text-left">Department</th><th class="py-2.5 px-3 font-medium text-left">Grade</th><th class="py-2.5 px-3 font-medium text-left">Class</th><th class="py-2.5 px-3 font-medium text-left">Subject</th><th class="py-2.5 px-3 font-medium text-left">Status</th>', asgnRows, 'No dynamic class assignments found.') +
+        '</div>';
+
+        var classesTaughtList = p.classesTaught || p.classes || (asgns.length ? asgns.map(function (a) { return (a.class || '').replace('Grade ', ''); }) : []);
+
+        return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">' +
+          cell('Subjects taught', chips(p.subjects && p.subjects.length ? p.subjects : [p.subject])) +
+          cell('Homeroom', dash(p.homeroom)) + cell('Advisee count', dash(p.adviseeCount)) +
+          cell('Classes assigned', dash(p.classesAssigned != null ? p.classesAssigned : asgns.length)) +
+          cell('Pending grade records', '<span class="' + ((p.pendingGradeRecords || 0) > 0 ? 'text-[#B3261E]' : 'text-[#204F3A]') + '">' + (p.pendingGradeRecords || 0) + '</span>') +
+          cell('Published records', dash(p.publishedGradeRecords)) + '</div>' +
+          asgnSection +
+          '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mb-2">Classes Taught</h4>' +
+          '<div class="flex flex-wrap gap-2">' + chips(classesTaughtList) + '</div>';
+      }
       if (i === 3) return '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mb-2">Certifications &amp; Licences</h4>' +
         '<div class="flex flex-wrap gap-2 mb-4">' + chips(p.certifications) + '</div>' +
         '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mb-2">Spoken Languages</h4>' +
         '<div class="flex flex-wrap gap-2 mb-4">' + chips(p.languages) + '</div>' +
         '<p class="text-[11px] text-slate-500">Upload certified copies of degrees, licences and safeguarding training from the Documents tab — every upload is timestamped and audited.</p>';
     } else {
-      if (i === 0) return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">' +
-        cell('Full name', esc(p.name)) + cell('Student ID', esc(p.id)) + cell('Gender', dash(p.gender)) +
-        cell('Grade level', dash(p.grade)) + cell('Class', dash(p.class)) + cell('Advisor', dash(p.advisorName || p.advisor)) +
-        cell('Enrolment status', statusBadge(p.status)) + cell('Live GPA', dash(p.gpaLive == null ? null : num(p.gpaLive))) +
-        cell('Attendance', p.attendancePct == null ? '—' : esc(num(p.attendancePct, 1) + '%')) + '</div>';
+      // ═══ STUDENT PROFILE TABS ═══
+      if (i === 0) {
+        var genderRaw = String(p.gender || '').trim();
+        var genderLetter = genderRaw.toUpperCase().charAt(0);
+        var genderVal = genderRaw
+          ? (genderLetter === 'F' ? 'Female (F)' : genderLetter === 'M' ? 'Male (M)' : genderRaw)
+          : '';
+        var gpaVal = p.gpaLive != null ? num(p.gpaLive, 2)
+          : (p.gpa != null ? num(p.gpa, 2) : '');
+        var dobVal = p.dob || p.dateOfBirth || p.dobIso || '';
+        var campusVal = p.campus || p.campusName || '';
+        var residencyVal = p.residencyType || p.residency || '';
+        var advisorVal = p.advisorName || '';
+        var enr0 = (p.enrollments && p.enrollments[0]) || {};
+        var placementVal = enr0.class_id || (p.class ? 'cls-' + String(p.class).toLowerCase() : '');
+
+        return '<section class="space-y-6">' +
+          '<div>' +
+            '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-400 mb-4">Official Student Credentials</h3>' +
+            '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-6 bg-slate-50/60 p-5 rounded-2xl border border-slate-100">' +
+              cell('Full Name', esc(p.name)) +
+              cell('Student ID', '<span class="font-mono text-slate-800">' + esc(p.id) + '</span>') +
+              cell('Gender', esc(genderVal || 'Not recorded')) +
+              cell('Primary Grade', esc(p.grade || 'Not recorded')) +
+              cell('Primary Class', p.class ? 'Class ' + esc(p.class) : 'Not recorded') +
+              cell('Advisor', '<span class="truncate" title="' + esc(advisorVal) + '">' + dash(advisorVal) + '</span>') +
+              '<div><p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Enrolment Status</p>' +
+              '<div class="inline-flex items-center gap-1.5 mt-1">' +
+              '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>' +
+              '<span class="text-sm font-medium text-emerald-800 capitalize">' + esc(p.status || 'active') + '</span></div></div>' +
+              '<div><p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Live GPA</p>' +
+              (gpaVal
+                ? '<p class="text-sm font-medium text-slate-900 mt-1"><span class="text-base text-[#176B45] font-medium">' + esc(gpaVal) + '</span> <span class="text-slate-400 font-normal text-xs">/ 4.00</span></p>'
+                : '<p class="text-sm font-normal text-slate-400 mt-1">Not yet graded</p>') + '</div>' +
+              cell('Active Placement', p.enrollments && p.enrollments.length ? esc(placementVal) : 'Not recorded') +
+              cell('Date of Birth', esc(dobVal || 'Not recorded')) +
+              cell('Primary Campus', esc(campusVal || 'Not recorded')) +
+              cell('Residency Type', esc(residencyVal || 'Not recorded')) +
+            '</div>' +
+          '</div>' +
+        '</section>';
+      }
       if (i === 1) {
-        var bySubj = {};
+        var enrs = p.enrollments || [];
+        var enrRows = enrs.map(function (en) {
+          var dName = en.department || '—';
+          var gName = en.grade || p.grade || '—';
+          var cName = en.class || en.class_id || '—';
+          var yName = en.academic_year || '—';
+          var st = en.status || 'active';
+          return '<tr class="hover:bg-slate-50/50 transition-colors">' +
+            '<td class="py-3 px-4 font-medium text-slate-900">' + esc(dName) + '</td>' +
+            '<td class="py-3 px-4 text-slate-600">' + esc(gName) + '</td>' +
+            '<td class="py-3 px-4 font-mono font-medium text-[#176B45]">' + esc(cName) + '</td>' +
+            '<td class="py-3 px-4 text-slate-600">' + esc(yName) + '</td>' +
+            '<td class="py-3 px-4"><span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>' + esc(st) + '</span></td>' +
+            '</tr>';
+        }).join('');
+
+        var enrSection = enrs.length
+          ? '<div>' +
+              '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-3">Academic Department Enrollments (' + enrs.length + ')</h3>' +
+              '<div class="overflow-x-auto border border-slate-200 rounded-2xl">' +
+                '<table class="w-full text-left text-xs text-slate-700 divide-y divide-slate-200">' +
+                  '<thead class="bg-slate-50 text-[11px] font-medium text-slate-500 uppercase tracking-wider">' +
+                    '<tr><th class="py-3 px-4">Department</th><th class="py-3 px-4">Grade</th><th class="py-3 px-4">Class</th><th class="py-3 px-4">Academic Year</th><th class="py-3 px-4">Status</th></tr>' +
+                  '</thead>' +
+                  '<tbody class="divide-y divide-slate-100 bg-white">' + enrRows + '</tbody>' +
+                '</table>' +
+              '</div>' +
+            '</div>'
+          : '<div class="border border-dashed border-slate-200 rounded-2xl p-6 text-center">' +
+              '<p class="text-sm font-medium text-slate-700">No department enrollments recorded</p>' +
+              '<p class="text-xs text-slate-400 mt-1 font-normal">Enrollments appear here once the student is placed in a class.</p>' +
+            '</div>';
+
+        // Subject averages computed from the student's real graded assessments.
+        var subjAgg = {};
         (p.grades || []).forEach(function (g) {
-          var s = g.subject_name || 'General';
-          bySubj[s] = bySubj[s] || [];
-          bySubj[s].push(Number(g.percentage || g.score || 0));
+          var score = Number(g.score);
+          if (isNaN(score)) return;
+          var maxRaw = g.assessmentMaxScore != null ? Number(g.assessmentMaxScore)
+            : (g.maxScore != null ? Number(g.maxScore) : 100);
+          var max = (!isNaN(maxRaw) && maxRaw > 0) ? maxRaw : 100;
+          var pct = score / max * 100;
+          var name = g.subjectName || g.subject_name || g.subject ||
+            (g.assessmentTitle ? String(g.assessmentTitle).replace(/\s*[-·]\s*.*$/, '') : '') || 'General Assessments';
+          var agg = subjAgg[name] = subjAgg[name] || { n: 0, sum: 0, best: null };
+          agg.n += 1; agg.sum += pct;
+          if (agg.best == null || pct > agg.best) agg.best = pct;
         });
-        var subRows = Object.keys(bySubj).map(function (s) {
-          var arr = bySubj[s];
-          var avg = arr.reduce(function (n, v) { return n + v; }, 0) / arr.length;
-          return '<tr>' + td(esc(s)) + td(arr.length + ' assessments', 'text-slate-600') + td('<span class="font-medium text-slate-800">' + num(avg, 1) + '%</span>') + '</tr>';
-        });
-        var trs = (p.transcripts || []).map(function (t) {
-          return '<tr>' + td(esc(t.term || t.year || '—')) + td(esc(t.gpa == null ? '—' : t.gpa)) + td(statusBadge(t.status || 'issued')) + td('<a class="text-[#176B45] hover:underline text-[11px]" href="' + esc(t.fileUrl || '#') + '" ' + (t.fileUrl ? 'target="_blank" rel="noopener"' : '') + '>' + (t.fileUrl ? 'Open' : 'Archived in system') + '</a></tr>');
-        });
-        return '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mb-2">Subject Averages (from graded assessments)</h4>' +
-          miniTable('<th class="py-2.5 px-3 font-medium text-left">Subject</th><th class="py-2.5 px-3 font-medium text-left">Assessments</th><th class="py-2.5 px-3 font-medium text-left">Average</th>', subRows, 'No subject grades recorded yet.') +
-          '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mt-5 mb-2">Issued Transcripts</h4>' +
-          miniTable('<th class="py-2.5 px-3 font-medium text-left">Term / Year</th><th class="py-2.5 px-3 font-medium text-left">GPA</th><th class="py-2.5 px-3 font-medium text-left">Status</th><th class="py-2.5 px-3 font-medium text-left">Document</th>', trs, 'No transcripts issued for this student yet.');
+        var subjNames = Object.keys(subjAgg).sort();
+        var bandCls = function (pct) {
+          return pct >= 85 ? 'text-emerald-700' : pct >= 70 ? 'text-sky-700' : pct >= 50 ? 'text-amber-700' : 'text-rose-700';
+        };
+        var subjSection;
+        if (subjNames.length) {
+          var subRows = subjNames.map(function (name) {
+            var agg = subjAgg[name];
+            var avg = agg.sum / agg.n;
+            return '<tr class="hover:bg-slate-50/50 transition-colors">' +
+              '<td class="py-3 px-4 font-medium text-slate-900">' + esc(name) + '</td>' +
+              '<td class="py-3 px-4 text-slate-500">' + agg.n + (agg.n === 1 ? ' assessment' : ' assessments') + '</td>' +
+              '<td class="py-3 px-4 text-slate-500">' + num(agg.best, 1) + '%</td>' +
+              '<td class="py-3 px-4 text-right font-medium ' + bandCls(avg) + '">' + num(avg, 1) + '%</td>' +
+              '</tr>';
+          }).join('');
+          subjSection = '<div>' +
+            '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-3">Subject Averages (From Graded Assessments)</h3>' +
+            '<div class="overflow-x-auto border border-slate-200 rounded-2xl">' +
+              '<table class="w-full text-left text-xs text-slate-700 divide-y divide-slate-200">' +
+                '<thead class="bg-slate-50 text-[11px] font-medium text-slate-500 uppercase tracking-wider">' +
+                  '<tr><th class="py-3 px-4">Subject</th><th class="py-3 px-4">Assessments Logged</th><th class="py-3 px-4">Best Score</th><th class="py-3 px-4 text-right">Student Average</th></tr>' +
+                '</thead>' +
+                '<tbody class="divide-y divide-slate-100 bg-white">' + subRows + '</tbody>' +
+              '</table>' +
+            '</div>' +
+          '</div>';
+        } else {
+          subjSection = '<div>' +
+            '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-3">Subject Averages (From Graded Assessments)</h3>' +
+            '<div class="border border-dashed border-slate-200 rounded-2xl p-6 text-center">' +
+              '<p class="text-sm font-medium text-slate-700">No graded assessments recorded yet</p>' +
+              '<p class="text-xs text-slate-400 mt-1 font-normal">Published assessment scores will build this subject breakdown.</p>' +
+            '</div>' +
+          '</div>';
+        }
+
+        var transcripts = p.transcripts || [];
+        var transcriptSection;
+        if (transcripts.length) {
+          var trRows = transcripts.map(function (t) {
+            return '<div class="border border-dashed border-slate-200 rounded-2xl p-4 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">' +
+              '<div class="flex items-center gap-3">' +
+                '<span class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[20px]">description</span></span>' +
+                '<div><p class="font-medium text-slate-800">' + esc(t.term || t.title || 'Official Transcript') + '</p>' +
+                '<p class="text-slate-400 text-[11px] font-normal">' + esc(t.fileName || 'Transcript record') + (t.generatedAt || t.createdAt ? ' • ' + esc(fmtDT(t.generatedAt || t.createdAt)) : '') + '</p></div>' +
+              '</div>' +
+              (t.fileUrl ? '<a class="font-medium text-[#176B45] hover:text-[#125638] inline-flex items-center gap-1.5 hover:underline" href="' + esc(t.fileUrl) + '" target="_blank" rel="noopener">Download Official Copy <span class="material-symbols-outlined text-[15px]">download</span></a>' : '<span class="text-slate-400">No file attached</span>') +
+            '</div>';
+          }).join('');
+          transcriptSection = '<div>' +
+            '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-3">Issued Transcripts &amp; Formal Records (' + transcripts.length + ')</h3>' +
+            '<div class="space-y-2">' + trRows + '</div>' +
+          '</div>';
+        } else {
+          transcriptSection = '<div>' +
+            '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-3">Issued Transcripts &amp; Formal Records</h3>' +
+            '<div class="border border-dashed border-slate-200 rounded-2xl p-6 text-center">' +
+              '<p class="text-sm font-medium text-slate-700">No transcripts issued yet</p>' +
+              '<p class="text-xs text-slate-400 mt-1 font-normal">Official transcripts generated by the registrar will be listed here.</p>' +
+            '</div>' +
+          '</div>';
+        }
+
+        return '<section class="space-y-6">' + enrSection + subjSection + transcriptSection + '</section>';
       }
       if (i === 2) {
-        var g = p.guardian;
-        if (!g) return '<div class="p-6 text-center text-xs text-slate-500 border border-[#E1E9E3] rounded-xl bg-[#F7F9F7]/60">No guardian profile is linked to this student yet.</div>';
-        return '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">' +
-          cell('Guardian name', dash(g.name)) + cell('Relation', dash(g.relation)) +
-          cell('Email', g.email ? '<a class="text-[#176B45] hover:underline break-all" href="mailto:' + esc(g.email) + '">' + esc(g.email) + '</a>' : '—') +
-          cell('Phone', dash(g.phone)) + cell('Occupation', dash(g.occupation)) + cell('District', dash(g.district)) +
-          cell('Preferred language', dash(g.preferredLanguage)) +
-          cell('Consent on file', g.consentOnFile == null ? '—' : (g.consentOnFile ? 'Yes' : 'No')) +
-          cell('Last contact', dash(g.lastContact)) + '</div>' +
-          '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mt-5 mb-2">Linked Students</h4><div class="flex flex-wrap gap-2">' +
-          chips((g.linkedStudents || []).map(function (s) { return s.name + ' · ' + (s.class || ''); })) + '</div>';
+        var att = (p.attendance && typeof p.attendance === 'object') ? p.attendance : {};
+        var attRecords = att.records || [];
+        var sum = att.summary || {};
+        var attRaw = sum.percentage != null ? sum.percentage :
+          (p.attendancePct != null ? p.attendancePct :
+          (p.attendanceRate != null ? p.attendanceRate :
+          (typeof p.attendance === 'number' ? p.attendance :
+          (p.stats && p.stats.attendance != null ? p.stats.attendance : null))));
+        var hasAtt = attRaw != null && (sum.total == null || sum.total > 0);
+        var attVal = hasAtt ? parseFloat(num(attRaw, 1)) || 0 : 0;
+        var attColor = attVal >= 85 ? 'bg-emerald-500' : 'bg-amber-500';
+        var attLabel = !hasAtt ? '<span class="text-xs text-slate-400 font-normal">No data</span>'
+          : attVal >= 85 ? '<span class="text-xs text-emerald-700 font-medium">Good Standing (&ge;85%)</span>'
+          : '<span class="text-xs text-amber-700 font-medium">Needs Attention (&lt;85%)</span>';
+
+        var STATUS_STYLES = {
+          present: { chip: 'bg-emerald-50 text-emerald-800 border-emerald-200', dot: 'bg-emerald-600' },
+          tardy: { chip: 'bg-amber-50 text-amber-800 border-amber-200', dot: 'bg-amber-500' },
+          absent: { chip: 'bg-rose-50 text-rose-700 border-rose-200', dot: 'bg-rose-600' },
+          excused: { chip: 'bg-sky-50 text-sky-700 border-sky-200', dot: 'bg-sky-600' }
+        };
+
+        var logSection;
+        if (attRecords.length) {
+          var logRows = attRecords.map(function (lg) {
+            var st = String(lg.status || '').toLowerCase();
+            var sty = STATUS_STYLES[st] || STATUS_STYLES.present;
+            return '<tr class="hover:bg-slate-50/50 transition-colors">' +
+              '<td class="py-3 px-4 font-mono font-medium text-slate-900">' + esc(lg.attendance_date || lg.date || '—') + '</td>' +
+              '<td class="py-3 px-4 text-slate-600">' + esc((lg.session === 'daily' ? 'Daily Session' : (lg.session || '—'))) + '</td>' +
+              '<td class="py-3 px-4 text-slate-400">' + esc(lg.recorded_by || lg.source || '—') + '</td>' +
+              '<td class="py-3 px-4"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium border ' + sty.chip + '"><span class="w-1.5 h-1.5 rounded-full ' + sty.dot + '"></span>' + esc(st || '—') + '</span></td>' +
+              '<td class="py-3 px-4 text-slate-500 max-w-[180px] truncate" title="' + esc(lg.note || '') + '">' + esc(lg.note || '—') + '</td>' +
+              '</tr>';
+          }).join('');
+          logSection = '<div>' +
+            '<div class="flex items-center justify-between mb-3">' +
+              '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500">Recent Attendance Log</h3>' +
+              '<span class="text-xs text-slate-400 font-normal">Latest ' + attRecords.length + ' records</span>' +
+            '</div>' +
+            '<div class="overflow-x-auto border border-slate-200 rounded-2xl">' +
+              '<table class="w-full text-left text-xs text-slate-700 divide-y divide-slate-200">' +
+                '<thead class="bg-slate-50 text-[11px] font-medium text-slate-500 uppercase tracking-wider">' +
+                  '<tr><th class="py-3 px-4">Date</th><th class="py-3 px-4">Session</th><th class="py-3 px-4">Recorded By</th><th class="py-3 px-4">Status</th><th class="py-3 px-4">Note</th></tr>' +
+                '</thead>' +
+                '<tbody class="divide-y divide-slate-100 bg-white">' + logRows + '</tbody>' +
+              '</table>' +
+            '</div>' +
+          '</div>';
+        } else {
+          logSection = '<div>' +
+            '<div class="flex items-center justify-between mb-3">' +
+              '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500">Recent Attendance Log</h3>' +
+            '</div>' +
+            '<div class="border border-dashed border-slate-200 rounded-2xl p-8 text-center">' +
+              '<div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-2"><span class="material-symbols-outlined text-xl">fact_check</span></div>' +
+              '<p class="text-sm font-medium text-slate-700">No attendance records yet</p>' +
+              '<p class="text-xs text-slate-400 mt-1 font-normal">Daily rollcall and gate check-ins will appear here once recorded.</p>' +
+            '</div>' +
+          '</div>';
+        }
+
+        return '<section class="space-y-6">' +
+          '<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">' +
+            '<div class="border border-slate-200 bg-slate-50/60 rounded-2xl p-4">' +
+              '<span class="text-[11px] font-medium uppercase tracking-wider text-slate-400 block mb-1">Overall Attendance</span>' +
+              '<div class="flex items-baseline gap-2">' +
+                '<span class="text-2xl font-medium text-slate-900">' + (hasAtt ? esc(num(attVal, 1)) + '%' : '—') + '</span>' +
+                attLabel +
+              '</div>' +
+              '<div class="w-full bg-slate-200 rounded-full h-1.5 mt-2 overflow-hidden">' +
+                '<div class="' + attColor + ' h-1.5 rounded-full" style="width: ' + (hasAtt ? Math.min(attVal, 100) : 0) + '%"></div>' +
+              '</div>' +
+            '</div>' +
+            '<div class="border border-slate-200 bg-slate-50/60 rounded-2xl p-4">' +
+              '<span class="text-[11px] font-medium uppercase tracking-wider text-slate-400 block mb-1">Present Days</span>' +
+              '<div class="flex items-baseline gap-2">' +
+                '<span class="text-2xl font-medium text-slate-900">' + (sum.present != null ? esc(String(sum.present)) : '—') + '</span>' +
+                '<span class="text-xs text-slate-500 font-normal">Sessions</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-500 font-normal mt-2">' + (sum.tardy != null ? esc(String(sum.tardy)) + ' tardy arrivals' : 'No tardy data') + '</p>' +
+            '</div>' +
+            '<div class="border border-slate-200 bg-slate-50/60 rounded-2xl p-4">' +
+              '<span class="text-[11px] font-medium uppercase tracking-wider text-slate-400 block mb-1">Total Absences</span>' +
+              '<div class="flex items-baseline gap-2">' +
+                '<span class="text-2xl font-medium text-slate-900">' + (sum.absent != null ? esc(String(sum.absent)) : '—') + '</span>' +
+                '<span class="text-xs text-slate-500 font-normal">Sessions</span>' +
+              '</div>' +
+              '<p class="text-xs text-slate-500 font-normal mt-2">' + (sum.excused != null ? esc(String(sum.excused)) + ' excused' : 'No excused data') + '</p>' +
+            '</div>' +
+          '</div>' +
+          logSection +
+        '</section>';
       }
       if (i === 3) {
-        var gr = (p.grades || []).map(function (x) {
-          return '<tr>' + td(esc(x.assessmentTitle || x.subject_name || '—')) +
-            td(x.score == null ? '—' : esc(x.score) + ' / ' + esc(x.maxScore == null ? 100 : x.maxScore)) +
-            td(x.percentage == null ? '—' : esc(x.percentage) + '%') +
-            td('<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F7F9F7] border border-[#E1E9E3] text-xs font-medium text-slate-700">' + dash(x.letterGrade) + '</span>') +
-            td(statusBadge(x.workflow || '—')) + td(esc(x.teacher || '—'), 'text-slate-500') + '</tr>';
-        });
-        return miniTable('<th class="py-2.5 px-3 font-medium text-left">Assessment</th><th class="py-2.5 px-3 font-medium text-left">Score</th><th class="py-2.5 px-3 font-medium text-left">%</th><th class="py-2.5 px-3 font-medium text-left">Grade</th><th class="py-2.5 px-3 font-medium text-left">Workflow</th><th class="py-2.5 px-3 font-medium text-left">Teacher</th>', gr, 'No graded assessments found for this student.');
-      }
-      if (i === 4) {
-        var att = p.attendance || {};
-        var sum = att.summary || {};
-        var recs = (att.records || []).map(function (a) {
-          var l = String(a.status || '').toLowerCase();
-          var cls = l === 'present' ? 'bg-[#E8F3ED] text-[#204F3A] border-[#c4dece]' : l === 'absent' ? 'bg-[#ffdad6] text-[#93000a] border-[#ffb4a3]' : 'bg-[#ffeadb] text-[#822714] border-[#ffd0b0]';
-          return '<tr>' + td(esc(a.attendance_date)) + td(esc(a.course || a.subject || '—')) + td('<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ' + cls + '">' + esc(a.status) + '</span>') + '</tr>';
-        });
-        return '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">' +
-          cell('Overall attendance', sum.percentage == null ? dash(att.percentage) : esc(num(sum.percentage, 1) + '%')) +
-          cell('Present days', dash(sum.present)) + cell('Absences', dash(sum.absent)) + '</div>' +
-          '<h4 class="text-[11px] font-medium uppercase tracking-wider text-slate-600 mb-2">Recent Attendance Log</h4>' +
-          miniTable('<th class="py-2.5 px-3 font-medium text-left">Date</th><th class="py-2.5 px-3 font-medium text-left">Course</th><th class="py-2.5 px-3 font-medium text-left">Status</th>', recs, 'No attendance entries recorded yet.');
+        var reqs = p.serviceRequests || [];
+        var openN = p.openRequests != null ? p.openRequests
+          : reqs.filter(function (r) { return ['open', 'pending', 'in_progress'].indexOf(String(r.status || '').toLowerCase()) >= 0; }).length;
+        var reqRows = reqs.map(function (r) {
+          var st = String(r.status || '').toLowerCase();
+          var stCls = (st === 'completed' || st === 'approved') ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+            : (st === 'rejected') ? 'bg-rose-50 text-rose-700 border-rose-200'
+            : 'bg-amber-50 text-amber-800 border-amber-200';
+          return '<tr class="hover:bg-slate-50/50 transition-colors">' +
+            '<td class="py-3 px-4 font-medium text-slate-900 max-w-[220px] truncate" title="' + esc(r.title || r.type || '') + '">' + esc(r.title || r.type || '—') + '</td>' +
+            '<td class="py-3 px-4 text-slate-600 capitalize">' + esc(String(r.category || '').replace(/_/g, ' ') || '—') + '</td>' +
+            '<td class="py-3 px-4 text-slate-500">' + esc(fmtDT(r.date || r.createdAt)) + '</td>' +
+            '<td class="py-3 px-4"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium border capitalize ' + stCls + '">' + esc(st || '—') + '</span></td>' +
+            '</tr>';
+        }).join('');
+        var reqSection = reqs.length
+          ? '<div class="overflow-x-auto border border-slate-200 rounded-2xl">' +
+              '<table class="w-full text-left text-xs text-slate-700 divide-y divide-slate-200">' +
+                '<thead class="bg-slate-50 text-[11px] font-medium text-slate-500 uppercase tracking-wider">' +
+                  '<tr><th class="py-3 px-4">Request</th><th class="py-3 px-4">Category</th><th class="py-3 px-4">Submitted</th><th class="py-3 px-4">Status</th></tr>' +
+                '</thead>' +
+                '<tbody class="divide-y divide-slate-100 bg-white">' + reqRows + '</tbody>' +
+              '</table>' +
+            '</div>'
+          : '<div class="border border-slate-200/80 rounded-2xl bg-slate-50/40 p-8 sm:p-12 text-center my-4 flex flex-col items-center justify-center">' +
+              '<div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3"><span class="material-symbols-outlined text-2xl">support_agent</span></div>' +
+              '<p class="text-sm text-slate-600 font-medium">This student has no service requests on file.</p>' +
+              '<p class="text-xs text-slate-400 mt-1 max-w-sm font-normal">Counseling, academic support accommodations, IT requests, and transportation inquiries logged will appear here.</p>' +
+            '</div>';
+
+        return '<section class="space-y-6">' +
+          '<div class="flex items-center justify-between gap-6 py-2 px-1 border-b border-slate-100">' +
+            '<div class="flex items-center gap-6 sm:gap-8">' +
+              '<div class="flex items-center gap-2.5 sm:gap-3"><span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">OPEN REQUESTS</span><span class="text-lg font-medium text-slate-900">' + Number(openN || 0) + '</span></div>' +
+              '<div class="flex items-center gap-2.5 sm:gap-3"><span class="text-[11px] font-medium uppercase tracking-wider text-slate-500">TOTAL REQUESTS</span><span class="text-lg font-medium text-slate-900">' + reqs.length + '</span></div>' +
+            '</div>' +
+          '</div>' +
+          reqSection +
+          '<div class="mt-6">' +
+            '<div class="flex items-center justify-between mb-3">' +
+              '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500">Available Support Services</h3>' +
+            '</div>' +
+            '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
+              '<div class="p-3.5 border border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-colors flex items-start gap-3">' +
+                '<div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">psychology</span></div>' +
+                '<div><p class="text-xs font-medium text-slate-900">Academic Guidance</p><p class="text-[11px] text-slate-400 mt-0.5 font-normal">Tutoring &amp; course advisement</p></div>' +
+              '</div>' +
+              '<div class="p-3.5 border border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-colors flex items-start gap-3">' +
+                '<div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">medical_services</span></div>' +
+                '<div><p class="text-xs font-medium text-slate-900">Health &amp; Wellness</p><p class="text-[11px] text-slate-400 mt-0.5 font-normal">Nurse pass &amp; care plans</p></div>' +
+              '</div>' +
+              '<div class="p-3.5 border border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-colors flex items-start gap-3">' +
+                '<div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">directions_bus</span></div>' +
+                '<div><p class="text-xs font-medium text-slate-900">Transportation &amp; Boarding</p><p class="text-[11px] text-slate-400 mt-0.5 font-normal">Bus route &amp; campus shuttle</p></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</section>';
       }
       if (i === 5) {
-        var reqs = (p.serviceRequests || []).map(function (r) {
-          return '<tr>' + td(esc(r.type || r.category || 'Request')) + td(esc(r.title || r.description || '—')) +
-            td(statusBadge(r.status || 'open')) + td(esc(fmtDT(r.created || r.createdAt || r.date)), 'text-slate-600') + '</tr>';
-        });
-        return '<div class="grid grid-cols-2 gap-3 mb-4">' + cell('Open requests', dash(p.openRequests)) + cell('Total requests', (p.serviceRequests || []).length) + '</div>' +
-          miniTable('<th class="py-2.5 px-3 font-medium text-left">Type</th><th class="py-2.5 px-3 font-medium text-left">Detail</th><th class="py-2.5 px-3 font-medium text-left">Status</th><th class="py-2.5 px-3 font-medium text-left">Raised</th>', reqs, 'This student has no service requests on file.');
+        var g = p.guardian || {};
+        var gName = g.name || p.parentName || '';
+        var gRel = g.relation || '';
+        var gEmail = g.email || p.parentEmail || '';
+        var gPhone = g.phone || p.parentPhone || '';
+        var gOcc = g.occupation || '';
+        var gDist = g.district || '';
+        var gLang = g.preferredLanguage || '';
+        var gLast = g.lastContact || '';
+        var notRec = '<span class="text-sm font-normal text-slate-400">Not recorded</span>';
+        var valOrNot = function (v) { return v ? esc(v) : notRec; };
+
+        var linked = (g.linkedStudents && g.linkedStudents.length ? g.linkedStudents : [{ id: p.id, name: p.name, class: p.class, grade: p.grade }])
+          .map(function (ls) {
+            var isCurrent = String(ls.id) === String(p.id);
+            var lsName = ls.name || ls.studentName || '—';
+            var lsMeta = 'ID: ' + esc(ls.id || '—') + (ls.class ? ' • Section ' + esc(ls.class) : '') + (ls.grade ? ' • ' + esc(ls.grade) : '');
+            return '<div class="p-3.5 flex items-center justify-between hover:bg-slate-50/50 transition-colors">' +
+              '<div class="flex items-center gap-3">' +
+                '<div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-medium text-xs flex items-center justify-center shrink-0">' + esc(initials(lsName)) + '</div>' +
+                '<div><p class="text-xs font-medium text-slate-900">' + esc(lsName) + (isCurrent ? ' (Current Student)' : '') + '</p><p class="text-[11px] text-slate-500 font-normal">' + lsMeta + '</p></div>' +
+              '</div>' +
+              '<span class="text-xs font-medium text-[#176B45] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">Enrolled</span>' +
+            '</div>';
+          }).join('');
+
+        return '<section class="space-y-6">' +
+          '<div>' +
+            '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-3">Primary Legal Guardian</h3>' +
+            '<div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs">' +
+              '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 sm:gap-y-5 gap-x-6">' +
+                cell('Guardian Name', valOrNot(gName)) +
+                cell('Relationship', valOrNot(gRel)) +
+                '<div><p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Email Address</p>' +
+                (gEmail
+                  ? '<a class="text-sm font-medium text-[#176B45] hover:underline block truncate mt-1" href="mailto:' + esc(gEmail) + '" title="' + esc(gEmail) + '">' + esc(gEmail) + '</a>'
+                  : notRec) + '</div>' +
+                '<div><p class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Phone (Primary)</p>' +
+                '<div class="mt-1">' + (gPhone ? '<span class="text-sm font-medium text-slate-900">' + esc(gPhone) + '</span>' : notRec) + '</div></div>' +
+                cell('Occupation', valOrNot(gOcc)) +
+                cell('Residential District', valOrNot(gDist)) +
+                cell('Preferred Language', valOrNot(gLang)) +
+                cell('Consent On File', g.consentOnFile != null
+                  ? (g.consentOnFile ? '<span class="text-sm font-medium text-emerald-800 flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[16px] text-emerald-600">check</span> Signed Digital Consent</span>' : '<span class="text-sm font-normal text-slate-400">No consent on file</span>')
+                  : notRec) +
+                cell('Last School Contact', valOrNot(gLast)) +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500 mb-3">Linked Household Students</h3>' +
+            '<div class="border border-slate-200 rounded-2xl divide-y divide-slate-100 bg-white overflow-hidden">' + linked + '</div>' +
+          '</div>' +
+        '</section>';
       }
     }
     if (i === DOCS_TAB_INDEX) return docsTabMarkup(p);
@@ -1432,14 +1865,33 @@
       var acts = (p.activity || []).map(function (a) {
         var actor = '';
         try { actor = (JSON.parse(a.metadata_json || '{}').actorName) || a.actor_id || ''; } catch (e) { actor = a.actor_id || ''; }
-        return '<tr>' + td('<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F7F9F7] border border-[#E1E9E3] text-xs font-medium text-slate-700">' + esc(String(a.action || '').replace(/_/g, ' ')) + '</span>') +
-          td(esc(a.reason || '—')) + td(esc(actor), 'text-slate-600') + td(esc(fmtDT(a.created_at || a.timestamp)), 'text-slate-600') + '</tr>';
+        return '<tr class="hover:bg-slate-50/50 transition-colors">' +
+          '<td class="py-3 px-4"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F7F9F7] border border-[#E1E9E3] text-xs font-medium text-slate-700">' + esc(String(a.action || '').replace(/_/g, ' ')) + '</span></td>' +
+          '<td class="py-3 px-4 text-slate-700">' + esc(a.reason || '—') + '</td>' +
+          '<td class="py-3 px-4 text-slate-600">' + esc(actor) + '</td>' +
+          '<td class="py-3 px-4 text-slate-500">' + esc(fmtDT(a.created_at || a.timestamp)) + '</td>' +
+          '</tr>';
       });
-      return miniTable('<th class="py-2.5 px-3 font-medium text-left">Action</th><th class="py-2.5 px-3 font-medium text-left">Reason</th><th class="py-2.5 px-3 font-medium text-left">Actor</th><th class="py-2.5 px-3 font-medium text-left">When</th>', acts, 'No recorded activity for this profile yet.');
+
+      if (!acts || !acts.length) {
+        return '<div class="border border-dashed border-slate-200 rounded-2xl p-8 text-center">' +
+          '<div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-2"><span class="material-symbols-outlined text-xl">history</span></div>' +
+          '<p class="text-sm font-medium text-slate-700">No recent activity</p>' +
+          '<p class="text-xs text-slate-400 mt-1 font-normal">Audit trails and enrollment status changes are archived here.</p>' +
+          '</div>';
+      }
+
+      return '<div class="overflow-x-auto border border-slate-200 rounded-2xl">' +
+        '<table class="w-full text-left text-xs text-slate-700 divide-y divide-slate-200">' +
+          '<thead class="bg-slate-50 text-[11px] font-medium text-slate-500 uppercase tracking-wider">' +
+            '<tr><th class="py-3 px-4">Action</th><th class="py-3 px-4">Reason</th><th class="py-3 px-4">Actor</th><th class="py-3 px-4">When</th></tr>' +
+          '</thead>' +
+          '<tbody class="divide-y divide-slate-100 bg-white">' + acts.join('') + '</tbody>' +
+        '</table>' +
+      '</div>';
     }
     return '';
   }
-
   /* ---------- documents tab ---------- */
   function docsTabMarkup(p) {
     var rows = (p.documents || []).map(function (d) {
@@ -1627,10 +2079,20 @@
         url = API_BASE + '/' + encodeURIComponent(formEditId); method = 'PUT';
       }
     } else {
+      var currentRec = state.all.filter(function (r) { return String(r.id) === String(formEditId); })[0] || {};
+      var enrs = currentRec.enrollments ? JSON.parse(JSON.stringify(currentRec.enrollments)) : [];
+      if (enrs.length > 0) {
+        if (fv('fxGrade')) enrs[0].grade = fv('fxGrade');
+        if (fv('fxClass')) {
+          enrs[0].class = fv('fxClass').replace('Grade ', '').split(' (')[0].trim();
+          enrs[0].class_id = 'cls-' + enrs[0].class.toLowerCase();
+        }
+        if (fv('fxStatus')) enrs[0].status = fv('fxStatus');
+      }
       body = {
         name: fv('fxName'), gender: fv('fxGender'), grade: fv('fxGrade'), class: fv('fxClass'),
         advisor: fv('fxAdvisor'), parentName: fv('fxParent'), parentEmail: fv('fxParentEmail'),
-        status: fv('fxStatus'), reason: fv('fxReason')
+        status: fv('fxStatus'), enrollments: enrs, reason: fv('fxReason')
       };
       if (!body.reason) { $('#fxReasonErr').classList.remove('hidden'); $('#formError').textContent = ''; return; }
       url = API_BASE + '/' + encodeURIComponent(formEditId); method = 'PUT';
@@ -1683,8 +2145,8 @@
     var wrap = document.createElement('div');
     wrap.innerHTML = [
       // Profile modal
-      '<div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle" onclick="if(event.target===this)__ngisCloseProfile()">',
-      '  <div id="profileModalInner" class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[90vh] flex flex-col relative animate-fade-in"></div>',
+      '<div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-900/50 backdrop-blur-xs transition-opacity" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle" onclick="if(event.target===this)__ngisCloseProfile()">',
+      '  <div id="profileModalInner" class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[92vh] flex flex-col relative animate-fade-in"></div>',
       '</div>',
       // Add/edit form modal
       '<div id="formModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" role="dialog" aria-modal="true" onclick="if(event.target===this)window.__ngisCloseForm()">',
@@ -1846,7 +2308,7 @@
           btnExecExcel.disabled = false;
           closeExcelImportModal();
           applyFilters();
-          toast('Successfully imported ' + importedCount + ' teachers from Excel.');
+          toast('Imported ' + importedCount + ' teachers from Excel.');
         });
       });
     }
@@ -1864,6 +2326,28 @@
     renderShell();
     mountModals();
     loadDirectory();
+    // Deep link: admin-users-students/teachers open profiles here with
+    // ?open-profile=<institutional id>. Clean the URL, then auto-open the
+    // actual record's profile modal once the shell is mounted.
+    var deepId = '';
+    try {
+      var sp = new URLSearchParams(window.location.search);
+      deepId = (sp.get('open-profile') || '').trim();
+      if (deepId) {
+        sp.delete('open-profile');
+        var qs = sp.toString();
+        history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+      }
+    } catch (e) { /* older browsers: deep link simply not applied */ }
+    if (deepId) {
+      var tries = 0;
+      (function tryOpen() {
+        tries += 1;
+        var m = $id('profileModal');
+        if (m) { openProfile(deepId); return; }
+        if (tries < 20) window.setTimeout(tryOpen, 200);
+      })();
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();

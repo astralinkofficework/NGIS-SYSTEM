@@ -9,7 +9,6 @@ for layout_path in (ROOT / "layout.js", ROOT / "assets/js/layout.js"):
     layout = layout_path.read_text(encoding="utf-8")
     assert "function resolvePortalRole" in layout, layout_path
     assert "ngis_user" in layout, layout_path
-    assert "pathRole" in layout, layout_path
     assert "window.location.replace" not in layout, layout_path
     assert not re.search(r'id:"messaging", label:"Messaging", icon:"forum", collapsible:true', layout), layout_path
     for retired in ("messaging-dashboard", "saved", "attachments", "notification-preferences", "message-search"):

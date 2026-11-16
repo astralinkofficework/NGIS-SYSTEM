@@ -31,18 +31,29 @@ NAV_FILE = os.path.join(DATA_DIR, 'sidebar_nav.json')
 NAV_VERSIONS_FILE = os.path.join(DATA_DIR, 'sidebar_nav_versions.json')
 NAV_AUDIT_FILE = os.path.join(DATA_DIR, 'sidebar_nav_audit.json')
 
-PORTALS = ['admin', 'principal', 'teacher', 'student']
+PORTALS = ['superadmin', 'admin', 'principal', 'teacher', 'student', 'staff']
 PORTAL_LABELS = {
+    'superadmin': 'Super Admin Sidebar',
     'admin': 'Admin Sidebar',
     'principal': 'Principal Sidebar',
     'teacher': 'Teacher Sidebar',
     'student': 'Student Sidebar',
+    'staff': 'Staff Sidebar',
 }
 PORTAL_OWNERS = {
+    'superadmin': 'admin',
     'admin': 'admin',
     'principal': 'principal',
     'teacher': 'teacher',
     'student': 'student',
+    'staff': 'admin',
+}
+STAFF_SHARED_ROUTES = {
+    'pages/principal/principal-lost-found.html',
+    'pages/admin/admin-services.html',
+    'pages/admin/admin-campuses.html',
+    'pages/admin/admin-school-information.html',
+    'pages/admin/admin-settings.html',
 }
 MAX_VERSIONS = 60
 
@@ -94,13 +105,162 @@ def _actor_role(actor):
     return 'admin'
 
 
+def _default_portal_config(portal):
+    now = _now()
+    if portal == 'superadmin':
+        return {
+            "brand": "Super Admin",
+            "meta": "Root System Suite · 2025–26",
+            "status": "published",
+            "last_published": now,
+            "published_by": "system@ngis.edu.kh",
+            "groups": [
+                {
+                    "id": "sa-overview-grp",
+                    "label": "Overview",
+                    "links": [
+                        { "id": "sa-dashboard", "label": "System Overview", "icon": "dashboard", "href": "pages/admin/admin.html", "locked": True }
+                    ]
+                },
+                {
+                    "id": "sa-cms-grp",
+                    "label": "CONTENT & NAVIGATION",
+                    "icon": "tune",
+                    "links": [
+                        { "id": "sa-sidebar-mgr", "label": "Global Sidebar Manager", "icon": "menu_open", "href": "pages/admin/admin-dashboard-content.html" },
+                        { "id": "sa-hero-banners", "label": "Hero & Banners CMS", "icon": "view_carousel", "href": "pages/admin/admin-dashboard-content.html#tabHero" }
+                    ]
+                },
+                {
+                    "id": "sa-users-grp",
+                    "label": "IDENTITY & ACCESS",
+                    "icon": "manage_accounts",
+                    "links": [
+                        { "id": "sa-users-reg", "label": "Central Registry", "icon": "dashboard", "href": "pages/admin/admin-users-students.html" },
+                        {
+                            "id": "sa-directories-drop",
+                            "label": "User Directories",
+                            "icon": "group",
+                            "collapsible": True,
+                            "children": [
+                                { "id": "sa-students", "label": "Student Accounts", "href": "pages/admin/admin-users-students.html" },
+                                { "id": "sa-teachers", "label": "Teacher Accounts", "href": "pages/admin/admin-users-teachers.html" },
+                                { "id": "sa-staff", "label": "Staff Accounts", "href": "pages/admin/admin-users-staff.html" },
+                                { "id": "sa-principals", "label": "Principal Accounts", "href": "pages/admin/admin-users-principals.html" },
+                                { "id": "sa-admins", "label": "Admin Accounts", "href": "pages/admin/admin-users-admins.html" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "sa-academics-grp",
+                    "label": "ACADEMIC ARCHITECTURE",
+                    "icon": "school",
+                    "links": [
+                        { "id": "sa-timetables", "label": "Timetable Monitoring", "icon": "calendar_month", "href": "pages/admin/admin-timetables.html" },
+                        { "id": "sa-teacher-assign", "label": "Teacher Class Assignment", "icon": "co_present", "href": "pages/admin/admin-teacher-class-assignment.html" }
+                    ]
+                },
+                {
+                    "id": "sa-infra-grp",
+                    "label": "INSTITUTIONAL SUITE",
+                    "icon": "business",
+                    "links": [
+                        { "id": "sa-campuses", "label": "Campus Infrastructure", "icon": "location_city", "href": "pages/admin/admin-campuses.html" },
+                        { "id": "sa-departments", "label": "Departments", "icon": "domain", "href": "pages/admin/admin-departments.html" },
+                        { "id": "sa-dictionary", "label": "Data Dictionary", "icon": "menu_book", "href": "pages/admin/admin-data-dictionary.html" },
+                        { "id": "sa-school-info", "label": "School Information", "icon": "account_balance", "href": "pages/admin/admin-school-information.html" }
+                    ]
+                },
+                {
+                    "id": "sa-sec-grp",
+                    "label": "GOVERNANCE & SECURITY",
+                    "icon": "security",
+                    "links": [
+                        { "id": "sa-audit-logs", "label": "Audit Logs", "icon": "history", "href": "pages/admin/admin-logs.html" },
+                        { "id": "sa-settings", "label": "System General Settings", "icon": "settings", "href": "pages/admin/admin-system-general-setting.html" }
+                    ]
+                },
+                {
+                    "id": "sa-account-grp",
+                    "label": "ACCOUNT",
+                    "icon": "person",
+                    "links": [
+                        { "id": "sa-profile", "label": "Admin Profile", "icon": "manage_accounts", "href": "pages/admin/admin-settings.html" }
+                    ]
+                }
+            ]
+        }
+    if portal == 'staff':
+        return {
+            "brand": "Staff",
+            "meta": "Campus Operations Hub · 2025–26",
+            "status": "published",
+            "last_published": now,
+            "published_by": "system@ngis.edu.kh",
+            "groups": [
+                {
+                    "id": "staff-overview-grp",
+                    "label": "Overview",
+                    "links": [
+                        { "id": "staff-services", "label": "Campus Services Hub", "icon": "grid_view", "href": "pages/admin/admin-services.html", "locked": True }
+                    ]
+                },
+                {
+                    "id": "staff-ops-grp",
+                    "label": "CAMPUS OPERATIONS",
+                    "icon": "business_center",
+                    "links": [
+                        { "id": "staff-lost-found", "label": "Lost & Found Registry", "icon": "inventory_2", "href": "pages/principal/principal-lost-found.html" },
+                        { "id": "staff-campuses", "label": "Campus Directory", "icon": "location_city", "href": "pages/admin/admin-campuses.html" },
+                        { "id": "staff-school-info", "label": "School Information", "icon": "account_balance", "href": "pages/admin/admin-school-information.html" }
+                    ]
+                },
+                {
+                    "id": "staff-comm-grp",
+                    "label": "COMMUNICATION",
+                    "icon": "campaign",
+                    "links": [
+                        { "id": "staff-announcements", "label": "Announcements", "icon": "campaign", "href": "pages/shared/announcements.html?portal=staff" },
+                        { "id": "staff-news", "label": "Institutional News", "icon": "newspaper", "href": "pages/shared/news.html?portal=staff" }
+                    ]
+                },
+                {
+                    "id": "staff-account-grp",
+                    "label": "ACCOUNT",
+                    "icon": "person",
+                    "links": [
+                        { "id": "staff-profile", "label": "Staff Profile & Settings", "icon": "settings", "href": "pages/admin/admin-settings.html" }
+                    ]
+                }
+            ]
+        }
+    return None
+
+
 def _ensure_seeded():
     """Loads the store, seeding defaults on first run so nothing is lost."""
     data = _load_json(NAV_FILE, None)
+    dirty = False
     if not data or 'portals' not in data:
         data = {"version": 1, "last_updated": _now(), "updated_by": "system", "portals": {}}
+        dirty = True
     if 'defaults' not in data:
-        data['defaults'] = copy.deepcopy(data.get('portals', {}))
+        data['defaults'] = {}
+        dirty = True
+
+    # Seed any missing portals (e.g. superadmin, staff)
+    for p in PORTALS:
+        if p not in data['portals']:
+            def_cfg = _default_portal_config(p)
+            if def_cfg:
+                data['portals'][p] = def_cfg
+                dirty = True
+        if p not in data.get('defaults', {}) and p in data['portals']:
+            data['defaults'][p] = copy.deepcopy(data['portals'][p])
+            dirty = True
+
+    if dirty:
         _save_json(NAV_FILE, data)
     return data
 
@@ -267,7 +427,7 @@ def validate(portal, nav):
             # Cross-portal exposure guard (visibility is NOT authorization).
             if href and isinstance(href, str):
                 clean = href.split('?', 1)[0].split('#', 1)[0].strip('/')
-                if clean.startswith('pages/') and not clean.startswith('pages/shared/'):
+                if clean.startswith('pages/') and not clean.startswith('pages/shared/') and not (portal == 'staff' and clean in STAFF_SHARED_ROUTES):
                     parts = clean.split('/')
                     seg = parts[1].lower() if len(parts) > 1 else ''
                     if seg in PORTALS and seg != owner:

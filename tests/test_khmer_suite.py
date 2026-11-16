@@ -415,25 +415,48 @@ class TestKhmerSuite(unittest.TestCase):
             "viewer": "timetables",
             "subjects": "subjects",
         }
-        for role in ("principal", "admin"):
-            for module, slug in files.items():
-                with self.subTest(role=role, module=module):
-                    path = ROOT / "pages" / role / f"{role}-{slug}.html"
-                    self.assertTrue(path.exists(), str(path))
-                    html = path.read_text(encoding="utf-8")
-                    self.assertTrue('lang="en"' in html or 'lang="km"' in html)
-                    self.assertIn('<main class="main">', html)
-                    self.assertIn('id="ks-root"', html)
-                    self.assertIn(f'KS_MODULE="{module}"', html)
-                    self.assertIn(f'role:"{role}"', html)
-                    self.assertIn(f'active:"ks-{module}"', html)
-                    for asset in ("khmer-suite.css", "khmer-suite-data.js",
-                                  "khmer-suite-engine.js", "khmer-suite-ui.js",
-                                  "layout.js", "_auth-bootstrap.js"):
-                        self.assertIn(asset, html, asset)
-                    # served over HTTP by Flask
-                    resp = self.c.get(f"/pages/{role}/{role}-{slug}.html")
-                    self.assertEqual(resp.status_code, 200)
+        # Principal retains operational scheduling suite (wizard, builder, viewer, subjects, records)
+        for module, slug in files.items():
+            with self.subTest(role="principal", module=module):
+                path = ROOT / "pages" / "principal" / f"principal-{slug}.html"
+                self.assertTrue(path.exists(), str(path))
+                html = path.read_text(encoding="utf-8")
+                self.assertTrue('lang="en"' in html or 'lang="km"' in html)
+                self.assertIn('<main class="main">', html)
+                self.assertIn('id="ks-root"', html)
+                self.assertIn(f'KS_MODULE="{module}"', html)
+                self.assertIn('role:"principal"', html)
+                self.assertIn(f'active:"ks-{module}"', html)
+                for asset in ("khmer-suite.css", "khmer-suite-data.js",
+                              "khmer-suite-engine.js", "khmer-suite-ui.js",
+                              "layout.js", "_auth-bootstrap.js"):
+                    self.assertIn(asset, html, asset)
+                # served over HTTP by Flask
+                resp = self.c.get(f"/pages/principal/principal-{slug}.html")
+                self.assertEqual(resp.status_code, 200)
+
+        # Admin subjects page
+        admin_sub = ROOT / "pages" / "admin" / "admin-subjects.html"
+        self.assertTrue(admin_sub.exists())
+        self.assertEqual(self.c.get("/pages/admin/admin-subjects.html").status_code, 200)
+
+        # Admin Timetables page is now the Timetable Monitoring workspace
+        # (the read-only KS Master Matrix viewer was replaced by product decision)
+        admin_tt = ROOT / "pages" / "admin" / "admin-timetables.html"
+        self.assertTrue(admin_tt.exists())
+        tt_html = admin_tt.read_text(encoding="utf-8")
+        self.assertIn("timetable-monitoring.js", tt_html)
+        self.assertIn("active: 'timetables'", tt_html)
+        self.assertNotIn("KS_MODULE", tt_html)
+        self.assertIn("layout.js", tt_html)
+        self.assertEqual(self.c.get("/pages/admin/admin-timetables.html").status_code, 200)
+        # the duplicate admin editor stays deleted (criterion 17)
+        self.assertFalse((ROOT / "pages" / "admin" / "admin-timetable-builder.html").exists())
+        # legacy monitoring URL is a redirect stub to the canonical page
+        legacy = ROOT / "pages" / "admin" / "admin-timetable-management.html"
+        legacy_html = legacy.read_text(encoding="utf-8")
+        self.assertIn("admin-timetables.html", legacy_html)
+        self.assertNotIn("timetable-monitoring.js", legacy_html)
 
     def test_17_sidebar_has_role_specific_khmer_suite_links(self):
         layout = (ROOT / "assets" / "js" / "layout.js").read_text(encoding="utf-8")
@@ -445,15 +468,18 @@ class TestKhmerSuite(unittest.TestCase):
             with self.subTest(role="principal", module=module):
                 self.assertIn(f'id:"{module}"', layout)
                 self.assertIn(f'pages/principal/principal-{slug}.html', layout)
-        # Admin has centralized timetable oversight
-        for module, slug in (("ks-oversight", "timetable-management"),
-                             ("ks-viewer", "timetables"),
-                             ("ks-subjects", "subjects")):
-            with self.subTest(role="admin", module=module):
-                self.assertIn(f'id:"{module}"', layout)
-                self.assertIn(f'pages/admin/admin-{slug}.html', layout)
-        self.assertEqual(layout.count('pages/admin/admin-timetable-management.html'), 1)
+        # Admin has NO timetable nav entries (removed by product decision):
+        # only the Curriculum Subjects entry remains under a CURRICULUM group.
+        self.assertNotIn('id:"ks-oversight"', layout)
+        self.assertNotIn('pages/admin/admin-timetable-management.html', layout)
+        self.assertNotIn('label:"Timetables Matrix", icon:"calendar_view_week", href:"pages/admin/admin-timetables.html"', layout)
+        self.assertIn('pages/admin/admin-subjects.html', layout)
+        self.assertIn('label:"CURRICULUM"', layout)
+        self.assertNotIn('pages/admin/admin-timetable-builder.html', layout,
+                         'admin builder page removed')
         self.assertEqual(layout.count('pages/principal/principal-timetable-builder.html'), 1)
+        # Principal keeps the full operational scheduling suite in nav
+        self.assertEqual(layout.count('pages/principal/principal-timetables.html'), 1)
 
     def test_18_shared_assets_are_served(self):
         for asset in ("assets/css/khmer-suite.css",
@@ -485,9 +511,12 @@ class TestKhmerSuite(unittest.TestCase):
         self.assertIn("pageHeadHtml() + kpiHtml()", ui)
         self.assertIn('data-act="export" data-type="all"', ui)
 
-        for role in ("principal", "admin"):
-            for slug in ("teacher-class-assignment", "timetable-builder",
-                         "timetables", "subjects"):
+        for role, slugs in (
+            ("principal", ("teacher-class-assignment", "timetable-builder",
+                           "timetables", "subjects")),
+            ("admin", ("timetables", "subjects")),  # admin has no builder
+        ):
+            for slug in slugs:
                 html = (ROOT / "pages" / role / f"{role}-{slug}.html").read_text(encoding="utf-8")
                 with self.subTest(role=role, slug=slug):
                     self.assertIn('content="web_dashboard"', html)

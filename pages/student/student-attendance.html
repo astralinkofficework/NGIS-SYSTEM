@@ -9,8 +9,8 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 <!-- Framework & Student Styles -->
@@ -86,6 +86,101 @@
   background: rgba(234, 242, 255, 0.08);
   border-bottom: 1px solid rgba(234, 242, 255, 0.35);
 }
+
+/* ── Attendance date-column matrix ─────────────────────────────
+   Rows = sessions/subjects, columns = attendance dates. The first
+   column is a fixed (sticky) identification column and never counts
+   toward the 15-date visibility limit. */
+.att-scroll {
+  border: 1px solid rgba(184, 219, 217, 0.35);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.att-matrix {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.att-matrix .att-fixed {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #ffffff;
+  text-align: left;
+  border-right: 1px solid rgba(184, 219, 217, 0.5);
+}
+.att-matrix thead .att-fixed { z-index: 3; }
+.att-matrix th[data-date-idx],
+.att-matrix td[data-date-idx] {
+  text-align: center;
+  min-width: 96px;
+  white-space: nowrap;
+}
+.att-matrix thead th[data-date-idx] { vertical-align: top; }
+.att-matrix thead th[data-date-idx] .att-th-date { display: block; }
+.att-matrix thead th[data-date-idx] .att-th-day {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--txt3, #6b7f72);
+  margin-top: 2px;
+}
+.att-col-off { display: none !important; }
+.att-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.att-p { background: #2E6F5E; }
+.att-l { background: #C98A2D; }
+.att-e { background: #2F4550; }
+.att-a { background: #B23A3A; }
+.att-who {
+  padding: 0 20px 10px;
+  font-size: 12.5px;
+  color: var(--txt3);
+}
+.att-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 20px 0;
+  font-size: 12px;
+  color: var(--txt3);
+}
+.att-legend .att-lg { display: inline-flex; align-items: center; gap: 6px; }
+.att-col-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px 6px;
+}
+.att-col-controls[hidden] { display: none; }
+.att-col-count { font-size: 12.5px; color: var(--txt3); }
+.att-dept-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 20px 10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: rgba(46, 111, 94, 0.08);
+  color: #29352E;
+  border: 1px solid rgba(46, 111, 94, 0.25);
+}
+.att-dept-chip[hidden] { display: none; }
+.att-dept-chip a { color: #176B45; text-decoration: underline; }
+.att-empty-row td {
+  padding: 28px 16px !important;
+  text-align: center;
+  color: var(--txt3);
+}
 </style>
 
 <script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
@@ -94,8 +189,9 @@
 <script src="../student/_auth-bootstrap.js"></script>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 <body data-page="student" data-role="student" class="student-dashboard">
 <main class="main">
@@ -136,33 +232,39 @@
   <div class="attendance-main-layout">
     <!-- Main Attendance Table Card -->
     <div class="card">
-      <div class="card-head" style="padding: 16px 20px; border-bottom: 1px solid rgba(234, 242, 255, 0.35); display: flex; align-items: center; justify-content: space-between;">
-        <div>
-          <h3 style="font-size: 16px; margin: 0; color: var(--txt);">Authoritative Attendance Log</h3>
-          <div class="sub" style="font-size: 12px; color: var(--txt3); margin-top: 2px;">Synced in real-time from NGIS Academic Registry</div>
-        </div>
-        <div class="toolbar">
-          <a href="student-grades.html" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 8px; background: #29352E; color: #fff; font-size: 12.5px;">
-            <span class="material-symbols-outlined text-[16px]">grid_on</span>
-            <span>Attendance By Class View</span>
-          </a>
-        </div>
+      <div class="att-who" id="attWho" hidden>
+        <span id="attWhoName"></span><span id="attWhoId"></span>
       </div>
-      <div class="tbl-wrap" style="overflow-x: auto;">
-        <table class="tbl" style="width: 100%; border-collapse: collapse;">
-          <thead>
+      <div class="att-dept-chip" id="attDeptChip" hidden>
+        <span class="material-symbols-outlined" style="font-size:14px" aria-hidden="true">filter_alt</span>
+        <span id="attDeptChipText"></span>
+        <a href="student-attendance.html" id="attDeptClear" title="Clear department filter">Clear</a>
+      </div>
+      <div class="tbl-wrap att-scroll" style="overflow-x: auto;">
+        <table class="tbl att-matrix" id="attendanceMatrix" style="width: 100%;">
+          <thead id="attHead">
             <tr>
-              <th>Date</th>
-              <th>Day</th>
-              <th>Status</th>
-              <th>Session / Subject</th>
-              <th>Administrative Note</th>
+              <th class="att-fixed">Session / Subject</th>
+              <th>Loading…</th>
             </tr>
           </thead>
           <tbody id="attendanceLogBody">
-            <tr><td colspan="5" class="py-6 text-center faint">Loading authoritative attendance records…</td></tr>
+            <tr class="att-empty-row"><td colspan="2">Loading authoritative attendance records…</td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="att-legend" id="attLegend" hidden aria-label="Attendance status legend">
+        <span class="att-lg"><span class="att-dot att-p"></span>Present</span>
+        <span class="att-lg"><span class="att-dot att-l"></span>Late / Tardy</span>
+        <span class="att-lg"><span class="att-dot att-e"></span>Excused</span>
+        <span class="att-lg"><span class="att-dot att-a"></span>Absent</span>
+      </div>
+      <div class="att-col-controls" id="attColControls" hidden>
+        <span class="att-col-count" id="attColCount" role="status"></span>
+        <button type="button" class="btn btn-sm btn-ghost" id="attToggleCols" aria-expanded="false" aria-controls="attendanceMatrix" title="Toggle additional attendance date columns">
+          <span class="material-symbols-outlined" id="attToggleIcon" aria-hidden="true">expand_more</span>
+          <span id="attToggleLabel">Show More</span>
+        </button>
       </div>
     </div>
 
@@ -216,7 +318,194 @@ window.HERO_CONFIG = {
 <script>
 (function() {
   'use strict';
-  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* ── Attendance date-column matrix ────────────────────────────
+     Rows = sessions/subjects, columns = attendance dates (in the
+     API's authoritative ordering, most recent first). The fixed
+     identification column (Session / Subject) never counts toward
+     the visibility limit below. */
+  var ATT_COL_LIMIT = 15;
+
+  var STATUS = {
+    present: { cls: 'att-p', label: 'Present', rank: 0 },
+    tardy:   { cls: 'att-l', label: 'Late / Tardy', rank: 1 },
+    excused: { cls: 'att-e', label: 'Excused', rank: 2 },
+    absent:  { cls: 'att-a', label: 'Absent', rank: 3 }
+  };
+  function statusOf(v) {
+    var k = String(v || '').toLowerCase();
+    if (STATUS[k]) return STATUS[k];
+    return { cls: 'att-a', label: k ? k.charAt(0).toUpperCase() + k.slice(1) : 'Absent', rank: 4 };
+  }
+
+  /* Demo-mode department filter driven by ?dept=<department>. NGIS subject
+     names do not carry a department code, so the filter matches the
+     department's subject keywords (e.g. English → "Pre-AP English II"). */
+  var DEPT_KEYWORDS = {
+    'english': ['english'],
+    'mathematics': ['math', 'calculus', 'algebra', 'geometry', 'statistics'],
+    'science': ['science', 'biology', 'chemistry', 'physics'],
+    'khmer': ['khmer'],
+    'chinese': ['chinese'],
+    'physical education': ['physical education', 'physical'],
+    'administration': ['homeroom', 'school day', 'administration']
+  };
+  function matchesDept(subject, dept) {
+    var s = String(subject || '').toLowerCase();
+    var keys = DEPT_KEYWORDS[dept.toLowerCase()] || [dept.toLowerCase()];
+    return keys.some(function(k) { return s.indexOf(k) !== -1; });
+  }
+
+  var state = { allRecords: [], dates: [], expanded: false };
+
+  function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  /* Unique dates in first-seen order → preserves the API's date ordering. */
+  function uniqOrderedDates(records) {
+    var seen = {}, out = [];
+    records.forEach(function(r) {
+      var d = String(r.date || r.formattedDate || '');
+      if (d && !seen[d]) { seen[d] = true; out.push(d); }
+    });
+    return out;
+  }
+
+  function render() {
+    var head = document.getElementById('attHead');
+    var body = document.getElementById('attendanceLogBody');
+    if (!head || !body) return;
+
+    var dept = (function() {
+      try { return (new URLSearchParams(window.location.search || '').get('dept') || '').trim(); }
+      catch (e) { return ''; }
+    })();
+    var chip = document.getElementById('attDeptChip');
+    if (chip) {
+      if (dept) {
+        chip.hidden = false;
+        var t = document.getElementById('attDeptChipText');
+        if (t) t.textContent = 'Department filter: ' + dept.charAt(0).toUpperCase() + dept.slice(1);
+      } else {
+        chip.hidden = true;
+      }
+    }
+
+    var records = dept
+      ? state.allRecords.filter(function(r) { return matchesDept(r.subject, dept); })
+      : state.allRecords;
+
+    var dates = uniqOrderedDates(records);
+    state.dates = dates;
+
+    /* Ordered unique subjects (row identification column). */
+    var subjects = [], seenSub = {};
+    records.forEach(function(r) {
+      var s = r.subject || 'School Day Session';
+      if (!seenSub[s]) { seenSub[s] = true; subjects.push(s); }
+    });
+
+    /* subject × date → strongest status for that cell (absent > excused >
+       tardy > present when multiple sessions share one subject/date). */
+    var cell = {};
+    records.forEach(function(r) {
+      var s = r.subject || 'School Day Session';
+      var d = String(r.date || r.formattedDate || '');
+      var st = statusOf(r.status);
+      var key = s + '\u0000' + d;
+      if (!cell[key] || st.rank > cell[key].rank) {
+        cell[key] = { rank: st.rank, cls: st.cls, label: st.label, status: r.status, note: r.note || '' };
+      }
+    });
+
+    if (!records.length) {
+      head.innerHTML = '<tr><th class="att-fixed">Session / Subject</th></tr>';
+      body.innerHTML = '<tr class="att-empty-row"><td>No attendance records found for this view.</td></tr>';
+      document.getElementById('attLegend').hidden = true;
+      applyColumnLimit();
+      return;
+    }
+
+    var headHtml = '<tr><th class="att-fixed" scope="col">Session / Subject</th>';
+    var meta = {};
+    records.forEach(function(r) {
+      var d = String(r.date || r.formattedDate || '');
+      if (d && !meta[d]) meta[d] = r;
+    });
+    dates.forEach(function(d, i) {
+      var m = meta[d] || {};
+      headHtml += '<th scope="col" data-date-idx="' + i + '">' +
+        '<span class="att-th-date">' + esc(m.formattedDate || d) + '</span>' +
+        '<span class="att-th-day">' + esc(m.day || '') + '</span>' +
+        '</th>';
+    });
+    headHtml += '</tr>';
+    head.innerHTML = headHtml;
+
+    var html = '';
+    subjects.forEach(function(s) {
+      html += '<tr><th class="att-fixed" scope="row" style="font-size:13px">' + esc(s) + '</th>';
+      dates.forEach(function(d, i) {
+        var c = cell[s + '\u0000' + d];
+        if (c) {
+          html += '<td data-date-idx="' + i + '">' +
+            '<span class="att-dot ' + c.cls + '" role="img" aria-label="' + esc(c.label) + ' — ' +
+              esc((meta[d] || {}).formattedDate || d) + '" title="' + esc(c.label) + (c.note ? ' — ' + esc(c.note) : '') + '"></span>' +
+            '</td>';
+        } else {
+          html += '<td data-date-idx="' + i + '"><span class="faint" aria-label="No session">—</span></td>';
+        }
+      });
+      html += '</tr>';
+    });
+    body.innerHTML = html;
+
+    document.getElementById('attLegend').hidden = false;
+    applyColumnLimit();
+  }
+
+  /* Show More / Show Less — toggles the hidden state of date columns
+     beyond ATT_COL_LIMIT. Header cells (th) and their matching body
+     cells (td) share the same data-date-idx, so they always stay
+     aligned. No refetch, no page reload, no duplicated table. */
+  function applyColumnLimit() {
+    var tbl = document.getElementById('attendanceMatrix');
+    var controls = document.getElementById('attColControls');
+    var btn = document.getElementById('attToggleCols');
+    var icon = document.getElementById('attToggleIcon');
+    var label = document.getElementById('attToggleLabel');
+    var count = document.getElementById('attColCount');
+    if (!tbl || !controls || !btn) return;
+
+    var total = state.dates.length;
+    var collapsible = total > ATT_COL_LIMIT;
+    var collapsed = collapsible && !state.expanded;
+
+    tbl.querySelectorAll('[data-date-idx]').forEach(function(el) {
+      var idx = parseInt(el.getAttribute('data-date-idx'), 10);
+      el.classList.toggle('att-col-off', collapsed && idx >= ATT_COL_LIMIT);
+    });
+
+    controls.hidden = !collapsible;
+    if (collapsible) {
+      var visible = collapsed ? ATT_COL_LIMIT : total;
+      if (count) count.textContent = 'Showing ' + visible + ' of ' + total + ' dates';
+      btn.setAttribute('aria-expanded', state.expanded ? 'true' : 'false');
+      if (icon) icon.textContent = state.expanded ? 'expand_less' : 'expand_more';
+      if (label) label.textContent = state.expanded ? 'Show Less' : 'Show More';
+    }
+  }
+
+  /* Single bound listener — guarded so re-renders never duplicate it. */
+  function bindToggle() {
+    var btn = document.getElementById('attToggleCols');
+    if (btn && !btn.dataset.attBound) {
+      btn.dataset.attBound = '1';
+      btn.addEventListener('click', function() {
+        state.expanded = !state.expanded;
+        applyColumnLimit();
+      });
+    }
+  }
 
   var fallbackRecords = [
     { date: '2026-10-30', formattedDate: 'Oct 30, 2026', day: 'Friday', status: 'present', subject: 'AP Calculus BC', note: 'On time' },
@@ -235,7 +524,9 @@ window.HERO_CONFIG = {
     var records = fallbackRecords;
     try {
       if (window.NGISAuth && typeof NGISAuth.api === 'function') {
-        var res = await NGISAuth.api('/api/academic/attendance-by-day');
+        /* Full history (server caps at 200) so the date-column matrix and the
+           Show More / Show Less control always see every attendance date. */
+        var res = await NGISAuth.api('/api/academic/attendance-by-day?limit=200');
         if (res && res.data && res.data.records && res.data.records.length) {
           records = res.data.records;
         }
@@ -244,30 +535,29 @@ window.HERO_CONFIG = {
       console.info('Using authoritative fallback attendance records (demo mode):', e);
     }
 
-    var tbody = document.getElementById('attendanceLogBody');
-    if (!tbody) return;
+    state.allRecords = records;
 
-    var html = '';
-    records.forEach(function(rec) {
-      var badge = '';
-      if (rec.status === 'present') badge = '<span class="badge green" style="background:rgba(46,111,94,0.12);color:#000000;padding:4px 8px;border-radius:6px;font-size:11.5px;font-weight:500">Present</span>';
-      else if (rec.status === 'tardy') badge = '<span class="badge amber" style="background:rgba(140,98,43,0.12);color:#000000;padding:4px 8px;border-radius:6px;font-size:11.5px;font-weight:500">Late / Tardy</span>';
-      else if (rec.status === 'excused') badge = '<span class="badge blue" style="background:rgba(47,69,80,0.12);color:#29352E;padding:4px 8px;border-radius:6px;font-size:11.5px;font-weight:500">Excused</span>';
-      else badge = '<span class="badge red" style="background:rgba(150,59,59,0.12);color:#176B45;padding:4px 8px;border-radius:6px;font-size:11.5px;font-weight:500">Absent</span>';
+    /* Identification caption: authenticated student identity, never part of
+       the date-column limit. */
+    try {
+      var u = window.NGISAuth && typeof NGISAuth.getUser === 'function' ? NGISAuth.getUser() : null;
+      if (u) {
+        var name = [u.firstName, u.lastName].filter(Boolean).join(' ');
+        var who = document.getElementById('attWho');
+        if (who && name) {
+          who.hidden = false;
+          document.getElementById('attWhoName').textContent = 'Student: ' + name;
+          document.getElementById('attWhoId').textContent = u.id ? '  ·  ID: ' + u.id : '';
+        }
+      }
+    } catch (e) { /* identity caption is cosmetic */ }
 
-      html += '<tr>' +
-        '<td class="faint mono" style="font-size:12.5px;color:var(--txt3)">' + esc(rec.formattedDate || rec.date) + '</td>' +
-        '<td style="color:var(--txt)">' + esc(rec.day) + '</td>' +
-        '<td>' + badge + '</td>' +
-        '<td style="font-medium;color:var(--txt)">' + esc(rec.subject) + '</td>' +
-        '<td class="faint" style="font-size:12.5px;color:var(--txt3)">' + esc(rec.note || '—') + '</td>' +
-      '</tr>';
-    });
-    tbody.innerHTML = html;
+    render();
   }
 
-  document.addEventListener('DOMContentLoaded', loadData);
+  document.addEventListener('DOMContentLoaded', function() { bindToggle(); loadData(); });
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    bindToggle();
     loadData();
   }
 })();

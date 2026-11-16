@@ -8,7 +8,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- Phosphor Icons for Mobile/Sidebar -->
@@ -22,23 +22,30 @@
     theme: {
       extend: {
         fontFamily: {
-          sans: ['"Manrope"', '"Plus Jakarta Sans"', 'Plus Jakarta Sans', 'sans-serif'],
+          sans: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
+        },
+        fontWeight: {
+          normal: '400',
+          medium: '500',
+          semibold: '500',
+          bold: '500',
+          extrabold: '500',
+          black: '500'
         },
         colors: {
           brand: {
-            50: '#FBFBFB',
-            100: '#FBFBFB',
-            200: '#ECE7E2',
-            500: '#000000',
-            600: '#000000',
-            700: '#000000',
-            800: '#000000',
-            900: '#000000',
+            50: '#edf7f1',
+            100: '#d7ece0',
+            200: '#b2dac3',
+            600: '#166534',
+            700: '#0F5132', // NGIS Signature Forest Green
+            800: '#0c4028',
+            900: '#093220',
           }
         }
       }
     }
-  }
+  };
 </script>
 
 <!-- NGIS Core Stylesheets -->
@@ -47,21 +54,26 @@
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
 <link rel="stylesheet" href="../../assets/css/admin-dna.css?v=1.0">
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
 
 <!-- Theme Bootstrap & Auth -->
 <script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
 <script src="../../assets/js/auth.js"></script>
 <script src="../../assets/js/protect.js"></script>
 <script src="_auth-bootstrap.js"></script>
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 
 <!-- Custom Micro-Styling & Dark Mode System -->
 <style>
-  /* Global typography constraint: No bold font */
-  * {
+  /* Global typography constraint: NO BOLD FONTS (AGENTS.md) */
+  *, b, strong, th, h1, h2, h3, h4, h5, h6, .font-bold, .font-semibold {
+    font-weight: 500 !important;
+  }
+  p, span, td, input, select, textarea, div {
     font-weight: 400;
   }
-  b, strong, th, h1, h2, h3, h4, h5, h6,
-  .font-medium, .font-medium, .font-medium, .font-medium {
+  .font-medium, .font-semibold, th, h1, h2, h3, h4, [class*="font-medium"], [class*="font-semibold"] {
     font-weight: 500 !important;
   }
 
@@ -71,21 +83,18 @@
     height: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #FBFBFB;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #ECE7E2;
+    background: #cbd5e1;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #9D9A97;
+    background: #94a3b8;
   }
 
   .card-shadow {
     box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-  }
-  .badge-ring {
-    box-shadow: inset 0 0 0 1px rgba(36, 85, 214, 0.2);
   }
 
   /* Table styling */
@@ -110,120 +119,112 @@
 
   /* Dark mode overrides */
   [data-theme="dark"] body {
-    background-color: #000000;
-    color: #ECE7E2;
+    background-color: #0f172a !important;
+    color: #e2e8f0 !important;
   }
   [data-theme="dark"] .bg-white {
-    background-color: #000000 !important;
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
   }
   [data-theme="dark"] .bg-slate-50\/50,
   [data-theme="dark"] .bg-slate-50\/60,
+  [data-theme="dark"] .bg-slate-50\/70,
+  [data-theme="dark"] .bg-slate-50\/90,
   [data-theme="dark"] .bg-slate-50 {
-    background-color: #000000 !important;
+    background-color: #0f172a !important;
   }
   [data-theme="dark"] .border-slate-200,
   [data-theme="dark"] .border-slate-200\/70,
   [data-theme="dark"] .border-slate-200\/80,
   [data-theme="dark"] .border-slate-100 {
-    border-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: #334155 !important;
   }
   [data-theme="dark"] .text-slate-900 {
-    color: #FBFBFB !important;
+    color: #f1f5f9 !important;
   }
-  [data-theme="dark"] .text-slate-800 {
-    color: #ECE7E2 !important;
-  }
+  [data-theme="dark"] .text-slate-800,
   [data-theme="dark"] .text-slate-700 {
-    color: #ECE7E2 !important;
+    color: #cbd5e1 !important;
   }
-  [data-theme="dark"] .text-slate-600 {
-    color: #9D9A97 !important;
-  }
-  [data-theme="dark"] .text-slate-500,
-  [data-theme="dark"] .text-slate-400 {
-    color: #F77442 !important;
-  }
-  [data-theme="dark"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
-    border-color: rgba(255, 255, 255, 0.06) !important;
-  }
-  [data-theme="dark"] .hover\:bg-slate-50\/70:hover,
-  [data-theme="dark"] .hover\:bg-slate-50:hover,
-  [data-theme="dark"] .hover\:bg-slate-100:hover {
-    background-color: rgba(56, 189, 248, 0.05) !important;
-  }
-  [data-theme="dark"] .bg-slate-100 {
-    background-color: #1D1D1B !important;
+  [data-theme="dark"] .text-slate-600,
+  [data-theme="dark"] .text-slate-500 {
+    color: #94a3b8 !important;
   }
   [data-theme="dark"] input,
-  [data-theme="dark"] select {
-    background-color: #000000 !important;
-    color: #FBFBFB !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
+  [data-theme="dark"] select,
+  [data-theme="dark"] textarea {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
   }
 </style>
-
-<!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
 </head>
-<body class="flex flex-col font-sans text-slate-800 antialiased bg-[#FBFBFB] selection:bg-brand-500 selection:text-white" data-role="admin" data-portal="admin">
+<body class="flex flex-col font-sans text-slate-800 antialiased bg-[#F8FAFC] selection:bg-brand-100 selection:text-brand-900" data-role="admin" data-portal="admin">
 <main class="main">
 
   <!-- NGIS Top Hero Banner -->
   <header id="heroBanner" role="banner"></header>
 
+  <!-- ═══ MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE) ═══ -->
+  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+    <div class="flex items-center gap-3 min-w-0">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <i class="ph-bold ph-list text-xl"></i>
+      </button>
+      <div class="min-w-0 truncate">
+        <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Class Management</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-medium text-[#0F5132]">Academic</span>
+    </div>
+  </header>
+
   <!-- Page Content Container -->
-  <div class="page" style="padding-top: 14px; max-width: 1440px; margin: 0 auto; width: 100%;">
+  <div class="page w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-7xl mx-auto">
     <div class="space-y-6">
 
       <!-- Top Title and Quick Stats Summary -->
       <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 lg:hidden flex items-center justify-center transition-all active:scale-95" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
-            <i class="ph ph-list text-xl"></i>
-          </button>
-          <div>
-            <div class="flex items-center gap-2 text-xs font-medium text-brand-700 uppercase tracking-wider">
-              <span>Academic Management</span>
-              <span>•</span>
-              <span class="text-slate-500">Term 1 (2025–2026)</span>
-            </div>
-            <h2 class="text-2xl font-medium text-slate-900 tracking-tight mt-1">Class Directory &amp; Oversight</h2>
+        <div>
+          <div class="flex items-center gap-2 text-xs font-medium text-[#0F5132] uppercase tracking-wider">
+            <span>Academic Management</span>
+            <span>•</span>
+            <span class="text-slate-500">Term 1 (2025–2026)</span>
           </div>
+          <h2 class="text-2xl font-medium text-slate-900 tracking-tight mt-1">Class Directory &amp; Oversight</h2>
         </div>
-        <div class="flex items-center gap-3">
-          <button id="btnExportCsv" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 shadow-xs transition-colors cursor-pointer" type="button">
-            <span data-ngis-icon="download" class="text-base" style="color:#F77442"></span>
-            Export CSV
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <button id="btnExportCsv" class="btn btn-secondary inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 shadow-xs transition-colors cursor-pointer active:scale-95" type="button">
+            <span class="material-symbols-outlined text-[16px] text-slate-500">download</span>
+            <span>Export CSV</span>
           </button>
-          <button id="btnAddClass" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#F77442] hover:bg-[#E0521F] rounded-xl shadow-xs transition-colors cursor-pointer" type="button">
-            <span data-ngis-icon="add" class="text-base text-white"></span>
-            Add New Class
+          <button id="btnAddClass" class="btn btn-primary inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#176B45] hover:bg-[#125638] rounded-xl shadow-xs transition-all cursor-pointer active:scale-95" type="button">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            <span>Add New Class</span>
           </button>
         </div>
       </header>
 
       <!-- BEGIN: KeyMetricsGrid -->
-      <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5" data-purpose="kpi-cards">
+      <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" data-purpose="kpi-cards">
         <!-- Active Classes -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between  transition-all">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between transition-all">
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Active Classes</span>
-            <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center text-brand-600">
-              <span class="material-symbols-outlined text-2xl text-[#000000]">class</span>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-[#0F5132]">
+              <span class="material-symbols-outlined text-2xl">class</span>
             </div>
           </div>
           <div class="mt-4 flex items-baseline justify-between">
             <div class="text-3xl font-medium text-slate-900 tracking-tight" id="kpiActiveClasses">186</div>
-            <span class="text-xs font-normal text-slate-500">
-              +4 new
-            </span>
+            <span class="text-xs font-normal text-slate-500">+4 new</span>
           </div>
           <div class="mt-2 text-xs text-slate-400">Total active scheduled sections</div>
         </div>
 
         <!-- Enrolled Students -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between  transition-all">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between transition-all">
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Enrolled Students</span>
             <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600">
@@ -238,7 +239,7 @@
         </div>
 
         <!-- Active Teachers -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between  transition-all">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between transition-all">
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Active Teachers</span>
             <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-600">
@@ -253,7 +254,7 @@
         </div>
 
         <!-- Classrooms -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between  transition-all">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow flex flex-col justify-between transition-all">
           <div class="flex items-center justify-between">
             <span class="text-xs font-medium text-slate-500 uppercase tracking-wide">Classrooms</span>
             <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-700">
@@ -269,240 +270,420 @@
       </section>
       <!-- END: KeyMetricsGrid -->
 
-      <!-- Main Layout: Table Area (2/3) + Secondary Right Rails (1/3) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+      <!-- BEGIN: ClassDataTableSection -->
+      <section class="w-full bg-white rounded-2xl border border-slate-200/80 card-shadow overflow-hidden" data-purpose="class-roster-table">
         
-        <!-- BEGIN: ClassDataTableSection -->
-        <section class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 card-shadow overflow-hidden" data-purpose="class-roster-table">
-          
-          <!-- Filter & Controls Toolbar -->
-          <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50/50">
-            <div>
-              <h3 class="font-medium text-slate-900 text-base">Class Sections</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Showing assigned teachers, quotas, and rooms</p>
-            </div>
-            <div class="flex items-center gap-3">
-              <!-- Search in table -->
-              <div class="relative w-full sm:w-52">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-                </span>
-                <input id="classSearchInput" class="w-full bg-white border border-slate-200 text-xs rounded-xl pl-8 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-600 focus:border-brand-600 transition-all placeholder:text-slate-400" placeholder="Filter classes..." type="text">
-              </div>
-              <!-- Grade Filter Dropdown -->
-              <select id="gradeFilterSelect" class="text-xs font-medium bg-white border border-slate-200 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-600 text-slate-700">
-                <option value="all">All Grades</option>
-                <option value="10">Grade 10</option>
-                <option value="11">Grade 11</option>
-                <option value="12">Grade 12</option>
-              </select>
-            </div>
+        <!-- Filter & Controls Toolbar -->
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-50/50">
+          <div>
+            <h3 class="font-medium text-slate-900 text-base">Class Sections</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Showing assigned teachers, quotas, and rooms</p>
           </div>
-
-          <!-- Mobile Swipe Hint -->
-          <div class="table-scroll-hint items-center gap-2 px-5 py-2.5 bg-[#FBFBFB] text-[#000000] border-b border-[#ECE7E2] text-xs font-medium">
-            <span class="material-symbols-outlined text-base">swipe</span>
-            <span>Swipe horizontally to view full class section details</span>
+          <div class="flex items-center gap-3">
+            <!-- Search in table -->
+            <div class="relative w-full sm:w-56">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+              </span>
+              <input id="classSearchInput" class="w-full bg-white border border-slate-200 text-xs rounded-xl pl-8 pr-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#0F5132] focus:border-[#0F5132] transition-all placeholder:text-slate-400 font-normal" placeholder="Filter classes..." type="text">
+            </div>
+            <!-- Grade Filter Dropdown -->
+            <select id="gradeFilterSelect" class="text-xs font-medium bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#0F5132] text-slate-700 cursor-pointer">
+              <option value="all">All Grades</option>
+              <option value="10">Grade 10</option>
+              <option value="11">Grade 11</option>
+              <option value="12">Grade 12</option>
+            </select>
           </div>
+        </div>
 
-          <!-- Table Container -->
-          <div class="overflow-x-auto">
-            <table class="w-full text-left class-table border-collapse border border-slate-200">
-              <thead>
-                <tr class="border-b border-slate-200 bg-slate-50/90 text-[11px] font-medium text-slate-600 uppercase tracking-wider">
-                  <th class="py-3 px-3.5 border-r border-slate-200" scope="col">Class</th>
-                  <th class="py-3 px-3 border-r border-slate-200" scope="col">Lead Teacher</th>
-                  <th class="py-3 px-3 border-r border-slate-200" scope="col">Primary Subject</th>
-                  <th class="py-3 px-3 border-r border-slate-200" scope="col">Enrolled / Cap</th>
-                  <th class="py-3 px-2.5 text-center border-r border-slate-200" scope="col">Room</th>
-                  <th class="py-3 px-2.5 text-center border-r border-slate-200" scope="col">Status</th>
-                  <th class="py-3 px-3 text-right" scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="classesTableBody" class="divide-y divide-slate-200 text-sm">
-                <!-- Dynamically populated or static rows below -->
-              </tbody>
-            </table>
+        <!-- Mobile Swipe Hint -->
+        <div class="table-scroll-hint items-center gap-2 px-5 py-2.5 bg-slate-50 text-slate-500 border-b border-slate-100 text-xs font-medium">
+          <span class="material-symbols-outlined text-base">swipe</span>
+          <span>Swipe horizontally to view full class section details</span>
+        </div>
+
+        <!-- Table Container -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left class-table border-collapse border border-slate-200">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50/90 text-[11px] font-medium text-slate-600 uppercase tracking-wider">
+                <th class="py-3 px-3.5 border-r border-slate-200" scope="col">Class</th>
+                <th class="py-3 px-3 border-r border-slate-200" scope="col">Lead Teacher</th>
+                <th class="py-3 px-3 border-r border-slate-200" scope="col">Primary Subject</th>
+                <th class="py-3 px-3 border-r border-slate-200" scope="col">Enrolled / Cap</th>
+                <th class="py-3 px-2.5 text-center border-r border-slate-200" scope="col">Room</th>
+                <th class="py-3 px-2.5 text-center border-r border-slate-200" scope="col">Status</th>
+                <th class="py-3 px-3 text-right" scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="classesTableBody" class="divide-y divide-slate-200 text-sm">
+              <!-- Dynamically populated rows below -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Pagination Footer -->
+        <div class="py-3.5 px-5 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <div id="paginationSummary">
+            Showing <span class="font-medium text-slate-800" id="pgStart">1</span> to <span class="font-medium text-slate-800" id="pgEnd">6</span> of <span class="font-medium text-slate-800" id="totalClassesCount">186</span> classes
           </div>
-
-          <!-- Table Pagination Footer -->
-          <div class="py-3.5 px-5 bg-white border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-            <div id="paginationSummary">
-              Showing <span class="font-medium text-slate-800" id="pgStart">1</span> to <span class="font-medium text-slate-800" id="pgEnd">6</span> of <span class="font-medium text-slate-800" id="totalClassesCount">186</span> classes
-            </div>
-            <div id="classesPagination" class="flex items-center gap-1.5 flex-wrap justify-center">
-              <button id="btnPrevPage" class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed" type="button" disabled>Previous</button>
-              <div id="paginationPageNumbers" class="flex items-center gap-1.5"></div>
-              <button id="btnNextPage" class="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">Next</button>
-            </div>
+          <div id="classesPagination" class="flex items-center gap-1.5 flex-wrap justify-center">
+            <button id="btnPrevPage" class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed" type="button" disabled>Previous</button>
+            <div id="paginationPageNumbers" class="flex items-center gap-1.5"></div>
+            <button id="btnNextPage" class="px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors" type="button">Next Page</button>
           </div>
-        </section>
-        <!-- END: ClassDataTableSection -->
+        </div>
+      </section>
+      <!-- END: ClassDataTableSection -->
 
-        <!-- BEGIN: RightSideRailPanels -->
-        <div class="lg:col-span-4 space-y-6">
-
-          <!-- Card: Grade Summary Breakdown -->
-          <section class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow" data-purpose="grade-summary">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 class="font-medium text-slate-900 text-sm">Grade Distribution</h3>
-              <span class="text-[11px] font-medium text-slate-400 uppercase tracking-wide">186 Total</span>
-            </div>
-            <div class="mt-5 space-y-4">
-              <!-- Grade 10 -->
-              <div>
-                <div class="flex items-center justify-between text-xs mb-1.5">
-                  <span class="font-medium text-slate-700">Grade 10</span>
-                  <span class="font-medium text-slate-900">62 <span class="font-normal text-slate-400">classes</span></span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                  <div class="bg-brand-600 h-2 rounded-full" style="width: 33%"></div>
-                </div>
-              </div>
-              <!-- Grade 11 -->
-              <div>
-                <div class="flex items-center justify-between text-xs mb-1.5">
-                  <span class="font-medium text-slate-700">Grade 11</span>
-                  <span class="font-medium text-slate-900">68 <span class="font-normal text-slate-400">classes</span></span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                  <div class="bg-brand-600 h-2 rounded-full" style="width: 37%"></div>
-                </div>
-              </div>
-              <!-- Grade 12 -->
-              <div>
-                <div class="flex items-center justify-between text-xs mb-1.5">
-                  <span class="font-medium text-slate-700">Grade 12</span>
-                  <span class="font-medium text-slate-900">56 <span class="font-normal text-slate-400">classes</span></span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                  <div class="bg-brand-600 h-2 rounded-full" style="width: 30%"></div>
-                </div>
-              </div>
-            </div>
-            <!-- Contextual Tip -->
-            <div class="mt-5 p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-2.5">
-              <svg class="w-4 h-4 text-[#000000] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-              <p class="text-[11px] text-slate-600 leading-relaxed">
-                Grade 11 sections currently have the highest student density at 96% target enrollment.
-              </p>
-            </div>
-          </section>
-
-          <!-- Card: Capacity & Classroom Utilization Overview -->
-          <section class="bg-white p-5 rounded-2xl border border-slate-200/80 card-shadow" data-purpose="capacity-utilization">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 class="font-medium text-slate-900 text-sm">Capacity &amp; Seating</h3>
-              <span class="text-xs font-normal text-slate-500">Optimal</span>
-            </div>
-            <dl class="mt-4 divide-y divide-slate-100 text-xs">
-              <div class="py-2.5 flex items-center justify-between">
-                <dt class="text-slate-500">Average class size</dt>
-                <dd class="font-normal text-slate-800 text-sm">29.4 <span class="font-normal text-xs text-slate-400">students</span></dd>
-              </div>
-              <div class="py-2.5 flex items-center justify-between">
-                <dt class="text-slate-500">Max classroom quota</dt>
-                <dd class="font-normal text-slate-700">35 seats / room</dd>
-              </div>
-              <div class="py-2.5 flex items-center justify-between">
-                <dt class="flex items-center gap-1.5 text-slate-500">
-                  <span>Full / Overcrowded</span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                </dt>
-                <dd class="font-normal text-slate-700">3 classes</dd>
-              </div>
-              <div class="py-2.5 flex items-center justify-between">
-                <dt class="text-slate-500">Available empty seats</dt>
-                <dd class="font-normal text-slate-700">142 total</dd>
-              </div>
-            </dl>
-            <!-- Quick Action button inside card -->
-            <button id="btnReallocateRooms" class="w-full mt-4 py-2 px-3 text-xs font-medium text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200/80 transition-colors text-center block" type="button">
-              Manage Room Reallocations
-            </button>
-          </section>
-
-          <!-- Card: Administrator Notice banner (Rules V2, V3, V4 Compliant) -->
-          <div class="p-5 rounded-2xl bg-white border border-[#ECE7E2] relative">
-            <div>
-              <div class="flex items-center gap-2 text-xs font-medium text-[#1D1D1B] uppercase tracking-wider mb-2">
-                <span class="material-symbols-outlined text-sm">schedule</span>
-                <span>Term Schedule Notice</span>
-              </div>
-              <h4 class="font-medium text-sm text-[#000000]">Course Quota Finalization</h4>
-              <p class="text-xs text-[#757371] mt-1 leading-relaxed">
-                Add-drop period concludes in 5 business days. Please review senior cohort allocations before the registry deadline.
-              </p>
-              <div class="mt-4 flex items-center gap-2">
-                <a href="admin-timetables.html" class="inline-flex items-center gap-1 text-xs font-medium text-[#1D1D1B] hover:underline transition-colors">
-                  <span>View Timetable Master</span>
-                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
+    </div>
+  </div>
 </main>
 
-<!-- Add New Class Modal -->
-<div id="modalAddClass" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200">
-  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm border border-slate-200 max-w-lg w-full p-6 transform scale-95 transition-transform duration-200">
-    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center font-medium">
-          <span class="material-symbols-outlined text-lg">add_box</span>
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- POPUP MODAL: ADD / EDIT CLASS SECTION (MATCHING USER SPECIFICATION)        -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div id="modalAddClass" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 hidden opacity-0 transition-opacity duration-200" role="dialog" aria-modal="true" aria-labelledby="modalClassTitle">
+  <!-- Modal Card Dialog -->
+  <div class="relative w-full max-w-xl sm:max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[92dvh] sm:max-h-[88vh] overflow-hidden border border-slate-200 transform scale-95 transition-transform duration-200 my-auto">
+    <!-- Top Decorative Forest Green Accent Bar -->
+    <div class="h-1.5 w-full bg-[#176B45] shrink-0"></div>
+
+    <!-- Modal Header (Pinned) -->
+    <div class="px-5 py-4 sm:px-6 sm:py-4.5 flex items-center justify-between bg-white border-b border-slate-100 shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#176B45] border border-emerald-200 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[20px]">class</span>
         </div>
-        <div>
-          <h3 class="font-medium text-slate-900 text-base">Add New Class Section</h3>
-          <p class="text-xs text-slate-500">Configure grade cohort, adviser, and seating cap</p>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="text-base sm:text-lg font-medium text-slate-900 tracking-tight" id="modalClassTitle">Add New Class Section</h2>
+            <div class="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-[#176B45] border border-emerald-200 text-[10px] font-medium shrink-0">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#176B45] animate-pulse"></span>
+              <span>Active Sync</span>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 font-normal mt-0.5 truncate">Configure grade cohort, academic track, adviser, room, and seating limit</p>
         </div>
       </div>
-      <button id="btnCloseModal" type="button" aria-label="Close" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
-        <span data-ngis-icon="close" class="inline-flex"></span>
+      <button id="btnCloseModal" class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors ml-2 shrink-0 cursor-pointer active:scale-95" type="button" aria-label="Close modal">
+        <span class="material-symbols-outlined text-[20px]">close</span>
       </button>
     </div>
-    <form id="formAddClass" class="mt-4 space-y-4 text-xs">
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Section Code</label>
-          <input required id="inSectionCode" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. 11-C" type="text">
+
+    <!-- Form Container (Flex-1 & Internal Scrollable Body) -->
+    <form id="formAddClass" class="flex flex-col flex-1 overflow-hidden min-h-0">
+      <!-- Scrollable Form Fields Body -->
+      <div class="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1 custom-scrollbar text-xs">
+
+        <!-- Protocol / Section Registry Strip -->
+        <div class="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-3 text-xs">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="material-symbols-outlined text-[#176B45] text-lg shrink-0">verified</span>
+            <span class="text-[11px] font-medium uppercase tracking-wider text-slate-600 truncate">Class Section Config Protocol · NGIS-TK-2026</span>
+          </div>
+          <span class="text-[11px] font-medium text-[#176B45] font-mono shrink-0">Active Sync: Section Registry</span>
         </div>
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Grade Level</label>
-          <select id="inGradeLevel" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600">
-            <option value="10">Grade 10</option>
-            <option value="11" selected>Grade 11</option>
-            <option value="12">Grade 12</option>
-          </select>
+
+        <!-- Row 1: Section Code & Grade Level -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+          <!-- Field 1: Section Code -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-medium text-slate-700 uppercase tracking-wide flex items-center justify-between text-[11px]">
+              <span>Section Code</span>
+              <span class="text-slate-400 font-normal">e.g. 11-A</span>
+            </label>
+            <div class="relative flex items-center">
+              <span class="material-symbols-outlined absolute left-3 text-[18px] text-slate-400 pointer-events-none">tag</span>
+              <input id="inSectionCode" required class="w-full pl-9 pr-3 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] rounded-xl font-medium text-slate-900 outline-none transition-all" placeholder="e.g. 11-A" type="text">
+            </div>
+          </div>
+
+          <!-- Field 2: Grade Level -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-medium text-slate-700 uppercase tracking-wide text-[11px]">Grade Level</label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-2.5 text-[18px] text-slate-400 pointer-events-none">stairs</span>
+              <select id="inGradeLevel" class="w-full pl-9 pr-8 py-2 bg-slate-50 hover:bg-white focus:bg-white border border-slate-200 focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] rounded-xl font-medium text-slate-900 appearance-none outline-none cursor-pointer transition-all">
+                <option value="7">Grade 7 (Lower Secondary)</option>
+                <option value="8">Grade 8 (Lower Secondary)</option>
+                <option value="9">Grade 9 (Lower Secondary)</option>
+                <option value="10">Grade 10 (Upper Secondary)</option>
+                <option value="11" selected>Grade 11 (Upper Secondary)</option>
+                <option value="12">Grade 12 (Graduation Track)</option>
+              </select>
+              <span class="material-symbols-outlined absolute right-2.5 top-2.5 text-[18px] text-slate-400 pointer-events-none">expand_more</span>
+            </div>
+          </div>
         </div>
+
+        <!-- Field 3: Stream / Academic Track -->
+        <div class="flex flex-col gap-1.5 relative">
+          <label class="font-medium text-slate-700 uppercase tracking-wide flex items-center justify-between text-[11px]">
+            <span>Stream / Academic Track</span>
+            <span class="text-slate-400 font-normal">Select or customize</span>
+          </label>
+          <input type="hidden" id="inStream" value="Science Stream">
+          <!-- Dropdown Trigger Box -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-1 flex flex-col gap-1">
+            <button type="button" id="streamTrigger" class="w-full flex items-center justify-between px-3 py-2 bg-white rounded-lg border border-slate-200/80 shadow-2xs text-left cursor-pointer hover:border-slate-300 transition-all">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="material-symbols-outlined text-[18px] text-[#176B45] shrink-0" id="streamIcon">biotech</span>
+                <span class="font-medium text-slate-900 truncate" id="streamLabel">Science Stream</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-50 text-[#176B45] text-[10px] font-medium border border-emerald-200/80 shrink-0" id="streamTag">STEM Focused</span>
+              </div>
+              <span class="material-symbols-outlined text-[18px] text-slate-400 shrink-0" id="streamChevron">expand_more</span>
+            </button>
+            <!-- Collapsible Options Menu -->
+            <div id="streamMenu" class="hidden bg-white rounded-lg p-2 flex-col gap-1 shadow-md border border-slate-200 mt-1">
+              <div class="flex items-center ngis-search ngis-search--compact"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="streamSearch" class="w-full ngis-search-input" placeholder="Search streams, tracks, pathways..." type="text"></div>
+              <div class="flex flex-col gap-1 max-h-36 overflow-y-auto" id="streamList">
+                <div class="stream-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#176B45] cursor-pointer" data-val="Science Stream" data-tag="STEM Focused" data-icon="biotech">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="material-symbols-outlined text-[16px] shrink-0">check_circle</span>
+                    <span class="font-medium truncate">Science Stream</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">(Physics, Chemistry, Pure Math)</span>
+                  </div>
+                  <span class="text-[10px] font-medium uppercase text-[#176B45] shrink-0">Active</span>
+                </div>
+                <div class="stream-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Social Science & Humanities" data-tag="Humanities" data-icon="menu_book">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="material-symbols-outlined text-[16px] text-slate-400 shrink-0">circle</span>
+                    <span class="font-medium truncate">Social Science &amp; Humanities</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">(History, Khmer Civ, Literature)</span>
+                  </div>
+                </div>
+                <div class="stream-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Advanced STEM & Pre-Engineering" data-tag="AP Accelerated" data-icon="precision_manufacturing">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="material-symbols-outlined text-[16px] text-slate-400 shrink-0">circle</span>
+                    <span class="font-medium truncate">Advanced STEM &amp; Pre-Engineering</span>
+                  </div>
+                  <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] shrink-0">AP Accelerated</span>
+                </div>
+                <div class="stream-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Commerce & Business Administration" data-tag="Business" data-icon="payments">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="material-symbols-outlined text-[16px] text-slate-400 shrink-0">circle</span>
+                    <span class="font-medium truncate">Commerce &amp; Business Administration</span>
+                  </div>
+                </div>
+                <div class="stream-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Bilingual Khmer-General Education" data-tag="Bilingual" data-icon="translate">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="material-symbols-outlined text-[16px] text-slate-400 shrink-0">circle</span>
+                    <span class="font-medium truncate">Bilingual Khmer-General Education</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field 4: Lead Teacher / Class Adviser -->
+        <div class="flex flex-col gap-1.5 relative">
+          <div class="flex items-center justify-between">
+            <label class="font-medium text-slate-700 uppercase tracking-wide text-[11px]">Lead Teacher / Class Adviser</label>
+            <span class="text-slate-500 font-normal text-[11px]">Faculty ID Verified</span>
+          </div>
+          <input type="hidden" id="inLeadTeacher" value="Dr. Sarah Jenkins">
+          <!-- Dropdown Trigger Box -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-1 flex flex-col gap-1">
+            <button type="button" id="teacherTrigger" class="w-full flex items-center justify-between px-3 py-2 bg-white rounded-lg border border-slate-200/80 shadow-2xs text-left cursor-pointer hover:border-slate-300 transition-all">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-7 h-7 rounded-full bg-emerald-100 text-[#176B45] font-medium flex items-center justify-center text-[11px] shrink-0" id="teacherAvatar">
+                  SJ
+                </div>
+                <div class="flex flex-col min-w-0">
+                  <span class="font-medium text-slate-900 leading-tight truncate" id="teacherLabel">Dr. Sarah Jenkins</span>
+                  <span class="text-[11px] text-slate-500 truncate" id="teacherSub">Dept: Mathematics · TCH-2026-042</span>
+                </div>
+              </div>
+              <span class="material-symbols-outlined text-[18px] text-slate-400 shrink-0" id="teacherChevron">unfold_more</span>
+            </button>
+            <!-- Collapsible Options Menu -->
+            <div id="teacherMenu" class="hidden bg-white rounded-lg p-2 flex-col gap-1 shadow-md border border-slate-200 mt-1">
+              <div class="flex items-center ngis-search ngis-search--compact"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="teacherSearch" class="w-full ngis-search-input" placeholder="Search teacher name, ID, or subject..." type="text"></div>
+              <div class="flex flex-col gap-1 max-h-36 overflow-y-auto" id="teacherList">
+                <div class="teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#176B45] cursor-pointer" data-val="Dr. Sarah Jenkins" data-init="SJ" data-sub="Dept: Mathematics · TCH-2026-042">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="material-symbols-outlined text-[15px] shrink-0">check</span>
+                    <span class="font-medium truncate">Dr. Sarah Jenkins</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">· TCH-2026-042 (Senior Math)</span>
+                  </div>
+                  <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-[#176B45] text-[10px] font-medium shrink-0">Assigned</span>
+                </div>
+                <div class="teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Mr. Heng Samnang" data-init="HS" data-sub="Dept: Science · TCH-2026-015">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-3.5 shrink-0"></span>
+                    <span class="font-medium truncate">Mr. Heng Samnang</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">· TCH-2026-015 (Physics Honors)</span>
+                  </div>
+                  <span class="text-slate-400 text-[11px] shrink-0">22h / 26h</span>
+                </div>
+                <div class="teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Dr. Pov Chanthy" data-init="PC" data-sub="Dept: Mathematics · TCH-2026-088">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-3.5 shrink-0"></span>
+                    <span class="font-medium truncate">Dr. Pov Chanthy</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">· TCH-2026-088 (Probability &amp; Stats)</span>
+                  </div>
+                  <span class="text-slate-400 text-[11px] shrink-0">18h / 26h</span>
+                </div>
+                <div class="teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Ms. Rin Sothea" data-init="RS" data-sub="Dept: Languages · TCH-2026-029">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-3.5 shrink-0"></span>
+                    <span class="font-medium truncate">Ms. Rin Sothea</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">· TCH-2026-029 (English Literature)</span>
+                  </div>
+                  <span class="text-slate-400 text-[11px] shrink-0">24h / 26h</span>
+                </div>
+                <div class="teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Mr. Chan Vuth" data-init="CV" data-sub="Dept: Humanities · TCH-2026-031">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-3.5 shrink-0"></span>
+                    <span class="font-medium truncate">Mr. Chan Vuth</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">· TCH-2026-031 (Khmer Studies)</span>
+                  </div>
+                  <span class="text-slate-400 text-[11px] shrink-0">20h / 26h</span>
+                </div>
+                <div class="teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors" data-val="Dr. Lim Bunna" data-init="LB" data-sub="Dept: Technology · TCH-2026-052">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-3.5 shrink-0"></span>
+                    <span class="font-medium truncate">Dr. Lim Bunna</span>
+                    <span class="text-slate-500 text-[11px] truncate hidden sm:inline">· TCH-2026-052 (Robotics &amp; CS)</span>
+                  </div>
+                  <span class="text-slate-400 text-[11px] shrink-0">21h / 26h</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Primary Subject & Room Allocation -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+          <!-- Field 5: Primary Subject -->
+          <div class="flex flex-col gap-1.5 relative">
+            <label class="font-medium text-slate-700 uppercase tracking-wide text-[11px]">Primary Subject Module</label>
+            <input type="hidden" id="inSubject" value="Advanced Mathematics">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-1 flex flex-col gap-1">
+              <button type="button" id="subjectTrigger" class="w-full flex items-center justify-between px-3 py-2 bg-white rounded-lg border border-slate-200/80 shadow-2xs text-left cursor-pointer hover:border-slate-300 transition-all">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="material-symbols-outlined text-[16px] text-[#176B45] shrink-0">calculate</span>
+                  <span class="font-medium text-slate-900 truncate" id="subjectLabel">Advanced Mathematics</span>
+                </div>
+                <span class="material-symbols-outlined text-[18px] text-slate-400 shrink-0" id="subjectChevron">expand_more</span>
+              </button>
+              <div id="subjectMenu" class="hidden bg-white rounded-lg p-2 flex-col gap-1 shadow-md border border-slate-200 mt-1">
+                <div class="flex items-center ngis-search ngis-search--compact"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="subjectSearch" class="w-full ngis-search-input" placeholder="Filter subjects..." type="text"></div>
+                <div class="flex flex-col gap-1 max-h-32 overflow-y-auto" id="subjectList">
+                  <div class="subject-opt flex items-center justify-between px-2 py-1 rounded bg-emerald-50 text-[#176B45] cursor-pointer" data-val="Advanced Mathematics">
+                    <span class="font-medium">Advanced Mathematics</span>
+                    <span class="material-symbols-outlined text-[14px]">check</span>
+                  </div>
+                  <div class="subject-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="Physics Honors">
+                    <span>Physics Honors</span>
+                  </div>
+                  <div class="subject-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="Probability & Statistics">
+                    <span>Probability &amp; Statistics</span>
+                  </div>
+                  <div class="subject-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="English Literature">
+                    <span>English Literature</span>
+                  </div>
+                  <div class="subject-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="Khmer Language">
+                    <span>Khmer Language</span>
+                  </div>
+                  <div class="subject-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="Computer Science & Robotics">
+                    <span>Computer Science &amp; Robotics</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Field 6: Room / Lab Allocation -->
+          <div class="flex flex-col gap-1.5 relative">
+            <label class="font-medium text-slate-700 uppercase tracking-wide text-[11px]">Room / Lab Allocation</label>
+            <input type="hidden" id="inRoom" value="302">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-1 flex flex-col gap-1">
+              <button type="button" id="roomTrigger" class="w-full flex items-center justify-between px-3 py-2 bg-white rounded-lg border border-slate-200/80 shadow-2xs text-left cursor-pointer hover:border-slate-300 transition-all">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="material-symbols-outlined text-[16px] text-slate-600 shrink-0">apartment</span>
+                  <span class="font-medium text-slate-900 truncate" id="roomLabel">Room 302 · Science Wing</span>
+                </div>
+                <span class="material-symbols-outlined text-[18px] text-slate-400 shrink-0" id="roomChevron">expand_more</span>
+              </button>
+              <div id="roomMenu" class="hidden bg-white rounded-lg p-2 flex-col gap-1 shadow-md border border-slate-200 mt-1">
+                <div class="flex items-center ngis-search ngis-search--compact"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="roomSearch" class="w-full ngis-search-input" placeholder="Search room number, wing..." type="text"></div>
+                <div class="flex flex-col gap-1 max-h-32 overflow-y-auto" id="roomList">
+                  <div class="room-opt flex items-center justify-between px-2 py-1 rounded bg-emerald-50 text-[#176B45] cursor-pointer" data-val="302" data-label="Room 302 · Science Wing">
+                    <span class="font-medium">Room 302 · Cap: 36</span>
+                    <span class="px-1 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px]">Floor 3</span>
+                  </div>
+                  <div class="room-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="Lab 04" data-label="Lab 04 · Physics Lab">
+                    <span>Lab 04 · Physics Lab · Cap: 32</span>
+                  </div>
+                  <div class="room-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="401" data-label="Room 401 · Main Tower">
+                    <span>Room 401 · Main Tower · Cap: 40</span>
+                  </div>
+                  <div class="room-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="108" data-label="Room 108 · Arts Wing">
+                    <span>Room 108 · Arts Wing · Cap: 35</span>
+                  </div>
+                  <div class="room-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="112" data-label="Room 112 · Languages Wing">
+                    <span>Room 112 · Languages · Cap: 35</span>
+                  </div>
+                  <div class="room-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer" data-val="Lab 02" data-label="Lab 02 · Computer Lab">
+                    <span>Lab 02 · Computer Lab · Cap: 30</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field 7: Student Capacity Cap with Visual Gauge -->
+        <div class="p-3.5 sm:p-4 bg-slate-50 border border-slate-200 rounded-xl flex flex-col gap-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex flex-col">
+              <span class="font-medium text-slate-900 uppercase tracking-wide text-[11px]">Cohort Student Capacity Limit</span>
+              <span class="text-xs text-slate-500 font-normal">Maximum seat allocation per room safety regulation</span>
+            </div>
+            <!-- Numerical Stepper -->
+            <div class="flex items-center bg-white rounded-lg p-1 border border-slate-200 shadow-2xs self-start sm:self-auto">
+              <button id="btnCapMinus" class="w-8 h-8 flex items-center justify-center rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors active:scale-95 cursor-pointer" type="button" aria-label="Decrease capacity">
+                <span class="material-symbols-outlined text-[18px]">remove</span>
+              </button>
+              <input id="inCap" class="w-12 text-center font-medium text-slate-900 text-sm outline-none bg-transparent" type="number" value="35" min="10" max="50">
+              <button id="btnCapPlus" class="w-8 h-8 flex items-center justify-center rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors active:scale-95 cursor-pointer" type="button" aria-label="Increase capacity">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+              </button>
+            </div>
+          </div>
+          <!-- Capacity Ratio Indicator & Bar -->
+          <div class="flex flex-col gap-1.5 pt-1">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs gap-1">
+              <span class="text-slate-800 font-medium">Current Enrolled: <span id="capEnrolled">31</span> / <span id="capTotal">35</span></span>
+              <span class="text-[#176B45] font-medium" id="capAvailable">4 seats available · 88% capacity</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+              <div id="capProgressBar" class="h-full bg-[#176B45] rounded-full transition-all duration-300" style="width: 88%"></div>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div>
-        <label class="block font-medium text-slate-700 mb-1">Stream / Description</label>
-        <input required id="inStream" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. STEM / Engineering Track" type="text">
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Lead Teacher</label>
-          <input required id="inLeadTeacher" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Dr. Kiri Vuth" type="text">
+
+      <!-- Modal Footer (Pinned Sticky Action Controls) -->
+      <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-t border-slate-100 bg-white flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-1.5 text-slate-500 text-xs">
+          <span class="material-symbols-outlined text-[16px] text-slate-400 shrink-0">history</span>
+          <span id="modalAuditText" class="truncate">Last modified today by Administrator</span>
         </div>
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Primary Subject</label>
-          <input required id="inSubject" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Chemistry Honors" type="text">
+        <div class="flex items-center justify-end gap-2.5 w-full sm:w-auto">
+          <button id="btnCancelModal" class="btn btn-secondary px-4 py-2 rounded-xl text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer flex-1 sm:flex-none justify-center active:scale-95" type="button">
+            Discard Changes
+          </button>
+          <button id="btnSubmitModal" class="btn btn-primary px-4 py-2 rounded-xl bg-[#176B45] hover:bg-[#125638] text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer flex-1 sm:flex-none" type="submit">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            <span id="btnSubmitText">Save &amp; Update Section</span>
+          </button>
         </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Room / Lab Allocation</label>
-          <input required id="inRoom" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" placeholder="e.g. Lab 03" type="text">
-        </div>
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Student Capacity Cap</label>
-          <input required id="inCap" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-1 focus:ring-brand-600" value="35" type="number" min="10" max="45">
-        </div>
-      </div>
-      <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-        <button id="btnCancelModal" type="button" class="px-4 py-2 font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
-        <button type="submit" class="px-4 py-2 font-medium text-white bg-brand-700 hover:bg-brand-800 rounded-xl shadow-xs transition-colors">Save Section</button>
       </div>
     </form>
   </div>
@@ -537,20 +718,21 @@ window.HERO_CONFIG = {
 <script src="../../assets/js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
 
-<!-- Interactive Logic for Class Management -->
+<!-- Interactive Logic for Class Management & Pop Up Modal -->
 <script>
 (function() {
-  // Mock Data Store
+  "use strict";
+
+  // Data Store
   const CLASSES_DATA = [
     {
       code: '11-A',
       grade: '11',
       stream: 'Science Stream',
       teacher: 'Dr. Sarah Jenkins',
-      initials: 'DJ',
-      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
+      initials: 'SJ',
       subject: 'Advanced Mathematics',
-      enrolled: 32,
+      enrolled: 31,
       cap: 35,
       room: '302',
       status: 'Active'
@@ -558,10 +740,9 @@ window.HERO_CONFIG = {
     {
       code: '11-B',
       grade: '11',
-      stream: 'Natural Science',
+      stream: 'Social Science & Humanities',
       teacher: 'Mr. Heng Samnang',
       initials: 'HS',
-      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
       subject: 'Physics Honors',
       enrolled: 29,
       cap: 35,
@@ -571,10 +752,9 @@ window.HERO_CONFIG = {
     {
       code: '12-A',
       grade: '12',
-      stream: 'Senior Cohort',
+      stream: 'Advanced STEM & Pre-Engineering',
       teacher: 'Dr. Pov Chanthy',
       initials: 'PC',
-      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
       subject: 'Probability & Statistics',
       enrolled: 31,
       cap: 35,
@@ -584,10 +764,9 @@ window.HERO_CONFIG = {
     {
       code: '10-A',
       grade: '10',
-      stream: 'Humanities Track',
+      stream: 'Commerce & Business Administration',
       teacher: 'Ms. Rin Sothea',
       initials: 'RS',
-      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
       subject: 'English Literature',
       enrolled: 35,
       cap: 35,
@@ -597,10 +776,9 @@ window.HERO_CONFIG = {
     {
       code: '10-B',
       grade: '10',
-      stream: 'National Studies',
+      stream: 'Bilingual Khmer-General Education',
       teacher: 'Mr. Chan Vuth',
       initials: 'CV',
-      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
       subject: 'Khmer Language',
       enrolled: 33,
       cap: 35,
@@ -610,10 +788,9 @@ window.HERO_CONFIG = {
     {
       code: '12-B',
       grade: '12',
-      stream: 'STEM Division',
+      stream: 'Advanced STEM & Pre-Engineering',
       teacher: 'Dr. Lim Bunna',
       initials: 'LB',
-      teacherBg: 'bg-slate-100 text-slate-700 border border-slate-200',
       subject: 'Computer Science & Robotics',
       enrolled: 28,
       cap: 35,
@@ -632,7 +809,60 @@ window.HERO_CONFIG = {
   const closeModalBtn = document.getElementById('btnCloseModal');
   const cancelModalBtn = document.getElementById('btnCancelModal');
   const formAddClass = document.getElementById('formAddClass');
-  const btnReallocateRooms = document.getElementById('btnReallocateRooms');
+
+  let currentPage = 1;
+  const pageSize = 6;
+  let currentFilteredList = CLASSES_DATA.slice();
+  let editingClassCode = null;
+  let activeEnrolledCount = 0;
+
+  // Capacity visual components
+  const inCapInput = document.getElementById('inCap');
+  const capEnrolledEl = document.getElementById('capEnrolled');
+  const capTotalEl = document.getElementById('capTotal');
+  const capAvailableEl = document.getElementById('capAvailable');
+  const capProgressBar = document.getElementById('capProgressBar');
+  const btnCapMinus = document.getElementById('btnCapMinus');
+  const btnCapPlus = document.getElementById('btnCapPlus');
+
+  // Searchable dropdown components
+  const streamTrigger = document.getElementById('streamTrigger');
+  const streamMenu = document.getElementById('streamMenu');
+  const streamSearch = document.getElementById('streamSearch');
+  const streamList = document.getElementById('streamList');
+  const inStream = document.getElementById('inStream');
+  const streamLabel = document.getElementById('streamLabel');
+  const streamTag = document.getElementById('streamTag');
+  const streamIcon = document.getElementById('streamIcon');
+
+  const teacherTrigger = document.getElementById('teacherTrigger');
+  const teacherMenu = document.getElementById('teacherMenu');
+  const teacherSearch = document.getElementById('teacherSearch');
+  const teacherList = document.getElementById('teacherList');
+  const inLeadTeacher = document.getElementById('inLeadTeacher');
+  const teacherLabel = document.getElementById('teacherLabel');
+  const teacherSub = document.getElementById('teacherSub');
+  const teacherAvatar = document.getElementById('teacherAvatar');
+
+  const subjectTrigger = document.getElementById('subjectTrigger');
+  const subjectMenu = document.getElementById('subjectMenu');
+  const subjectSearch = document.getElementById('subjectSearch');
+  const subjectList = document.getElementById('subjectList');
+  const inSubject = document.getElementById('inSubject');
+  const subjectLabel = document.getElementById('subjectLabel');
+
+  const roomTrigger = document.getElementById('roomTrigger');
+  const roomMenu = document.getElementById('roomMenu');
+  const roomSearch = document.getElementById('roomSearch');
+  const roomList = document.getElementById('roomList');
+  const inRoom = document.getElementById('inRoom');
+  const roomLabel = document.getElementById('roomLabel');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);
+    });
+  }
 
   function renderRows(items) {
     if (!tbody) return;
@@ -651,37 +881,37 @@ window.HERO_CONFIG = {
     }
 
     items.forEach(c => {
-      const pct = Math.round((c.enrolled / c.cap) * 100);
+      const pct = Math.min(100, Math.round((c.enrolled / c.cap) * 100));
       const isFull = c.enrolled >= c.cap;
-      const barColor = isFull ? 'bg-[#F77442]' : 'bg-[#F77442]';
+      const barColor = isFull ? 'bg-[#0F5132]' : 'bg-[#0F5132]';
 
       const statusBadge = c.status === 'Active'
         ? `<div class="inline-flex items-center gap-1.5 text-xs text-slate-700 font-normal">
-             <span class="w-1.5 h-1.5 rounded-full bg-[#F77442]"></span>
+             <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
              <span>Active</span>
            </div>`
         : `<div class="inline-flex items-center gap-1.5 text-xs text-slate-600 font-normal">
-             <span class="w-1.5 h-1.5 rounded-full bg-[#F77442]"></span>
+             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
              <span>Review</span>
            </div>`;
 
       const tr = document.createElement('tr');
-      tr.className = 'border-b border-slate-100 transition-colors';
+      tr.className = 'border-b border-slate-100 transition-colors hover:bg-slate-50/70';
       tr.innerHTML = `
         <td class="py-3 px-3.5 whitespace-nowrap border-r border-b border-slate-200">
           <div>
-            <span class="font-medium text-slate-900 block text-xs">Section ${c.code}</span>
-            <span class="font-mono text-[11px] text-slate-400">${c.stream}</span>
+            <span class="font-medium text-slate-900 block text-xs">Section ${esc(c.code)}</span>
+            <span class="font-mono text-[11px] text-slate-500">${esc(c.stream)}</span>
           </div>
         </td>
         <td class="py-3 px-3 whitespace-nowrap border-r border-b border-slate-200">
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-medium flex items-center justify-center shrink-0">${c.initials}</div>
-            <span class="font-normal text-xs text-slate-800">${c.teacher}</span>
+            <div class="w-6 h-6 rounded-full bg-emerald-100 text-[#0F5132] border border-emerald-200 text-[10px] font-medium flex items-center justify-center shrink-0">${esc(c.initials)}</div>
+            <span class="font-normal text-xs text-slate-800">${esc(c.teacher)}</span>
           </div>
         </td>
         <td class="py-3 px-3 whitespace-nowrap border-r border-b border-slate-200">
-          <span class="text-xs text-slate-600 font-normal">${c.subject}</span>
+          <span class="text-xs text-slate-600 font-normal">${esc(c.subject)}</span>
         </td>
         <td class="py-3 px-3 whitespace-nowrap border-r border-b border-slate-200">
           <div class="flex items-center gap-2">
@@ -692,18 +922,18 @@ window.HERO_CONFIG = {
           </div>
         </td>
         <td class="py-3 px-2.5 whitespace-nowrap text-center text-xs text-slate-600 font-normal border-r border-b border-slate-200">
-          <span>${c.room}</span>
+          <span>${esc(c.room)}</span>
         </td>
         <td class="py-3 px-2.5 whitespace-nowrap text-center border-r border-b border-slate-200">
           ${statusBadge}
         </td>
         <td class="py-3 px-3 whitespace-nowrap text-right border-b border-slate-200">
-          <div class="action-group">
-            <button class="action-icon-btn btn-edit-class" data-code="${c.code}" aria-label="Edit class ${c.code}" title="Edit" type="button">
-              <span data-ngis-icon="edit"></span>
+          <div class="flex items-center justify-end gap-1.5">
+            <button class="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-[#0F5132] btn-edit-class transition-colors" data-code="${esc(c.code)}" aria-label="Edit class ${esc(c.code)}" title="Edit Section" type="button">
+              <span class="material-symbols-outlined text-lg">edit</span>
             </button>
-            <button class="action-icon-btn btn-more-class" data-code="${c.code}" aria-label="More options for ${c.code}" title="More options" type="button">
-              <span data-ngis-icon="more"></span>
+            <button class="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 btn-more-class transition-colors" data-code="${esc(c.code)}" aria-label="More options for ${esc(c.code)}" title="More options" type="button">
+              <span class="material-symbols-outlined text-lg">more_vert</span>
             </button>
           </div>
         </td>
@@ -713,11 +943,6 @@ window.HERO_CONFIG = {
 
     if (totalCountEl) totalCountEl.textContent = CLASSES_DATA.length;
   }
-
-  let currentPage = 1;
-  const pageSize = 6;
-  let currentFilteredList = CLASSES_DATA.slice();
-  let editingClassCode = null;
 
   const pgStartEl = document.getElementById('pgStart');
   const pgEndEl = document.getElementById('pgEnd');
@@ -740,15 +965,15 @@ window.HERO_CONFIG = {
     if (btnPrev) {
       btnPrev.disabled = currentPage <= 1;
       btnPrev.className = currentPage <= 1
-        ? 'px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed'
-        : 'px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer';
+        ? 'px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed text-xs'
+        : 'px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer text-xs';
     }
 
     if (btnNext) {
       btnNext.disabled = currentPage >= totalPages;
       btnNext.className = currentPage >= totalPages
-        ? 'px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed'
-        : 'px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer';
+        ? 'px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-400 cursor-not-allowed text-xs'
+        : 'px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer text-xs';
     }
 
     if (paginationWrap) {
@@ -758,9 +983,9 @@ window.HERO_CONFIG = {
         pBtn.type = 'button';
         pBtn.textContent = p;
         if (p === currentPage) {
-          pBtn.className = 'px-3 py-1.5 rounded-lg bg-brand-700 text-white font-medium shadow-xs';
+          pBtn.className = 'px-3 py-1.5 rounded-lg bg-[#0F5132] text-white font-medium text-xs shadow-xs';
         } else {
-          pBtn.className = 'px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors';
+          pBtn.className = 'px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors text-xs';
           pBtn.addEventListener('click', () => {
             currentPage = p;
             paginateAndRender();
@@ -811,7 +1036,6 @@ window.HERO_CONFIG = {
     paginateAndRender();
   }
 
-  // Bind Filter Events
   if (searchInput) searchInput.addEventListener('input', filterData);
   if (gradeSelect) gradeSelect.addEventListener('change', filterData);
 
@@ -841,46 +1065,281 @@ window.HERO_CONFIG = {
       document.body.removeChild(link);
 
       if (window.toast) {
-        window.toast('Class directory exported successfully to CSV', 'success');
+        window.toast('Class directory exported to CSV', 'success');
       }
     });
   }
 
-  // Modal Handlers
+  // Live Capacity Gauge updater
+  function updateCapacityVisuals() {
+    let cap = parseInt(inCapInput.value, 10) || 35;
+    if (cap < 10) cap = 10;
+    if (cap > 60) cap = 60;
+    inCapInput.value = cap;
+
+    const enrolled = activeEnrolledCount;
+    const available = Math.max(0, cap - enrolled);
+    const pct = Math.min(100, Math.round((enrolled / cap) * 100));
+
+    capEnrolledEl.textContent = enrolled;
+    capTotalEl.textContent = cap;
+    capAvailableEl.textContent = available + ' seats available · ' + pct + '% capacity';
+    capProgressBar.style.width = pct + '%';
+  }
+
+  if (btnCapMinus) {
+    btnCapMinus.addEventListener('click', () => {
+      let v = parseInt(inCapInput.value, 10) || 35;
+      if (v > 10) {
+        inCapInput.value = v - 1;
+        updateCapacityVisuals();
+      }
+    });
+  }
+
+  if (btnCapPlus) {
+    btnCapPlus.addEventListener('click', () => {
+      let v = parseInt(inCapInput.value, 10) || 35;
+      if (v < 60) {
+        inCapInput.value = v + 1;
+        updateCapacityVisuals();
+      }
+    });
+  }
+
+  if (inCapInput) {
+    inCapInput.addEventListener('input', updateCapacityVisuals);
+  }
+
+  // ── Custom Searchable Dropdowns Handling ──
+  function setupDropdown(trigger, menu, searchInput, listContainer, onSelect) {
+    if (!trigger || !menu) return;
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isHidden = menu.classList.contains('hidden');
+      closeAllDropdowns();
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        menu.classList.add('flex');
+        if (searchInput) {
+          searchInput.value = '';
+          filterDropdownOptions(listContainer, '');
+          setTimeout(() => searchInput.focus(), 50);
+        }
+      }
+    });
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        filterDropdownOptions(listContainer, e.target.value.trim().toLowerCase());
+      });
+    }
+
+    listContainer.addEventListener('click', (e) => {
+      const item = e.target.closest('[data-val]');
+      if (!item) return;
+      onSelect(item);
+      menu.classList.add('hidden');
+      menu.classList.remove('flex');
+    });
+  }
+
+  function filterDropdownOptions(container, q) {
+    if (!container) return;
+    Array.from(container.children).forEach(el => {
+      const txt = el.textContent.toLowerCase();
+      el.style.display = (!q || txt.includes(q)) ? 'flex' : 'none';
+    });
+  }
+
+  function closeAllDropdowns() {
+    [streamMenu, teacherMenu, subjectMenu, roomMenu].forEach(m => {
+      if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+    });
+  }
+
+  document.addEventListener('click', closeAllDropdowns);
+
+  // Wire Stream Dropdown
+  setupDropdown(streamTrigger, streamMenu, streamSearch, streamList, (item) => {
+    const val = item.dataset.val;
+    const tag = item.dataset.tag || '';
+    const icon = item.dataset.icon || 'biotech';
+
+    inStream.value = val;
+    streamLabel.textContent = val;
+    streamTag.textContent = tag;
+    streamIcon.textContent = icon;
+
+    Array.from(streamList.children).forEach(el => {
+      const isMatch = el.dataset.val === val;
+      el.className = isMatch
+        ? 'stream-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#176B45] cursor-pointer'
+        : 'stream-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors';
+    });
+  });
+
+  // Wire Teacher Dropdown
+  setupDropdown(teacherTrigger, teacherMenu, teacherSearch, teacherList, (item) => {
+    const val = item.dataset.val;
+    const init = item.dataset.init || 'T';
+    const sub = item.dataset.sub || '';
+
+    inLeadTeacher.value = val;
+    teacherLabel.textContent = val;
+    teacherSub.textContent = sub;
+    teacherAvatar.textContent = init;
+
+    Array.from(teacherList.children).forEach(el => {
+      const isMatch = el.dataset.val === val;
+      el.className = isMatch
+        ? 'teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-emerald-50 text-[#176B45] cursor-pointer'
+        : 'teacher-opt flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-slate-50 text-slate-800 cursor-pointer transition-colors';
+    });
+  });
+
+  // Wire Subject Dropdown
+  setupDropdown(subjectTrigger, subjectMenu, subjectSearch, subjectList, (item) => {
+    const val = item.dataset.val;
+    inSubject.value = val;
+    subjectLabel.textContent = val;
+
+    Array.from(subjectList.children).forEach(el => {
+      const isMatch = el.dataset.val === val;
+      el.className = isMatch
+        ? 'subject-opt flex items-center justify-between px-2 py-1 rounded bg-emerald-50 text-[#176B45] cursor-pointer'
+        : 'subject-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer';
+    });
+  });
+
+  // Wire Room Dropdown
+  setupDropdown(roomTrigger, roomMenu, roomSearch, roomList, (item) => {
+    const val = item.dataset.val;
+    const label = item.dataset.label || val;
+    inRoom.value = val;
+    roomLabel.textContent = label;
+
+    Array.from(roomList.children).forEach(el => {
+      const isMatch = el.dataset.val === val;
+      el.className = isMatch
+        ? 'room-opt flex items-center justify-between px-2 py-1 rounded bg-emerald-50 text-[#176B45] cursor-pointer'
+        : 'room-opt flex items-center justify-between px-2 py-1 rounded hover:bg-slate-50 text-slate-800 cursor-pointer';
+    });
+  });
+
+  // ── Open / Close Modal ──
   function openModal(editItem) {
-    const titleEl = modal.querySelector('h3');
-    const submitBtn = formAddClass.querySelector('button[type="submit"]');
+    const titleEl = document.getElementById('modalClassTitle');
+    const submitBtnText = document.getElementById('btnSubmitText');
+    const auditText = document.getElementById('modalAuditText');
 
     if (editItem) {
       editingClassCode = editItem.code;
+      activeEnrolledCount = editItem.enrolled || 0;
       if (titleEl) titleEl.textContent = 'Edit Class Section';
-      if (submitBtn) submitBtn.textContent = 'Update Section';
+      if (submitBtnText) submitBtnText.textContent = 'Save & Update Section';
+      if (auditText) auditText.textContent = 'Last modified today at 09:40 AM by Admin Heng Samnang';
 
       document.getElementById('inSectionCode').value = editItem.code;
       document.getElementById('inGradeLevel').value = editItem.grade;
-      document.getElementById('inStream').value = editItem.stream;
-      document.getElementById('inLeadTeacher').value = editItem.teacher;
-      document.getElementById('inSubject').value = editItem.subject;
-      document.getElementById('inRoom').value = editItem.room;
-      document.getElementById('inCap').value = editItem.cap;
+
+      // Select Stream
+      const streamOpt = Array.from(streamList.children).find(c => c.dataset.val === editItem.stream) || streamList.children[0];
+      if (streamOpt) {
+        inStream.value = streamOpt.dataset.val;
+        streamLabel.textContent = streamOpt.dataset.val;
+        streamTag.textContent = streamOpt.dataset.tag || 'Track';
+        streamIcon.textContent = streamOpt.dataset.icon || 'biotech';
+      }
+
+      // Select Teacher
+      const teacherOpt = Array.from(teacherList.children).find(c => c.dataset.val === editItem.teacher) || teacherList.children[0];
+      if (teacherOpt) {
+        inLeadTeacher.value = teacherOpt.dataset.val;
+        teacherLabel.textContent = teacherOpt.dataset.val;
+        teacherSub.textContent = teacherOpt.dataset.sub || '';
+        teacherAvatar.textContent = teacherOpt.dataset.init || 'T';
+      }
+
+      // Select Subject
+      const subjOpt = Array.from(subjectList.children).find(c => c.dataset.val === editItem.subject) || subjectList.children[0];
+      if (subjOpt) {
+        inSubject.value = subjOpt.dataset.val;
+        subjectLabel.textContent = subjOpt.dataset.val;
+      }
+
+      // Select Room
+      const roomOpt = Array.from(roomList.children).find(c => c.dataset.val === editItem.room) || roomList.children[0];
+      if (roomOpt) {
+        inRoom.value = roomOpt.dataset.val;
+        roomLabel.textContent = roomOpt.dataset.label || roomOpt.dataset.val;
+      }
+
+      inCapInput.value = editItem.cap || 35;
     } else {
       editingClassCode = null;
+      activeEnrolledCount = 0;
       if (titleEl) titleEl.textContent = 'Add New Class Section';
-      if (submitBtn) submitBtn.textContent = 'Create Class Section';
+      if (submitBtnText) submitBtnText.textContent = 'Create Class Section';
+      if (auditText) auditText.textContent = 'New registration entry';
+
       formAddClass.reset();
+      document.getElementById('inSectionCode').value = '11-C';
+      document.getElementById('inGradeLevel').value = '11';
+
+      // Default stream
+      inStream.value = 'Science Stream';
+      streamLabel.textContent = 'Science Stream';
+      streamTag.textContent = 'STEM Focused';
+      streamIcon.textContent = 'biotech';
+
+      // Default teacher
+      inLeadTeacher.value = 'Dr. Sarah Jenkins';
+      teacherLabel.textContent = 'Dr. Sarah Jenkins';
+      teacherSub.textContent = 'Dept: Mathematics · TCH-2026-042';
+      teacherAvatar.textContent = 'SJ';
+
+      // Default subject
+      inSubject.value = 'Advanced Mathematics';
+      subjectLabel.textContent = 'Advanced Mathematics';
+
+      // Default room
+      inRoom.value = '302';
+      roomLabel.textContent = 'Room 302 · Science Wing';
+
+      inCapInput.value = 35;
     }
 
-    modal.classList.remove('opacity-0', 'pointer-events-none');
-    modal.querySelector('.transform').classList.remove('scale-95');
-    modal.querySelector('.transform').classList.add('scale-100');
+    updateCapacityVisuals();
+    closeAllDropdowns();
+
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0');
+      const dialog = modal.querySelector('.scale-95');
+      if (dialog) {
+        dialog.classList.remove('scale-95');
+        dialog.classList.add('scale-100');
+      }
+    });
   }
 
   function closeModal() {
-    modal.classList.add('opacity-0', 'pointer-events-none');
-    modal.querySelector('.transform').classList.add('scale-95');
-    modal.querySelector('.transform').classList.remove('scale-100');
-    editingClassCode = null;
-    formAddClass.reset();
+    closeAllDropdowns();
+    const dialog = modal.querySelector('.scale-100');
+    if (dialog) {
+      dialog.classList.remove('scale-100');
+      dialog.classList.add('scale-95');
+    }
+    modal.classList.add('opacity-0');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      editingClassCode = null;
+    }, 200);
   }
 
   if (addBtn) addBtn.addEventListener('click', () => openModal(null));
@@ -893,17 +1352,23 @@ window.HERO_CONFIG = {
     });
   }
 
+  // Submit Handler
   if (formAddClass) {
     formAddClass.addEventListener('submit', (e) => {
       e.preventDefault();
       const code = document.getElementById('inSectionCode').value.trim();
       const grade = document.getElementById('inGradeLevel').value;
-      const stream = document.getElementById('inStream').value.trim();
-      const teacher = document.getElementById('inLeadTeacher').value.trim();
-      const subject = document.getElementById('inSubject').value.trim();
-      const room = document.getElementById('inRoom').value.trim();
-      const cap = parseInt(document.getElementById('inCap').value, 10) || 35;
+      const stream = inStream.value.trim();
+      const teacher = inLeadTeacher.value.trim();
+      const subject = inSubject.value.trim();
+      const room = inRoom.value.trim();
+      const cap = parseInt(inCapInput.value, 10) || 35;
       const initials = teacher.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+
+      if (!code) {
+        alert('Please enter a section code');
+        return;
+      }
 
       if (editingClassCode) {
         const target = CLASSES_DATA.find(c => c.code === editingClassCode);
@@ -917,7 +1382,7 @@ window.HERO_CONFIG = {
           target.room = room;
           target.cap = cap;
         }
-        if (window.toast) window.toast(`Class Section ${code} updated successfully`, 'success');
+        if (window.toast) window.toast(`Class Section ${code} successfully updated`, 'success');
       } else {
         CLASSES_DATA.unshift({
           code,
@@ -925,14 +1390,13 @@ window.HERO_CONFIG = {
           stream,
           teacher,
           initials,
-          teacherBg: 'bg-[#FBFBFB] text-[#000000]',
           subject,
           enrolled: 0,
           cap,
           room,
           status: 'Active'
         });
-        if (window.toast) window.toast(`Class Section ${code} created successfully`, 'success');
+        if (window.toast) window.toast(`New Class Section ${code} registered`, 'success');
       }
 
       closeModal();
@@ -940,17 +1404,7 @@ window.HERO_CONFIG = {
     });
   }
 
-  if (btnReallocateRooms) {
-    btnReallocateRooms.addEventListener('click', () => {
-      if (window.toast) {
-        window.toast('Opening Interactive Room Schedule & Reallocations Optimizer...', 'info');
-      } else {
-        alert('Room Reallocations Optimizer: All classrooms currently balanced at 91% occupancy.');
-      }
-    });
-  }
-
-  // Table action buttons delegation
+  // Row Action Delegation
   if (tbody) {
     tbody.addEventListener('click', (e) => {
       const editBtn = e.target.closest('.btn-edit-class');
@@ -967,7 +1421,7 @@ window.HERO_CONFIG = {
       if (moreBtn) {
         const code = moreBtn.dataset.code;
         if (window.toast) {
-          window.toast(`Section ${code} options: Timetable, Attendance, Student List`, 'info');
+          window.toast(`Section ${code}: Timetable, Attendance, Student Roster options`, 'info');
         }
       }
     });

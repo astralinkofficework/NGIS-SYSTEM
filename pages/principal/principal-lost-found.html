@@ -8,7 +8,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- NGIS Stylesheets -->
@@ -50,8 +50,9 @@
 <script src="_auth-bootstrap.js"></script>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 
 <body data-role="principal" data-portal="principal">
@@ -70,10 +71,7 @@
     <!-- Top Action Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
       <div>
-        <h1 style="font-size:22px; color:var(--navy); margin:0 0 4px; line-height:1.25;">Lost and Found Management</h1>
-        <p style="font-size:13.5px; color:#176B45; margin:0;">
-          Review and manage lost and found items, storage locations, and return approvals.
-        </p>
+        <h1 style="font-size:22px; color:var(--navy); margin:0; line-height:1.25;">Lost and Found Management</h1>
       </div>
       <div class="flex items-center gap-2">
         <button class="btn-neutral" onclick="loadLostFound()" title="Reload list">
@@ -168,10 +166,7 @@
 
     <!-- Filters & Search -->
     <div class="bg-white border border-[#E1E9E3] rounded-xl p-4 mb-6 flex flex-wrap items-center gap-2.5" data-purpose="toolbar">
-      <div class="relative flex-1 min-w-[220px] md:max-w-xs order-first">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-        <input id="lfSearchInput" type="search" placeholder="Search item title, ref ID, or location..." class="w-full !pl-11 pr-4 py-2 text-xs border border-[#E1E9E3] rounded-lg outline-none focus:border-[#176B45] min-h-[40px]" style="padding-left: 44px !important;">
-      </div>
+      <div class="flex-1 min-w-[220px] md:max-w-xs order-first ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="lfSearchInput" type="search" placeholder="Search item title, ref ID, or location..." class="w-full ngis-search-input"></div>
       <div class="relative flex-1 sm:flex-initial min-w-[130px]">
         <select id="typeFilter" class="w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors">
           <option value="all">All Types</option>
@@ -533,7 +528,7 @@ async function saveItemChanges() {
       });
       if (!res.ok) throw new Error("Could not update item");
       closeManageModal();
-      if (window.toast) window.toast("Lost and found listing updated successfully", "success");
+      if (window.toast) window.toast("Lost and found listing updated", "success");
       loadLostFound();
     }, { loadingText: "Saving..." });
   } else {
@@ -597,7 +592,7 @@ async function deleteInappropriatePost() {
     });
     if (!res.ok) throw new Error();
     closeManageModal();
-    if (window.toast) window.toast("Inappropriate post removed successfully", "success");
+    if (window.toast) window.toast("Inappropriate post removed", "success");
     loadLostFound();
   } catch (e) {
     alert("Unable to delete item");

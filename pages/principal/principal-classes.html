@@ -8,7 +8,7 @@
 <!-- Google Fonts: Plus Jakarta Sans & Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
 
 <!-- NGIS Stylesheets -->
@@ -141,8 +141,9 @@ tailwind.config = {
 <script src="_auth-bootstrap.js"></script>
 
 <!-- NGIS global action-icon engine -->
-<link rel="stylesheet" href="../../assets/css/action-icons.css">
-<script src="../../assets/js/action-icons.js" defer></script>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 </head>
 
 <body data-role="principal" data-portal="principal" class="bg-[#F7F9F7] text-slate-800 antialiased min-h-screen flex flex-col font-sans selection:bg-[#E8F3ED] selection:text-[#29352E]">
@@ -350,7 +351,7 @@ tailwind.config = {
         <div class="flex items-center gap-1">
           <button class="px-2.5 py-1 rounded border border-slate-200 text-slate-400 cursor-not-allowed text-xs font-medium" disabled="" type="button">Previous</button>
           <button class="px-2.5 py-1 rounded bg-[#176B45] text-white text-xs font-medium" type="button">1</button>
-          <button class="px-2.5 py-1 rounded border border-slate-200 text-slate-400 cursor-not-allowed text-xs font-medium" disabled="" type="button">Next</button>
+          <button class="px-2.5 py-1 rounded border border-slate-200 text-slate-400 cursor-not-allowed text-xs font-medium" disabled="" type="button">Next Page</button>
         </div>
       </div>
     </div>
@@ -370,7 +371,7 @@ tailwind.config = {
           <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#176B45]"></span>
         </span>
         <div>
-          <h3 id="editClassModalTitle" class="text-base font-semibold text-slate-900" style="font-family: 'Manrope', sans-serif;">Edit Class Information</h3>
+          <h3 id="editClassModalTitle" class="text-base font-medium text-slate-900" style="font-family: 'Manrope', sans-serif;">Edit Class Information</h3>
           <p class="text-xs text-slate-500 mt-0.5">Update class details, teacher assignment, and room capacity</p>
         </div>
       </div>
@@ -495,7 +496,7 @@ tailwind.config = {
           <span class="material-symbols-outlined text-[20px]">groups</span>
         </div>
         <div>
-          <h3 id="classStudentsTitle" class="text-base font-semibold text-slate-900" style="font-family: 'Manrope', sans-serif;">Assigned Students</h3>
+          <h3 id="classStudentsTitle" class="text-base font-medium text-slate-900" style="font-family: 'Manrope', sans-serif;">Assigned Students</h3>
           <p id="classStudentsSubtitle" class="text-xs text-slate-500 mt-0.5">Enrolled students and academic standing</p>
         </div>
       </div>
@@ -536,7 +537,32 @@ tailwind.config = {
 
     <!-- Student List -->
     <div id="classStudentsList" class="flex-1 overflow-y-auto px-6 sm:px-7 py-5 space-y-2.5">
-      <div class="text-xs text-slate-400 py-8 text-center">Loading student records...</div>
+      <div class="space-y-3" role="status" aria-busy="true" aria-label="Loading student roster">
+        <div class="flex items-center gap-3 p-3 bg-white border border-[#E1E9E3] rounded-xl">
+          <span class="ngis-sk-avatar-sm ngis-sk-shimmer"></span>
+          <div class="flex-1 flex flex-col gap-1.5">
+            <span class="ngis-sk-text ngis-sk-shimmer" style="width:60%;height:13px;"></span>
+            <span class="ngis-sk-text ngis-sk-shimmer" style="width:30%;height:10px;"></span>
+          </div>
+          <span class="ngis-sk-badge ngis-sk-shimmer w-16"></span>
+        </div>
+        <div class="flex items-center gap-3 p-3 bg-white border border-[#E1E9E3] rounded-xl">
+          <span class="ngis-sk-avatar-sm ngis-sk-shimmer"></span>
+          <div class="flex-1 flex flex-col gap-1.5">
+            <span class="ngis-sk-text ngis-sk-shimmer" style="width:70%;height:13px;"></span>
+            <span class="ngis-sk-text ngis-sk-shimmer" style="width:35%;height:10px;"></span>
+          </div>
+          <span class="ngis-sk-badge ngis-sk-shimmer w-16"></span>
+        </div>
+        <div class="flex items-center gap-3 p-3 bg-white border border-[#E1E9E3] rounded-xl">
+          <span class="ngis-sk-avatar-sm ngis-sk-shimmer"></span>
+          <div class="flex-1 flex flex-col gap-1.5">
+            <span class="ngis-sk-text ngis-sk-shimmer" style="width:50%;height:13px;"></span>
+            <span class="ngis-sk-text ngis-sk-shimmer" style="width:25%;height:10px;"></span>
+          </div>
+          <span class="ngis-sk-badge ngis-sk-shimmer w-16"></span>
+        </div>
+      </div>
     </div>
 
     <!-- Footer -->
@@ -576,12 +602,20 @@ window.HERO_CONFIG = {
 <script>
 let allClasses = [];
 
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  clearTimeout(t._h);
-  t._h = setTimeout(() => { t.style.display = 'none'; }, 2400);
+function toast(msg, kind) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — no page-local
+     toast UI; this delegate keeps the page's toast(msg, kind) calls. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', msg);
+    return null;
+  }
+  var t;
+  if (kind === true || kind === 'error' || kind === 'danger' || kind === 'bad' || kind === 'fail') t = 'error';
+  else if (kind === 'warning' || kind === 'warn') t = 'warning';
+  else if (kind === 'info') t = 'info';
+  else if (kind === 'loading') t = 'loading';
+  else t = 'success';
+  return window.NGISUI.toast.show(t, String(msg));
 }
 
 function getTeacherInitials(teacherName) {
@@ -842,7 +876,7 @@ async function saveClassChanges(e) {
       });
       if (!res.ok) throw new Error("Could not update class");
       closeEditModal();
-      toast("Class information updated successfully");
+      toast("Class information updated");
       loadClasses();
     }, { loadingText: "Saving..." });
   } else {
@@ -853,7 +887,7 @@ async function saveClassChanges(e) {
         body: JSON.stringify(payload)
       });
       closeEditModal();
-      toast("Class information updated successfully");
+      toast("Class information updated");
       loadClasses();
     } catch (err) {
       alert("Could not update class");
@@ -865,7 +899,9 @@ async function viewClassStudents(classId, className) {
   document.getElementById("classStudentsTitle").textContent = `${className} — Enrolled Students`;
   document.getElementById("classStudentsModal").classList.remove("hidden");
   const listEl = document.getElementById("classStudentsList");
-  listEl.innerHTML = '<div class="text-xs text-slate-400 py-6 text-center">Loading enrolled students...</div>';
+  listEl.innerHTML = window.NGIS_SKELETON
+    ? window.NGIS_SKELETON.table({ rows: 4 })
+    : '<div class="space-y-3 p-4"></div>';
 
   try {
     const res = await fetch(`/api/classes/${classId}`);

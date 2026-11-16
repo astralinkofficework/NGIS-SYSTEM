@@ -570,7 +570,9 @@
         return;
       }
       if (!this.config || !this.currentData) {
-        body.innerHTML = '<div class="cms-loading"><span class="cms-spinner" aria-hidden="true"></span><span>Loading overview…</span></div>';
+        body.innerHTML = window.NGIS_SKELETON
+          ? window.NGIS_SKELETON.dashboard({ kpis: 3 })
+          : '<div class="ngis-sk-dashboard-wrap p-4"></div>';
         return;
       }
 
@@ -625,7 +627,9 @@
         return;
       }
       if (!this.config || !this.currentData) {
-        el.innerHTML = '<div class="cms-loading"><span class="cms-spinner" aria-hidden="true"></span><span>Loading publication status…</span></div>';
+        el.innerHTML = window.NGIS_SKELETON
+          ? window.NGIS_SKELETON.cards({ count: 2 })
+          : '<div class="ngis-sk-card-grid p-4"></div>';
         return;
       }
 
@@ -700,7 +704,9 @@
       var el = this.dom.activityList;
       if (!el) return;
 
-      el.innerHTML = '<div class="cms-loading"><span class="cms-spinner" aria-hidden="true"></span><span>Loading activity…</span></div>';
+      el.innerHTML = window.NGIS_SKELETON
+        ? window.NGIS_SKELETON.table({ rows: 4 })
+        : '<div class="ngis-sk-table-container p-4"></div>';
 
       fetch('/api/cms/dashboard/audit?portal=' + encodeURIComponent(this.portal) + '&limit=40')
         .then(function (r) { return r.json(); })
@@ -862,7 +868,7 @@
         description: 'Detailed information regarding academic schedule',
         image_url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&h=320&fit=crop',
         alt_text: 'School campus',
-        button_label: 'Learn More',
+        button_label: 'View Announcement',
         button_url: '#',
         target_portals: [this.portal],
         target_campuses: ['all'],
@@ -899,21 +905,32 @@
     },
 
     deleteBanner: function (idx) {
+      var self = this;
       var banners = this.currentData.banners || [];
       if (banners.length <= 1) {
-        alert('At least one banner must be retained for the portal layout.');
+        this.showToast('Keep at least one banner slide for this portal layout.');
         return;
       }
-      if (!confirm('Are you sure you want to remove this banner slide?')) return;
-
-      banners.splice(idx, 1);
-      banners.forEach(function (b, i) { b.order = i + 1; });
-      this.activeBannerIdx = Math.max(0, idx - 1);
-      this.renderBannerList();
-      this.loadBannerForm(this.activeBannerIdx);
-      this.markUnsaved();
-      this.debounceSync();
-      this.showToast('Banner slide deleted.');
+      var doRemove = function () {
+        banners.splice(idx, 1);
+        banners.forEach(function (b, i) { b.order = i + 1; });
+        self.activeBannerIdx = Math.max(0, idx - 1);
+        self.renderBannerList();
+        self.loadBannerForm(self.activeBannerIdx);
+        self.markUnsaved();
+        self.debounceSync();
+        self.showToast('Banner slide removed.');
+      };
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Remove banner slide?',
+          description: 'Remove Slide ' + (idx + 1) + ' from this draft dashboard.',
+          consequence: 'You can add another banner slide later before publishing.',
+          confirmLabel: 'Remove slide',
+          isDestructive: true,
+          onConfirm: doRemove
+        });
+      }
     },
 
     renderPageSections: function () {
@@ -1055,16 +1072,17 @@
         if (res.success) {
           self.hasUnsavedChanges = false;
           self.updateStatusBadge('draft');
-          self.showToast('Draft saved successfully without affecting live dashboard.');
+          self.showToast('Draft saved without affecting live dashboard.');
         } else {
-          alert('Failed to save draft: ' + (res.error || 'Server error'));
+          self.showToast('Could not save draft: ' + (res.error || 'Please try again.'));
         }
       });
     },
 
     publishContent: function () {
       var self = this;
-      if (!confirm('Publish all changes immediately to the live ' + this.portal.toUpperCase() + ' dashboard?')) return;
+      var portalUpper = (this.portal || '').toUpperCase();
+      var executePublish = function () {
 
       var payload = this.assemblePayload();
       fetch('/api/cms/dashboard/publish', {
@@ -1081,12 +1099,23 @@
         if (res.success) {
           self.hasUnsavedChanges = false;
           self.updateStatusBadge('published');
-          self.showToast('Published live successfully! (Version: ' + res.version.version_id + ')');
+          self.showToast('Published live! (Version: ' + res.version.version_id + ')');
           self.loadConfig();
         } else {
-          alert('Publish error: ' + (res.error || 'Unknown error'));
+          self.showToast('Could not publish dashboard: ' + (res.error || 'Please try again.'));
         }
       });
+      }.bind(this);
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Publish ' + portalUpper + ' dashboard?',
+          description: 'Your saved draft banners and hero settings will go live right away.',
+          consequence: 'Signed-in ' + portalUpper + ' portal users will see this update on next load.',
+          confirmLabel: 'Publish live',
+          isDestructive: false,
+          onConfirm: executePublish
+        });
+      }
     },
 
     openScheduleModal: function () {
@@ -1099,8 +1128,17 @@
         '</div>';
 
       this.openModal('Schedule Future Publication', html, function () {
-        var dt = document.getElementById('cmsScheduleTimeInput').value;
-        if (!dt) { alert('Please select a valid date and time.'); return; }
+        var dtInput = document.getElementById('cmsScheduleTimeInput');
+        var dt = dtInput ? dtInput.value : '';
+        if (!dt) {
+          if (window.NGISKit && dtInput) {
+            window.NGISKit.setFieldError(dtInput, 'Please pick a date and time before scheduling.');
+          } else {
+            self.showToast('Please select a valid date and time.');
+          }
+          return;
+        }
+        if (window.NGISKit && dtInput) window.NGISKit.clearFieldError(dtInput);
         var payload = self.assemblePayload();
 
         fetch('/api/cms/dashboard/schedule', {
@@ -1115,7 +1153,7 @@
             self.updateStatusBadge('scheduled');
             self.showToast('Publication scheduled for ' + dt);
           } else {
-            alert('Scheduling failed: ' + res.error);
+            self.showToast('Scheduling failed: ' + (res.error || 'Please try again.'));
           }
         });
       }, 'Schedule Publication');
@@ -1151,7 +1189,8 @@
 
     restoreVersion: function (versionId) {
       var self = this;
-      if (!confirm('Revert all ' + this.portal.toUpperCase() + ' dashboard settings to snapshot ' + versionId + '?')) return;
+      var portalUpper = (this.portal || '').toUpperCase();
+      var executeRestore = function () {
 
       fetch('/api/cms/dashboard/restore', {
         method: 'POST',
@@ -1165,9 +1204,20 @@
           self.showToast('Reverted to version ' + versionId);
           self.loadConfig();
         } else {
-          alert('Restore failed: ' + res.error);
+          self.showToast('Restore failed: ' + (res.error || 'Please try again.'));
         }
       });
+      }.bind(this);
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Restore snapshot ' + versionId + '?',
+          description: 'Revert ' + portalUpper + ' dashboard settings to this saved version.',
+          consequence: 'Any unpublished draft edits on screen will be replaced.',
+          confirmLabel: 'Restore version',
+          isDestructive: true,
+          onConfirm: executeRestore
+        });
+      }
     },
 
     renderMediaLibrary: function () {
@@ -1238,28 +1288,38 @@
       .then(function (res) { return res.json(); })
       .then(function (res) {
         if (res.success && res.data) {
-          self.showToast('Image uploaded successfully (' + res.data.width + 'x' + res.data.height + 'px).');
+          self.showToast('Image uploaded (' + res.data.width + 'x' + res.data.height + 'px).');
           self.renderMediaLibrary();
         } else {
-          alert('Upload failed: ' + (res.error || 'Server error'));
+          self.showToast('Upload failed: ' + (res.error || 'Please choose another file.'));
         }
       });
     },
 
     deleteMediaItem: function (mediaId) {
       var self = this;
-      if (!confirm('Are you sure you want to delete this media item?')) return;
-
-      fetch('/api/cms/dashboard/media/' + mediaId, { method: 'DELETE' })
-        .then(function (res) { return res.json(); })
-        .then(function (res) {
-          if (res.success) {
-            self.showToast('Media deleted.');
-            self.renderMediaLibrary();
-          } else {
-            alert('Cannot delete: ' + res.error);
-          }
+      var executeDelete = function () {
+        fetch('/api/cms/dashboard/media/' + mediaId, { method: 'DELETE' })
+          .then(function (res) { return res.json(); })
+          .then(function (res) {
+            if (res.success) {
+              self.showToast('Media item removed.');
+              self.renderMediaLibrary();
+            } else {
+              self.showToast('Cannot delete media: ' + (res.error || 'In use by a banner.'));
+            }
+          });
+      };
+      if (window.NGISKit && typeof window.NGISKit.confirmAction === 'function') {
+        window.NGISKit.confirmAction({
+          title: 'Delete media item?',
+          description: 'Remove this uploaded image from the shared media library.',
+          consequence: 'Banners still pointing to this image will need a replacement.',
+          confirmLabel: 'Delete image',
+          isDestructive: true,
+          onConfirm: executeDelete
         });
+      }
     },
 
     openModal: function (title, bodyHTML, onConfirm, confirmText) {
@@ -1274,11 +1334,15 @@
       } else {
         footer.style.display = 'none';
       }
+      this.dom.modalBackdrop.classList.remove('hidden');
       this.dom.modalBackdrop.classList.add('open');
+      this.dom.modalBackdrop.style.display = 'grid';
     },
 
     closeModal: function () {
       this.dom.modalBackdrop.classList.remove('open');
+      this.dom.modalBackdrop.classList.add('hidden');
+      this.dom.modalBackdrop.style.display = 'none';
     },
 
     showToast: function (msg) {

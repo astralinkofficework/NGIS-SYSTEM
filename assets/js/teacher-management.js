@@ -25,20 +25,22 @@
     });
   }
 
-  function toast(msg, type) {
-    var existing = document.getElementById('tmToast');
-    if (existing) existing.remove();
-    var t = document.createElement('div');
-    t.id = 'tmToast';
-    var bg = type === 'error' ? 'bg-rose-600' : (type === 'info' ? 'bg-slate-800' : 'bg-[#176B45]');
-    t.className = 'fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-lg text-white text-xs font-medium transition-all transform translate-y-0 ' + bg;
-    t.innerHTML = '<span class="material-symbols-outlined text-sm">' + (type === 'error' ? 'error' : 'check_circle') + '</span><span>' + esc(msg) + '</span>';
-    document.body.appendChild(t);
-    setTimeout(function () {
-      t.classList.add('opacity-0', 'translate-y-2');
-      setTimeout(function () { t.remove(); }, 300);
-    }, 3200);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
   }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
 
   /* ════════════════════════════════════════════════════════════════
      1. VERIFY TEACHER UPDATE
@@ -50,7 +52,7 @@
     var state = { items: [], search: '', status: 'all', activeItem: null };
 
     function fetchUpdates() {
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading teacher update requests...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON ? window.NGIS_SKELETON.table({ rows: 6 }) : '<div class="ngis-sk-table-container p-6"></div>';
       fetch('/api/teacher-mgmt/verify')
         .then(function (res) { return res.json(); })
         .then(function (res) {
@@ -58,7 +60,7 @@
           render();
         })
         .catch(function () {
-          root.innerHTML = '<div class="p-6 text-center text-xs text-rose-600">Failed to load verification requests.</div>';
+          root.innerHTML = '<div class="p-6 text-center text-xs text-[#DC3545]">Failed to load verification requests.</div>';
         });
     }
 
@@ -83,11 +85,11 @@
       var rowsHtml = filtered.map(function (item) {
         var statusBadge = '';
         if (item.status === 'pending') {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Pending Review</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">Pending Review</span>';
         } else if (item.status === 'approved') {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Approved</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">Approved</span>';
         } else if (item.status === 'rejected') {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">Rejected</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FDECEC] text-[#B02A37] border border-[#F5C2C7]">Rejected</span>';
         } else {
           statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Needs Correction</span>';
         }
@@ -101,8 +103,8 @@
           '<td class="py-3 px-3 text-xs text-slate-600">' + esc(item.department) + '</td>' +
           '<td class="py-3 px-3 text-xs text-slate-700 font-medium">' + esc(item.fieldChanged) + '</td>' +
           '<td class="py-3 px-3">' +
-            '<div class="text-[11px] text-rose-600 bg-rose-50/70 px-2 py-0.5 rounded mb-1 max-w-xs truncate" title="' + esc(item.previousValue) + '"><span class="font-medium">Previous:</span> ' + esc(item.previousValue) + '</div>' +
-            '<div class="text-[11px] text-emerald-700 bg-emerald-50/70 px-2 py-0.5 rounded max-w-xs truncate" title="' + esc(item.proposedValue) + '"><span class="font-medium">Proposed:</span> ' + esc(item.proposedValue) + '</div>' +
+            '<div class="text-[11px] text-[#DC3545] bg-[#FDECEC]/70 px-2 py-0.5 rounded mb-1 max-w-xs truncate" title="' + esc(item.previousValue) + '"><span class="font-medium">Previous:</span> ' + esc(item.previousValue) + '</div>' +
+            '<div class="text-[11px] text-[#176B45] bg-[#E8F3ED]/70 px-2 py-0.5 rounded max-w-xs truncate" title="' + esc(item.proposedValue) + '"><span class="font-medium">Proposed:</span> ' + esc(item.proposedValue) + '</div>' +
           '</td>' +
           '<td class="py-3 px-3 text-xs text-slate-500">' + esc(item.submittedDate) + '</td>' +
           '<td class="py-3 px-3">' + statusBadge + '</td>' +
@@ -119,12 +121,12 @@
         '<div class="space-y-4">' +
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
-              '<div><div class="text-xs text-slate-400 font-medium">Pending Verification</div><div class="text-xl font-medium text-amber-600 mt-0.5">' + pending + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">pending_actions</span></div>' +
+              '<div><div class="text-xs text-slate-400 font-medium">Pending Verification</div><div class="text-xl font-medium text-[#D9741A] mt-0.5">' + pending + '</div></div>' +
+              '<div class="w-9 h-9 rounded-lg bg-[#FEF0E3] text-[#D9741A] flex items-center justify-center"><span class="material-symbols-outlined text-lg">pending_actions</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
-              '<div><div class="text-xs text-slate-400 font-medium">Approved Changes</div><div class="text-xl font-medium text-emerald-700 mt-0.5">' + approved + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified</span></div>' +
+              '<div><div class="text-xs text-slate-400 font-medium">Approved Changes</div><div class="text-xl font-medium text-[#176B45] mt-0.5">' + approved + '</div></div>' +
+              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Total Submissions</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + total + '</div></div>' +
@@ -183,7 +185,7 @@
             '</div>' +
             '<div class="p-5 space-y-4" id="tmModalBody"></div>' +
             '<div class="px-5 py-3.5 border-t border-slate-100 flex items-center justify-end gap-2 bg-slate-50/60">' +
-              '<button type="button" id="btnReject" class="px-3.5 py-1.5 rounded-lg border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-medium transition-all cursor-pointer">Reject</button>' +
+              '<button type="button" id="btnReject" class="px-3.5 py-1.5 rounded-lg border border-[#F5C2C7] text-[#B02A37] hover:bg-[#FDECEC] text-xs font-medium transition-all cursor-pointer">Reject</button>' +
               '<button type="button" id="btnCorrection" class="px-3.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-medium transition-all cursor-pointer">Needs Correction</button>' +
               '<button type="button" id="btnApprove" class="px-4 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition-all shadow-xs cursor-pointer">Approve & Update Profile</button>' +
             '</div>' +
@@ -238,18 +240,18 @@
               '</div>' +
               '<div class="grid grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">' +
                 '<div>' +
-                  '<span class="text-[11px] font-medium text-rose-700 block mb-1">Previous Registered Value:</span>' +
+                  '<span class="text-[11px] font-medium text-[#B02A37] block mb-1">Previous Registered Value:</span>' +
                   '<div class="text-xs text-slate-700 bg-white p-2 rounded-lg border border-slate-200 break-words">' + esc(item.previousValue) + '</div>' +
                 '</div>' +
                 '<div>' +
-                  '<span class="text-[11px] font-medium text-emerald-700 block mb-1">Proposed Verified Value:</span>' +
-                  '<div class="text-xs text-slate-900 bg-emerald-50/50 p-2 rounded-lg border border-emerald-200 break-words font-medium">' + esc(item.proposedValue) + '</div>' +
+                  '<span class="text-[11px] font-medium text-[#176B45] block mb-1">Proposed Verified Value:</span>' +
+                  '<div class="text-xs text-slate-900 bg-[#E8F3ED]/50 p-2 rounded-lg border border-[#C8E3D3] break-words font-medium">' + esc(item.proposedValue) + '</div>' +
                 '</div>' +
               '</div>' +
               '<div>' +
                 '<label class="text-xs text-slate-500 font-medium">Supporting Evidence / Attachment:</label>' +
                 '<div class="mt-1 flex items-center gap-2 p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-700">' +
-                  '<span class="material-symbols-outlined text-rose-600 text-sm">picture_as_pdf</span>' +
+                  '<span class="material-symbols-outlined text-[#DC3545] text-sm">picture_as_pdf</span>' +
                   '<span class="font-mono flex-1 truncate">' + esc(item.supportingDocument || 'Faculty_Credential_Evidence.pdf') + '</span>' +
                   '<span class="text-[11px] text-[#176B45] hover:underline cursor-pointer">Preview</span>' +
                 '</div>' +
@@ -276,7 +278,7 @@
           .then(function (res) { return res.json(); })
           .then(function (res) {
             if (res.success) {
-              toast('Update request successfully ' + (act === 'approve' ? 'approved' : (act === 'reject' ? 'rejected' : 'flagged for correction')));
+              toast('Update request ' + (act === 'approve' ? 'approved' : (act === 'reject' ? 'rejected' : 'flagged for correction')));
               modal.classList.add('hidden');
               fetchUpdates();
             } else {
@@ -307,7 +309,7 @@
     var state = { assignments: [], workloads: [], search: '', dept: 'all' };
 
     function fetchAssignments() {
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading faculty teaching allocations...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON ? window.NGIS_SKELETON.table({ rows: 6 }) : '<div class="ngis-sk-table-container p-6"></div>';
       fetch('/api/teacher-mgmt/assignments')
         .then(function (res) { return res.json(); })
         .then(function (res) {
@@ -316,7 +318,7 @@
           render();
         })
         .catch(function () {
-          root.innerHTML = '<div class="p-6 text-center text-xs text-rose-600">Failed to load teaching assignments.</div>';
+          root.innerHTML = '<div class="p-6 text-center text-xs text-[#DC3545]">Failed to load teaching assignments.</div>';
         });
     }
 
@@ -327,9 +329,9 @@
 
       var workloadCards = state.workloads.map(function (w) {
         var pct = Math.min(100, Math.round((w.assignedPeriods / w.maxCapacity) * 100));
-        var barColor = w.status === 'heavy' ? 'bg-amber-500' : (w.status === 'light' ? 'bg-blue-500' : 'bg-[#176B45]');
+        var barColor = w.status === 'heavy' ? 'bg-[#F28C28]' : (w.status === 'light' ? 'bg-blue-500' : 'bg-[#176B45]');
         var statusLabel = w.status === 'heavy' ? 'High Load' : (w.status === 'light' ? 'Under-allocated' : 'Optimal Capacity');
-        var badgeColor = w.status === 'heavy' ? 'bg-amber-50 text-amber-700 border-amber-200' : (w.status === 'light' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200');
+        var badgeColor = w.status === 'heavy' ? 'bg-[#FEF0E3] text-[#B45309] border-[#FAD1A5]' : (w.status === 'light' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-[#E8F3ED] text-[#176B45] border-[#C8E3D3]');
 
         return '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs hover:border-slate-300 transition-all">' +
           '<div class="flex items-center justify-between">' +
@@ -376,7 +378,7 @@
           '<td class="py-2.5 px-3 text-xs text-slate-700 font-medium">' + esc(a.periodsPerWeek) + ' hrs/wk</td>' +
           '<td class="py-2.5 px-3 text-xs text-slate-500">' + esc(a.room) + '</td>' +
           '<td class="py-2.5 px-3 text-right">' +
-            '<button type="button" class="btn-del-assign text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer" data-id="' + esc(a.id) + '" title="Remove Assignment">' +
+            '<button type="button" class="btn-del-assign text-slate-400 hover:text-[#DC3545] p-1.5 rounded-lg hover:bg-[#FDECEC] transition-colors cursor-pointer" data-id="' + esc(a.id) + '" title="Remove Assignment">' +
               '<span class="material-symbols-outlined text-[17px]">delete</span>' +
             '</button>' +
           '</td>' +
@@ -388,15 +390,15 @@
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Active Teaching Allocations</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalAssigned + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">assignment_ind</span></div>' +
+              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">assignment_ind</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Assigned Faculty</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalFaculty + '</div></div>' +
               '<div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">groups</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
-              '<div><div class="text-xs text-slate-400 font-medium">Heavy Workload Warnings</div><div class="text-xl font-medium ' + (heavyLoads > 0 ? 'text-amber-600' : 'text-slate-800') + ' mt-0.5">' + heavyLoads + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">speed</span></div>' +
+              '<div><div class="text-xs text-slate-400 font-medium">Heavy Workload Warnings</div><div class="text-xl font-medium ' + (heavyLoads > 0 ? 'text-[#D9741A]' : 'text-slate-800') + ' mt-0.5">' + heavyLoads + '</div></div>' +
+              '<div class="w-9 h-9 rounded-lg bg-[#FEF0E3] text-[#D9741A] flex items-center justify-center"><span class="material-symbols-outlined text-lg">speed</span></div>' +
             '</div>' +
           '</div>' +
 
@@ -484,7 +486,7 @@
     var state = { records: [], teachers: [] };
 
     function fetchHomeroom() {
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading homeroom allocations...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON ? window.NGIS_SKELETON.table({ rows: 6 }) : '<div class="ngis-sk-table-container p-6"></div>';
       Promise.all([
         fetch('/api/teacher-mgmt/homeroom').then(function (r) { return r.json(); }),
         fetch('/api/teacher-mgmt/teachers').then(function (r) { return r.json(); })
@@ -495,7 +497,7 @@
           render();
         })
         .catch(function () {
-          root.innerHTML = '<div class="p-6 text-center text-xs text-rose-600">Failed to load homeroom records.</div>';
+          root.innerHTML = '<div class="p-6 text-center text-xs text-[#DC3545]">Failed to load homeroom records.</div>';
         });
     }
 
@@ -506,7 +508,7 @@
 
       var cardsHtml = state.records.map(function (c) {
         var isVacant = c.status === 'vacant';
-        var badgeColor = isVacant ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        var badgeColor = isVacant ? 'bg-[#FDECEC] text-[#B02A37] border-[#F5C2C7]' : 'bg-[#E8F3ED] text-[#176B45] border-[#C8E3D3]';
 
         return '<div class="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between">' +
           '<div>' +
@@ -524,7 +526,7 @@
             '<div class="p-3 bg-slate-50 rounded-lg border border-slate-100 mb-3">' +
               '<div class="text-[11px] text-slate-400 font-medium">Assigned Homeroom Teacher</div>' +
               '<div class="text-xs font-medium text-slate-800 mt-0.5 flex items-center gap-1.5">' +
-                '<span class="material-symbols-outlined text-sm ' + (isVacant ? 'text-rose-500' : 'text-[#176B45]') + '">co_present</span>' +
+                '<span class="material-symbols-outlined text-sm ' + (isVacant ? 'text-[#DC3545]' : 'text-[#176B45]') + '">co_present</span>' +
                 '<span>' + esc(c.homeroomTeacher) + '</span>' +
               '</div>' +
               (c.teacherEmail ? '<div class="text-[11px] text-slate-400 font-mono mt-0.5">' + esc(c.teacherEmail) + '</div>' : '') +
@@ -543,12 +545,12 @@
         '<div class="space-y-4">' +
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
-              '<div><div class="text-xs text-slate-400 font-medium">Assigned Homerooms</div><div class="text-xl font-medium text-emerald-700 mt-0.5">' + assigned + ' / ' + state.records.length + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified_user</span></div>' +
+              '<div><div class="text-xs text-slate-400 font-medium">Assigned Homerooms</div><div class="text-xl font-medium text-[#176B45] mt-0.5">' + assigned + ' / ' + state.records.length + '</div></div>' +
+              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified_user</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
-              '<div><div class="text-xs text-slate-400 font-medium">Vacant Allocations</div><div class="text-xl font-medium ' + (vacant > 0 ? 'text-rose-600' : 'text-slate-800') + ' mt-0.5">' + vacant + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">notification_important</span></div>' +
+              '<div><div class="text-xs text-slate-400 font-medium">Vacant Allocations</div><div class="text-xl font-medium ' + (vacant > 0 ? 'text-[#DC3545]' : 'text-slate-800') + ' mt-0.5">' + vacant + '</div></div>' +
+              '<div class="w-9 h-9 rounded-lg bg-[#FDECEC] text-[#DC3545] flex items-center justify-center"><span class="material-symbols-outlined text-lg">notification_important</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Total Roster Enrollment</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalStudents + ' Students</div></div>' +
@@ -583,7 +585,7 @@
                   }).join('') +
                 '</select>' +
               '</div>' +
-              '<div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-[11px] text-amber-800 flex items-start gap-2">' +
+              '<div class="p-3 bg-[#FEF0E3]/70 border border-[#FAD1A5] rounded-xl text-[11px] text-[#8F4A07] flex items-start gap-2">' +
                 '<span class="material-symbols-outlined text-sm mt-0.5">info</span>' +
                 '<span>Reassigning will automatically update class notifications and official MoEYS roster reports.</span>' +
               '</div>' +
@@ -627,7 +629,7 @@
             .then(function (res) { return res.json(); })
             .then(function (res) {
               if (res.success) {
-                toast('Homeroom teacher assigned successfully.');
+                toast('Homeroom teacher assigned.');
                 modal.classList.add('hidden');
                 fetchHomeroom();
               }
@@ -649,7 +651,7 @@
     var state = { records: [], summary: {}, search: '', dept: 'all', status: 'all' };
 
     function fetchAttendance() {
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading faculty attendance records...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON ? window.NGIS_SKELETON.table({ rows: 6 }) : '<div class="ngis-sk-table-container p-6"></div>';
       fetch('/api/teacher-mgmt/attendance')
         .then(function (res) { return res.json(); })
         .then(function (res) {
@@ -658,7 +660,7 @@
           render();
         })
         .catch(function () {
-          root.innerHTML = '<div class="p-6 text-center text-xs text-rose-600">Failed to load attendance logs.</div>';
+          root.innerHTML = '<div class="p-6 text-center text-xs text-[#DC3545]">Failed to load attendance logs.</div>';
         });
     }
 
@@ -680,15 +682,15 @@
       var rowsHtml = filtered.map(function (r) {
         var statusBadge = '';
         if (r.status === 'present') {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Present</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">Present</span>';
         } else if (r.status === 'late') {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Late Arrival</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">Late Arrival</span>';
         } else if (r.status === 'duty') {
           statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Field Duty</span>';
         } else if (r.status === 'excused') {
           statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-purple-50 text-purple-700 border border-purple-200">Excused Leave</span>';
         } else {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">Absent</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FDECEC] text-[#B02A37] border border-[#F5C2C7]">Absent</span>';
         }
 
         return '<tr class="border-b border-slate-100 hover:bg-slate-50/60 transition-colors">' +
@@ -710,7 +712,7 @@
           '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs">' +
               '<div class="text-xs text-slate-400 font-medium">Daily Present Rate</div>' +
-              '<div class="text-xl font-medium text-emerald-700 mt-0.5">' + (s.presentRate || 98.2) + '%</div>' +
+              '<div class="text-xl font-medium text-[#176B45] mt-0.5">' + (s.presentRate || 98.2) + '%</div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs">' +
               '<div class="text-xs text-slate-400 font-medium">Present / On Time</div>' +
@@ -718,7 +720,7 @@
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs">' +
               '<div class="text-xs text-slate-400 font-medium">Late / Delayed</div>' +
-              '<div class="text-xl font-medium text-amber-600 mt-0.5">' + (s.lateCount || 0) + '</div>' +
+              '<div class="text-xl font-medium text-[#D9741A] mt-0.5">' + (s.lateCount || 0) + '</div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs">' +
               '<div class="text-xs text-slate-400 font-medium">Excused / Field Duty</div>' +
@@ -805,7 +807,7 @@
     var state = { items: [], search: '', dept: 'all' };
 
     function fetchCommendations() {
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading faculty commendations...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON ? window.NGIS_SKELETON.table({ rows: 6 }) : '<div class="ngis-sk-table-container p-6"></div>';
       fetch('/api/teacher-mgmt/commendations')
         .then(function (res) { return res.json(); })
         .then(function (res) {
@@ -813,7 +815,7 @@
           render();
         })
         .catch(function () {
-          root.innerHTML = '<div class="p-6 text-center text-xs text-rose-600">Failed to load commendations.</div>';
+          root.innerHTML = '<div class="p-6 text-center text-xs text-[#DC3545]">Failed to load commendations.</div>';
         });
     }
 
@@ -835,7 +837,7 @@
         return '<div class="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs hover:border-[#176B45]/40 transition-all flex flex-col justify-between">' +
           '<div>' +
             '<div class="flex items-start justify-between gap-2 mb-2">' +
-              '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200">' + esc(c.category) + '</span>' +
+              '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-[#FEF0E3] text-[#8F4A07] border border-[#FAD1A5]">' + esc(c.category) + '</span>' +
               '<span class="text-[11px] text-slate-400 font-mono">' + esc(c.dateAwarded) + '</span>' +
             '</div>' +
             '<h4 class="text-sm font-medium text-slate-900 mb-1 leading-snug">' + esc(c.title) + '</h4>' +
@@ -912,7 +914,7 @@
     var state = { records: [], status: 'all' };
 
     function fetchDiscipline() {
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading confidential personnel records...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON ? window.NGIS_SKELETON.table({ rows: 6 }) : '<div class="ngis-sk-table-container p-6"></div>';
       fetch('/api/teacher-mgmt/discipline')
         .then(function (res) { return res.json(); })
         .then(function (res) {
@@ -920,7 +922,7 @@
           render();
         })
         .catch(function () {
-          root.innerHTML = '<div class="p-6 text-center text-xs text-rose-600">Failed to load disciplinary records.</div>';
+          root.innerHTML = '<div class="p-6 text-center text-xs text-[#DC3545]">Failed to load disciplinary records.</div>';
         });
     }
 
@@ -933,11 +935,11 @@
       var rowsHtml = filtered.map(function (r) {
         var statusBadge = '';
         if (r.status === 'resolved') {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Resolved</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">Resolved</span>';
         } else if (r.status === 'hearing_scheduled') {
           statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Hearing Scheduled</span>';
         } else {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Under Review</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">Under Review</span>';
         }
 
         return '<tr class="border-b border-slate-100 hover:bg-slate-50/60 transition-colors">' +
@@ -956,8 +958,8 @@
 
       root.innerHTML = '' +
         '<div class="space-y-4">' +
-          '<div class="p-3.5 bg-amber-50/60 border border-amber-200/80 rounded-xl flex items-start gap-2.5 text-xs text-amber-800">' +
-            '<span class="material-symbols-outlined text-amber-600 text-base mt-0.5">lock</span>' +
+          '<div class="p-3.5 bg-[#FEF0E3]/60 border border-[#FAD1A5]/80 rounded-xl flex items-start gap-2.5 text-xs text-[#8F4A07]">' +
+            '<span class="material-symbols-outlined text-[#D9741A] text-base mt-0.5">lock</span>' +
             '<div class="leading-relaxed">' +
               '<span class="font-medium">CONFIDENTIAL FACULTY CONDUCT REPOSITORY:</span> ' +
               'This registry contains restricted personnel records accessible exclusively to authorized School Administration and Executive Principal Oversight.' +
@@ -1031,7 +1033,7 @@
     var state = { records: [], search: '', cat: 'all' };
 
     function fetchEfforts() {
-      root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading documented teacher contributions...</span></div>';
+      root.innerHTML = window.NGIS_SKELETON ? window.NGIS_SKELETON.table({ rows: 6 }) : '<div class="ngis-sk-table-container p-6"></div>';
       fetch('/api/teacher-mgmt/efforts')
         .then(function (res) { return res.json(); })
         .then(function (res) {
@@ -1039,7 +1041,7 @@
           render();
         })
         .catch(function () {
-          root.innerHTML = '<div class="p-6 text-center text-xs text-rose-600">Failed to load teacher effort records.</div>';
+          root.innerHTML = '<div class="p-6 text-center text-xs text-[#DC3545]">Failed to load teacher effort records.</div>';
         });
     }
 
@@ -1063,11 +1065,11 @@
       var rowsHtml = filtered.map(function (r) {
         var statusBadge = '';
         if (r.status === 'endorsed') {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Endorsed</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#E8F3ED] text-[#176B45] border border-[#C8E3D3]">Endorsed</span>';
         } else if (r.status === 'verified') {
           statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Verified</span>';
         } else {
-          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Logged</span>';
+          statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF0E3] text-[#B45309] border border-[#FAD1A5]">Logged</span>';
         }
 
         return '<tr class="border-b border-slate-100 hover:bg-slate-50/60 transition-colors">' +
@@ -1099,7 +1101,7 @@
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Total Documented Hours</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalHours + ' hrs</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">schedule</span></div>' +
+              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">schedule</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Verified Contributions</div><div class="text-xl font-medium text-blue-600 mt-0.5">' + verifiedCount + ' / ' + state.records.length + '</div></div>' +

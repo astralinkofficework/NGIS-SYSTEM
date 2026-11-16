@@ -1,0 +1,902 @@
+/* ==========================================================================
+   NGIS — REGISTER NEW USER (3-step wizard)
+   Scoped `.nrg-*` styles. Loaded only by the five Admin account directories.
+   Mirrors the supplied modal design while following NGIS project rules:
+     - no font weight above 500, no gradients, no decorative shimmer
+     - forest green #176B45 / soft mint #E8F3ED / hairline #E1E9E3
+     - responsive 1-column -> 2-column grid, no horizontal overflow
+     - respects prefers-reduced-motion
+   ========================================================================== */
+
+.nrg-scope {
+  --nrg-surface: #FFFFFF;
+  --nrg-surface-soft: #F7F9F7;
+  --nrg-mint: #E8F3ED;
+  --nrg-border: #E1E9E3;
+  --nrg-border-soft: #EEF4F0;
+  --nrg-text: #29352E;
+  --nrg-muted: #64746A;
+  --nrg-faint: #8FA095;
+  --nrg-accent: #176B45;
+  --nrg-accent-hover: #125638;
+  --nrg-accent-deep: #0B3824;
+  --nrg-danger: #B3403C;
+  --nrg-danger-soft: #FDF2F1;
+  --nrg-radius: 16px;
+}
+
+[data-theme="dark"] .nrg-scope {
+  --nrg-surface: #1B2420;
+  --nrg-surface-soft: #151D19;
+  --nrg-mint: #203A2C;
+  --nrg-border: #2F3E35;
+  --nrg-border-soft: #26332B;
+  --nrg-text: #EDF2EE;
+  --nrg-muted: #AFC0B4;
+  --nrg-faint: #8B9C90;
+}
+
+/* ── Backdrop / card geometry ──────────────────────────────────────────────
+   The global modal system sets these with !important, so overrides use a
+   more specific selector plus !important and are loaded afterwards. */
+
+body .nrg-backdrop.smx-modal-backdrop,
+body .nrg-backdrop.ngis-modal-backdrop {
+  background: rgba(15, 23, 20, 0.42) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  padding: 12px !important;
+}
+
+body .nrg-backdrop .smx-modal.ngis-modal {
+  /* A literal width avoids the grid percentage-circularity that collapses
+     min(100% - Npx, ...) on a centred grid item in some browsers. */
+  width: 672px !important;
+  max-width: calc(100vw - 24px) !important;
+  max-height: min(92vh, calc(100dvh - 24px)) !important;
+  border-radius: var(--nrg-radius) !important;
+  border: 1px solid var(--nrg-border) !important;
+  background: var(--nrg-surface) !important;
+  box-shadow: 0 24px 64px -16px rgba(15, 23, 20, 0.24),
+              0 0 0 1px rgba(15, 23, 20, 0.04) !important;
+  color: var(--nrg-text) !important;
+  font-weight: 400 !important;
+}
+
+/* Header */
+body .nrg-backdrop .ngis-modal-head {
+  padding: 22px 28px 16px !important;
+  align-items: flex-start !important;
+  border-bottom: 1px solid var(--nrg-border-soft) !important;
+  background: var(--nrg-surface) !important;
+}
+body .nrg-backdrop .ngis-modal-title {
+  font-size: 19px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em;
+  color: var(--nrg-text) !important;
+}
+body .nrg-backdrop .ngis-modal-sub {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: var(--nrg-muted) !important;
+  margin-top: 3px !important;
+}
+body .nrg-backdrop .ngis-modal-close {
+  width: 30px; height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--nrg-faint);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+body .nrg-backdrop .ngis-modal-close:hover { background: var(--nrg-surface-soft); color: var(--nrg-text); }
+body .nrg-backdrop .ngis-modal-close:focus-visible { outline: 2px solid var(--nrg-accent); outline-offset: 2px; }
+
+/* Body / footer */
+body .nrg-backdrop .ngis-modal-body { padding: 0 !important; font-size: 13px !important; }
+body .nrg-backdrop .ngis-modal-foot {
+  padding: 0 !important;
+  justify-content: stretch !important;
+  border-top: 1px solid var(--nrg-border-soft) !important;
+  background: var(--nrg-surface-soft) !important;
+}
+body .nrg-backdrop.nrg-success-mode .ngis-modal-head,
+body .nrg-backdrop.nrg-success-mode .ngis-modal-foot { display: none !important; }
+body .nrg-backdrop.nrg-success-mode .ngis-modal-body { overflow-y: auto !important; }
+
+/* ── Stepper ───────────────────────────────────────────────────────────── */
+
+.nrg-stepbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 12px 28px;
+  background: var(--nrg-surface-soft);
+  border-bottom: 1px solid var(--nrg-border-soft);
+}
+.nrg-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  color: var(--nrg-muted);
+  font-size: 12px;
+  font-weight: 400;
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: default;
+}
+.nrg-step:not(:disabled) { cursor: pointer; }
+.nrg-step:focus-visible { outline: 2px solid var(--nrg-accent); outline-offset: 3px; border-radius: 4px; }
+.nrg-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; height: 24px;
+  flex: none;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  background: var(--nrg-surface);
+  color: var(--nrg-muted);
+  border: 1px solid var(--nrg-border);
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+.nrg-badge svg { width: 13px; height: 13px; }
+.nrg-divider { height: 1px; flex: 1 1 auto; min-width: 8px; max-width: 48px; background: var(--nrg-border); }
+.nrg-step.is-done { color: var(--nrg-muted); }
+.nrg-step.is-done .nrg-badge { background: var(--nrg-mint); color: var(--nrg-accent); border-color: var(--nrg-mint); }
+.nrg-step.is-active { color: var(--nrg-accent); font-weight: 500; }
+.nrg-step.is-active .nrg-badge {
+  background: var(--nrg-accent);
+  color: #FFFFFF;
+  border-color: var(--nrg-accent);
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.12);
+}
+.nrg-step.is-upcoming .nrg-step-label { color: var(--nrg-muted); }
+
+/* ── Panes / fields ────────────────────────────────────────────────────── */
+
+.nrg-shell { color: var(--nrg-text); font-weight: 400; }
+.nrg-pane { padding: 20px 28px 22px; }
+.nrg-pane[aria-busy="true"] { opacity: 0.58; pointer-events: none; }
+.nrg-section-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding-bottom: 8px; margin-bottom: 16px;
+  border-bottom: 1px solid var(--nrg-border-soft);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--nrg-faint);
+}
+/* Section heads after the first need breathing room from the grid above. */
+.nrg-pane .nrg-section-head:not(:first-child) { margin-top: 18px; }
+.nrg-hint { font-size: 11px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--nrg-faint); }
+.nrg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.nrg-field { min-width: 0; }
+.nrg-field.nrg-span-2 { grid-column: 1 / -1; }
+.nrg-label {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-bottom: 5px;
+  font-size: 12px; font-weight: 500; color: var(--nrg-text);
+}
+.nrg-req { color: var(--nrg-danger); font-weight: 500; }
+.nrg-optional { font-size: 10px; font-weight: 400; color: var(--nrg-faint); }
+.nrg-input,
+.nrg-select {
+  display: block; width: 100%; box-sizing: border-box;
+  padding: 8px 12px;
+  border: 1px solid var(--nrg-border);
+  border-radius: 8px;
+  background: var(--nrg-surface);
+  color: var(--nrg-text);
+  font-family: inherit; font-size: 13px; font-weight: 400;
+  line-height: 1.4;
+  box-shadow: 0 1px 1px rgba(15, 23, 20, 0.02);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.nrg-input::placeholder { color: var(--nrg-faint); }
+.nrg-input:focus,
+.nrg-select:focus {
+  outline: none;
+  border-color: var(--nrg-accent);
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.10);
+}
+.nrg-input:disabled, .nrg-select:disabled { background: var(--nrg-surface-soft); color: var(--nrg-faint); }
+.nrg-select { appearance: none; padding-right: 30px;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364746A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.nrg-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* Gender segmented control */
+.nrg-segmented {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px;
+  padding: 4px; border: 1px solid var(--nrg-border);
+  border-radius: 8px; background: var(--nrg-surface-soft);
+}
+.nrg-segment {
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px 4px; min-height: 32px; box-sizing: border-box;
+  border-radius: 6px; font-size: 12px; font-weight: 400;
+  color: var(--nrg-muted); cursor: pointer; text-align: center;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.nrg-segment input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.nrg-segment.is-selected { background: var(--nrg-surface); color: var(--nrg-accent); font-weight: 500; box-shadow: 0 1px 2px rgba(15, 23, 20, 0.08); }
+.nrg-segment:focus-within { outline: 2px solid var(--nrg-accent); outline-offset: 1px; }
+
+/* Credentials cards */
+.nrg-cred-card {
+  display: flex; flex-direction: column; justify-content: space-between; gap: 8px;
+  min-width: 0; padding: 14px;
+  border: 1px solid var(--nrg-border);
+  border-radius: 12px;
+  background: var(--nrg-surface-soft);
+}
+.nrg-cred-label { font-size: 11px; font-weight: 500; color: var(--nrg-muted); }
+.nrg-cred-value { font-size: 14px; font-weight: 500; color: var(--nrg-text); word-break: break-all; }
+.nrg-cred-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.nrg-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 500; color: var(--nrg-accent);
+  white-space: nowrap;
+}
+.nrg-tag.is-muted { color: var(--nrg-faint); }
+.nrg-tag.is-bad { color: var(--nrg-danger); }
+.nrg-tag svg { width: 12px; height: 12px; }
+
+.nrg-pass-box {
+  margin-top: 16px; padding: 14px;
+  border: 1px solid var(--nrg-border); border-radius: 12px;
+  background: var(--nrg-surface);
+}
+.nrg-pass-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-top: 10px; padding: 8px 10px;
+  border: 1px solid var(--nrg-border); border-radius: 8px;
+  background: var(--nrg-surface-soft);
+}
+.nrg-pass-row .nrg-input { border: 0; background: transparent; padding: 0; box-shadow: none; letter-spacing: 0.08em; }
+.nrg-pass-row .nrg-input:focus { box-shadow: none; border: 0; }
+.nrg-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 4px; border: 0; border-radius: 5px;
+  background: transparent; color: var(--nrg-accent);
+  font-family: inherit; font-size: 11px; font-weight: 500; cursor: pointer;
+}
+.nrg-link:hover { color: var(--nrg-accent-hover); }
+.nrg-link:focus-visible, .nrg-btn:focus-visible { outline: 2px solid var(--nrg-accent); outline-offset: 2px; }
+.nrg-link[disabled] { opacity: 0.5; pointer-events: none; }
+
+.nrg-check {
+  display: flex; align-items: flex-start; gap: 9px;
+  margin-top: 16px; font-size: 12px; font-weight: 400;
+  color: var(--nrg-muted); line-height: 1.5; cursor: pointer;
+}
+.nrg-check input { margin-top: 2px; accent-color: var(--nrg-accent); flex: none; }
+.nrg-check .nrg-strong { color: var(--nrg-text); font-weight: 500; }
+
+/* Error banner */
+.nrg-error {
+  display: flex; align-items: flex-start; gap: 9px;
+  margin: 16px 28px 0; padding: 11px 13px;
+  border: 1px solid #F0D3D1; border-radius: 10px;
+  background: var(--nrg-danger-soft); color: var(--nrg-danger);
+  font-size: 12px; font-weight: 400; line-height: 1.5;
+}
+[data-theme="dark"] .nrg-error { border-color: #5B3030; background: #2A1D1D; }
+.nrg-error .nrg-error-text { flex: 1 1 auto; }
+.nrg-error-dismiss { border: 0; background: transparent; color: inherit; cursor: pointer; font-size: 15px; line-height: 1; }
+
+/* ── Footer / buttons ──────────────────────────────────────────────────── */
+
+.nrg-foot-inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; padding: 14px 28px; box-sizing: border-box;
+}
+/* The parent modal footer is display:flex (global CSS). Make this single
+   child fill the row so Cancel and the primary action sit at opposite ends. */
+body .nrg-backdrop .ngis-modal-foot > .nrg-foot-inner {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+.nrg-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 38px; padding: 8px 16px; box-sizing: border-box;
+  border: 1px solid transparent; border-radius: 8px;
+  font-family: inherit; font-size: 12px; font-weight: 500;
+  cursor: pointer; white-space: nowrap;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.nrg-btn-quiet { background: transparent; color: var(--nrg-muted); }
+.nrg-btn-quiet:hover:not(:disabled) { background: var(--nrg-surface); color: var(--nrg-text); }
+.nrg-btn-outline { background: var(--nrg-surface); color: var(--nrg-text); border-color: var(--nrg-border); }
+.nrg-btn-outline:hover:not(:disabled) { background: var(--nrg-surface-soft); }
+.nrg-btn-primary { background: var(--nrg-accent); color: #FFFFFF; box-shadow: 0 1px 2px rgba(15, 23, 20, 0.12); }
+.nrg-btn-primary:hover:not(:disabled) { background: var(--nrg-accent-hover); }
+.nrg-btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.nrg-btn-primary:disabled { opacity: 1; background: var(--nrg-accent-deep); }
+.nrg-spinner {
+  width: 14px; height: 14px; flex: none;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+  border-radius: 999px;
+  animation: nrg-spin 720ms linear infinite;
+}
+@keyframes nrg-spin { to { transform: rotate(360deg); } }
+
+/* ── Success view ──────────────────────────────────────────────────────── */
+
+.nrg-success {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 30px 28px 32px; text-align: center;
+  animation: nrg-fade 220ms ease-out both;
+}
+.nrg-check-ring {
+  display: flex; align-items: center; justify-content: center;
+  width: 76px; height: 76px; margin-bottom: 18px;
+  border: 1px solid var(--nrg-mint); border-radius: 999px;
+  background: var(--nrg-mint);
+}
+.nrg-check-ring svg { width: 52px; height: 52px; }
+.nrg-check-circle { fill: none; stroke: var(--nrg-accent); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 166; stroke-dashoffset: 166; animation: nrg-circle 600ms cubic-bezier(0.65, 0, 0.45, 1) forwards; }
+.nrg-check-mark { fill: none; stroke: var(--nrg-accent); stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 48; stroke-dashoffset: 48; animation: nrg-check 400ms 380ms cubic-bezier(0.65, 0, 0.45, 1) forwards; }
+@keyframes nrg-circle { to { stroke-dashoffset: 0; } }
+@keyframes nrg-check { to { stroke-dashoffset: 0; } }
+@keyframes nrg-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.nrg-success-title { margin: 0 0 5px; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; color: var(--nrg-text); }
+.nrg-success-sub { margin: 0 0 22px; max-width: 420px; font-size: 12px; font-weight: 400; color: var(--nrg-muted); line-height: 1.6; }
+.nrg-summary {
+  width: 100%; box-sizing: border-box; padding: 16px 18px;
+  border: 1px solid var(--nrg-border); border-radius: 12px;
+  background: var(--nrg-surface-soft); text-align: left;
+}
+.nrg-summary-head { display: flex; align-items: center; gap: 11px; padding-bottom: 12px; border-bottom: 1px solid var(--nrg-border); }
+.nrg-avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; flex: none; border-radius: 999px;
+  background: var(--nrg-accent); color: #FFFFFF; font-size: 13px; font-weight: 500;
+}
+.nrg-summary-label { font-size: 11px; font-weight: 400; color: var(--nrg-muted); }
+.nrg-summary-name { font-size: 14px; font-weight: 500; color: var(--nrg-text); }
+.nrg-summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding-top: 14px; }
+.nrg-summary-item { min-width: 0; }
+.nrg-summary-item .nrg-cred-label { display: block; margin-bottom: 3px; }
+.nrg-summary-item .nrg-cred-value { font-size: 13px; word-break: break-all; }
+.nrg-copy {
+  margin-left: 6px; padding: 2px 6px; border: 1px solid var(--nrg-border);
+  border-radius: 6px; background: var(--nrg-surface);
+  color: var(--nrg-muted); font-family: inherit; font-size: 10px; font-weight: 500; cursor: pointer;
+}
+.nrg-copy:hover { color: var(--nrg-accent); border-color: var(--nrg-accent); }
+.nrg-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; width: 100%; margin-top: 20px; }
+.nrg-actions .nrg-btn { flex: 0 1 auto; }
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  body .nrg-backdrop .ngis-modal-head { padding: 18px 18px 14px !important; }
+  .nrg-stepbar { padding: 11px 18px; }
+  .nrg-pane { padding: 18px; }
+  .nrg-error { margin: 14px 18px 0; }
+  .nrg-foot-inner { padding: 12px 18px; }
+  .nrg-success { padding: 26px 18px; }
+  .nrg-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .nrg-field.nrg-span-2 { grid-column: auto; }
+}
+@media (max-width: 430px) {
+  .nrg-step { gap: 5px; font-size: 10px; }
+  .nrg-badge { width: 21px; height: 21px; font-size: 10px; }
+  .nrg-divider { display: none; }
+  .nrg-foot-inner { gap: 6px; }
+  .nrg-btn { padding: 8px 11px; font-size: 11px; }
+  .nrg-summary-grid { grid-template-columns: minmax(0, 1fr); }
+  .nrg-actions { justify-content: stretch; }
+  .nrg-actions .nrg-btn { flex: 1 1 100%; }
+}
+@media (max-width: 350px) {
+  .nrg-step-label { display: none; }
+  .nrg-stepbar { justify-content: space-around; }
+}
+
+/* ── Specificity shield ──────────────────────────────────────────────────
+   ui-cleanup.css is loaded AFTER this file and force-resets every button
+   (`html body button`, `html body [class*="btn"]`) and every element whose
+   class contains "card" to transparent / borderless with !important. The
+   scoped rules below have higher specificity so the wizard keeps its own
+   surfaces without touching the rest of the application. */
+
+html body .nrg-backdrop button.nrg-btn,
+html body .nrg-backdrop button.nrg-link,
+html body .nrg-backdrop button.nrg-copy,
+html body .nrg-backdrop button.nrg-step,
+html body .nrg-backdrop button.nrg-error-dismiss,
+html body .nrg-backdrop button.ngis-modal-close {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 solid transparent !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  transform: none !important;
+  cursor: pointer !important;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease !important;
+}
+
+/* Step indicators carry the `disabled` attribute only as a click-guard —
+   the wizard renders its own visual states (is-active / is-done /
+   is-upcoming). The global disabled-button rule (shared-components.css:
+   `button:disabled { opacity: .45 !important }`) would otherwise fade every
+   step — including the active one — to 45%. Steps must stay fully readable
+   in all three states; the native `disabled` attribute alone still blocks
+   clicks and is announced to assistive tech. */
+html body .nrg-backdrop button.nrg-step {
+  opacity: 1 !important;
+  cursor: default !important;
+}
+html body .nrg-backdrop button.nrg-step:not(:disabled) {
+  cursor: pointer !important;
+}
+
+html body .nrg-backdrop button.nrg-btn-primary {
+  background: var(--nrg-accent) !important;
+  background-color: var(--nrg-accent) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 20, 0.12) !important;
+}
+html body .nrg-backdrop button.nrg-btn-primary:hover:not(:disabled) {
+  background: var(--nrg-accent-hover) !important;
+  background-color: var(--nrg-accent-hover) !important;
+}
+html body .nrg-backdrop button.nrg-btn-primary:disabled {
+  background: var(--nrg-accent-deep) !important;
+  background-color: var(--nrg-accent-deep) !important;
+}
+html body .nrg-backdrop button.nrg-btn-outline,
+html body .nrg-backdrop button.nrg-copy {
+  background: var(--nrg-surface) !important;
+  background-color: var(--nrg-surface) !important;
+  border: 1px solid var(--nrg-border) !important;
+  border-width: 1px !important;
+  border-color: var(--nrg-border) !important;
+}
+html body .nrg-backdrop button.nrg-btn-quiet:hover:not(:disabled) {
+  background: var(--nrg-surface) !important;
+  background-color: var(--nrg-surface) !important;
+}
+html body .nrg-backdrop button.ngis-modal-close:hover {
+  background: var(--nrg-surface-soft) !important;
+  background-color: var(--nrg-surface-soft) !important;
+}
+html body .nrg-backdrop button.nrg-btn:focus-visible,
+html body .nrg-backdrop button.nrg-link:focus-visible,
+html body .nrg-backdrop button.nrg-copy:focus-visible,
+html body .nrg-backdrop button.nrg-step:focus-visible,
+html body .nrg-backdrop button.ngis-modal-close:focus-visible {
+  outline: 2px solid var(--nrg-accent) !important;
+  outline-offset: 2px !important;
+}
+
+html body .nrg-backdrop .nrg-pane .nrg-cred-card,
+html body .nrg-backdrop .nrg-success .nrg-summary {
+  background: var(--nrg-surface-soft) !important;
+  background-color: var(--nrg-surface-soft) !important;
+  border: 1px solid var(--nrg-border) !important;
+  border-width: 1px !important;
+  border-color: var(--nrg-border) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+html body .nrg-backdrop .nrg-pane .nrg-pass-box {
+  background: var(--nrg-surface) !important;
+  background-color: var(--nrg-surface) !important;
+  border: 1px solid var(--nrg-border) !important;
+  border-width: 1px !important;
+  border-color: var(--nrg-border) !important;
+  border-radius: 12px !important;
+}
+html body .nrg-backdrop .nrg-pane .nrg-input,
+html body .nrg-backdrop .nrg-pane .nrg-select {
+  border: 1px solid var(--nrg-border) !important;
+  border-width: 1px !important;
+  border-color: var(--nrg-border) !important;
+  background: var(--nrg-surface) !important;
+  background-color: var(--nrg-surface) !important;
+}
+html body .nrg-backdrop .nrg-pane .nrg-input:focus,
+html body .nrg-backdrop .nrg-pane .nrg-select:focus {
+  border-color: var(--nrg-accent) !important;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.10) !important;
+  outline: none !important;
+}
+/* Tailwind's forms CDN injects its own select arrow; the !important
+   background shorthand above would reset repeat/position and tile that
+   arrow across the field. Pin our own arrow with equal importance. */
+html body .nrg-backdrop .nrg-pane .nrg-select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  padding-right: 30px !important;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364746A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nrg-scope *,
+  .nrg-spinner,
+  .nrg-check-circle,
+  .nrg-check-mark,
+  .nrg-success { animation: none !important; transition: none !important; }
+  .nrg-check-circle, .nrg-check-mark { stroke-dashoffset: 0 !important; }
+}
+
+/* ── Step 3: Review & Create ─────────────────────────────────────────── */
+html body .nrg-backdrop .nrg-review-card {
+  border: 1px solid var(--nrg-border);
+  border-radius: 12px;
+  background: var(--nrg-surface);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+html body .nrg-backdrop .nrg-review-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--nrg-border);
+  font-size: 13px;
+}
+html body .nrg-backdrop .nrg-review-row:last-child { border-bottom: none; }
+html body .nrg-backdrop .nrg-review-label {
+  color: var(--nrg-muted);
+  flex: none;
+}
+html body .nrg-backdrop .nrg-review-value {
+  color: var(--nrg-text);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+html body .nrg-backdrop .nrg-review-note {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--nrg-muted);
+  background: var(--nrg-surface-soft);
+  border: 1px solid var(--nrg-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+/* ── Multi-Department Academic Enrollments ───────────────────────────── */
+.nrg-enrollments-wrapper {
+  grid-column: 1 / -1;
+  background: var(--nrg-surface-soft);
+  border: 1px solid var(--nrg-border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.nrg-enr-section-header {
+  margin-bottom: 12px;
+}
+
+.nrg-enr-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--nrg-text);
+  letter-spacing: -0.01em;
+}
+
+.nrg-enr-subtitle {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--nrg-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.nrg-enr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nrg-enr-card {
+  background: var(--nrg-surface);
+  border: 1px solid var(--nrg-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 20, 0.04);
+}
+
+.nrg-enr-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.nrg-enr-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nrg-enr-num-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nrg-accent);
+  background: var(--nrg-mint);
+  border: 1px solid rgba(23, 107, 69, 0.2);
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.nrg-enr-dept-tag {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--nrg-muted);
+}
+
+.nrg-enr-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nrg-danger);
+  background: var(--nrg-danger-soft);
+  border: 1px solid rgba(179, 64, 60, 0.25);
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.nrg-enr-remove-btn:hover {
+  background: #FCE8E6;
+  border-color: rgba(179, 64, 60, 0.4);
+}
+
+.nrg-enr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .nrg-enr-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+.nrg-enr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nrg-enr-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nrg-muted);
+}
+
+.nrg-enr-add-wrap {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.nrg-add-dept-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--nrg-accent);
+  background: var(--nrg-surface);
+  border: 1px solid rgba(23, 107, 69, 0.35);
+  border-radius: 8px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.nrg-add-dept-btn:hover {
+  background: var(--nrg-mint);
+  border-color: var(--nrg-accent);
+}
+
+.nrg-add-dept-btn:focus-visible {
+  outline: 2px solid var(--nrg-accent);
+  outline-offset: 2px;
+}
+
+/* Review Step Academic Table */
+.nrg-review-enr-box {
+  margin: 10px 0;
+  border: 1px solid var(--nrg-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--nrg-surface);
+}
+
+.nrg-review-enr-title {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nrg-muted);
+  background: var(--nrg-surface-soft);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--nrg-border);
+}
+
+.nrg-review-enr-table-wrap {
+  overflow-x: auto;
+}
+
+.nrg-review-enr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+}
+
+.nrg-review-enr-table th {
+  padding: 8px 12px;
+  font-weight: 500;
+  color: var(--nrg-muted);
+  border-bottom: 1px solid var(--nrg-border);
+  background: var(--nrg-surface-soft);
+}
+
+.nrg-review-enr-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--nrg-border);
+  color: var(--nrg-text);
+  font-weight: 400;
+}
+
+.nrg-review-enr-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DYNAMIC TEACHING ASSIGNMENTS (Teacher Registration & Management)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.nrg-teaching-assignments-wrap {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.nrg-asgn-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nrg-asgn-card {
+  background: var(--nrg-card-bg);
+  border: 1px solid var(--nrg-border);
+  border-radius: var(--nrg-radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color var(--nrg-transition-fast), box-shadow var(--nrg-transition-fast);
+}
+
+.nrg-asgn-card:hover {
+  border-color: var(--nrg-border-strong);
+}
+
+.nrg-asgn-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nrg-asgn-head-l {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nrg-asgn-num-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 9999px;
+  background: var(--nrg-primary-soft);
+  color: var(--nrg-primary);
+}
+
+.nrg-asgn-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--nrg-text);
+}
+
+.nrg-asgn-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nrg-danger);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--nrg-radius-sm);
+  cursor: pointer;
+  transition: all var(--nrg-transition-fast);
+}
+
+.nrg-asgn-remove-btn:hover {
+  background: var(--nrg-danger-soft);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.nrg-asgn-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.nrg-asgn-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nrg-asgn-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--nrg-muted);
+}
+
+@media (max-width: 768px) {
+  .nrg-asgn-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nrg-asgn-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

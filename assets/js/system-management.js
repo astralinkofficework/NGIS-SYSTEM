@@ -30,26 +30,30 @@
     });
   }
 
-  function toast(msg, type) {
-    var existing = document.getElementById('sysToast');
-    if (existing) existing.remove();
-    var t = document.createElement('div');
-    t.id = 'sysToast';
-    var bg = type === 'error' ? 'bg-rose-600' : (type === 'info' ? 'bg-slate-800' : 'bg-[#176B45]');
-    t.className = 'fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl shadow-lg text-white text-xs font-medium transition-all transform translate-y-0 ' + bg;
-    t.innerHTML = '<span class="material-symbols-outlined text-sm">' + (type === 'error' ? 'error' : 'check_circle') + '</span><span>' + esc(msg) + '</span>';
-    document.body.appendChild(t);
-    setTimeout(function () {
-      t.classList.add('opacity-0', 'translate-y-2');
-      setTimeout(function () { t.remove(); }, 300);
-    }, 3200);
+  function toast(__a, __b) {
+  /* Shared NGIS operation-feedback engine (ui-states.js) — single
+     implementation across all portals; no page-local toast UI anymore. */
+  if (!(window.NGISUI && window.NGISUI.toast)) {
+    if (window.console) console.warn('toast unavailable:', __a);
+    return null;
   }
+  var __k = __b;
+  if (__b === true || __b === 'error' || __b === 'danger' || __b === 'fail' || __b === 'isError') __k = 'error';
+  else if (__b === 'warning' || __b === 'warn') __k = 'warning';
+  else if (__b === 'info') __k = 'info';
+  else if (__b === 'loading') __k = 'loading';
+  else if (__b === false || __b === undefined || __b === null || __b === 'success' || __b === 'ok' || __b === 'done') __k = 'success';
+  else __k = 'info';
+  return window.NGISUI.toast.show(__k, String(__a));
+}
 
   // 1. School Information
   SYS.initSchoolInfo = function (containerId) {
     var root = document.getElementById(containerId);
     if (!root) return;
-    root.innerHTML = '<div class="flex items-center justify-center py-20 text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-[#176B45] animate-ping mr-2"></span><span class="text-xs font-medium">Loading School Information...</span></div>';
+    root.innerHTML = window.NGIS_SKELETON
+      ? window.NGIS_SKELETON.form({ fields: 6 })
+      : '<div class="ngis-sk-form-container p-6">' + (window.NGISKit ? window.NGISKit.Skeleton({ type: "table" }) : '') + '</div>';
 
     fetch('/api/system/school-info')
       .then(function (r) { return r.json(); })
@@ -135,7 +139,7 @@
           })
             .then(function (r) { return r.json(); })
             .then(function (res) {
-              if (res.success) toast('School information updated successfully.');
+              if (res.success) toast('School information updated.');
             });
         };
       });
@@ -169,8 +173,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">Institutional Academic Years</div>' +
               '<button type="button" class="px-3 py-1.5 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] transition-all cursor-pointer shadow-xs">+ Add Academic Year</button>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">Year ID</th><th class="py-2.5 px-3">Academic Period</th><th class="py-2.5 px-3">Start Date</th><th class="py-2.5 px-3">End Date</th><th class="py-2.5 px-3">Terms</th><th class="py-2.5 px-3">Status</th></tr>' +
                 '</thead>' +
@@ -208,8 +212,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">40-Week Academic Calendar Structure</div>' +
               '<span class="text-xs text-slate-500 font-mono">AY 2025–26</span>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">Week</th><th class="py-2.5 px-3">Milestone & Focus</th><th class="py-2.5 px-3">Start Date</th><th class="py-2.5 px-3">End Date</th><th class="py-2.5 px-3">Category</th></tr>' +
                 '</thead>' +
@@ -289,8 +293,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">Faculty Gradebook Lockdown Oversight</div>' +
               '<button type="button" class="px-3 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-medium hover:bg-rose-700 cursor-pointer shadow-xs" onclick="window.SYS_MGMT.saveMock(\'All gradebooks locked.\')">Lock All Sections</button>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">Class</th><th class="py-2.5 px-3">Subject</th><th class="py-2.5 px-3">Teacher</th><th class="py-2.5 px-3">Examination Term</th><th class="py-2.5 px-3">Lock Status</th><th class="py-2.5 px-3 text-right">Action</th></tr>' +
                 '</thead>' +
@@ -374,8 +378,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">Curriculum Syllabus Design &amp; Hour Mapping</div>' +
               '<button type="button" class="px-3 py-1.5 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] cursor-pointer shadow-xs">+ Design New Syllabus</button>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">Design ID</th><th class="py-2.5 px-3">Track</th><th class="py-2.5 px-3">Target Grade</th><th class="py-2.5 px-3">Annual Hours</th><th class="py-2.5 px-3">Chairperson</th><th class="py-2.5 px-3">Approval Date</th></tr>' +
                 '</thead>' +
@@ -411,8 +415,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">Declared Class Cohorts (AY 2025–26)</div>' +
               '<button type="button" class="px-3 py-1.5 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] cursor-pointer shadow-xs">+ Declare New Class</button>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">Class Code</th><th class="py-2.5 px-3">Full Title</th><th class="py-2.5 px-3">Assigned Room</th><th class="py-2.5 px-3">Shift</th><th class="py-2.5 px-3">Enrollment / Max</th><th class="py-2.5 px-3">Status</th></tr>' +
                 '</thead>' +
@@ -450,8 +454,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">Annual Student Transition &amp; Promotion Batches</div>' +
               '<button type="button" class="px-3 py-1.5 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] cursor-pointer shadow-xs" onclick="window.SYS_MGMT.saveMock(\'Transition batch simulated.\')">Run Promotion Audit</button>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">Current Cohort</th><th class="py-2.5 px-3">Promoted Cohort</th><th class="py-2.5 px-3">Total Candidates</th><th class="py-2.5 px-3">Promoted</th><th class="py-2.5 px-3">Retained</th><th class="py-2.5 px-3">Status</th></tr>' +
                 '</thead>' +
@@ -487,8 +491,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">Campus Technicians &amp; Invigilator Duty Allocations</div>' +
               '<button type="button" class="px-3 py-1.5 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] cursor-pointer shadow-xs">+ Assign Technician</button>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">Staff ID</th><th class="py-2.5 px-3">Name</th><th class="py-2.5 px-3">Role</th><th class="py-2.5 px-3">Zone / Building</th><th class="py-2.5 px-3">Phone</th><th class="py-2.5 px-3">Duty Status</th></tr>' +
                 '</thead>' +
@@ -547,7 +551,7 @@
             '<td class="py-3 px-3 text-xs font-medium text-slate-800">' + esc(a.name) + '</td>' +
             '<td class="py-3 px-3 text-xs font-mono text-slate-600">' + esc(a.username) + '</td>' +
             '<td class="py-3 px-3 text-xs text-slate-700">' + esc(a.role) + '</td>' +
-            '<td class="py-3 px-3"><span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Active</span></td>' +
+            '<td class="py-3 px-3"><span class="inline-flex items-center gap-1.5 text-xs text-slate-700 font-normal"><span class="w-1.5 h-1.5 rounded-full bg-[#176B45]"></span>Active</span></td>' +
             '<td class="py-3 px-3 text-xs font-mono text-slate-400">' + esc(a.lastLogin) + '</td>' +
             '<td class="py-3 px-3 text-right">' +
               '<button type="button" class="text-xs text-[#176B45] hover:underline font-medium cursor-pointer" onclick="window.SYS_MGMT.saveMock(\'Password reset sent to ' + esc(a.username) + '\')">Reset Password</button>' +
@@ -561,8 +565,8 @@
               '<div class="text-xs font-medium text-slate-700 uppercase tracking-wider">' + esc(titleLabel) + ' Directory</div>' +
               '<button type="button" class="px-3 py-1.5 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] cursor-pointer shadow-xs">+ Add Account</button>' +
             '</div>' +
-            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-hidden">' +
-              '<table class="w-full text-left border-collapse">' +
+            '<div class="bg-white border border-slate-200 rounded-xl shadow-2xs overflow-x-auto">' +
+              '<table class="w-full min-w-[640px] text-left border-collapse">' +
                 '<thead class="bg-slate-50/70 border-b border-slate-200 text-[11px] font-medium text-slate-500 uppercase">' +
                   '<tr><th class="py-2.5 px-3">User ID</th><th class="py-2.5 px-3">Full Name</th><th class="py-2.5 px-3">Login / Email</th><th class="py-2.5 px-3">Assigned Role</th><th class="py-2.5 px-3">Status</th><th class="py-2.5 px-3">Last Access</th><th class="py-2.5 px-3 text-right">Action</th></tr>' +
                 '</thead>' +
@@ -600,7 +604,7 @@
                 '</div>' +
               '</div>' +
               '<div class="pt-3 border-t border-slate-100 flex justify-end">' +
-                '<button type="button" class="px-4 py-2 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium cursor-pointer" onclick="window.SYS_MGMT.saveMock(\'Schedule updated successfully.\')">Save Schedule Config</button>' +
+                '<button type="button" class="px-4 py-2 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium cursor-pointer" onclick="window.SYS_MGMT.saveMock(\'Schedule updated.\')">Save Schedule Config</button>' +
               '</div>' +
             '</div>' +
           '</div>';

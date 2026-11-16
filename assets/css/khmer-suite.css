@@ -28,7 +28,7 @@
   --ks-subtle:       #F2F5F3;   /* table headers / total rows / legends */
   --ks-raised:       #FBFCFB;   /* one step above canvas, below surface */
   --ks-font:         'Noto Sans Khmer', var(--font-khmer, 'Kantumruy Pro'),
-                     var(--font-body, 'Plus Jakarta Sans'), sans-serif;
+                     var(--font-body, 'Inter'), sans-serif;
 }
 
 html[data-theme="dark"], [data-theme="dark"] {
@@ -63,7 +63,7 @@ html[data-theme="dark"], [data-theme="dark"] {
 /* AGENTS.md: weights 400/500 only — never 600/700. */
 .ks h1, .ks h2, .ks h3, .ks h4, .ks strong, .ks b { margin: 0; font-weight: 500; }
 .ks-page-title {
-  font-family: var(--font-heading, 'Manrope'), var(--ks-font);
+  font-family: var(--font-heading, 'Inter'), var(--ks-font);
   font-size: var(--font-size-h1, 28px); font-weight: 500;
   line-height: 36px; letter-spacing: -.01em; color: var(--ks-ink);
 }
@@ -453,7 +453,7 @@ html[data-theme="dark"], [data-theme="dark"] {
 .ks, .ks button, .ks input, .ks select, .ks textarea {
   font-weight: 400;
   /* design-system.css sets html/body font-family with !important; keep Khmer
-     glyphs on Noto Sans Khmer while Latin falls back to Plus Jakarta Sans. */
+     glyphs on Noto Sans Khmer while Latin falls back to Inter. */
   font-family: var(--ks-font) !important;
 }
 .ks h1, .ks h2, .ks h3, .ks h4, .ks strong, .ks b,
@@ -495,7 +495,7 @@ html[data-theme="dark"], [data-theme="dark"] {
 .ks-kpi .ks-kpi-icon.warn { background: var(--ks-orange-soft); color: var(--ks-orange); }
 .ks-kpi .ks-kpi-icon.bad  { background: var(--ks-red-soft); color: var(--ks-red); }
 .ks-kpi .ks-kpi-value {
-  font-family: var(--font-heading, 'Manrope'), var(--ks-font);
+  font-family: var(--font-heading, 'Inter'), var(--ks-font);
   font-size: 28px; line-height: 36px; font-weight: 500; margin-top: 12px;
   color: var(--ks-ink); font-variant-numeric: tabular-nums;
 }
@@ -891,9 +891,9 @@ html[data-theme="dark"], [data-theme="dark"] {
 
 /* Drag over states */
 .ks-drop-target-active {
-  outline: 2px dashed #006C49 !important;
+  outline: 2px dashed var(--color-primary, #176B45) !important;
   outline-offset: -2px;
-  background-color: rgba(16, 185, 129, 0.12) !important;
+  background-color: rgba(23, 107, 69, 0.12) !important;
 }
 .ks-drop-target-invalid {
   outline: 2px dashed #E11D48 !important;
@@ -932,7 +932,7 @@ html[data-theme="dark"], [data-theme="dark"] {
   transform: scale(0.94);
 }
 .ks-lesson-chip.is-selected {
-  outline: 2px solid #006C49;
+  outline: 2px solid var(--color-primary, #176B45);
   outline-offset: 1px;
 }
 
@@ -1018,10 +1018,56 @@ html[data-theme="dark"], [data-theme="dark"] {
 
 /* Toolbar controls wrap instead of shrinking into clipped labels. */
 #ks-root .ks-builder-toolbar { max-width: 100%; }
+/* Sticky editor action bar: stays visible while scrolling the timetable.
+   NOTE: sticky needs every ancestor to keep `overflow: visible`, so the
+   builder wrapper must not use overflow-x: hidden. */
+#ks-root .ks-builder-toolbar {
+  position: sticky;
+  top: calc(var(--topbar-h, 64px) + 8px);
+  z-index: 40;
+}
 #ks-root .ks-builder-toolbar-left,
 #ks-root .ks-builder-toolbar-actions { min-width: 0; }
 #ks-root .ks-builder-toolbar-left > * { flex-shrink: 0; }
 #ks-root .ks-builder-toolbar-actions > * { flex-shrink: 0; }
+
+/* Compact sticky bottom action bar — mobile only. The full toolbar stays in
+   flow on small screens; these three controls are always reachable without
+   covering timetable cells (content gets extra bottom padding instead). */
+#ks-root .ks-mobile-actionbar { display: none; }
+@media (max-width: 768px) {
+  #ks-root .ks-builder-toolbar { position: static; }
+  #ks-root .ks-mobile-actionbar {
+    display: flex; align-items: center; gap: 8px;
+    position: fixed; left: 0; right: 0; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); z-index: 45;
+    padding: 10px 12px;
+    background: var(--ks-surface); border-top: 1px solid var(--ks-border);
+    box-shadow: 0 -6px 20px -12px rgba(0, 0, 0, 0.18);
+  }
+  #ks-root .ks-mobile-actionbar .ks-mobile-status {
+    display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1;
+  }
+  #ks-root .ks-mobile-actionbar .ks-mobile-status .lbl {
+    font-size: 10px; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--ks-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  #ks-root .ks-mobile-actionbar .ks-mobile-status .val {
+    font-size: 12px; color: var(--ks-ink);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  #ks-root .ks-mobile-actionbar .ks-btn {
+    flex: none; min-height: 44px; padding: 0 14px; font-size: 12.5px;
+  }
+  #ks-root .ks-mobile-actionbar .ks-btn.publish {
+    background: var(--color-primary, #176B45); border-color: var(--color-primary, #176B45); color: #fff;
+  }
+  #ks-root { padding-bottom: 172px; }
+}
+@media print {
+  #ks-root .ks-builder-toolbar,
+  #ks-root .ks-mobile-actionbar { position: static !important; box-shadow: none !important; }
+  #ks-root .ks-mobile-actionbar { display: none !important; }
+}
 
 #ks-root .ks-insights {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
@@ -1032,7 +1078,7 @@ html[data-theme="dark"], [data-theme="dark"] {
   box-shadow: var(--ks-shadow);
 }
 #ks-root .ks-insight-card h3 {
-  font-family: var(--font-heading, 'Manrope'), var(--ks-font);
+  font-family: var(--font-heading, 'Inter'), var(--ks-font);
   font-size: 14px; font-weight: 500; color: var(--ks-ink);
 }
 #ks-root .ks-insight-note { margin: 2px 0 12px; font-size: 11px; color: var(--ks-muted); }
@@ -1100,3 +1146,16 @@ html[data-theme="dark"], [data-theme="dark"] {
 
 
 
+
+/* Design audit: subject name renders as plain text with a color swatch —
+   no chip/pill container around ordinary labels */
+.ks-subject-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ks-text, #29352E);
+  white-space: nowrap;
+}
+.ks-subject-name .swatch { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; }
+.ks-subject-name .ks-muted-code { color: var(--ks-muted, #77777F); font-size: 10px; }

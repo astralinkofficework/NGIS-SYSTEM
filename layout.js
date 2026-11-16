@@ -14,6 +14,36 @@
 
   "use strict";
 
+  /* ── Shared Bootstrap-icon engine loader (idempotent) ──────────
+     The sidebar renders icons as data-ngis-icon slots with their
+     Material/Phosphor ligature as text fallback. This ensures the
+     official icon engine (action-icons.js, Bootstrap Icons SVGs) is
+     present to hydrate them — even on pages that forgot to include
+     it — without duplicating script tags when it already is. */
+  try {
+    if (!window.__NGIS_ICON_ENGINE__) {
+      window.__NGIS_ICON_ENGINE__ = true;
+      if (!(window.NGIS && window.NGIS.icon) && !document.querySelector('script[src*="action-icons.js"]')) {
+        const _root = (window.location.pathname || "").indexOf("/pages/") !== -1 ? "../../" : "";
+        if (!document.querySelector('link[href*="action-icons.css"]')) {
+          const _l = document.createElement("link");
+          _l.rel = "stylesheet";
+          _l.href = _root + "assets/css/action-icons.css?v=1.13.2";
+          document.head.appendChild(_l);
+        }
+        const _s = document.createElement("script");
+        _s.src = _root + "assets/js/action-icons.js?v=1.13.2";
+        _s.defer = true;
+        document.head.appendChild(_s);
+      }
+    }
+  } catch (e) { /* icons fall back to ligature glyphs */ }
+
+  /* Remembers which sidebar link the user clicked so the sidebar stays anchored
+     to that exact section after navigation (matters when one page is reachable
+     from more than one nav group). */
+  const CLICKED_NAV_KEY = "ngis-sidebar-active-id";
+
 
 
   /* ------------------------------------------------------------------
@@ -50,9 +80,23 @@
 
         ]},
 
-        { id:"users-grp", label:"USER MANAGEMENT", icon:"group", links:[
+        { id:"users-grp", label:"USER & ACCESS MANAGEMENT", icon:"group", links:[
 
-          { id:"users", label:"User Directory", icon:"manage_accounts", href:"pages/admin/admin-users.html" },
+          {
+            id: "users-directories-drop",
+            label: "Account Directories",
+            icon: "group",
+            collapsible: true,
+            children: [
+              { id: "users-students", label: "Student Accounts", href: "pages/admin/admin-users-students.html" },
+              { id: "users-teachers", label: "Teacher Accounts", href: "pages/admin/admin-users-teachers.html" },
+              { id: "users-staff", label: "Staff Accounts", href: "pages/admin/admin-users-staff.html" },
+              { id: "users-principals", label: "Principal Accounts", href: "pages/admin/admin-users-principals.html" },
+              { id: "users-admins", label: "Admin Accounts", href: "pages/admin/admin-users-admins.html" },
+            ]
+          },
+
+          { id: "roles-permissions", label: "Roles & Access Control", icon: "admin_panel_settings", href: "pages/admin/admin-roles-permissions.html" },
 
           {
             id: "teachers-mgmt-drop",
@@ -62,9 +106,7 @@
             children: [
               { id: "teacher-profiles", label: "Teacher Profile", href: "pages/admin/admin-teacher-profiles.html" },
               { id: "teacher-class-assignment", label: "Teacher-Class Assignment", href: "pages/admin/admin-teacher-class-assignment.html" },
-              { id: "homeroom-assign", label: "Homeroom Teacher Assign", href: "pages/admin/admin-teacher-homeroom.html" },
-              { id: "teacher-attendance", label: "Teacher Attendance", href: "pages/admin/admin-teacher-attendance.html" },
-              { id: "teacher-discipline", label: "Discipline", href: "pages/admin/admin-teacher-discipline.html" },
+              { id: "verify-teacher", label: "Verify Teacher Update", href: "pages/admin/admin-teacher-verify.html" },
             ]
           },
 
@@ -77,24 +119,16 @@
               { id: "student-profiles", label: "Student Information", href: "pages/admin/admin-student-profiles.html" },
               { id: "verify-student", label: "Verify Student Update", href: "pages/admin/admin-student-verify.html" },
               { id: "student-assign", label: "Student Assign To Class", href: "pages/admin/admin-student-assign.html" },
-              { id: "declare-exemption", label: "Declare Exemption", href: "pages/admin/admin-student-exemption.html" },
               { id: "input-attendance", label: "Input Attendance", href: "pages/admin/admin-attendance.html" },
-              {
-                id: "academic-result-drop",
-                label: "Academic Result",
-                collapsible: true,
-                children: [
-                  { id: "subject-gpa", label: "Subject GPA By Exam", href: "pages/admin/admin-subject-gpa.html" },
-                  { id: "semester-gpa", label: "Semester GPA", href: "pages/admin/admin-semester-gpa.html" },
-                  { id: "student-failed", label: "Student Failed", href: "pages/admin/admin-student-failed.html" },
-                ]
-              },
               { id: "absence-stats", label: "Absence Statistics", href: "pages/admin/admin-absence-stats.html" },
-              { id: "registration-approve", label: "Registration Form Approve", hasChevron: true, href: "pages/admin/admin-registration-approve.html" },
-              { id: "student-commendation", label: "Commendation", href: "pages/admin/admin-student-commendation.html" },
-              { id: "student-discipline", label: "Discipline", href: "pages/admin/admin-student-discipline.html" },
             ]
           },
+
+        ]},
+
+        { id:"khmer-suite", label:"CURRICULUM", icon:"menu_book", links:[
+
+          { id:"ks-subjects", label:"Curriculum Subjects", icon:"menu_book", href:"pages/admin/admin-subjects.html" }
 
         ]},
 
@@ -110,15 +144,11 @@
 
         ]},
 
-        { id:"khmer-suite", label:"TIMETABLE MANAGEMENT", icon:"calendar_view_week", links:[
-          { id:"ks-oversight", label:"Timetable Oversight", icon:"monitor_heart", href:"pages/admin/admin-timetable-management.html" },
-          { id:"ks-viewer", label:"Timetables Matrix", icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
-          { id:"ks-subjects", label:"Curriculum Subjects", icon:"menu_book", href:"pages/admin/admin-subjects.html" }
-        ]},
-
         { id:"records", label:"INSTITUTIONAL RECORDS", icon:"folder_shared", links:[
 
           { id:"services", label:"Student Services", icon:"assignment", href:"pages/admin/admin-services.html" },
+
+          { id:"lost-found", label:"Lost & Found", icon:"inventory_2", href:"pages/admin/admin-lost-found.html" },
 
           { id:"reports",  label:"Academic Reports", icon:"assessment", href:"pages/admin/admin-reports.html" },
 
@@ -144,36 +174,21 @@
             children: [
               { id: "dashboard-content-sys", label: "Dashboard Content", href: "pages/admin/admin-dashboard-content.html" },
               { id: "school-information", label: "School Information & Settings", href: "pages/admin/admin-school-information.html" },
-              { id: "sys-school-info", label: "School Information", href: "pages/admin/admin-system-school-info.html" },
-              {
-                id: "sys-year-config-drop",
-                label: "School Year Configuration",
-                collapsible: true,
-                children: [
-                  { id: "sys-school-year", label: "School Year", href: "pages/admin/admin-system-school-year.html" },
-                  { id: "sys-school-week", label: "School Week", href: "pages/admin/admin-system-school-week.html" },
-                  { id: "sys-exam-config", label: "School Exam Configuration", href: "pages/admin/admin-system-exam-config.html" },
-                  { id: "sys-score-lock", label: "Score Lock Configuration", href: "pages/admin/admin-system-score-lock.html" },
-                  { id: "sys-define-curriculum", label: "Define Curriculum", href: "pages/admin/admin-system-define-curriculum.html" },
-                  { id: "sys-design-curriculum", label: "Design Curriculum", href: "pages/admin/admin-system-design-curriculum.html" },
-                  { id: "sys-declare-class", label: "Declare Class", href: "pages/admin/admin-system-declare-class.html" },
-                  { id: "sys-student-transition", label: "Student Transition", href: "pages/admin/admin-system-student-transition.html" },
-                  { id: "sys-technician-assign", label: "Technician & Monitor Assign", href: "pages/admin/admin-system-technician-assign.html" },
-                ]
-              },
-              {
-                id: "sys-account-mgmt-drop",
-                label: "Account Management",
-                collapsible: true,
-                children: [
-                  { id: "sys-employee-group", label: "Employee Group", href: "pages/admin/admin-system-employee-group.html" },
-                  { id: "sys-employee-accounts", label: "Employee Accounts", href: "pages/admin/admin-system-employee-accounts.html" },
-                  { id: "sys-student-accounts", label: "Student Accounts", href: "pages/admin/admin-system-student-accounts.html" },
-                  { id: "sys-parent-accounts", label: "Parent Accounts", href: "pages/admin/admin-system-parent-accounts.html" },
-                ]
-              },
+              { id: "sys-school-info", label: "School Profile (Legacy)", href: "pages/admin/admin-system-school-info.html" },
               { id: "sys-schedule", label: "Schedule", href: "pages/admin/admin-system-schedule.html" },
               { id: "sys-general-setting", label: "General Setting", href: "pages/admin/admin-system-general-setting.html" },
+            ]
+          },
+
+          {
+            id: "sys-year-config-drop",
+            label: "School Year Configuration",
+            icon: "calendar_today",
+            collapsible: true,
+            children: [
+              { id: "sys-school-year", label: "School Year", href: "pages/admin/admin-system-school-year.html" },
+              { id: "sys-school-week", label: "School Week", href: "pages/admin/admin-system-school-week.html" },
+              { id: "sys-exam-config", label: "School Exam Configuration", href: "pages/admin/admin-system-exam-config.html" }
             ]
           },
 
@@ -186,8 +201,6 @@
         { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
 
           { id:"profile", label:"Admin Profile", icon:"person", href:"pages/admin/admin-settings.html" },
-
-          { id:"logout",  label:"Log out",       icon:"logout", href:"index.html" },
 
         ]},
 
@@ -209,7 +222,7 @@
 
         { id:"teaching", label:"TEACHING", icon:"school", links:[
 
-          { id:"attendance", label:"Attendance",                 icon:"how_to_reg",     href:"pages/teacher/teacher-attendance.html" },
+          { id:"attendance", label:"Daily Attendance", icon:"how_to_reg", href:"pages/teacher/teacher-attendance.html" },
 
           { id:"roster",     label:"Roster & Profiles",          icon:"badge",          href:"pages/teacher/teacher-roster.html" },
 
@@ -223,6 +236,8 @@
 
         { id:"assessment", label:"ASSESSMENT", icon:"grading", links:[
 
+          { id:"gradebook",   label:"Gradebook & Marks",          icon:"fact_check",     href:"pages/teacher/teacher-gradebook.html" },
+
           { id:"submissions", label:"Assignments & Student Work", icon:"description",  href:"pages/teacher/teacher-submissions.html" },
 
           { id:"reports",     label:"Official Academic Reports",  icon:"assessment",   href:"pages/teacher/teacher-reports.html" },
@@ -231,7 +246,10 @@
 
         { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
 
-          { id:"announcements", label:"Class Announcements",      icon:"campaign",      href:"pages/teacher/teacher-announcements.html" },
+          /* Shared announcements page — one backend, one reader experience for
+             every portal. The ?portal hint only selects the UI context; the
+             authenticated session (and the backend) still own permissions. */
+          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=teacher" },
 
         ]},
 
@@ -246,8 +264,6 @@
         { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
 
           { id:"profile",       label:"Settings & Profile",       icon:"settings",      href:"pages/teacher/teacher-profile.html" },
-
-          { id:"logout",        label:"Log out",                  icon:"logout",        href:"index.html" },
 
         ]},
 
@@ -273,8 +289,6 @@
 
           { id:"calendar",    label:"Class Timetable",      icon:"calendar_month", href:"pages/student/student-calendar.html" },
 
-          { id:"student-id",  label:"Digital Student ID",    icon:"badge", href:"pages/student/student-id.html" },
-
         ]},
 
         { id:"campus-life", label:"CAMPUS LIFE", icon:"local_activity", links:[
@@ -287,7 +301,9 @@
 
         { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
 
-          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/student/student-announcements.html" },
+          /* Shared announcements page (see teacher note above): students read
+             the same school-wide feed; publishing controls stay admin-only. */
+          { id:"announcements", label:"Announcements", icon:"campaign", href:"pages/shared/announcements.html?portal=student" },
 
         ]},
 
@@ -316,9 +332,12 @@
         ]},
         { id: "academic-oversight", label: "ACADEMIC OVERSIGHT", icon: "assignment", links: [
           { id: "attendance", label: "Attendance", icon: "how_to_reg", href: "pages/principal/principal-attendance.html" },
-            { id: "reports", label: "Student Results & Reports", icon: "assessment", href: "pages/principal/principal-reports.html" },
+          { id: "classes", label: "Classes & Cohorts", icon: "class", href: "pages/principal/principal-classes.html" },
+          { id: "departments", label: "Academic Departments", icon: "apartment", href: "pages/principal/principal-departments.html" },
+          { id: "reports", label: "Student Results & Reports", icon: "assessment", href: "pages/principal/principal-reports.html" },
         ]},
         { id:"khmer-suite", label:"TIMETABLE MANAGEMENT", icon:"calendar_view_week", links:[
+
           { id:"ks-wizard", label:"Teacher Assignment", icon:"swap_horiz", href:"pages/principal/principal-teacher-class-assignment.html" },
           { id:"ks-builder", label:"Timetable Builder", icon:"grid_view", href:"pages/principal/principal-timetable-builder.html" },
           { id:"ks-viewer", label:"Timetables Matrix", icon:"calendar_view_week", href:"pages/principal/principal-timetables.html" },
@@ -328,18 +347,169 @@
           { id: "student-profiles", label: "Student Profile", icon: "school", href: "pages/principal/principal-student-profiles.html" },
         ]},
         { id: "approvals-grp", label: "DECISIONS & NOTICES", icon: "verified", links: [
+          { id: "principal-school-information", label: "School Information", icon: "account_balance", href: "pages/principal/principal-school-information.html" },
+          { id: "services", label: "Services Hub", icon: "grid_view", href: "pages/principal/principal-services.html" },
           { id: "announcements", label: "School Announcements", icon: "campaign", href: "pages/shared/announcements.html?portal=principal" },
           { id: "activity", label: "Change History", icon: "history", href: "pages/principal/principal-activity.html" },
         ]},
         { id: "account-grp", label: "ACCOUNT", icon: "person", links: [
           { id: "profile", label: "Settings & Profile", icon: "settings", href: "pages/principal/principal-profile.html" },
-          { id: "logout", label: "Log out", icon: "logout", href: "index.html" },
         ]},
       ],
+    },
+
+    superadmin: {
+      brand: "Super Admin", meta: "Root System Suite · 2025–26",
+      groups: [
+        { label: "Overview", links: [
+          { id: "sa-dashboard", label: "System Overview", icon: "dashboard", href: "pages/admin/admin.html", locked: true }
+        ]},
+        { id: "sa-cms-grp", label: "CONTENT & NAVIGATION", icon: "tune", links: [
+          { id: "sa-sidebar-mgr", label: "Global Sidebar Manager", icon: "menu_open", href: "pages/admin/admin-dashboard-content.html" },
+          { id: "sa-hero-banners", label: "Hero & Banners CMS", icon: "view_carousel", href: "pages/admin/admin-dashboard-content.html#tabHero" }
+        ]},
+        { id: "sa-users-grp", label: "IDENTITY & ACCESS", icon: "manage_accounts", links: [
+          { id: "sa-users-reg", label: "Central Registry", icon: "dashboard", href: "pages/admin/admin-users-students.html" },
+          { id: "sa-directories-drop", label: "User Directories", icon: "group", collapsible: true, children: [
+            { id: "sa-students", label: "Student Accounts", href: "pages/admin/admin-users-students.html" },
+            { id: "sa-teachers", label: "Teacher Accounts", href: "pages/admin/admin-users-teachers.html" },
+            { id: "sa-staff", label: "Staff Accounts", href: "pages/admin/admin-users-staff.html" },
+            { id: "sa-principals", label: "Principal Accounts", href: "pages/admin/admin-users-principals.html" },
+            { id: "sa-admins", label: "Admin Accounts", href: "pages/admin/admin-users-admins.html" }
+          ]}
+        ]},
+        { id: "sa-academics-grp", label: "ACADEMIC ARCHITECTURE", icon: "school", links: [
+          { id: "sa-teacher-assign", label: "Teacher Class Assignment", icon: "co_present", href: "pages/admin/admin-teacher-class-assignment.html" }
+        ]},
+        { id: "sa-comm-grp", label: "COMMUNICATION", icon: "campaign", links: [
+          { id: "announcements", label: "School Announcements", icon: "campaign", href: "pages/shared/announcements.html?portal=superadmin" }
+        ]},
+        { id: "sa-infra-grp", label: "INSTITUTIONAL SUITE", icon: "business", links: [
+          { id: "sa-campuses", label: "Campus Infrastructure", icon: "location_city", href: "pages/admin/admin-campuses.html" },
+          { id: "sa-departments", label: "Departments", icon: "domain", href: "pages/admin/admin-departments.html" },
+          { id: "sa-dictionary", label: "Data Dictionary", icon: "menu_book", href: "pages/admin/admin-data-dictionary.html" },
+          { id: "sa-school-info", label: "School Information", icon: "account_balance", href: "pages/admin/admin-school-information.html" }
+        ]},
+        { id: "sa-sec-grp", label: "GOVERNANCE & SECURITY", icon: "security", links: [
+          { id: "sa-audit-logs", label: "Audit Logs", icon: "history", href: "pages/admin/admin-logs.html" },
+          { id: "sa-settings", label: "System General Settings", icon: "settings", href: "pages/admin/admin-system-general-setting.html" }
+        ]},
+        { id: "account-grp", label: "ACCOUNT", icon: "person", links: [
+          { id: "sa-profile", label: "Admin Profile", icon: "manage_accounts", href: "pages/admin/admin-settings.html" },
+        ]}
+      ]
+    },
+
+    staff: {
+      brand: "Staff", meta: "Campus Operations Hub · 2025–26",
+      groups: [
+        { label: "Overview", links: [
+          { id: "staff-services", label: "Campus Services Hub", icon: "grid_view", href: "pages/admin/admin-services.html", locked: true }
+        ]},
+        { id: "staff-ops-grp", label: "CAMPUS OPERATIONS", icon: "business_center", links: [
+          { id: "staff-lost-found", label: "Lost & Found Registry", icon: "inventory_2", href: "pages/principal/principal-lost-found.html" },
+          { id: "staff-campuses", label: "Campus Directory", icon: "location_city", href: "pages/admin/admin-campuses.html" },
+          { id: "staff-school-info", label: "School Information", icon: "account_balance", href: "pages/admin/admin-school-information.html" }
+        ]},
+        { id: "staff-comm-grp", label: "COMMUNICATION", icon: "campaign", links: [
+          { id: "staff-announcements", label: "Announcements", icon: "campaign", href: "pages/shared/announcements.html?portal=staff" },
+          { id: "staff-news", label: "Institutional News", icon: "newspaper", href: "pages/shared/news.html?portal=staff" }
+        ]},
+        { id: "account-grp", label: "ACCOUNT", icon: "person", links: [
+          { id: "staff-profile", label: "Staff Profile & Settings", icon: "settings", href: "pages/admin/admin-settings.html" },
+        ]}
+      ]
     },
   };
 
 
+
+  /* ── Published navigation override (Global Sidebar Manager) ──
+
+     The built-in NAV above is the safe default. When the backend has a
+     published navigation configuration for a portal (managed from
+     admin-dashboard-content.html → Sidebar Manager), it takes precedence.
+
+     The backend JSON store is the single source of truth; sessionStorage is
+     only a render-fast cache so the sidebar paints without a flash. */
+
+  let NAV_OVERRIDE = null;
+
+  const NAV_CACHE_KEY = 'ngis-nav-published-v5';
+
+  function sanitizeNavTree(data) {
+    if (!data || typeof data !== 'object') return data;
+    const cleanGroups = (groups) => {
+      if (!Array.isArray(groups)) return groups;
+      return groups.map(g => {
+        if (!g || !Array.isArray(g.links)) return g;
+        const links = g.links.filter(l => {
+          if (!l) return false;
+          if (l.id === 'sys-account-mgmt-drop' || l.label === 'Account Management') return false;
+          return true;
+        }).map(l => {
+          if (l && Array.isArray(l.children)) {
+            l.children = l.children.filter(c =>
+              c &&
+              c.id !== 'sys-account-mgmt-drop' &&
+              c.label !== 'Account Management' &&
+              c.id !== 'sys-employee-group' &&
+              c.id !== 'sys-employee-accounts' &&
+              c.id !== 'sys-student-accounts' &&
+              c.id !== 'sys-parent-accounts'
+            );
+          }
+          return l;
+        });
+        return Object.assign({}, g, { links });
+      });
+    };
+
+    if (Array.isArray(data.groups)) {
+      return Object.assign({}, data, { groups: cleanGroups(data.groups) });
+    }
+    const res = {};
+    for (const k of Object.keys(data)) {
+      const portal = data[k];
+      if (portal && Array.isArray(portal.groups)) {
+        res[k] = Object.assign({}, portal, { groups: cleanGroups(portal.groups) });
+      } else {
+        res[k] = portal;
+      }
+    }
+    return res;
+  }
+
+  try {
+    sessionStorage.removeItem('ngis-nav-published');
+    sessionStorage.removeItem('ngis-published-nav-cache');
+    const cached = sessionStorage.getItem(NAV_CACHE_KEY);
+    if (cached) NAV_OVERRIDE = sanitizeNavTree(JSON.parse(cached));
+  } catch (e) { /* ignore malformed cache */ }
+
+  const navReadyPromise = fetch('/api/nav/published')
+    .then((r) => (r && r.ok ? r.json() : null))
+    .then((res) => {
+      if (res && res.success && res.data && typeof res.data === 'object') {
+        NAV_OVERRIDE = sanitizeNavTree(res.data);
+        try { sessionStorage.setItem(NAV_CACHE_KEY, JSON.stringify(NAV_OVERRIDE)); } catch (e) {}
+      }
+    })
+    .catch(() => { /* keep cache / built-in NAV */ });
+
+
+
+  function resolveNav(portalRole) {
+    const source = NAV_OVERRIDE || NAV;
+    let targetRole = portalRole;
+    if (targetRole === 'super_admin') targetRole = 'superadmin';
+    const cfg = source[targetRole] || source[portalRole];
+
+    // Guard against an empty/partial published config for this portal.
+    if (cfg && Array.isArray(cfg.groups) && cfg.groups.length) return cfg;
+
+    return NAV[portalRole] || NAV[targetRole] || NAV.admin || NAV.student;
+  }
 
   /* Department sub-pages keep "Departments" highlighted in the sidebar,
 
@@ -357,7 +527,7 @@
 
       { id:"dashboard",  label:"Home",       icon:"home",      href:"pages/admin/admin.html" },
 
-      { id:"users",      label:"Users",       icon:"group",     href:"pages/admin/admin-users.html" },
+      { id:"users",      label:"Users",       icon:"group",     href:"pages/admin/admin-users-students.html" },
 
       { id:"reports",    label:"Reports",     icon:"assessment",href:"pages/admin/admin-reports.html" },
 
@@ -403,6 +573,30 @@
 
     ],
 
+    superadmin: [
+
+      { id:"dashboard",  label:"Home",       icon:"home",           href:"pages/admin/admin.html" },
+
+      { id:"users",      label:"Users",      icon:"group",          href:"pages/admin/admin-users-students.html" },
+
+      { id:"reports",    label:"CMS",        icon:"tune",           href:"pages/admin/admin-dashboard-content.html" },
+
+      { id:"settings",   label:"Settings",   icon:"settings",       href:"pages/admin/admin-settings.html" },
+
+    ],
+
+    staff: [
+
+      { id:"services",   label:"Services",   icon:"grid_view",      href:"pages/admin/admin-services.html" },
+
+      { id:"lost-found", label:"Lost&Found", icon:"inventory_2",    href:"pages/principal/principal-lost-found.html" },
+
+      { id:"campuses",   label:"Campuses",   icon:"location_city",  href:"pages/admin/admin-campuses.html" },
+
+      { id:"settings",   label:"Account",    icon:"settings",       href:"pages/admin/admin-settings.html" },
+
+    ],
+
   };
 
 
@@ -413,13 +607,17 @@
 
   const DEFAULT_USER = {
 
-    admin:     { name:"Sok Panha Heng",  role:"Super Administrator",  initials:"SH" },
+    admin:      { name:"Sok Panha Heng",  role:"School Administrator",    initials:"SH" },
 
-    teacher:   { name:"Dr. Sarah Jenkins", role:"Head of Senior Faculty", initials:"SJ" },
+    superadmin: { name:"Sok Panha Heng",  role:"Super Administrator",     initials:"SH" },
 
-    student:   { name:"Nrinphouneta Hok", role:"Student · Grade 11-A", initials:"NH" },
+    staff:      { name:"Chanthou Meas",   role:"Campus Operations Staff", initials:"CM" },
 
-    principal: { name:"Dr. Ly Bunheng",  role:"Campus Principal",     initials:"LB" },
+    teacher:    { name:"Dr. Sarah Jenkins", role:"Head of Senior Faculty", initials:"SJ" },
+
+    student:    { name:"Nrinphouneta Hok", role:"Student · Grade 11-A",    initials:"NH" },
+
+    principal:  { name:"Dr. Ly Bunheng",  role:"Campus Principal",        initials:"LB" },
 
   };
 
@@ -428,6 +626,10 @@
   const PORTAL_HOME = {
 
     admin: "pages/admin/admin.html",
+
+    superadmin: "pages/admin/admin.html?portal=superadmin",
+
+    staff: "pages/admin/admin-services.html?portal=staff",
 
     teacher: "pages/teacher/teacher.html",
 
@@ -441,6 +643,23 @@
 
   /* Resolve the portal from the authenticated session and scoped URL. */
 
+  const VALID_PORTALS = ["admin", "superadmin", "principal", "teacher", "student", "staff"];
+
+  const STAFF_ALLOWED_FILES = [
+    "admin-services.html",
+    "admin-lost-found.html",
+    "principal-lost-found.html",
+    "admin-campuses.html",
+    "admin-school-information.html",
+    "admin-settings.html"
+  ];
+
+  const PRINCIPAL_ADMIN_SHARED_FILES = [
+    "admin-school-information.html",
+    "admin-dashboard-content.html",
+    "admin-timetables.html"
+  ];
+
   function readStoredUser(key) {
 
     try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
@@ -451,11 +670,33 @@
 
     if (!role) return "student";
 
-    role = String(role).toLowerCase();
+    role = String(role).trim().toLowerCase();
 
-    if (role === "super_admin" || role === "superadmin") return "admin";
+    if (role === "super_admin" || role === "superadmin") return "superadmin";
+
+    if (role === "editor") return "admin";
 
     return role;
+
+  }
+
+  function hasExplicitAuthSession() {
+
+    if (window.NGISAuth && typeof window.NGISAuth.hasExplicitSession === "function") {
+
+      return window.NGISAuth.hasExplicitSession();
+
+    }
+
+    try {
+
+      if (localStorage.getItem("ngis_session_mode") === "passive") return false;
+
+      const u = readStoredUser("ngis_user");
+
+      return Boolean(u && u.role);
+
+    } catch (e) { return false; }
 
   }
 
@@ -465,41 +706,133 @@
 
     const user = readStoredUser("ngis_user");
 
-    return normalizeRole(authRole || (user && user.role));
+    return normalizeRole(authRole || (user && (user.portal || user.role)));
+
+  }
+
+  function canPortalServeCurrentPath(candidatePortal, pathSeg, curFile) {
+
+    if (!VALID_PORTALS.includes(candidatePortal)) return false;
+
+    if (!pathSeg || pathSeg === "shared") return true;
+
+    if (candidatePortal === "staff") return STAFF_ALLOWED_FILES.includes(curFile);
+
+    if (candidatePortal === "superadmin" || candidatePortal === "admin") {
+
+      return pathSeg === "admin" || pathSeg === "principal";
+
+    }
+
+    if (candidatePortal === "principal") {
+
+      return pathSeg === "principal" || PRINCIPAL_ADMIN_SHARED_FILES.includes(curFile);
+
+    }
+
+    return pathSeg === candidatePortal;
+
+  }
+
+  /* Sidebar System v2 — portal identity guard.
+     A portal that owns a directory (/pages/admin, /pages/principal,
+     /pages/teacher, /pages/student) always keeps its own sidebar. Only the two
+     preview roles, which have no directory of their own, may render on top of
+     another portal's page, and only where their published nav actually links:
+       superadmin -> /pages/admin/*
+       staff      -> /pages/admin/<STAFF_ALLOWED_FILES> + principal-lost-found.html
+     Shared pages have no owner and keep the existing query/session resolution.
+     Without this guard, ?portal=admin or a sticky preference could show the
+     Admin sidebar (49 links) on a Principal Portal page. */
+  function directoryOwnedRole(pathSeg) {
+
+    if (!pathSeg || pathSeg === "shared" || pathSeg === "parent") return "";
+
+    const r = normalizeRole(pathSeg);
+
+    return ["admin", "principal", "teacher", "student"].includes(r) ? r : "";
+
+  }
+
+  function canOverrideDirectoryRole(candidate, pathSeg, curFile, dirRole) {
+
+    if (!candidate || !VALID_PORTALS.includes(candidate)) return false;
+
+    if (!dirRole) return true;
+
+    if (candidate === dirRole) return true;
+
+    if (candidate === "superadmin") return pathSeg === "admin";
+
+    if (candidate === "staff") {
+      return (pathSeg === "admin" && STAFF_ALLOWED_FILES.includes(curFile)) ||
+        curFile === "principal-lost-found.html";
+    }
+
+    return false;
 
   }
 
   function resolvePortalRole(pageRole) {
 
-    const path = (window.location.pathname || "").replace(/\\/g, "/");
+    const path = (window.location.pathname || "").replace(/\\/g, "/").toLowerCase();
 
-    const match = path.match(/\/pages\/(admin|teacher|student|parent|principal)\//);
+    const match = path.match(/\/pages\/(admin|teacher|student|parent|principal|shared)\//);
 
-    const pathRole = match ? match[1] : null;
+    const pathSeg = match ? match[1] : null;
 
+    const curFile = (path.split("/").pop() || "").toLowerCase();
 
-
-    // Priority 1: Explicit role directory path (e.g. /pages/admin/, /pages/teacher/, /pages/student/, etc.)
-
-    if (pathRole) {
-
-      const normalizedPathRole = normalizeRole(pathRole);
-
-      try { localStorage.setItem("ngis_active_portal", normalizedPathRole); } catch (e) {}
-
-      return normalizedPathRole;
-
-    }
-
-
-
-    // Priority 2: Explicit URL query param (?portal=... or ?role=...)
+    const dirRole = directoryOwnedRole(pathSeg);
 
     const params = new URLSearchParams(window.location.search || "");
 
-    const queryRole = (params.get("portal") || params.get("role") || "").toLowerCase();
+    const rawQuery = params.get("portal") || params.get("role") || "";
 
-    if (["admin", "teacher", "student", "principal"].includes(queryRole)) {
+    const queryRole = rawQuery ? normalizeRole(rawQuery) : "";
+
+    const explicitSession = hasExplicitAuthSession();
+
+    const sessionRole = explicitSession ? getSessionRole() : null;
+
+    let storedPortal = "";
+
+    try { storedPortal = localStorage.getItem("ngis_active_portal") || ""; } catch (e) {}
+
+    if (storedPortal) storedPortal = normalizeRole(storedPortal);
+
+    // Priority 1: Explicit authenticated session locks role cleanly (admins/superadmins may still preview compatible portals via ?portal=)
+
+    if (explicitSession && sessionRole && VALID_PORTALS.includes(sessionRole)) {
+
+      if (queryRole && VALID_PORTALS.includes(queryRole) && canPortalServeCurrentPath(queryRole, pathSeg, curFile) &&
+          canOverrideDirectoryRole(queryRole, pathSeg, curFile, dirRole)) {
+
+        if (queryRole === sessionRole || sessionRole === "superadmin" || (sessionRole === "admin" && queryRole !== "student")) {
+
+          try { localStorage.setItem("ngis_active_portal", queryRole); } catch (e) {}
+
+          return queryRole;
+
+        }
+
+      }
+
+      if (canPortalServeCurrentPath(sessionRole, pathSeg, curFile) &&
+          canOverrideDirectoryRole(sessionRole, pathSeg, curFile, dirRole)) {
+
+        try { localStorage.setItem("ngis_active_portal", sessionRole); } catch (e) {}
+
+        return sessionRole;
+
+      }
+
+    }
+
+    // Priority 2: Explicit ?portal= or ?role= query param when structurally valid for this page
+
+    if (queryRole && canPortalServeCurrentPath(queryRole, pathSeg, curFile) &&
+        canOverrideDirectoryRole(queryRole, pathSeg, curFile, dirRole)) {
 
       try { localStorage.setItem("ngis_active_portal", queryRole); } catch (e) {}
 
@@ -507,15 +840,38 @@
 
     }
 
+    // Priority 3: Sticky multi-portal contexts (staff / superadmin) across permitted admin/principal/shared pages
 
+    if ((storedPortal === "staff" || storedPortal === "superadmin") && canPortalServeCurrentPath(storedPortal, pathSeg, curFile) &&
+        canOverrideDirectoryRole(storedPortal, pathSeg, curFile, dirRole)) {
 
-    // Priority 3: Explicit pageRole configured on window.PAGE
+      return storedPortal;
+
+    }
+
+    // Priority 4: Role directory path (/pages/admin/, /pages/teacher/, /pages/student/, /pages/principal/)
+
+    if (pathSeg && pathSeg !== "shared") {
+
+      const normalizedPathRole = normalizeRole(pathSeg);
+
+      if (VALID_PORTALS.includes(normalizedPathRole)) {
+
+        try { localStorage.setItem("ngis_active_portal", normalizedPathRole); } catch (e) {}
+
+        return normalizedPathRole;
+
+      }
+
+    }
+
+    // Priority 5: Explicit pageRole configured on window.PAGE (on shared/root pages)
 
     if (pageRole) {
 
       const normalizedPageRole = normalizeRole(pageRole);
 
-      if (["admin", "teacher", "student", "principal"].includes(normalizedPageRole)) {
+      if (canPortalServeCurrentPath(normalizedPageRole, pathSeg, curFile)) {
 
         try { localStorage.setItem("ngis_active_portal", normalizedPageRole); } catch (e) {}
 
@@ -525,29 +881,67 @@
 
     }
 
+    // Priority 6: Stored portal preference or passive session fallback
 
-
-    // Priority 4: Stored portal preference or active session role
-
-    const sessionRole = getSessionRole();
-
-    if (sessionRole && ["admin", "teacher", "student", "principal"].includes(sessionRole)) {
-
-      return sessionRole;
-
-    }
-
-    const storedPortal = localStorage.getItem("ngis_active_portal");
-
-    if (storedPortal && ["admin", "teacher", "student", "principal"].includes(storedPortal)) {
+    if (storedPortal && canPortalServeCurrentPath(storedPortal, pathSeg, curFile) &&
+        canOverrideDirectoryRole(storedPortal, pathSeg, curFile, dirRole)) {
 
       return storedPortal;
 
     }
 
+    const fallbackSession = getSessionRole();
 
+    if (fallbackSession && canPortalServeCurrentPath(fallbackSession, pathSeg, curFile) &&
+        canOverrideDirectoryRole(fallbackSession, pathSeg, curFile, dirRole)) {
+
+      return fallbackSession;
+
+    }
 
     return "student";
+
+  }
+
+  function buildPortalHref(rawHref, portalRole) {
+
+    if (!rawHref) return "#";
+
+    const s = String(rawHref);
+
+    if (s.startsWith("#") || s.startsWith("http://") || s.startsWith("https://") || s.startsWith("mailto:") || s.startsWith("tel:")) {
+
+      return s;
+
+    }
+
+    const clean = s.split("?")[0].split("#")[0];
+
+    if (clean === "index.html" || clean === "") return `${_P}${s}`;
+
+    const hashIdx = s.indexOf("#");
+
+    const hashPart = hashIdx !== -1 ? s.slice(hashIdx) : "";
+
+    const withoutHash = hashIdx !== -1 ? s.slice(0, hashIdx) : s;
+
+    const qIdx = withoutHash.indexOf("?");
+
+    const pathPart = qIdx !== -1 ? withoutHash.slice(0, qIdx) : withoutHash;
+
+    const queryPart = qIdx !== -1 ? withoutHash.slice(qIdx + 1) : "";
+
+    const params = new URLSearchParams(queryPart);
+
+    if (portalRole && (pathPart.startsWith("pages/shared/") || portalRole === "staff" || portalRole === "superadmin")) {
+
+      params.set("portal", portalRole);
+
+    }
+
+    const qOut = params.toString();
+
+    return `${_P}${pathPart}${qOut ? "?" + qOut : ""}${hashPart}`;
 
   }
 
@@ -601,33 +995,40 @@
 
 
 
-  function buildSidebar(cfg, active, user) {
+  function buildSidebar(cfg, active, user, portalRole) {
 
-    const role = (window.PAGE && window.PAGE.role) || "admin";
+    const role = portalRole || resolvePortalRole(window.PAGE && window.PAGE.role);
 
-    const homeHref = PORTAL_HOME[role] ? `${_P}${PORTAL_HOME[role]}` : `${_P}index.html`;
+    const homeHref = buildPortalHref(PORTAL_HOME[role] || "index.html", role);
 
     const currentUser = user || (window.PAGE && window.PAGE.user) || DEFAULT_USER[role] || DEFAULT_USER.teacher;
 
 
 
+    function isMatchingNavId(itemId, targetId) {
+
+      if (!itemId || !targetId) return false;
+
+      if (itemId === targetId) return true;
+
+      if ((targetId === "teachers" || targetId === "teacher-profiles") && (itemId === "teachers" || itemId === "teacher-profiles" || itemId === "teachers-mgmt-drop")) return true;
+
+      if ((targetId === "students" || targetId === "student-profiles") && (itemId === "students" || itemId === "student-profiles" || itemId === "student-mgmt-drop")) return true;
+
+      return false;
+
+    }
+
     function linkHasId(item, id) {
 
       if (!item) return false;
 
-      if (item.id === id) return true;
+      if (isMatchingNavId(item.id, id)) return true;
 
-      if ((id === "teachers" || id === "teacher-profiles") && (item.id === "teachers" || item.id === "teacher-profiles" || item.id === "teachers-mgmt-drop")) return true;
+      if (Array.isArray(item.children)) {
 
-      if ((id === "students" || id === "student-profiles") && (item.id === "students" || item.id === "student-profiles" || item.id === "student-mgmt-drop")) return true;
+        return item.children.some(c => linkHasId(c, id));
 
-      if (item.children) {
-        for (const c of item.children) {
-          if (c.id === id) return true;
-          if ((id === "teachers" || id === "teacher-profiles") && (c.id === "teachers" || c.id === "teacher-profiles")) return true;
-          if ((id === "students" || id === "student-profiles") && (c.id === "students" || c.id === "student-profiles")) return true;
-          if (c.children && c.children.some(n => n.id === id)) return true;
-        }
       }
 
       return false;
@@ -636,96 +1037,228 @@
 
 
 
-    // Auto-detect active link if not set or doesn't match any link in this portal
-
-    let effectiveActive = active;
-
     const curFile = (window.location.pathname || '').replace(/\\/g, '/').split('/').pop().toLowerCase();
-    const curSearch = (window.location.search || '').toLowerCase();
 
-    // Query parameter priority match for nested subgroups (e.g., ?view=verify, ?tab=assignments, ?tab=homeroom)
-    if (curSearch) {
-      for (const g of cfg.groups) {
-        for (const l of g.links) {
-          if (l.children && l.children.length > 0) {
-            for (const sub of l.children) {
-              if (sub.children && sub.children.length > 0) {
-                for (const n of sub.children) {
-                  if (n.href && n.href.includes('?')) {
-                    const parts = n.href.split('?');
-                    const nFile = parts[0].split('/').pop().toLowerCase();
-                    const nQuery = (parts[1] || '').toLowerCase();
-                    if (nFile === curFile && curSearch.includes(nQuery)) {
-                      effectiveActive = n.id;
-                      break;
-                    }
-                  }
-                }
-              } else if (sub.href && sub.href.includes('?')) {
-                const parts = sub.href.split('?');
-                const subFile = parts[0].split('/').pop().toLowerCase();
-                const subQuery = (parts[1] || '').toLowerCase();
-                if (subFile === curFile && curSearch.includes(subQuery)) {
-                  effectiveActive = sub.id;
-                  break;
-                }
-              }
-            }
-          }
-          if (effectiveActive && linkHasId(l, effectiveActive)) break;
-        }
-      }
-    }
+    const curSearch = (window.location.search || '');
 
-    if (!effectiveActive || !cfg.groups.some(g => g.links.some(l => linkHasId(l, effectiveActive)))) {
+    const curParams = new URLSearchParams(curSearch);
 
-      for (const g of cfg.groups) {
+    const curHash = (window.location.hash || '').toLowerCase();
 
-        for (const l of g.links) {
 
-          if (l.children && l.children.length > 0) {
 
-            for (const sub of l.children) {
+    function hrefMatchScore(rawHref) {
 
-              if (sub.children && sub.children.length > 0) {
-                for (const n of sub.children) {
-                  const nFile = (n.href || '').split('?')[0].split('/').pop().toLowerCase();
-                  if (nFile && nFile === curFile) {
-                    effectiveActive = n.id;
-                    break;
-                  }
-                }
-              } else {
-                const linkFile = (sub.href || '').split('?')[0].split('/').pop().toLowerCase();
-                if (linkFile && linkFile === curFile) {
-                  effectiveActive = sub.id;
-                  break;
-                }
-              }
+      if (!rawHref) return -1;
 
-            }
+      const s = String(rawHref);
 
-          } else {
+      if (s.startsWith('#') || s.startsWith('http://') || s.startsWith('https://')) return -1;
 
-            const linkFile = (l.href || '').split('?')[0].split('/').pop().toLowerCase();
+      const hashIdx = s.indexOf('#');
 
-            if (linkFile && linkFile === curFile) {
+      const hashPart = hashIdx !== -1 ? s.slice(hashIdx).toLowerCase() : '';
 
-              effectiveActive = l.id;
+      const withoutHash = hashIdx !== -1 ? s.slice(0, hashIdx) : s;
 
-              break;
+      const qIdx = withoutHash.indexOf('?');
 
-            }
+      const pathPart = qIdx !== -1 ? withoutHash.slice(0, qIdx) : withoutHash;
 
-          }
+      const queryPart = qIdx !== -1 ? withoutHash.slice(qIdx + 1) : '';
 
-          if (effectiveActive && cfg.groups.some(grp => grp.links.some(lnk => linkHasId(lnk, effectiveActive)))) break;
+      const file = pathPart.replace(/\\/g, '/').split('/').pop().toLowerCase();
 
-        }
+      if (!file || file !== curFile) return -1;
+
+
+
+      if (hashPart) {
+
+        if (curHash !== hashPart) return -1;
 
       }
 
+
+
+      const linkParams = new URLSearchParams(queryPart);
+
+      let score = 1;
+
+      for (const [k, v] of linkParams.entries()) {
+
+        const lk = k.toLowerCase();
+
+        if (lk === 'portal' || lk === 'role') continue;
+
+        const actual = curParams.get(k);
+
+        if (actual === null || actual.toLowerCase() !== String(v).toLowerCase()) {
+
+          return -1;
+
+        }
+
+        score += 10;
+
+      }
+
+      if (hashPart && curHash === hashPart) score += 20;
+
+      else if (!hashPart && !curHash) score += 2;
+
+      return score;
+
     }
+
+
+
+    function collectLeaves(items, out) {
+
+      if (!Array.isArray(items)) return;
+
+      for (const item of items) {
+
+        if (!item || item.visible === false) continue;
+
+        if (Array.isArray(item.children) && item.children.length > 0) {
+
+          collectLeaves(item.children, out);
+
+        } else if (item.href) {
+
+          out.push({ id: item.id, href: item.href, score: hrefMatchScore(item.href) });
+
+        }
+
+      }
+
+    }
+
+
+
+    function resolveEffectiveActive(activeCandidate) {
+
+      const leaves = [];
+
+      for (const g of cfg.groups) {
+
+        if (g.visible === false) continue;
+
+        if (g.href) leaves.push({ id: g.id, href: g.href, score: hrefMatchScore(g.href) });
+
+        collectLeaves(g.links, leaves);
+
+      }
+
+      const matchingLeaves = leaves.filter(l => l.score > 0).sort((a, b) => b.score - a.score);
+
+      const bestScore = matchingLeaves.length ? matchingLeaves[0].score : 0;
+
+
+
+      // 1. Honor clicked sidebar link when its target file/query/hash still matches the URL
+
+      try {
+
+        const rawClicked = sessionStorage.getItem(CLICKED_NAV_KEY);
+
+        if (rawClicked) {
+
+          let clickedId = rawClicked;
+
+          let clickedPortal = '';
+
+          if (rawClicked.startsWith('{')) {
+
+            const parsed = JSON.parse(rawClicked);
+
+            clickedId = parsed.id || '';
+
+            clickedPortal = parsed.portal || '';
+
+          }
+
+          if (clickedId && (!clickedPortal || clickedPortal === role)) {
+
+            const clickedLeaf = leaves.find(l => l.id === clickedId);
+
+            if (clickedLeaf && clickedLeaf.score >= Math.max(1, bestScore)) {
+
+              return clickedId;
+
+            }
+
+          }
+
+        }
+
+      } catch (e) {}
+
+
+
+      /* 1b. A declared PAGE.active that resolves to the current file with the
+         best available score must win. Several nav entries can point at the
+         same .html file; without this guard the first one alphabetically
+         steals the active state from the page's own declared id. */
+      if (activeCandidate) {
+        const declaredLeaf = leaves.find(l => isMatchingNavId(l.id, activeCandidate));
+        if (declaredLeaf && declaredLeaf.score > 0 && declaredLeaf.score >= bestScore) {
+          return declaredLeaf.id;
+        }
+      }
+
+
+
+      // 2. Specific query or hash parameter match wins (e.g., ?view=verify, ?tab=homeroom, #tabHero)
+
+      if (bestScore > 1 && matchingLeaves.length) {
+
+        return matchingLeaves[0].id;
+
+      }
+
+
+
+      // 3. Declared PAGE.active only if it points to the current file OR the current file is an unlisted subpage (e.g., department detail)
+
+      if (activeCandidate) {
+
+        const declaredLeaf = leaves.find(l => isMatchingNavId(l.id, activeCandidate));
+
+        if (declaredLeaf && declaredLeaf.score > 0) {
+
+          return declaredLeaf.id;
+
+        }
+
+        if (matchingLeaves.length === 0 && cfg.groups.some(g => g.id === activeCandidate || (g.links && g.links.some(l => linkHasId(l, activeCandidate))))) {
+
+          return activeCandidate;
+
+        }
+
+      }
+
+
+
+      // 4. First matching leaf for the current file
+
+      if (matchingLeaves.length) {
+
+        return matchingLeaves[0].id;
+
+      }
+
+
+
+      return activeCandidate;
+
+    }
+
+
+
+    let effectiveActive = resolveEffectiveActive(active);
 
 
 
@@ -736,29 +1269,39 @@
         return `<span class="nav-icon ${className} nav-icon-svg" aria-hidden="true">${trimmed}</span>`;
       }
       if (trimmed.startsWith("ph ") || trimmed.startsWith("ph-")) {
-        return `<i class="${trimmed} ${className} nav-icon" aria-hidden="true"></i>`;
+        /* Phosphor glyph: upgrade to the shared Bootstrap-icon engine while
+           keeping the Phosphor ligature as a no-engine fallback. */
+        const phName = trimmed.replace(/^ph[\s-]+/, "").replace(/^ph-/, "");
+        return `<i class="${trimmed} ${className} nav-icon" data-ngis-icon="${esc(phName)}" aria-hidden="true">${esc(phName)}</i>`;
       }
-      return `<span class="material-symbols-outlined ${className} nav-icon" aria-hidden="true">${trimmed}</span>`;
+      /* Material Symbols glyph with a data-ngis-icon slot: the shared icon
+         engine (action-icons.js) replaces it with the official Bootstrap
+         Icons SVG when present; the ligature text remains a graceful
+         fallback so the sidebar never loses its icons. */
+      return `<span class="material-symbols-outlined ${className} nav-icon" data-ngis-icon="${esc(trimmed)}" aria-hidden="true">${esc(trimmed)}</span>`;
     }
 
     const groups = cfg.groups.map((g, gi) => {
 
+      if (g.visible === false) return '';
+
       const links = g.links.map(l => {
+
+        if (l.visible === false) return '';
 
         if (l.children && l.children.length > 0) {
 
-          const isSubActive = l.children.some(sub => {
-            if (sub.id === effectiveActive || ((effectiveActive === "teachers" || effectiveActive === "teacher-profiles") && (sub.id === "teachers" || sub.id === "teacher-profiles")) || ((effectiveActive === "students" || effectiveActive === "student-profiles") && (sub.id === "students" || sub.id === "student-profiles"))) return true;
-            if (sub.children && sub.children.some(n => n.id === effectiveActive)) return true;
-            return false;
-          });
+          const isSubActive = l.children.some(sub => linkHasId(sub, effectiveActive));
 
           const sublinks = l.children.map(sub => {
+            if (sub.visible === false) return '';
             if (sub.children && sub.children.length > 0) {
-              const isNestedActive = sub.children.some(n => n.id === effectiveActive);
+              const isNestedActive = sub.children.some(n => linkHasId(n, effectiveActive));
               const nestedLinks = sub.children.map(n => {
-                const isNActive = n.id === effectiveActive;
-                return `<a class="nav-link nav-nested-link ${isNActive ? "active" : ""}" href="${_P}${n.href}"${isNActive ? ' aria-current="page"' : ''} data-id="${n.id}">
+                if (n.visible === false) return '';
+                const isNActive = isMatchingNavId(n.id, effectiveActive);
+                const nHref = buildPortalHref(n.href, role);
+                return `<a class="nav-link nav-nested-link ${isNActive ? "active" : ""}" href="${nHref}" data-raw-href="${esc(n.href || '')}"${isNActive ? ' aria-current="page"' : ''} title="${esc(n.subtitle || n.label)}" data-id="${n.id}">
                   <span class="nav-link-label">${esc(n.label)}</span>
                   ${n.badge ? `<span class="pill">${n.badge}</span>` : ""}
                 </a>`;
@@ -776,9 +1319,10 @@
                 </div>`;
             }
 
-            const isItemActive = sub.id === effectiveActive || ((effectiveActive === "teachers" || effectiveActive === "teacher-profiles") && (sub.id === "teachers" || sub.id === "teacher-profiles")) || ((effectiveActive === "students" || effectiveActive === "student-profiles") && (sub.id === "students" || sub.id === "student-profiles"));
+            const isItemActive = isMatchingNavId(sub.id, effectiveActive);
             const chevronHtml = sub.hasChevron ? `<span class="material-symbols-outlined ngl-subchevron-static" aria-hidden="true">expand_more</span>` : "";
-            return `<a class="nav-link nav-sub-link ${isItemActive ? "active" : ""}" href="${_P}${sub.href}"${isItemActive ? ' aria-current="page"' : ''} data-id="${sub.id}">
+            const subHref = buildPortalHref(sub.href, role);
+            return `<a class="nav-link nav-sub-link ${isItemActive ? "active" : ""}" href="${subHref}" data-raw-href="${esc(sub.href || '')}"${isItemActive ? ' aria-current="page"' : ''} title="${esc(sub.subtitle || sub.label)}" data-id="${sub.id}">
                ${sub.icon ? renderNavIcon(sub.icon, "nav-link-icon") : ""}
                <span class="nav-link-label">${esc(sub.label)}</span>
                ${sub.badge ? `<span class="pill">${sub.badge}</span>` : ""}
@@ -810,7 +1354,9 @@
 
         }
 
-        return `<a class="nav-link ${l.icon ? '' : 'no-icon'} ${l.id === effectiveActive ? "active" : ""}" href="${_P}${l.href}"${l.id===effectiveActive?' aria-current="page"':''} data-id="${l.id}">
+        const isTopActive = isMatchingNavId(l.id, effectiveActive);
+        const topHref = buildPortalHref(l.href, role);
+        return `<a class="nav-link ${l.icon ? '' : 'no-icon'} ${isTopActive ? "active" : ""}" href="${topHref}" data-raw-href="${esc(l.href || '')}"${isTopActive?' aria-current="page"':''} title="${esc(l.subtitle || l.label)}" data-id="${l.id}">
 
            ${renderNavIcon(l.icon, "nav-link-icon")}
 
@@ -822,7 +1368,7 @@
 
       }).join("");
 
-      const groupActive = g.id === effectiveActive || g.links.some(l => linkHasId(l, effectiveActive));
+      const groupActive = isMatchingNavId(g.id, effectiveActive) || g.links.some(l => linkHasId(l, effectiveActive));
 
       const labelInner = `
 
@@ -838,13 +1384,13 @@
 
       if (g.collapsible) {
 
-        label = `<button type="button" class="nav-group-label" aria-expanded="false" title="${esc(g.label)}">${labelInner}</button>`;
+        label = `<button type="button" class="nav-group-label" aria-expanded="${groupActive ? "true" : "false"}" title="${esc(g.label)}">${labelInner}</button>`;
 
         linksHtml = `<div class="nav-group-links"><div>${links}</div></div>`;
 
       } else if (g.href) {
 
-        label = `<a class="nav-group-label nav-group-label-link${groupActive ? " active" : ""}" href="${_P}${g.href}">${labelInner}</a>`;
+        label = `<a class="nav-group-label nav-group-label-link${groupActive ? " active" : ""}" href="${buildPortalHref(g.href, role)}" data-raw-href="${esc(g.href)}" data-id="${esc(g.id || '')}">${labelInner}</a>`;
 
         linksHtml = links;
 
@@ -876,9 +1422,14 @@
 
 
 
+    const helpRaw = role === 'student' ? 'pages/student/student-services.html'
+      : role === 'teacher' ? 'pages/teacher/teacher-services.html'
+      : role === 'principal' ? 'pages/principal/principal-services.html'
+      : 'pages/admin/admin-services.html';
+
     return el(`
 
-      <aside class="sidebar custom-scrollbar" id="sidebar" role="navigation" aria-label="Main navigation" data-purpose="primary-sidebar">
+      <aside class="sidebar custom-scrollbar" id="sidebar" role="navigation" aria-label="Main navigation" data-purpose="primary-sidebar" data-portal-role="${esc(role)}">
 
         <div class="side-brand">
 
@@ -916,7 +1467,12 @@
 
         </div>
 
-
+        <div class="sb-search-wrap">
+          <div class="sb-search-box">
+            <span class="material-symbols-outlined sb-search-icon" aria-hidden="true">search</span>
+            <input type="search" class="sb-search-input" id="sidebarSearchInput" placeholder="Find a page…" aria-label="Filter navigation links" autocomplete="off">
+          </div>
+        </div>
 
         <nav class="side-nav custom-scrollbar" aria-label="Main Navigation">
 
@@ -928,7 +1484,7 @@
 
         <footer class="side-foot">
 
-          <a class="nav-link side-foot-help" href="${_P}${role === 'student' ? 'pages/student/student-services.html' : role === 'teacher' ? 'pages/teacher/teacher-services.html' : 'pages/shared/announcements.html'}">
+          <a class="nav-link side-foot-help" href="${buildPortalHref(helpRaw, role)}">
 
             <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">help_outline</span>
 
@@ -1020,13 +1576,13 @@
 
     student: [
 
-      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/student/student.html" },
+      { id: "home", label: "Home", icon: "ph ph-house", href: "pages/student/student.html" },
 
-      { id: "department", label: "Departments", icon: "ph-bold ph-buildings", href: "pages/shared/departments.html" },
+      { id: "department", label: "Depts", icon: "ph ph-buildings", href: "pages/shared/departments.html" },
 
-      { id: "schedule", label: "Schedule", icon: "ph-bold ph-calendar", href: "pages/student/student-calendar.html" },
+      { id: "schedule", label: "Timetable", icon: "ph ph-calendar-blank", href: "pages/student/student-calendar.html" },
 
-      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/student/student-profile.html" },
+      { id: "profile", label: "Account", icon: "ph ph-user", href: "pages/student/student-profile.html" },
 
     ],
 
@@ -1038,33 +1594,57 @@
 
       { id: "submissions", label: "Work", icon: "ph ph-file-text", href: "pages/teacher/teacher-submissions.html" },
 
-      { id: "profile", label: "Profile", icon: "ph ph-user", href: "pages/teacher/teacher-profile.html" },
+      { id: "profile", label: "Account", icon: "ph ph-user", href: "pages/teacher/teacher-profile.html" },
 
     ],
 
     admin: [
 
-      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/admin/admin.html" },
+      { id: "home", label: "Home", icon: "ph ph-house", href: "pages/admin/admin.html" },
 
-      { id: "users", label: "Users", icon: "ph-bold ph-users-four", href: "pages/admin/admin-users.html" },
+      { id: "users", label: "Users", icon: "ph ph-users", href: "pages/admin/admin-users-students.html" },
 
-      { id: "reports", label: "Reports", icon: "ph-bold ph-chart-line-up", href: "pages/admin/admin-reports.html" },
+      { id: "reports", label: "Reports", icon: "ph ph-chart-bar", href: "pages/admin/admin-reports.html" },
 
-      { id: "settings", label: "Settings", icon: "ph-bold ph-gear", href: "pages/admin/admin-settings.html" },
+      { id: "settings", label: "Settings", icon: "ph ph-gear", href: "pages/admin/admin-settings.html" },
+
+    ],
+
+    superadmin: [
+
+      { id: "home", label: "Home", icon: "ph ph-house", href: "pages/admin/admin.html" },
+
+      { id: "users", label: "Users", icon: "ph ph-users", href: "pages/admin/admin-users-students.html" },
+
+      { id: "reports", label: "CMS", icon: "ph ph-sliders", href: "pages/admin/admin-dashboard-content.html" },
+
+      { id: "settings", label: "Settings", icon: "ph ph-gear", href: "pages/admin/admin-settings.html" },
+
+    ],
+
+    staff: [
+
+      { id: "services", label: "Services", icon: "ph ph-grid-four", href: "pages/admin/admin-services.html" },
+
+      { id: "lost-found", label: "Lost & Found", icon: "ph ph-package", href: "pages/principal/principal-lost-found.html" },
+
+      { id: "campuses", label: "Campuses", icon: "ph ph-buildings", href: "pages/admin/admin-campuses.html" },
+
+      { id: "settings", label: "Account", icon: "ph ph-gear", href: "pages/admin/admin-settings.html" },
 
     ],
 
     principal: [
 
-      { id: "home", label: "Home", icon: "ph-fill ph-house-simple", href: "pages/principal/principal.html" },
+      { id: "home", label: "Home", icon: "ph ph-house", href: "pages/principal/principal.html" },
 
-      { id: "classes", label: "Classes", icon: "ph-bold ph-chalkboard-simple", href: "pages/principal/principal-classes.html" },
+      { id: "classes", label: "Classes", icon: "ph ph-chalkboard", href: "pages/principal/principal-classes.html" },
 
-      { id: "students", label: "Students", icon: "ph-bold ph-school", href: "pages/principal/principal-student-profiles.html" },
+      { id: "students", label: "Students", icon: "ph ph-graduation-cap", href: "pages/principal/principal-student-profiles.html" },
 
-      { id: "reports", label: "Reports", icon: "ph-bold ph-chart-line-up", href: "pages/principal/principal-reports.html" },
+      { id: "reports", label: "Reports", icon: "ph ph-chart-bar", href: "pages/principal/principal-reports.html" },
 
-      { id: "profile", label: "Profile", icon: "ph-bold ph-user", href: "pages/principal/principal-profile.html" },
+      { id: "profile", label: "Account", icon: "ph ph-user", href: "pages/principal/principal-profile.html" },
 
     ],
 
@@ -1086,7 +1666,7 @@
 
     if (file.indexOf('profile') !== -1 || file.indexOf('setting') !== -1 || active === 'profile' || active === 'settings' || active === 'preferences') {
 
-      return (role === 'admin' || role === 'principal') ? 'settings' : 'profile';
+      return (role === 'admin' || role === 'superadmin' || role === 'principal' || role === 'staff') ? 'settings' : 'profile';
 
     }
 
@@ -1106,13 +1686,25 @@
 
     }
 
-    if (role === 'admin') {
+    if (role === 'admin' || role === 'superadmin') {
 
       if (file.indexOf('user') !== -1 || active === 'users' || active === 'admins' || active === 'teachers' || active === 'students' || active === 'parents') return 'users';
 
-      if (file.indexOf('report') !== -1 || active === 'reports') return 'reports';
+      if (file.indexOf('report') !== -1 || file.indexOf('dashboard-content') !== -1 || active === 'reports' || active === 'dashboard-content') return 'reports';
 
       if (file.indexOf('setting') !== -1 || active === 'settings') return 'settings';
+
+    }
+
+    if (role === 'staff') {
+
+      if (file.indexOf('lost-found') !== -1 || active === 'lost-found' || active === 'staff-lost-found') return 'lost-found';
+
+      if (file.indexOf('campus') !== -1 || active === 'campuses' || active === 'staff-campuses') return 'campuses';
+
+      if (file.indexOf('setting') !== -1 || active === 'settings' || active === 'staff-profile') return 'settings';
+
+      return 'services';
 
     }
 
@@ -1180,13 +1772,15 @@
 
             </span>
 
+            <span class="mob-bn-label">${esc(tab.label)}</span>
+
           </button>`;
 
       }
 
       return `
 
-        <a href="${_P}${tab.href}" class="mob-bn-item ${isActive ? 'is-active' : ''}" data-tab="${tab.id}" aria-label="${esc(tab.label)}"${isActive ? ' aria-current="page"' : ''}>
+        <a href="${buildPortalHref(tab.href, role)}" class="mob-bn-item ${isActive ? 'is-active' : ''}" data-tab="${tab.id}" aria-label="${esc(tab.label)}"${isActive ? ' aria-current="page"' : ''}>
 
           <span class="mob-bn-icon-row">
 
@@ -1199,6 +1793,8 @@
             </span>
 
           </span>
+
+          <span class="mob-bn-label">${esc(tab.label)}</span>
 
         </a>`;
 
@@ -1500,7 +2096,7 @@
 
     window.PAGE = PAGE;
 
-    const cfg  = NAV[portalRole] || NAV.student;
+    const cfg  = resolveNav(portalRole);
 
     const user = PAGE.user || DEFAULT_USER[portalRole] || DEFAULT_USER.student;
 
@@ -1510,11 +2106,22 @@
 
     let active = PAGE.active;
 
-    const ALIAS_MAP = {};
+    /* Legacy/renamed page ids mapped onto their current nav entry so the
+       sidebar still highlights correctly after navigation. Ids that don't
+       exist in the current portal's nav are harmless no-ops. */
+    const ALIAS_MAP = {
+      "ks-wizard": "teacher-class-assignment",
+      "dict-school": "sa-dictionary",
+      "dict-students": "sa-dictionary",
+      "dict-teachers": "sa-dictionary",
+      "dict-timetable": "sa-dictionary",
+      "dict-additional": "sa-dictionary",
+      "gradebook": "assessment",
+    };
 
     if (ALIAS_MAP[active]) active = ALIAS_MAP[active];
 
-    if (PAGE.role === "student" && DEPT_CHILD.includes(active)) {
+    if (portalRole === "student" && DEPT_CHILD.includes(active)) {
 
       active = "departments";
 
@@ -1540,7 +2147,7 @@
 
 
 
-    const sidebar = buildSidebar(cfg, active, user);
+    const sidebar = buildSidebar(cfg, active, user, portalRole);
 
     const scrim   = el(`<div class="scrim" id="scrim"></div>`);
 
@@ -1562,33 +2169,85 @@
 
 
 
-    /* ── Sidebar accordion (collapsible groups — admin only) ── */
+    /* ── Persistent multi-level sidebar expansion helpers ── */
 
-    const OPEN_GROUP_KEY = `ngis-${PAGE.role}-open-group`;
+    function readOpenIds(storageKey) {
+
+      try {
+
+        const raw = store.get(storageKey);
+
+        if (!raw) return [];
+
+        if (raw.startsWith('[')) {
+
+          const arr = JSON.parse(raw);
+
+          return Array.isArray(arr) ? arr.filter(Boolean) : [];
+
+        }
+
+        return [raw];
+
+      } catch (e) { return []; }
+
+    }
+
+    function saveOpenIds(storageKey, elements, attrName) {
+
+      const ids = elements.filter(node => node.classList.contains('expanded')).map(node => node.getAttribute(attrName)).filter(Boolean);
+
+      try { store.set(storageKey, JSON.stringify(ids)); } catch (e) {}
+
+    }
+
+    const OPEN_GROUPS_KEY = `ngis-${portalRole}-open-groups`;
+
+    const OPEN_SUBGROUPS_KEY = `ngis-${portalRole}-open-subgroups`;
+
+    const OPEN_NESTED_KEY = `ngis-${portalRole}-open-nested`;
+
+
+
+    /* ── Sidebar collapsible groups ── */
 
     const collapsibleGroups = Array.from(sidebar.querySelectorAll('.nav-group.collapsible'));
 
+    const setGroupExpanded = (groupEl, expanded) => {
+
+      groupEl.classList.toggle('expanded', expanded);
+
+      const btn = groupEl.querySelector('.nav-group-label');
+
+      if (btn && btn.tagName === 'BUTTON') btn.setAttribute('aria-expanded', String(expanded));
+
+    };
+
     if (collapsibleGroups.length) {
 
-      const activeGroupEl = collapsibleGroups.find(g => g.querySelector('.nav-link.active'));
+      const savedGroups = readOpenIds(OPEN_GROUPS_KEY);
 
-      const initialId = activeGroupEl ? activeGroupEl.dataset.groupId : store.get(OPEN_GROUP_KEY);
+      const legacySingle = store.get(`ngis-${portalRole}-open-group`);
 
+      if (legacySingle && !savedGroups.includes(legacySingle)) savedGroups.push(legacySingle);
 
-
-      const setGroupExpanded = (groupEl, expanded) => {
-
-        groupEl.classList.toggle('expanded', expanded);
-
-        const btn = groupEl.querySelector('.nav-group-label');
-
-        if (btn && btn.tagName === 'BUTTON') btn.setAttribute('aria-expanded', String(expanded));
-
-      };
+      const hasSavedGroups = store.get(OPEN_GROUPS_KEY) !== null;
 
 
 
-      collapsibleGroups.forEach(g => setGroupExpanded(g, g.dataset.groupId === initialId));
+      collapsibleGroups.forEach(g => {
+
+        const gid = g.dataset.groupId || '';
+
+        const hasActive = Boolean(g.querySelector('.nav-link.active'));
+
+        const shouldOpen = hasActive || (hasSavedGroups ? savedGroups.includes(gid) : (gid && legacySingle === gid));
+
+        setGroupExpanded(g, shouldOpen);
+
+      });
+
+      saveOpenIds(OPEN_GROUPS_KEY, collapsibleGroups, 'data-group-id');
 
 
 
@@ -1606,7 +2265,7 @@
 
             setGroupExpanded(g, true);
 
-            store.set(OPEN_GROUP_KEY, g.dataset.groupId || '');
+            saveOpenIds(OPEN_GROUPS_KEY, collapsibleGroups, 'data-group-id');
 
             return;
 
@@ -1614,9 +2273,9 @@
 
           const willOpen = !g.classList.contains('expanded');
 
-          collapsibleGroups.forEach(other => setGroupExpanded(other, other === g && willOpen));
+          setGroupExpanded(g, willOpen);
 
-          store.set(OPEN_GROUP_KEY, willOpen ? g.dataset.groupId : '');
+          saveOpenIds(OPEN_GROUPS_KEY, collapsibleGroups, 'data-group-id');
 
           if (willOpen) {
 
@@ -1660,27 +2319,41 @@
 
 
 
-    /* ── Sidebar sub-accordion (nested collapsible sub-groups) ── */
+    /* ── Sidebar sub-accordion (1st-level collapsible sub-groups) ── */
 
     const collapsibleSubgroups = Array.from(sidebar.querySelectorAll('.nav-subgroup.collapsible'));
 
+    const setSubgroupExpanded = (sg, expanded) => {
+
+      sg.classList.toggle('expanded', expanded);
+
+      const btn = sg.querySelector('.nav-subgroup-label');
+
+      if (btn) btn.setAttribute('aria-expanded', String(expanded));
+
+    };
+
     if (collapsibleSubgroups.length) {
+
+      const savedSubs = readOpenIds(OPEN_SUBGROUPS_KEY);
 
       collapsibleSubgroups.forEach(sg => {
 
-        const hasActiveSub = sg.querySelector('.nav-link.active');
+        const sgId = sg.dataset.subgroupId || '';
 
-        if (hasActiveSub) {
+        const hasActiveSub = Boolean(sg.querySelector('.nav-link.active'));
 
-          sg.classList.add('expanded');
+        const shouldOpen = hasActiveSub || savedSubs.includes(sgId);
 
-          const btn = sg.querySelector('.nav-subgroup-label');
+        setSubgroupExpanded(sg, shouldOpen);
 
-          if (btn) btn.setAttribute('aria-expanded', 'true');
+      });
 
-        }
+      saveOpenIds(OPEN_SUBGROUPS_KEY, collapsibleSubgroups, 'data-subgroup-id');
 
 
+
+      collapsibleSubgroups.forEach(sg => {
 
         const btn = sg.querySelector('.nav-subgroup-label');
 
@@ -1692,11 +2365,23 @@
 
           e.stopPropagation();
 
+          if (sidebar.classList.contains('collapsed')) {
+
+            setSidebarCollapsed(false);
+
+            setSubgroupExpanded(sg, true);
+
+            saveOpenIds(OPEN_SUBGROUPS_KEY, collapsibleSubgroups, 'data-subgroup-id');
+
+            return;
+
+          }
+
           const willOpen = !sg.classList.contains('expanded');
 
-          sg.classList.toggle('expanded', willOpen);
+          setSubgroupExpanded(sg, willOpen);
 
-          btn.setAttribute('aria-expanded', String(willOpen));
+          saveOpenIds(OPEN_SUBGROUPS_KEY, collapsibleSubgroups, 'data-subgroup-id');
 
         });
 
@@ -1706,27 +2391,51 @@
 
 
 
-    /* ── Sidebar 2nd-level nested sub-accordion (e.g. Academic Result) ── */
+    /* ── Sidebar 2nd-level nested sub-accordion (e.g. Data Dictionary / Academic Result) ── */
 
     const collapsibleNested = Array.from(sidebar.querySelectorAll('.nav-nested-group.collapsible'));
 
+    const setNestedExpanded = (ng, expanded) => {
+
+      ng.classList.toggle('expanded', expanded);
+
+      const btn = ng.querySelector('.nav-nested-label');
+
+      if (btn) btn.setAttribute('aria-expanded', String(expanded));
+
+    };
+
     if (collapsibleNested.length) {
+
+      const savedNested = readOpenIds(OPEN_NESTED_KEY);
 
       collapsibleNested.forEach(ng => {
 
-        const hasActiveNested = ng.querySelector('.nav-link.active');
+        const ngId = ng.dataset.nestedId || '';
 
-        if (hasActiveNested) {
+        const hasActiveNested = Boolean(ng.querySelector('.nav-link.active'));
 
-          ng.classList.add('expanded');
+        const shouldOpen = hasActiveNested || savedNested.includes(ngId);
 
-          const btn = ng.querySelector('.nav-nested-label');
+        setNestedExpanded(ng, shouldOpen);
 
-          if (btn) btn.setAttribute('aria-expanded', 'true');
+        if (shouldOpen) {
+
+          const parentSub = ng.closest('.nav-subgroup.collapsible');
+
+          if (parentSub) setSubgroupExpanded(parentSub, true);
 
         }
 
+      });
 
+      saveOpenIds(OPEN_NESTED_KEY, collapsibleNested, 'data-nested-id');
+
+      if (collapsibleSubgroups.length) saveOpenIds(OPEN_SUBGROUPS_KEY, collapsibleSubgroups, 'data-subgroup-id');
+
+
+
+      collapsibleNested.forEach(ng => {
 
         const btn = ng.querySelector('.nav-nested-label');
 
@@ -1740,9 +2449,9 @@
 
           const willOpen = !ng.classList.contains('expanded');
 
-          ng.classList.toggle('expanded', willOpen);
+          setNestedExpanded(ng, willOpen);
 
-          btn.setAttribute('aria-expanded', String(willOpen));
+          saveOpenIds(OPEN_NESTED_KEY, collapsibleNested, 'data-nested-id');
 
         });
 
@@ -1940,13 +2649,43 @@
 
 
 
-    // Click handler on sidebar links to capture scroll position and mark navigation
+    // Click handler on sidebar links to capture scroll position, clicked item, and sign-out state
 
     sidebar.addEventListener("click", (e) => {
 
       const link = e.target.closest("a");
 
       if (!link) return;
+
+      const isLogout = link.classList.contains("side-foot-signout") || (link.dataset && link.dataset.id === "logout");
+
+      if (isLogout) {
+
+        try {
+
+          if (window.NGISAuth && typeof window.NGISAuth.clearSession === "function") {
+
+            window.NGISAuth.clearSession();
+
+          } else {
+
+            localStorage.removeItem("ngis_token");
+
+            localStorage.removeItem("ngis_user");
+
+            localStorage.removeItem("ngis_active_portal");
+
+            localStorage.removeItem("ngis_session_mode");
+
+          }
+
+          sessionStorage.removeItem(CLICKED_NAV_KEY);
+
+        } catch (err) {}
+
+        return;
+
+      }
 
       try {
 
@@ -1956,9 +2695,71 @@
 
         sessionStorage.setItem(NAV_FLAG_KEY, "1");
 
-      } catch (e) {}
+        if (link.dataset && link.dataset.id) {
+
+          sessionStorage.setItem(CLICKED_NAV_KEY, JSON.stringify({ id: link.dataset.id, portal: portalRole }));
+
+        }
+
+      } catch (err) {}
 
     }, { capture: true });
+
+    // Update active state when navigating to same-page hash targets (e.g. #tabHero)
+
+    window.addEventListener("hashchange", () => {
+
+      const curHashNow = (window.location.hash || "").toLowerCase();
+
+      const curFileNow = (window.location.pathname || "").replace(/\\/g, "/").split("/").pop().toLowerCase();
+
+      const linksNow = Array.from(sidebar.querySelectorAll("a.nav-link[data-id]"));
+
+      let bestMatch = null;
+
+      linksNow.forEach(a => {
+
+        const raw = a.getAttribute("data-raw-href") || a.getAttribute("href") || "";
+
+        const hIdx = raw.indexOf("#");
+
+        const hPart = hIdx !== -1 ? raw.slice(hIdx).toLowerCase() : "";
+
+        const clean = raw.split("#")[0].split("?")[0].split("/").pop().toLowerCase();
+
+        if (clean === curFileNow && hPart && hPart === curHashNow) bestMatch = a;
+
+      });
+
+      if (!bestMatch && !curHashNow) {
+
+        bestMatch = linksNow.find(a => {
+
+          const raw = a.getAttribute("data-raw-href") || "";
+
+          return !raw.includes("#") && raw.split("?")[0].split("/").pop().toLowerCase() === curFileNow;
+
+        }) || null;
+
+      }
+
+      if (bestMatch) {
+
+        linksNow.forEach(a => {
+
+          const act = a === bestMatch;
+
+          a.classList.toggle("active", act);
+
+          if (act) a.setAttribute("aria-current", "page");
+
+          else a.removeAttribute("aria-current");
+
+        });
+
+      }
+
+    });
 
 
 
@@ -2060,11 +2861,7 @@
 
     function setSidebarCollapsed(collapsed) {
 
-      /* Desktop responsive view MUST always keep the sidebar fully open:
-         refuse every collapse request while not in drawer mode so the rail
-         never shrinks to the icon-only strip. Mobile drawer is unaffected. */
-
-      if (collapsed && !isDrawerMode()) collapsed = false;
+      if (isDrawerMode()) collapsed = false;
 
       const brandLogo = sidebar.querySelector('.side-brand-crest') || sidebar.querySelector('.side-brand-logo-img');
 
@@ -2075,6 +2872,12 @@
         main.classList.add('sidebar-collapsed');
 
         document.body.classList.add('sidebar-collapsed');
+
+        if (collapseBtn) {
+          collapseBtn.setAttribute('title', 'Expand sidebar');
+          collapseBtn.setAttribute('aria-label', 'Expand navigation');
+          collapseBtn.setAttribute('aria-expanded', 'false');
+        }
 
         expandBtn.setAttribute('title', 'Expand sidebar');
 
@@ -2098,6 +2901,12 @@
 
         document.body.classList.remove('sidebar-collapsed');
 
+        if (collapseBtn) {
+          collapseBtn.setAttribute('title', 'Collapse sidebar');
+          collapseBtn.setAttribute('aria-label', 'Collapse sidebar');
+          collapseBtn.setAttribute('aria-expanded', 'true');
+        }
+
         expandBtn.setAttribute('title', 'Collapse sidebar');
 
         expandBtn.setAttribute('aria-label', 'Collapse sidebar');
@@ -2118,11 +2927,9 @@
 
     }
 
-    // Restore persisted state or default to collapsed on admin as requested
-
     const savedCollapsed = store.get(COLLAPSED_KEY);
 
-    if (savedCollapsed === '1' || (savedCollapsed === null && PAGE.role === 'admin')) {
+    if (savedCollapsed === '1') {
 
       setSidebarCollapsed(true);
 
@@ -2162,7 +2969,7 @@
 
         e.stopPropagation();
 
-        setSidebarCollapsed(true);
+        setSidebarCollapsed(!sidebar.classList.contains('collapsed'));
 
       });
 
@@ -2182,23 +2989,92 @@
 
     }
 
+    const searchInput = sidebar.querySelector('#sidebarSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        if (!q) {
+          sidebar.querySelectorAll('.nav-group, .nav-subgroup, .nav-nested-group, .nav-link').forEach(elNode => {
+            elNode.style.display = '';
+          });
+          const savedGroups = readOpenIds(OPEN_GROUPS_KEY);
+          const savedSubs = readOpenIds(OPEN_SUBGROUPS_KEY);
+          const savedNested = readOpenIds(OPEN_NESTED_KEY);
+          collapsibleGroups.forEach(g => setGroupExpanded(g, Boolean(g.querySelector('.nav-link.active')) || savedGroups.includes(g.dataset.groupId || '')));
+          collapsibleSubgroups.forEach(sg => setSubgroupExpanded(sg, Boolean(sg.querySelector('.nav-link.active')) || savedSubs.includes(sg.dataset.subgroupId || '')));
+          collapsibleNested.forEach(ng => setNestedExpanded(ng, Boolean(ng.querySelector('.nav-link.active')) || savedNested.includes(ng.dataset.nestedId || '')));
+          return;
+        }
+        sidebar.querySelectorAll('.nav-group').forEach(grp => {
+          let groupVisibleCount = 0;
+          grp.querySelectorAll('.nav-subgroup').forEach(sub => {
+            const subTitle = (sub.querySelector('.nav-subgroup-label')?.textContent || '').toLowerCase();
+            const subMatch = subTitle.indexOf(q) !== -1;
+            let childMatches = 0;
+            sub.querySelectorAll('.nav-nested-group').forEach(nested => {
+              const nTitle = (nested.querySelector('.nav-nested-label')?.textContent || '').toLowerCase();
+              const nTitleMatch = subMatch || nTitle.indexOf(q) !== -1;
+              let nestedCount = 0;
+              nested.querySelectorAll('.nav-nested-link').forEach(nl => {
+                const nTxt = (nl.textContent || '').toLowerCase();
+                const nShow = nTitleMatch || nTxt.indexOf(q) !== -1;
+                nl.style.display = nShow ? '' : 'none';
+                if (nShow) nestedCount++;
+              });
+              const showNested = nestedCount > 0;
+              nested.style.display = showNested ? '' : 'none';
+              if (showNested) {
+                nested.classList.add('expanded');
+                childMatches += nestedCount;
+              }
+            });
+            sub.querySelectorAll(':scope > .nav-subgroup-links > div > .nav-sub-link').forEach(link => {
+              const txt = (link.textContent || '').toLowerCase();
+              const show = subMatch || txt.indexOf(q) !== -1;
+              link.style.display = show ? '' : 'none';
+              if (show) childMatches++;
+            });
+            const showSub = subMatch || childMatches > 0;
+            sub.style.display = showSub ? '' : 'none';
+            if (showSub) sub.classList.add('expanded');
+            if (showSub) groupVisibleCount++;
+          });
+          grp.querySelectorAll(':scope > .nav-link, :scope > .nav-group-links > div > .nav-link').forEach(link => {
+            const txt = (link.textContent || '').toLowerCase();
+            const show = txt.indexOf(q) !== -1;
+            link.style.display = show ? '' : 'none';
+            if (show) groupVisibleCount++;
+          });
+          grp.style.display = groupVisibleCount > 0 ? '' : 'none';
+          if (groupVisibleCount > 0 && grp.classList.contains('collapsible')) {
+            setGroupExpanded(grp, true);
+          }
+        });
+      });
+    }
 
-    /* Desktop view: the sidebar is locked open, so hide the rail collapse /
-       expand toggles entirely (there is no control to close it) and force it
-       expanded. On drawer widths (<=1024px) restore them so CSS governs and the
-       hamburger-driven drawer keeps working normally. */
+    /* Desktop view: keep collapse/expand controls available (>=1025px),
+       and hide them in mobile/tablet drawer mode (<=1024px). */
 
     function syncRailLockUI() {
 
-      const lockOpen = !isDrawerMode();
+      const inDrawer = isDrawerMode();
 
-      const hide = (b) => { if (b) { if (lockOpen) b.style.setProperty('display', 'none', 'important'); else b.style.removeProperty('display'); } };
+      if (collapseBtn) {
+        if (inDrawer) collapseBtn.style.setProperty('display', 'none', 'important');
+        else collapseBtn.style.removeProperty('display');
+      }
 
-      hide(collapseBtn);
+      if (expandBtn) {
+        if (inDrawer) expandBtn.style.setProperty('display', 'none', 'important');
+        else expandBtn.style.removeProperty('display');
+      }
 
-      hide(expandBtn);
-
-      if (lockOpen && sidebar.classList.contains('collapsed')) setSidebarCollapsed(false);
+      if (inDrawer && sidebar.classList.contains('collapsed')) {
+        sidebar.classList.remove('collapsed');
+        main.classList.remove('sidebar-collapsed');
+        document.body.classList.remove('sidebar-collapsed');
+      }
 
     }
 
@@ -2212,7 +3088,7 @@
 
     if (!bNav) {
 
-      bNav = buildBottomNav(PAGE.role, active);
+      bNav = buildBottomNav(portalRole, active);
 
       document.body.appendChild(bNav);
 
@@ -2759,7 +3635,36 @@
       document.head.appendChild(lu);
     }
 
+    /* UI Cleanup & Zero-Border Zero-Shadow Master System */
+    let cleanupLink = document.querySelector('link[href*="ui-cleanup.css"]');
+    if (!cleanupLink) {
+      cleanupLink = document.createElement("link");
+      cleanupLink.rel = "stylesheet";
+      cleanupLink.href = _P + "assets/css/ui-cleanup.css";
+      document.head.appendChild(cleanupLink);
+    } else {
+      document.head.appendChild(cleanupLink);
+    }
+
+    /* Shared search system must load AFTER ui-cleanup/shared-components so the
+       single .ngis-search pattern wins by source order, not page-level hacks. */
+    if (!document.querySelector('link[href*="ngis-search.css"]')) {
+      const searchCss = document.createElement("link");
+      searchCss.rel = "stylesheet";
+      searchCss.href = _P + "assets/css/ngis-search.css";
+      document.head.appendChild(searchCss);
+    }
+
+    /* Semantic urgency-state system (global status-aware colors) */
+    if (!document.querySelector('link[href*="semantic-states.css"]')) {
+      const lss = document.createElement("link");
+      lss.rel = "stylesheet";
+      lss.href = _P + "assets/css/semantic-states.css";
+      document.head.appendChild(lss);
+    }
+
     const sharedComponents = [
+      "assets/js/ngis-copy.js",
       "assets/js/error-messages.js",
       "assets/js/error-boundary.js",
       "assets/components/skeleton.js",
@@ -2768,11 +3673,15 @@
       "assets/components/primary-button.js",
       "assets/components/cancel-dialog.js",
       "assets/components/onboarding-layout.js",
+      "assets/components/ngis-ui-kit.js",
       "assets/js/ui-states.js",
-      "assets/js/action-icons.js"
+      "assets/js/action-icons.js?v=1.13.2",
+      "assets/js/semantic-states.js",
+      "assets/js/ngis-search.js"
     ];
 
     sharedComponents.forEach(scriptPath => {
+      if (document.querySelector('script[src*="' + scriptPath + '"]')) return;
       const scriptTag = document.createElement("script");
       scriptTag.src = _P + scriptPath;
       scriptTag.defer = true;
@@ -2785,6 +3694,16 @@
     kind = kind || "info";
 
     if (window.NGISUI && window.NGISUI.toast) {
+
+      /* Full async lifecycle: window.toast('Saving…', 'loading', '', { promise }) */
+      if (kind === "loading" && options && options.promise) {
+        const p = window.NGISUI.toast.operation(msg, options.promise, options);
+        p.catch(() => { /* state already rendered by the feedback row */ });
+        return p;
+      }
+      if (kind === "loading") {
+        return window.NGISUI.toast.loading(msg, detail || "");
+      }
 
       const fn = window.NGISUI.toast[kind] || window.NGISUI.toast.info;
 
@@ -2818,9 +3737,515 @@
 
 
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  /* Boot: wait briefly for the published navigation so the sidebar paints
+     from the managed configuration when one exists. If the request is slow
+     or unavailable we mount immediately with the cached / built-in NAV. */
+  function boot() {
+    Promise.race([
+      navReadyPromise,
+      new Promise((resolve) => setTimeout(resolve, 1200)),
+    ]).then(mount);
+  }
 
-  else mount();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+
+  else boot();
 
 })();
+
+
+/* =========================================================================
+   NGIS SIDEBAR SYSTEM v2 — shared enhancement layer
+   -------------------------------------------------------------------------
+   Runs once per document, after the legacy shell mounts. No framework, no
+   extra network call per interaction, no duplicate listeners, no re-render:
+
+     - removes duplicate sidebars / scrims / hamburger ids
+     - keeps the current portal's identity (never renders two global navs)
+     - enriches rows with accessible tooltips, aria-current, aria-expanded
+     - gives the mobile drawer dialog semantics, a focus trap and focus restore
+     - filters navigation by the SERVER-evaluated access document
+     - gates the current direct URL through the same server resolver
+
+   Shared by all portals: portal-specific navigation content still comes from
+   /api/nav/published; only the shell behaviour lives here.
+   ========================================================================= */
+(function (window, document) {
+  'use strict';
+  if (window.__NGIS_SIDEBAR_V2__) return;
+  window.__NGIS_SIDEBAR_V2__ = true;
+
+  var ACCESS_CACHE_KEY = 'ngis-nav-access-v2';
+  var sidebar = null;
+  var stateObserver = null;
+  var bodyObserver = null;
+  var access = { hidden_pages: [], denied_pages: [], hidden_files: [],
+                 hidden_keys: [], denied_keys: [] };
+
+  /* Portal directory from the URL. Nav ids such as "dashboard" repeat in every
+     portal, so access keys must always be qualified with the owning portal. */
+  function portalDir() {
+    var m = (window.location.pathname || '').toLowerCase().match(/\/pages\/([^/]+)\//);
+    return m ? m[1] : '';
+  }
+
+  function navPortals() {
+    var list = [];
+    if (sidebar) {
+      var role = (sidebar.getAttribute('data-portal-role') || '').toLowerCase();
+      var pp = (sidebar.getAttribute('data-portal-path') || '').toLowerCase();
+      if (role) list.push(role);
+      if (pp && list.indexOf(pp) === -1) list.push(pp);
+    }
+    var dir = portalDir();
+    if (dir && list.indexOf(dir) === -1) list.push(dir);
+    return list;
+  }
+  var opener = null;
+  var focusBeforeOpen = null;
+  var drawerOpen = false;
+  var attached = false;
+
+  /* Keep the first-party identity cookie aligned with the client gate. HTML
+     document requests cannot send X-Actor, so the server-side direct-URL gate
+     reads this cookie instead. Passive demo sessions stay cookie-free. */
+  function writeActorCookie(actor) {
+    try {
+      document.cookie = actor
+        ? 'ngis_actor=' + encodeURIComponent(actor) + '; path=/; max-age=604800; SameSite=Lax'
+        : 'ngis_actor=; path=/; max-age=0; SameSite=Lax';
+    } catch (e) {}
+  }
+
+  /* localStorage is origin-wide, so this works on every page regardless of
+     whether auth.js was loaded. That avoids one page erasing the identity
+     cookie that another page established. */
+  function actorHeader() {
+    var value = '';
+    try {
+      var ls = window.localStorage;
+      var passive = ls.getItem('ngis_session_mode') === 'passive';
+      var u = null;
+      try { u = JSON.parse(ls.getItem('ngis_user') || 'null'); } catch (e) { u = null; }
+      if (!u) {
+        try { u = JSON.parse(ls.getItem('auth_user') || 'null'); } catch (e) { u = null; }
+      }
+      var raw = u && (u.email || u.username);
+      if (!passive && raw) value = String(raw).trim().toLowerCase();
+    } catch (e) { value = ''; }
+    writeActorCookie(value);
+    return value;
+  }
+
+  function authHeaders() {
+    var actor = actorHeader();
+    return actor ? { 'X-Actor': actor } : {};
+  }
+
+  function dedupeShell() {
+    ['#sidebar', '#scrim', '#htbHamburger'].forEach(function (selector) {
+      var nodes = document.querySelectorAll(selector);
+      for (var i = 1; i < nodes.length; i++) {
+        if (nodes[i].parentNode) nodes[i].parentNode.removeChild(nodes[i]);
+      }
+    });
+  }
+
+  function labelOf(node) {
+    var label = node.querySelector('.nav-link-label, .nav-group-label-text');
+    return String((label ? label.textContent : node.textContent) || '').replace(/\s+/g, ' ').trim();
+  }
+
+  /* Accessibility: tooltips for the collapsed rail, semantic states for
+     active rows and expandable groups. Idempotent — safe after a re-render. */
+  function decorate() {
+    if (!sidebar) return;
+    var rows = sidebar.querySelectorAll('.nav-link, .nav-subgroup-label, .nav-nested-label, .nav-group-label');
+    Array.prototype.forEach.call(rows, function (row) {
+      var text = labelOf(row);
+      if (!text) return;
+      if (!row.getAttribute('title')) row.setAttribute('title', text);
+      if (/^(A|BUTTON)$/.test(row.tagName) && !row.getAttribute('aria-label')) {
+        row.setAttribute('aria-label', text);
+      }
+      if (/^(A|BUTTON)$/.test(row.tagName) && row.tagName === 'BUTTON' && !row.hasAttribute('type')) {
+        row.setAttribute('type', 'button');
+      }
+    });
+    var active = sidebar.querySelector('.nav-link.active');
+    if (active) active.setAttribute('aria-current', 'page');
+    var toggles = sidebar.querySelectorAll('.nav-group.collapsible > .nav-group-label,' +
+      '.nav-subgroup.collapsible > .nav-subgroup-label,' +
+      '.nav-nested-group.collapsible > .nav-nested-label');
+    Array.prototype.forEach.call(toggles, function (btn) {
+      if (btn.tagName === 'BUTTON' && !btn.hasAttribute('aria-expanded')) {
+        btn.setAttribute('aria-expanded', btn.parentNode.classList.contains('expanded') ? 'true' : 'false');
+      }
+    });
+  }
+
+  /* Permission-aware visibility. The list is computed by the server; the
+     sidebar only reflects it. Direct-URL enforcement is independent. */
+  function applyAccess() {
+    if (!sidebar || !access) return;
+    var ports = navPortals();
+    var hasKeys = !!(access.hidden_keys || access.denied_keys);
+    var blocked = {};
+    /* Qualified keys (portal:id) are the source of truth. Raw ids are only a
+       fallback for a legacy cached document, and are portal-scoped by the API. */
+    (access.hidden_keys || []).concat(access.denied_keys || []).forEach(function (key) {
+      blocked[String(key).toLowerCase()] = true;
+    });
+    var rawIds = {};
+    if (!hasKeys) {
+      (access.hidden_pages || []).concat(access.denied_pages || []).forEach(function (id) {
+        rawIds[String(id).toLowerCase()] = true;
+      });
+    }
+    var hiddenFiles = {};
+    (access.hidden_files || []).forEach(function (f) { hiddenFiles[String(f).toLowerCase()] = true; });
+
+    function isBlocked(id, file) {
+      if (id && hasKeys) {
+        for (var i = 0; i < ports.length; i++) {
+          if (blocked[ports[i] + ':' + id]) return true;
+        }
+      }
+      return (id && rawIds[id]) || (file && hiddenFiles[file]);
+    }
+
+    var nodes = sidebar.querySelectorAll('[data-id], [data-subgroup-id], [data-nested-id], [data-group-id]');
+    Array.prototype.forEach.call(nodes, function (node) {
+      var id = (node.getAttribute('data-id') || node.getAttribute('data-subgroup-id') ||
+        node.getAttribute('data-nested-id') || node.getAttribute('data-group-id') || '').toLowerCase();
+      var raw = node.getAttribute('data-raw-href') || '';
+      var file = raw.split('?')[0].split('#')[0].split('/').pop().toLowerCase();
+      if (isBlocked(id, file)) node.setAttribute('data-access-hidden', '1');
+      else node.removeAttribute('data-access-hidden');
+    });
+
+    /* Collapse containers whose every leaf was removed. */
+    var groups = sidebar.querySelectorAll('.nav-group, .nav-subgroup, .nav-nested-group');
+    Array.prototype.forEach.call(groups, function (group) {
+      var links = group.querySelectorAll('.nav-link');
+      if (!links.length) return;
+      var visible = 0;
+      Array.prototype.forEach.call(links, function (link) {
+        if (!link.closest('[data-access-hidden]')) visible++;
+      });
+      var gid = (group.getAttribute('data-group-id') || group.getAttribute('data-subgroup-id') || '').toLowerCase();
+      if (!visible) group.setAttribute('data-access-hidden', '1');
+      else if (!isBlocked(gid, '')) group.removeAttribute('data-access-hidden');
+    });
+  }
+
+  function loadAccess(force) {
+    try {
+      if (!force) {
+        var cached = window.sessionStorage.getItem(ACCESS_CACHE_KEY);
+        if (cached) { access = JSON.parse(cached); applyAccess(); return; }
+      }
+    } catch (e) {}
+    if (typeof window.fetch !== 'function') return;
+    var query = portalDir() ? '?portal=' + encodeURIComponent(portalDir()) : '';
+    window.fetch('/api/roles-mgmt/access' + query, { headers: authHeaders() })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.success) return;
+        access = {
+          enforced: !!data.enforced,
+          hidden_pages: data.hidden_pages || [],
+          denied_pages: data.denied_pages || [],
+          hidden_keys: data.hidden_keys || [],
+          denied_keys: data.denied_keys || [],
+          hidden_files: data.hidden_files || [],
+        };
+        try { window.sessionStorage.setItem(ACCESS_CACHE_KEY, JSON.stringify(access)); } catch (e) {}
+        applyAccess();
+      })
+      .catch(function () { /* nav stays available if the API is offline */ });
+  }
+
+  function gateCurrentPage() {
+    if (typeof window.fetch !== 'function') return;
+    var PAGE = window.PAGE || {};
+    var file = (window.location.pathname || '').split('/').pop();
+    /* Filename + portal is unambiguous. PAGE.active alone is not: nav ids such
+       as "dashboard" exist in every portal and would resolve to the wrong one. */
+    var page = file || PAGE.active || '';
+    if (!page) return;
+    var query = '?page=' + encodeURIComponent(page) +
+      '&portal=' + encodeURIComponent(portalDir()) +
+      '&active=' + encodeURIComponent(PAGE.active || '');
+    window.fetch('/api/roles-mgmt/my-access' + query, { headers: authHeaders() })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.enforced || data.allowed !== false) return;
+        var prefix = (window.location.pathname || '').indexOf('/pages/') !== -1 ? '../../' : '';
+        window.location.href = prefix + 'pages/shared/access-denied.html?attempted=' +
+          encodeURIComponent(window.location.pathname + window.location.search) +
+          '&reason=access_denied';
+      })
+      .catch(function () {});
+  }
+
+  /* Drawer semantics + focus management. Only active in drawer widths. */
+  function focusable() {
+    if (!sidebar) return [];
+    return Array.prototype.filter.call(
+      sidebar.querySelectorAll('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])'),
+      function (el) { return el.offsetParent !== null; }
+    );
+  }
+
+  function onDrawerOpen() {
+    if (!sidebar) return;
+    sidebar.setAttribute('role', 'dialog');
+    sidebar.setAttribute('aria-modal', 'true');
+    sidebar.setAttribute('aria-label', 'Navigation menu');
+    focusBeforeOpen = opener || document.activeElement;
+    window.setTimeout(function () {
+      var items = focusable();
+      if (items.length && document.activeElement && !sidebar.contains(document.activeElement)) {
+        items[0].focus();
+      }
+    }, 60);
+  }
+
+  function onDrawerClose() {
+    if (!sidebar) return;
+    sidebar.setAttribute('role', 'navigation');
+    sidebar.removeAttribute('aria-modal');
+    if (focusBeforeOpen && document.contains(focusBeforeOpen) && focusBeforeOpen.focus) {
+      try { focusBeforeOpen.focus(); } catch (e) {}
+    }
+    focusBeforeOpen = null;
+  }
+
+  function watchDrawer() {
+    if (stateObserver || !sidebar) return;
+    drawerOpen = sidebar.classList.contains('open');
+    stateObserver = new MutationObserver(function () {
+      var isOpen = sidebar.classList.contains('open');
+      if (isOpen === drawerOpen) return;
+      drawerOpen = isOpen;
+      if (isOpen) onDrawerOpen(); else onDrawerClose();
+    });
+    stateObserver.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  function attach() {
+    if (attached) return;
+    var found = document.getElementById('sidebar');
+    if (!found) return;
+    attached = true;
+    dedupeShell();
+    sidebar = document.getElementById('sidebar') || found;
+
+    /* Portal identity: record the owning directory without overriding the
+       resolved role (superadmin/staff previews remain intact). Dedupe above
+       guarantees exactly one global navigation is rendered. */
+    var pathMatch = (window.location.pathname || '').toLowerCase().match(/\/pages\/(admin|principal|teacher|student|shared)\//);
+    if (pathMatch) sidebar.setAttribute('data-portal-path', pathMatch[1]);
+    document.body.setAttribute('data-sidebar-system', 'v2');
+
+    decorate();
+    watchDrawer();
+    loadAccess(false);
+    gateCurrentPage();
+
+    /* Re-apply cheap decorations after any nav re-render, without observing
+       attribute churn (which would loop when we write attributes ourselves). */
+    if (window.MutationObserver) {
+      var navObserver = new MutationObserver(function (mutations) {
+        var needsDecorate = false;
+        for (var i = 0; i < mutations.length; i++) {
+          if (mutations[i].addedNodes.length) { needsDecorate = true; break; }
+        }
+        if (needsDecorate) { decorate(); applyAccess(); }
+      });
+      var nav = sidebar.querySelector('.side-nav');
+      if (nav) navObserver.observe(nav, { childList: true, subtree: true });
+    }
+  }
+
+  /* One delegated opener tracker + one focus-trap listener for the whole app. */
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest ? e.target.closest(
+      '#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action="toggle-sidebar"]') : null;
+    if (btn) opener = btn;
+  }, true);
+
+  document.addEventListener('keydown', function (e) {
+    /* Escape / scrim / nav-click closing is already owned by layout.js; the
+       class observer above performs the focus restore exactly once. */
+    if (e.key !== 'Tab' || !sidebar || !sidebar.classList.contains('open')) return;
+    var items = focusable();
+    if (!items.length) return;
+    var first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }, true);
+
+  function start() {
+    attach();
+    if (attached) return;
+    if (window.MutationObserver) {
+      bodyObserver = new MutationObserver(function () {
+        if (document.getElementById('sidebar')) { attach(); if (bodyObserver) bodyObserver.disconnect(); }
+      });
+      bodyObserver.observe(document.body, { childList: true, subtree: false });
+    }
+    /* layout.js waits up to 1200ms for the published nav; cover that window. */
+    window.setTimeout(attach, 1400);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+
+  /* Public, minimal API for the access-control workspace to invalidate the
+     cached visibility document after a Save & Apply. */
+  window.NGIS_SIDEBAR = {
+    refreshAccess: function () { loadAccess(true); },
+    element: function () { return sidebar; },
+    apply: function () { decorate(); applyAccess(); },
+  };
+
+  /* Global Modal & Popup Controller bridge */
+  if (!window.NGIS_MODAL) {
+    var modalScript = document.createElement('script');
+    modalScript.src = (function() {
+      var currentScript = document.currentScript;
+      if (currentScript && currentScript.src) {
+        return currentScript.src.replace(/layout\.js.*$/, 'modal-system.js');
+      }
+      return '../../assets/js/modal-system.js';
+    })();
+    modalScript.defer = true;
+    document.head.appendChild(modalScript);
+  }
+
+  /* Global Smart Content Display & Progressive Disclosure System bridge */
+  if (!window.SmartDisclosure) {
+    var disclosureScript = document.createElement('script');
+    disclosureScript.src = (function() {
+      var currentScript = document.currentScript;
+      if (currentScript && currentScript.src) {
+        return currentScript.src.replace(/layout\.js.*$/, 'smart-disclosure.js');
+      }
+      return '../../assets/js/smart-disclosure.js';
+    })();
+    disclosureScript.defer = true;
+    document.head.appendChild(disclosureScript);
+  }
+
+  /* Global UX Copy & UI Kit System bridge (Rules 1-12) */
+  if (!window.NGIS_COPY) {
+    var copyScript = document.createElement('script');
+    copyScript.src = (function() {
+      var currentScript = document.currentScript;
+      if (currentScript && currentScript.src) {
+        return currentScript.src.replace(/layout\.js.*$/, 'ngis-copy.js');
+      }
+      return '../../assets/js/ngis-copy.js';
+    })();
+    copyScript.defer = true;
+    document.head.appendChild(copyScript);
+  }
+
+  if (!window.NGISKit) {
+    var kitScript = document.createElement('script');
+    kitScript.src = (function() {
+      var currentScript = document.currentScript;
+      if (currentScript && currentScript.src) {
+        return currentScript.src.replace(/js\/layout\.js.*$/, 'components/ngis-ui-kit.js');
+      }
+      return '../../assets/components/ngis-ui-kit.js';
+    })();
+    kitScript.defer = true;
+    document.head.appendChild(kitScript);
+  }
+
+  /* Global Skeleton Loading System bridge */
+  if (!window.NGIS_SKELETON) {
+    var skScript = document.createElement('script');
+    skScript.src = (function() {
+      var currentScript = document.currentScript;
+      if (currentScript && currentScript.src) {
+        return currentScript.src.replace(/layout\.js.*$/, 'skeleton-system.js');
+      }
+      return '../../assets/js/skeleton-system.js';
+    })();
+    skScript.defer = true;
+    document.head.appendChild(skScript);
+  }
+
+  /* Global Runtime UX Writing & State Normalizer (Rules 1–12) */
+  function normalizeUXWritingAndStates() {
+    try {
+      // 1. Sanitize Toast Messages (Rule 12: eliminate filler words)
+      if (typeof window.toast === 'function' && !window.toast.__ngisSanitized) {
+        var origToast = window.toast;
+        window.toast = function(msg, type) {
+          if (typeof msg === 'string') {
+            msg = msg.replace(/\b(successfully|has been successfully|was successfully)\b/gi, '')
+                     .replace(/\bhas been\s+/gi, '')
+                     .replace(/\bhave been\s+/gi, '')
+                     .replace(/\bplease note that\s+/gi, '')
+                     .replace(/\s{2,}/g, ' ')
+                     .trim();
+          }
+          /* Forward every argument — detail and options (incl. {promise})
+             must reach the underlying feedback engine untouched. */
+          return origToast.apply(this, arguments);
+        };
+        window.toast.__ngisSanitized = true;
+      }
+
+      // 2. Normalize bare buttons (Rule 8: verb + noun, no bare 'Submit', 'OK', 'Yes', 'Next')
+      document.querySelectorAll('button, a.btn, .btn').forEach(function(btn) {
+        var txt = btn.textContent.trim();
+        if (txt === 'Submit') {
+          var isSearch = btn.closest('form') && (btn.closest('form').id.indexOf('search') !== -1 || btn.closest('form').id.indexOf('filter') !== -1);
+          btn.textContent = isSearch ? 'Search Records' : 'Save Changes';
+        } else if (txt === 'Next') {
+          btn.textContent = 'Next Page';
+        } else if (txt === 'OK' || txt === 'Ok') {
+          btn.textContent = 'Confirm';
+        } else if (txt === 'Yes') {
+          btn.textContent = 'Confirm';
+        } else if (txt === 'Learn More' || txt === 'Learn more') {
+          btn.textContent = 'View Details';
+        }
+      });
+
+      // 3. Normalize semantic badge colors (Rule 9)
+      document.querySelectorAll('.badge, [class*="badge-"]').forEach(function(badge) {
+        var text = (badge.textContent || '').trim().toLowerCase();
+        if (text === 'urgent' || text === 'overdue' || text === 'failed' || text === 'expired' || text === 'rejected') {
+          if (!badge.classList.contains('badge-danger') && !badge.classList.contains('red')) {
+            badge.classList.add('badge-danger');
+          }
+        } else if (text === 'pending' || text === 'in progress' || text === 'review' || text === 'draft' || text === 'on hold') {
+          if (!badge.classList.contains('badge-warning') && !badge.classList.contains('amber')) {
+            badge.classList.add('badge-warning');
+          }
+        } else if (text === 'active' || text === 'published' || text === 'completed' || text === 'approved' || text === 'present') {
+          if (!badge.classList.contains('badge-success') && !badge.classList.contains('green')) {
+            badge.classList.add('badge-success');
+          }
+        }
+      });
+    } catch(err) {
+      // safe fallback
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', normalizeUXWritingAndStates);
+  } else {
+    normalizeUXWritingAndStates();
+  }
+  window.setTimeout(normalizeUXWritingAndStates, 500);
+})(window, document);
 

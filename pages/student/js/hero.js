@@ -5,6 +5,27 @@
    ══════════════════════════════════════ */
 
 (function () {
+  /* Shared Bootstrap-icon engine loader (idempotent) — hydrates the
+     data-ngis-icon slots above with official Bootstrap Icons SVGs. */
+  try {
+    if (!window.__NGIS_ICON_ENGINE__) {
+      window.__NGIS_ICON_ENGINE__ = true;
+      if (!(window.NGIS && window.NGIS.icon) && !document.querySelector('script[src*="action-icons.js"]')) {
+        var _root = (window.location.pathname || '').indexOf('/pages/') !== -1 ? '../../' : '';
+        if (!document.querySelector('link[href*="action-icons.css"]')) {
+          var _l = document.createElement('link');
+          _l.rel = 'stylesheet';
+          _l.href = _root + 'assets/css/action-icons.css?v=1.13.2';
+          document.head.appendChild(_l);
+        }
+        var _s = document.createElement('script');
+        _s.src = _root + 'assets/js/action-icons.js?v=1.13.2';
+        _s.defer = true;
+        document.head.appendChild(_s);
+      }
+    }
+  } catch (e) { /* icons fall back to ligature glyphs */ }
+
 
   /* ── Student data ── */
   var STUDENT = {
@@ -78,10 +99,6 @@
       title: 'Student Profile & Academic Standing',
       greeting: 'Personal information, enrollment credentials, program stream, and records'
     },
-    'student-id.html': {
-      title: 'Digital Student ID Card',
-      greeting: 'Official student credential, library card barcode, and campus access pass'
-    },
     'student-lost-found.html': {
       title: 'Campus Lost & Found Hub',
       greeting: 'Report lost personal items, browse discovered campus articles, and claim belongings'
@@ -112,23 +129,23 @@
 
         '<!-- Center: Global Search Capsule -->' +
         '<div class="htb-search-wrap" role="search">' +
-          '<span class="mi htb-search-icon">search</span>' +
+          '<span class="mi htb-search-icon" data-ngis-icon="search" aria-hidden="true">search</span>' +
           '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses," aria-label="Search courses">' +
         '</div>' +
 
         '<!-- Right: Controls & User Profile -->' +
         '<div class="htb-right-controls">' +
           '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
-            '<span class="mi">menu</span>' +
+            '<span class="mi" data-ngis-icon="menu" aria-hidden="true">menu</span>' +
           '</button>' +
 
           '<button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">' +
-            '<span class="mi">notifications</span>' +
+            '<span class="mi" data-ngis-icon="notifications" aria-hidden="true">notifications</span>' +
             '<span class="htb-ctrl-badge">3</span>' +
           '</button>' +
 
           '<a href="student-notifications.html" class="htb-ctrl-btn" id="htbMsgBtn" title="Messages" aria-label="Messages">' +
-            '<span class="mi">mail</span>' +
+            '<span class="mi" data-ngis-icon="mail" aria-hidden="true">mail</span>' +
             '<span class="htb-ctrl-badge">11</span>' +
           '</a>' +
 
@@ -174,16 +191,16 @@
       '</div>' +
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-info">' +
-        '<div class="htb-dd-row"><span class="mi">school</span><span>' + STUDENT.stream + '</span></div>' +
-        '<div class="htb-dd-row"><span class="mi">class</span><span>' + STUDENT.class + '</span></div>' +
-        '<div class="htb-dd-row"><span class="mi">email</span><span>' + STUDENT.email + '</span></div>' +
-        '<div class="htb-dd-row"><span class="mi">calendar_today</span><span>Enrolled: ' + STUDENT.enrolled + '</span></div>' +
-        '<div class="htb-dd-row"><span class="mi">emoji_events</span><span>GPA: ' + STUDENT.gpa + '</span></div>' +
+        '<div class="htb-dd-row"><span class="mi" data-ngis-icon="school" aria-hidden="true">school</span><span>' + STUDENT.stream + '</span></div>' +
+        '<div class="htb-dd-row"><span class="mi" data-ngis-icon="class" aria-hidden="true">class</span><span>' + STUDENT.class + '</span></div>' +
+        '<div class="htb-dd-row"><span class="mi" data-ngis-icon="email" aria-hidden="true">email</span><span>' + STUDENT.email + '</span></div>' +
+        '<div class="htb-dd-row"><span class="mi" data-ngis-icon="calendar_today" aria-hidden="true">calendar_today</span><span>Enrolled: ' + STUDENT.enrolled + '</span></div>' +
+        '<div class="htb-dd-row"><span class="mi" data-ngis-icon="emoji_events" aria-hidden="true">emoji_events</span><span>GPA: ' + STUDENT.gpa + '</span></div>' +
       '</div>' +
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-actions">' +
-        '<a href="student-profile.html" class="htb-dd-btn"><span class="mi">manage_accounts</span>My Profile</a>' +
-        '<a href="/" class="htb-dd-btn htb-dd-btn-danger"><span class="mi">logout</span>Sign Out</a>' +
+        '<a href="student-profile.html" class="htb-dd-btn"><span class="mi" data-ngis-icon="manage_accounts" aria-hidden="true">manage_accounts</span>My Profile</a>' +
+        '<a href="/" class="htb-dd-btn htb-dd-btn-danger"><span class="mi" data-ngis-icon="logout" aria-hidden="true">logout</span>Sign Out</a>' +
       '</div>' +
     '</div>';
 
@@ -336,7 +353,7 @@
       '</div>' +
       '<div class="hpd-footer">' +
         '<a href="' + notifLink + '" class="hpd-footer-btn">' +
-          '<span class="mi">notifications</span>View all' +
+          '<span class="mi" data-ngis-icon="notifications" aria-hidden="true">notifications</span>View all' +
         '</a>' +
       '</div>' +
     '</div>';

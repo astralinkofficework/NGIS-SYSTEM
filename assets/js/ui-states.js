@@ -412,7 +412,7 @@
 
       const root = (window.location.pathname.indexOf("/pages/") !== -1) ? "../../" : "";
       const defaultReturn = returnUrl || `${root}pages/${currentRole}/${currentRole}.html`;
-      const finalMsg = reason || message || `You are currently authenticated as <strong>${currentRole.toUpperCase()}</strong>. Access to this section requires <strong>${requiredRole}</strong> privileges.`;
+      const finalMsg = reason || message || `You are currently authenticated as <span class="font-medium">${currentRole.toUpperCase()}</span>. Access to this section requires <span class="font-medium">${requiredRole}</span> privileges.`;
 
       const card = document.createElement("div");
       card.className = "ngis-state-card ngis-denied-state";
@@ -523,7 +523,7 @@
           }
           modal.classList.add("hidden");
           document.querySelectorAll("form").forEach(f => this.restoreDraft(f));
-          this.toast.success("Session Restored", "Your workspace draft was recovered successfully.");
+          this.toast.success("Session Restored", "Your workspace draft recovered.");
           if (typeof options.onReauth === "function") options.onReauth();
         });
       }
@@ -650,7 +650,13 @@
     },
 
     /* ══════════════════════════════════════════════════════════
-       10. SUCCESS STATE & TOAST ENGINE
+       10. OPERATION FEEDBACK ENGINE (loading → success/error)
+       One centralized animated component for every portal.
+       - loading: indeterminate circular spinner (NGIS green)
+       - success: animated checkmark, auto-dismisses
+       - error: persists until dismissed, optional Retry action
+       - operation(): ties a row to the REAL async operation state —
+         never uses fixed timers to simulate completion.
        ══════════════════════════════════════════════════════════ */
     toast: {
       getContainer() {
@@ -660,25 +666,43 @@
           container.id = "ngisToastContainer";
           container.setAttribute("role", "region");
           container.setAttribute("aria-live", "polite");
+          container.setAttribute("aria-label", "Operation feedback");
           document.body.appendChild(container);
         }
         return container;
       },
 
+      /* Icon slot markup per state. Loading uses a pure-CSS spinner,
+         success an SVG checkmark that draws itself; others use the
+         shared Bootstrap icon engine (ligature text as fallback). */
+      _iconMarkup(type) {
+        if (type === "loading") {
+          return '<span class="ngis-toast-spinner" aria-hidden="true"></span>';
+        }
+        if (type === "success") {
+          return '<svg class="ngis-toast-check" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">' +
+            '<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" class="ngis-check-ring"/>' +
+            '<path d="M7.5 12.5l3 3 6-6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ngis-check-mark"/>' +
+            '</svg>';
+        }
+        const icons = { error: "x-circle", warning: "warning", info: "info" };
+        const name = icons[type] || "info";
+        return '<span class="ngis-toast-gi" data-ngis-icon="' + name + '" aria-hidden="true">' + name + "</span>";
+      },
+
+      _dismissDuration(type, options) {
+        if (options.duration !== undefined) return options.duration;
+        if (type === "error" || type === "loading") return 0; /* persists */
+        if (type === "success") return 3200;
+        return 4200;
+      },
+
       show(type, title, detail = "", options = {}) {
         const container = this.getContainer();
         const toast = document.createElement("div");
-        toast.className = `ngis-toast ${type} ngis-toast-${type}`;
-        toast.setAttribute("role", "alert");
-
-        const icons = {
-          success: "ph-check-circle",
-          error: "ph-x-circle",
-          warning: "ph-warning",
-          info: "ph-info"
-        };
-
-        const iconClass = icons[type] || "ph-info";
+        toast.className = `ngis-toast ${type} ngis-toast-enter`;
+        toast.setAttribute("role", type === "error" ? "alert" : "status");
+        toast.setAttribute("aria-live", type === "error" ? "assertive" : "polite");
 
         let actionHtml = "";
         if (options.actionText) {
@@ -686,7 +710,7 @@
         }
 
         toast.innerHTML = `
-          <i class="ph ${iconClass} ngis-toast-icon"></i>
+          <span class="ngis-toast-icon">${this._iconMarkup(type)}</span>
           <div class="ngis-toast-body">
             <div class="ngis-toast-title">${title}</div>
             ${detail ? `<div class="ngis-toast-detail">${detail}</div>` : ""}
@@ -700,25 +724,161 @@
           if (actBtn) {
             actBtn.addEventListener("click", () => {
               options.onAction();
-              toast.remove();
+              this.dismiss(toast);
             });
           }
         }
 
         const closeBtn = toast.querySelector(".ngis-toast-close");
-        closeBtn.addEventListener("click", () => toast.remove());
+        if (closeBtn) {
+          closeBtn.addEventListener("click", () => this.dismiss(toast));
+        }
+        /* Errors and loading rows keep their dismiss button; instant rows
+           show it too — keyboard accessible. */
+        if (this._dismissDuration(type, options) === 0) {
+          toast.classList.add("ngis-toast-persist");
+        }
 
         container.appendChild(toast);
 
-        // Auto dismiss in 4 seconds unless duration is 0
-        const duration = options.duration !== undefined ? options.duration : 4000;
-        if (duration > 0) {
-          setTimeout(() => {
-            if (toast.parentElement) toast.remove();
-          }, duration);
-        }
+        const duration = this._dismissDuration(type, options);
+        if (duration > 0) this._armAutoDismiss(toast, duration);
 
         return toast;
+      },
+
+      _armAutoDismiss(toast, duration) {
+        clearTimeout(toast.__ngisToastTimer);
+        toast.__ngisToastTimer = setTimeout(() => this.dismiss(toast), duration);
+      },
+
+      dismiss(toast) {
+        if (!toast || !toast.parentElement) return;
+        clearTimeout(toast.__ngisToastTimer);
+        toast.classList.add("ngis-toast-leave");
+        const done = () => { if (toast.parentElement) toast.remove(); };
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          done();
+        } else {
+          setTimeout(done, 220);
+        }
+      },
+
+      /* Smoothly turn an existing row into another state (no layout shift). */
+      morph(toast, nextType, title, detail = "", options = {}) {
+        if (!toast || !toast.parentElement) return null;
+        clearTimeout(toast.__ngisToastTimer);
+        toast.className = `ngis-toast ${nextType} ngis-toast-morph`;
+        toast.setAttribute("role", nextType === "error" ? "alert" : "status");
+        toast.setAttribute("aria-live", nextType === "error" ? "assertive" : "polite");
+        const iconSlot = toast.querySelector(".ngis-toast-icon");
+        if (iconSlot) iconSlot.innerHTML = this._iconMarkup(nextType);
+        const titleEl = toast.querySelector(".ngis-toast-title");
+        if (titleEl) titleEl.innerHTML = title;
+        const detailEl = toast.querySelector(".ngis-toast-detail");
+        if (detailEl) {
+          if (detail) detailEl.innerHTML = detail;
+          else detailEl.remove();
+        }
+        /* Replace the custom action button when the new state carries one. */
+        const oldAction = toast.querySelector(".ngis-toast-action");
+        if (oldAction) oldAction.remove();
+        if (options && options.actionText) {
+          const body = toast.querySelector(".ngis-toast-body");
+          if (body) {
+            const actBtn = document.createElement("button");
+            actBtn.type = "button";
+            actBtn.className = "ngis-toast-action";
+            actBtn.textContent = options.actionText;
+            actBtn.addEventListener("click", () => {
+              if (typeof options.onAction === "function") options.onAction();
+            });
+            body.appendChild(actBtn);
+          }
+        }
+        const closeBtn = toast.querySelector(".ngis-toast-close");
+        if (!closeBtn) {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "ngis-toast-close";
+          btn.setAttribute("aria-label", "Dismiss");
+          btn.innerHTML = "&times;";
+          btn.addEventListener("click", () => this.dismiss(toast));
+          toast.appendChild(btn);
+        }
+        if (this._dismissDuration(nextType, options || {}) === 0) {
+          toast.classList.add("ngis-toast-persist");
+        } else {
+          toast.classList.remove("ngis-toast-persist");
+          this._armAutoDismiss(toast, this._dismissDuration(nextType, options || {}));
+        }
+        return toast;
+      },
+
+      /* Attach an optional determinate progress bar to a loading row. */
+      setProgress(toast, pct) {
+        if (!toast) return;
+        let bar = toast.querySelector(".ngis-toast-progress > span");
+        if (pct === null || pct === undefined) {
+          if (bar) bar.parentElement.remove();
+          return;
+        }
+        if (!bar) {
+          const wrap = document.createElement("div");
+          wrap.className = "ngis-toast-progress";
+          wrap.innerHTML = "<span></span>";
+          toast.querySelector(".ngis-toast-body").appendChild(wrap);
+          bar = wrap.querySelector("span");
+        }
+        bar.style.width = Math.max(0, Math.min(100, pct)) + "%";
+        toast.classList.add("ngis-toast-determinate");
+      },
+
+      /* Loading row without a backing promise (manual control). */
+      loading(title, detail = "") {
+        return this.show("loading", title, detail, { duration: 0 });
+      },
+
+      /* ── Full lifecycle tied to the real operation ──────────────
+         operation(title, promiseOrFactory, options)
+           options.successTitle  message shown on real success
+           options.errorTitle    fallback title when no error.message
+           options.retry         fn returning a new promise → Retry button
+           options.progress      fn(setProgress) for real progress reporting
+         Returns the original promise (callers keep their own .catch),
+         with .feedback (the row element) attached for manual control. */
+      operation(title, promiseOrFactory, options = {}) {
+        const self = this;
+        const row = this.show("loading", title, "", { duration: 0 });
+        const run = (promise) => {
+          if (options.progress && typeof options.progress === "function") {
+            try { options.progress((pct) => self.setProgress(row, pct)); } catch (e) { /* progress is best-effort */ }
+          }
+          return Promise.resolve(typeof promise === "function" ? promise() : promise).then(
+            (result) => {
+              self.morph(row, "success", options.successTitle || "Done", options.successDetail || "");
+              return result;
+            },
+            (error) => {
+              const msg = (error && (error.message || error.error || error.reason)) || options.errorTitle || "Something went wrong. Please try again.";
+              if (options.retry && typeof options.retry === "function") {
+                self.morph(row, "error", msg, "", {
+                  actionText: "Retry",
+                  onAction: () => {
+                    self.morph(row, "loading", title, "");
+                    run(options.retry());
+                  }
+                });
+              } else {
+                self.morph(row, "error", msg, "");
+              }
+              throw error; /* preserve the caller's own error handling */
+            }
+          );
+        };
+        const promise = run(promiseOrFactory);
+        try { promise.feedback = row; } catch (e) { /* frozen promise engines */ }
+        return promise;
       },
 
       success(title, detail = "", options = {}) {

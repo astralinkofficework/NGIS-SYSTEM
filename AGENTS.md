@@ -16,9 +16,18 @@ To integrate seamlessly with `assets/js/layout.js`, always include:
 - `title="Open navigation"`
 
 ### 3. Iconography & Styling
-- Use Phosphor icon: `<i class="ph ph-list text-xl"></i>` (or `<i class="ph-bold ph-list text-xl"></i>`) or Material Symbols `<span class="material-symbols-outlined">menu</span>`.
+- **Preferred (system standard)**: Bootstrap Icons list glyph via the shared engine: `<span data-ngis-icon="menu"></span>` (renders official `bi-list`; hydrate with `assets/js/action-icons.js`).
+- Equally acceptable (legacy fallbacks): Phosphor `<i class="ph ph-list text-xl"></i>` (or `<i class="ph-bold ph-list text-xl"></i>`) or Material Symbols `<span class="material-symbols-outlined">menu</span>`.
 - Ensure a minimum touch target size of 38-44px.
 - Use smooth interaction feedback (`active:scale-95` / transition) and ensure theme support (`[data-theme="dark"]`).
+
+## Icon System Requirements
+> **STANDARD**: All functional UI icons use **official Bootstrap Icons** (bootstrap-icons v1.13.2, bundled in `node_modules/bootstrap-icons`, baked as SVGs in `assets/js/action-icons.js`).
+
+- Render icons through the shared engine: `NGIS.icon(name)` in JS templates, or `<span data-ngis-icon="name"></span>` in HTML.
+- Legacy Material Symbols / Phosphor glyphs may remain as graceful fallbacks; action contexts are auto-normalized to Bootstrap SVGs by the engine.
+- Do not add new icon libraries; do not load icon fonts for new work.
+- Canonical mappings (action → icon): preview `view`, save `bookmark` / saved `bookmarkAdded`, download `download`, edit `edit`, delete `delete`, add `add`, search `search`, filter `filter`, settings `settings`, notifications `bell`, messages `mail`, calendar `calendar`, attendance `attendance`, grades `grades`, assignments `documents`, exams `exams`, lessons `book`, departments `departments`, students `users`, teachers `teachers`, dashboard `dashboard`, back `back`, close `close`, expand `chevronDown`, collapse `chevronUp`, more `more`, success `checkCircle`, warning `warning`, info `info`, logout `logout`.
 
 ## Typography Requirements
 > **CRITICAL RULE**: NO BOLD FONTS. Avoid heavy weights across all pages.
