@@ -334,7 +334,7 @@
       h += '<div class="nrg-enr-add-wrap">' +
         '<button type="button" class="nrg-add-dept-btn" id="nrg-add-dept-btn">' +
           '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>' +
-          '<span>+ Add Another Department</span>' +
+          '<span>Add Another Department</span>' +
         '</button>' +
       '</div>';
       h += '</div>';
@@ -464,7 +464,7 @@
       h += '<div class="nrg-asgn-add-wrap" style="margin-top:12px;">' +
         '<button type="button" class="nrg-add-dept-btn" id="nrg-add-class-btn">' +
           '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>' +
-          '<span>+ Add Another Class</span>' +
+          '<span>Add Another Class</span>' +
         '</button>' +
       '</div>';
       h += '</div>';

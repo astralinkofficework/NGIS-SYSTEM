@@ -74,7 +74,7 @@
 
       groups: [
 
-        { label:"Overview", links:[
+        { id:"overview", label:"Overview", icon:"dashboard", links:[
 
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/admin/admin.html" },
 
@@ -88,11 +88,11 @@
             icon: "group",
             collapsible: true,
             children: [
-              { id: "users-students", label: "Student Accounts", href: "pages/admin/admin-users-students.html" },
-              { id: "users-teachers", label: "Teacher Accounts", href: "pages/admin/admin-users-teachers.html" },
-              { id: "users-staff", label: "Staff Accounts", href: "pages/admin/admin-users-staff.html" },
-              { id: "users-principals", label: "Principal Accounts", href: "pages/admin/admin-users-principals.html" },
-              { id: "users-admins", label: "Admin Accounts", href: "pages/admin/admin-users-admins.html" },
+              { id: "users-students", label: "Student Accounts", icon: "school", href: "pages/admin/admin-users-students.html" },
+              { id: "users-teachers", label: "Teacher Accounts", icon: "teachers", href: "pages/admin/admin-users-teachers.html" },
+              { id: "users-staff", label: "Staff Accounts", icon: "user", href: "pages/admin/admin-users-staff.html" },
+              { id: "users-principals", label: "Principal Accounts", icon: "bank", href: "pages/admin/admin-users-principals.html" },
+              { id: "users-admins", label: "Admin Accounts", icon: "shield", href: "pages/admin/admin-users-admins.html" },
             ]
           },
 
@@ -104,9 +104,9 @@
             icon: "co_present",
             collapsible: true,
             children: [
-              { id: "teacher-profiles", label: "Teacher Profile", href: "pages/admin/admin-teacher-profiles.html" },
-              { id: "teacher-class-assignment", label: "Teacher-Class Assignment", href: "pages/admin/admin-teacher-class-assignment.html" },
-              { id: "verify-teacher", label: "Verify Teacher Update", href: "pages/admin/admin-teacher-verify.html" },
+              { id: "teacher-profiles", label: "Teacher Profile", icon: "teachers", href: "pages/admin/admin-teacher-profiles.html" },
+              { id: "teacher-class-assignment", label: "Teacher-Class Assignment", icon: "co_present", href: "pages/admin/admin-teacher-class-assignment.html" },
+              { id: "verify-teacher", label: "Verify Teacher Update", icon: "checkCircle", href: "pages/admin/admin-teacher-verify.html" },
             ]
           },
 
@@ -116,11 +116,11 @@
             icon: "school",
             collapsible: true,
             children: [
-              { id: "student-profiles", label: "Student Information", href: "pages/admin/admin-student-profiles.html" },
-              { id: "verify-student", label: "Verify Student Update", href: "pages/admin/admin-student-verify.html" },
-              { id: "student-assign", label: "Student Assign To Class", href: "pages/admin/admin-student-assign.html" },
-              { id: "input-attendance", label: "Input Attendance", href: "pages/admin/admin-attendance.html" },
-              { id: "absence-stats", label: "Absence Statistics", href: "pages/admin/admin-absence-stats.html" },
+              { id: "student-profiles", label: "Student Information", icon: "school", href: "pages/admin/admin-student-profiles.html" },
+              { id: "verify-student", label: "Verify Student Update", icon: "checkCircle", href: "pages/admin/admin-student-verify.html" },
+              { id: "student-assign", label: "Student Assign To Class", icon: "group_add", href: "pages/admin/admin-student-assign.html" },
+              { id: "input-attendance", label: "Input Attendance", icon: "attendance", href: "pages/admin/admin-attendance.html" },
+              { id: "absence-stats", label: "Absence Statistics", icon: "report", href: "pages/admin/admin-absence-stats.html" },
             ]
           },
 
@@ -172,11 +172,11 @@
             icon: "settings",
             collapsible: true,
             children: [
-              { id: "dashboard-content-sys", label: "Dashboard Content", href: "pages/admin/admin-dashboard-content.html" },
-              { id: "school-information", label: "School Information & Settings", href: "pages/admin/admin-school-information.html" },
-              { id: "sys-school-info", label: "School Profile (Legacy)", href: "pages/admin/admin-system-school-info.html" },
-              { id: "sys-schedule", label: "Schedule", href: "pages/admin/admin-system-schedule.html" },
-              { id: "sys-general-setting", label: "General Setting", href: "pages/admin/admin-system-general-setting.html" },
+              { id: "dashboard-content-sys", label: "Dashboard Content", icon: "grid", href: "pages/admin/admin-dashboard-content.html" },
+              { id: "school-information", label: "School Information & Settings", icon: "settings", href: "pages/admin/admin-school-information.html" },
+              { id: "sys-school-info", label: "School Profile (Legacy)", icon: "building", href: "pages/admin/admin-system-school-info.html" },
+              { id: "sys-schedule", label: "Schedule", icon: "calendar", href: "pages/admin/admin-system-schedule.html" },
+              { id: "sys-general-setting", label: "General Setting", icon: "tune", href: "pages/admin/admin-system-general-setting.html" },
             ]
           },
 
@@ -186,9 +186,9 @@
             icon: "calendar_today",
             collapsible: true,
             children: [
-              { id: "sys-school-year", label: "School Year", href: "pages/admin/admin-system-school-year.html" },
-              { id: "sys-school-week", label: "School Week", href: "pages/admin/admin-system-school-week.html" },
-              { id: "sys-exam-config", label: "School Exam Configuration", href: "pages/admin/admin-system-exam-config.html" }
+              { id: "sys-school-year", label: "School Year", icon: "calendar", href: "pages/admin/admin-system-school-year.html" },
+              { id: "sys-school-week", label: "School Week", icon: "calendarWeek", href: "pages/admin/admin-system-school-week.html" },
+              { id: "sys-exam-config", label: "School Exam Configuration", icon: "exams", href: "pages/admin/admin-system-exam-config.html" }
             ]
           },
 
@@ -216,7 +216,7 @@
 
       groups: [
 
-        { label:"Overview", links:[
+        { id:"overview", label:"Overview", icon:"dashboard", links:[
 
           { id:"dashboard",  label:"Home",                       icon:"home",           href:"pages/teacher/teacher.html", chevron:false },
 
@@ -279,7 +279,7 @@
 
       groups: [
 
-        { label:"Main", links:[
+        { id:"main", label:"Main", icon:"dashboard", links:[
 
           { id:"dashboard", label:"Dashboard", icon:"dashboard", href:"pages/student/student.html" },
 
@@ -289,7 +289,6 @@
 
           { id:"departments", label:"Academic Departments", icon:"apartment", href:"pages/shared/departments.html?portal=student" },
 
-          { id:"calendar",    label:"Class Timetable",      icon:"calendar_month", href:"pages/student/student-calendar.html" },
 
         ]},
 
@@ -326,7 +325,7 @@
         principal: {
       brand: "Principal", meta: "School Operations · 2025–26",
       groups: [
-        { label: "Overview", links: [
+        { id: "overview", label: "Overview", icon: "dashboard", links: [
           { id: "dashboard", label: "Home", icon: "home", href: "pages/principal/principal.html" },
         ]},
         { id: "teachers-mgmt", label: "TEACHER MANAGEMENT", icon: "school", links: [
@@ -363,7 +362,7 @@
     superadmin: {
       brand: "Super Admin", meta: "Root System Suite · 2025–26",
       groups: [
-        { label: "Overview", links: [
+        { id: "sa-overview-grp", label: "Overview", icon: "dashboard", links: [
           { id: "sa-dashboard", label: "System Overview", icon: "dashboard", href: "pages/admin/admin.html", locked: true }
         ]},
         { id: "sa-cms-grp", label: "CONTENT & NAVIGATION", icon: "tune", links: [
@@ -373,11 +372,11 @@
         { id: "sa-users-grp", label: "IDENTITY & ACCESS", icon: "manage_accounts", links: [
           { id: "sa-users-reg", label: "Central Registry", icon: "dashboard", href: "pages/admin/admin-users-students.html" },
           { id: "sa-directories-drop", label: "User Directories", icon: "group", collapsible: true, children: [
-            { id: "sa-students", label: "Student Accounts", href: "pages/admin/admin-users-students.html" },
-            { id: "sa-teachers", label: "Teacher Accounts", href: "pages/admin/admin-users-teachers.html" },
-            { id: "sa-staff", label: "Staff Accounts", href: "pages/admin/admin-users-staff.html" },
-            { id: "sa-principals", label: "Principal Accounts", href: "pages/admin/admin-users-principals.html" },
-            { id: "sa-admins", label: "Admin Accounts", href: "pages/admin/admin-users-admins.html" }
+            { id: "sa-students", label: "Student Accounts", icon: "school", href: "pages/admin/admin-users-students.html" },
+            { id: "sa-teachers", label: "Teacher Accounts", icon: "teachers", href: "pages/admin/admin-users-teachers.html" },
+            { id: "sa-staff", label: "Staff Accounts", icon: "user", href: "pages/admin/admin-users-staff.html" },
+            { id: "sa-principals", label: "Principal Accounts", icon: "bank", href: "pages/admin/admin-users-principals.html" },
+            { id: "sa-admins", label: "Admin Accounts", icon: "shield", href: "pages/admin/admin-users-admins.html" }
           ]}
         ]},
         { id: "sa-academics-grp", label: "ACADEMIC ARCHITECTURE", icon: "school", links: [
@@ -406,7 +405,7 @@
     staff: {
       brand: "Staff", meta: "Campus Operations Hub · 2025–26",
       groups: [
-        { label: "Overview", links: [
+        { id: "staff-overview-grp", label: "Overview", icon: "dashboard", links: [
           { id: "staff-services", label: "Campus Services Hub", icon: "grid_view", href: "pages/admin/admin-services.html", locked: true }
         ]},
         { id: "staff-ops-grp", label: "CAMPUS OPERATIONS", icon: "business_center", links: [
@@ -555,8 +554,6 @@
       { id:"dashboard",    label:"Home",        icon:"home",           href:"pages/student/student.html" },
 
       { id:"departments",  label:"Department",  icon:"apartment",      href:"pages/shared/departments.html" },
-
-      { id:"calendar",     label:"Schedule",    icon:"calendar_month", href:"pages/student/student-calendar.html" },
 
       { id:"profile",      label:"Profile",     icon:"person",         href:"pages/student/student-profile.html" },
 
@@ -1266,21 +1263,19 @@
 
 
     function renderNavIcon(icon, className) {
-      if (!icon) return "";
-      const trimmed = String(icon).trim();
+      const isGroup = className && className.includes("group");
+      const effectiveIcon = (icon && String(icon).trim() !== "") ? icon : (isGroup ? "dashboard" : "circle");
+      const trimmed = String(effectiveIcon).trim();
       if (trimmed.startsWith("<svg")) {
         return `<span class="nav-icon ${className} nav-icon-svg" aria-hidden="true">${trimmed}</span>`;
       }
       if (trimmed.startsWith("ph ") || trimmed.startsWith("ph-")) {
-        /* Phosphor glyph: upgrade to the shared Bootstrap-icon engine while
-           keeping the Phosphor ligature as a no-engine fallback. */
-        const phName = trimmed.replace(/^ph[\s-]+/, "").replace(/^ph-/, "");
-        return `<i class="${trimmed} ${className} nav-icon" data-ngis-icon="${esc(phName)}" aria-hidden="true">${esc(phName)}</i>`;
+        /* Phosphor glyph without bold weight */
+        const cleanPh = trimmed.replace(/\bph-bold\b/g, "ph").replace(/\bph-fill\b/g, "ph");
+        const phName = cleanPh.replace(/^ph[\s-]+/, "").replace(/^ph-/, "");
+        return `<i class="${cleanPh} ${className} nav-icon" data-ngis-icon="${esc(phName)}" aria-hidden="true">${esc(phName)}</i>`;
       }
-      /* Material Symbols glyph with a data-ngis-icon slot: the shared icon
-         engine (action-icons.js) replaces it with the official Bootstrap
-         Icons SVG when present; the ligature text remains a graceful
-         fallback so the sidebar never loses its icons. */
+      /* Material Symbols glyph with a data-ngis-icon slot */
       return `<span class="material-symbols-outlined ${className} nav-icon" data-ngis-icon="${esc(trimmed)}" aria-hidden="true">${esc(trimmed)}</span>`;
     }
 
@@ -1314,7 +1309,7 @@
                 <div class="nav-nested-group${sub.collapsible ? ' collapsible' : ''}${isNestedActive ? ' expanded' : ''}" data-nested-id="${sub.id}">
                   <button type="button" class="nav-nested-label" aria-expanded="${isNestedActive ? 'true' : 'false'}" title="${esc(sub.label)}">
                     <span class="nav-link-label">${esc(sub.label)}</span>
-                    <span class="material-symbols-outlined ngl-nestedchevron" aria-hidden="true">expand_more</span>
+                    <span class="material-symbols-outlined ngl-nestedchevron" data-ngis-icon="chevronDown" aria-hidden="true">expand_more</span>
                   </button>
                   <div class="nav-nested-links">
                     <div>${nestedLinks}</div>
@@ -1323,10 +1318,10 @@
             }
 
             const isItemActive = isMatchingNavId(sub.id, effectiveActive);
-            const chevronHtml = sub.hasChevron ? `<span class="material-symbols-outlined ngl-subchevron-static" aria-hidden="true">expand_more</span>` : "";
+            const chevronHtml = sub.hasChevron ? `<span class="material-symbols-outlined ngl-subchevron-static" data-ngis-icon="chevronDown" aria-hidden="true">expand_more</span>` : "";
             const subHref = buildPortalHref(sub.href, role);
             return `<a class="nav-link nav-sub-link ${isItemActive ? "active" : ""}" href="${subHref}" data-raw-href="${esc(sub.href || '')}"${isItemActive ? ' aria-current="page"' : ''} title="${esc(sub.subtitle || sub.label)}" data-id="${sub.id}">
-               ${sub.icon ? renderNavIcon(sub.icon, "nav-link-icon") : ""}
+               ${renderNavIcon(sub.icon, "nav-link-icon")}
                <span class="nav-link-label">${esc(sub.label)}</span>
                ${sub.badge ? `<span class="pill">${sub.badge}</span>` : ""}
                ${chevronHtml}
@@ -1343,7 +1338,7 @@
 
                 <span class="nav-link-label">${esc(l.label)}</span>
 
-                <span class="material-symbols-outlined ngl-subchevron" aria-hidden="true">expand_more</span>
+                <span class="material-symbols-outlined ngl-subchevron" data-ngis-icon="chevronDown" aria-hidden="true">expand_more</span>
 
               </button>
 
@@ -1472,7 +1467,7 @@
 
         <div class="sb-search-wrap">
           <div class="sb-search-box">
-            <span class="material-symbols-outlined sb-search-icon" aria-hidden="true">search</span>
+            <span class="material-symbols-outlined sb-search-icon" data-ngis-icon="search" aria-hidden="true">search</span>
             <input type="search" class="sb-search-input" id="sidebarSearchInput" placeholder="Find a page…" aria-label="Filter navigation links" autocomplete="off">
           </div>
         </div>
@@ -1489,7 +1484,7 @@
 
           <a class="nav-link side-foot-help" href="${buildPortalHref(helpRaw, role)}">
 
-            <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">help_outline</span>
+            <span class="material-symbols-outlined nav-link-icon nav-icon" data-ngis-icon="info" aria-hidden="true">help_outline</span>
 
             <span class="nav-link-label">Help &amp; Support</span>
 
@@ -1497,7 +1492,7 @@
 
           <a class="nav-link nav-link-danger side-foot-signout" href="${_P}index.html" data-purpose="sign-out-button">
 
-            <span class="material-symbols-outlined nav-link-icon nav-icon" aria-hidden="true">logout</span>
+            <span class="material-symbols-outlined nav-link-icon nav-icon" data-ngis-icon="logout" aria-hidden="true">logout</span>
 
             <span class="nav-link-label">Log out</span>
 
@@ -1582,8 +1577,6 @@
       { id: "home", label: "Home", icon: "ph ph-house", href: "pages/student/student.html" },
 
       { id: "department", label: "Depts", icon: "ph ph-buildings", href: "pages/shared/departments.html" },
-
-      { id: "schedule", label: "Timetable", icon: "ph ph-calendar-blank", href: "pages/student/student-calendar.html" },
 
       { id: "profile", label: "Account", icon: "ph ph-user", href: "pages/student/student-profile.html" },
 
@@ -3471,67 +3464,63 @@
     document.addEventListener("click", (e) => {
 
       const openDrawer = e.target.closest("[data-open-drawer]");
-
       if (openDrawer) {
-
         e.preventDefault();
-
-        const id = openDrawer.getAttribute("data-open-drawer");
-
-        const drawer = document.querySelector(`.drawer-overlay[data-drawer="${id}"], .drawer-overlay#${id}, #${id}.drawer-overlay, #${id}`);
-
-        if (drawer) {
-
-          drawer.classList.add("show", "open");
-
-          const inner = drawer.querySelector(".drawer");
-
-          if (inner) inner.classList.add("show", "open");
-
+        const rawId = openDrawer.getAttribute("data-open-drawer");
+        if (!rawId || !rawId.trim()) return;
+        const id = rawId.trim().replace(/^#/, "");
+        if (!id) return;
+        let drawer = null;
+        try {
+          drawer = document.querySelector(`.drawer-overlay[data-drawer="${id}"], .drawer-overlay#${id}, #${id}.drawer-overlay, #${id}`);
+        } catch (_) {
+          drawer = document.getElementById(id);
         }
-
+        if (drawer) {
+          drawer.classList.add("show");
+          drawer.classList.add("open");
+          const inner = drawer.querySelector(".drawer");
+          if (inner) {
+            inner.classList.add("show");
+            inner.classList.add("open");
+          }
+        }
         return;
-
       }
 
       const closeDrawer = e.target.closest("[data-close-drawer]");
-
       if (closeDrawer) {
-
         e.preventDefault();
-
         const drawer = closeDrawer.closest(".drawer-overlay, aside.drawer");
-
         if (drawer) {
-
-          drawer.classList.remove("show", "open");
-
+          drawer.classList.remove("show");
+          drawer.classList.remove("open");
           if (drawer.parentElement && drawer.parentElement.classList.contains("drawer-overlay")) {
-
-            drawer.parentElement.classList.remove("show", "open");
-
+            drawer.parentElement.classList.remove("show");
+            drawer.parentElement.classList.remove("open");
           }
-
         }
-
         return;
-
       }
 
       const openModal = e.target.closest("[data-open-modal]");
-
       if (openModal) {
-
         e.preventDefault();
-
-        const id = openModal.getAttribute("data-open-modal");
-
-        const modal = document.querySelector(`.modal-overlay[data-modal="${id}"], .modal-overlay#${id}, #${id}.modal-overlay, #${id}`);
-
-        if (modal) modal.classList.add("show", "open");
-
+        const rawId = openModal.getAttribute("data-open-modal");
+        if (!rawId || !rawId.trim()) return;
+        const id = rawId.trim().replace(/^#/, "");
+        if (!id) return;
+        let modal = null;
+        try {
+          modal = document.querySelector(`.modal-overlay[data-modal="${id}"], .modal-overlay#${id}, #${id}.modal-overlay, #${id}`);
+        } catch (_) {
+          modal = document.getElementById(id);
+        }
+        if (modal) {
+          modal.classList.add("show");
+          modal.classList.add("open");
+        }
         return;
-
       }
 
       const closeModal = e.target.closest("[data-close-modal], [data-dismiss='modal']");
@@ -3666,6 +3655,15 @@
       document.head.appendChild(lss);
     }
 
+    /* Measured sticky application header — must load after the cleanup layers
+       so its opaque surface and calculated offsets win the cascade. */
+    if (!document.querySelector('link[href*="sticky-layout.css"]')) {
+      const stickyCss = document.createElement("link");
+      stickyCss.rel = "stylesheet";
+      stickyCss.href = _P + "assets/css/sticky-layout.css";
+      document.head.appendChild(stickyCss);
+    }
+
     const sharedComponents = [
       "assets/js/ngis-copy.js",
       "assets/js/error-messages.js",
@@ -3680,7 +3678,8 @@
       "assets/js/ui-states.js",
       "assets/js/action-icons.js?v=1.13.2",
       "assets/js/semantic-states.js",
-      "assets/js/ngis-search.js"
+      "assets/js/ngis-search.js",
+      "assets/js/sticky-layout.js"
     ];
 
     sharedComponents.forEach(scriptPath => {

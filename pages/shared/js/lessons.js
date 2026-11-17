@@ -13,223 +13,8 @@ var _currentResources = [];
 var _currentSubjectId = '';
 
 /* ════════════════════════════════════
-   RESOURCE DATA per subject
-   type: lesson | worksheet | exam | formula | video | link
-   fileType: pdf | image | video | link
-════════════════════════════════════ */
-var RESOURCES = {
-  math: [
-    {
-      id: 'm1',
-      name: 'Introduction to Algebra',
-      fullName: 'Introduction to Algebra — Fundamentals',
-      type: 'lesson',
-      fileType: 'pdf',
-      date: '2026-01-10',
-      size: '1.4 MB',
-      pages: 16,
-      readTime: '15 min read',
-      topic: 'Algebra',
-      tone: 'tone-blue',
-      formulas: ['f(x) = ax + b\nx = (-b ± √D)/2a\n∑ (x_i - μ)²'],
-      desc: 'Fundamental theorems, variables, manipulation of polynomials, and foundational abstractions.',
-      downloads: 98,
-      tags: ['#Algebra', '#Grade10'],
-      src: 'https://www.africau.edu/images/default/sample.pdf'
-    },
-    {
-      id: 'm2',
-      name: 'Linear Equations &...',
-      fullName: 'Linear Equations & Inequalities',
-      type: 'lesson',
-      fileType: 'pdf',
-      date: '2026-01-18',
-      size: '2.1 MB',
-      pages: 22,
-      readTime: '20 min read',
-      topic: 'Algebra',
-      tone: 'tone-mint',
-      formulas: ['y - y₀ = m(x - x₀)\n|ax + b| < c\nAx + By + C = 0'],
-      desc: 'Comprehensive guide to single and multivariable systems, inequalities, and solution graphs.',
-      downloads: 142,
-      tags: ['#Algebra', '#Chapter3'],
-      src: 'https://www.africau.edu/images/default/sample.pdf'
-    },
-    {
-      id: 'm3',
-      name: 'Quadratic Functions &...',
-      fullName: 'Quadratic Functions & Curves',
-      type: 'lesson',
-      fileType: 'pdf',
-      date: '2026-02-05',
-      size: '3.2 MB',
-      pages: 34,
-      readTime: '25 min read',
-      topic: 'Algebra',
-      badge: 'Exam Focus',
-      badgeClass: 'pill-green',
-      tone: 'tone-peach',
-      formulas: ['y = a(x - h)² + k\nΔ = b² - 4ac\nVertex: (-b/2a)'],
-      desc: 'Parabolic behavior, discriminant analysis, optimization scenarios, and vertex calculations.',
-      downloads: 117,
-      tags: ['#Quadratic', '#Functions'],
-      src: 'https://www.africau.edu/images/default/sample.pdf'
-    },
-    {
-      id: 'm4',
-      name: 'Calculus: Limits &...',
-      fullName: 'Calculus: Limits & Derivatives',
-      type: 'lesson',
-      fileType: 'pdf',
-      date: '2026-02-20',
-      size: '4.0 MB',
-      pages: 40,
-      readTime: 'Advanced',
-      topic: 'Calculus',
-      tone: 'tone-cyan',
-      formulas: ['lim (x→a) f(x) = L\ndy/dx = f\'(x)\nd/dx[uv] = u\'v + uv\''],
-      desc: 'Differential calculus foundational rules, continuity criteria, rate of change, and limit theorems.',
-      downloads: 203,
-      tags: ['#Calculus', '#Grade11'],
-      src: 'https://www.africau.edu/images/default/sample.pdf'
-    },
-    {
-      id: 'm5',
-      name: 'Analytic Geometry —...',
-      fullName: 'Analytic Geometry — Circles',
-      type: 'lesson',
-      fileType: 'pdf',
-      date: '2026-03-01',
-      size: '2.8 MB',
-      pages: 28,
-      readTime: '18 min read',
-      topic: 'Geometry',
-      tone: 'tone-sand',
-      formulas: ['(x - h)² + (y - k)² = r²\nx² + y² + 2gx = 0\nTangent: xx₁ + yy₁'],
-      desc: 'Conic sections, radii calculations, secant equations, and locus problems in Cartesian space.',
-      downloads: 89,
-      tags: ['#Geometry', '#Circles'],
-      src: 'https://www.africau.edu/images/default/sample.pdf'
-    },
-    {
-      id: 'm7',
-      name: 'Algebra Practice...',
-      fullName: 'Algebra Practice Worksheet',
-      type: 'worksheet',
-      fileType: 'quiz',
-      isQuiz: true,
-      date: '2026-01-25',
-      size: '0.8 MB',
-      pages: 10,
-      questions: 10,
-      readTime: 'Interactive',
-      topic: 'Interactive Exercise',
-      badge: 'Interactive Exercise',
-      badgeClass: 'pill-mint',
-      tone: 'tone-green',
-      formulas: ['[Q1] Find roots\n[Q2] Matrix det(A)\n[Q3] Solve system'],
-      desc: 'Guided multi-tier problem set with automated hint checks and self-graded mastery validation.',
-      downloads: 211,
-      tags: ['#Algebra', '#Practice'],
-      src: 'https://www.africau.edu/images/default/sample.pdf'
-    }
-  ],
-  physics: [
-    { id:'p1',  name:'Kinematics — Motion in 1D',           type:'lesson',    fileType:'pdf',   date:'2026-01-12', size:'2.0 MB', downloads:115, tags:['#Mechanics','#Kinematics'],    src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p2',  name:'Newton\'s Laws of Motion',            type:'lesson',    fileType:'pdf',   date:'2026-01-22', size:'2.5 MB', downloads:140, tags:['#Mechanics','#Newton'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p3',  name:'Work, Energy & Power',                type:'lesson',    fileType:'pdf',   date:'2026-02-08', size:'3.0 MB', downloads:122, tags:['#Energy','#Work'],             src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p4',  name:'Electricity — Circuits & Ohm\'s Law', type:'lesson',    fileType:'pdf',   date:'2026-02-25', size:'2.8 MB', downloads:96,  tags:['#Electricity','#Circuits'],    src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p5',  name:'Waves & Oscillations',                type:'lesson',    fileType:'pdf',   date:'2026-03-10', size:'2.2 MB', downloads:88,  tags:['#Waves'],                      src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p6',  name:'Thermodynamics — Heat & Gas Laws',    type:'lesson',    fileType:'pdf',   date:'2026-03-25', size:'3.4 MB', downloads:101, tags:['#Thermo','#GasLaws'],          src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p7',  name:'Newton\'s Laws Practice Sheet',       type:'worksheet', fileType:'pdf',   date:'2026-01-28', size:'0.6 MB', downloads:178, tags:['#Mechanics','#Practice'],      src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p8',  name:'Circuit Problems Worksheet',          type:'worksheet', fileType:'pdf',   date:'2026-03-02', size:'0.9 MB', downloads:143, tags:['#Electricity','#Problems'],    src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p9',  name:'2024 Physics Final Exam',             type:'exam',      fileType:'pdf',   date:'2025-11-12', size:'2.1 MB', downloads:295, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p10', name:'Physics Constants & Formulas Sheet',  type:'formula',   fileType:'pdf',   date:'2026-01-05', size:'0.3 MB', downloads:410, tags:['#Formula','#Constants'],       src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'p11', name:'Waves Concept Explanation (Video)',   type:'video',     fileType:'video', date:'2026-03-18', size:'—',      downloads:0,   tags:['#Waves','#Video'],             src:'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  ],
-  chemistry: [
-    { id:'c1',  name:'Atomic Structure & Periodic Table',  type:'lesson',    fileType:'pdf',   date:'2026-01-14', size:'2.3 MB', downloads:108, tags:['#Atoms','#PeriodicTable'],     src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c2',  name:'Chemical Bonding',                   type:'lesson',    fileType:'pdf',   date:'2026-01-28', size:'2.7 MB', downloads:93,  tags:['#Bonding'],                    src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c3',  name:'Stoichiometry & Moles',              type:'lesson',    fileType:'pdf',   date:'2026-02-14', size:'1.8 MB', downloads:112, tags:['#Stoich','#Moles'],            src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c4',  name:'Acids, Bases & Salts',               type:'lesson',    fileType:'pdf',   date:'2026-03-03', size:'2.0 MB', downloads:87,  tags:['#AcidBase','#pH'],             src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c5',  name:'Organic Chemistry — Hydrocarbons',   type:'lesson',    fileType:'pdf',   date:'2026-03-20', size:'3.1 MB', downloads:79,  tags:['#Organic'],                    src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c6',  name:'Mole Calculations Worksheet',        type:'worksheet', fileType:'pdf',   date:'2026-02-20', size:'0.7 MB', downloads:161, tags:['#Stoich','#Worksheet'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c7',  name:'2024 Chemistry Final Exam',          type:'exam',      fileType:'pdf',   date:'2025-11-14', size:'2.0 MB', downloads:260, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c8',  name:'Periodic Table Reference Sheet',     type:'formula',   fileType:'pdf',   date:'2026-01-03', size:'0.4 MB', downloads:488, tags:['#Formula','#PeriodicTable'],   src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'c9',  name:'Reaction Types Formula Card',        type:'formula',   fileType:'pdf',   date:'2026-02-01', size:'0.2 MB', downloads:312, tags:['#Formula','#Reactions'],       src:'https://www.africau.edu/images/default/sample.pdf' },
-  ],
-  biology: [
-    { id:'b1',  name:'Cell Structure & Functions',         type:'lesson',    fileType:'pdf',   date:'2026-01-11', size:'2.6 MB', downloads:99,  tags:['#Cells','#Biology'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b2',  name:'Genetics & DNA Replication',         type:'lesson',    fileType:'pdf',   date:'2026-01-25', size:'3.0 MB', downloads:118, tags:['#Genetics','#DNA'],            src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b3',  name:'Photosynthesis & Respiration',       type:'lesson',    fileType:'pdf',   date:'2026-02-10', size:'2.4 MB', downloads:105, tags:['#Photosynthesis'],             src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b4',  name:'Ecosystems & Biodiversity',          type:'lesson',    fileType:'pdf',   date:'2026-03-01', size:'2.9 MB', downloads:88,  tags:['#Ecosystems'],                 src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b5',  name:'Human Body Systems Overview',        type:'lesson',    fileType:'pdf',   date:'2026-03-18', size:'3.5 MB', downloads:122, tags:['#HumanBody'],                  src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b6',  name:'Cell Division Worksheet',            type:'worksheet', fileType:'pdf',   date:'2026-02-03', size:'0.5 MB', downloads:145, tags:['#Cells','#Mitosis'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b7',  name:'Genetics Problem Set',               type:'worksheet', fileType:'pdf',   date:'2026-02-18', size:'0.8 MB', downloads:177, tags:['#Genetics','#Mendel'],         src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b8',  name:'2024 Biology Final Exam',            type:'exam',      fileType:'pdf',   date:'2025-11-10', size:'2.2 MB', downloads:277, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'b9',  name:'Biology Key Terms & Diagrams',       type:'formula',   fileType:'pdf',   date:'2026-01-07', size:'1.0 MB', downloads:320, tags:['#Reference','#Diagrams'],      src:'https://www.africau.edu/images/default/sample.pdf' },
-  ],
-  english: [
-    { id:'e1',  name:'Essay Writing — Structure & Style',  type:'lesson',    fileType:'pdf',   date:'2026-01-10', size:'1.5 MB', downloads:88,  tags:['#Writing','#Essay'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'e2',  name:'Grammar: Clauses & Sentence Types',  type:'lesson',    fileType:'pdf',   date:'2026-01-24', size:'1.8 MB', downloads:104, tags:['#Grammar'],                    src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'e3',  name:'Literature Analysis: Short Stories', type:'lesson',    fileType:'pdf',   date:'2026-02-12', size:'2.0 MB', downloads:79,  tags:['#Literature','#Analysis'],     src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'e4',  name:'Grammar Practice Worksheet B',       type:'worksheet', fileType:'pdf',   date:'2026-02-20', size:'0.6 MB', downloads:165, tags:['#Grammar','#Practice'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'e5',  name:'Vocabulary Builder Worksheet',       type:'worksheet', fileType:'pdf',   date:'2026-03-05', size:'0.5 MB', downloads:143, tags:['#Vocabulary'],                 src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'e6',  name:'2024 English Final Exam',            type:'exam',      fileType:'pdf',   date:'2025-11-08', size:'1.9 MB', downloads:240, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'e7',  name:'Writing Structures Reference Card',  type:'formula',   fileType:'pdf',   date:'2026-01-06', size:'0.3 MB', downloads:298, tags:['#Formula','#Writing'],         src:'https://www.africau.edu/images/default/sample.pdf' },
-  ],
-  history: [
-    { id:'h1',  name:'Angkor Empire — Rise & Fall',        type:'lesson',    fileType:'pdf',   date:'2026-01-13', size:'2.1 MB', downloads:92,  tags:['#Cambodia','#Angkor'],         src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'h2',  name:'World War II — Causes & Effects',    type:'lesson',    fileType:'pdf',   date:'2026-02-04', size:'2.9 MB', downloads:134, tags:['#WW2','#WorldHistory'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'h3',  name:'Cold War & Decolonisation',          type:'lesson',    fileType:'pdf',   date:'2026-02-22', size:'2.5 MB', downloads:110, tags:['#ColdWar','#Modern'],          src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'h4',  name:'Primary Source Analysis Worksheet',  type:'worksheet', fileType:'pdf',   date:'2026-03-01', size:'0.7 MB', downloads:99,  tags:['#Sources','#Analysis'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'h5',  name:'2024 History Final Exam',            type:'exam',      fileType:'pdf',   date:'2025-11-06', size:'1.8 MB', downloads:215, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-  ],
-  geography: [
-    { id:'g1',  name:'Physical Geography — Landforms',     type:'lesson',    fileType:'pdf',   date:'2026-01-15', size:'2.4 MB', downloads:77,  tags:['#Landforms'],                  src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'g2',  name:'Climate Zones & Weather Systems',    type:'lesson',    fileType:'pdf',   date:'2026-02-06', size:'2.2 MB', downloads:85,  tags:['#Climate','#Weather'],         src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'g3',  name:'Map Reading & Cartography',          type:'lesson',    fileType:'pdf',   date:'2026-03-10', size:'1.7 MB', downloads:71,  tags:['#Maps','#Cartography'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'g4',  name:'Map Skills Worksheet',               type:'worksheet', fileType:'pdf',   date:'2026-03-15', size:'0.6 MB', downloads:118, tags:['#Maps','#Practice'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'g5',  name:'2024 Geography Final Exam',          type:'exam',      fileType:'pdf',   date:'2025-11-07', size:'1.9 MB', downloads:188, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-  ],
-  cs: [
-    { id:'cs1', name:'Introduction to Programming (Python)', type:'lesson',  fileType:'pdf',   date:'2026-01-09', size:'2.0 MB', downloads:178, tags:['#Python','#Programming'],      src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs2', name:'Data Structures — Arrays & Lists',   type:'lesson',    fileType:'pdf',   date:'2026-01-23', size:'2.6 MB', downloads:155, tags:['#DataStructures'],             src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs3', name:'Algorithms: Searching & Sorting',    type:'lesson',    fileType:'pdf',   date:'2026-02-11', size:'3.1 MB', downloads:199, tags:['#Algorithms','#Sorting'],      src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs4', name:'Web Development Basics (HTML/CSS)',  type:'lesson',    fileType:'pdf',   date:'2026-02-28', size:'2.4 MB', downloads:212, tags:['#Web','#HTML'],                src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs5', name:'Databases & SQL Fundamentals',       type:'lesson',    fileType:'pdf',   date:'2026-03-14', size:'2.8 MB', downloads:167, tags:['#SQL','#Databases'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs6', name:'OOP Concepts in Python',             type:'lesson',    fileType:'pdf',   date:'2026-03-28', size:'3.5 MB', downloads:145, tags:['#OOP','#Python'],              src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs7', name:'Python Coding Exercises Set A',      type:'worksheet', fileType:'pdf',   date:'2026-01-30', size:'0.8 MB', downloads:234, tags:['#Python','#Exercises'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs8', name:'Algorithm Design Worksheet',         type:'worksheet', fileType:'pdf',   date:'2026-02-15', size:'1.0 MB', downloads:196, tags:['#Algorithms','#Design'],       src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs9', name:'SQL Query Practice Sheet',           type:'worksheet', fileType:'pdf',   date:'2026-03-18', size:'0.7 MB', downloads:155, tags:['#SQL','#Queries'],             src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs10',name:'2024 CS Final Exam',                 type:'exam',      fileType:'pdf',   date:'2025-11-11', size:'2.3 MB', downloads:305, tags:['#PastExam','#2024'],           src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs11',name:'2023 CS Mid-Term Exam',              type:'exam',      fileType:'pdf',   date:'2025-05-20', size:'1.7 MB', downloads:258, tags:['#PastExam','#MidTerm'],        src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs12',name:'Big-O Complexity Reference Sheet',   type:'formula',   fileType:'pdf',   date:'2026-01-04', size:'0.2 MB', downloads:389, tags:['#Formula','#BigO'],            src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs13',name:'Python Syntax Cheat Sheet',          type:'formula',   fileType:'pdf',   date:'2026-02-02', size:'0.3 MB', downloads:441, tags:['#Formula','#Python'],          src:'https://www.africau.edu/images/default/sample.pdf' },
-    { id:'cs14',name:'W3Schools — HTML Reference',         type:'link',      fileType:'link',  date:'2026-01-01', size:'—',      downloads:0,   tags:['#External','#HTML'],           src:'https://www.w3schools.com/html/' },
-    { id:'cs15',name:'CS50 — Intro to CS (Video)',         type:'video',     fileType:'video', date:'2026-02-01', size:'—',      downloads:0,   tags:['#Video','#CS50'],              src:'https://www.youtube.com/embed/dQw4w9WgXcQ' },
-  ]
-};
-
-/* ════════════════════════════════════
    Type meta helpers
 ════════════════════════════════════ */
-var TYPE_META = {
-  lesson:    { label:'Lesson',    cls:'pdf-ic',  mdIcon:'menu_book'   },
-  worksheet: { label:'Worksheet', cls:'ws-ic',   mdIcon:'assignment'  },
-  exam:      { label:'Exam',      cls:'past-ic', mdIcon:'fact_check'  },
-  formula:   { label:'Formula',   cls:'xls-ic',  mdIcon:'calculate'   },
-  video:     { label:'Video',     cls:'vid-ic',  mdIcon:'play_circle' },
-  link:      { label:'Link',      cls:'link-ic', mdIcon:'open_in_new' }
-};
-function typeMeta(t) { return TYPE_META[t] || { label:t, cls:'pdf-ic', mdIcon:'description' }; }
-function escHtml(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function escAttr(s)  { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
-function fmtDate(d)  {
-  if (!d) return '';
-  try { return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
-  catch(e){ return d; }
-}
 function isMobileLibraryView() {
   return window.matchMedia('(max-width: 640px)').matches;
 }
@@ -431,39 +216,6 @@ function selectFile(id) {
 var _rpvZoom   = 100;
 var _rpvRotate = 0;
 var _rpvBm     = false;   /* bookmark state for current file */
-
-/* icon & colour map per file type */
-var FILE_TYPE_STYLE = {
-  pdf:   { icon:'picture_as_pdf', bg:'#ffebee', color:'#e53935', badge:'pdf-ic'  },
-  image: { icon:'image',          bg:'#f3e5f5', color:'#8e24aa', badge:'img-ic'  },
-  video: { icon:'play_circle',    bg:'#e0f7fa', color:'#00838f', badge:'vid-ic'  },
-  link:  { icon:'open_in_new',    bg:'#e3f2fd', color:'#1565c0', badge:'link-ic' }
-};
-function fileTypeStyle(ft) {
-  return FILE_TYPE_STYLE[ft] || FILE_TYPE_STYLE['pdf'];
-}
-
-/* Resource descriptions (keyed by id) */
-var RES_DESCRIPTIONS = {
-  m1:  'A foundational introduction to algebraic thinking — variables, expressions, and basic operations. Ideal for students beginning their algebra journey.',
-  m2:  'Covers solving linear equations and inequalities in one variable, including graphical interpretation. Please review examples and practice problems before the next lesson.',
-  m3:  'Comprehensive notes on quadratic functions, including vertex form, factoring, and the quadratic formula with worked examples.',
-  m4:  'Introduction to limits, continuity, and derivative rules. Includes chain rule, product rule, and real-world applications.',
-  m5:  'Analytic geometry of circles — standard form, centre-radius form, and intersections with lines.',
-  m6:  'All major trigonometric identities: Pythagorean, double-angle, sum-to-product, and product-to-sum formulas.',
-  m7:  'Practice worksheet covering linear and quadratic algebra problems. Great for exam preparation.',
-  m8:  'Drill sheet focused on quadratic equation techniques — factoring, completing the square, and the formula.',
-  m9:  'A set of calculus practice problems covering derivatives, integrals, and applications.',
-  m10: 'Worksheet Set A for trigonometry — unit circle, reference angles, and solving trig equations.',
-  m11: '2024 final examination paper with full mark scheme. Essential for exam revision.',
-  m12: '2023 mid-term exam covering algebra and geometry topics.',
-  m13: 'Quick-reference formula sheet for algebra and calculus — suitable for use during revision.',
-  m14: 'Trigonometry formula reference card covering all standard identities and ratios.',
-  m15: 'External link to Khan Academy\'s comprehensive algebra course.'
-};
-function getDesc(r) {
-  return RES_DESCRIPTIONS[r.id] || ('A ' + r.type + ' resource for ' + (r.tags[0] || 'this subject') + '. Uploaded by your teacher for study and revision.');
-}
 
 /* ── Page data for inline lesson preview (resource m2) ── */
 var LESSON_PAGES = [
@@ -1335,17 +1087,6 @@ var _oakCurrentView = 'grid';
 var _oakSortDesc = true;
 var _oakBookmarkedIds = {};
 
-var OAK_SUBJECT_TITLES = {
-  math: 'MATHEMATICS',
-  physics: 'PHYSICS',
-  chemistry: 'CHEMISTRY',
-  biology: 'BIOLOGY',
-  english: 'ENGLISH LANGUAGE',
-  history: 'HISTORY',
-  geography: 'GEOGRAPHY',
-  cs: 'COMPUTER SCIENCE'
-};
-
 function oakInit() {
   var params = new URLSearchParams(window.location.search);
   var subjParam = params.get('subject') || params.get('dept');
@@ -1354,17 +1095,6 @@ function oakInit() {
   }
   oakSwitchSubject(_oakCurrentSubject);
 }
-
-var OAK_SUBJECT_ICONS = {
-  math: { icon: 'calculate', color: '#1565c0' },
-  physics: { icon: 'bolt', color: '#6a1b9a' },
-  chemistry: { icon: 'science', color: '#00695c' },
-  biology: { icon: 'biotech', color: '#2e7d32' },
-  english: { icon: 'menu_book', color: '#b71c1c' },
-  history: { icon: 'history_edu', color: '#c62828' },
-  geography: { icon: 'public', color: '#e65100' },
-  cs: { icon: 'laptop_code', color: '#1565c0' }
-};
 
 function oakSwitchSubject(subjId) {
   _oakCurrentSubject = subjId || 'math';
@@ -1534,18 +1264,36 @@ function oakRenderCards() {
       if (r.badge && r.badge !== topicText) {
         badgeHtml = '<span class="oak-badge-pill ' + (r.badgeClass || 'pill-green') + '">' + escHtml(r.badge) + '</span>';
       }
-      var isBookmarked = !!_oakBookmarkedIds[r.id];
+      var isBookmarked = NGISBookmarks.has(r.id);
       var bookmarkedClass = isBookmarked ? ' active' : '';
 
+      /* Primary action: opens the dedicated lesson page. Independent actions
+         (bookmark / download / quiz) stop propagation so they never trigger
+         card navigation. */
       var actionBtnHtml = isQuiz
-        ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span data-ngis-icon="play"></span> Start Quiz</button>'
-        : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span data-ngis-icon="view"></span> Preview</button>';
+        ? '<button class="oak-btn-quiz" onclick="event.stopPropagation(); oakOpenQuiz(\'' + r.id + '\')"><span data-ngis-icon="play"></span> Start Quiz</button>'
+        : '<button class="oak-btn-view" onclick="event.stopPropagation(); oakOpenLesson(\'' + r.id + '\')"><span data-ngis-icon="book"></span> View Lesson</button>';
 
       var iconBadgeHtml = isQuiz
         ? '<div class="oak-banner-icon-badge type-quiz"><span class="material-symbols-outlined">task_alt</span></div>'
         : '<div class="oak-banner-icon-badge type-pdf"><span class="material-symbols-outlined">picture_as_pdf</span></div>';
 
-      gridHtml += '<div class="oak-card" data-id="' + r.id + '">'
+      /* Truthful file information — only fields that exist in the data model */
+      var metaBits = [typeMeta(r.type).label];
+      if (r.pages) metaBits.push(r.pages + ' pages');
+      if (r.size && r.size !== '—') metaBits.push(r.size);
+      var metaText = metaBits.join(' • ');
+
+      var downloadBtnHtml = (r.fileType !== 'link' && r.fileType !== 'video')
+        ? '<button class="oak-icon-action" title="Download file" aria-label="Download ' + escHtml(r.name) + '" onclick="event.stopPropagation(); oakDownload(\'' + r.id + '\')">'
+          + '<span data-ngis-icon="download"></span>'
+          + '</button>'
+        : '';
+
+      gridHtml += '<article class="oak-card oak-card-clickable" data-id="' + r.id + '" role="button" tabindex="0"'
+        + ' aria-label="Open ' + escHtml(r.fullName || r.name) + '"'
+        + ' onclick="oakCardNavigate(event,\'' + r.id + '\')"'
+        + ' onkeydown="oakCardKeydown(event,\'' + r.id + '\')">'
         + '  <div class="oak-card-banner ' + tone + '">'
         + '    <div class="oak-banner-top">'
         + '      ' + iconBadgeHtml
@@ -1558,24 +1306,22 @@ function oakRenderCards() {
         + '  </div>'
         + '  <div class="oak-card-body">'
         + '    <div class="oak-card-metarow">'
-        + '      <span class="oak-card-pages">' + (isQuiz ? 'Worksheet • ' + (r.questions || 10) + ' Qs' : 'PDF • ' + (r.pages || 16) + ' pgs') + '</span>'
-        + '      <span class="oak-card-time">' + escHtml(r.readTime || '15 min read') + '</span>'
+        + '      <span class="oak-card-pages">' + escHtml(metaText) + '</span>'
+        + (r.readTime ? '<span class="oak-card-time">' + escHtml(r.readTime) + '</span>' : '')
         + '    </div>'
-        + '    <h3 class="oak-card-title" title="' + escHtml(r.fullName || r.name) + '">' + escHtml(r.name) + '</h3>'
+        + '    <h3 class="oak-card-title">' + escHtml(r.fullName || r.name) + '</h3>'
         + '    <p class="oak-card-desc">' + escHtml(r.desc || '') + '</p>'
         + '    <div class="oak-card-actions">'
         + '      ' + actionBtnHtml
         + '      <div class="oak-act-icons">'
-        + '        <button class="oak-icon-action' + bookmarkedClass + '" title="Save resource" aria-label="Save ' + escHtml(r.name) + '" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
+        + '        <button class="oak-icon-action' + bookmarkedClass + '" title="Save resource" aria-label="Save ' + escHtml(r.name) + '" onclick="event.stopPropagation(); oakToggleBookmark(this,\'' + r.id + '\')">'
         + '          <span data-ngis-icon="' + (isBookmarked ? 'bookmarkAdded' : 'bookmark') + '"></span>'
         + '        </button>'
-        + '        <button class="oak-icon-action" title="Download file" aria-label="Download ' + escHtml(r.name) + '" onclick="oakDownload(\'' + r.id + '\')">'
-        + '          <span data-ngis-icon="download"></span>'
-        + '        </button>'
+        + '        ' + downloadBtnHtml
         + '      </div>'
         + '    </div>'
         + '  </div>'
-        + '</div>';
+        + '</article>';
     });
     gridEl.innerHTML = gridHtml;
   }
@@ -1584,10 +1330,24 @@ function oakRenderCards() {
     var listHtml = '';
     filtered.forEach(function(r) {
       var isQuiz = !!r.isQuiz;
-      var isBookmarked = !!_oakBookmarkedIds[r.id];
+      var isBookmarked = NGISBookmarks.has(r.id);
       var bookmarkedClass = isBookmarked ? ' active' : '';
 
-      listHtml += '<div class="oak-list-row">'
+      var metaBits = [typeMeta(r.type).label];
+      if (r.pages) metaBits.push(r.pages + ' pages');
+      if (r.size && r.size !== '—') metaBits.push(r.size);
+      var metaText = metaBits.join(' • ');
+
+      var downloadBtnHtml = (r.fileType !== 'link' && r.fileType !== 'video')
+        ? '<button class="oak-icon-action" title="Download file" aria-label="Download ' + escHtml(r.name) + '" onclick="event.stopPropagation(); oakDownload(\'' + r.id + '\')">'
+          + '<span data-ngis-icon="download"></span>'
+          + '</button>'
+        : '';
+
+      listHtml += '<article class="oak-list-row oak-card-clickable" role="button" tabindex="0"'
+        + ' aria-label="Open ' + escHtml(r.fullName || r.name) + '"'
+        + ' onclick="oakCardNavigate(event,\'' + r.id + '\')"'
+        + ' onkeydown="oakCardKeydown(event,\'' + r.id + '\')">'
         + '  <div class="oak-list-left">'
         + '    <div class="oak-banner-icon-badge ' + (isQuiz ? 'type-quiz' : 'type-pdf') + '">'
         + '      <span class="material-symbols-outlined">' + (isQuiz ? 'task_alt' : 'picture_as_pdf') + '</span>'
@@ -1595,27 +1355,54 @@ function oakRenderCards() {
         + '    <div class="oak-list-title-wrap">'
         + '      <div class="oak-list-title">' + escHtml(r.fullName || r.name) + '</div>'
         + '      <div class="oak-list-sub">'
-        + '        <span>' + (isQuiz ? 'Worksheet • ' + (r.questions || 10) + ' Qs' : 'PDF • ' + (r.pages || 16) + ' pgs') + '</span>'
-        + '        <span>•</span>'
-        + '        <span>' + escHtml(r.readTime || '15 min read') + '</span>'
+        + '        <span>' + escHtml(metaText) + '</span>'
+        + (r.readTime ? '<span>•</span><span>' + escHtml(r.readTime) + '</span>' : '')
         + '        <span>•</span>'
         + '        <span class="oak-topic-pill" style="font-size:10.5px; padding:1px 8px;">' + escHtml(r.topic || 'Resource') + '</span>'
         + '      </div>'
         + '    </div>'
         + '  </div>'
         + '  <div class="oak-list-right">'
-        + (isQuiz ? '<button class="oak-btn-quiz" onclick="oakOpenQuiz(\'' + r.id + '\')"><span data-ngis-icon="play"></span> Start Quiz</button>'
-                 : '<button class="oak-btn-preview" onclick="oakOpenPreview(\'' + r.id + '\')"><span data-ngis-icon="view"></span> Preview</button>')
-        + '    <button class="oak-icon-action' + bookmarkedClass + '" title="Save resource" aria-label="Save ' + escHtml(r.name) + '" onclick="oakToggleBookmark(this,\'' + r.id + '\')">'
+        + (isQuiz ? '<button class="oak-btn-quiz" onclick="event.stopPropagation(); oakOpenQuiz(\'' + r.id + '\')"><span data-ngis-icon="play"></span> Start Quiz</button>'
+                 : '<button class="oak-btn-view" onclick="event.stopPropagation(); oakOpenLesson(\'' + r.id + '\')"><span data-ngis-icon="book"></span> View Lesson</button>')
+        + '    <button class="oak-icon-action' + bookmarkedClass + '" title="Save resource" aria-label="Save ' + escHtml(r.name) + '" onclick="event.stopPropagation(); oakToggleBookmark(this,\'' + r.id + '\')">'
         + '      <span data-ngis-icon="' + (isBookmarked ? 'bookmarkAdded' : 'bookmark') + '"></span>'
         + '    </button>'
-        + '    <button class="oak-icon-action" title="Download file" aria-label="Download ' + escHtml(r.name) + '" onclick="oakDownload(\'' + r.id + '\')">'
-        + '      <span data-ngis-icon="download"></span>'
-        + '    </button>'
+        + '    ' + downloadBtnHtml
         + '  </div>'
-        + '</div>';
+        + '</article>';
     });
     listEl.innerHTML = listHtml;
+  }
+}
+
+/* ════════════════════════════════════
+   Dedicated lesson page navigation
+════════════════════════════════════ */
+function oakOpenLesson(resId) {
+  var rawList = RESOURCES[_oakCurrentSubject] || [];
+  var r = rawList.find(function(x) { return x.id === resId; });
+  if (!r) return;
+  var role = (window.PAGE && window.PAGE.role) || 'student';
+  window.location.href = lessonDetailsUrl(resId, _oakCurrentSubject, role);
+}
+
+/* Whole-card click → lesson page. Interactive controls (buttons, links)
+   and text selections inside the card are excluded from navigation. */
+function oakCardNavigate(e, resId) {
+  if (e.target.closest && e.target.closest('button, a, input, select, textarea')) return;
+  try {
+    var sel = window.getSelection();
+    if (sel && String(sel).length > 0) return;
+  } catch (err) {}
+  oakOpenLesson(resId);
+}
+
+/* Keyboard activation for the clickable card */
+function oakCardKeydown(e, resId) {
+  if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+    e.preventDefault();
+    oakOpenLesson(resId);
   }
 }
 
@@ -1681,20 +1468,19 @@ function oakDownload(resId) {
   var r = rawList.find(function(x) { return x.id === resId; });
   var name = (r && (r.fullName || r.name)) || 'Resource Material';
   if (window.toast) {
-    window.toast('Downloading "' + name + '"...', 'success');
+    /* Neutral in-progress wording — never claim the download succeeded
+       before it actually has. */
+    window.toast('Preparing download of "' + name + '"…', 'info');
   } else {
-    alert('Downloading "' + name + '"');
+    alert('Preparing download of "' + name + '"');
   }
   downloadFile((r && r.src) || 'https://www.africau.edu/images/default/sample.pdf', name + '.pdf');
 }
 
 function oakToggleBookmark(btn, resId) {
-  _oakBookmarkedIds[resId] = !_oakBookmarkedIds[resId];
-  var active = _oakBookmarkedIds[resId];
-  var ico = btn.querySelector('[data-ngis-icon]');
-  if (ico) ico.setAttribute('data-ngis-icon', active ? 'bookmarkAdded' : 'bookmark');
-  btn.classList.toggle('active', active);
-  if (window.NGIS && window.NGIS.hydrate) window.NGIS.hydrate(btn);
+  var active = NGISBookmarks.toggle(resId);
+  NGISBookmarks.syncButton(btn, resId);
+  _oakBookmarkedIds[resId] = active;
   if (window.toast) {
     window.toast(active ? 'Saved to Bookmarks' : 'Removed from Bookmarks', 'info');
   }

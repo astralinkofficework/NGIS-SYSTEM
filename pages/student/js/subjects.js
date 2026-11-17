@@ -68,7 +68,7 @@
 
     var tabsWrap = document.createElement('div');
     tabsWrap.id = 'studentDeptTabs';
-    tabsWrap.style.cssText = 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0 14px;padding:0 2px;';
+    tabsWrap.className = 'ngis-seg-tabs';
 
     var tabs = [{ id: 'all', label: 'All Enrolled (' + enrollments.length + ' depts)' }];
     enrollments.forEach(function (e) {
@@ -81,9 +81,8 @@
 
     tabsWrap.innerHTML = tabs.map(function (t) {
       var isAct = activeDeptFilter === t.id;
-      return '<button type="button" class="dept-tab-btn" data-dept-id="' + t.id + '" style="font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;border:1px solid ' +
-        (isAct ? '#176B45' : '#E2E8F0') + ';background:' + (isAct ? '#E8F3ED' : '#FFFFFF') +
-        ';color:' + (isAct ? '#176B45' : '#475569') + ';cursor:pointer;transition:all 120ms ease;">' + t.label + '</button>';
+      return '<button type="button" class="ngis-seg-tab" data-dept-id="' + t.id +
+        '" aria-pressed="' + isAct + '">' + t.label + '</button>';
     }).join('');
 
     var card = document.querySelector('.subj-card');
@@ -91,14 +90,12 @@
     if (card && list) card.insertBefore(tabsWrap, list);
 
     // Wire tab clicks
-    tabsWrap.querySelectorAll('.dept-tab-btn').forEach(function (btn) {
+    tabsWrap.querySelectorAll('.ngis-seg-tab').forEach(function (btn) {
       btn.onclick = function () {
         activeDeptFilter = btn.getAttribute('data-dept-id');
-        tabsWrap.querySelectorAll('.dept-tab-btn').forEach(function (b) {
+        tabsWrap.querySelectorAll('.ngis-seg-tab').forEach(function (b) {
           var sel = b.getAttribute('data-dept-id') === activeDeptFilter;
-          b.style.borderColor = sel ? '#176B45' : '#E2E8F0';
-          b.style.backgroundColor = sel ? '#E8F3ED' : '#FFFFFF';
-          b.style.color = sel ? '#176B45' : '#475569';
+          b.setAttribute('aria-pressed', sel ? 'true' : 'false');
         });
         filterAndRender(enrollments);
       };

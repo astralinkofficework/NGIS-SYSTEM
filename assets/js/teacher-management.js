@@ -420,7 +420,7 @@
             '<div class="flex items-center gap-2">' +
               '<button type="button" id="btnOpenNewAssign" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition-all shadow-xs cursor-pointer">' +
                 '<span class="material-symbols-outlined text-sm">add</span>' +
-                '<span>+ Assign Subject</span>' +
+                '<span>Assign Subject</span>' +
               '</button>' +
             '</div>' +
           '</div>' +
@@ -868,7 +868,7 @@
             '<div class="flex items-center gap-2">' +
               '<button type="button" id="btnIssueAward" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition-all shadow-xs cursor-pointer">' +
                 '<span class="material-symbols-outlined text-sm">workspace_premium</span>' +
-                '<span>+ Record Commendation</span>' +
+                '<span>Record Commendation</span>' +
               '</button>' +
             '</div>' +
           '</div>' +
@@ -978,7 +978,7 @@
             '</div>' +
             '<button type="button" id="btnLogCase" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700 text-xs font-medium transition-all shadow-xs cursor-pointer">' +
               '<span class="material-symbols-outlined text-sm">shield</span>' +
-              '<span>+ Lodge Incident Report</span>' +
+              '<span>Lodge Incident Report</span>' +
             '</button>' +
           '</div>' +
 
@@ -1129,7 +1129,7 @@
               '</select>' +
               '<button type="button" id="btnLogEffort" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition-all shadow-xs cursor-pointer">' +
                 '<span class="material-symbols-outlined text-sm">add</span>' +
-                '<span>+ Log Teacher Effort</span>' +
+                '<span>Log Teacher Effort</span>' +
               '</button>' +
             '</div>' +
           '</div>' +

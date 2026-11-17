@@ -82,17 +82,16 @@ a.btn,
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Button State 4: Focused (Rule 11) */
+/* Button State 4: Focused (Rule 11) - Exclude search inputs where container owns focus ring */
 .btn:focus-visible,
 button:focus-visible,
 a.btn:focus-visible,
 .ngis-btn:focus-visible,
-input:focus-visible,
+input:not(.ngis-search-input):not(.sb-search-input):not(.htb-search-input):not([type="search"]):focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid var(--color-primary, #176B45) !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px rgba(23, 107, 69, 0.25) !important;
 }
 
 /* Primary Button (Forest Green #176B45) */
@@ -331,10 +330,10 @@ textarea:hover,
   border-color: var(--color-navy);
 }
 
-input:focus,
+input:not(.ngis-search-input):not(.sb-search-input):not(.htb-search-input):not([type="search"]):focus,
 select:focus,
 textarea:focus,
-.input:focus {
+.input:not(.ngis-search-input):not(.sb-search-input):not(.htb-search-input):not([type="search"]):focus {
   border-color: var(--color-navy) !important;
   outline: none;
   box-shadow: 0 0 0 3px rgba(32, 47, 99, 0.20) !important;
@@ -1029,22 +1028,22 @@ table td.num,
 }
 
 /* Topbar Header & Search Capsule — 100% Transparent / Non-Color to match every page */
-.topbar,
-.hero-topbar,
-.hero .hero-topbar,
-header.topbar,
-#topbar,
-.htb-topbar,
-.htb-bar,
-.page-header,
-.main-header,
-.app-header,
-header[role="banner"],
-header[class*="sticky"],
-header.sticky,
-.hero:not(.hero-main):not(:has(.hero-body)) .hero-topbar,
-body .topbar,
-body .hero-topbar {
+.topbar:not(.ngis-sticky-active),
+.hero-topbar:not(.ngis-sticky-active),
+.hero .hero-topbar:not(.ngis-sticky-active),
+header.topbar:not(.ngis-sticky-active),
+#topbar:not(.ngis-sticky-active),
+.htb-topbar:not(.ngis-sticky-active),
+.htb-bar:not(.ngis-sticky-active),
+.page-header:not(.ngis-sticky-active),
+.main-header:not(.ngis-sticky-active),
+.app-header:not(.ngis-sticky-active),
+header[role="banner"]:not(.ngis-sticky-active),
+header[class*="sticky"]:not(.ngis-sticky-active),
+header.sticky:not(.ngis-sticky-active),
+.hero:not(.hero-main):not(:has(.hero-body)) .hero-topbar:not(.ngis-sticky-active),
+body .topbar:not(.ngis-sticky-active),
+body .hero-topbar:not(.ngis-sticky-active) {
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -1078,8 +1077,8 @@ header.topbar::after {
 }
 .search:focus-within,
 .htb-search-wrap:focus-within {
-  border-color: var(--color-navy) !important;
-  box-shadow: 0 0 0 3px rgba(32, 47, 99, 0.20) !important;
+  border-color: var(--color-primary, #176B45) !important;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.12) !important;
 }
 
 /* ── Sidebar Brand Header & Collapse Control ────────────────── */
@@ -1459,7 +1458,7 @@ header.topbar::after {
   flex-shrink: 0;
 }
 .side-promo-close:hover {
-  background: rgba(23, 107, 69, 0.10);
+  background: #F7F9F7;
   color: var(--token-primary, #176B45);
 }
 .side-promo-cta {
@@ -1832,7 +1831,7 @@ header.topbar::after {
   color: var(--token-text-secondary, #45544B);
 }
 .ngis-btn-ghost:hover {
-  background: var(--token-surface-subtle, #F2F8F4);
+  background: #F7F9F7;
   color: var(--token-primary, #176B45);
 }
 .ngis-btn-danger {
@@ -2085,7 +2084,8 @@ input[type="radio"]:checked::before {
   transform: scale(1) !important;
 }
 input[type="radio"]:focus-visible {
-  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.25) !important;
+  outline: 2px solid #176B45;
+  outline-offset: 2px;
 }
 
 input[type="checkbox"] {
@@ -2121,7 +2121,8 @@ input[type="checkbox"]:checked::before {
   transform: rotate(-45deg) translate(1px, -1px) scale(1) !important;
 }
 input[type="checkbox"]:focus-visible {
-  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.25) !important;
+  outline: 2px solid #176B45;
+  outline-offset: 2px;
 }
 
 /* ── RULE 6: Searchable Dropdown & Combobox ───────────────── */
@@ -2187,6 +2188,8 @@ input[type="checkbox"]:focus-visible {
 }
 .ngis-combobox-search-input:focus {
   border-color: #176B45 !important;
+  box-shadow: 0 0 0 2px rgba(23, 107, 69, 0.12) !important;
+  outline: none !important;
 }
 .ngis-combobox-search-icon {
   position: absolute !important;
@@ -2247,21 +2250,24 @@ input[type="checkbox"]:focus-visible {
   border-radius: 9999px !important;
   font-size: 12px !important;
   font-weight: 500 !important;
-  border: 1px solid #CBD5E1 !important;
-  background-color: #F8FAFC !important;
-  color: #334155 !important;
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  color: var(--color-text-secondary, #64746A) !important;
   cursor: pointer !important;
   user-select: none !important;
-  transition: all 0.15s ease !important;
+  transition: color 150ms var(--ease-standard, ease) !important;
 }
-.filter-chip:hover, .ngis-chip:hover {
-  background-color: #F1F5F9 !important;
-  border-color: #94A3B8 !important;
+@media (hover: hover) and (pointer: fine) {
+  .filter-chip:hover, .ngis-chip:hover {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: var(--color-text, #29352E) !important;
+  }
 }
 .filter-chip.is-active, .filter-chip[data-selected="true"], .ngis-chip.selected {
-  background-color: #E8F3ED !important;
-  border-color: #176B45 !important;
-  color: #176B45 !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: var(--color-primary, #176B45) !important;
 }
 .filter-chip .chip-check, .ngis-chip .chip-check {
   display: none !important;

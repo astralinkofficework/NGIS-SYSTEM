@@ -2,8 +2,8 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>NGIS — Student Timetable</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NGIS · Class Timetable</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -12,655 +12,122 @@
 <link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
 <link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
 <link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="../../assets/css/hero.css">
 <link rel="stylesheet" href="css/overlap.css">
 <link rel="stylesheet" href="css/responsive.css">
 <link rel="stylesheet" href="../../assets/css/interactions.css">
 <link rel="stylesheet" href="../../assets/css/ui-states.css">
 <link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
 <script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script>try{var t=localStorage.getItem('ngis-theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
-<style>
-  .tt-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:4px; }
-  .tt-chip {
-    display:inline-flex; align-items:center; gap:5px;
-    padding:4px 10px; border-radius:99px;
-    font-size:12px; font-weight: 500; letter-spacing:.2px;
-    background:rgba(23,107,69,.08); color:var(--text, #29352E);
-    border:1px solid rgba(23,107,69,.15);
-  }
-  .tt-chip.green {
-    background:#E8F3ED; color:#176B45; border-color:#BEE1CE;
-  }
-  .tt-chip.warn {
-    background:#FEF3C7; color:#B45309; border-color:#FDE68A;
-  }
-  .tt-chip .material-symbols-outlined { font-size:14px; }
-
-  /* Interactive Matrix Styles */
-  .grid-card {
-    background:#ffffff;
-    border-radius:18px;
-    border:1px solid var(--bdr, #E1E9E3);
-    box-shadow:0 4px 16px rgba(0, 0, 0, 0.02);
-    overflow:hidden;
-    margin-top:16px;
-  }
-  .tt-slot-active {
-    position:relative;
-    border:2px solid #176B45 !important;
-    background:rgba(23,107,69,0.08) !important;
-    box-shadow:0 0 0 3px rgba(23,107,69,0.2);
-  }
-
-  .slot-btn {
-    text-align:left;
-    width:100%;
-    border:none;
-    background:transparent;
-    padding:0;
-    cursor:pointer;
-    font-family:inherit;
-  }
-  .lesson-card {
-    padding:8px 10px;
-    border-radius:8px;
-    transition:transform .12s ease, box-shadow .12s ease;
-    border-left:3px solid #176B45;
-  }
-  .lesson-card:hover {
-    transform:translateY(-1px);
-    box-shadow:0 2px 8px rgba(0,0,0,0.06);
-  }
-  .lesson-sub {
-    font-size:12.5px;
-    font-weight:500;
-    color:var(--text, #1c2620);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:4px;
-  }
-  .lesson-tch {
-    font-size:11px;
-    color:#5C6B61;
-    margin-top:2px;
-  }
-  .lesson-rm {
-    font-size:10.5px;
-    color:#8FA095;
-    margin-top:1px;
-  }
-  .slot-empty {
-    padding:14px 6px;
-    text-align:center;
-    font-size:11.5px;
-    color:#8FA095;
-    background:#FAFCFA;
-    border-radius:6px;
-    border:1px dashed #E1E9E3;
-  }
-
-  /* Live Period Ticker */
-  .ticker-bar {
-    background:#176B45;
-    border-radius:16px;
-    padding:16px 20px;
-    color:#fff;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    flex-wrap:wrap;
-    gap:16px;
-    margin-top:16px;
-  }
-  /* Global heading-color normalization overrides the inline #fff on the
-     green ticker bar — keep the ticker text white and readable. */
-  html body #tickerText,
-  html body #tickerText * {
-    color: #ffffff !important;
-  }
-  .shift-divider td {
-    background:#F2F6F3;
-    padding:8px 14px;
-    font-size:11.5px;
-    font-weight:500;
-    color:#415247;
-    text-align:center;
-    letter-spacing:.5px;
-  }
-  .break-row td {
-    background:#FAFBF9;
-    padding:6px 12px;
-    font-size:11px;
-    color:#738479;
-    text-align:center;
-  }
-  .class-select-box {
-    padding:5px 12px;
-    border-radius:8px;
-    border:1px solid #C9D9CE;
-    font-size:12.5px;
-    font-weight:500;
-    background:#fff;
-    color:#29352E;
-    outline:none;
-  }
-  .class-select-box:focus {
-    border-color:#176B45;
-    box-shadow:0 0 0 2px rgba(23,107,69,0.2);
-  }
-</style>
 
 <!-- NGIS global action-icon engine -->
 <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
 <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
 <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
 <script src="../../assets/js/khmer-suite-data.js"></script>
+
+<style>
+/* ── Weekly Class Timetable — same visual language as student-calendar.html ── */
+.wktt-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:16px 20px; }
+.wktt-head h3 { font-size:16px; margin:0; color:var(--text); }
+.wktt-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+.wktt-meta { display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
+.wktt-chip { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; padding:3px 9px; border-radius:999px; background:var(--surface-2,#F1F5F9); color:var(--text-secondary,#64746A); }
+.wktt-chip.green { background:transparent; color:var(--color-success-text,#176B45); }
+.wktt-chip .material-symbols-outlined { font-size:14px; }
+.wktt-link,
+.wktt-action { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:500; color:var(--primary,#176B45); text-decoration:none; padding:6px 10px; border-radius:8px; border:0; background:transparent; font-family:inherit; cursor:pointer; }
+.wktt-link:hover,
+.wktt-action:hover { text-decoration:underline; }
+.wktt-link:focus-visible,
+.wktt-action:focus-visible { outline:2px solid var(--primary,#176B45); outline-offset:2px; }
+.wktt-action[disabled] { opacity:.55; cursor:not-allowed; text-decoration:none; }
+.wktt-toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:0 20px 12px; }
+.wktt-days { display:flex; gap:12px; flex-wrap:wrap; }
+.wktt-day-btn { position:relative; border:0; background:transparent; color:var(--text-secondary,#64746A); font-family:inherit; font-size:12px; font-weight:400; padding:5px 2px 8px; border-radius:0; cursor:pointer; transition:color 150ms ease,opacity 120ms ease; }
+.wktt-day-btn::after { content:""; position:absolute; left:2px; right:2px; bottom:2px; height:2px; border-radius:2px; background:transparent; transition:background-color 150ms ease; }
+.wktt-day-btn:hover { color:var(--text,#29352E); }
+.wktt-day-btn[aria-pressed="true"] { background:transparent; color:var(--primary,#176B45); }
+.wktt-day-btn[aria-pressed="true"]::after { background:var(--primary,#176B45); }
+.wktt-day-btn:active { opacity:.82; }
+.wktt-day-btn:focus-visible { outline:2px solid var(--primary,#176B45); outline-offset:2px; }
+.wktt-week { font-size:12px; color:var(--muted); }
+.wktt-body { padding:0 20px 20px; }
+.wktt-day-group { margin-top:6px; }
+.wktt-day-head { display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:500; color:var(--text,#29352E); padding:10px 12px; border-radius:8px; background:transparent; }
+.wktt-day-head.today { background:transparent; box-shadow:inset 2px 0 0 var(--primary,#176B45); }
+.wktt-day-head .wktt-today-tag { font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.04em; background:var(--primary,#176B45); color:#fff; padding:1px 7px; border-radius:999px; }
+.wktt-row { display:grid; grid-template-columns:130px minmax(0,1fr) 110px 170px; gap:10px; align-items:center; padding:9px 12px; border-top:1px solid var(--border-subtle,#EEF4F0); font-size:13px; }
+.wktt-row:first-of-type { border-top:0; }
+.wktt-time { font-size:12px; color:var(--text-secondary,#64746A); font-variant-numeric:tabular-nums; }
+.wktt-subject { font-weight:500; color:var(--text,#29352E); display:flex; align-items:center; gap:6px; min-width:0; }
+.wktt-subject .wktt-code { font-size:10px; padding:1px 6px; border-radius:5px; font-weight:500; flex-shrink:0; }
+.wktt-class, .wktt-teacher { color:var(--text-secondary,#64746A); font-size:12.5px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.wktt-note { font-size:12px; color:var(--muted); padding:8px 12px; }
+.wktt-state { text-align:center; padding:48px 20px; color:var(--muted,#8FA095); }
+.wktt-state .material-symbols-outlined { font-size:36px; color:#B9C7BD; }
+.wktt-state-title { margin-top:8px; font-weight:500; color:var(--text,#29352E); font-size:14px; }
+.wktt-state-sub { margin-top:4px; font-size:13px; }
+.wktt-spinner { width:22px; height:22px; margin:0 auto; border-radius:50%; border:2.5px solid #E1E9E3; border-top-color:var(--primary,#176B45); animation:wkttSpin .8s linear infinite; }
+@keyframes wkttSpin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .wktt-spinner { animation:none; } }
+@media (max-width:767px) {
+  .wktt-head { padding:14px 14px; }
+  .wktt-meta { justify-content:flex-start; }
+  .wktt-row { grid-template-columns:1fr; gap:3px; padding:10px 4px; }
+  .wktt-time { font-weight:500; color:var(--text,#29352E); font-size:12.5px; }
+  .wktt-class, .wktt-teacher { white-space:normal; overflow:visible; }
+  .wktt-teacher::before { content:'Teacher: '; color:var(--muted,#8FA095); }
+  .wktt-toolbar { flex-direction:column; align-items:stretch; padding-left:14px; padding-right:14px; }
+  .wktt-body { padding:0 14px 16px; }
+}
+@media (min-width:768px) and (max-width:1023px) {
+  .wktt-row { grid-template-columns:110px minmax(0,1fr) 90px 140px; }
+}
+@media print {
+  .wktt-toolbar, .wktt-action, .wktt-link { display:none !important; }
+  .wktt-head { padding:0 0 10px; }
+  .wktt-body { padding:0; }
+}
+</style>
 </head>
 <body data-page="student" data-role="student" class="student-dashboard">
 <main class="main">
-  <header id="heroBanner" role="banner"></header>
-  <div class="subpage-container">
+<header id="heroBanner" role="banner"></header>
+<div class="subpage-container">
 
-    <!-- Live Period Ticker -->
-    <div class="ticker-bar anim-up">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="material-symbols-outlined" style="color:#E8F3ED;font-size:28px;">schedule</span>
-        <div>
-          <span style="font-size:11px;font-weight:500;text-transform:uppercase;color:#BEE1CE;letter-spacing:0.5px">Active Session Tracker</span>
-          <h4 style="margin:2px 0 0 0;font-size:14px;font-weight:500;color:#fff;" id="tickerText">Checking schedule status…</h4>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="btn btn-sm btn-ghost" onclick="exportICSFile()" style="color:#fff;border-color:rgba(255,255,255,0.3);font-weight:500">
-          <span class="material-symbols-outlined" style="font-size:15px;margin-right:4px">calendar_today</span>Export (.ICS) Calendar
-        </button>
-      </div>
-    </div>
+  <div class="col-main mt4 anim-up">
+    <div class="stack" style="width:100%">
 
-    <!-- Weekly Schedule Matrix -->
-    <div class="grid-card anim-up-2">
-      <div class="card-head" style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bdr, #E1E9E3);flex-wrap:wrap;gap:12px;">
-        <div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-            <h3 style="margin:0;font-size:16px;font-weight:500;">Weekly Class Timetable</h3>
-            <span id="publishBadge" class="tt-chip green"><span class="material-symbols-outlined">verified</span> Published</span>
+      <!-- Published weekly class timetable, reached from Academic Departments -->
+      <div class="card" id="wkttCard">
+        <div class="wktt-head">
+          <div>
+            <h3>Weekly Class Timetable</h3>
+            <div class="wktt-sub" id="wkttSubtitle">Published weekly schedule · synced with the NGIS Timetable Registry</div>
           </div>
-          <div class="tt-meta">
-            <span class="sub" style="font-size:12px;color:#5C6B61;">Academic Year 2026–2027</span>
-            <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#5C6B61;">
-              Select Class:
-              <select id="classSelector" class="class-select-box"></select>
-            </label>
-            <span class="tt-chip" id="roomChip"><span class="material-symbols-outlined">meeting_room</span> Room 101</span>
-            <span class="tt-chip" id="shiftChip"><span class="material-symbols-outlined">schedule</span> Morning Shift</span>
-          </div>
+          <div class="wktt-meta" id="wkttMeta"></div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-sm btn-ghost" onclick="window.print()" style="font-weight:500">
-            <span class="material-symbols-outlined" style="font-size:15px;margin-right:4px">print</span>Print Timetable
-          </button>
+        <div class="wktt-toolbar">
+          <div class="wktt-days" id="wkttDays" role="group" aria-label="Filter by day"></div>
+          <div class="wktt-week" id="wkttWeek"></div>
+        </div>
+        <div class="wktt-body" id="wkttBody">
+          <div class="wktt-state"><div class="wktt-spinner"></div><div class="wktt-state-sub" style="margin-top:10px">Loading timetable…</div></div>
         </div>
       </div>
-      
-      <div class="card-pad" style="overflow-x:auto; padding:20px;">
-        <div id="timetableContainer">
-          <div style="text-align:center;padding:40px;color:#738479;">Loading timetable data…</div>
-        </div>
-      </div>
-    </div>
 
+    </div>
   </div>
+
+</div>
 </main>
 
-<script>
-(function () {
-  'use strict';
-
-  var DAYS = ['ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
-  var DAY_LABELS = {
-    'ច័ន្ទ': 'Monday',
-    'អង្គារ': 'Tuesday',
-    'ពុធ': 'Wednesday',
-    'ព្រហស្បតិ៍': 'Thursday',
-    'សុក្រ': 'Friday',
-    'សៅរ៍': 'Saturday'
-  };
-  var DAY_OF_WEEK_MAP = { 1: 'ច័ន្ទ', 2: 'អង្គារ', 3: 'ពុធ', 4: 'ព្រហស្បតិ៍', 5: 'សុក្រ', 6: 'សៅរ៍' };
-
-  var MORNING_PERIODS = [
-    { p: 1, time: '07:00–07:50', label: 'Period 1' },
-    { p: 2, time: '07:55–08:45', label: 'Period 2' },
-    { break: true, time: '08:45–09:05', label: 'RECREATIONAL BREAK' },
-    { p: 3, time: '09:05–09:55', label: 'Period 3' },
-    { p: 4, time: '10:00–10:50', label: 'Period 4' },
-    { p: 5, time: '10:55–11:45', label: 'Period 5' }
-  ];
-
-  var AFTERNOON_PERIODS = [
-    { p: 1, time: '13:00–13:50', label: 'Period 1' },
-    { p: 2, time: '13:55–14:45', label: 'Period 2' },
-    { break: true, time: '14:45–15:05', label: 'AFTERNOON BREAK' },
-    { p: 3, time: '15:05–15:55', label: 'Period 3' },
-    { p: 4, time: '16:00–16:50', label: 'Period 4' },
-    { p: 5, time: '16:55–17:45', label: 'Period 5' }
-  ];
-
-  var state = {
-    classId: 'class_10A',
-    classes: [],
-    classInfo: null,
-    lessons: [],
-    isPublished: true,
-    version: 1
-  };
-
-  function parseQueryParams() {
-    var params = new URLSearchParams(window.location.search);
-    var c = params.get('class');
-    if (c) {
-      if (!c.startsWith('class_') && !isNaN(parseInt(c, 10))) {
-        state.classId = 'class_' + c;
-      } else {
-        state.classId = c;
-      }
-    }
-  }
-
-  // Resolve the logged-in student's actual enrolled class from real records.
-  async function resolveStudentClass() {
-    var params = new URLSearchParams(window.location.search);
-    var sid = params.get('student');
-    if (!sid || state.classId) return;
-    try {
-      var res = await fetch('/api/students');
-      if (!res.ok) return;
-      var students = await res.json();
-      var stu = (Array.isArray(students) ? students : (students.data || []))
-        .find(function (s) { return s.id === sid; });
-      if (stu && stu.class) {
-        state.classId = 'class_' + stu.class.replace(/\s+|Grade\s*/gi, '');
-      }
-    } catch (e) { /* keep the default class */ }
-  }
-
-  function esc(s) {
-    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
-
-  async function loadClasses() {
-    try {
-      var res = await fetch('/api/timetable/state');
-      if (res.ok) {
-        var d = await res.json();
-        state.classes = d.classes || [];
-        populateClassSelector();
-      }
-    } catch (e) {
-      console.warn('Failed to load classes catalog:', e);
-    }
-  }
-
-  function populateClassSelector() {
-    var sel = document.getElementById('classSelector');
-    if (!sel) return;
-    sel.innerHTML = '';
-    (state.classes.length ? state.classes : [
-      { id: 'class_10A', display: '10A' },
-      { id: 'class_10B', display: '10B' },
-      { id: 'class_11A', display: '11A' },
-      { id: 'class_12A', display: '12A' }
-    ]).forEach(function (c) {
-      var opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = 'Class ' + (c.display || c.id);
-      if (c.id === state.classId) opt.selected = true;
-      sel.appendChild(opt);
-    });
-
-    sel.onchange = function () {
-      state.classId = sel.value;
-      loadTimetable();
-    };
-  }
-
-  async function loadTimetable() {
-    var container = document.getElementById('timetableContainer');
-    if (container) container.innerHTML = '<div style="text-align:center;padding:40px;color:#738479;">Loading timetable data…</div>';
-
-    try {
-      var res = await fetch('/api/timetable/published/class/' + encodeURIComponent(state.classId));
-      if (res.ok) {
-        var data = await res.json();
-        state.classInfo = data.class;
-        state.lessons = data.lessons || [];
-        state.isPublished = true;
-        state.version = data.version || 1;
-        state.effectiveFrom = data.effective_from || null;
-      } else {
-        // No published timetable yet — NEVER fall back to the unpublished
-        // draft: students must only ever see the official published schedule.
-        state.lessons = [];
-        state.isPublished = false;
-        state.version = null;
-        try {
-          var sRes = await fetch('/api/timetable/state');
-          if (sRes.ok) {
-            var sData = await sRes.json();
-            var cls = (sData.classes || []).find(function (c) { return c.id === state.classId; });
-            state.classInfo = cls || { id: state.classId, display: state.classId.replace('class_', ''), room: '', shift: 'ព្រឹក' };
-          }
-        } catch (e2) { /* banner falls back to defaults */ }
-      }
-    } catch (e) {
-      console.error('Error fetching timetable:', e);
-    }
-
-    renderTimetable();
-    updateTicker();
-  }
-
-  function renderTimetable() {
-    var container = document.getElementById('timetableContainer');
-    if (!container) return;
-
-    // Update meta chips
-    var pBadge = document.getElementById('publishBadge');
-    if (pBadge) {
-      if (state.isPublished) {
-        pBadge.className = 'tt-chip green';
-        pBadge.innerHTML = '<span class="material-symbols-outlined">verified</span> Published (v' + state.version + ')' +
-          (state.effectiveFrom ? ' · effective ' + esc(state.effectiveFrom) : '');
-      } else {
-        pBadge.className = 'tt-chip warn';
-        pBadge.innerHTML = '<span class="material-symbols-outlined">pending</span> Not Published Yet';
-      }
-    }
-
-    // Official empty state: never render unpublished draft data here.
-    if (!state.isPublished) {
-      container.innerHTML =
-        '<div style="text-align:center;padding:56px 20px;color:#738479">' +
-        '<span class="material-symbols-outlined" style="font-size:40px;color:#B9C7BD">hourglass_empty</span>' +
-        '<div style="margin-top:10px;font-weight:500;color:#29352E">No published timetable yet</div>' +
-        '<div style="margin-top:4px;font-size:13px">Your class schedule will appear here automatically once the school publishes it.</div>' +
-        '</div>';
-      return;
-    }
-
-    var rChip = document.getElementById('roomChip');
-    if (rChip) {
-      var rName = state.classInfo && state.classInfo.room ? (window.KSData ? window.KSData.toEnRoom(state.classInfo.room) : state.classInfo.room) : 'Room 101';
-      rChip.innerHTML = '<span class="material-symbols-outlined">meeting_room</span> ' + esc(rName);
-    }
-
-    var sChip = document.getElementById('shiftChip');
-    if (sChip) var shName = state.classInfo ? (window.KSData ? window.KSData.toEnShift(state.classInfo.shift) : state.classInfo.shift) : 'Morning';
-    sChip.innerHTML = '<span class="material-symbols-outlined">schedule</span> ' + esc(shName) + ' Shift';
-
-    // Index lessons by key: day|shift|period
-    var lMap = {};
-    state.lessons.forEach(function (l) {
-      var k = l.day + '|' + l.shift + '|' + l.period;
-      lMap[k] = l;
-    });
-
-    // Check if afternoon has lessons
-    var hasAfternoon = state.lessons.some(function (l) { return l.shift === 'រសៀល'; }) || (state.classInfo && state.classInfo.shift === 'រសៀល');
-
-    var html = '<table class="tbl" style="min-width:880px; border-collapse:collapse; width:100%;">' +
-      '<thead>' +
-        '<tr>' +
-          '<th style="width:120px;text-align:left;padding:10px 12px;">Time / Shift</th>';
-
-    DAYS.forEach(function (d) {
-      html += '<th style="text-align:left;padding:10px 12px;">' + DAY_LABELS[d] + '</th>';
-    });
-    html += '</tr></thead><tbody>';
-
-    // Morning Header
-    html += '<tr class="shift-divider"><td colspan="7">Morning Shift (MORNING SHIFT · 07:00 – 11:45)</td></tr>';
-
-    MORNING_PERIODS.forEach(function (item) {
-      if (item.break) {
-        html += '<tr class="break-row"><td class="faint mono" style="font-size:11.5px;padding:6px 12px;">' + item.time + '</td>' +
-          '<td colspan="6">' + item.label + '</td></tr>';
-        return;
-      }
-      html += '<tr>' +
-        '<td class="faint mono" style="font-size:11.5px;padding:8px 12px;">' +
-          '<div style="font-weight:500;color:var(--text);">' + item.label + '</div>' +
-          '<div style="font-size:10.5px;color:#8FA095;">' + item.time + '</div>' +
-        '</td>';
-
-      DAYS.forEach(function (d) {
-        var key = d + '|ព្រឹក|' + item.p;
-        var lesson = lMap[key];
-        html += '<td style="padding:6px;vertical-align:top;">';
-        if (lesson) {
-          var bg = lesson.color + '15';
-          html += '<button class="slot-btn" onclick="openClassDetail(\'' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '\', \'' + DAY_LABELS[d] + ' Morning ' + item.label + ' (' + item.time + ')\')">' +
-            '<div class="lesson-card" data-slot="' + d + '|ព្រឹក|' + item.p + '" style="background:' + bg + ';border-left-color:' + lesson.color + '">' +
-              '<div class="lesson-sub">' +
-                '<span>' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '</span>' +
-                '<span style="font-size:10px;padding:1px 5px;border-radius:4px;background:' + lesson.color + '25;color:' + lesson.color + ';">' + esc(lesson.subject_code) + '</span>' +
-              '</div>' +
-              '<div class="lesson-tch">' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '</div>' +
-              '<div class="lesson-rm">' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '</div>' +
-            '</div></button>';
-        } else {
-          html += '<div class="slot-empty">Free</div>';
-        }
-        html += '</td>';
-      });
-      html += '</tr>';
-    });
-
-    // Lunch row
-    html += '<tr class="break-row" style="background:#EDF3F0;"><td class="faint mono" style="font-size:11.5px;padding:8px 12px;">11:45–13:00</td>' +
-      '<td colspan="6" style="font-weight:500;color:#29352E;">LUNCH REPAST (11:45 – 13:00)</td></tr>';
-
-    // Afternoon Header
-    if (hasAfternoon) {
-      html += '<tr class="shift-divider"><td colspan="7">AFTERNOON SHIFT (13:00 – 17:45)</td></tr>';
-
-      AFTERNOON_PERIODS.forEach(function (item) {
-        if (item.break) {
-          html += '<tr class="break-row"><td class="faint mono" style="font-size:11.5px;padding:6px 12px;">' + item.time + '</td>' +
-            '<td colspan="6">' + item.label + '</td></tr>';
-          return;
-        }
-        html += '<tr>' +
-          '<td class="faint mono" style="font-size:11.5px;padding:8px 12px;">' +
-            '<div style="font-weight:500;color:var(--text);">' + item.label + '</div>' +
-            '<div style="font-size:10.5px;color:#8FA095;">' + item.time + '</div>' +
-          '</td>';
-
-        DAYS.forEach(function (d) {
-          var key = d + '|រសៀល|' + item.p;
-          var lesson = lMap[key];
-          html += '<td style="padding:6px;vertical-align:top;">';
-          if (lesson) {
-            var bg = lesson.color + '15';
-            html += '<button class="slot-btn" onclick="openClassDetail(\'' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '\', \'' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '\', \'' + DAY_LABELS[d] + ' Afternoon ' + item.label + ' (' + item.time + ')\')">' +
-              '<div class="lesson-card" data-slot="' + d + '|រសៀល|' + item.p + '" style="background:' + bg + ';border-left-color:' + lesson.color + '">' +
-                '<div class="lesson-sub">' +
-                  '<span>' + esc(window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name) + '</span>' +
-                  '<span style="font-size:10px;padding:1px 5px;border-radius:4px;background:' + lesson.color + '25;color:' + lesson.color + ';">' + esc(lesson.subject_code) + '</span>' +
-                '</div>' +
-                '<div class="lesson-tch">' + esc(window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name) + '</div>' +
-                '<div class="lesson-rm">' + esc(window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room) + '</div>' +
-              '</div></button>';
-          } else {
-            html += '<div class="slot-empty">Free</div>';
-          }
-          html += '</td>';
-        });
-        html += '</tr>';
-      });
-    }
-
-    html += '</tbody></table>';
-    container.innerHTML = html;
-  }
-
-  function updateTicker() {
-    var ticker = document.getElementById('tickerText');
-    if (!ticker) return;
-
-    var now = new Date();
-    var dayIdx = now.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
-    var khmerDay = DAY_OF_WEEK_MAP[dayIdx];
-
-    // Clear active highlights
-    document.querySelectorAll('.lesson-card.tt-slot-active').forEach(function (el) {
-      el.classList.remove('tt-slot-active');
-    });
-
-    if (!khmerDay) {
-      ticker.textContent = 'Sunday (Weekend) · No classes scheduled today. Enjoy your rest!';
-      return;
-    }
-
-    var curMinutes = now.getHours() * 60 + now.getMinutes();
-
-    function toMin(str) {
-      var parts = str.split(':');
-      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
-    }
-
-    var activeShift = null;
-    var activePeriod = null;
-    var activePeriodDef = null;
-
-    // Check morning periods
-    MORNING_PERIODS.forEach(function (item) {
-      if (item.break) return;
-      var times = item.time.split('–');
-      var start = toMin(times[0]), end = toMin(times[1]);
-      if (curMinutes >= start && curMinutes < end) {
-        activeShift = 'ព្រឹក';
-        activePeriod = item.p;
-        activePeriodDef = item;
-      }
-    });
-
-    // Check afternoon periods
-    if (!activeShift) {
-      AFTERNOON_PERIODS.forEach(function (item) {
-        if (item.break) return;
-        var times = item.time.split('–');
-        var start = toMin(times[0]), end = toMin(times[1]);
-        if (curMinutes >= start && curMinutes < end) {
-          activeShift = 'រសៀល';
-          activePeriod = item.p;
-          activePeriodDef = item;
-        }
-      });
-    }
-
-    if (activeShift && activePeriod) {
-      var activeKey = khmerDay + '|' + activeShift + '|' + activePeriod;
-      var lesson = state.lessons.find(function (l) {
-        return l.day === khmerDay && l.shift === activeShift && l.period === activePeriod;
-      });
-
-      var activeCard = document.querySelector('.lesson-card[data-slot="' + activeKey + '"]');
-      if (activeCard) activeCard.classList.add('tt-slot-active');
-
-      if (lesson) {
-        var sName = window.KSData ? window.KSData.toEnSubject(lesson.subject_name) : lesson.subject_name;
-        var tName = window.KSData ? window.KSData.toEnTeacher(lesson.teacher_name) : lesson.teacher_name;
-        var rName = window.KSData ? window.KSData.toEnRoom(lesson.room) : lesson.room;
-        ticker.textContent = 'Current Period: ' + sName + ' (' + activePeriodDef.time + ') • Instructor: ' + tName + ' • ' + rName;
-      } else {
-        ticker.textContent = 'Current Period: Free Study Period (' + activePeriodDef.time + ')';
-      }
-    } else {
-      var todayLessons = state.lessons.filter(function (l) { return l.day === khmerDay; });
-      if (todayLessons.length && curMinutes < toMin('17:45')) {
-        ticker.textContent = 'Outside Class Hours · Today has ' + todayLessons.length + ' scheduled periods (' + DAY_LABELS[khmerDay] + ')';
-      } else {
-        ticker.textContent = 'Outside Class Hours · Official Published Timetable';
-      }
-    }
-  }
-
-  // Dynamic RFC 5545 ICS Export
-  window.exportICSFile = function () {
-    if (!state.lessons.length) {
-      if (window.toast) window.toast('No scheduled lessons available for export', 'info');
-      return;
-    }
-
-    var lines = [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//NGIS Cambodian School ERP//Class Timetable//KM',
-      'CALSCALE:GREGORIAN',
-      'METHOD:PUBLISH',
-      'X-WR-CALNAME:NGIS ' + (state.classInfo ? state.classInfo.display : 'Class') + ' Timetable'
-    ];
-
-    var dayOffsetMap = { 'ច័ន្ទ': 0, 'អង្គារ': 1, 'ពុធ': 2, 'ព្រហស្បតិ៍': 3, 'សុក្រ': 4, 'សៅរ៍': 5 };
-
-    state.lessons.forEach(function (l, idx) {
-      var pDef = (l.shift === 'ព្រឹក' ? MORNING_PERIODS : AFTERNOON_PERIODS).find(function (item) { return item.p === l.period; });
-      var timeStr = pDef ? pDef.time : '07:00–07:50';
-      var times = timeStr.split('–');
-      var sParts = times[0].split(':'), eParts = times[1].split(':');
-
-      var off = dayOffsetMap[l.day] || 0;
-      var dateDay = 7 + off;
-      var dateStr = '202609' + (dateDay < 10 ? '0' + dateDay : dateDay);
-
-      var dtStart = dateStr + 'T' + sParts[0] + sParts[1] + '00';
-      var dtEnd = dateStr + 'T' + eParts[0] + eParts[1] + '00';
-
-      lines.push('BEGIN:VEVENT');
-      lines.push('UID:ngis-class-' + state.classId + '-' + idx + '@ngis.edu.kh');
-      lines.push('DTSTAMP:20260901T000000Z');
-      lines.push('DTSTART:' + dtStart);
-      lines.push('DTEND:' + dtEnd);
-      lines.push('RRULE:FREQ=WEEKLY;COUNT=20');
-      lines.push('SUMMARY:' + l.subject_name + ' (' + l.subject_code + ')');
-      lines.push('DESCRIPTION:Instructor: ' + (window.KSData ? window.KSData.toEnTeacher(l.teacher_name) : l.teacher_name) + ' | Class: ' + (state.classInfo ? state.classInfo.display : state.classId));
-      lines.push('LOCATION:' + l.room);
-      lines.push('END:VEVENT');
-    });
-
-    lines.push('END:VCALENDAR');
-
-    var blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'NGIS_Class_' + (state.classInfo ? state.classInfo.display : state.classId) + '_Timetable.ics';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    if (window.toast) window.toast('Class timetable (.ICS) exported', 'success');
-  };
-
-  window.openClassDetail = function (subject, teacher, location, timeInfo) {
-    var msg = subject + ' · Instructor: ' + teacher + ' · Room: ' + location + ' (' + timeInfo + ')';
-    if (window.toast) window.toast(msg, 'info');
-    else alert(msg);
-  };
-
-  parseQueryParams();
-  resolveStudentClass().then(function () {
-    return loadClasses().then(loadTimetable);
-  });
-  setInterval(updateTicker, 60000);
-
-})();
-</script>
-<script>window.PAGE={role:"student",active:"timetable"};</script>
-<script>
+<script>window.PAGE = {"role":"student","active":"departments"};
 window.HERO_CONFIG = {
-  title: 'Weekly Class Timetable',
-  greeting: 'Academic schedule, course periods, classroom locations, and instructors',
+  title: 'Class Timetable',
+  greeting: 'Your recurring weekly class schedule — synced with the NGIS Timetable Registry',
   name: 'Nrinphouneta Hok',
   id: 'Student ID: 2026-STD-0142',
   grade: 'Grade 10',
@@ -671,9 +138,10 @@ window.HERO_CONFIG = {
   profileLink: 'student-profile.html',
   notifLink: 'student-notifications.html',
   notifCount: 3,
-  title: 'Timetable',
-  greeting: 'Verify subject allocations, current room sessions, and export to calendars.',
-  breadcrumbs: [{ label: 'Timetable' }],
+  breadcrumbs: [
+    { label: 'Academic Departments', href: '../shared/departments.html?portal=student' },
+    { label: 'Class Timetable' }
+  ],
   ddRows: [
     { icon: 'school', text: 'Grade 10 — Science Stream' },
     { icon: 'class', text: 'Class 10A' },
@@ -681,9 +149,420 @@ window.HERO_CONFIG = {
     { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
     { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
   ]
-};
-</script>
+};</script>
 <script src="js/hero.js"></script>
 <script src="../../assets/js/layout.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     Weekly Class Timetable — READ-ONLY
+     Reuses the published timetable APIs only:
+       · /api/students                     → real enrollment record
+       · /api/timetable/state              → class catalog (+ departments)
+       · /api/timetable/published/class/X  → OFFICIAL published lessons only
+                                             (404 when nothing is published —
+                                              the draft is never exposed)
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  var DAYS = ['ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+  var DAY_LABELS = { 'ច័ន្ទ':'Monday', 'អង្គារ':'Tuesday', 'ពុធ':'Wednesday', 'ព្រហស្បតិ៍':'Thursday', 'សុក្រ':'Friday', 'សៅរ៍':'Saturday' };
+  var DAY_SHORT = { 'ច័ន្ទ':'Mon', 'អង្គារ':'Tue', 'ពុធ':'Wed', 'ព្រហស្បតិ៍':'Thu', 'សុក្រ':'Fri', 'សៅរ៍':'Sat' };
+  var JS_DAY_TO_KHMER = { 1:'ច័ន្ទ', 2:'អង្គារ', 3:'ពុធ', 4:'ព្រហស្បតិ៍', 5:'សុក្រ', 6:'សៅរ៍' };
+
+  var PERIODS = {
+    'ព្រឹក': { 1:'07:00–07:50', 2:'07:55–08:45', 3:'09:05–09:55', 4:'10:00–10:50', 5:'10:55–11:45' },
+    'រសៀល': { 1:'13:00–13:50', 2:'13:55–14:45', 3:'15:05–15:55', 4:'16:00–16:50', 5:'16:55–17:45' }
+  };
+  var SHIFT_ORDER = { 'ព្រឹក': 0, 'រសៀល': 1 };
+
+  var params = new URLSearchParams(window.location.search);
+  var state = {
+    loading: true,
+    error: null,
+    entries: [],
+    deptFilter: params.get('dept') || 'all',
+    classFilter: params.get('class') || null,
+    dayFilter: 'all',
+    studentClassDisplay: null,
+    departmentLabel: params.get('dept') || ''
+  };
+
+  function KS() { return window.KSData || null; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function to12h(range) {
+    var parts = String(range || '').split('–');
+    if (parts.length !== 2) return range || '';
+    function fmt(t) {
+      var m = t.trim().match(/^(\d{1,2}):(\d{2})$/);
+      if (!m) return { text:t, mer:'' };
+      var h = parseInt(m[1], 10), mm = m[2];
+      var mer = h >= 12 ? 'PM' : 'AM';
+      var h12 = h % 12 || 12;
+      return { text: h12 + ':' + mm, mer: mer };
+    }
+    var a = fmt(parts[0]), b = fmt(parts[1]);
+    if (!a.mer || !b.mer) return range;
+    return a.mer === b.mer ? a.text + ' – ' + b.text + ' ' + a.mer : a.text + ' ' + a.mer + ' – ' + b.text + ' ' + b.mer;
+  }
+
+  function bodyEl() { return document.getElementById('wkttBody'); }
+  function metaEl() { return document.getElementById('wkttMeta'); }
+
+  function resolveStudentId() {
+    var sid = params.get('student');
+    if (sid) return sid;
+    try {
+      var heroId = window.HERO_CONFIG && window.HERO_CONFIG.id;
+      if (heroId) {
+        var m = String(heroId).match(/(\d{4}-STD-\d+)/);
+        if (m) return m[1];
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  async function resolveEnrollment() {
+    var sid = resolveStudentId();
+    var classes = [];
+    try {
+      var res = await fetch('/api/timetable/state');
+      if (res.ok) {
+        var d = await res.json();
+        classes = (d.state && d.state.classes) || d.classes || [];
+      }
+    } catch (e) {}
+
+    /* A department card may link to a specific class. */
+    if (state.classFilter) {
+      var requested = classes.filter(function (c) {
+        return c.id === state.classFilter || String(c.display).replace(/\s+/g, '') === String(state.classFilter).replace(/\s+/g, '');
+      });
+      if (requested.length) return requested;
+    }
+
+    var classDisplay = null;
+    if (sid) {
+      try {
+        var sRes = await fetch('/api/students');
+        if (sRes.ok) {
+          var sData = await sRes.json();
+          var list = Array.isArray(sData) ? sData : (sData.data || []);
+          var stu = list.find(function (s) { return s.id === sid; });
+          if (stu && stu.class) classDisplay = String(stu.class).trim();
+        }
+      } catch (e) {}
+    }
+
+    var wanted = classDisplay ? [classDisplay] : [];
+    var enrolled = classes.filter(function (c) { return wanted.indexOf(String(c.display).trim()) !== -1; });
+    state.studentClassDisplay = classDisplay;
+    return enrolled;
+  }
+
+  async function loadTimetable() {
+    state.loading = true; state.error = null;
+    renderLoading();
+    try {
+      var enrolled = await resolveEnrollment();
+      if (!enrolled.length) {
+        state.entries = [];
+        state.error = 'no-enrollment';
+        state.loading = false;
+        render();
+        return;
+      }
+      var entries = await Promise.all(enrolled.map(async function (c) {
+        try {
+          var res = await fetch('/api/timetable/published/class/' + encodeURIComponent(c.id));
+          if (res.ok) {
+            var data = await res.json();
+            return { cls: c, dept: c.department || '', lessons: data.lessons || [], version: data.version || null, effectiveFrom: data.effective_from || null, published: true };
+          }
+          return { cls: c, dept: c.department || '', lessons: [], version: null, effectiveFrom: null, published: false };
+        } catch (e) {
+          return { cls: c, dept: c.department || '', lessons: [], version: null, effectiveFrom: null, published: false, fetchError: true };
+        }
+      }));
+      state.entries = entries;
+      state.loading = false;
+    } catch (e) {
+      state.loading = false;
+      state.error = 'network';
+    }
+    render();
+  }
+
+  function visibleEntries() {
+    return state.entries.filter(function (en) {
+      if (state.deptFilter !== 'all' && en.dept !== state.deptFilter) return false;
+      if (state.classFilter && en.cls.id !== state.classFilter && String(en.cls.display) !== state.classFilter) return false;
+      return true;
+    });
+  }
+
+  function allLessons() {
+    var out = [];
+    visibleEntries().forEach(function (en) {
+      en.lessons.forEach(function (l) { out.push({ lesson:l, cls:en.cls, dept:en.dept }); });
+    });
+    out.sort(function (a, b) {
+      var d = DAYS.indexOf(a.lesson.day) - DAYS.indexOf(b.lesson.day);
+      if (d !== 0) return d;
+      var s = (SHIFT_ORDER[a.lesson.shift] || 0) - (SHIFT_ORDER[b.lesson.shift] || 0);
+      if (s !== 0) return s;
+      return (a.lesson.period || 0) - (b.lesson.period || 0);
+    });
+    return out;
+  }
+
+  function isToday(khmerDay) { return JS_DAY_TO_KHMER[new Date().getDay()] === khmerDay; }
+
+  function liveSummary() {
+    var now = new Date();
+    var kh = JS_DAY_TO_KHMER[now.getDay()];
+    if (!kh) return 'Weekend · no classes';
+    var mins = now.getHours() * 60 + now.getMinutes();
+    var found = null;
+    Object.keys(SHIFT_ORDER).sort(function (a,b) { return SHIFT_ORDER[a] - SHIFT_ORDER[b]; }).forEach(function (shift) {
+      Object.keys(PERIODS[shift]).forEach(function (p) {
+        var bits = PERIODS[shift][p].split('–');
+        var start = parseInt(bits[0].split(':')[0], 10) * 60 + parseInt(bits[0].split(':')[1], 10);
+        var end = parseInt(bits[1].split(':')[0], 10) * 60 + parseInt(bits[1].split(':')[1], 10);
+        if (mins >= start && mins < end && !found) found = { shift:shift, period:parseInt(p, 10), time:PERIODS[shift][p] };
+      });
+    });
+    if (!found) return 'Outside class hours';
+    var lesson = allLessons().find(function (it) {
+      return it.lesson.day === kh && it.lesson.shift === found.shift && Number(it.lesson.period) === found.period;
+    });
+    if (!lesson) return 'Free period · ' + to12h(found.time);
+    var subject = KS() ? KS().toEnSubject(lesson.lesson.subject_name) : lesson.lesson.subject_name;
+    return subject + ' · ' + to12h(found.time);
+  }
+
+  function renderLoading() {
+    bodyEl().innerHTML = '<div class="wktt-state"><div class="wktt-spinner"></div><div class="wktt-state-sub" style="margin-top:10px">Loading timetable…</div></div>';
+  }
+
+  function renderMeta() {
+    var el = metaEl();
+    if (!el) return;
+    var chips = [];
+    var published = state.entries.filter(function (e) { return e.published; });
+    if (published.length) {
+      var v = published[0].version;
+      chips.push('<span class="wktt-chip green"><span class="material-symbols-outlined">verified</span>Published' + (v ? ' (v' + esc(v) + ')' : '') + '</span>');
+      if (published[0].effectiveFrom) chips.push('<span class="wktt-chip">Effective ' + esc(published[0].effectiveFrom) + '</span>');
+    }
+    if (state.entries.length) {
+      var clsNames = state.entries.map(function (e) { return e.cls.display; }).join(', ');
+      chips.push('<span class="wktt-chip"><span class="material-symbols-outlined">class</span>Class ' + esc(clsNames) + '</span>');
+      var depts = state.entries.map(function (e) { return e.dept; }).filter(Boolean);
+      if (depts.length) chips.push('<span class="wktt-chip">' + esc(depts.join(' · ')) + '</span>');
+    }
+    if (state.entries.length) chips.push('<span class="wktt-chip"><span class="material-symbols-outlined">schedule</span>' + esc(liveSummary()) + '</span>');
+    chips.push('<button type="button" class="wktt-action" data-action="export"><span class="material-symbols-outlined" style="font-size:14px">download</span>Export .ICS</button>');
+    chips.push('<button type="button" class="wktt-action" data-action="print"><span class="material-symbols-outlined" style="font-size:14px">print</span>Print</button>');
+    chips.push('<a class="wktt-link" href="../shared/departments.html?portal=student">Departments <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span></a>');
+    el.innerHTML = chips.join('');
+
+    el.querySelectorAll('[data-action="export"]').forEach(function (b) { b.addEventListener('click', exportICSFile); });
+    el.querySelectorAll('[data-action="print"]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
+  }
+
+  function renderDayChips() {
+    var wrap = document.getElementById('wkttDays');
+    if (!wrap) return;
+    var todayKh = JS_DAY_TO_KHMER[new Date().getDay()];
+    var html = '<button type="button" class="wktt-day-btn" data-day="all" aria-pressed="' + (state.dayFilter === 'all') + '">All days</button>';
+    DAYS.forEach(function (d) {
+      html += '<button type="button" class="wktt-day-btn" data-day="' + esc(d) + '" aria-pressed="' + (state.dayFilter === d) + '" title="' + esc(DAY_LABELS[d]) + '">' + DAY_SHORT[d] + (d === todayKh ? ' ·' : '') + '</button>';
+    });
+    wrap.innerHTML = html;
+    wrap.querySelectorAll('.wktt-day-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.dayFilter = btn.getAttribute('data-day');
+        renderDayChips();
+        renderBody();
+      });
+    });
+  }
+
+  function renderWeekRange() {
+    var el = document.getElementById('wkttWeek');
+    if (!el) return;
+    var now = new Date();
+    var mon = new Date(now);
+    var dow = now.getDay();
+    mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+    var sat = new Date(mon);
+    sat.setDate(mon.getDate() + 5);
+    function f(d) { return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); }
+    el.textContent = 'This week · ' + f(mon) + ' – ' + f(sat) + ' · recurring schedule';
+  }
+
+  function renderSubtitle() {
+    var el = document.getElementById('wkttSubtitle');
+    if (!el) return;
+    var dept = state.departmentLabel || state.deptFilter;
+    var label = dept && dept !== 'all' ? ' · Department: ' + dept : '';
+    el.textContent = 'Published weekly schedule' + label + ' · synced with the NGIS Timetable Registry';
+  }
+
+  function deptChipsNeeded() {
+    var depts = {};
+    state.entries.forEach(function (e) { if (e.dept) depts[e.dept] = 1; });
+    return Object.keys(depts).length > 1;
+  }
+
+  function renderBody() {
+    var el = bodyEl();
+    if (!el) return;
+
+    if (state.loading) return renderLoading();
+
+    if (state.error === 'no-enrollment') {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">person_off</span>' +
+        '<div class="wktt-state-title">No enrollment record found</div>' +
+        '<div class="wktt-state-sub">Your class enrollment could not be resolved from school records, so no timetable can be shown.</div></div>';
+      return;
+    }
+    if (state.error === 'network') {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">wifi_off</span>' +
+        '<div class="wktt-state-title">Could not load the timetable</div>' +
+        '<div class="wktt-state-sub">The timetable service is unreachable right now.</div>' +
+        '<button type="button" class="wktt-day-btn" id="wkttRetry" style="margin-top:12px">Retry</button></div>';
+      var r = document.getElementById('wkttRetry');
+      if (r) r.addEventListener('click', loadTimetable);
+      return;
+    }
+
+    var publishedCount = state.entries.filter(function (e) { return e.published && e.lessons.length; }).length;
+    if (!publishedCount) {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">hourglass_empty</span>' +
+        '<div class="wktt-state-title">No published timetable yet</div>' +
+        '<div class="wktt-state-sub">Your class schedule will appear here automatically once the school publishes it.</div></div>';
+      return;
+    }
+
+    var lessons = allLessons().filter(function (it) { return state.dayFilter === 'all' || it.lesson.day === state.dayFilter; });
+    if (!lessons.length) {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">event_busy</span>' +
+        '<div class="wktt-state-title">No classes scheduled</div>' +
+        '<div class="wktt-state-sub">There are no lessons for this selection in the published schedule.</div></div>';
+      return;
+    }
+
+    var html = '';
+    if (deptChipsNeeded()) {
+      html += '<div class="wktt-days" style="padding-bottom:10px">';
+      html += '<button type="button" class="wktt-day-btn" data-dept="all" aria-pressed="' + (state.deptFilter === 'all') + '">All enrolled departments</button>';
+      Object.keys(state.entries.reduce(function (m, e) { if (e.dept) m[e.dept] = 1; return m; }, {})).forEach(function (dp) {
+        html += '<button type="button" class="wktt-day-btn" data-dept="' + esc(dp) + '" aria-pressed="' + (state.deptFilter === dp) + '">' + esc(dp) + '</button>';
+      });
+      html += '</div>';
+    }
+
+    var currentDay = null;
+    var multiDept = deptChipsNeeded();
+    lessons.forEach(function (it) {
+      var l = it.lesson;
+      if (l.day !== currentDay) {
+        if (currentDay !== null) html += '</div>';
+        currentDay = l.day;
+        html += '<div class="wktt-day-group">' +
+          '<div class="wktt-day-head' + (isToday(l.day) ? ' today' : '') + '">' +
+            esc(DAY_LABELS[l.day] || (KS() ? KS().toEnDay(l.day) : l.day)) +
+            (isToday(l.day) ? '<span class="wktt-today-tag">Today</span>' : '') +
+          '</div>';
+      }
+      var time = to12h((PERIODS[l.shift] || {})[l.period] || '');
+      var subject = KS() ? KS().toEnSubject(l.subject_name) : l.subject_name;
+      var teacher = KS() ? KS().toEnTeacher(l.teacher_name) : l.teacher_name;
+      var room = l.room ? (KS() ? KS().toEnRoom(l.room) : l.room) : '';
+      var color = l.color || '#176B45';
+      html += '<div class="wktt-row">' +
+        '<div class="wktt-time">' + esc(time) + '</div>' +
+        '<div class="wktt-subject"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(subject || '—') + '</span>' +
+          (l.subject_code ? '<span class="wktt-code" style="background:' + esc(color) + '22;color:' + esc(color) + '">' + esc(l.subject_code) + '</span>' : '') +
+        '</div>' +
+        '<div class="wktt-class">' + esc('Class ' + it.cls.display) + (multiDept && it.dept ? ' · ' + esc(it.dept) : '') + '</div>' +
+        '<div class="wktt-teacher">' + esc(teacher || '—') + (room ? ' · ' + esc(room) : '') + '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+
+    el.querySelectorAll('[data-dept]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.deptFilter = btn.getAttribute('data-dept');
+        state.departmentLabel = state.deptFilter;
+        renderSubtitle();
+        renderBody();
+      });
+    });
+  }
+
+  function exportICSFile() {
+    var lessons = allLessons();
+    if (!lessons.length) {
+      if (window.toast) window.toast('No published lessons available for export', 'info');
+      return;
+    }
+    var lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//NGIS Cambodian School ERP//Class Timetable//KM',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:NGIS Class Timetable'
+    ];
+    var dayOffsetMap = { 'ច័ន្ទ':0, 'អង្គារ':1, 'ពុធ':2, 'ព្រហស្បតិ៍':3, 'សុក្រ':4, 'សៅរ៍':5 };
+    lessons.forEach(function (it, idx) {
+      var l = it.lesson;
+      var time = (PERIODS[l.shift] || {})[l.period] || '07:00–07:50';
+      var times = time.split('–');
+      var s = times[0].split(':'), e = times[1].split(':');
+      var off = dayOffsetMap[l.day] || 0;
+      var dateDay = 7 + off;
+      var dateStr = '202609' + (dateDay < 10 ? '0' + dateDay : dateDay);
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:ngis-class-' + encodeURIComponent(it.cls.id) + '-' + idx + '@ngis.edu.kh');
+      lines.push('DTSTAMP:20260901T000000Z');
+      lines.push('DTSTART:' + dateStr + 'T' + s[0] + s[1] + '00');
+      lines.push('DTEND:' + dateStr + 'T' + e[0] + e[1] + '00');
+      lines.push('RRULE:FREQ=WEEKLY;COUNT=20');
+      lines.push('SUMMARY:' + (KS() ? KS().toEnSubject(l.subject_name) : l.subject_name) + ' (' + l.subject_code + ')');
+      lines.push('DESCRIPTION:Instructor: ' + (KS() ? KS().toEnTeacher(l.teacher_name) : l.teacher_name) + ' | Class: ' + it.cls.display);
+      lines.push('LOCATION:' + (KS() ? KS().toEnRoom(l.room) : l.room));
+      lines.push('END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    var blob = new Blob([lines.join('\r\n')], { type:'text/calendar;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'NGIS_Class_Timetable.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    if (window.toast) window.toast('Class timetable (.ICS) exported', 'success');
+  }
+
+  function render() {
+    renderSubtitle();
+    renderMeta();
+    renderDayChips();
+    renderWeekRange();
+    renderBody();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTimetable);
+  else loadTimetable();
+})();
+</script>
 </body>
 </html>

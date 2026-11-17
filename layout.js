@@ -194,6 +194,8 @@
 
           { id:"logs",     label:"Audit Logs",      icon:"history",  href:"pages/admin/admin-logs.html" },
 
+          { id:"security", label:"Security Center", icon:"security", href:"pages/admin/admin-security.html" },
+
           { id:"settings", label:"System Settings", icon:"settings", href:"pages/admin/admin-settings.html" },
 
         ]},
@@ -286,8 +288,6 @@
         { id:"academics", label:"ACADEMICS", icon:"school", links:[
 
           { id:"departments", label:"Academic Departments", icon:"apartment", href:"pages/shared/departments.html?portal=student" },
-
-          { id:"calendar",    label:"Class Timetable",      icon:"calendar_month", href:"pages/student/student-calendar.html" },
 
         ]},
 
@@ -392,6 +392,7 @@
         ]},
         { id: "sa-sec-grp", label: "GOVERNANCE & SECURITY", icon: "security", links: [
           { id: "sa-audit-logs", label: "Audit Logs", icon: "history", href: "pages/admin/admin-logs.html" },
+          { id: "sa-security", label: "Security Center", icon: "security", href: "pages/admin/admin-security.html" },
           { id: "sa-settings", label: "System General Settings", icon: "settings", href: "pages/admin/admin-system-general-setting.html" }
         ]},
         { id: "account-grp", label: "ACCOUNT", icon: "person", links: [
@@ -552,8 +553,6 @@
       { id:"dashboard",    label:"Home",        icon:"home",           href:"pages/student/student.html" },
 
       { id:"departments",  label:"Department",  icon:"apartment",      href:"pages/shared/departments.html" },
-
-      { id:"calendar",     label:"Schedule",    icon:"calendar_month", href:"pages/student/student-calendar.html" },
 
       { id:"profile",      label:"Profile",     icon:"person",         href:"pages/student/student-profile.html" },
 
@@ -1579,8 +1578,6 @@
       { id: "home", label: "Home", icon: "ph ph-house", href: "pages/student/student.html" },
 
       { id: "department", label: "Depts", icon: "ph ph-buildings", href: "pages/shared/departments.html" },
-
-      { id: "schedule", label: "Timetable", icon: "ph ph-calendar-blank", href: "pages/student/student-calendar.html" },
 
       { id: "profile", label: "Account", icon: "ph ph-user", href: "pages/student/student-profile.html" },
 
@@ -3468,67 +3465,63 @@
     document.addEventListener("click", (e) => {
 
       const openDrawer = e.target.closest("[data-open-drawer]");
-
       if (openDrawer) {
-
         e.preventDefault();
-
-        const id = openDrawer.getAttribute("data-open-drawer");
-
-        const drawer = document.querySelector(`.drawer-overlay[data-drawer="${id}"], .drawer-overlay#${id}, #${id}.drawer-overlay, #${id}`);
-
-        if (drawer) {
-
-          drawer.classList.add("show", "open");
-
-          const inner = drawer.querySelector(".drawer");
-
-          if (inner) inner.classList.add("show", "open");
-
+        const rawId = openDrawer.getAttribute("data-open-drawer");
+        if (!rawId || !rawId.trim()) return;
+        const id = rawId.trim().replace(/^#/, "");
+        if (!id) return;
+        let drawer = null;
+        try {
+          drawer = document.querySelector(`.drawer-overlay[data-drawer="${id}"], .drawer-overlay#${id}, #${id}.drawer-overlay, #${id}`);
+        } catch (_) {
+          drawer = document.getElementById(id);
         }
-
+        if (drawer) {
+          drawer.classList.add("show");
+          drawer.classList.add("open");
+          const inner = drawer.querySelector(".drawer");
+          if (inner) {
+            inner.classList.add("show");
+            inner.classList.add("open");
+          }
+        }
         return;
-
       }
 
       const closeDrawer = e.target.closest("[data-close-drawer]");
-
       if (closeDrawer) {
-
         e.preventDefault();
-
         const drawer = closeDrawer.closest(".drawer-overlay, aside.drawer");
-
         if (drawer) {
-
-          drawer.classList.remove("show", "open");
-
+          drawer.classList.remove("show");
+          drawer.classList.remove("open");
           if (drawer.parentElement && drawer.parentElement.classList.contains("drawer-overlay")) {
-
-            drawer.parentElement.classList.remove("show", "open");
-
+            drawer.parentElement.classList.remove("show");
+            drawer.parentElement.classList.remove("open");
           }
-
         }
-
         return;
-
       }
 
       const openModal = e.target.closest("[data-open-modal]");
-
       if (openModal) {
-
         e.preventDefault();
-
-        const id = openModal.getAttribute("data-open-modal");
-
-        const modal = document.querySelector(`.modal-overlay[data-modal="${id}"], .modal-overlay#${id}, #${id}.modal-overlay, #${id}`);
-
-        if (modal) modal.classList.add("show", "open");
-
+        const rawId = openModal.getAttribute("data-open-modal");
+        if (!rawId || !rawId.trim()) return;
+        const id = rawId.trim().replace(/^#/, "");
+        if (!id) return;
+        let modal = null;
+        try {
+          modal = document.querySelector(`.modal-overlay[data-modal="${id}"], .modal-overlay#${id}, #${id}.modal-overlay, #${id}`);
+        } catch (_) {
+          modal = document.getElementById(id);
+        }
+        if (modal) {
+          modal.classList.add("show");
+          modal.classList.add("open");
+        }
         return;
-
       }
 
       const closeModal = e.target.closest("[data-close-modal], [data-dismiss='modal']");
@@ -3663,6 +3656,15 @@
       document.head.appendChild(lss);
     }
 
+    /* Measured sticky application header — must load after the cleanup layers
+       so its opaque surface and calculated offsets win the cascade. */
+    if (!document.querySelector('link[href*="sticky-layout.css"]')) {
+      const stickyCss = document.createElement("link");
+      stickyCss.rel = "stylesheet";
+      stickyCss.href = _P + "assets/css/sticky-layout.css";
+      document.head.appendChild(stickyCss);
+    }
+
     const sharedComponents = [
       "assets/js/ngis-copy.js",
       "assets/js/error-messages.js",
@@ -3677,7 +3679,8 @@
       "assets/js/ui-states.js",
       "assets/js/action-icons.js?v=1.13.2",
       "assets/js/semantic-states.js",
-      "assets/js/ngis-search.js"
+      "assets/js/ngis-search.js",
+      "assets/js/sticky-layout.js"
     ];
 
     sharedComponents.forEach(scriptPath => {

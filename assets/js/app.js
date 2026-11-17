@@ -588,7 +588,7 @@
     }
 
     document.querySelectorAll(".dropzone").forEach(dz => {
-      const input = dz.querySelector("input[type=file]");
+      const input = dz.querySelector('input[type="file"]');
       if (!input) return;
       dz.addEventListener("click", () => input.click());
       dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("drag"); });
@@ -607,7 +607,7 @@
      ══════════════════════════════════════════════════ */
   function wireAvatarUpload() {
     document.querySelectorAll(".avatar-upload").forEach(au => {
-      const input = au.querySelector("input[type=file]");
+      const input = au.querySelector('input[type="file"]');
       const img = au.querySelector("img, .au-fallback");
       const edit = au.querySelector(".au-edit");
       if (!input) return;

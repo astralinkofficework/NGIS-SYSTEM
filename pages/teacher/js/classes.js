@@ -69,18 +69,28 @@ const fallbackClasses = [
     }, 150);
   }
 
-  const token = (window.getToken && window.getToken()) || localStorage.getItem('ngis_token');
-  const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-  fetch('/api/teacher/classes', { credentials: 'include', headers: headers })
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
+  async function fetchClasses() {
+    try {
+      let data = null;
+      if (window.NGISAuth && typeof NGISAuth.api === 'function') {
+        data = await NGISAuth.api('/api/teacher/classes');
+      } else {
+        const token = (window.getToken && window.getToken()) || localStorage.getItem('ngis_token') || 'mock-jwt-token-teacher';
+        const res = await fetch('/api/teacher/classes', {
+          credentials: 'include',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) data = await res.json();
+      }
       if (data && Array.isArray(data.data) && data.data.length > 0) {
         render(data.data);
       } else {
         render(fallbackClasses);
       }
-    })
-    .catch(() => render(fallbackClasses));
+    } catch (e) {
+      render(fallbackClasses);
+    }
+  }
+  fetchClasses();
 })();
 

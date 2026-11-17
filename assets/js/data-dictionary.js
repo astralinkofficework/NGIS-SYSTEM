@@ -230,7 +230,7 @@
               '</button>' +
               '<button type="button" id="btnAddNewEntry" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition-all shadow-xs cursor-pointer">' +
                 '<span class="material-symbols-outlined text-sm">add</span>' +
-                '<span>+ Add Definition</span>' +
+                '<span>Add Definition</span>' +
               '</button>' +
             '</div>' +
           '</div>' +

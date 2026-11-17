@@ -163,18 +163,9 @@
 .att-col-controls[hidden] { display: none; }
 .att-col-count { font-size: 12.5px; color: var(--txt3); }
 .att-dept-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 20px 10px;
-  padding: 5px 10px;
-  font-size: 12px;
-  border-radius: 999px;
-  background: rgba(46, 111, 94, 0.08);
-  color: #29352E;
-  border: 1px solid rgba(46, 111, 94, 0.25);
+  display: none !important;
 }
-.att-dept-chip[hidden] { display: none; }
+.att-dept-chip[hidden] { display: none !important; }
 .att-dept-chip a { color: #176B45; text-decoration: underline; }
 .att-empty-row td {
   padding: 28px 16px !important;
@@ -235,7 +226,7 @@
       <div class="att-who" id="attWho" hidden>
         <span id="attWhoName"></span><span id="attWhoId"></span>
       </div>
-      <div class="att-dept-chip" id="attDeptChip" hidden>
+      <div class="att-dept-chip" id="attDeptChip" hidden style="display: none !important;">
         <span class="material-symbols-outlined" style="font-size:14px" aria-hidden="true">filter_alt</span>
         <span id="attDeptChipText"></span>
         <a href="student-attendance.html" id="attDeptClear" title="Clear department filter">Clear</a>
@@ -356,7 +347,7 @@ window.HERO_CONFIG = {
     return keys.some(function(k) { return s.indexOf(k) !== -1; });
   }
 
-  var state = { allRecords: [], dates: [], expanded: false };
+  var state = { allRecords: [], dates: [], expanded: true };
 
   function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
@@ -375,24 +366,15 @@ window.HERO_CONFIG = {
     var body = document.getElementById('attendanceLogBody');
     if (!head || !body) return;
 
-    var dept = (function() {
-      try { return (new URLSearchParams(window.location.search || '').get('dept') || '').trim(); }
-      catch (e) { return ''; }
-    })();
     var chip = document.getElementById('attDeptChip');
     if (chip) {
-      if (dept) {
-        chip.hidden = false;
-        var t = document.getElementById('attDeptChipText');
-        if (t) t.textContent = 'Department filter: ' + dept.charAt(0).toUpperCase() + dept.slice(1);
-      } else {
-        chip.hidden = true;
-      }
+      chip.hidden = true;
+      chip.style.display = 'none';
     }
 
-    var records = dept
-      ? state.allRecords.filter(function(r) { return matchesDept(r.subject, dept); })
-      : state.allRecords;
+    // Official Student Attendance Record is holistic across all academic subjects and sessions.
+    // Always render all subjects and all attendance date columns in full view.
+    var records = state.allRecords;
 
     var dates = uniqOrderedDates(records);
     state.dates = dates;

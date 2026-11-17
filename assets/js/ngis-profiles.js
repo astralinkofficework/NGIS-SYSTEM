@@ -121,7 +121,12 @@
 
   /* ---------- data loading ---------- */
   function loadDirectory() {
-    state.loading = true; state.error = ''; renderTable(); renderKpis();
+    state.loading = true; state.error = '';
+    var st = $id('filterStatusText');
+    if (st) st.textContent = 'Loading...';
+    var badge = $id('filterStatusBadge');
+    if (badge) badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200/80 text-xs font-medium text-slate-600 whitespace-nowrap';
+    renderTable(); renderKpis();
     api(API_BASE).then(function (res) {
       state.all = (res && res.data) || [];
       state.loading = false;
@@ -130,6 +135,12 @@
     }).catch(function (err) {
       state.loading = false;
       state.error = apiError(err, 'Could not load the directory');
+      var stEl = $id('filterStatusText');
+      if (stEl) stEl.textContent = 'Error loading records';
+      var badgeEl = $id('filterStatusBadge');
+      if (badgeEl) badgeEl.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-xs font-medium text-rose-700 whitespace-nowrap';
+      var countEl = $id('dirCount');
+      if (countEl) countEl.textContent = 'Failed to load records';
       renderTable(); renderKpis();
     });
   }
@@ -204,19 +215,19 @@
   /* ---------- shell ---------- */
   var BTN_SECONDARY = 'inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-200/90 bg-white text-slate-700 text-xs font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-xs cursor-pointer min-h-[40px]';
   var BTN_PRIMARY = 'inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#176B45] text-white text-xs font-medium hover:bg-[#125638] transition-all shadow-xs active:scale-[0.98] cursor-pointer min-h-[40px]';
-  var SELECT_CLS = 'w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors';
+  var SELECT_CLS = 'w-full text-xs py-2.5 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none transition-colors !bg-none';
 
   function renderShell() {
     var root = $id('profilesRoot');
     var pageTitle = IS_TEACHER ? 'Teacher Profiles' : 'Student Profiles';
     root.innerHTML = [
       '<div class="space-y-6 w-full">',
-      // Section 1: Header Page Title & Top Actions
+      // Section 1: Header Page Title & Top Actions (Title hidden on mobile to eliminate duplication with appbar)
       '  <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">',
       '    <div class="min-w-0">',
-      '      <h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight leading-tight">' + pageTitle + '</h1>',
+      '      <h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight leading-tight hidden lg:block">' + pageTitle + '</h1>',
       '    </div>',
-      '    <div class="flex items-center flex-wrap gap-2.5 shrink-0">',
+      '    <div class="flex items-center flex-wrap gap-2.5 shrink-0 w-full sm:w-auto justify-between sm:justify-end">',
       '      <button type="button" id="btnRefresh" class="' + BTN_SECONDARY + '">',
       '        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>',
       '        <span>Sync Registry</span>',
@@ -227,37 +238,37 @@
       '      </button>',
       IS_TEACHER
         ? '      <button type="button" id="btnPasteExcel" class="' + BTN_SECONDARY + '" title="Paste from Excel or Google Sheets"><span class="material-symbols-outlined text-[16px] text-slate-500">content_paste</span><span>Paste from Excel</span></button>' +
-          '      <button type="button" id="btnAddTeacher" class="' + BTN_PRIMARY + '"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><span>+ Add Teacher</span></button>'
+          '      <button type="button" id="btnAddTeacher" class="' + BTN_PRIMARY + '"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><span>Add Teacher</span></button>'
         : '',
       '    </div>',
       '  </section>',
-      // Section 2: Executive Telemetry KPI Cards
-      '  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="metrics-telemetry" id="kpiGrid"></section>',
+      // Section 2: Executive Telemetry KPI Cards (Compact 2-column grid on mobile)
+      '  <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4" data-purpose="metrics-telemetry" id="kpiGrid"></section>',
       // Section 3: Standalone Search & Filter Bar
       '  <section class="bg-white rounded-xl border border-[#E1E9E3] p-3 sm:p-4 shadow-2xs" data-purpose="filtering-controls">',
       '    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">',
-      '      <!-- Search Input with padding-left 44px -->',
-      '      <div class="relative flex-1 min-w-[260px] max-w-xl">',
-      '        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none z-10 flex items-center">',
+      '      <!-- Search Input Container -->',
+      '      <div class="ngis-search relative flex-1 min-w-[240px] max-w-xl">',
+      '        <span class="ngis-search-icon text-slate-400 pointer-events-none flex items-center">',
       '          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>',
       '        </span>',
-      '        <input class="w-full pl-11 pr-9 py-2 bg-white border border-[#E1E9E3] rounded-lg text-xs placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition-all min-h-[40px]" id="dirSearch" style="padding-left: 44px !important;" type="text" placeholder="Search ' + (IS_TEACHER ? 'teacher name, ID, code, subject or department...' : 'student name, ID, class or guardian...') + '">',
-      '        <button class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#176B45] cursor-pointer" id="clearSearch" type="button" aria-label="Clear search">',
+      '        <input class="w-full text-xs placeholder:text-slate-400 text-slate-800" id="dirSearch" type="search" placeholder="Search ' + (IS_TEACHER ? 'teacher name, ID, code, subject or department...' : 'student name, ID, class or guardian...') + '">',
+      '        <button class="ngis-search-clear" id="clearSearch" type="button" aria-label="Clear search">',
       '          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>',
       '        </button>',
       '      </div>',
       '      <!-- Filter Dropdowns & Status Badge -->',
       '      <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0">',
       '        <div class="relative flex-1 sm:flex-initial min-w-[130px]">',
-      '          <select class="' + SELECT_CLS + '" id="deptFilter"></select>',
+      '          <select class="' + SELECT_CLS + '" id="deptFilter" style="background-image: none !important; -webkit-appearance: none !important; appearance: none !important;"></select>',
       '          <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>',
       '        </div>',
       '        <div class="relative flex-1 sm:flex-initial min-w-[130px]">',
-      '          <select class="' + SELECT_CLS + '" id="statusFilter"></select>',
+      '          <select class="' + SELECT_CLS + '" id="statusFilter" style="background-image: none !important; -webkit-appearance: none !important; appearance: none !important;"></select>',
       '          <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></span>',
       '        </div>',
       '        <div class="relative flex-1 sm:flex-initial min-w-[140px]">',
-      '          <select class="' + SELECT_CLS + '" id="sortSelect">',
+      '          <select class="' + SELECT_CLS + '" id="sortSelect" style="background-image: none !important; -webkit-appearance: none !important; appearance: none !important;">',
       IS_TEACHER
         ? '<option value="name-asc">Sort: Name (A-Z)</option><option value="name-desc">Sort: Name (Z-A)</option><option value="target-desc">Sort: Workload Target</option><option value="classesAssigned-desc">Sort: Most Classes</option><option value="yearsAtSchool-desc">Sort: Most Senior</option>'
         : '<option value="name-asc">Sort: Name (A-Z)</option><option value="name-desc">Sort: Name (Z-A)</option><option value="gpaLive-desc">Sort: GPA (High to Low)</option><option value="gpaLive-asc">Sort: GPA (Low to High)</option><option value="attendancePct-desc">Sort: Attendance (High to Low)</option><option value="attendancePct-asc">Sort: Attendance (Low to High)</option>',
@@ -338,20 +349,35 @@
 
   function resetAllFilters() {
     state.search = ''; state.dept = 'ALL'; state.status = 'ALL'; state.sort = 'name-asc'; state.page = 1;
-    $id('dirSearch').value = ''; $('#clearSearch').classList.add('hidden');
-    $id('deptFilter').value = 'ALL'; $id('statusFilter').value = 'ALL'; $id('sortSelect').value = 'name-asc';
+    var sInput = $id('dirSearch');
+    if (sInput) sInput.value = '';
+    var clr = $id('clearSearch') || $('.ngis-search-clear');
+    if (clr) clr.classList.add('hidden');
+    if ($id('deptFilter')) $id('deptFilter').value = 'ALL';
+    if ($id('statusFilter')) $id('statusFilter').value = 'ALL';
+    if ($id('sortSelect')) $id('sortSelect').value = 'name-asc';
     applyFilters();
   }
 
   function wireShell() {
-    $id('dirSearch').addEventListener('input', function (e) {
-      state.search = e.target.value; state.page = 1;
-      $('#clearSearch').classList.toggle('hidden', !state.search);
-      applyFilters();
-    });
-    $('#clearSearch').addEventListener('click', function () {
-      state.search = ''; $id('dirSearch').value = ''; $('#clearSearch').classList.add('hidden'); applyFilters();
-    });
+    var sInput = $id('dirSearch');
+    if (sInput) {
+      sInput.addEventListener('input', function (e) {
+        state.search = e.target.value; state.page = 1;
+        var clr = $id('clearSearch') || $('.ngis-search-clear');
+        if (clr) clr.classList.toggle('hidden', !state.search);
+        applyFilters();
+      });
+    }
+    var clrBtn = $id('clearSearch') || $('.ngis-search-clear');
+    if (clrBtn) {
+      clrBtn.addEventListener('click', function () {
+        state.search = '';
+        if (sInput) sInput.value = '';
+        clrBtn.classList.add('hidden');
+        applyFilters();
+      });
+    }
     $id('deptFilter').addEventListener('change', function (e) { state.dept = e.target.value; state.page = 1; applyFilters(); });
     $id('statusFilter').addEventListener('change', function (e) { state.status = e.target.value; state.page = 1; applyFilters(); });
     $id('sortSelect').addEventListener('change', function (e) { state.sort = e.target.value; state.page = 1; applyFilters(); });
@@ -420,7 +446,7 @@
       if (which === 'all') { resetAllFilters(); return; }
       if (which === 'dept') { state.dept = 'ALL'; $id('deptFilter').value = 'ALL'; }
       else if (which === 'status') { state.status = 'ALL'; $id('statusFilter').value = 'ALL'; }
-      else if (which === 'search') { state.search = ''; $id('dirSearch').value = ''; $('#clearSearch').classList.add('hidden'); }
+      else if (which === 'search') { state.search = ''; if ($id('dirSearch')) $id('dirSearch').value = ''; var clr = $id('clearSearch') || $('.ngis-search-clear'); if (clr) clr.classList.add('hidden'); }
       applyFilters();
     });
   }
@@ -459,84 +485,86 @@
     var total = state.all.length;
     if (IS_TEACHER) {
       var active = state.all.filter(function (t) { return String(t.status || '').toLowerCase() === 'active'; }).length;
-      var activePct = total ? Math.round(active / total * 100) : 100;
+      var activePct = total > 0 ? Math.round(active / total * 100) : 0;
       var depts = uniq('department').length;
       var pendRecords = state.all.reduce(function (n, t) { return n + (t.pendingGradeRecords || 0); }, 0);
       var pubRecords = state.all.reduce(function (n, t) { return n + (t.publishedGradeRecords || 0); }, 0);
 
       grid.innerHTML = [
         // Card 1: Credentialed Faculty
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">',
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">',
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Credentialed Faculty</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight text-[#29352E]">' + total + '</span>',
-        '        <span class="text-xs font-medium text-emerald-700">' + activePct + '% Active</span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-slate-500 block truncate">Credentialed Faculty</span>',
+        '      <div class="flex items-baseline gap-1.5 sm:gap-2 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + total + '</span>',
+        '        <span class="text-[11px] sm:text-xs font-medium ' + (total > 0 ? 'text-emerald-700' : 'text-slate-400') + '">' + (total > 0 ? (activePct + '% Active') : '0 Active') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">badge</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">badge</span>',
         '    </div>',
         '  </div>',
         '</div>',
 
         // Card 2: Active Standing & Clearance Rate with Two-Tone Bar
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">',
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">',
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Clearance Rate</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight text-[#29352E]">' + activePct + '%</span>',
-        '        <span class="text-xs font-normal text-slate-400">Target: 100%</span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-slate-500 block truncate">Clearance Rate</span>',
+        '      <div class="flex items-baseline gap-1.5 sm:gap-2 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + (total > 0 ? (activePct + '%') : '—') + '</span>',
+        '        <span class="text-[11px] sm:text-xs font-normal text-slate-400">' + (total > 0 ? 'Target: 100%' : 'No records') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">verified</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">verified</span>',
         '    </div>',
         '  </div>',
         '  <div class="pt-2 mt-1">',
-        '    <div class="flex items-center justify-between text-xs mb-1.5">',
-        '      <span class="text-slate-600 font-normal">' + active + ' active</span>',
-        '      <span class="text-[#991b1b] font-medium">' + (total - active) + ' on leave/pending</span>',
+        '    <div class="flex items-center justify-between text-[11px] sm:text-xs mb-1.5">',
+        '      <span class="text-slate-600 font-normal truncate">' + active + ' active</span>',
+        '      <span class="text-[#991b1b] font-medium truncate">' + (total - active) + ' on leave</span>',
         '    </div>',
         '    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">',
-        '      <div class="bg-[#176B45] h-full rounded-full transition-all duration-500" style="width: ' + activePct + '%"></div>',
-        '      <div class="bg-[#991b1b] h-full rounded-full transition-all duration-500" style="width: ' + (100 - activePct) + '%"></div>',
+        (total > 0
+          ? '      <div class="bg-[#176B45] h-full rounded-full transition-all duration-500" style="width: ' + activePct + '%"></div>' +
+            '      <div class="bg-[#991b1b] h-full rounded-full transition-all duration-500" style="width: ' + (100 - activePct) + '%"></div>'
+          : '      <div class="bg-slate-200 h-full rounded-full w-full"></div>'),
         '    </div>',
         '  </div>',
         '</div>',
 
-        // Card 3: Pending Grade Records (Golden Reference corner tint)
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between relative overflow-hidden">',
-        (pendRecords > 0 ? '  <div class="absolute right-0 top-0 w-24 h-24 bg-rose-500/10 rounded-bl-full pointer-events-none"></div>' : ''),
+        // Card 3: Pending Grade Records
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between relative overflow-hidden">',
+        (pendRecords > 0 ? '  <div class="absolute right-0 top-0 w-16 sm:w-24 h-16 sm:h-24 bg-rose-500/10 rounded-bl-full pointer-events-none"></div>' : ''),
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider ' + (pendRecords > 0 ? 'text-[#991b1b]' : 'text-slate-500') + ' block">Pending Clearances</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight ' + (pendRecords > 0 ? 'text-[#991b1b]' : 'text-[#29352E]') + '">' + pendRecords + '</span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider ' + (pendRecords > 0 ? 'text-[#991b1b]' : 'text-slate-500') + ' block truncate">Pending Clearances</span>',
+        '      <div class="flex items-baseline gap-1.5 sm:gap-2 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight ' + (pendRecords > 0 ? 'text-[#991b1b]' : 'text-[#29352E]') + '">' + pendRecords + '</span>',
         (pendRecords > 0
-          ? '        <span class="inline-flex items-center gap-1 text-xs font-medium text-[#991b1b] bg-rose-100/90 px-1.5 py-0.5 rounded">High Priority</span>'
-          : '        <span class="text-xs font-medium text-emerald-700">All Cleared</span>'),
+          ? '        <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium text-[#991b1b] bg-rose-100/90 px-1.5 py-0.5 rounded">High Priority</span>'
+          : '        <span class="text-[11px] sm:text-xs font-medium text-emerald-700">All Cleared</span>'),
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg ' + (pendRecords > 0 ? 'bg-rose-100/90 text-[#991b1b]' : 'bg-emerald-50 text-[#176B45]') + ' flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">' + (pendRecords > 0 ? 'pending_actions' : 'check_circle') + '</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg ' + (pendRecords > 0 ? 'bg-rose-100/90 text-[#991b1b]' : 'bg-emerald-50 text-[#176B45]') + ' flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">' + (pendRecords > 0 ? 'pending_actions' : 'check_circle') + '</span>',
         '    </div>',
         '  </div>',
         '</div>',
 
         // Card 4: Published Records / Turnaround
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">',
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">',
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Published Records</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight text-[#29352E]">' + pubRecords + '<span class="text-lg font-normal text-slate-400"> recs</span></span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-slate-500 block truncate">Published Records</span>',
+        '      <div class="flex items-baseline gap-1 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + pubRecords + '<span class="text-sm font-normal text-slate-400"> recs</span></span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">publish</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">publish</span>',
         '    </div>',
         '  </div>',
         '</div>'
@@ -547,80 +575,82 @@
       var att = total ? state.all.reduce(function (n, s) { return n + (Number(s.attendancePct) || 0); }, 0) / total : 0;
       var open = state.all.reduce(function (n, s) { return n + (s.openRequests || 0); }, 0);
       var classes = uniq('class').length;
-      var gpaPct = Math.min(100, Math.round((gpa / 4.0) * 100));
+      var gpaPct = total > 0 ? Math.min(100, Math.round((gpa / 4.0) * 100)) : 0;
 
       grid.innerHTML = [
         // Card 1: Enrolled Students
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">',
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">',
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Enrolled Students</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight text-[#29352E]">' + total + '</span>',
-        '        <span class="text-xs font-medium text-emerald-700">100% Active</span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-slate-500 block truncate">Enrolled Students</span>',
+        '      <div class="flex items-baseline gap-1.5 sm:gap-2 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + total + '</span>',
+        '        <span class="text-[11px] sm:text-xs font-medium ' + (total > 0 ? 'text-emerald-700' : 'text-slate-400') + '">' + (total > 0 ? '100% Active' : '0 Enrolled') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">school</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">school</span>',
         '    </div>',
         '  </div>',
         '</div>',
 
         // Card 2: Cohort GPA Standing
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">',
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">',
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Cohort Standing (GPA)</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight text-[#29352E]">' + num(gpa) + '</span>',
-        '        <span class="text-xs font-normal text-slate-400">/ 4.00</span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-slate-500 block truncate">Cohort Standing (GPA)</span>',
+        '      <div class="flex items-baseline gap-1.5 sm:gap-2 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + (total > 0 ? num(gpa) : '—') + '</span>',
+        '        <span class="text-[11px] sm:text-xs font-normal text-slate-400">' + (total > 0 ? '/ 4.00' : 'No records') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">verified</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">verified</span>',
         '    </div>',
         '  </div>',
         '  <div class="pt-2 mt-1">',
-        '    <div class="flex items-center justify-between text-xs mb-1.5">',
-        '      <span class="text-slate-600 font-normal">Live term performance</span>',
-        '      <span class="text-emerald-700 font-medium">' + gpaPct + '% of max</span>',
+        '    <div class="flex items-center justify-between text-[11px] sm:text-xs mb-1.5">',
+        '      <span class="text-slate-600 font-normal truncate">Live term performance</span>',
+        '      <span class="text-emerald-700 font-medium truncate">' + (total > 0 ? (gpaPct + '% of max') : '—') + '</span>',
         '    </div>',
         '    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex">',
-        '      <div class="bg-[#176B45] h-full rounded-full transition-all duration-500" style="width: ' + gpaPct + '%"></div>',
+        (total > 0
+          ? '      <div class="bg-[#176B45] h-full rounded-full transition-all duration-500" style="width: ' + gpaPct + '%"></div>'
+          : '      <div class="bg-slate-200 h-full rounded-full w-full"></div>'),
         '    </div>',
         '  </div>',
         '</div>',
 
-        // Card 3: Open Service Requests (Golden Reference corner tint)
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between relative overflow-hidden">',
-        (open > 0 ? '  <div class="absolute right-0 top-0 w-24 h-24 bg-rose-500/10 rounded-bl-full pointer-events-none"></div>' : ''),
+        // Card 3: Open Service Requests
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between relative overflow-hidden">',
+        (open > 0 ? '  <div class="absolute right-0 top-0 w-16 sm:w-24 h-16 sm:h-24 bg-rose-500/10 rounded-bl-full pointer-events-none"></div>' : ''),
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider ' + (open > 0 ? 'text-[#991b1b]' : 'text-slate-500') + ' block">Open Service Requests</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight ' + (open > 0 ? 'text-[#991b1b]' : 'text-[#29352E]') + '">' + open + '</span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider ' + (open > 0 ? 'text-[#991b1b]' : 'text-slate-500') + ' block truncate">Open Service Requests</span>',
+        '      <div class="flex items-baseline gap-1.5 sm:gap-2 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight ' + (open > 0 ? 'text-[#991b1b]' : 'text-[#29352E]') + '">' + open + '</span>',
         (open > 0
-          ? '        <span class="inline-flex items-center gap-1 text-xs font-medium text-[#991b1b] bg-rose-100/90 px-1.5 py-0.5 rounded">High Priority</span>'
-          : '        <span class="text-xs font-medium text-emerald-700">All Completed</span>'),
+          ? '        <span class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium text-[#991b1b] bg-rose-100/90 px-1.5 py-0.5 rounded">High Priority</span>'
+          : '        <span class="text-[11px] sm:text-xs font-medium text-emerald-700">All Completed</span>'),
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg ' + (open > 0 ? 'bg-rose-100/90 text-[#991b1b]' : 'bg-emerald-50 text-[#176B45]') + ' flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">' + (open > 0 ? 'pending_actions' : 'check_circle') + '</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg ' + (open > 0 ? 'bg-rose-100/90 text-[#991b1b]' : 'bg-emerald-50 text-[#176B45]') + ' flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">' + (open > 0 ? 'pending_actions' : 'check_circle') + '</span>',
         '    </div>',
         '  </div>',
         '</div>',
 
         // Card 4: Attendance Average
-        '<div class="telemetry-card bg-white rounded-xl p-5 border border-[#E1E9E3] flex flex-col justify-between">',
+        '<div class="telemetry-card bg-white rounded-xl p-3.5 sm:p-5 border border-[#E1E9E3] flex flex-col justify-between">',
         '  <div class="flex items-start justify-between">',
         '    <div>',
-        '      <span class="text-[11px] font-medium uppercase tracking-wider text-slate-500 block">Average Attendance</span>',
-        '      <div class="flex items-baseline gap-2 mt-1">',
-        '        <span class="text-3xl font-medium tracking-tight text-[#29352E]">' + num(att, 1) + '%</span>',
+        '      <span class="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-slate-500 block truncate">Average Attendance</span>',
+        '      <div class="flex items-baseline gap-1.5 sm:gap-2 mt-1">',
+        '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + (total > 0 ? (num(att, 1) + '%') : '—') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-10 h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
-        '      <span class="material-symbols-outlined text-[22px]">fact_check</span>',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">fact_check</span>',
         '    </div>',
         '  </div>',
         '</div>'
@@ -1202,7 +1232,9 @@
         renderPager(); return;
       }
       if (state.error) {
-        rowsContainer.innerHTML = '<div class="py-12 text-center text-rose-600 bg-white rounded-xl border border-[#E1E9E3]"><div class="flex flex-col items-center justify-center gap-2"><span class="material-symbols-outlined text-4xl text-[#B3261E] opacity-70">cloud_off</span><p class="font-medium text-sm text-[#B3261E]">' + esc(state.error) + '</p></div></div>';
+        rowsContainer.innerHTML = '<div class="py-12 text-center text-rose-600 bg-white rounded-xl border border-[#E1E9E3]"><div class="flex flex-col items-center justify-center gap-2.5"><span class="material-symbols-outlined text-4xl text-[#B3261E] opacity-70">cloud_off</span><p class="font-medium text-sm text-[#B3261E]">' + esc(state.error) + '</p><button type="button" class="mt-2 px-3.5 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition cursor-pointer" id="btnRetryLoad">Retry</button></div></div>';
+        var rb = $id('btnRetryLoad');
+        if (rb) rb.addEventListener('click', loadDirectory);
         renderPager(); return;
       }
       if (!state.filtered.length) {
@@ -1243,7 +1275,9 @@
       renderPager(); return;
     }
     if (state.error) {
-      body.innerHTML = '<tr><td colspan="9" class="py-12 text-center text-rose-600"><div class="flex flex-col items-center justify-center gap-2"><span class="material-symbols-outlined text-4xl text-[#B3261E] opacity-70">cloud_off</span><p class="font-medium text-sm text-[#B3261E]">' + esc(state.error) + '</p></div></td></tr>';
+      body.innerHTML = '<tr><td colspan="9" class="py-12 text-center text-rose-600"><div class="flex flex-col items-center justify-center gap-2.5"><span class="material-symbols-outlined text-4xl text-[#B3261E] opacity-70">cloud_off</span><p class="font-medium text-sm text-[#B3261E]">' + esc(state.error) + '</p><button type="button" class="mt-2 px-3.5 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition cursor-pointer" id="btnRetryLoadStudents">Retry</button></div></td></tr>';
+      var rb2 = $id('btnRetryLoadStudents');
+      if (rb2) rb2.addEventListener('click', loadDirectory);
       renderPager(); return;
     }
     if (!state.filtered.length) {

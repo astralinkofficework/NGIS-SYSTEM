@@ -1007,7 +1007,7 @@
               '<div class="pt-2 border-t border-slate-100">' +
                 '<button type="button" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-emerald-600/30 hover:border-emerald-600 bg-emerald-50/30 hover:bg-emerald-50 text-emerald-800 font-medium text-[12px] flex items-center justify-center gap-2 transition-all cursor-pointer" data-act="open-assign-modal" data-cid="' + esc(curClass.id) + '">' +
                   '<span class="material-symbols-outlined text-[18px]">add_circle</span>' +
-                  '<span>+ Add Subject Allocation</span>' +
+                  '<span>Add Subject Allocation</span>' +
                 '</button>' +
               '</div>' +
             '</div>' +
@@ -1106,7 +1106,7 @@
               '<div class="flex flex-wrap items-center justify-between gap-4 pt-1">' +
                 '<button type="button" class="px-4 py-2 bg-[#176B45] hover:bg-[#14532D] text-white font-medium text-[13px] rounded-xl flex items-center gap-2 shadow-xs transition-all cursor-pointer" data-act="open-assign-modal" data-cid="' + esc(curClass.id) + '">' +
                   '<span class="material-symbols-outlined text-[18px]">add_circle</span>' +
-                  '<span>+ Add Subject Allocation</span>' +
+                  '<span>Add Subject Allocation</span>' +
                 '</button>' +
                 '<span class="text-xs text-slate-500 font-normal">' +
                   'Showing ' + classAssignments.length + ' allocations · ' + assignedHours + '/30 hrs scheduled' +
@@ -2788,7 +2788,7 @@
               '</button>' +
               '<button id="addNewSubjectBtn" data-act="subject-add" class="flex items-center gap-1.5 px-4 py-2 bg-primary text-on-primary hover:bg-primary-container rounded-xl font-label-md text-label-md shadow-xs hover:shadow transition-all font-medium" type="button">' +
                 '<span class="material-symbols-outlined text-[18px]">add_circle</span>' +
-                '<span>+ Add New Subject</span>' +
+                '<span>Add New Subject</span>' +
               '</button>' +
             '</div>' +
           '</div>' +

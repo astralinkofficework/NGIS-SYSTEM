@@ -249,11 +249,14 @@ class TestNgisRolePortals(unittest.TestCase):
             self.assertIsNotNone(nav_match)
             nav_block = nav_match.group(1)
 
-            # Ensure student nav exists and contains student items
+            # Ensure student nav exists and keeps its dedicated navigation intact.
+            # Timetable is intentionally department-only, not a student sidebar link.
             student_start = nav_block.find("    student:")
             self.assertNotEqual(student_start, -1)
             self.assertIn("pages/student/student.html", nav_block)
-            self.assertIn("pages/student/student-calendar.html", nav_block)
+            self.assertIn("pages/shared/departments.html", nav_block)
+            self.assertNotIn("pages/student/student-calendar.html", nav_block)
+            self.assertNotIn("pages/student/student-timetable.html", nav_block)
 
             # Verify non-student portals do NOT contain student page links
             for role in ["teacher", "admin", "principal"]:

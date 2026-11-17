@@ -1302,7 +1302,7 @@
               '<option value="under_review">Under Review</option>' +
             '</select>' +
             '<button type="button" id="btnNewExemption" class="px-4 py-2 rounded-lg bg-[#176B45] hover:bg-[#125638] text-white text-xs font-medium min-h-[38px] flex items-center gap-1.5 cursor-pointer shadow-xs">' +
-              '<span class="material-symbols-outlined text-base">add</span><span>+ Declare Exemption</span>' +
+              '<span class="material-symbols-outlined text-base">add</span><span>Declare Exemption</span>' +
             '</button>' +
           '</div>' +
         '</div>' +

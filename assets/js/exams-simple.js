@@ -198,7 +198,7 @@
       '</section>';
     modal = scrim.querySelector('.exw-modal');
     scrim.classList.add('show');
-    var firstInput = modal.querySelector('input:not([type=checkbox]), select, textarea, button');
+    var firstInput = modal.querySelector('input:not([type="checkbox"]), select, textarea, button');
     if (firstInput) firstInput.focus();
   }
 

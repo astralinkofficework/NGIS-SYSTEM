@@ -162,7 +162,7 @@
       connectedCallback() {
         const variant = this.getAttribute("variant") || "primary";
         const btnClass = variant === "secondary" ? "ngis-btn-secondary" : "ngis-btn-primary";
-        this.classList.add(btnClass);
+        btnClass.split(/\s+/).filter(Boolean).forEach(c => this.classList.add(c));
         if (!this.getAttribute("tabindex")) this.setAttribute("tabindex", "0");
         if (!this.getAttribute("role")) this.setAttribute("role", "button");
       }

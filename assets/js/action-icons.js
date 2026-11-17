@@ -32,6 +32,7 @@
      by svgMarkup(), so size/colour always come from action-icons.css. */
   var PATHS = {
     /* Hamburger / menu toggle (official bi-list). */
+    circle: "<circle cx=\"8\" cy=\"8\" r=\"5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\"/>",
     menu: "<path fill-rule=\"evenodd\" d=\"M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5\"/>",
     home: "<path d=\"M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4z\"/>",
     dashboard: "<path d=\"M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5z\"/>",
@@ -139,6 +140,28 @@
 
   /* Friendly aliases → canonical key */
   var ALIASES = {
+    /* Navigation & Sidebar Aliases */
+    'co_present': 'teachers',
+    'assignment_ind': 'user',
+    'verified_user': 'shield',
+    'group_add': 'users',
+    'support_agent': 'user',
+    'account_balance': 'bank',
+    'bar_chart': 'report',
+    'menu_book': 'book',
+    'location_city': 'building',
+    'calendar_view_week': 'calendarWeek',
+    'calendar_month': 'calendar',
+    'date_range': 'calendar',
+    'view_week': 'calendarWeek',
+    'inventory_2': 'inventory',
+    'dashboard_customize': 'dashboardCustom',
+    'view_quilt': 'grid',
+    'grid_view': 'grid',
+    'local_activity': 'activity',
+    'business_center': 'building',
+    'how_to_reg': 'attendance',
+    'circle': 'circle',
     /* Master action mapping aliases */
     house: 'home', 'home-page': 'home', main: 'home',
     overview: 'dashboard', board: 'dashboard',
