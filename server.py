@@ -1552,6 +1552,190 @@ def mark_all_notifications_read():
 
 
 
+# ── GLOBAL SEARCH API ──
+@app.route('/api/search', methods=['GET'])
+def global_search():
+    query = (request.args.get('q') or '').strip().lower()
+    role = (request.args.get('role') or 'student').strip().lower()
+    if role in ('editor', 'super-admin', 'super_admin'):
+        role = 'admin'
+
+    if not query:
+        return jsonify({
+            'success': True,
+            'query': '',
+            'total': 0,
+            'categories': []
+        })
+
+    categories = []
+
+    # 1. System Pages & Modules (from sidebar_nav.json)
+    pages = []
+    try:
+        nav_file = os.path.join(ROOT, 'data', 'sidebar_nav.json')
+        if os.path.exists(nav_file):
+            with open(nav_file, 'r', encoding='utf-8') as f:
+                s_data = json.load(f)
+                portals = s_data.get('portals', {})
+                allowed_portals = [role]
+                if role in ('admin', 'principal', 'superadmin'):
+                    allowed_portals.extend(['shared', 'admin', 'principal'])
+                else:
+                    allowed_portals.append('shared')
+
+                for p_key in allowed_portals:
+                    p_obj = portals.get(p_key, {})
+                    for grp in p_obj.get('groups', []):
+                        grp_name = grp.get('label', '')
+                        for link in grp.get('links', []):
+                            items_to_check = [link]
+                            if link.get('children'):
+                                items_to_check.extend(link['children'])
+                            for item in items_to_check:
+                                l_name = item.get('label', '')
+                                l_href = item.get('href', '')
+                                l_icon = item.get('icon', 'dashboard')
+                                if l_href and (query in l_name.lower() or query in grp_name.lower()):
+                                    if not any(p['url'] == l_href for p in pages):
+                                        pages.append({
+                                            'title': l_name,
+                                            'meta': f"{p_key.capitalize()} · {grp_name}",
+                                            'url': l_href,
+                                            'icon': l_icon
+                                        })
+    except Exception as e:
+        print(f"Error reading sidebar_nav in search: {e}")
+    if pages:
+        categories.append({'name': 'System Pages & Modules', 'items': pages[:6]})
+
+    # 2. Students & Teachers (role permissions: students can search faculty; teachers/admins can search students & teachers)
+    user_results = []
+    if role in ('admin', 'principal', 'teacher'):
+        for s in DB.get('students', []):
+            s_name = s.get('name', '')
+            s_id = s.get('id', '')
+            s_grade = s.get('grade', '')
+            if query in s_name.lower() or query in s_id.lower() or query in s_grade.lower():
+                url = f"pages/{role}/{role}-student-profiles.html?search={s_name}"
+                user_results.append({
+                    'title': s_name,
+                    'meta': f"Student · ID: {s_id} · {s_grade}",
+                    'url': url,
+                    'icon': 'users'
+                })
+    for t in DB.get('teachers', []):
+        t_name = t.get('name', '')
+        t_id = t.get('id', '')
+        t_dept = t.get('department', '')
+        if query in t_name.lower() or query in t_id.lower() or query in t_dept.lower():
+            dept_slug = t_dept.lower().split()[0] if t_dept else 'english'
+            url = f"pages/shared/department.html?dept={dept_slug}" if role == 'student' else f"pages/{role}/{role}-teacher-profiles.html?search={t_name}"
+            user_results.append({
+                'title': t_name,
+                'meta': f"Faculty · {t_dept} · ID: {t_id}",
+                'url': url,
+                'icon': 'teachers'
+            })
+    if user_results:
+        categories.append({'name': 'Students & Faculty', 'items': user_results[:6]})
+
+    # 3. Classes & Subjects
+    class_results = []
+    for c in DB.get('classes', []):
+        c_name = c.get('name', '')
+        c_dept = c.get('department', '')
+        c_teacher = c.get('homeroomTeacher', '')
+        c_room = c.get('room', '')
+        if query in c_name.lower() or query in c_dept.lower() or query in c_teacher.lower() or query in c_room.lower():
+            url = f"pages/student/student-assignments.html?class={c.get('id')}" if role == 'student' else f"pages/{role}/{role}-classes.html"
+            class_results.append({
+                'title': f"{c_name} — {c_dept}",
+                'meta': f"{c_teacher} · {c_room} · {c.get('campus', 'Main Campus')}",
+                'url': url,
+                'icon': 'book'
+            })
+    if class_results:
+        categories.append({'name': 'Classes & Subjects', 'items': class_results[:6]})
+
+    # 4. Academic Departments
+    dept_results = []
+    for d in DB.get('departments', []):
+        d_name = d.get('name', '')
+        d_code = d.get('code', '') or d.get('id', '')
+        d_head = d.get('head', '') or d.get('dean', '')
+        if query in d_name.lower() or query in d_code.lower() or query in d_head.lower():
+            dept_key = d_name.lower().split()[0]
+            url = f"pages/shared/department.html?dept={dept_key}"
+            dept_results.append({
+                'title': d_name,
+                'meta': f"Academic Department · Head: {d_head}" if d_head else "Academic Department",
+                'url': url,
+                'icon': 'departments'
+            })
+    if dept_results:
+        categories.append({'name': 'Academic Departments', 'items': dept_results[:5]})
+
+    # 5. Assignments & Examinations
+    all_exams = [
+        {'title': 'Mathematics Midterm Examination', 'date': 'July 15, 2026', 'grade': 'Grade 10', 'dept': 'Mathematics'},
+        {'title': 'English Literature Essay & Written Exam', 'date': 'July 18, 2026', 'grade': 'Grade 10 & 11', 'dept': 'English'},
+        {'title': 'Physics Laboratory Practical Exam', 'date': 'July 20, 2026', 'grade': 'Grade 10', 'dept': 'Science'},
+        {'title': 'Khmer Literature Final Examination', 'date': 'July 22, 2026', 'grade': 'Grade 10', 'dept': 'Khmer Studies'},
+        {'title': 'Chemistry Midterm Assessment', 'date': 'July 24, 2026', 'grade': 'Grade 10', 'dept': 'Science'},
+        {'title': 'World History Comprehensive Exam', 'date': 'July 26, 2026', 'grade': 'Grade 10', 'dept': 'Social Studies'}
+    ]
+    exam_asgn_results = []
+    for ex in all_exams:
+        if query in ex['title'].lower() or query in ex['dept'].lower():
+            url = f"pages/{role}/{role}-exams.html" if role in ('student', 'teacher', 'admin', 'principal') else "pages/shared/exams.html"
+            exam_asgn_results.append({
+                'title': ex['title'],
+                'meta': f"{ex['dept']} · {ex['grade']} · {ex['date']}",
+                'url': url,
+                'icon': 'exams'
+            })
+    for a in DB.get('assignments', []):
+        a_title = a.get('title', '')
+        a_subj = a.get('subject', '') or a.get('course', '')
+        if query in a_title.lower() or query in a_subj.lower():
+            url = f"pages/student/student-assignments.html?id={a.get('id')}" if role == 'student' else f"pages/teacher/teacher-submissions.html?id={a.get('id')}"
+            exam_asgn_results.append({
+                'title': a_title,
+                'meta': f"Assignment · {a_subj} · Due: {a.get('dueDate', '2026-07-20')}",
+                'url': url,
+                'icon': 'documents'
+            })
+    if exam_asgn_results:
+        categories.append({'name': 'Assignments & Examinations', 'items': exam_asgn_results[:6]})
+
+    # 6. Announcements & News
+    news_results = []
+    for item in DB.get('news', []):
+        n_title = item.get('title', '')
+        n_cat = item.get('category', 'General')
+        n_date = item.get('date', '')
+        if query in n_title.lower() or query in n_cat.lower():
+            url = "pages/shared/announcements.html"
+            news_results.append({
+                'title': n_title,
+                'meta': f"Announcement · {n_cat} · {n_date}",
+                'url': url,
+                'icon': 'bell'
+            })
+    if news_results:
+        categories.append({'name': 'Announcements & News', 'items': news_results[:5]})
+
+    total_count = sum(len(c['items']) for c in categories)
+    return jsonify({
+        'success': True,
+        'query': query,
+        'total': total_count,
+        'categories': categories
+    })
+
+
+
 # ── STUDENTS ──
 
 @app.route('/api/students', methods=['GET'])
@@ -9735,5 +9919,23 @@ if __name__ == '__main__':
 
     
 
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    # Bind a dual-stack socket so both 127.0.0.1 and ::1 reach the app.
+    # On Windows an IPv6 socket defaults to V6ONLY, which makes
+    # http://localhost:3000 fail in browsers that resolve localhost to ::1.
+    import socket as _socket
+    from werkzeug.serving import BaseWSGIServer as _BaseWSGIServer
+
+    _ngis_server_bind = _BaseWSGIServer.server_bind
+
+    def _ngis_dual_stack_bind(self):
+        if self.address_family == _socket.AF_INET6:
+            try:
+                self.socket.setsockopt(_socket.IPPROTO_IPV6, _socket.IPV6_V6ONLY, 0)
+            except OSError:
+                pass
+        return _ngis_server_bind(self)
+
+    _BaseWSGIServer.server_bind = _ngis_dual_stack_bind
+
+    app.run(host='::', port=PORT, debug=True)
 

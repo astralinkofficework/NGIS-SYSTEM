@@ -3,6 +3,10 @@
 @import url('action-icons.css');
 @import url('ui-cleanup.css');
 @import url('semantic-states.css');
+@import url('mobile-ux.css');
+@import url('mobile-header.css');
+@import url('navbar.css');
+@import url('bottom-nav.css');
 
 /* ============================================================
    NGIS ERP — Master Global Design System & Visual Style
@@ -79,6 +83,61 @@
   --ngis-radius-nested: 8px;
   --ngis-radius-btn:    8px;
   --ngis-radius-pill:   9999px;
+
+  /* ── 8-Point Spacing Scale (Master Centralized Tokens) ── */
+  --space-0: 0px;
+  --space-1: 4px;   /* Small icon and text adjustments */
+  --space-2: 8px;   /* Closely related elements */
+  --space-3: 12px;  /* Compact spacing & pills */
+  --space-4: 16px;  /* Standard component spacing & mobile page pad */
+  --space-5: 20px;  /* Tablet padding & medium group */
+  --space-6: 24px;  /* Card padding and content groups */
+  --space-8: 32px;  /* Section separation & desktop page pad */
+  --space-10: 40px; /* Larger content separation */
+  --space-12: 48px; /* Major section separation */
+  --space-16: 64px; /* Large layout separation */
+
+  /* Semantic Scale Aliases */
+  --space-xs: var(--space-1);   /* 4px */
+  --space-sm: var(--space-2);   /* 8px */
+  --space-md: var(--space-4);   /* 16px */
+  --space-lg: var(--space-6);   /* 24px */
+  --space-xl: var(--space-8);   /* 32px */
+  --space-2xl: var(--space-10); /* 40px */
+  --space-3xl: var(--space-12); /* 48px */
+  --space-4xl: var(--space-16); /* 64px */
+
+  /* Responsive Page, Card, & Layout Tokens (Default Desktop) */
+  --page-pad-x: var(--space-8); /* 32px desktop */
+  --page-pad-y: var(--space-6); /* 24px desktop */
+  --card-pad: var(--space-6);   /* 24px desktop */
+  --card-pad-x: var(--space-6);
+  --card-pad-y: var(--space-6);
+  --card-gap: var(--space-4);   /* 16px */
+  --grid-gap: var(--space-4);   /* 16px */
+  --section-gap: var(--space-8);/* 32px */
+  --form-field-gap: var(--space-4); /* 16px */
+  --form-group-gap: var(--space-6); /* 24px */
+  --heading-gap-tight: var(--space-1); /* 4px between heading and subtitle */
+  --heading-gap-normal: var(--space-2); /* 8px */
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --page-pad-x: var(--space-6); /* 24px tablet */
+    --page-pad-y: var(--space-5); /* 20px */
+    --card-pad: var(--space-5);   /* 20px */
+    --section-gap: var(--space-6);/* 24px */
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --page-pad-x: var(--space-4); /* 16px mobile */
+    --page-pad-y: var(--space-4); /* 16px */
+    --card-pad: var(--space-4);   /* 16px */
+    --section-gap: var(--space-5);/* 20px */
+  }
 }
 
 html[data-theme="dark"],
@@ -98,7 +157,11 @@ html[data-theme="dark"],
 }
 
 /* ── 2. Global Canvas & Typography Reset ─────────────────────── */
-html, body {
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+body {
   background-color: var(--ngis-canvas) !important;
   color: var(--ngis-text-primary) !important;
   font-family: var(--font-body, 'Inter', sans-serif) !important;
@@ -246,6 +309,76 @@ textarea {
   font-family: var(--font-body, 'Inter', sans-serif) !important;
   font-size: 14px !important;
   font-weight: 400;
+}
+
+/* ── 2b. Visual Hierarchy & Heading-to-Content Spacing ──────── */
+/* Rule: Headings remain visually tied to the information they introduce */
+h1 + p, h1 + .page-sub, h1 + .subtitle, h1 + .desc,
+h2 + p, h2 + .section-sub, h2 + .subtitle, h2 + .desc,
+h3 + p, h3 + .card-desc, h3 + .sub, h3 + .subtitle,
+h4 + p, h4 + .subcard-desc, h4 + .card-desc,
+.page-title + .page-sub, .page-title + p,
+.section-title + .section-sub, .section-title + p,
+.card-title + .card-desc, .card-title + p,
+.modal-title + .modal-desc, .modal-title + p {
+  margin-top: var(--space-1, 4px) !important;
+  margin-bottom: var(--space-4, 16px) !important;
+  line-height: 1.45 !important;
+  color: var(--color-text-secondary, #64746A) !important;
+}
+
+/* Headings without descriptions: maintain clean separation */
+h1:not(:has(+ p)):not(:has(+ .page-sub)):not(:has(+ .subtitle)),
+.page-title:not(:has(+ p)):not(:has(+ .page-sub)) {
+  margin-bottom: var(--space-4, 16px) !important;
+}
+h2:not(:has(+ p)):not(:has(+ .section-sub)):not(:has(+ .subtitle)),
+.section-title:not(:has(+ p)):not(:has(+ .section-sub)) {
+  margin-bottom: var(--space-3, 12px) !important;
+}
+h3:not(:has(+ p)):not(:has(+ .card-desc)):not(:has(+ .subtitle)),
+.card-title:not(:has(+ p)):not(:has(+ .card-desc)) {
+  margin-bottom: var(--space-2, 8px) !important;
+}
+
+/* Unrelated section separation (whitespace establishes clear visual grouping) */
+section + section,
+.section + .section,
+.page-section + .page-section,
+.dash-section + .dash-section,
+.content-section + .content-section,
+[data-section] + [data-section] {
+  margin-top: var(--section-gap, 32px) !important;
+}
+
+/* Form labels strictly tied to inputs */
+label,
+.form-label,
+.field-label,
+.input-label {
+  display: inline-block !important;
+  margin-bottom: var(--space-1, 4px) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--color-text, #29352E) !important;
+}
+.form-group,
+.field-group,
+.field {
+  margin-bottom: var(--space-4, 16px) !important;
+}
+.form-section + .form-section,
+fieldset + fieldset {
+  margin-top: var(--space-6, 24px) !important;
+  padding-top: var(--space-6, 24px) !important;
+  border-top: 1px solid var(--color-border-subtle, #EEF4F0) !important;
+}
+
+/* Table headings tied directly to tables */
+.table-header,
+.tbl-head,
+.table-title-row {
+  margin-bottom: var(--space-2, 8px) !important;
 }
 
 /* Table Content: Inter, 13–14px */
@@ -562,23 +695,26 @@ button.btn-utility:focus-visible {
   box-shadow: none !important;
 }
 
-/* ── 3. Transparent Background Design ────────────────────────── */
-.topbar:not(.ngis-sticky-active),
-.hero-topbar:not(.ngis-sticky-active),
-.hero:not(.hero-main):not(:has(.hero-body)):not(.ngis-sticky-active),
-.hero:not(.hero-main):not(:has(.hero-body)) .hero-topbar:not(.ngis-sticky-active),
-.hero-subpage:not(.ngis-sticky-active),
-.hero-transparent:not(.ngis-sticky-active),
-.page-header:not(.ngis-sticky-active),
-.main-header:not(.ngis-sticky-active),
-.app-header:not(.ngis-sticky-active),
-.filter-toolbar:not(.ngis-sticky-active),
-.breadcrumb-strip:not(.ngis-sticky-active),
-.workspace-masthead-transparent:not(.ngis-sticky-active),
-header.topbar:not(.ngis-sticky-active),
-header:not(.hero-main):not(:has(.hero-body)):not(.ngis-sticky-active),
-header[role="banner"]:not(.ngis-sticky-active),
-header[class*="sticky"]:not(.ngis-sticky-active) {
+/* ── 3. Seamless Transparent Top Navbar & Headers ────────────────────────── */
+.topbar:not(.ngis-sticky-fixed),
+.hero-topbar:not(.ngis-sticky-fixed),
+.hero:not(.hero-main):not(:has(.hero-body)):not(.ngis-sticky-fixed),
+.hero:not(.hero-main):not(:has(.hero-body)) .hero-topbar:not(.ngis-sticky-fixed),
+.hero-subpage:not(.ngis-sticky-fixed),
+.hero-transparent:not(.ngis-sticky-fixed),
+.page-header:not(.ngis-sticky-fixed),
+.main-header:not(.ngis-sticky-fixed),
+.app-header:not(.ngis-sticky-fixed),
+.filter-toolbar:not(.ngis-sticky-fixed),
+.breadcrumb-strip:not(.ngis-sticky-fixed),
+.mobile-appbar:not(.ngis-sticky-fixed),
+#mobileMainAppbar:not(.ngis-sticky-fixed),
+.htb-topbar-mobile:not(.ngis-sticky-fixed),
+.workspace-masthead-transparent:not(.ngis-sticky-fixed),
+header.topbar:not(.ngis-sticky-fixed),
+header:not(.hero-main):not(:has(.hero-body)):not(.ngis-sticky-fixed),
+header[role="banner"]:not(.ngis-sticky-fixed),
+header[class*="sticky"]:not(.ngis-sticky-fixed) {
   background: transparent !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -589,47 +725,75 @@ header[class*="sticky"]:not(.ngis-sticky-active) {
   -webkit-backdrop-filter: none !important;
 }
 
+/* Scrolled / Stuck state: seamlessly matches surrounding page background token */
+.topbar.ngis-sticky-fixed,
+.hero-topbar.ngis-sticky-fixed,
+header.ngis-sticky-fixed,
+.mobile-appbar.ngis-sticky-fixed,
+#mobileMainAppbar.ngis-sticky-fixed,
+.htb-topbar-mobile.ngis-sticky-fixed {
+  background: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-color: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-image: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .topbar.ngis-sticky-fixed,
+html[data-theme="dark"] .hero-topbar.ngis-sticky-fixed,
+html[data-theme="dark"] header.ngis-sticky-fixed,
+html[data-theme="dark"] .mobile-appbar.ngis-sticky-fixed,
+html[data-theme="dark"] #mobileMainAppbar.ngis-sticky-fixed,
+html[data-theme="dark"] .htb-topbar-mobile.ngis-sticky-fixed {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
 /* ── 4. Premium Content Surfaces & Clean Cards ───────────────── */
 /* :not([style*="background"]) keeps intentional inline-background (dark KPI /
    highlight) tiles from being force-painted white, which hid their white text. */
-.card:not([style*="background"]),
-.module-card,
-.dept-card,
-.hub-card,
-.stat-card,
-.stat,
-.lesson-card,
-.ann-card,
-.exam-card,
-.rc-filecard,
-.card-hover,
-.card-hover-sm,
-.candidate-card,
-.club-card,
-.cert-card,
-.portal-card,
-.role-card,
-.news-card,
-.subj-card,
-.cal-card,
-.att-card,
-.ql-card,
-.pf-card,
-.ov-profile,
-.ov-upcoming,
-.ov-deadlines,
-.sh-card,
-.sh-stat-card,
-.sh-request-item,
-.task-card,
-.quick,
-.sk-stat-card,
-.box,
-.panel,
-.widget,
-.mgr-card,
-.dash-card,
-.telemetry-card {
+html:not([data-theme="dark"]) :is(
+  .card:not([style*="background"]),
+  .module-card,
+  .dept-card,
+  .hub-card,
+  .stat-card,
+  .stat,
+  .lesson-card,
+  .ann-card,
+  .exam-card,
+  .rc-filecard,
+  .card-hover,
+  .card-hover-sm,
+  .candidate-card,
+  .club-card,
+  .cert-card,
+  .portal-card,
+  .role-card,
+  .news-card,
+  .subj-card,
+  .cal-card,
+  .att-card,
+  .ql-card,
+  .pf-card,
+  .ov-profile,
+  .ov-upcoming,
+  .ov-deadlines,
+  .sh-card,
+  .sh-stat-card,
+  .sh-request-item,
+  .task-card,
+  .quick,
+  .sk-stat-card,
+  .box,
+  .panel,
+  .widget,
+  .mgr-card,
+  .dash-card,
+  .telemetry-card
+) {
   background: #FFFFFF !important;
   background-color: #FFFFFF !important;
   /* Flat surface standard: no decorative border; separation comes from
@@ -650,27 +814,27 @@ header[class*="sticky"]:not(.ngis-sticky-active) {
 }
 
 /* ── 5. STRICT: Zero Colored Hover Overlays & No Jumps ───────── */.card:not([style*="background"]):hover,
-.module-card:hover,
-.dept-card:hover,
-.hub-card:hover,
+/* .module-card:hover, */
+/* .dept-card:hover, */
+/* .hub-card:hover, */
 .stat-card:hover,
 .stat:hover,
-.lesson-card:hover,
-.ann-card:hover,
-.exam-card:hover,
+/* .lesson-card:hover, */
+/* .ann-card:hover, */
+/* .exam-card:hover, */
 .rc-filecard:hover,
-.card-hover:hover,
-.card-hover-sm:hover,
+/* .card-hover:hover, */
+/* .card-hover-sm:hover, */
 .candidate-card:hover,
 .club-card:hover,
 .cert-card:hover,
-.portal-card:hover,
+/* .portal-card:hover, */
 .role-card:hover,
 .news-card:hover,
-.subj-card:hover,
+/* .subj-card:hover, */
 .cal-card:hover,
 .att-card:hover,
-.ql-card:hover,
+/* .ql-card:hover, */
 .pf-card:hover,
 .ov-profile:hover,
 .ov-upcoming:hover,
@@ -678,7 +842,7 @@ header[class*="sticky"]:not(.ngis-sticky-active) {
 .sh-card:hover,
 .sh-stat-card:hover,
 .sh-request-item:hover,
-.task-card:hover,
+/* .task-card:hover, */
 .quick:hover,
 .sk-stat-card:hover,
 .box:hover,
@@ -696,7 +860,7 @@ header[class*="sticky"]:not(.ngis-sticky-active) {
 }
 
 /* Interactive clickable buttons: no lifting, no bouncing */
-a[href]:hover,
+a[href]:not(.portal-card):not(.card-hover):not(.ql-card):not(.module-card):not(.dept-card):not(.hub-card):not(.task-card):not(.ann-card):not(.exam-card):not(.subj-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):hover,
 button:not(:disabled):hover,
 [role="button"]:hover,
 [onclick]:hover,
@@ -718,21 +882,32 @@ table, .tbl, .sk-table, .class-table, .classes-table, .mgr-table {
   border: 1px solid var(--color-border, #E1E9E3) !important;
   border-radius: 12px !important;
   overflow: hidden !important;
+  width: 100% !important;
 }
 
 thead tr, thead th {
+  height: 42px !important;
+  padding: 10px 16px !important;
   background-color: var(--color-mint, #E8F3ED) !important;
   color: var(--color-text, #29352E) !important;
   border-bottom: 1px solid var(--color-border, #E1E9E3) !important;
+  border-right: none !important;
+  border-left: none !important;
   font-weight: 500 !important;
-  font-size: 11px !important;
+  font-size: 11.5px !important;
   text-transform: uppercase !important;
   letter-spacing: 0.04em !important;
+  vertical-align: middle !important;
 }
 
 tbody tr td {
+  height: 48px !important;
+  padding: 12px 16px !important;
   border-bottom: 1px solid var(--color-border, #E1E9E3) !important;
+  border-right: none !important;
+  border-left: none !important;
   color: var(--color-text, #29352E) !important;
+  vertical-align: middle !important;
 }
 
 tbody tr:last-child td {
@@ -743,10 +918,139 @@ tbody tr:hover td {
   background-color: #FAFDFB !important;
 }
 
+/* ── 4c. Unified Card Padding & Equal Grid Heights ──────────── */
+.card,
+.module-card,
+.dept-card,
+.hub-card,
+.stat-card,
+.lesson-card,
+.ann-card,
+.exam-card,
+.portal-card,
+.task-card,
+.interactive-card,
+.panel,
+.widget,
+.mgr-card,
+.dash-card {
+  padding: var(--card-pad, 24px) !important;
+}
+
+/* Equal Height Cards in Grids & Bottom Action Alignment */
+.grid > :is(.card, .module-card, .dept-card, .hub-card, .portal-card, [class*="card"]),
+.card-grid > :is(.card, .module-card, .dept-card, .hub-card, .portal-card, [class*="card"]),
+.dashboard-grid > :is(.card, .module-card, .dept-card, .hub-card, .portal-card, [class*="card"]) {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+.grid > :is(.card, .module-card, .dept-card, .hub-card, .portal-card, [class*="card"]) > :is(.card-body, .hub-card-body, .portal-card-body, [class*="-body"], .card-content),
+.card-grid > :is(.card, .module-card, .dept-card, .hub-card, .portal-card, [class*="card"]) > :is(.card-body, .hub-card-body, .portal-card-body, [class*="-body"], .card-content) {
+  flex: 1 1 auto !important;
+}
+
+.grid > :is(.card, .module-card, .dept-card, .hub-card, .portal-card, [class*="card"]) > :is(.card-footer, .hub-card-footer, .card-actions, [class*="-action"], [class*="-footer"]),
+.card-grid > :is(.card, .module-card, .dept-card, .hub-card, .portal-card, [class*="card"]) > :is(.card-footer, .hub-card-footer, .card-actions, [class*="-action"], [class*="-footer"]) {
+  margin-top: auto !important;
+}
+
+/* Suppress nested card borders & redundant padding (Use Space Instead of Excessive Lines) */
+.card :is(.card, .panel, .widget, .box),
+.hub-card :is(.card, .panel, .widget, .box),
+.dept-card :is(.card, .panel, .widget, .box),
+.module-card :is(.card, .panel, .widget, .box),
+.stat-card :is(.card, .panel, .widget, .box) {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Standardized Tabs & Filter Spacing */
+.tabs,
+.tab-list,
+.filter-tabs,
+.pill-tabs {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-2, 8px) !important;
+  margin-bottom: var(--space-4, 16px) !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Standardized Modal Dialogs (Spacing & Boundaries) */
+.modal,
+.modal-box,
+.ngis-modal-box {
+  width: 100% !important;
+  max-width: 520px !important;
+  border-radius: 16px !important;
+  background: var(--color-surface, #FFFFFF) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  box-shadow: 0 20px 48px -8px rgba(15, 23, 42, 0.16) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+.modal-header,
+.ngis-modal-header {
+  padding: 20px 24px !important;
+  border-bottom: 1px solid var(--color-border, #E1E9E3) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.modal-body,
+.ngis-modal-body {
+  padding: 24px !important;
+  max-height: calc(85vh - 140px) !important;
+  overflow-y: auto !important;
+}
+.modal-footer,
+.modal-actions,
+.ngis-modal-footer,
+.ngis-confirm-actions {
+  padding: 16px 24px !important;
+  border-top: 1px solid var(--color-border, #E1E9E3) !important;
+  background: var(--color-background, #F7F9F7) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: var(--space-3, 12px) !important;
+  margin: 0 !important;
+}
+
+/* Standardized Pagination Controls */
+.pagination,
+.tbl-pagination,
+.page-controls {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: var(--space-3, 12px) !important;
+  padding: var(--space-4, 16px) 0 0 !important;
+  margin-top: var(--space-4, 16px) !important;
+  border-top: 1px solid var(--color-border, #E1E9E3) !important;
+}
+.pagination-btn,
+.page-btn {
+  height: 36px !important;
+  min-width: 36px !important;
+  padding: 0 10px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
 /* Form Inputs & Controls (ngx-inline-edit = quiet inline-editable text, exempted;
    .nrg-input/.nrg-select = registration wizard fields, self-themed incl. dark mode;
    search inputs are governed exclusively by their search containers) */
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.sb-search-input):not(.htb-search-input):not(.ngis-search-input):not(.dir-search-input):not(.ngx-inline-edit):not(.nrg-input),
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.sb-search-input):not(.htb-search-input):not(.ngis-search-input):not(.dir-search-input):not(.ngx-inline-edit):not(.nrg-input):not(.exw-roadmap-search),
 select:not(.nrg-select),
 textarea {
   background-color: var(--color-surface, #FFFFFF) !important;
@@ -755,7 +1059,7 @@ textarea {
   border-radius: 8px !important;
 }
 
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.sb-search-input):not(.htb-search-input):not(.ngis-search-input):not(.dir-search-input):not(.ngx-inline-edit):not(.nrg-input):focus,
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.sb-search-input):not(.htb-search-input):not(.ngis-search-input):not(.dir-search-input):not(.ngx-inline-edit):not(.nrg-input):not(.exw-roadmap-search):focus,
 select:not(.nrg-select):focus,
 textarea:focus {
   border-color: var(--color-primary, #176B45) !important;
@@ -810,13 +1114,13 @@ textarea::placeholder {
 }
 
 @media (max-width: 1024px) {
-  .hamburger-btn,
-  .mobile-hamburger-btn,
+  .hamburger-btn:not(#ngisMobileMenuBtn),
+  .mobile-hamburger-btn:not(#ngisMobileMenuBtn),
   .htb-hamburger,
   #htbHamburger,
   .menu-btn,
   #menuBtn,
-  [data-action="toggle-sidebar"]:not(#sidebarCollapseBtn):not(#sidebarExpandBtn) {
+  [data-action="toggle-sidebar"]:not(#sidebarCollapseBtn):not(#sidebarExpandBtn):not(#ngisMobileMenuBtn) {
     display: inline-flex !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -2037,13 +2341,20 @@ html[data-theme="dark"] .ngis-sm,
 .smx-icon { font-size: 18px; line-height: 1; vertical-align: middle; }
 .smx-icon.sm { font-size: 15px; }
 
-/* Mobile appbar must stay a real surface despite the global transparent header rule. */
-.mobile-appbar.smx-appbar {
-  background: var(--ngis-surface, #FFFFFF) !important;
-  background-color: var(--ngis-surface, #FFFFFF) !important;
-  border-bottom: 1px solid var(--ngis-border, #E1E9E3) !important;
+/* Mobile appbar seamless transparent navigation */
+.mobile-appbar.smx-appbar:not(.ngis-sticky-fixed) {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: none !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
+}
+.mobile-appbar.smx-appbar.ngis-sticky-fixed {
+  background: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-color: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 .smx-appbar-title {
   color: var(--ngis-text-primary, #29352E) !important;
@@ -2678,7 +2989,7 @@ dialog {
 .ngis-modal-enter .ngis-modal-box,
 .ngis-modal-enter.smx-modal,
 .ngis-modal-enter.ngis-modal {
-  transform: translateY(8px) scale(0.98) !important;
+  transform: translateY(8px) scale(0.97) !important;
   opacity: 0 !important;
 }
 
@@ -2689,7 +3000,7 @@ dialog {
 .ngis-modal-exit .ngis-modal-box,
 .ngis-modal-exit.smx-modal,
 .ngis-modal-exit.ngis-modal {
-  transform: translateY(6px) scale(0.985) !important;
+  transform: translateY(6px) scale(0.97) !important;
   opacity: 0 !important;
   transition: transform 160ms cubic-bezier(0.4, 0, 1, 1), opacity 160ms cubic-bezier(0.4, 0, 1, 1) !important;
 }
@@ -3774,3 +4085,855 @@ body.smx-users-page .ngis-sm table .smx-icon-btn.smx-more-trigger:hover {
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   NGIS MASTER DESIGN SYSTEM REFINEMENT & STANDARDIZATION
+   Production-ready design system tokens, concentric nested radii,
+   universal button sizes, accessible touch targets, soft elevations,
+   card architecture, form standardization, and optical alignment.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 01. Centralized Concentric Corner Radii (Section 03) ───── */
+.radius-xs       { border-radius: var(--radius-xs, 4px) !important; }
+.radius-sm       { border-radius: var(--radius-sm, 6px) !important; }
+.radius-md       { border-radius: var(--radius-md, 8px) !important; }
+.radius-lg       { border-radius: var(--radius-lg, 12px) !important; }
+.radius-xl       { border-radius: var(--radius-xl, 16px) !important; }
+.radius-2xl      { border-radius: var(--radius-2xl, 20px) !important; }
+.radius-container{ border-radius: var(--radius-container, 24px) !important; }
+.radius-pill     { border-radius: var(--radius-pill, 9999px) !important; }
+
+/* Mathematically concentric nested radius:
+   Formula: Inner radius = Outer radius - Inset distance
+   Outer 24px, Inset 8px  -> Inner 16px
+   Outer 24px, Inset 12px -> Inner 12px
+   Outer 20px, Inset 8px  -> Inner 12px
+   Outer 16px, Inset 8px  -> Inner 8px
+   Outer 16px, Inset 4px  -> Inner 12px
+   Outer 12px, Inset 4px  -> Inner 8px
+   Outer 12px, Inset 6px  -> Inner 6px */
+.concentric-container-24 {
+  border-radius: var(--radius-container, 24px) !important;
+  padding: var(--space-6, 24px);
+}
+.concentric-container-24 > .concentric-inner-8,
+.concentric-container-24 .nested-card,
+.concentric-container-24 .nested-panel {
+  border-radius: var(--radius-xl, 16px) !important;
+}
+
+.concentric-container-20 {
+  border-radius: var(--radius-2xl, 20px) !important;
+  padding: var(--space-5, 20px);
+}
+.concentric-container-20 > .concentric-inner-8,
+.concentric-container-20 .nested-card {
+  border-radius: var(--radius-lg, 12px) !important;
+}
+
+.concentric-card-16 {
+  border-radius: var(--radius-xl, 16px) !important;
+  padding: var(--space-4, 16px);
+}
+.concentric-card-16 > .concentric-inner-8,
+.concentric-card-16 .nested-thumbnail,
+.concentric-card-16 .nested-badge-wrap,
+.concentric-card-16 .nested-subcard {
+  border-radius: var(--radius-md, 8px) !important;
+}
+
+.concentric-card-12 {
+  border-radius: var(--radius-lg, 12px) !important;
+  padding: var(--space-3, 12px);
+}
+.concentric-card-12 > .concentric-inner-4,
+.concentric-card-12 .nested-chip,
+.concentric-card-12 .nested-badge {
+  border-radius: var(--radius-md, 8px) !important;
+}
+
+/* Automatic concentric nested surface radii */
+.card .card,
+.card .panel,
+.card .nested-panel,
+.module-card .nested-card,
+.hub-card .nested-panel,
+.ngis-card .nested-panel {
+  border-radius: var(--radius-md, 8px) !important;
+}
+
+/* Modals & Dialogs Concentric Radii */
+.modal,
+.modal-content,
+.dialog,
+.exw-modal {
+  border-radius: var(--radius-container, 24px) !important;
+}
+.modal .modal-header,
+.modal .modal-body,
+.modal .modal-footer,
+.exw-modal .exw-modal-head,
+.exw-modal .exw-modal-body,
+.exw-modal .exw-modal-foot {
+  border-radius: 0 !important;
+}
+.modal .modal-body .panel,
+.modal .modal-body .card,
+.exw-modal .exw-review-line {
+  border-radius: var(--radius-lg, 12px) !important;
+}
+
+/* Dropdown Menus Concentric Radii */
+.dropdown-menu,
+.menu-dropdown,
+.select-dropdown,
+.ngis-dropdown {
+  border-radius: var(--radius-lg, 12px) !important;
+  padding: 6px !important;
+}
+.dropdown-menu .dropdown-item,
+.menu-dropdown .menu-item,
+.ngis-dropdown .dropdown-item {
+  border-radius: var(--radius-sm, 6px) !important;
+}
+
+/* ── 02. Soft Shadow & Elevation Levels (Section 09) ────────── */
+.elevation-0, .shadow-level-0, .shadow-none {
+  box-shadow: var(--elevation-0, none) !important;
+}
+.elevation-1, .shadow-level-1, .shadow-subtle {
+  box-shadow: var(--elevation-1, 0 2px 8px rgba(0, 0, 0, 0.04)) !important;
+}
+.elevation-2, .shadow-level-2, .shadow-interactive {
+  box-shadow: var(--elevation-2, 0 6px 18px rgba(0, 0, 0, 0.07)) !important;
+}
+.elevation-3, .shadow-level-3, .shadow-floating {
+  box-shadow: var(--elevation-3, 0 12px 32px rgba(0, 0, 0, 0.10)) !important;
+}
+.elevation-4, .shadow-level-4, .shadow-modal {
+  box-shadow: var(--elevation-4, 0 20px 48px rgba(0, 0, 0, 0.14)) !important;
+}
+
+/* Dark mode elevations */
+[data-theme="dark"] .elevation-1,
+[data-theme="dark"] .shadow-level-1,
+[data-theme="dark"] .shadow-subtle {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+[data-theme="dark"] .elevation-2,
+[data-theme="dark"] .shadow-level-2,
+[data-theme="dark"] .shadow-interactive {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35) !important;
+}
+[data-theme="dark"] .elevation-3,
+[data-theme="dark"] .shadow-level-3,
+[data-theme="dark"] .shadow-floating {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
+}
+[data-theme="dark"] .elevation-4,
+[data-theme="dark"] .shadow-level-4,
+[data-theme="dark"] .shadow-modal {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* ── 03. Universal Button Size System (Section 06 & 07) ─────── */
+/* Base button typography & optical vertical center alignment */
+button,
+.btn,
+.ngis-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: var(--font-primary, Inter, sans-serif) !important;
+  font-weight: 500 !important; /* STRICT NO BOLD */
+  line-height: 1 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 120ms cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+/* Small Button (Height: 36px, Font: 14px, Icon: 16px, Padding: 12px, Gap: 6px, Radius: 8px) */
+.btn-sm,
+.ngis-btn-sm,
+button.btn-sm,
+a.btn-sm {
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+  gap: 6px !important;
+  border-radius: var(--radius-md, 8px) !important;
+}
+.btn-sm svg,
+.btn-sm [data-ngis-icon],
+.btn-sm i,
+.btn-sm .bi,
+.btn-sm .ph,
+.btn-sm .material-symbols-outlined,
+.ngis-btn-sm svg,
+.ngis-btn-sm [data-ngis-icon] {
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Medium Button / Standard (Height: 40px, Font: 14px, Icon: 20px, Padding: 16px, Gap: 8px, Radius: 8px) */
+.btn-md,
+.btn,
+.ngis-btn,
+.ngis-btn-md,
+button.btn:not(.btn-sm):not(.btn-lg):not(.icon-btn):not(.btn-icon),
+a.btn:not(.btn-sm):not(.btn-lg):not(.icon-btn):not(.btn-icon) {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 16px !important;
+  font-size: 14px !important;
+  gap: 8px !important;
+  border-radius: var(--radius-md, 8px) !important;
+}
+.btn-md svg,
+.btn:not(.btn-sm):not(.btn-lg) svg,
+.btn:not(.btn-sm):not(.btn-lg) [data-ngis-icon],
+.btn:not(.btn-sm):not(.btn-lg) i,
+.btn:not(.btn-sm):not(.btn-lg) .bi,
+.btn:not(.btn-sm):not(.btn-lg) .ph,
+.btn:not(.btn-sm):not(.btn-lg) .material-symbols-outlined,
+.ngis-btn svg,
+.ngis-btn [data-ngis-icon] {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Large Button (Height: 56px, Font: 16px, Icon: 24px, Padding: 24-32px, Gap: 8px, Radius: 12px) */
+.btn-lg,
+.ngis-btn-lg,
+button.btn-lg,
+a.btn-lg {
+  height: 56px !important;
+  min-height: 56px !important;
+  max-height: 56px !important;
+  padding: 0 24px !important;
+  font-size: 16px !important;
+  gap: 8px !important;
+  border-radius: var(--radius-lg, 12px) !important;
+}
+.btn-lg svg,
+.btn-lg [data-ngis-icon],
+.btn-lg i,
+.btn-lg .bi,
+.btn-lg .ph,
+.btn-lg .material-symbols-outlined,
+.ngis-btn-lg svg,
+.ngis-btn-lg [data-ngis-icon] {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 24px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Icon-Only Buttons (Desktop: 36-40px, Mobile: 44-48px interactive target) */
+.icon-btn,
+.btn-icon,
+.icon-only-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  border-radius: var(--radius-md, 8px) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  background: #FFFFFF !important;
+  color: var(--color-text, #29352E) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: all 150ms ease !important;
+}
+.icon-btn.icon-btn-sm,
+.btn-icon-sm {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+}
+.icon-btn.icon-btn-lg,
+.btn-icon-lg {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  border-radius: var(--radius-lg, 12px) !important;
+}
+
+/* Mobile Touch Target Expansion for Icon-Only Buttons */
+@media (max-width: 768px) {
+  .icon-btn,
+  .btn-icon,
+  .icon-only-btn,
+  .hamburger-btn,
+  .mobile-hamburger-btn,
+  .htb-hamburger,
+  .modal-close,
+  [data-action="toggle-sidebar"] {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+/* ── 04. Unified Button Variants (Section 08) ───────────────── */
+/* Primary Variant (Forest Green) */
+.btn-primary,
+.ngis-btn-primary,
+button.btn-primary {
+  background: #176B45 !important;
+  background-color: #176B45 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #176B45 !important;
+  box-shadow: 0 1px 2px rgba(23, 107, 69, 0.15) !important;
+}
+.btn-primary:hover,
+.ngis-btn-primary:hover,
+button.btn-primary:hover {
+  background: #125638 !important;
+  background-color: #125638 !important;
+  border-color: #125638 !important;
+  color: #FFFFFF !important;
+}
+.btn-primary:active,
+.ngis-btn-primary:active,
+button.btn-primary:active {
+  background: #0D4029 !important;
+  background-color: #0D4029 !important;
+  border-color: #0D4029 !important;
+  transform: scale(0.97) !important;
+}
+
+/* Secondary Variant (White / Subtle Neutral) */
+.btn-secondary,
+.btn-outline,
+.ngis-btn-secondary,
+button.btn-secondary {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  color: var(--color-text, #29352E) !important;
+  border: 1px solid var(--color-border, #CBD5E1) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+}
+.btn-secondary:hover,
+.btn-outline:hover,
+.ngis-btn-secondary:hover,
+button.btn-secondary:hover {
+  background: #F8FAFC !important;
+  background-color: #F8FAFC !important;
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+}
+.btn-secondary:active,
+.btn-outline:active,
+.ngis-btn-secondary:active,
+button.btn-secondary:active {
+  background: #F1F5F9 !important;
+  background-color: #F1F5F9 !important;
+  transform: scale(0.97) !important;
+}
+
+/* Transparent / Ghost Variant */
+.btn-ghost,
+.btn-transparent,
+.ngis-btn-ghost,
+button.btn-ghost {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--color-text, #334155) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+}
+.btn-ghost:hover,
+.btn-transparent:hover,
+.ngis-btn-ghost:hover,
+button.btn-ghost:hover {
+  background: #F1F5F9 !important;
+  background-color: #F1F5F9 !important;
+  color: #0F172A !important;
+  border-color: transparent !important;
+}
+.btn-ghost:active,
+.btn-transparent:active,
+.ngis-btn-ghost:active,
+button.btn-ghost:active {
+  background: #E2E8F0 !important;
+  background-color: #E2E8F0 !important;
+  transform: scale(0.97) !important;
+}
+
+/* Destructive Variant (Red) */
+.btn-destructive,
+.btn-danger,
+.ngis-btn-danger,
+button.btn-danger {
+  background: #DC2626 !important;
+  background-color: #DC2626 !important;
+  color: #FFFFFF !important;
+  border: 1px solid #DC2626 !important;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.20) !important;
+}
+.btn-destructive:hover,
+.btn-danger:hover,
+.ngis-btn-danger:hover,
+button.btn-danger:hover {
+  background: #B91C1C !important;
+  background-color: #B91C1C !important;
+  border-color: #B91C1C !important;
+  color: #FFFFFF !important;
+}
+.btn-destructive:active,
+.btn-danger:active,
+.ngis-btn-danger:active,
+button.btn-danger:active {
+  background: #991B1B !important;
+  background-color: #991B1B !important;
+  border-color: #991B1B !important;
+  transform: scale(0.97) !important;
+}
+
+/* Disabled State */
+.btn:disabled,
+button:disabled,
+.btn.disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Loading State */
+.btn.is-loading,
+.btn-loading {
+  position: relative !important;
+  pointer-events: none !important;
+  cursor: wait !important;
+}
+.btn.is-loading .btn-text,
+.btn-loading .btn-text {
+  opacity: 0 !important;
+}
+.btn.is-loading::after,
+.btn-loading::after {
+  content: "" !important;
+  position: absolute !important;
+  width: 18px !important;
+  height: 18px !important;
+  top: 50% !important;
+  left: 50% !important;
+  margin-top: -9px !important;
+  margin-left: -9px !important;
+  border: 2px solid currentColor !important;
+  border-right-color: transparent !important;
+  border-radius: 50% !important;
+  animation: ngis-btn-spin 0.6s linear infinite !important;
+}
+@keyframes ngis-btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Dark Mode Button Overrides */
+[data-theme="dark"] .btn-secondary,
+[data-theme="dark"] .btn-outline,
+[data-theme="dark"] .ngis-btn-secondary,
+[data-theme="dark"] .icon-btn {
+  background: #1E293B !important;
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+[data-theme="dark"] .btn-secondary:hover,
+[data-theme="dark"] .btn-outline:hover,
+[data-theme="dark"] .ngis-btn-secondary:hover,
+[data-theme="dark"] .icon-btn:hover {
+  background: #334155 !important;
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+  color: #FFFFFF !important;
+}
+[data-theme="dark"] .btn-ghost:hover,
+[data-theme="dark"] .ngis-btn-ghost:hover {
+  background: #1E293B !important;
+  background-color: #1E293B !important;
+  color: #F8FAFC !important;
+}
+
+/* ── 05. Accessible Touch Targets (Section 04) ──────────────── */
+.touch-target,
+.touch-target-44 {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.touch-target-48 {
+  min-width: 48px !important;
+  min-height: 48px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Checkbox and Radio Accessible Hit Area */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  position: relative !important;
+  accent-color: #176B45 !important;
+}
+@media (max-width: 768px) {
+  .touch-checkbox-wrap,
+  .touch-radio-wrap {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* Minimum 8px Separation between adjacent touch controls */
+.touch-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* ── 06. Natural Hover & Press Animations (Section 10) ───────── */
+/* Clickable cards: hover scale 1.01, translateY -2px, press scale 0.97 */
+.interactive-card,
+.card-clickable,
+a.card,
+a.hub-card,
+a.dept-card,
+a.module-card {
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 180ms ease, border-color 150ms ease !important;
+  cursor: pointer !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .interactive-card:hover,
+  .card-clickable:hover,
+  a.card:hover,
+  a.hub-card:hover,
+  a.dept-card:hover,
+  a.module-card:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: var(--elevation-2, 0 6px 18px rgba(0, 0, 0, 0.07)) !important;
+  }
+}
+.interactive-card:active,
+.card-clickable:active,
+a.card:active,
+a.hub-card:active,
+a.dept-card:active,
+a.module-card:active {
+  transform: scale(0.97) !important;
+  box-shadow: var(--elevation-1, 0 2px 8px rgba(0, 0, 0, 0.04)) !important;
+}
+
+/* Strictly retain solid continuous background on cards throughout all states */
+.interactive-card,
+.card-clickable,
+.card,
+.hub-card,
+.dept-card,
+.module-card,
+.exw-roadmap-container,
+.ngis-card {
+  background-color: #FFFFFF !important;
+}
+[data-theme="dark"] .interactive-card,
+[data-theme="dark"] .card-clickable,
+[data-theme="dark"] .card,
+[data-theme="dark"] .hub-card,
+[data-theme="dark"] .dept-card,
+[data-theme="dark"] .module-card,
+[data-theme="dark"] .exw-roadmap-container,
+[data-theme="dark"] .ngis-card {
+  background-color: #18231D !important;
+}
+
+/* Buttons Press Feedback (scale: 0.97, duration: 100-180ms) */
+.btn:active,
+button:not(:disabled):active,
+.ngis-btn:active {
+  transform: scale(0.97) !important;
+}
+
+/* Reduced motion compliance */
+@media (prefers-reduced-motion: reduce) {
+  .interactive-card,
+  .card-clickable,
+  a.card,
+  a.hub-card,
+  a.dept-card,
+  a.module-card,
+  .btn,
+  button,
+  .ngis-btn {
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
+}
+
+/* ── 07. Global Card Architecture (Section 11) ───────────────── */
+.ngis-card {
+  display: flex !important;
+  flex-direction: column !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: var(--radius-lg, 12px) !important;
+  box-shadow: var(--elevation-0, none) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+.ngis-card-header {
+  padding: 18px 24px !important;
+  border-bottom: 1px solid var(--color-border-subtle, #EEF4F0) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+.ngis-card-body {
+  padding: 24px !important;
+  flex: 1 1 auto !important;
+}
+.ngis-card-footer {
+  padding: 16px 24px !important;
+  border-top: 1px solid var(--color-border-subtle, #EEF4F0) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  background: #F8FAF8 !important;
+}
+
+@media (max-width: 640px) {
+  .ngis-card-header { padding: 14px 16px !important; }
+  .ngis-card-body   { padding: 16px !important; }
+  .ngis-card-footer { padding: 12px 16px !important; }
+}
+
+[data-theme="dark"] .ngis-card {
+  background: #18231D !important;
+  border-color: #2D3A31 !important;
+}
+[data-theme="dark"] .ngis-card-header {
+  border-bottom-color: #2D3A31 !important;
+}
+[data-theme="dark"] .ngis-card-footer {
+  border-top-color: #2D3A31 !important;
+  background: #101713 !important;
+}
+
+/* ── 08. Forms, Dropdowns & Search Fields (Section 12) ───────── */
+.form-label,
+.ngis-label {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 500 !important; /* STRICT NO BOLD */
+  color: var(--color-text-heading, #29352E) !important;
+  margin-bottom: 6px !important;
+  line-height: 1.3 !important;
+}
+
+.form-control,
+.form-input,
+.ngis-input,
+input.input-standard,
+select.select-standard {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 14px !important;
+  font-family: var(--font-primary, Inter, sans-serif) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--color-text, #29352E) !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--color-border, #CBD5E1) !important;
+  border-radius: var(--radius-md, 8px) !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease !important;
+  width: 100% !important;
+}
+
+.form-control-sm,
+.form-input-sm,
+.ngis-input-sm {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 12px !important;
+  font-size: 13.5px !important;
+}
+
+.form-control:focus,
+.form-input:focus,
+.ngis-input:focus,
+input.input-standard:focus,
+select.select-standard:focus {
+  border-color: #176B45 !important;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.18) !important;
+}
+
+/* Search input with icon optical alignment */
+.ngis-search-wrap,
+.search-input-wrap {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+.ngis-search-wrap .search-icon,
+.search-input-wrap .search-icon {
+  position: absolute !important;
+  left: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #94A3B8 !important;
+  pointer-events: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.ngis-search-wrap input,
+.search-input-wrap input {
+  padding-left: 38px !important;
+}
+
+/* Optical Chevron in Dropdown Selects */
+select.form-control,
+select.form-select,
+select.ngis-select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  padding-right: 36px !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+}
+
+/* ── 09. Tables & Dense Administrative Interfaces (Section 13) ── */
+.ngis-table-wrap,
+.table-responsive {
+  width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  border-radius: var(--radius-lg, 12px) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  background: #FFFFFF !important;
+}
+
+.ngis-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  text-align: left !important;
+}
+
+.ngis-table th {
+  padding: 12px 16px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important; /* STRICT NO BOLD */
+  color: var(--color-text-secondary, #64746A) !important;
+  background: #F8FAF8 !important;
+  border-bottom: 1px solid var(--color-border, #E1E9E3) !important;
+  white-space: nowrap !important;
+}
+
+.ngis-table td {
+  padding: 14px 16px !important;
+  font-size: 13.5px !important;
+  font-weight: 400 !important;
+  color: var(--color-text, #29352E) !important;
+  border-bottom: 1px solid var(--color-border-subtle, #EEF4F0) !important;
+  vertical-align: middle !important;
+}
+
+.ngis-table tr:last-child td {
+  border-bottom: none !important;
+}
+
+.ngis-table tbody tr:hover {
+  background-color: #F8FAF8 !important;
+}
+
+[data-theme="dark"] .ngis-table-wrap {
+  background: #18231D !important;
+  border-color: #2D3A31 !important;
+}
+[data-theme="dark"] .ngis-table th {
+  background: #101713 !important;
+  border-color: #2D3A31 !important;
+  color: #C9D6CC !important;
+}
+[data-theme="dark"] .ngis-table td {
+  border-color: #2D3A31 !important;
+  color: #E8F3ED !important;
+}
+[data-theme="dark"] .ngis-table tbody tr:hover {
+  background-color: #1F2E26 !important;
+}
+
+/* ── 10. Mobile Responsive Layout Rules (Section 14 & 19) ────── */
+@media (max-width: 640px) {
+  .page-container,
+  .workspace-container,
+  main.main {
+    padding-left: var(--page-pad-mobile, 16px) !important;
+    padding-right: var(--page-pad-mobile, 16px) !important;
+  }
+  .btn-mobile-full {
+    width: 100% !important;
+  }
+}
+
+/* iOS Safe Area Padding Support */
+.safe-area-bottom,
+.bottom-nav,
+.mobile-action-bar {
+  padding-bottom: env(safe-area-inset-bottom, 16px) !important;
+}
+
+/* ── 11. Universal Tooltip Suppression (Zero Hover Popups) ── */
+#ngisGlobalTooltip,
+.ngis-universal-tooltip,
+.ngis-motion-tooltip,
+.has-tooltip::before,
+.has-tooltip::after,
+[data-tooltip]::before,
+[data-tooltip]::after,
+[data-title]::before,
+[data-title]::after,
+[role="tooltip"]:not(.modal-dialog):not(.dropdown-menu) {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+

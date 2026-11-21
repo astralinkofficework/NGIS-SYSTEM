@@ -159,6 +159,12 @@ try {
 
       <!-- Topbar Action Utilities -->
       <div class="flex items-center gap-2 flex-wrap">
+        <!-- Student Fast Search (Section 5) -->
+        <div class="relative flex-1 min-w-[160px] max-w-xs">
+          <input type="text" id="searchAttendanceStudent" oninput="window.onAttendanceSearch(this.value)" placeholder="Search student name, ID..." class="w-full text-xs py-1.5 pl-8 pr-2.5 border border-slate-300 rounded-lg focus:border-[#0F5132] focus:ring-1 focus:ring-[#0F5132] bg-white text-slate-800 shadow-xs">
+          <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        </div>
+
         <!-- Sheet / Card View Mode Selector -->
         <div class="inline-flex p-0.5 rounded-lg bg-slate-100 border border-slate-200 text-xs font-medium">
           <button type="button" id="btnViewGridDesk" onclick="setViewMode('grid')" class="px-2.5 py-1 rounded-md bg-white font-medium text-slate-900 shadow-xs border border-slate-200/60 inline-flex items-center gap-1.5 transition">
@@ -256,7 +262,7 @@ try {
     <div id="viewModeGrid" class="bg-white border border-slate-300 rounded-xl shadow-xs overflow-hidden flex flex-col flex-1">
       <!-- Table Wrapper with full straight borders -->
       <div class="overflow-x-auto flex-1">
-        <table class="w-full text-left text-xs excel-grid min-w-[980px]" id="attendanceSpreadsheet">
+        <table class="w-full text-left text-xs excel-grid w-full min-w-0 max-w-full" id="attendanceSpreadsheet">
           <!-- SPREADSHEET COORDINATES HEADER (Excel A, B, C, D... row) -->
           <thead>
             <tr class="bg-slate-100 text-slate-500 font-mono text-[10px] text-center font-medium tracking-wider select-none">
@@ -436,18 +442,38 @@ window.HERO_CONFIG = {
     if (!tbody) return;
 
     if (!rosterData || rosterData.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="12" class="p-0 border-0">
-        <div class="ngis-state-card" style="margin:28px auto; max-width:440px;">
-          <div class="ngis-state-icon neutral"><i class="ph ph-users"></i></div>
-          <h3 class="ngis-state-title">No Students in Roster</h3>
-          <p class="ngis-state-desc">There are currently no students enrolled in Grade 10A for attendance logging.</p>
-          <a href="teacher-roster.html" class="ngis-btn-primary"><i class="ph ph-user-plus"></i><span>View Class Roster</span></a>
-        </div>
-      </td></tr>`;
+      if (window.NGIS_EMPTY) {
+        window.NGIS_EMPTY.render(tbody, 'attendance');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="12" class="py-12 text-center text-slate-400">No attendance records.</td></tr>';
+      }
       return;
     }
 
-    tbody.innerHTML = rosterData.map((s, sIdx) => {
+    const filteredRoster = rosterData.map((s, idx) => ({ ...s, origIdx: idx })).filter(s => {
+      if (!attendanceSearchQuery) return true;
+      return (s.name && s.name.toLowerCase().includes(attendanceSearchQuery)) || 
+             (s.id && s.id.toLowerCase().includes(attendanceSearchQuery));
+    });
+
+    if (filteredRoster.length === 0) {
+      if (window.NGIS_EMPTY) {
+        window.NGIS_EMPTY.renderNoResults(tbody, {
+          colspan: 12,
+          onAction: () => {
+            const inp = document.getElementById('attendanceSearchInput');
+            if (inp) inp.value = '';
+            window.onAttendanceSearch('');
+          }
+        });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="12" class="py-12 text-center text-slate-400">No matching students found.</td></tr>';
+      }
+      return;
+    }
+
+    tbody.innerHTML = filteredRoster.map((s, itemIdx) => {
+      const sIdx = s.origIdx;
       const stats = calculateStudentStats(s.days);
       const isAbsentRow = s.days[2] === 'A';
       const isLateRow = s.days[2] === 'L';
@@ -466,35 +492,35 @@ window.HERO_CONFIG = {
 
           <!-- Mon (Day 0) -->
           <td class="excel-cell py-2 px-2 text-center">
-            <button type="button" onclick="window.cycleCell(${sIdx}, 0)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[0]).bg} ${getStateMeta(s.days[0]).hover} ${getStateMeta(s.days[0]).text} shadow-xs transition active:scale-95" title="Monday: ${getStateMeta(s.days[0]).label}">
+            <button type="button" onclick="window.openAttendanceStatusPicker(event, ${sIdx}, 0)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[0]).bg} ${getStateMeta(s.days[0]).hover} ${getStateMeta(s.days[0]).text} shadow-xs transition active:scale-95" aria-label="Monday: ${getStateMeta(s.days[0]).label}">
               ${s.days[0]}
             </button>
           </td>
 
           <!-- Tue (Day 1) -->
           <td class="excel-cell py-2 px-2 text-center">
-            <button type="button" onclick="window.cycleCell(${sIdx}, 1)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[1]).bg} ${getStateMeta(s.days[1]).hover} ${getStateMeta(s.days[1]).text} shadow-xs transition active:scale-95" title="Tuesday: ${getStateMeta(s.days[1]).label}">
+            <button type="button" onclick="window.openAttendanceStatusPicker(event, ${sIdx}, 1)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[1]).bg} ${getStateMeta(s.days[1]).hover} ${getStateMeta(s.days[1]).text} shadow-xs transition active:scale-95" aria-label="Tuesday: ${getStateMeta(s.days[1]).label}">
               ${s.days[1]}
             </button>
           </td>
 
           <!-- Wed (Day 2) -->
           <td class="excel-cell py-2 px-2 text-center ${s.days[2] === 'L' ? 'bg-[#F7F9F7]/40' : (s.days[2] === 'A' ? 'bg-[#F7F9F7]/50' : '')}">
-            <button type="button" onclick="window.cycleCell(${sIdx}, 2)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[2]).bg} ${getStateMeta(s.days[2]).hover} ${getStateMeta(s.days[2]).text} shadow-xs transition active:scale-95" title="Wednesday: ${getStateMeta(s.days[2]).label}">
+            <button type="button" onclick="window.openAttendanceStatusPicker(event, ${sIdx}, 2)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[2]).bg} ${getStateMeta(s.days[2]).hover} ${getStateMeta(s.days[2]).text} shadow-xs transition active:scale-95" aria-label="Wednesday: ${getStateMeta(s.days[2]).label}">
               ${s.days[2]}
             </button>
           </td>
 
           <!-- Thu (Day 3) -->
           <td class="excel-cell py-2 px-2 text-center">
-            <button type="button" onclick="window.cycleCell(${sIdx}, 3)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[3]).bg} ${getStateMeta(s.days[3]).hover} ${getStateMeta(s.days[3]).text} shadow-xs transition active:scale-95" title="Thursday: ${getStateMeta(s.days[3]).label}">
+            <button type="button" onclick="window.openAttendanceStatusPicker(event, ${sIdx}, 3)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[3]).bg} ${getStateMeta(s.days[3]).hover} ${getStateMeta(s.days[3]).text} shadow-xs transition active:scale-95" aria-label="Thursday: ${getStateMeta(s.days[3]).label}">
               ${s.days[3]}
             </button>
           </td>
 
           <!-- Fri - ACTIVE TODAY (Day 4) -->
           <td class="excel-cell py-2 px-2 text-center bg-[#F7F9F7]/50 border-x-2 border-[#E1E9E3]">
-            <button type="button" onclick="window.cycleCell(${sIdx}, 4)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[4]).bg} ${getStateMeta(s.days[4]).hover} ${getStateMeta(s.days[4]).text} shadow-xs ring-2 ring-[#29352E] transition active:scale-95" title="Today (Friday): ${getStateMeta(s.days[4]).label}">
+            <button type="button" onclick="window.openAttendanceStatusPicker(event, ${sIdx}, 4)" class="w-7 h-7 rounded font-medium text-xs border border-slate-300 ${getStateMeta(s.days[4]).bg} ${getStateMeta(s.days[4]).hover} ${getStateMeta(s.days[4]).text} shadow-xs ring-2 ring-[#29352E] transition active:scale-95" aria-label="Today (Friday): ${getStateMeta(s.days[4]).label}">
               ${s.days[4]}
             </button>
           </td>
@@ -658,6 +684,54 @@ window.HERO_CONFIG = {
       `;
     }).join('');
   }
+
+  
+  let attendanceSearchQuery = '';
+  let activePickerStudentIdx = null;
+  let activePickerDayIdx = null;
+
+  window.onAttendanceSearch = function(val) {
+    attendanceSearchQuery = (val || '').toLowerCase().trim();
+    renderSpreadsheet();
+    renderCardsView();
+  };
+
+  window.openAttendanceStatusPicker = function(event, studentIdx, dayIdx) {
+    event.stopPropagation();
+    activePickerStudentIdx = studentIdx;
+    activePickerDayIdx = dayIdx;
+
+    const popup = document.getElementById('attendanceStatusPopup');
+    if (!popup) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    popup.style.top = Math.min(window.innerHeight - 170, rect.bottom + 6) + 'px';
+    popup.style.left = Math.min(window.innerWidth - 160, Math.max(10, rect.left - 40)) + 'px';
+    popup.classList.remove('hidden');
+
+    const closeHandler = (e) => {
+      if (!popup.contains(e.target)) {
+        popup.classList.add('hidden');
+        document.removeEventListener('click', closeHandler);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', closeHandler), 10);
+  };
+
+  window.applyAttendanceStatus = function(code) {
+    const popup = document.getElementById('attendanceStatusPopup');
+    if (popup) popup.classList.add('hidden');
+
+    if (activePickerStudentIdx !== null && activePickerDayIdx !== null) {
+      if (rosterData[activePickerStudentIdx]) {
+        rosterData[activePickerStudentIdx].days[activePickerDayIdx] = code;
+        renderSpreadsheet();
+        renderCardsView();
+        updateKpisAndFooters();
+        if (window.toast) window.toast(`Marked ${code === 'P' ? 'Present' : (code === 'A' ? 'Absent' : (code === 'L' ? 'Late' : 'Excused'))}`, 'info');
+      }
+    }
+  };
 
   // Window-level interactive utilities
   window.cycleCell = function(sIdx, dIdx) {
@@ -857,5 +931,26 @@ window.HERO_CONFIG = {
 
 })();
 </script>
+
+  <!-- ════════ QUICK ATTENDANCE STATUS PICKER POPUP (Section 5) ════════ -->
+  <div id="attendanceStatusPopup" class="fixed z-[9999] bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-1.5 flex flex-col gap-1 min-w-[145px] hidden transition-all animate-scale-in" style="z-index: 9999;">
+    <button type="button" onclick="window.applyAttendanceStatus('P')" class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg text-slate-800 dark:text-slate-100 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-left transition cursor-pointer">
+      <span class="w-5 h-5 rounded bg-emerald-600 text-white font-medium text-[11px] flex items-center justify-center">P</span>
+      <span class="font-normal">Present</span>
+    </button>
+    <button type="button" onclick="window.applyAttendanceStatus('L')" class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg text-slate-800 dark:text-slate-100 hover:bg-amber-50 dark:hover:bg-amber-950/40 text-left transition cursor-pointer">
+      <span class="w-5 h-5 rounded bg-amber-500 text-white font-medium text-[11px] flex items-center justify-center">L</span>
+      <span class="font-normal">Late</span>
+    </button>
+    <button type="button" onclick="window.applyAttendanceStatus('A')" class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg text-slate-800 dark:text-slate-100 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-left transition cursor-pointer">
+      <span class="w-5 h-5 rounded bg-rose-600 text-white font-medium text-[11px] flex items-center justify-center">A</span>
+      <span class="font-normal">Absent</span>
+    </button>
+    <button type="button" onclick="window.applyAttendanceStatus('E')" class="flex items-center gap-2.5 px-3 py-2 text-xs rounded-lg text-slate-800 dark:text-slate-100 hover:bg-blue-50 dark:hover:bg-blue-950/40 text-left transition cursor-pointer">
+      <span class="w-5 h-5 rounded bg-blue-500 text-white font-medium text-[11px] flex items-center justify-center">E</span>
+      <span class="font-normal">Excused</span>
+    </button>
+  </div>
+
 </body>
 </html>

@@ -91,7 +91,7 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
   width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
-  padding: 20px 24px 80px !important;
+  padding: var(--page-pad-y, 24px) var(--page-pad-x, 32px) max(80px, calc(64px + env(safe-area-inset-bottom, 0px))) !important;
   box-sizing: border-box !important;
   flex: 1;
 }
@@ -268,22 +268,45 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
   justify-content: space-between;
   min-height: 200px;
   background: var(--hub-card-bg, #ffffff) !important;
+  background-color: var(--hub-card-bg, #ffffff) !important;
   border: 1px solid var(--hub-card-border, rgba(36, 50, 71, 0.12)) !important;
   border-radius: 16px !important;
   padding: 18px 18px 15px;
   text-decoration: none !important;
   color: inherit !important;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02) !important;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease;
   position: relative;
   overflow: hidden;
   cursor: pointer;
   box-sizing: border-box !important;
 }
 
-.hub-card:hover {
-  transform: none !important;
-  box-shadow: none !important;
+@media (hover: hover) and (pointer: fine) {
+  .hub-card:hover {
+    transform: translateY(-2.5px) !important;
+    border-color: var(--hub-card-border-hover, rgba(36, 50, 71, 0.28)) !important;
+    box-shadow: 0 8px 24px -4px rgba(15, 23, 20, 0.08), 0 2px 6px -2px rgba(15, 23, 20, 0.04) !important;
+    background: var(--hub-card-bg, #ffffff) !important;
+    background-color: var(--hub-card-bg, #ffffff) !important;
+  }
+}
+
+html[data-theme="dark"] .hub-card,
+html[data-theme="dark"] .hub-card:hover,
+html[data-theme="dark"] .hub-card:focus,
+html[data-theme="dark"] .hub-card:active,
+[data-theme="dark"] .hub-card,
+[data-theme="dark"] .hub-card:hover,
+[data-theme="dark"] .hub-card:focus,
+[data-theme="dark"] .hub-card:active {
+  background: #000000 !important;
+  background-color: #000000 !important;
+}
+
+.hub-card:active {
+  transform: scale(0.97) !important;
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 /* Top Row: Icon Container + Metric Badge */
@@ -434,7 +457,7 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
 }
 
 .hub-card:hover .hub-card-chevron {
-  transform: none !important;
+  transform: translateX(3px) !important;
 }
 
 [data-theme="dark"] .hub-card-chevron {
@@ -654,7 +677,7 @@ b, strong, th, h1, h2, h3, h4, h5, h6,
      ================================================================ -->
 <section class="hub-header-section" aria-label="Department Overview">
   <div class="hub-header-top-row">
-    <a href="departments.html" class="hub-back-btn" title="Back to All Departments">
+    <a href="departments.html" class="hub-back-btn" aria-label="Back to All Departments">
       <span class="text-[17px]" data-ngis-icon="back"></span>
       <span>All Departments</span>
     </a>

@@ -27,7 +27,7 @@ function ldInit() {
   var params = new URLSearchParams(window.location.search);
   var id = params.get('id') || params.get('lesson') || '';
   var dept = (params.get('dept') || params.get('subject') || '').toLowerCase();
-  var role = (window.PAGE && window.PAGE.role) || 'student';
+  var role = params.get('portal') || (window.PAGE && window.PAGE.role) || 'student';
 
   /* Contextual back links keep the caller's portal + subject */
   var backUrl = 'lessons.html?dept=' + encodeURIComponent(dept || 'math') + '&portal=' + encodeURIComponent(role);
@@ -290,12 +290,24 @@ function ldToggleBookmark() {
 
 function ldDownload() {
   if (!_ldLesson || !_ldLesson.src) return;
-  if (window.toast) window.toast('Preparing download of "' + (_ldLesson.fullName || _ldLesson.name) + '"…', 'info');
-  ngisDownloadFile(_ldLesson.src, (_ldLesson.fullName || _ldLesson.name));
+  var fileName = _ldLesson.fullName || _ldLesson.name || 'lesson-document';
+  if (window.toast) window.toast('Preparing download of "' + fileName + '"…', 'info');
+  if (typeof ngisDownloadFile === 'function') {
+    ngisDownloadFile(_ldLesson.src, fileName);
+  } else {
+    var a = document.createElement('a');
+    a.href = _ldLesson.src;
+    a.download = fileName;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { if (a.parentNode) a.parentNode.removeChild(a); }, 150);
+  }
 }
 
 function ldOpenInNewTab() {
-  if (_ldLesson && _ldLesson.src) window.open(_ldLesson.src, '_blank', 'noopener');
+  if (_ldLesson && _ldLesson.src) window.open(_ldLesson.src, '_blank', 'noopener,noreferrer');
 }
 
 /* ════════════════════════════════════

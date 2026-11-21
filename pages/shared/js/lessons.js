@@ -1432,7 +1432,7 @@ function oakOpenPreview(resId) {
     paperHeading.textContent = r.fullName || r.name;
   }
   if (paperDesc) {
-    paperDesc.textContent = r.desc || 'Comprehensive learning resource and syllabus guide covering core course concepts, review frameworks, and practice guidance.';
+    paperDesc.textContent = r.desc || 'Learning materials and syllabus guide covering core course concepts and practice exercises.';
   }
   if (paperCallout) {
     if (r.formulas && r.formulas.length) {

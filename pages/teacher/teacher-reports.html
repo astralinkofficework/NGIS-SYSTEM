@@ -175,9 +175,9 @@ try {
        MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE)
        Visible on screen width <= 1024px (lg:hidden) with accessible hamburger button
        ═══════════════════════════════════════════════════════════════════ -->
-  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+  <header class="lg:hidden bg-transparent border-none px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
     <div class="flex items-center gap-3 min-w-0">
-      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
         <i class="ph-bold ph-list text-xl"></i>
       </button>
       <div class="min-w-0 truncate">
@@ -186,7 +186,7 @@ try {
     </div>
 
     <div class="flex items-center gap-2 flex-shrink-0">
-      <button type="button" onclick="exportAllPDF()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition" title="Export PDF">
+      <button type="button" onclick="exportAllPDF()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition" aria-label="Export PDF">
         <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
 
@@ -313,6 +313,19 @@ try {
           </tbody>
         </table>
       </div>
+      <!-- Pagination Controls Bar (Section 7) -->
+      <div id="reportsPaginationContainer" class="px-4 py-3 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <span id="reportsPaginationSummary">Showing 1 to 8 of 17 reports</span>
+        <div class="flex items-center gap-2">
+          <button type="button" id="reportsPrevBtn" onclick="window.reportsPrevPage()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-normal transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+            Previous
+          </button>
+          <span id="reportsPageIndicator" class="px-2 text-slate-600 font-medium">Page 1 of 3</span>
+          <button type="button" id="reportsNextBtn" onclick="window.reportsNextPage()" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-normal transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+            Next
+          </button>
+        </div>
+      </div>
     </div>
     <!-- END: AcademicReportsDataGrid -->
 
@@ -335,11 +348,11 @@ try {
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <a id="btnOpenFullTranscript" href="../shared/transcript-viewer.html" target="_blank" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-[#176B45]/60 hover:bg-[#125638] text-white transition flex items-center gap-1.5" title="Open Official Academic Transcript Viewer">
+          <a id="btnOpenFullTranscript" href="../shared/transcript-viewer.html" target="_blank" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-[#176B45]/60 hover:bg-[#125638] text-white transition flex items-center gap-1.5" aria-label="Open Official Academic Transcript Viewer">
             <span data-ngis-icon="open" class="text-[16px]"></span>
             <span>Full Viewer</span>
           </a>
-          <button type="button" onclick="closePreviewModal()" class="text-white/70 hover:text-white p-1 rounded-lg hover:bg-white/10 transition" title="Close Preview">
+          <button type="button" onclick="closePreviewModal()" class="text-white/70 hover:text-white p-1 rounded-lg hover:bg-white/10 transition" aria-label="Close Preview">
             <span data-ngis-icon="close" class="text-[20px]"></span>
           </button>
         </div>
@@ -387,7 +400,7 @@ try {
 
           <!-- PDF Viewer Frame -->
           <div id="uploadedPdfViewer" class="w-full h-[520px] rounded-xl overflow-hidden border border-slate-200 bg-slate-100 hidden">
-            <iframe id="uploadedPdfFrame" src="" class="w-full h-full border-0" title="Uploaded Transcript PDF"></iframe>
+            <iframe id="uploadedPdfFrame" src="" class="w-full h-full border-0"></iframe>
           </div>
 
           <!-- Image Viewer Frame -->
@@ -713,7 +726,7 @@ try {
                 </div>
               </div>
               <!-- Remove / Replace action -->
-              <button onclick="clearSelectedUploadFile(event)" class="text-slate-400 hover:text-[#176B45] p-1 rounded-lg hover:bg-slate-100 transition-colors text-xs font-medium" type="button" title="Change file">
+              <button onclick="clearSelectedUploadFile(event)" class="text-slate-400 hover:text-[#176B45] p-1 rounded-lg hover:bg-slate-100 transition-colors text-xs font-medium" type="button" aria-label="Change file">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
@@ -790,6 +803,33 @@ window.HERO_CONFIG = {
   "use strict";
 
   // 17 Grade 10A students matching exact user specifications & backend DB
+  
+  let reportsCurrentPage = 1;
+  const REPORTS_PER_PAGE = 8;
+  let selectedReportStudentId = '2026-STD-0142';
+
+  window.selectReportStudent = function(studentId) {
+    selectedReportStudentId = studentId;
+    setModalTargetStudent(studentId, true);
+    renderTable();
+  };
+
+  window.reportsPrevPage = function() {
+    if (reportsCurrentPage > 1) {
+      reportsCurrentPage--;
+      renderTable();
+    }
+  };
+
+  window.reportsNextPage = function() {
+    const filtered = getFilteredReports();
+    const maxPages = Math.max(1, Math.ceil(filtered.length / REPORTS_PER_PAGE));
+    if (reportsCurrentPage < maxPages) {
+      reportsCurrentPage++;
+      renderTable();
+    }
+  };
+
   let reportsData = [
     { id: '2026-STD-0142', name: 'Nrinphouneta Hok', class: 'Grade 10A', term: 'Semester 1', status: 'Published', date: 'Oct 24', gpa: 3.87, attendance: 96, selected: true },
     { id: '2026-STD-0144', name: 'Sophea Chan',      class: 'Grade 10A', term: 'Semester 1', status: 'Published', date: 'Oct 24', gpa: 3.55, attendance: 91, selected: true },
@@ -865,6 +905,24 @@ window.HERO_CONFIG = {
     if (cShown) cShown.textContent = totalCount;
     if (cTotal) cTotal.textContent = reportsData.length;
 
+    const maxPages = Math.max(1, Math.ceil(totalCount / REPORTS_PER_PAGE));
+    if (reportsCurrentPage > maxPages) reportsCurrentPage = maxPages;
+
+    const startIdx = (reportsCurrentPage - 1) * REPORTS_PER_PAGE;
+    const endIdx = Math.min(startIdx + REPORTS_PER_PAGE, totalCount);
+    const pageRows = filtered.slice(startIdx, endIdx);
+
+    // Update pagination UI
+    const sumEl = document.getElementById('reportsPaginationSummary');
+    const indEl = document.getElementById('reportsPageIndicator');
+    const prevBtn = document.getElementById('reportsPrevBtn');
+    const nextBtn = document.getElementById('reportsNextBtn');
+
+    if (sumEl) sumEl.textContent = totalCount > 0 ? `Showing ${startIdx + 1} to ${endIdx} of ${totalCount} reports` : 'Showing 0 reports';
+    if (indEl) indEl.textContent = `Page ${reportsCurrentPage} of ${maxPages}`;
+    if (prevBtn) prevBtn.disabled = reportsCurrentPage <= 1;
+    if (nextBtn) nextBtn.disabled = reportsCurrentPage >= maxPages;
+
     if (totalCount === 0) {
       tbody.innerHTML = `
         <tr>
@@ -874,7 +932,9 @@ window.HERO_CONFIG = {
         </tr>
       `;
     } else {
-      tbody.innerHTML = filtered.map((r, idx) => {
+      tbody.innerHTML = pageRows.map((r, idx) => {
+        const isSelected = r.id === selectedReportStudentId;
+        const selectedIndicator = isSelected ? 'selected-row border-l-4 border-[#0F5132]' : '';
         const globalIdx = String(idx + 1).padStart(2, '0');
         const isPublished = r.status === 'Published';
         const rowBg = isPublished ? '/75' : '/75 bg-[#F7F9F7]/20';
@@ -892,7 +952,7 @@ window.HERO_CONFIG = {
               </span>
               <span class="text-[10px] text-slate-400 mt-0.5">Released &bull; ${r.date}</span>
               ${tr ? `
-                <span class="text-[11px] text-slate-500 mt-0.5 block truncate max-w-[130px]" title="${tr.fileName}">
+                <span class="text-[11px] text-slate-500 mt-0.5 block truncate max-w-[130px]">
                   File: ${tr.fileName}
                 </span>
               ` : ''}
@@ -906,7 +966,7 @@ window.HERO_CONFIG = {
               </span>
               <span class="text-[10px] text-slate-400 mt-0.5">Ready for release</span>
               ${tr ? `
-                <span class="text-[11px] text-slate-500 mt-0.5 block truncate max-w-[130px]" title="${tr.fileName}">
+                <span class="text-[11px] text-slate-500 mt-0.5 block truncate max-w-[130px]">
                   File: ${tr.fileName}
                 </span>
               ` : ''}
@@ -918,29 +978,29 @@ window.HERO_CONFIG = {
         let actionCol = `
           <div class="action-group">
             ${!isPublished ? `
-              <button type="button" class="action-icon-btn primary" onclick="window.publishSingle('${r.id}')" aria-label="Publish Academic Report" title="Publish Academic Report">
+              <button type="button" class="action-icon-btn primary" onclick="window.publishSingle('${r.id}')" aria-label="Publish Academic Report">
                 <span data-ngis-icon="check"></span>
               </button>
             ` : ''}
-            <button type="button" class="action-icon-btn" onclick="window.previewReport('${r.id}')" aria-label="Preview Academic Report" title="Preview Academic Report">
+            <button type="button" class="action-icon-btn" onclick="window.previewReport('${r.id}')" aria-label="Preview Academic Report">
               <span data-ngis-icon="view"></span>
             </button>
-            <button class="action-icon-btn" type="button" onclick="window.openUploadTranscriptModal('${r.id}')" aria-label="Upload / Assign Transcript File" title="Upload / Assign Transcript File">
+            <button class="action-icon-btn" type="button" onclick="window.openUploadTranscriptModal('${r.id}')" aria-label="Upload / Assign Transcript File">
               <span data-ngis-icon="upload"></span>
             </button>
             ${tr ? `
-              <a href="javascript:void(0)" data-href="javascript:void(0)" download="${tr.fileName}" class="action-icon-btn" aria-label="Download Official Transcript" title="Download Official Transcript (${tr.fileName})">
+              <a href="javascript:void(0)" data-href="javascript:void(0)" download="${tr.fileName}" class="action-icon-btn" aria-label="Download Official Transcript">
                 <span data-ngis-icon="download"></span>
               </a>
             ` : ''}
-            <button class="action-icon-btn" type="button" onclick="window.printSingleReport('${r.id}')" aria-label="Print Report" title="Print Report">
+            <button class="action-icon-btn" type="button" onclick="window.printSingleReport('${r.id}')" aria-label="Print Report">
               <span data-ngis-icon="print"></span>
             </button>
           </div>
         `;
 
         return `
-          <tr class="${rowBg} transition-colors" data-student-id="${r.id}">
+          <tr onclick="window.selectReportStudent('${r.id}')" class="transition-colors cursor-pointer ${selectedIndicator}" data-student-id="${r.id}">
             <td class="px-4 py-3.5 text-center">
               <input type="checkbox" ${r.selected ? 'checked' : ''} onchange="window.toggleRowCheck('${r.id}', this.checked)" class="rounded border-slate-300 text-brand-700 focus:ring-brand-700 cursor-pointer">
             </td>
@@ -959,7 +1019,6 @@ window.HERO_CONFIG = {
                   onchange="window.updateStudentGpa('${r.id}', this.value)"
                   class="w-16 h-8 text-center text-xs font-mono font-medium rounded-lg border border-slate-300 focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] bg-white hover:border-slate-400 text-slate-800 transition shadow-2xs"
                   placeholder="0.00"
-                  title="Edit GPA (0.00 - 4.00)"
                   aria-label="Student GPA for ${r.name}">
                 <span class="text-[11px] text-slate-400 font-normal select-none">/ 4.0</span>
               </div>
@@ -1526,6 +1585,7 @@ window.HERO_CONFIG = {
 
   window.onSearchInput = function(val) {
     searchQuery = val;
+    reportsCurrentPage = 1;
     renderTable();
   };
 

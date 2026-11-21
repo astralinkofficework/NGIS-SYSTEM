@@ -1,19 +1,44 @@
-/* ══════════════════════════════════════════════════════════════════════════════
-   NGIS MODERN BOTTOM NAVIGATION DOCK — Flow & Melt Liquid Aesthetics
-   Premium mobile-only floating dock with organic melting physics and animations
-   ══════════════════════════════════════════════════════════════════════════════ */
+/**
+ * ============================================================================
+ * NGIS ERP — Master Global Expanding-Chip Floating Bottom Navigation
+ * New Gateway International School · Modern Expanding-Chip Navigation System
+ *
+ * Requirements & Specifications:
+ * - Floating horizontal capsule container centered at bottom
+ * - Dimensions: Height 64px, Max-width 480px, Padding 8px, Margin 16px
+ * - Container radius: 999px (fully rounded capsule)
+ * - Clean white background (#FFFFFF) with subtle elevation shadow: 0 8px 24px rgba(0,0,0,0.08)
+ * - Dark theme support (#1E293B, border rgba(51,65,85,0.8), shadow 0 8px 24px rgba(0,0,0,0.35))
+ * - Inactive tabs: Compact 48x48px circle, neutral icon (#64748B), hidden text label
+ * - Active tab: Expands horizontally into rounded pill (height 48px, padding 0 16px, radius 999px)
+ *   with Forest Green (#176B45) brand background and pure white icon & text label
+ * - Smooth transition (180-240ms) for width, padding, opacity, and color
+ * - Strict AGENTS.md compliance: NO BOLD FONTS (font-weight <= 500), official Bootstrap SVGs
+ * - Tablet & Mobile (<= 1024px): Visible; Desktop (>= 1025px): Strictly hidden
+ * - Safe area support (env(safe-area-inset-bottom)), zero horizontal overflow
+ * - Page bottom clearance padding: 92px
+ * ============================================================================
+ */
 
-/* Mobile Only — Strictly hidden on desktop */
+/* ── 1. Desktop Suppression & Legacy Cleanup ──────────────────────────────── */
 .bottomnav,
 .bottom-dock-nav,
-.mob-bottomnav {
-  display: none;
+.mob-bottomnav:not(.ngis-chip-dock),
+#bottomnav,
+#mobBottomNav:not(.ngis-chip-dock),
+.mob-bn-shell,
+.mob-bn-glow,
+.mob-bn-slider {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
 }
 
-@media (min-width: 769px) {
-  .bottomnav,
-  .bottom-dock-nav,
-  .mob-bottomnav {
+/* Strictly hide on desktop (>= 1025px) where full sidebar + topbar exist */
+@media (min-width: 1025px) {
+  .ngis-chip-dock,
+  #ngisChipDock {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
@@ -21,591 +46,266 @@
   }
 }
 
-@media (max-width: 768.98px) {
-  .bottomnav,
-  .bottom-dock-nav {
-    display: block;
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%) translateY(0) scale(1);
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-    width: calc(100% - 24px);
-    max-width: 440px;
-    z-index: 80;
-    pointer-events: auto;
-    transform-origin: bottom center;
-    transition: transform 0.46s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.36s cubic-bezier(0.16, 1, 0.3, 1),
-                filter 0.36s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform, opacity, filter;
-  }
-
-  /* Suppress the legacy bottomnav across all student views in favor of .mob-bottomnav */
-  body.student-dashboard .bottomnav,
-  body[data-role="student"] .bottomnav,
-  body[data-page^="student"] .bottomnav,
-  body:has(.mob-bottomnav) .bottomnav {
+/* Hide when virtual keyboard opens or screen height is very short */
+@media (max-height: 480px) {
+  .ngis-chip-dock,
+  #ngisChipDock {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
-    opacity: 0 !important;
   }
+}
 
-  /* ═════════════════════════════════════════════════════════════════════
-     NGIS STUDENT PORTAL — UNIFIED FLOATING BOTTOM NAVIGATION DOCK
-     (Single Design Reference: student.html)
-     ═════════════════════════════════════════════════════════════════════ */
-  .mob-bottomnav {
-    display: block;
-    position: fixed;
-    left: 50%;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-    transform: translateX(-50%);
-    width: calc(100% - 24px);
-    max-width: 440px;
-    z-index: 80;
-    pointer-events: auto;
-    transform-origin: bottom center;
-    transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1),
-                filter 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform, opacity, filter;
+/* ── 2. Content Bottom Clearance (Prevents bottom dock obscuring content) ─── */
+@media (max-width: 1024px) {
+  body {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
   }
-  body.sidebar-open .mob-bottomnav,
-  body:has(#sidebar.open) .mob-bottomnav,
-  body:has(.scrim.show) .mob-bottomnav,
-  .mob-bottomnav.hidden-by-sidebar {
-    transform: translateX(-50%) translateY(calc(100% + 48px)) scale(0.88) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    filter: blur(8px) !important;
-    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s ease,
-                filter 0.3s ease !important;
+  main.main-content,
+  main.page,
+  main#mainContent,
+  .page-content,
+  .dashboard-container,
+  .workspace-canvas {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
   }
-  .mob-bn-glow {
-    display: none !important; /* Rule V4: Removed gratuitous blurred glow gradient */
+}
+
+/* ── 3. Floating Capsule Container ────────────────────────────────────────── */
+.ngis-chip-dock {
+  display: block;
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(0);
+  width: calc(100% - 32px);
+  max-width: 480px;
+  height: 64px;
+  z-index: 90;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+  margin: 0 auto;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 220ms ease,
+              visibility 220ms;
+  will-change: transform, opacity;
+}
+
+/* ── 4. Internal Track & Elevation Shell ───────────────────────────────────── */
+.ngis-chip-dock-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08),
+              0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .ngis-chip-dock-track {
+  background: #1E293B;
+  border-color: rgba(51, 65, 85, 0.9);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+              0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ── 5. Navigation Items & Morphing Chips ─────────────────────────────────── */
+.ngis-chip-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  min-height: 48px;
+  min-width: 48px;
+  width: 48px;
+  padding: 0;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #64748B;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+  transition: width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              padding 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 200ms ease,
+              color 200ms ease,
+              box-shadow 200ms ease,
+              transform 140ms ease;
+}
+
+/* Inactive Hover State */
+.ngis-chip-item:not(.is-active):hover {
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+[data-theme="dark"] .ngis-chip-item {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .ngis-chip-item:not(.is-active):hover {
+  color: #F8FAFC;
+  background: #334155;
+}
+
+/* Accessible Keyboard Focus Ring */
+.ngis-chip-item:focus-visible {
+  outline: 2px solid var(--color-primary, #176B45);
+  outline-offset: 2px;
+}
+
+/* Press feedback */
+.ngis-chip-item:active {
+  transform: scale(0.96);
+}
+
+/* ── 6. SVG Icon Styling ─────────────────────────────────────────────────── */
+.ngis-chip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+}
+
+.ngis-chip-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  stroke: none;
+  display: block;
+}
+
+/* Notification badge dot */
+.ngis-chip-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #DC3545;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(220, 53, 69, 0.4);
+}
+
+[data-theme="dark"] .ngis-chip-dot {
+  border-color: #1E293B;
+}
+
+/* ── 7. Text Label (Collapsed for Inactive, Expanded for Active) ───────────── */
+.ngis-chip-label {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-primary, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: 13.5px;
+  font-weight: 500; /* Strict AGENTS.md requirement: NO BOLD FONTS */
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-left: 0;
+  pointer-events: none;
+  transition: max-width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 180ms ease,
+              margin-left 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 8. Active Expanding Chip ─────────────────────────────────────────────── */
+.ngis-chip-item.is-active {
+  width: auto;
+  min-width: 48px;
+  padding: 0 16px;
+  background: var(--color-primary, #176B45) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 3px 12px rgba(23, 107, 69, 0.3);
+  cursor: default;
+}
+
+[data-theme="dark"] .ngis-chip-item.is-active {
+  background: #176B45 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 3px 12px rgba(23, 107, 69, 0.45);
+}
+
+.ngis-chip-item.is-active .ngis-chip-icon {
+  color: #FFFFFF;
+}
+
+.ngis-chip-item.is-active .ngis-chip-label {
+  max-width: 140px;
+  opacity: 1;
+  margin-left: 8px;
+  color: #FFFFFF;
+}
+
+/* ── 9. Collision Avoidance (Sidebar Drawer, Modals, Dialogs) ─────────────── */
+body.sidebar-open .ngis-chip-dock,
+body:has(#sidebar.open) .ngis-chip-dock,
+body:has(.scrim.show) .ngis-chip-dock,
+body.modal-open .ngis-chip-dock,
+body:has(.modal.show) .ngis-chip-dock,
+body:has(dialog[open]) .ngis-chip-dock,
+.ngis-chip-dock.is-hidden {
+  transform: translateX(-50%) translateY(calc(100% + 32px)) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden;
+}
+
+/* ── 10. Small Viewport Adaptation (320px - 360px) ────────────────────────── */
+@media (max-width: 360px) {
+  .ngis-chip-dock {
+    width: calc(100% - 16px);
+    margin: 0 8px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   }
-  .mob-bn-shell {
-    position: relative;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    border-radius: 999px;
-    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.16),
-                0 6px 16px -4px rgba(15, 23, 42, 0.08),
-                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95),
-                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.04);
-    padding: 6px 8px;
-    overflow: hidden;
-  }
-  .mob-bn-shell::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 15%;
-    right: 15%;
-    height: 1.5px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
-    border-radius: 999px;
-    pointer-events: none;
-    z-index: 3;
-  }
-  .mob-bn-track {
-    position: relative;
-    width: 100%;
-  }
-  .mob-bn-slider {
-    position: absolute;
-    top: 3px;
-    height: 58px;
-    left: 0;
-    border-radius: 18px;
-    background: #F7F9F7;
-    border: 1px solid #E1E9E3;
-    box-shadow: inset 0 1px 1px 0 rgba(255,255,255,0.85);
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0;
-    will-change: transform, width;
-    transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1),
-                width 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
-                opacity 0.25s ease;
-  }
-  .mob-bn-inner {
-    position: relative;
-    display: flex;
-    align-items: stretch;
-    justify-content: space-between;
-    width: 100%;
-    height: 64px;
-    z-index: 2;
-  }
-  .mob-bn-item {
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  .ngis-chip-dock-track {
+    padding: 6px;
     gap: 2px;
-    height: 100%;
-    padding: 4px 2px;
-    color: #555555;
-    text-decoration: none;
-    border-radius: 999px;
-    position: relative;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-    transition: color 0.24s ease;
   }
-  .mob-bn-label {
-    font-size: 10.5px;
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .mob-bn-item.is-active .mob-bn-label {
-    color: #176B45;
-    font-weight: 500;
-  }
-  .mob-bn-icon-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: auto;
-    width: 100%;
-  }
-  .mob-bn-item i {
-    font-size: 22px;
-    line-height: 1;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .mob-bn-item.is-active {
-    color: #176B45;
-  }
-  .mob-bn-item.is-active i {
-    transform: none !important;
-  }
-  .mob-bn-icon-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .mob-bn-dot {
-    position: absolute;
-    top: -2px;
-    right: -4px;
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: #176B45;
-    border: 1.5px solid #ffffff;
-    box-shadow: 0 1px 4px rgba(225, 29, 72, 0.4);
-  }
-  .mob-bn-chat {
-    flex: 0 0 auto !important;
-    width: auto;
-  }
-  .mob-bn-chat-core {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
+  .ngis-chip-item {
     height: 44px;
-    min-width: 44px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    background: #176B45;
-    color: #ffffff;
-    box-shadow: 0 6px 16px rgba(36, 85, 214, 0.32),
-                inset 0 1px 1px 0 rgba(255,255,255,0.25);
-    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    min-height: 44px;
+    min-width: 42px;
+    width: 42px;
   }
-  .mob-bn-chat:active .mob-bn-chat-core {
-    transform: scale(0.94);
+  .ngis-chip-item.is-active {
+    padding: 0 12px;
   }
-  .mob-bn-chat i {
-    font-size: 22px;
-    line-height: 1;
+  .ngis-chip-label {
+    font-size: 12.5px;
   }
-  .mob-bn-chat.is-active .mob-bn-chat-core {
-    box-shadow: 0 6px 20px rgba(36, 85, 214, 0.45),
-                inset 0 1px 1px 0 rgba(255,255,255,0.3);
-  }
-  /* Dark theme */
-  [data-theme="dark"] .mob-bn-glow,
-  html[data-theme="dark"] .mob-bn-glow {
-    background: linear-gradient(90deg, rgba(19,130,155,0.22), rgba(184,219,217,0.18), rgba(19,130,155,0.22));
-    opacity: 0.85;
-    filter: blur(20px);
-  }
-  [data-theme="dark"] .mob-bn-shell,
-  html[data-theme="dark"] .mob-bn-shell {
-    background: rgba(24, 35, 41, 0.84);
-    border: 1px solid rgba(234, 242, 255, 0.2);
-    box-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.65),
-                0 6px 16px -4px rgba(0, 0, 0, 0.45),
-                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.12),
-                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
-  }
-  [data-theme="dark"] .mob-bn-shell::before,
-  html[data-theme="dark"] .mob-bn-shell::before {
-    background: linear-gradient(90deg, transparent, rgba(184,219,217,0.4), transparent);
-  }
-  [data-theme="dark"] .mob-bn-slider,
-  html[data-theme="dark"] .mob-bn-slider {
-    background: linear-gradient(135deg, rgba(184,219,217,0.18), rgba(19,130,155,0.22));
-    border: 1px solid rgba(234, 242, 255, 0.28);
-    box-shadow: inset 0 1px 1.5px rgba(255,255,255,0.14);
-  }
-  [data-theme="dark"] .mob-bn-item,
-  html[data-theme="dark"] .mob-bn-item {
-    color: #E1E9E3;
-  }
-  [data-theme="dark"] .mob-bn-item.is-active,
-  html[data-theme="dark"] .mob-bn-item.is-active {
-    color: #F7F9F7;
-  }
-  [data-theme="dark"] .mob-bn-dot,
-  html[data-theme="dark"] .mob-bn-dot {
-    border-color: #000000;
-  }
-  /* Compact phones <= 380px */
-  @media (max-width: 380px) {
-    .mob-bottomnav {
-      width: calc(100% - 16px);
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-    }
-    .mob-bn-shell { padding: 4px 4px; }
-    .mob-bn-inner { height: 56px; }
-    .mob-bn-item i { font-size: 20px; }
-    .mob-bn-icon-row { height: auto; }
-    .mob-bn-chat-core { width: 40px; height: 40px; min-width: 40px; }
-    .mob-bn-slider { top: 3px; height: 50px; border-radius: 14px; }
-  }
-
-  /* ── Flow & Melt Disappearance on Sidebar Open ── */
-  body.sidebar-open .bottomnav,
-  body.sidebar-open .bottom-dock-nav,
-  body:has(#sidebar.open) .bottomnav,
-  body:has(#sidebar.open) .bottom-dock-nav,
-  body:has(.scrim.show) .bottomnav,
-  body:has(.scrim.show) .bottom-dock-nav,
-  .bottomnav.hidden-by-sidebar,
-  .bottom-dock-nav.hidden-by-sidebar {
-    transform: translateX(-50%) translateY(calc(100% + 48px)) scale(0.88) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    filter: blur(8px) !important;
-    transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s ease,
-                filter 0.3s ease !important;
-  }
-
-  /* ── Ambient Molten Underglow ── */
-  .bottomnav-glow {
-    position: absolute;
-    inset: 8px 16px -6px 16px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(88, 111, 124, 0.25), rgba(234, 242, 255, 0.38), rgba(36, 50, 71, 0.2));
-    filter: blur(16px);
-    opacity: 0.7;
-    pointer-events: none;
-    z-index: -1;
-    transition: opacity 0.3s ease;
-  }
-  [data-theme="dark"] .bottomnav-glow {
-    background: linear-gradient(90deg, rgba(56, 189, 248, 0.28), rgba(234, 242, 255, 0.22), rgba(36, 50, 71, 0.4));
-    opacity: 0.85;
-    filter: blur(18px);
-  }
-
-  /* ── Floating Liquid Glass Shell ── */
-  .bottomnav-shell {
-    position: relative;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    border-radius: 999px;
-    box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.16),
-                0 6px 16px -4px rgba(15, 23, 42, 0.08),
-                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.95),
-                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.04);
-    padding: 6px 8px;
-    overflow: hidden;
-  }
-  [data-theme="dark"] .bottomnav-shell {
-    background: rgba(24, 35, 41, 0.84);
-    border: 1px solid rgba(234, 242, 255, 0.2);
-    box-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.65),
-                0 6px 16px -4px rgba(0, 0, 0, 0.45),
-                inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.15),
-                inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
-  }
-
-  .bottomnav-shell::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 15%;
-    right: 15%;
-    height: 1.5px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
-    border-radius: 999px;
-    pointer-events: none;
-    z-index: 3;
-  }
-  [data-theme="dark"] .bottomnav-shell::before {
-    background: linear-gradient(90deg, transparent, rgba(234, 242, 255, 0.5), transparent);
-  }
-
-  /* ── Track & Sliding Melt Slider ── */
-  .bottomnav-track {
-    position: relative;
-    width: 100%;
-  }
-
-  .bottomnav-melt-slider {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(234, 242, 255, 0.42), rgba(36, 50, 71, 0.09));
-    border: 1px solid rgba(36, 50, 71, 0.12);
-    box-shadow: 0 4px 14px rgba(36, 50, 71, 0.12),
-                inset 0 1px 1px 0 rgba(255, 255, 255, 0.85);
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0;
-    will-change: transform, width;
-    transition: transform 0.45s cubic-bezier(0.34, 1.45, 0.64, 1),
-                width 0.38s cubic-bezier(0.34, 1.45, 0.64, 1),
-                opacity 0.25s ease;
-  }
-  [data-theme="dark"] .bottomnav-melt-slider {
-    background: linear-gradient(135deg, rgba(234, 242, 255, 0.22), rgba(88, 111, 124, 0.28));
-    border: 1px solid rgba(234, 242, 255, 0.32);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4),
-                inset 0 1px 1.5px rgba(255, 255, 255, 0.18);
-  }
-
-  .melt-slider-core {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4), transparent 70%);
-  }
-  [data-theme="dark"] .melt-slider-core {
-    background: radial-gradient(circle at 50% 30%, rgba(234, 242, 255, 0.2), transparent 70%);
-  }
-
-  /* ── Nav Inner Container ── */
-  .bottomnav-inner {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: 52px;
-    z-index: 2;
-  }
-
-  /* ── Navigation Item ── */
-  .bn-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    height: 100%;
-    padding: 3px 2px;
-    color: var(--blue-slate, #555555);
-    text-decoration: none;
-    border-radius: 999px;
-    position: relative;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-    transition: color 0.24s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  [data-theme="dark"] .bn-item {
-    color: var(--text-muted, #E1E9E3);
-  }
-
-  .bn-item:hover {
-  }
-  [data-theme="dark"] .bn-item:hover {
-  }
-
-  .bn-item.active {
-    color: var(--charcoal-blue, #176B45);
-  }
-  [data-theme="dark"] .bn-item.active {
-    color: var(--light-blue, #F7F9F7);
-  }
-
-  /* ── Icon Bubble ── */
-  .bn-icon-bubble {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 26px;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .bn-item.active .bn-icon-bubble {
-    transform: none !important;
-  }
-
-  .bn-icon {
-    font-size: 23px !important;
-    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-                font-variation-settings 0.25s ease,
-                filter 0.25s ease;
-  }
-
-  .bn-item.active .bn-icon {
-    font-variation-settings: 'FILL' 1, 'wght' 600;
-    filter: drop-shadow(0 2px 6px rgba(36, 50, 71, 0.25));
-  }
-  [data-theme="dark"] .bn-item.active .bn-icon {
-    filter: drop-shadow(0 2px 8px rgba(234, 242, 255, 0.45));
-  }
-
-  /* ── Label & Molten Droplet ── */
-  .bn-label {
-    font-size: 10.5px;
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    transition: font-weight 0.2s ease, transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .bn-item.active .bn-label {
-    font-weight: 500;
-    transform: none !important;
-  }
-
-  .bn-droplet {
-    width: 4px;
-    height: 4px;
-    border-radius: 999px;
-    background: var(--charcoal-blue, #176B45);
-    opacity: 0;
-    transform: scale(0.3);
-    transition: opacity 0.24s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    margin-top: 1px;
-  }
-  [data-theme="dark"] .bn-droplet {
-    background: var(--light-blue, #F7F9F7);
-  }
-
-  .bn-item.active .bn-droplet {
-    opacity: 1;
-    transform: scale(1);
-    animation: meltDropletPulse 2.4s ease-in-out infinite;
-  }
-
-  @keyframes meltDropletPulse {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 0.9;
-    }
-    50% {
-      transform: none !important;
-      opacity: 1;
-      box-shadow: 0 0 6px rgba(234, 242, 255, 0.8);
-    }
-  }
-
-  /* ── Unread Badge ── */
-  .bn-badge {
-    position: absolute;
-    top: -3px;
-    right: -5px;
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #125638, #176B45);
-    color: #ffffff;
-    font-size: 9.5px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 2px solid #ffffff;
-    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
-    animation: bnBadgePulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-  [data-theme="dark"] .bn-badge {
-    border-color: #000000;
-  }
-
-  @keyframes bnBadgePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: none !important; }
-  }
-
-  /* ── Bounce / Pop micro animation ── */
-  .bn-pop {
-    animation: bnPopBounce 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  @keyframes bnPopBounce {
-    0% { transform: scale(0.85); }
-    50% { transform: none !important; }
-    100% { transform: scale(1); }
-  }
-
-  /* ── Safe Area & Page Clearance ── */
-  .page {
-    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
-}
-
-/* Compact phones <= 380px */
-@media (max-width: 380px) {
-  .bottomnav,
-  .bottom-dock-nav {
-    width: calc(100% - 16px) !important;
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
-  }
-  .bottomnav-shell {
-    padding: 4px 4px !important;
-  }
-  .bottomnav-inner {
-    height: 48px !important;
-  }
-  .bn-icon {
-    font-size: 21px !important;
-  }
-  .bn-label {
-    font-size: 9.5px !important;
+  .ngis-chip-icon svg {
+    width: 20px;
+    height: 20px;
   }
 }
-/* Portal-wide mobile safety: the fixed dock never covers the last control. */
-@media (max-width: 768px) {
-  body[data-portal] .main {
-    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+
+/* ── 11. Accessibility: Reduced Motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ngis-chip-dock,
+  .ngis-chip-item,
+  .ngis-chip-label,
+  .ngis-chip-icon {
+    transition: none !important;
+    animation: none !important;
   }
-  body[data-portal] .main > .page,
-  body[data-portal] .main .page {
-    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
-  }
-  body.sidebar-open .main { padding-bottom: 0; }
 }

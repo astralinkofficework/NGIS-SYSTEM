@@ -236,10 +236,6 @@
       '        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>',
       '        <span>Export (CSV)</span>',
       '      </button>',
-      IS_TEACHER
-        ? '      <button type="button" id="btnPasteExcel" class="' + BTN_SECONDARY + '" title="Paste from Excel or Google Sheets"><span class="material-symbols-outlined text-[16px] text-slate-500">content_paste</span><span>Paste from Excel</span></button>' +
-          '      <button type="button" id="btnAddTeacher" class="' + BTN_PRIMARY + '"><svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg><span>Add Teacher</span></button>'
-        : '',
       '    </div>',
       '  </section>',
       // Section 2: Executive Telemetry KPI Cards (Compact 2-column grid on mobile)
@@ -295,51 +291,27 @@
       '    </div>',
       '  </section>',
       // Section 4: Data Container (Modern Rows for Teachers, Table for Students)
-      IS_TEACHER
-        ? [
-            '  <div class="space-y-3 w-full" data-purpose="teacher-roster-list" id="rosterListContainer">',
-            '    <!-- Desktop Header Guide (Hidden on mobile & tablet) -->',
-            '    <div class="hidden lg:grid grid-cols-12 gap-4 px-5 py-3 text-[11px] font-medium uppercase tracking-wider text-slate-500 bg-white rounded-xl border border-[#E1E9E3] items-center shadow-2xs">',
-            '      <div class="col-span-4">Faculty Member &amp; ID</div>',
-            '      <div class="col-span-3">Department &amp; Subject</div>',
-            '      <div class="col-span-2">Workload Target</div>',
-            '      <div class="col-span-1">Status</div>',
-            '      <div class="col-span-2 text-right">Actions</div>',
-            '    </div>',
-            '    <!-- Inline New Teacher Registration Card -->',
-            '    <div id="newTeacherRowWrap" class="hidden"></div>',
-            '    <!-- Row List -->',
-            '    <div id="dirRows" class="space-y-2.5"></div>',
-            '    <!-- Pagination & Bottom Statistics Bar -->',
-            '    <div class="py-3 px-4 rounded-xl border border-[#E1E9E3] bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 shadow-2xs">',
-            '      <div class="flex items-center gap-2">',
-            '        <span id="pagerInfo"></span>',
-            '      </div>',
-            '      <div class="flex items-center gap-1" id="pagerControls"></div>',
-            '    </div>',
-            '  </div>'
-          ].join('\n')
-        : [
-            '  <div class="bg-white rounded-xl border border-slate-200/80 overflow-hidden shadow-xs" data-purpose="roster-table">',
-            '    <div class="w-full overflow-x-auto">',
-            '      <table class="w-full text-left text-xs whitespace-nowrap min-w-[960px] classes-table">',
-            '        <thead><tr class="border-b border-slate-200/80 bg-slate-50/60 text-slate-500 font-medium tracking-wider text-[11px] uppercase" id="dirHead"></tr></thead>',
-            '        <tbody class="divide-y divide-slate-100 font-normal text-slate-700 bg-white" id="dirBody"></tbody>',
-            '      </table>',
-            '    </div>',
-            '    <!-- Pagination & Bottom Statistics Bar -->',
-            '    <div class="py-3 px-4 border-t border-slate-200/80 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">',
-            '      <div class="flex items-center gap-2">',
-            '        <span id="pagerInfo"></span>',
-            '      </div>',
-            '      <div class="flex items-center gap-1" id="pagerControls"></div>',
-            '    </div>',
-            '  </div>'
-          ].join('\n'),
+        '  <div class="bg-white rounded-xl border border-slate-200/80 overflow-hidden shadow-xs" data-purpose="roster-table">',
+      '    <div class="w-full overflow-x-auto">',
+      '      <table class="w-full text-left text-xs whitespace-nowrap min-w-[960px] classes-table">',
+      '        <thead><tr class="border-b border-slate-200/80 bg-slate-50/60 text-slate-500 font-medium tracking-wider text-[11px] uppercase" id="dirHead"></tr></thead>',
+      '        <tbody class="divide-y divide-slate-100 font-normal text-slate-700 bg-white" id="dirBody"></tbody>',
+      '      </table>',
+      '    </div>',
+      '    <!-- Pagination & Bottom Statistics Bar -->',
+      '    <div class="py-3 px-4 border-t border-slate-200/80 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">',
+      '      <div class="flex items-center gap-2">',
+      '        <span id="pagerInfo"></span>',
+      '      </div>',
+      '      <div class="flex items-center gap-1" id="pagerControls"></div>',
+      '    </div>',
+      '  </div>',
       '</div>'
     ].join('\n');
 
-    if (!IS_TEACHER) {
+    if (IS_TEACHER) {
+      $id('dirHead').innerHTML = '<th class="w-10 py-3.5 pl-4 pr-2" scope="col"></th><th class="py-3.5 px-4 font-medium" scope="col">Teacher</th><th class="py-3.5 px-4 font-medium" scope="col">Teacher ID</th><th class="py-3.5 px-4 font-medium" scope="col">Campus</th><th class="py-3.5 px-4 font-medium" scope="col">Department</th><th class="py-3.5 px-4 font-medium" scope="col">Assigned Subjects / Classes</th><th class="py-3.5 px-4 font-medium" scope="col">Status</th><th class="py-3.5 pr-4 pl-4 text-right font-medium" scope="col">Actions</th>';
+    } else {
       $id('dirHead').innerHTML = '<th class="w-10 py-3.5 pl-4 pr-2" scope="col"></th><th class="py-3.5 px-4 font-medium" scope="col">Student</th><th class="py-3.5 px-4 font-medium" scope="col">Grade &amp; Class</th><th class="py-3.5 px-4 font-medium" scope="col">Advisor</th><th class="py-3.5 px-4 font-medium" scope="col">GPA</th><th class="py-3.5 px-4 font-medium" scope="col">Attendance</th><th class="py-3.5 px-4 font-medium" scope="col">Requests</th><th class="py-3.5 px-4 font-medium" scope="col">Status</th><th class="py-3.5 pr-4 pl-4 text-right font-medium" scope="col">Actions</th>';
     }
 
@@ -708,18 +680,12 @@
       '</div></div>';
   }
 
-  /* ---------- Teacher Row Card & Inline Accordion Editor ---------- */
+  /* ---------- Teacher Row Table Architecture ---------- */
   function teacherRowHtml(r) {
     var teacherCode = r.code || r.id || 'TCH';
     var subjectColor = getSubjectColor(r.subject);
     var classesAssigned = (r.assignments && r.assignments.length) ? r.assignments.length : (r.classesAssigned != null ? r.classesAssigned : (r.classes ? r.classes.length : 0));
-    var targetHours = r.target || (classesAssigned ? classesAssigned * 3 : 17);
-    var maxDaily = r.max_daily || 5;
     var isActive = String(r.status || '').toLowerCase() === 'active';
-    var isLeave = String(r.status || '').toLowerCase().indexOf('leave') !== -1;
-    var statusTone = isActive ? 'bg-[#E8F3ED] text-[#176B45]' : (isLeave ? 'bg-[#ffeadb] text-[#822714]' : 'bg-slate-100 text-slate-600');
-    var statusDot = isActive ? 'bg-[#176B45]' : (isLeave ? 'bg-[#b8541f]' : 'bg-slate-400');
-    var gender = r.gender || 'Male';
 
     var deptSummary = esc(r.department || 'MoEYS Faculty');
     var subjectLabel = esc(r.subject || 'General');
@@ -746,232 +712,34 @@
       }
     }
 
-    return [
-      '<div class="teacher-row-card bg-white rounded-xl border border-[#E1E9E3] hover:border-slate-300 transition-all shadow-2xs overflow-hidden" data-id="' + esc(r.id) + '" id="teacherCard_' + esc(r.id) + '">',
-      // Row Bar (Clickable to toggle expand)
-      '  <div class="p-3 sm:p-4 flex flex-col lg:grid lg:grid-cols-12 gap-3 lg:gap-4 items-start lg:items-center cursor-pointer select-none transition-colors hover:bg-slate-50/50" data-act="toggle-expand" data-id="' + esc(r.id) + '">',
-      '    <!-- Col 1: Avatar, Name, Code, ID -->',
-      '    <div class="lg:col-span-4 flex items-center gap-3 min-w-0 w-full">',
-      '      <div class="w-10 h-10 rounded-full bg-[#E8F3ED] text-[#176B45] flex items-center justify-center font-medium text-xs shrink-0 shadow-2xs border border-[#176B45]/15">',
-      '        ' + esc(initials(r.name)),
-      '      </div>',
-      '      <div class="min-w-0 flex-1">',
-      '        <div class="flex items-center gap-2 flex-wrap">',
-      '          <span class="font-medium text-sm text-slate-900 hover:text-[#176B45] transition-colors truncate" data-act="view" data-id="' + esc(r.id) + '">' + esc(r.name) + '</span>',
-      '          <span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200/80">' + esc(teacherCode) + '</span>',
-      '        </div>',
-      '        <div class="text-[11px] text-slate-500 flex items-center gap-1.5 truncate mt-0.5">',
-      '          <span>' + esc(r.id) + '</span>',
-      '          <span class="text-slate-300">•</span>',
-      '          <span>' + esc(r.role || 'Faculty') + '</span>',
-      '        </div>',
-      '      </div>',
-      '    </div>',
+    var actions = '<div class="inline-flex items-center gap-1.5">' +
+      '<button type="button" data-act="view" data-id="' + esc(r.id) + '" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px]">' +
+        'Profile' +
+      '</button>' +
+      '<button type="button" data-act="edit" data-id="' + esc(r.id) + '" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px]">' +
+        'Edit' +
+      '</button>' +
+      '<button type="button" data-act="toggle" data-id="' + esc(r.id) + '" title="' + (isActive ? 'Deactivate record' : 'Activate record') + '" class="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center" aria-label="Toggle status">' +
+        '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="12" cy="5" r="1" fill="currentColor"></circle><circle cx="12" cy="19" r="1" fill="currentColor"></circle></svg>' +
+      '</button>' +
+    '</div>';
 
-      '    <!-- Col 2: Department & Subject -->',
-      '    <div class="lg:col-span-3 min-w-0 w-full flex flex-col justify-center">',
-      '      <div class="flex items-center gap-1.5">',
-      '        <span class="w-2 h-2 rounded-full shrink-0" style="background-color: ' + subjectColor + ';"></span>',
-      '        <span class="font-medium text-xs text-slate-800 truncate">' + subjectLabel + '</span>',
-      '      </div>',
-      '      <span class="text-[11px] text-slate-500 truncate ml-3.5">' + deptSummary + '</span>',
-      '    </div>',
-
-      '    <!-- Col 3: Workload & Classes -->',
-      '    <div class="lg:col-span-2 min-w-0 w-full flex items-center gap-2">',
-      '      <div class="flex flex-col">',
-      '        <span class="text-xs font-medium text-slate-700">' + targetHours + ' hrs/wk</span>',
-      '        <span class="text-[11px] text-slate-400">' + classesAssigned + ' classes assigned</span>',
-      '      </div>',
-      '    </div>',
-
-      '    <!-- Col 4: Status -->',
-      '    <div class="lg:col-span-1 min-w-0 flex items-center">',
-      '      <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ' + statusTone + '">',
-      '        <span class="w-1.5 h-1.5 rounded-full ' + statusDot + '"></span>' + esc(r.status || 'Active') + '',
-      '      </span>',
-      '    </div>',
-
-      '    <!-- Col 5: Actions -->',
-      '    <div class="lg:col-span-2 flex items-center justify-end gap-1.5 w-full shrink-0" >',
-      '      <button type="button" data-act="edit-row" data-id="' + esc(r.id) + '" class="px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-[#E8F3ED] hover:text-[#176B45] hover:border-[#176B45]/40 transition-colors cursor-pointer flex items-center gap-1 min-h-[32px]">',
-      '        <span class="material-symbols-outlined text-[15px]">edit</span>',
-      '        <span>Edit</span>',
-      '      </button>',
-      '      <button type="button" data-act="view" data-id="' + esc(r.id) + '" class="px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer flex items-center gap-1 min-h-[32px]" title="View Full Profile">',
-      '        <span>Profile</span>',
-      '      </button>',
-      '      <button type="button" data-act="toggle" data-id="' + esc(r.id) + '" title="' + (isActive ? 'Deactivate record' : 'Activate record') + '" class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center" aria-label="Toggle status">',
-      '        <span class="material-symbols-outlined text-[18px]">more_vert</span>',
-      '      </button>',
-      '      <button type="button" data-act="toggle-expand" data-id="' + esc(r.id) + '" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center" title="Expand Details" aria-label="Expand Details">',
-      '        <span class="material-symbols-outlined text-[20px] transition-transform duration-200 chevron-icon" id="chevron_' + esc(r.id) + '">expand_more</span>',
-      '      </button>',
-      '    </div>',
-      '  </div>',
-
-      // Inline Expandable Details Editor
-      '  <div class="teacher-inline-editor border-t border-[#E1E9E3] bg-[#F7F9F7]/90 p-4 sm:p-5 rounded-b-xl hidden" id="editor_' + esc(r.id) + '" >',
-      '    <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-200/90">',
-      '      <div class="flex items-center gap-2.5">',
-      '        <div class="w-2.5 h-2.5 rounded-full bg-[#176B45]"></div>',
-      '        <h3 class="text-xs font-medium uppercase tracking-wider text-[#29352E]">',
-      '          Faculty Member Record Editor — ' + esc(r.name) + ' <span class="text-slate-400 font-normal">(' + esc(r.id) + ')</span>',
-      '        </h3>',
-      '      </div>',
-      '      <span class="text-[11px] text-slate-500 hidden sm:inline">Inline editor · Instant synchronization to Live Timetable</span>',
-      '    </div>',
-
-      '    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-left">',
-      '      <!-- SECTION A — Basic Information -->',
-      '      <div class="bg-white p-3.5 rounded-xl border border-[#E1E9E3] space-y-3 shadow-2xs">',
-      '        <div class="flex items-center gap-1.5 pb-1 border-b border-slate-100 text-xs font-medium text-slate-700">',
-      '          <span class="material-symbols-outlined text-[16px] text-[#176B45]">person</span>',
-      '          <span>Section A — Basic Information</span>',
-      '        </div>',
-      '        <div>',
-      '          <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edName_' + r.id + '">Full Name <span class="text-rose-500">*</span></label>',
-      '          <input class="w-full text-xs py-2 px-3 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edName_' + r.id + '" type="text" value="' + esc(r.name || '') + '">',
-      '        </div>',
-      '        <div class="grid grid-cols-2 gap-2">',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edGender_' + r.id + '">Gender</label>',
-      '            <select class="w-full text-xs py-2 px-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edGender_' + r.id + '">',
-      '              <option value="Male"' + (gender === 'Male' ? ' selected' : '') + '>Male</option>',
-      '              <option value="Female"' + (gender === 'Female' ? ' selected' : '') + '>Female</option>',
-      '            </select>',
-      '          </div>',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edPhone_' + r.id + '">Phone</label>',
-      '            <input class="w-full text-xs py-2 px-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edPhone_' + r.id + '" type="text" value="' + esc(r.phone || '') + '">',
-      '          </div>',
-      '        </div>',
-      '        <div>',
-      '          <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edEmail_' + r.id + '">Email Address <span class="text-rose-500">*</span></label>',
-      '          <input class="w-full text-xs py-2 px-3 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edEmail_' + r.id + '" type="email" value="' + esc(r.email || '') + '">',
-      '        </div>',
-      '      </div>',
-
-      '      <!-- SECTION B — Employment -->',
-      '      <div class="bg-white p-3.5 rounded-xl border border-[#E1E9E3] space-y-3 shadow-2xs">',
-      '        <div class="flex items-center gap-1.5 pb-1 border-b border-slate-100 text-xs font-medium text-slate-700">',
-      '          <span class="material-symbols-outlined text-[16px] text-[#176B45]">work</span>',
-      '          <span>Section B — Employment</span>',
-      '        </div>',
-      '        <div>',
-      '          <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edRole_' + r.id + '">Position / Role</label>',
-      '          <select class="w-full text-xs py-2 px-2.5 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edRole_' + r.id + '">',
-      '            <option value="Faculty"' + (r.role === 'Faculty' ? ' selected' : '') + '>Faculty</option>',
-      '            <option value="Senior Faculty"' + (r.role === 'Senior Faculty' ? ' selected' : '') + '>Senior Faculty</option>',
-      '            <option value="Head of Department"' + (r.role === 'Head of Department' ? ' selected' : '') + '>Head of Department</option>',
-      '            <option value="Coordinator"' + (r.role === 'Coordinator' ? ' selected' : '') + '>Coordinator</option>',
-      '          </select>',
-      '        </div>',
-      '        <div class="grid grid-cols-2 gap-2">',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edEmploy_' + r.id + '">Category</label>',
-      '            <select class="w-full text-xs py-2 px-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edEmploy_' + r.id + '">',
-      '              <option value="Full-time"' + (r.employmentType === 'Full-time' ? ' selected' : '') + '>Full-time</option>',
-      '              <option value="Part-time"' + (r.employmentType === 'Part-time' ? ' selected' : '') + '>Part-time</option>',
-      '              <option value="Contract"' + (r.employmentType === 'Contract' ? ' selected' : '') + '>Contract</option>',
-      '            </select>',
-      '          </div>',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edYears_' + r.id + '">Years at School</label>',
-      '            <input class="w-full text-xs py-2 px-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edYears_' + r.id + '" type="number" min="0" value="' + (r.yearsAtSchool || 0) + '">',
-      '          </div>',
-      '        </div>',
-      '        <div>',
-      '          <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edRank_' + r.id + '">Rank / Classification</label>',
-      '          <input class="w-full text-xs py-2 px-3 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edRank_' + r.id + '" type="text" value="' + esc(r.rank || 'Senior Faculty') + '">',
-      '        </div>',
-      '      </div>',
-
-      '      <!-- SECTION C — Academic Information -->',
-      '      <div class="bg-white p-3.5 rounded-xl border border-[#E1E9E3] space-y-3 shadow-2xs">',
-      '        <div class="flex items-center gap-1.5 pb-1 border-b border-slate-100 text-xs font-medium text-slate-700">',
-      '          <span class="material-symbols-outlined text-[16px] text-[#176B45]">menu_book</span>',
-      '          <span>Section C — Academic Information</span>',
-      '        </div>',
-      '        <div>',
-      '          <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edDept_' + r.id + '">Department <span class="text-rose-500">*</span></label>',
-      '          <input class="w-full text-xs py-2 px-3 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edDept_' + r.id + '" type="text" value="' + esc(r.department || '') + '">',
-      '        </div>',
-      '        <div class="grid grid-cols-2 gap-2">',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edSubject_' + r.id + '">Primary Subject <span class="text-rose-500">*</span></label>',
-      '            <input class="w-full text-xs py-2 px-2.5 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edSubject_' + r.id + '" type="text" value="' + esc(r.subject || r.department || 'General') + '">',
-      '          </div>',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edCode_' + r.id + '">Teacher Code</label>',
-      '            <input class="w-full text-xs py-2 px-2.5 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] font-mono font-medium" id="edCode_' + r.id + '" type="text" value="' + esc(r.code || teacherCode) + '">',
-      '          </div>',
-      '        </div>',
-      '        <div>',
-      '          <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edQualified_' + r.id + '">Qualified Subjects</label>',
-      '          <input class="w-full text-xs py-2 px-3 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edQualified_' + r.id + '" type="text" placeholder="e.g. Khmer, Literature, History" value="' + esc(r.qualifiedSubjects || r.subject || '') + '">',
-      '        </div>',
-      '      </div>',
-
-      '      <!-- SECTION D & E — Scheduling & Status -->',
-      '      <div class="bg-white p-3.5 rounded-xl border border-[#E1E9E3] space-y-3 shadow-2xs">',
-      '        <div class="flex items-center gap-1.5 pb-1 border-b border-slate-100 text-xs font-medium text-slate-700">',
-      '          <span class="material-symbols-outlined text-[16px] text-[#176B45]">tune</span>',
-      '          <span>Section D &amp; E — Scheduling &amp; Status</span>',
-      '        </div>',
-      '        <div class="grid grid-cols-2 gap-2">',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edTarget_' + r.id + '">Target (hrs/wk)</label>',
-      '            <input class="w-full text-xs py-2 px-2.5 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edTarget_' + r.id + '" type="number" min="1" max="40" value="' + (r.target || 17) + '">',
-      '          </div>',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edMaxDaily_' + r.id + '">Max / Day</label>',
-      '            <input class="w-full text-xs py-2 px-2.5 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edMaxDaily_' + r.id + '" type="number" min="1" max="10" value="' + (r.max_daily || 5) + '">',
-      '          </div>',
-      '        </div>',
-      '        <div class="grid grid-cols-2 gap-2">',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edClasses_' + r.id + '">Classes</label>',
-      '            <input class="w-full text-xs py-2 px-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edClasses_' + r.id + '" type="number" min="0" value="' + (r.classesAssigned != null ? r.classesAssigned : 0) + '">',
-      '          </div>',
-      '          <div>',
-      '            <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edStatus_' + r.id + '">Status</label>',
-      '            <select class="w-full text-xs py-2 px-2 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edStatus_' + r.id + '">',
-      '              <option value="Active"' + (String(r.status || '').toLowerCase() === 'active' ? ' selected' : '') + '>Active</option>',
-      '              <option value="On Leave"' + (String(r.status || '').toLowerCase().indexOf('leave') !== -1 ? ' selected' : '') + '>On Leave</option>',
-      '              <option value="Inactive"' + (String(r.status || '').toLowerCase() === 'inactive' ? ' selected' : '') + '>Inactive</option>',
-      '            </select>',
-      '          </div>',
-      '        </div>',
-      '        <div>',
-      '          <label class="block text-[10px] font-medium uppercase tracking-wider text-slate-500 mb-1" for="edNotes_' + r.id + '">Scheduling Notes</label>',
-      '          <input class="w-full text-xs py-2 px-3 rounded-lg border border-[#E1E9E3] bg-white text-slate-800 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45]" id="edNotes_' + r.id + '" type="text" placeholder="Special availability or notes..." value="' + esc(r.notes || '') + '">',
-      '        </div>',
-      '      </div>',
-      '    </div>',
-
-      '    <!-- Bottom Action Bar -->',
-      '    <div class="mt-5 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">',
-      '      <div class="flex items-center gap-2 text-xs text-slate-500">',
-      '        <span class="material-symbols-outlined text-[16px] text-[#176B45]">check_circle</span>',
-      '        <span>Click Save Changes to commit directly to the faculty database.</span>',
-      '      </div>',
-      '      <div class="flex items-center gap-2 w-full sm:w-auto justify-end">',
-      '        <button type="button" data-act="reset-editor" data-id="' + esc(r.id) + '" class="px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer">',
-      '          Reset',
-      '        </button>',
-      '        <button type="button" data-act="cancel-editor" data-id="' + esc(r.id) + '" class="px-4 py-2 rounded-lg border border-[#E1E9E3] bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 transition cursor-pointer">',
-      '          Cancel',
-      '        </button>',
-      '        <button type="button" data-act="save-editor" data-id="' + esc(r.id) + '" class="px-5 py-2 rounded-lg bg-[#176B45] hover:bg-[#125638] text-white text-xs font-medium shadow-xs flex items-center gap-1.5 transition active:scale-[0.98] cursor-pointer" id="btnSaveEd_' + esc(r.id) + '">',
-      '          <span class="material-symbols-outlined text-[16px]">save</span>',
-      '          <span>Save Changes</span>',
-      '        </button>',
-      '      </div>',
-      '    </div>',
-      '  </div>',
-      '</div>'
-    ].join('\n');
+    return '<tr class="transition-colors group hover:bg-slate-50/50" data-id="' + esc(r.id) + '">' +
+      '<td class="py-3.5 pl-4 pr-2 align-middle"><input class="row-checkbox rounded border-slate-300 text-[#176B45] focus:ring-[#176B45]/20 focus:ring-offset-0 cursor-pointer accent-[#176B45]" type="checkbox" data-id="' + esc(r.id) + '"></td>' +
+      '<td class="py-3.5 px-4 align-middle">' + nameCell(r) + '</td>' +
+      '<td class="py-3.5 px-4 align-middle"><span class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-slate-100 text-slate-700 border border-slate-200/80">' + esc(teacherCode) + '</span></td>' +
+      '<td class="py-3.5 px-4 align-middle text-slate-700">' + esc(r.campus || 'Main Campus') + '</td>' +
+      '<td class="py-3.5 px-4 align-middle text-slate-700">' + esc(r.department || 'MoEYS Faculty') + '</td>' +
+      '<td class="py-3.5 px-4 align-middle">' +
+        '<div class="flex items-center gap-1.5">' +
+          '<span class="w-2 h-2 rounded-full shrink-0" style="background-color: ' + subjectColor + ';"></span>' +
+          '<span class="font-medium text-slate-800">' + subjectLabel + '</span>' +
+        '</div>' +
+        '<div class="text-[11px] text-slate-500 ml-3.5">' + deptSummary + ' (' + classesAssigned + ' classes)</div>' +
+      '</td>' +
+      '<td class="py-3.5 px-4 align-middle">' + statusBadge(r.status) + '</td>' +
+      '<td class="py-3.5 pr-4 pl-4 text-right align-middle">' + actions + '</td>' +
+    '</tr>';
   }
 
   function toggleRowAccordion(id) {
@@ -1222,42 +990,15 @@
   window.__ngisCloseExcelModal = closeExcelImportModal;
 
   function renderTable() {
-    if (IS_TEACHER) {
-      var rowsContainer = $id('dirRows');
-      if (!rowsContainer) return;
-      if (state.loading) {
-        rowsContainer.innerHTML = window.NGIS_SKELETON
-          ? window.NGIS_SKELETON.table({ rows: 5 })
-          : '<div class="ngis-sk-table-container p-6"></div>';
-        renderPager(); return;
-      }
-      if (state.error) {
-        rowsContainer.innerHTML = '<div class="py-12 text-center text-rose-600 bg-white rounded-xl border border-[#E1E9E3]"><div class="flex flex-col items-center justify-center gap-2.5"><span class="material-symbols-outlined text-4xl text-[#B3261E] opacity-70">cloud_off</span><p class="font-medium text-sm text-[#B3261E]">' + esc(state.error) + '</p><button type="button" class="mt-2 px-3.5 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition cursor-pointer" id="btnRetryLoad">Retry</button></div></div>';
-        var rb = $id('btnRetryLoad');
-        if (rb) rb.addEventListener('click', loadDirectory);
-        renderPager(); return;
-      }
-      if (!state.filtered.length) {
-        rowsContainer.innerHTML = '<div class="py-12 text-center text-slate-500 bg-white rounded-xl border border-[#E1E9E3]"><div class="flex flex-col items-center justify-center gap-2"><span class="material-symbols-outlined text-4xl text-[#94a3b8] opacity-40">person_search</span><p class="font-medium text-sm">No teachers match your active filters</p><button type="button" class="text-xs text-[#176B45] hover:underline mt-1 font-medium cursor-pointer" id="emptyReset">Reset Filters</button></div></div>';
-        var er = $id('emptyReset');
-        if (er) er.addEventListener('click', resetAllFilters);
-        renderPager(); return;
-      }
-      var start = (state.page - 1) * PER_PAGE;
-      var pageRows = state.filtered.slice(start, start + PER_PAGE);
-      rowsContainer.innerHTML = pageRows.map(teacherRowHtml).join('\n');
-      renderPager();
-      return;
-    }
-
     var body = $id('dirBody');
     if (!body) return;
+    var colSpanCount = IS_TEACHER ? 8 : 9;
     if (state.loading) {
       body.innerHTML = (function() {
         if (window.NGIS_SKELETON) {
           var out = '';
           for (var k = 0; k < 6; k++) {
-            out += '<tr><td colspan="9" class="p-3">' +
+            out += '<tr><td colspan="' + colSpanCount + '" class="p-3">' +
               '<div class="flex items-center gap-3">' +
                 window.NGIS_SKELETON.avatar({ size: "sm" }) +
                 '<div class="flex-1 flex flex-col gap-1">' +
@@ -1270,47 +1011,51 @@
           }
           return out;
         }
-        return '<tr><td colspan="9" class="p-4"></td></tr>';
+        return '<tr><td colspan="' + colSpanCount + '" class="p-4"></td></tr>';
       })();
       renderPager(); return;
     }
     if (state.error) {
-      body.innerHTML = '<tr><td colspan="9" class="py-12 text-center text-rose-600"><div class="flex flex-col items-center justify-center gap-2.5"><span class="material-symbols-outlined text-4xl text-[#B3261E] opacity-70">cloud_off</span><p class="font-medium text-sm text-[#B3261E]">' + esc(state.error) + '</p><button type="button" class="mt-2 px-3.5 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition cursor-pointer" id="btnRetryLoadStudents">Retry</button></div></td></tr>';
-      var rb2 = $id('btnRetryLoadStudents');
-      if (rb2) rb2.addEventListener('click', loadDirectory);
+      body.innerHTML = '<tr><td colspan="' + colSpanCount + '" class="py-12 text-center text-rose-600"><div class="flex flex-col items-center justify-center gap-2.5"><span class="material-symbols-outlined text-4xl text-[#B3261E] opacity-70">cloud_off</span><p class="font-medium text-sm text-[#B3261E]">' + esc(state.error) + '</p><button type="button" class="mt-2 px-3.5 py-1.5 rounded-lg bg-[#176B45] text-white hover:bg-[#125638] text-xs font-medium transition cursor-pointer" id="btnRetryLoad">Retry</button></div></td></tr>';
+      var rb = $id('btnRetryLoad');
+      if (rb) rb.addEventListener('click', loadDirectory);
       renderPager(); return;
     }
     if (!state.filtered.length) {
-      body.innerHTML = '<tr><td colspan="9" class="py-12 text-center text-slate-500"><div class="flex flex-col items-center justify-center gap-2"><span class="material-symbols-outlined text-4xl text-[#94a3b8] opacity-40">person_search</span><p class="font-medium text-sm">No ' + PLURAL_LABEL.toLowerCase() + ' match your active filters</p><button type="button" class="text-xs text-slate-600 hover:underline mt-1 font-medium cursor-pointer" id="emptyReset">Reset Filters</button></div></td></tr>';
-      var er2 = $id('emptyReset');
-      if (er2) er2.addEventListener('click', resetAllFilters);
+      body.innerHTML = '<tr><td colspan="' + colSpanCount + '" class="py-12 text-center text-slate-500"><div class="flex flex-col items-center justify-center gap-2"><span class="material-symbols-outlined text-4xl text-[#94a3b8] opacity-40">person_search</span><p class="font-medium text-sm">No ' + PLURAL_LABEL.toLowerCase() + ' match your active filters</p><button type="button" class="text-xs text-slate-600 hover:underline mt-1 font-medium cursor-pointer" id="emptyReset">Reset Filters</button></div></td></tr>';
+      var er = $id('emptyReset');
+      if (er) er.addEventListener('click', resetAllFilters);
       renderPager(); return;
     }
-    var start2 = (state.page - 1) * PER_PAGE;
-    var pageRows2 = state.filtered.slice(start2, start2 + PER_PAGE);
-    body.innerHTML = pageRows2.map(function (r) {
-      var isActive2 = String(r.status || '').toLowerCase() === 'active';
-      var actions2 = '<div class="inline-flex items-center gap-1.5">' +
-        '<button type="button" data-act="view" data-id="' + esc(r.id) + '" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px]">' +
-          'Profile' +
-        '</button>' +
-        '<button type="button" data-act="edit" data-id="' + esc(r.id) + '" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px]">' +
-          'Edit' +
-        '</button>' +
-        '<button type="button" data-act="toggle" data-id="' + esc(r.id) + '" title="' + (isActive2 ? 'Deactivate record' : 'Activate record') + '" class="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center" aria-label="Toggle status">' +
-          '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="12" cy="5" r="1" fill="currentColor"></circle><circle cx="12" cy="19" r="1" fill="currentColor"></circle></svg>' +
-        '</button>' +
-        '</div>';
-      return '<tr class="transition-colors group" data-id="' + esc(r.id) + '"><td class="py-3.5 pl-4 pr-2 align-middle"><input class="row-checkbox rounded border-slate-300 text-[#176B45] focus:ring-[#176B45]/20 focus:ring-offset-0 cursor-pointer accent-[#176B45]" type="checkbox" data-id="' + esc(r.id) + '"></td>' +
-        '<td class="py-3.5 px-4 align-middle">' + nameCell(r) + '</td>' +
-        '<td class="py-3.5 px-4 align-middle"><div class="font-medium text-sm text-slate-900">' + esc(r.grade || '—') + '</div><div class="text-[11px] text-slate-500">' + esc(r.class || '—') + '</div></td>' +
-        '<td class="py-3.5 px-4 align-middle font-medium text-sm text-slate-800">' + esc(r.advisor || '—') + '</td>' +
-        '<td class="py-3.5 px-4 align-middle font-headline-sm text-sm font-medium text-[#176B45]">' + (r.gpaLive == null ? '—' : num(r.gpaLive)) + '</td>' +
-        '<td class="py-3.5 px-4 align-middle"><span class="inline-flex items-center px-2 py-0.5 rounded-full font-medium text-xs bg-slate-50 font-medium ' + (Number(r.attendancePct) < 85 ? 'text-[#B3261E]' : 'text-slate-600') + '">' + (r.attendancePct == null ? '—' : num(r.attendancePct, 1) + '%') + '</span></td>' +
-        '<td class="py-3.5 px-4 align-middle font-medium text-sm text-slate-800">' + (r.openRequests || 0) + '</td>' +
-        '<td class="py-3.5 px-4 align-middle">' + statusBadge(r.status) + '</td>' +
-        '<td class="py-3.5 pr-4 pl-4 text-right align-middle">' + actions2 + '</td></tr>';
-    }).join('');
+    var start = (state.page - 1) * PER_PAGE;
+    var pageRows = state.filtered.slice(start, start + PER_PAGE);
+    if (IS_TEACHER) {
+      body.innerHTML = pageRows.map(teacherRowHtml).join('');
+    } else {
+      body.innerHTML = pageRows.map(function (r) {
+        var isActive2 = String(r.status || '').toLowerCase() === 'active';
+        var actions2 = '<div class="inline-flex items-center gap-1.5">' +
+          '<button type="button" data-act="view" data-id="' + esc(r.id) + '" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px]">' +
+            'Profile' +
+          '</button>' +
+          '<button type="button" data-act="edit" data-id="' + esc(r.id) + '" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200/70 rounded-lg hover:bg-[#176B45] hover:text-white hover:border-[#176B45] transition-colors cursor-pointer min-h-[32px]">' +
+            'Edit' +
+          '</button>' +
+          '<button type="button" data-act="toggle" data-id="' + esc(r.id) + '" title="' + (isActive2 ? 'Deactivate record' : 'Activate record') + '" class="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors cursor-pointer min-h-[32px] min-w-[32px] flex items-center justify-center" aria-label="Toggle status">' +
+            '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="12" cy="5" r="1" fill="currentColor"></circle><circle cx="12" cy="19" r="1" fill="currentColor"></circle></svg>' +
+          '</button>' +
+          '</div>';
+        return '<tr class="transition-colors group hover:bg-slate-50/50" data-id="' + esc(r.id) + '"><td class="py-3.5 pl-4 pr-2 align-middle"><input class="row-checkbox rounded border-slate-300 text-[#176B45] focus:ring-[#176B45]/20 focus:ring-offset-0 cursor-pointer accent-[#176B45]" type="checkbox" data-id="' + esc(r.id) + '"></td>' +
+          '<td class="py-3.5 px-4 align-middle">' + nameCell(r) + '</td>' +
+          '<td class="py-3.5 px-4 align-middle"><div class="font-medium text-sm text-slate-900">' + esc(r.grade || '—') + '</div><div class="text-[11px] text-slate-500">' + esc(r.class || '—') + '</div></td>' +
+          '<td class="py-3.5 px-4 align-middle font-medium text-sm text-slate-800">' + esc(r.advisor || '—') + '</td>' +
+          '<td class="py-3.5 px-4 align-middle font-headline-sm text-sm font-medium text-[#176B45]">' + (r.gpaLive == null ? '—' : num(r.gpaLive)) + '</td>' +
+          '<td class="py-3.5 px-4 align-middle"><span class="inline-flex items-center px-2 py-0.5 rounded-full font-medium text-xs bg-slate-50 font-medium ' + (Number(r.attendancePct) < 85 ? 'text-[#B3261E]' : 'text-slate-600') + '">' + (r.attendancePct == null ? '—' : num(r.attendancePct, 1) + '%') + '</span></td>' +
+          '<td class="py-3.5 px-4 align-middle font-medium text-sm text-slate-800">' + (r.openRequests || 0) + '</td>' +
+          '<td class="py-3.5 px-4 align-middle">' + statusBadge(r.status) + '</td>' +
+          '<td class="py-3.5 pr-4 pl-4 text-right align-middle">' + actions2 + '</td></tr>';
+      }).join('');
+    }
     renderPager();
   }
   function renderPager() {

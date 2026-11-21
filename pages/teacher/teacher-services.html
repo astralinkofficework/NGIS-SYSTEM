@@ -225,9 +225,9 @@ body {
     <!-- Desktop Hero Banner (injected by hero.js) -->
     <div id="heroBanner" class="hidden lg:block"></div>
     <!-- Mobile App Bar with Mandatory Hamburger Button (AGENTS.md) -->
-    <header class="lg:hidden flex items-center justify-between px-4 py-3 bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-30">
+    <header class="lg:hidden flex items-center justify-between px-4 py-3 bg-transparent border-none sticky top-0 z-30">
       <div class="flex items-center gap-3">
-        <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn w-10 h-10 rounded-xl bg-surface-container-low border border-outline-variant text-primary flex items-center justify-center hover:bg-surface-container-highest active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn w-10 h-10 rounded-xl bg-surface-container-low border border-outline-variant text-primary flex items-center justify-center hover:bg-surface-container-highest active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
           <i class="ph ph-list text-xl"></i>
         </button>
         <div class="flex items-center gap-2">
@@ -236,7 +236,7 @@ body {
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <a href="teacher.html" class="p-2 text-on-surface-variant hover:text-primary rounded-lg" title="Back to Home">
+        <a href="teacher.html" class="p-2 text-on-surface-variant hover:text-primary rounded-lg" aria-label="Back to Home">
           <span class="material-symbols-outlined text-[20px]">home</span>
         </a>
       </div>
@@ -262,7 +262,7 @@ body {
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span>
               IT &amp; Facilities Helpdesk Active
             </span>
-            <button type="button" onclick="refreshRequests()" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest rounded-xl border border-transparent hover:border-outline-variant transition-all" title="Refresh requests">
+            <button type="button" onclick="refreshRequests()" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest rounded-xl border border-transparent hover:border-outline-variant transition-all" aria-label="Refresh requests">
               <span data-ngis-icon="refresh" class="text-[18px]"></span>
             </button>
             <button onclick="openNewRequestModal()" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary text-on-primary text-[13.5px] font-medium shadow-sm active:scale-95 transition-all cursor-pointer">
@@ -509,7 +509,7 @@ body {
 
   <!-- ════════ FLOATING ACTION BUTTON (NEW REQUEST) ════════ -->
   <div class="fixed bottom-20 md:bottom-8 right-5 md:right-8 z-50 flex items-center group">
-    <button type="button" id="fabNewRequestBtn" onclick="openNewRequestModal()" aria-label="New Faculty Service Request" title="New Service Request" class="relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary text-on-primary shadow-lg border-2 border-white transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-secondary/30 cursor-pointer active:scale-95">
+    <button type="button" id="fabNewRequestBtn" onclick="openNewRequestModal()" aria-label="New Faculty Service Request" class="relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-primary text-on-primary shadow-lg border-2 border-white transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-secondary/30 cursor-pointer active:scale-95">
       <svg class="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
         <path d="M12 5v14M5 12h14"></path>
       </svg>
@@ -1038,10 +1038,15 @@ body {
         allRequests.unshift(payload);
       }
 
-      closeNewRequestModal();
+      closeNewRequestModal(true);
       document.getElementById('newRequestForm').reset();
       renderDashboard();
-      if (window.toast) {
+      if (window.NGIS_showOperationSuccess) {
+        window.NGIS_showOperationSuccess({
+          title: 'Faculty Request Submitted',
+          message: `Requisition ticket ${newId} has been successfully logged with Operations & Facilities.`
+        });
+      } else if (window.toast) {
         window.toast(`Service request ${newId} submitted!`, 'success');
       }
     }
@@ -1076,7 +1081,11 @@ body {
 
     function closeDetailsModal() {
       const modal = document.getElementById('detailsModal');
-      if (modal) modal.classList.remove('show');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        document.body.classList.remove('modal-open');
+      }
     }
 
     function renderCommentsList(req) {

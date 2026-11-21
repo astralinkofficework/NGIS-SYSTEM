@@ -1215,11 +1215,30 @@
     });
   };
 
-  SI.deleteCalendarEvent = function (evtId) {
-    if (!confirm('Are you sure you want to remove this event from the academic calendar?')) return;
+  SI.deleteCalendarEvent = async function (evtId) {
+    var confirmed = false;
+    if (window.NGIS_UX && typeof window.NGIS_UX.confirm === 'function') {
+      confirmed = await window.NGIS_UX.confirm({
+        title: "Remove Calendar Event?",
+        description: "This event will be permanently deleted from the official institutional academic calendar.",
+        consequence: "The event will no longer appear on student, teacher, or parent schedules.",
+        confirmLabel: "Delete Event",
+        cancelLabel: "Keep Event",
+        isDestructive: true,
+        isRecoverable: false,
+        icon: "trash3"
+      });
+    } else {
+      confirmed = confirm("Remove this event from the academic calendar?");
+    }
+    if (!confirmed) return;
     apiCall('/api/school-config/calendar/' + evtId, 'DELETE')
       .then(function (res) {
-        toast('Calendar event removed.');
+        if (window.NGIS_UX && typeof window.NGIS_UX.success === 'function') {
+          window.NGIS_UX.success("Calendar event removed successfully.");
+        } else {
+          toast('Calendar event removed.');
+        }
         SI.loadData('schoolInfoRoot');
       })
       .catch(function (err) {

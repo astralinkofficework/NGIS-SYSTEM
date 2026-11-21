@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NGIS — System Notice</title>
+  <meta name="description" content="New Gateway International School — Enterprise System Notice" />
+  
+  <!-- Fonts: Inter & JetBrains Mono (Strict No-Bold) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css?v=3.0" />
+  <link rel="stylesheet" href="../../assets/css/design-system.css" />
+  <link rel="stylesheet" href="../../assets/css/interactions.css" />
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-main, #f8fafc);
+      color: var(--text, #0f172a);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 400;
+      margin: 0;
+      padding: 0;
+    }
+    h1, h2, h3, h4, .font-medium, strong, b {
+      font-weight: 500 !important;
+    }
+    
+    .error-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .error-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 80px;
+    }
+    .error-card {
+      max-width: 560px;
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 44px 36px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+    .error-code-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: #e2f4ea;
+      color: #0f5132;
+      border: 1px solid #c2e8d4;
+      margin-bottom: 20px;
+    }
+    .error-code-badge.is-danger {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+    .error-code-badge.is-warning {
+      background: #fffbeb;
+      color: #d97706;
+      border-color: #fde68a;
+    }
+    .error-code-badge.is-info {
+      background: #eff6ff;
+      color: #2563eb;
+      border-color: #bfdbfe;
+    }
+    
+    .error-art {
+      width: 160px;
+      height: 120px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .error-title {
+      font-size: 22px;
+      font-weight: 500;
+      color: #0f172a;
+      margin: 0 0 10px;
+      line-height: 1.3;
+    }
+    .error-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+      margin: 0 auto 28px;
+      max-width: 440px;
+    }
+    
+    .error-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .error-btn {
+      min-height: 44px;
+      padding: 0 20px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    .error-btn:active {
+      transform: scale(0.97);
+    }
+    .error-btn.is-primary {
+      background: #0f5132;
+      color: #ffffff;
+      border: 1px solid #0f5132;
+    }
+    .error-btn.is-primary:hover {
+      background: #146c43;
+    }
+    .error-btn.is-secondary {
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .error-btn.is-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+    
+    .error-footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #f1f5f9;
+      font-size: 12px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* Dark theme tokens */
+    [data-theme="dark"] body {
+      background: #090d16;
+      color: #f8fafc;
+    }
+    [data-theme="dark"] .error-header {
+      background: #0f172a;
+      border-color: #1e293b;
+    }
+    [data-theme="dark"] .error-card {
+      background: #0f172a;
+      border-color: #1e293b;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+    [data-theme="dark"] .error-title {
+      color: #f8fafc;
+    }
+    [data-theme="dark"] .error-desc {
+      color: #94a3b8;
+    }
+    [data-theme="dark"] .error-btn.is-secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+      border-color: #334155;
+    }
+    [data-theme="dark"] .error-btn.is-secondary:hover {
+      background: #334155;
+      color: #ffffff;
+    }
+    [data-theme="dark"] .error-footer {
+      border-color: #1e293b;
+    }
+  </style>
+
+  <!-- NGIS Icon Engine -->
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+</head>
+<body data-page="error" data-role="shared">
+
+  <!-- Header -->
+  <header class="error-header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <!-- Mandatory Accessible Mobile Hamburger Navigation per AGENTS.md -->
+      <button type="button"
+              class="hamburger-btn mobile-hamburger-btn icon-btn"
+              data-action="toggle-sidebar"
+              aria-label="Open menu"
+              aria-expanded="false"
+              style="min-height:44px;min-width:44px;border:1px solid #e2e8f0;border-radius:10px;background:#ffffff;display:none;align-items:center;justify-content:center;cursor:pointer;">
+        <span data-ngis-icon="menu"></span>
+      </button>
+
+      <a href="../../index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#0f5132;display:grid;place-items:center;color:#ffffff;font-weight:500;font-size:13px;">
+          NGIS
+        </div>
+        <div>
+          <div style="font-size:14.5px;font-weight:500;line-height:1.2;color:inherit;">NGIS ERP</div>
+          <div style="font-size:11px;color:#64748b;">New Gateway International School</div>
+        </div>
+      </a>
+    </div>
+
+    <div>
+      <a href="../../index.html" class="error-btn is-secondary" style="min-height:36px;padding:0 14px;font-size:12.5px;">
+        <span data-ngis-icon="home"></span> Portal Home
+      </a>
+    </div>
+  </header>
+
+  <!-- Error Card View -->
+  <main class="error-container">
+    <div class="error-card" id="errorCard">
+      
+      <!-- Error Status Code Badge -->
+      <div id="errorCodeBadge" class="error-code-badge">
+        <span data-ngis-icon="info"></span>
+        <span id="errorCodeText">Error 404</span>
+      </div>
+
+      <!-- Vector Illustration Container -->
+      <div class="error-art" id="errorIllustration">
+        <!-- Injected dynamically based on error code -->
+      </div>
+
+      <!-- Heading & Explanation -->
+      <h1 class="error-title" id="errorTitle">Page not found</h1>
+      <p class="error-desc" id="errorDesc">
+        The page you're looking for may have been moved, removed or is no longer available.
+      </p>
+
+      <!-- Contextual Action Buttons -->
+      <div class="error-actions" id="errorActions">
+        <a href="../../index.html" class="error-btn is-primary" id="btnDashboard">
+          <span data-ngis-icon="dashboard"></span>
+          <span id="btnDashboardText">Return to Dashboard</span>
+        </a>
+        <button type="button" class="error-btn is-secondary" id="btnGoBack" onclick="handleGoBack()">
+          <span data-ngis-icon="back"></span> Go Back
+        </button>
+      </div>
+
+      <!-- Footer Help & Diagnostics -->
+      <div class="error-footer">
+        <span>Campus Gateway: <strong id="campusSubnetText" style="font-weight:500;">Phnom Penh (Sen Sok)</strong></span>
+        <span>·</span>
+        <a href="mailto:support@ngis.edu.kh" style="color:inherit;text-decoration:none;">Contact IT Support</a>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // 1. Role-aware Dashboard Resolver
+    function getRoleDashboardUrl() {
+      var role = "";
+      try {
+        role = localStorage.getItem("ngis_active_portal") ||
+               localStorage.getItem("ngis_role") ||
+               "";
+        if (!role) {
+          var userRaw = localStorage.getItem("ngis_user");
+          if (userRaw) {
+            var u = JSON.parse(userRaw);
+            role = u.role || "";
+          }
+        }
+      } catch (e) {}
+
+      role = (role || "").toLowerCase();
+      if (role === "student") return "../student/student.html";
+      if (role === "teacher") return "../teacher/teacher.html";
+      if (role === "principal") return "../principal/principal.html";
+      if (role === "admin") return "../admin/admin.html";
+      if (role === "superadmin") return "../superadmin/superadmin-dashboard.html";
+      return "../../index.html"; // Unauthenticated guests safely return to login portal
+    }
+
+    function handleGoBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = getRoleDashboardUrl();
+      }
+    }
+
+    // 2. Vector SVG Illustration Presets
+    var ILLUSTRATIONS = {
+      // Minimal Disconnected Plug SVG per User Reference (404)
+      disconnected_plug:
+        '<svg viewBox="0 0 160 120" width="160" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          // Socket (Left)
+          '<rect x="24" y="44" width="38" height="32" rx="8" fill="#e2f4ea" stroke="#0f5132" stroke-width="2"/>' +
+          '<line x1="36" y1="54" x2="36" y2="66" stroke="#0f5132" stroke-width="2.5" stroke-linecap="round"/>' +
+          '<line x1="48" y1="54" x2="48" y2="66" stroke="#0f5132" stroke-width="2.5" stroke-linecap="round"/>' +
+          // Cord Left
+          '<path d="M4 60H24" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>' +
+          // Gap / Disconnected Break
+          '<path d="M70 52L76 56L72 62L80 68" stroke="#f59e0b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+          // Plug (Right)
+          '<rect x="94" y="44" width="38" height="32" rx="8" fill="#ffffff" stroke="#0f5132" stroke-width="2"/>' +
+          '<line x1="84" y1="54" x2="94" y2="54" stroke="#0f5132" stroke-width="2.5" stroke-linecap="round"/>' +
+          '<line x1="84" y1="66" x2="94" y2="66" stroke="#0f5132" stroke-width="2.5" stroke-linecap="round"/>' +
+          // Cord Right
+          '<path d="M132 60H156" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>' +
+          // Ground Shadow
+          '<ellipse cx="80" cy="98" rx="48" ry="4" fill="#e2e8f0"/>' +
+        '</svg>',
+
+      // Access Denied Shield (403)
+      access_denied:
+        '<svg viewBox="0 0 160 120" width="160" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          '<path d="M80 20L116 34V64C116 86 80 102 80 102C80 102 44 86 44 64V34L80 20Z" fill="#fef2f2" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/>' +
+          '<rect x="70" y="52" width="20" height="16" rx="3" fill="#dc2626"/>' +
+          '<path d="M74 52V46C74 42.7 76.7 40 80 40C83.3 40 86 42.7 86 46V52" stroke="#dc2626" stroke-width="2"/>' +
+          '<circle cx="80" cy="60" r="2" fill="#ffffff"/>' +
+        '</svg>',
+
+      // Rate Limiting Speedometer / Hourglass (429)
+      rate_limited:
+        '<svg viewBox="0 0 160 120" width="160" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          '<circle cx="80" cy="60" r="38" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>' +
+          '<path d="M80 34V60L96 70" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>' +
+          '<circle cx="80" cy="60" r="4" fill="#d97706"/>' +
+        '</svg>',
+
+      // Server Internal Error (500)
+      server_error:
+        '<svg viewBox="0 0 160 120" width="160" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="40" y="30" width="80" height="24" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>' +
+          '<rect x="40" y="66" width="80" height="24" rx="6" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>' +
+          '<circle cx="52" cy="42" r="3" fill="#16a34a"/>' +
+          '<circle cx="62" cy="42" r="3" fill="#cbd5e1"/>' +
+          '<circle cx="52" cy="78" r="3" fill="#dc2626"/>' +
+          '<circle cx="62" cy="78" r="3" fill="#cbd5e1"/>' +
+          '<path d="M100 42H108M100 78H108" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>' +
+        '</svg>',
+
+      // System Maintenance (503)
+      maintenance:
+        '<svg viewBox="0 0 160 120" width="160" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          '<circle cx="80" cy="60" r="36" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>' +
+          '<path d="M68 60L76 68L92 52" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<path d="M80 30V38M80 82V90M50 60H58M102 60H110" stroke="#93c5fd" stroke-width="2" stroke-linecap="round"/>' +
+        '</svg>',
+
+      // Offline No Connection
+      offline:
+        '<svg viewBox="0 0 160 120" width="160" height="120" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+          '<path d="M40 46C64 30 96 30 120 46" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>' +
+          '<path d="M54 60C70 50 90 50 106 60" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>' +
+          '<path d="M68 74C75 69 85 69 92 74" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>' +
+          '<circle cx="80" cy="88" r="3" fill="#dc2626"/>' +
+          '<line x1="36" y1="34" x2="124" y2="94" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round"/>' +
+        '</svg>'
+    };
+
+    // 3. Configure Template based on query code
+    function applyErrorConfig() {
+      var params = new URLSearchParams(window.location.search);
+      var code = (params.get("code") || "404").toLowerCase();
+      var retrySec = parseInt(params.get("retry") || "30", 10);
+
+      var badge = document.getElementById("errorCodeBadge");
+      var badgeText = document.getElementById("errorCodeText");
+      var art = document.getElementById("errorIllustration");
+      var title = document.getElementById("errorTitle");
+      var desc = document.getElementById("errorDesc");
+      var btnDash = document.getElementById("btnDashboard");
+      var btnDashText = document.getElementById("btnDashboardText");
+      var btnGoBack = document.getElementById("btnGoBack");
+
+      // Set destination URL for dashboard button
+      btnDash.href = getRoleDashboardUrl();
+
+      if (code === "403") {
+        badge.className = "error-code-badge is-danger";
+        badgeText.textContent = "Security Notice 403";
+        art.innerHTML = ILLUSTRATIONS.access_denied;
+        title.textContent = "Access Restricted";
+        desc.textContent = "You do not have permission to access this administrative portal resource. Contact your school administrator to request credentials.";
+        btnDashText.textContent = "Return to My Dashboard";
+      } else if (code === "429") {
+        badge.className = "error-code-badge is-warning";
+        badgeText.textContent = "Rate Limit Exceeded (429)";
+        art.innerHTML = ILLUSTRATIONS.rate_limited;
+        title.textContent = "Too Many Requests";
+        desc.innerHTML = 'System request limit reached. <span id="countdownWrap">Retrying automatically in <strong id="rateCountdown" style="font-weight:500;">' + retrySec + 's</strong>...</span>';
+        btnDashText.textContent = "Try Again Now";
+        btnDash.href = "javascript:window.location.reload()";
+
+        // Live Countdown Timer
+        var count = retrySec;
+        var timer = setInterval(function () {
+          count--;
+          var el = document.getElementById("rateCountdown");
+          if (el) el.textContent = count + "s";
+          if (count <= 0) {
+            clearInterval(timer);
+            window.location.reload();
+          }
+        }, 1000);
+      } else if (code === "500") {
+        badge.className = "error-code-badge is-danger";
+        badgeText.textContent = "Server Error 500";
+        art.innerHTML = ILLUSTRATIONS.server_error;
+        title.textContent = "Something Went Wrong";
+        desc.textContent = "An unexpected error occurred while processing your request. Academic records remain intact. Please try reloading or check back shortly.";
+        btnDashText.textContent = "Reload Page";
+        btnDash.href = "javascript:window.location.reload()";
+      } else if (code === "503") {
+        badge.className = "error-code-badge is-info";
+        badgeText.textContent = "Maintenance Window 503";
+        art.innerHTML = ILLUSTRATIONS.maintenance;
+        title.textContent = "Scheduled System Maintenance";
+        desc.textContent = "NGIS ERP is undergoing scheduled database indexing and optimization. All services will resume shortly.";
+        btnDashText.textContent = "Check Service Status";
+        btnDash.href = "javascript:window.location.reload()";
+      } else if (code === "offline") {
+        badge.className = "error-code-badge is-warning";
+        badgeText.textContent = "Connectivity Lost";
+        art.innerHTML = ILLUSTRATIONS.offline;
+        title.textContent = "No Internet Connection";
+        desc.textContent = "You appear to be offline. Please verify your campus Wi-Fi or local ethernet connection.";
+        btnDashText.textContent = "Check Connection";
+        btnDash.href = "#";
+        btnDash.onclick = function (e) {
+          e.preventDefault();
+          if (navigator.onLine) {
+            title.textContent = "Connection Restored";
+            desc.textContent = "Reconnecting to campus gateway...";
+            setTimeout(function () { window.location.href = getRoleDashboardUrl(); }, 800);
+          } else {
+            alert("Still offline. Please check your network connection.");
+          }
+        };
+
+        // Automatic reconnection listener
+        window.addEventListener("online", function () {
+          title.textContent = "Connection Restored";
+          desc.textContent = "Network reconnected! Redirecting to portal...";
+          setTimeout(function () { window.location.href = getRoleDashboardUrl(); }, 1000);
+        });
+      } else {
+        // Default 404 Page Not Found with Disconnected Plug
+        badge.className = "error-code-badge";
+        badgeText.textContent = "Error 404";
+        art.innerHTML = ILLUSTRATIONS.disconnected_plug;
+        title.textContent = "Page not found";
+        desc.textContent = "The page you're looking for may have been moved, removed or is no longer available.";
+        btnDashText.textContent = "Return to Dashboard";
+      }
+
+      // Hydrate icons
+      if (window.NGIS && typeof window.NGIS.hydrateIcons === "function") {
+        window.NGIS.hydrateIcons(document.body);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", applyErrorConfig);
+  </script>
+</body>
+</html>

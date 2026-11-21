@@ -166,9 +166,9 @@
   <header id="heroBanner" role="banner"></header>
 
   <!-- ═══ MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE) ═══ -->
-  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+  <header class="lg:hidden bg-transparent border-none px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
     <div class="flex items-center gap-3 min-w-0">
-      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
         <i class="ph-bold ph-list text-xl"></i>
       </button>
       <div class="min-w-0 truncate">
@@ -869,14 +869,21 @@ window.HERO_CONFIG = {
     tbody.innerHTML = '';
 
     if (items.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="7" class="py-8 text-center text-slate-400">
-            <span class="material-symbols-outlined text-3xl mb-1 block">search_off</span>
-            No matching class sections found.
-          </td>
-        </tr>
-      `;
+      const isFiltered = (searchInput && searchInput.value.trim() !== '') || (gradeSelect && gradeSelect.value !== 'all');
+      if (isFiltered && window.NGIS_EMPTY) {
+        window.NGIS_EMPTY.renderNoResults(tbody, {
+          colspan: 7,
+          onAction: () => {
+            if (searchInput) searchInput.value = '';
+            if (gradeSelect) gradeSelect.value = 'all';
+            filterData();
+          }
+        });
+      } else if (window.NGIS_EMPTY) {
+        window.NGIS_EMPTY.render(tbody, 'classes');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-12 text-center text-slate-400">No classes found.</td></tr>';
+      }
       return;
     }
 
@@ -885,14 +892,11 @@ window.HERO_CONFIG = {
       const isFull = c.enrolled >= c.cap;
       const barColor = isFull ? 'bg-[#0F5132]' : 'bg-[#0F5132]';
 
-      const statusBadge = c.status === 'Active'
-        ? `<div class="inline-flex items-center gap-1.5 text-xs text-slate-700 font-normal">
+      const statusBadge = window.NGIS_STATUS
+        ? window.NGIS_STATUS.render(c.status || 'Active', { variant: 'flat' })
+        : `<div class="inline-flex items-center gap-1.5 text-xs text-slate-700 font-normal">
              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
              <span>Active</span>
-           </div>`
-        : `<div class="inline-flex items-center gap-1.5 text-xs text-slate-600 font-normal">
-             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-             <span>Review</span>
            </div>`;
 
       const tr = document.createElement('tr');
@@ -928,13 +932,34 @@ window.HERO_CONFIG = {
           ${statusBadge}
         </td>
         <td class="py-3 px-3 whitespace-nowrap text-right border-b border-slate-200">
-          <div class="flex items-center justify-end gap-1.5">
-            <button class="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-[#0F5132] btn-edit-class transition-colors" data-code="${esc(c.code)}" aria-label="Edit class ${esc(c.code)}" title="Edit Section" type="button">
+          <div class="flex items-center justify-end gap-1.5 relative">
+            <button class="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-[#0F5132] btn-edit-class transition-colors cursor-pointer" data-code="${esc(c.code)}" aria-label="Edit class ${esc(c.code)}" type="button">
               <span class="material-symbols-outlined text-lg">edit</span>
             </button>
-            <button class="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 btn-more-class transition-colors" data-code="${esc(c.code)}" aria-label="More options for ${esc(c.code)}" title="More options" type="button">
-              <span class="material-symbols-outlined text-lg">more_vert</span>
-            </button>
+            <div class="relative inline-block text-left class-menu-wrapper">
+              <button class="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 btn-more-class transition-colors cursor-pointer" data-code="${esc(c.code)}" aria-label="More options for ${esc(c.code)}" type="button">
+                <span class="material-symbols-outlined text-lg">more_vert</span>
+              </button>
+              <div class="class-action-menu hidden absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-slate-200/90 py-1 z-30 text-left text-xs font-normal text-slate-700">
+                <a href="admin-timetables.html?class=${encodeURIComponent(c.code)}" class="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 transition-colors">
+                  <span class="material-symbols-outlined text-[15px] text-slate-500">calendar_view_week</span>
+                  <span>View Timetable</span>
+                </a>
+                <a href="admin-users-students.html?class=${encodeURIComponent(c.code)}" class="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 transition-colors">
+                  <span class="material-symbols-outlined text-[15px] text-slate-500">group</span>
+                  <span>Student Roster</span>
+                </a>
+                <button type="button" class="btn-menu-edit w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 transition-colors text-left cursor-pointer" data-code="${esc(c.code)}">
+                  <span class="material-symbols-outlined text-[15px] text-slate-500">edit</span>
+                  <span>Edit Section</span>
+                </button>
+                <div class="my-1 border-t border-slate-100"></div>
+                <button type="button" class="btn-menu-delete w-full flex items-center gap-2 px-3 py-2 hover:bg-rose-50 text-rose-600 transition-colors text-left cursor-pointer" data-code="${esc(c.code)}">
+                  <span class="material-symbols-outlined text-[15px] text-rose-500">delete</span>
+                  <span>Delete Section</span>
+                </button>
+              </div>
+            </div>
           </div>
         </td>
       `;
@@ -1419,13 +1444,90 @@ window.HERO_CONFIG = {
 
       const moreBtn = e.target.closest('.btn-more-class');
       if (moreBtn) {
-        const code = moreBtn.dataset.code;
-        if (window.toast) {
-          window.toast(`Section ${code}: Timetable, Attendance, Student Roster options`, 'info');
+        e.stopPropagation();
+        const wrapper = moreBtn.closest('.class-menu-wrapper');
+        const menu = wrapper ? wrapper.querySelector('.class-action-menu') : null;
+        const wasOpen = menu && !menu.classList.contains('hidden');
+        document.querySelectorAll('.class-action-menu').forEach(m => m.classList.add('hidden'));
+        if (menu && !wasOpen) {
+          menu.classList.remove('hidden');
         }
+        return;
+      }
+
+      const menuEditBtn = e.target.closest('.btn-menu-edit');
+      if (menuEditBtn) {
+        document.querySelectorAll('.class-action-menu').forEach(m => m.classList.add('hidden'));
+        const code = menuEditBtn.dataset.code;
+        const item = CLASSES_DATA.find(c => c.code === code);
+        if (item) openModal(item);
+        return;
+      }
+
+      const menuDeleteBtn = e.target.closest('.btn-menu-delete');
+      if (menuDeleteBtn) {
+        document.querySelectorAll('.class-action-menu').forEach(m => m.classList.add('hidden'));
+        const code = menuDeleteBtn.dataset.code;
+        const item = CLASSES_DATA.find(c => c.code === code);
+        if (!item) return;
+
+        if (item.enrolled > 0) {
+          if (window.NGIS_UX && typeof window.NGIS_UX.confirm === 'function') {
+            window.NGIS_UX.confirm({
+              title: "Cannot Delete Section " + code,
+              description: "This class section currently has " + item.enrolled + " actively enrolled students. Deleting active sections is prohibited to prevent student record displacement.",
+              consequence: "Please transfer or reassign all " + item.enrolled + " students to another class before deleting this section.",
+              confirmLabel: "Understood",
+              cancelLabel: "Close",
+              isDestructive: false,
+              isRecoverable: true,
+              icon: "shield-exclamation"
+            });
+          } else {
+            alert(`Protected Section: Cannot delete Class Section ${code} because it currently has ${item.enrolled} actively enrolled students.`);
+          }
+          return;
+        }
+
+        (async function() {
+          let confirmed = false;
+          if (window.NGIS_UX && typeof window.NGIS_UX.confirm === 'function') {
+            confirmed = await window.NGIS_UX.confirm({
+              title: "Delete Section " + code + "?",
+              description: "This empty class section will be permanently removed from the master curriculum schedule and room allocation registry.",
+              consequence: "The section will no longer appear in course catalogs or teacher assignment rosters.",
+              confirmLabel: "Delete Section",
+              cancelLabel: "Keep Section",
+              isDestructive: true,
+              isRecoverable: false,
+              icon: "trash3"
+            });
+          } else {
+            confirmed = confirm(`Delete empty section ${code}? This cannot be undone.`);
+          }
+          if (!confirmed) return;
+          const idx = CLASSES_DATA.findIndex(c => c.code === code);
+          if (idx !== -1) {
+            CLASSES_DATA.splice(idx, 1);
+            if (window.NGIS_UX && typeof window.NGIS_UX.success === 'function') {
+              window.NGIS_UX.success("Class section " + code + " deleted successfully.");
+            } else if (window.toast) {
+              window.toast(`Class Section ${code} was deleted`, 'success');
+            }
+            filterData();
+          }
+        })();
+        return;
       }
     });
   }
+
+  // Close 3-dot menus on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.class-menu-wrapper')) {
+      document.querySelectorAll('.class-action-menu').forEach(m => m.classList.add('hidden'));
+    }
+  });
 
   // Initial render
   paginateAndRender();

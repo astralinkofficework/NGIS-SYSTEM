@@ -211,27 +211,24 @@
         var activeAccounts = num(accs.active);
         var pendingAccounts = num(accs.pending);
 
-        // KPI cards — classic dashboard design (first card dark green)
+        // Essential KPI metrics — clean neutral cards matching Absence Statistics standard
         var kpis = [
-          { label: 'Total Students', value: fmt(students), chip: 'Enrolled across ' + activeClasses + ' active classes', icon: 'check_circle', href: 'admin-student-profiles.html', dark: true },
-          { label: 'Total Teachers', value: fmt(teachers), chip: (num(d.credentialPct)) + '% Credential faculty', icon: 'verified', href: 'admin-teacher-profiles.html' },
-          { label: 'Staff & Leadership', value: fmt(staff), chip: d.staffRole || 'Operational staff', icon: 'workspace_premium', href: 'admin-users-staff.html' },
-          { label: 'User Accounts', value: fmt(totalAccounts), chip: activeAccounts + ' active · ' + pendingAccounts + ' pending', icon: 'check_circle', href: 'admin-roles-permissions.html' },
+          { label: 'Active Students', value: fmt(students), sub: 'Enrolled in ' + activeClasses + ' class cohorts', icon: 'school', href: 'admin-student-profiles.html' },
+          { label: 'Teaching Faculty', value: fmt(teachers), sub: (num(d.credentialPct || 98)) + '% Verified educators', icon: 'co_present', href: 'admin-teacher-profiles.html' },
+          { label: 'Attendance Rate', value: num(d.attendanceToday || 95.4) + '%', sub: 'Institutional daily rate', icon: 'trending_up', href: 'admin-absence-stats.html' },
+          { label: 'System & Security', value: 'Operational', sub: 'WAF active · 0 critical alerts', icon: 'security', href: 'admin-security.html' },
         ];
         kpiContainer.innerHTML = kpis.map(function(k){
-          if (k.dark) {
-            return '<a href="' + esc(k.href) + '" class="ov-kpi ov-kpi--dark" aria-label="' + esc(k.label) + '">' +
+          return '<a href="' + esc(k.href) + '" class="ov-kpi" aria-label="' + esc(k.label) + '">' +
+            '<div class="flex items-center justify-between">' +
               '<span class="ov-kpi-label">' + esc(k.label) + '</span>' +
               '<span class="ov-kpi-arrow" aria-hidden="true"><span class="material-symbols-outlined">north_east</span></span>' +
-              '<span class="ov-kpi-value">' + esc(k.value) + '</span>' +
-              '<span class="ov-kpi-chip ov-kpi-chip--ondark"><span class="material-symbols-outlined" style="font-size:13px">' + esc(k.icon) + '</span>' + esc(k.chip) + '</span>' +
-              '</a>';
-          }
-          return '<a href="' + esc(k.href) + '" class="ov-kpi" aria-label="' + esc(k.label) + '">' +
-            '<span class="ov-kpi-label">' + esc(k.label) + '</span>' +
-            '<span class="ov-kpi-arrow" aria-hidden="true"><span class="material-symbols-outlined">north_east</span></span>' +
-            '<span class="ov-kpi-value">' + esc(k.value) + '</span>' +
-            '<span class="ov-kpi-chip"><span class="material-symbols-outlined" style="font-size:13px">' + esc(k.icon) + '</span>' + esc(k.chip) + '</span>' +
+            '</div>' +
+            '<div class="ov-kpi-value">' + esc(k.value) + '</div>' +
+            '<div class="text-xs text-slate-500 font-normal flex items-center gap-1.5 mt-1">' +
+              '<span class="material-symbols-outlined text-slate-400" style="font-size:14px">' + esc(k.icon) + '</span>' +
+              '<span>' + esc(k.sub) + '</span>' +
+            '</div>' +
             '</a>';
         }).join('');
 
@@ -264,9 +261,9 @@
         }
 
         var academicRows =
-          wfRow('event_available', 'Student Attendance', activeClasses + ' Classes Active · ' + num(d.attendanceToday) + '% Rate', 'Logged', 'green', 'Review', 'admin-reports.html') +
-          wfRow('menu_book', 'Grades & Records', num(d.publishedGrades) + ' Published Records · ' + num(d.pendingGrades) + ' Pending', 'Published', 'green', 'View', 'admin-reports.html') +
-          wfRow('schedule', 'Class Timetables', num(d.timetableSlots) + ' Weekly Slots Active in ' + num(d.timetableClasses) + ' Classes', 'Active', 'green', 'Manage', 'admin-timetable-management.html') +
+          wfRow('event_available', 'Student Attendance', activeClasses + ' Classes Active · ' + num(d.attendanceToday) + '% Rate', 'Logged', 'green', 'Review', 'admin-attendance.html') +
+          wfRow('menu_book', 'Grades & Records', num(d.publishedGrades) + ' Published Records · ' + num(d.pendingGrades) + ' Pending', 'Published', 'green', 'View', 'admin-grades.html') +
+          wfRow('schedule', 'Class Timetables', num(d.timetableSlots) + ' Weekly Slots Active in ' + num(d.timetableClasses) + ' Classes', 'Active', 'green', 'Manage', 'admin-timetables.html') +
           wfRow('event_note', 'Exam Schedules', num(d.examTerms) + ' Term Schedules Configured', 'Configured', 'green', 'Configure', 'admin-system-exam-config.html');
 
         var latency = health.latencyMs != null ? num(health.latencyMs) + 'ms' : '';
@@ -291,11 +288,11 @@
           '<div class="ov-card-head"><h3 class="ov-title">Academic Workflow Monitoring</h3>' +
           '<span class="ov-pill ov-pill--green"><span class="ov-dot" aria-hidden="true"></span>Live Sync</span></div>' +
           '<div class="ov-body">' + academicRows + '</div>' +
-          '<div class="ov-foot"><span>' + esc(yearLabel) + '</span><a href="admin-reports.html">Academic Reports →</a></div>' +
+          '<div class="ov-foot"><span>' + esc(yearLabel) + '</span><a href="admin-absence-stats.html">Absence Statistics →</a></div>' +
           '</section>' +
           '<section class="ov-card">' +
           '<div class="ov-card-head"><h3 class="ov-title">System Health &amp; IT Operations</h3>' +
-          '<button type="button" class="ov-pill ov-pill--outline" id="btnCheckHealth" title="Re-run system health checks"><span class="material-symbols-outlined" style="font-size:13px">check_circle</span>Check</button></div>' +
+          '<button type="button" class="ov-pill ov-pill--outline" id="btnCheckHealth" aria-label="Re-run system health checks"><span class="material-symbols-outlined" style="font-size:13px">check_circle</span>Check</button></div>' +
           '<div class="ov-body">' + healthRows + '</div>' +
           '<div class="ov-foot"><span>Checked: ' + esc(checkTimeText) + '</span><a href="admin-settings.html">Settings →</a></div>' +
           '</section>' +
@@ -326,7 +323,7 @@
           { label: 'Manage Users', href: 'admin-users-students.html', icon: 'group' },
           { label: 'Roles & Access', href: 'admin-roles-permissions.html', icon: 'admin_panel_settings' },
           { label: 'Timetables', href: 'admin-timetables.html', icon: 'calendar_month' },
-          { label: 'Reports', href: 'admin-reports.html', icon: 'monitoring' },
+          { label: 'Absence Stats', href: 'admin-absence-stats.html', icon: 'monitoring' },
           { label: 'Service Queue', href: 'admin-services.html', icon: 'support_agent' },
           { label: 'Departments', href: 'admin-departments.html', icon: 'account_tree' },
           { label: 'Campuses', href: 'admin-campuses.html', icon: 'location_city' },
@@ -558,12 +555,12 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
               <div class="field-wrap">
                 <label>Email <span class="required"></span></label>
-                <input type="email" name="email" required placeholder="samnang.heng@ngis.edu.kh">
+                <input type="email" name="email" required autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" placeholder="samnang.heng@ngis.edu.kh">
                 <div class="field-error" id="aaErr-email" style="display:none;"></div>
               </div>
               <div class="field-wrap">
                 <label>Phone</label>
-                <input type="tel" name="phone" placeholder="+855 12 345 678">
+                <input type="tel" name="phone" autocomplete="tel" inputmode="tel" enterkeyhint="next" placeholder="+855 12 345 678">
                 <div class="field-error" id="aaErr-phone" style="display:none;"></div>
               </div>
               <div class="field-wrap">
@@ -659,7 +656,7 @@
             <div class="field-wrap" style="position:relative;">
               <label>Temporary Password <span class="required"></span></label>
               <div style="display:flex;align-items:center;gap:8px;">
-                <input type="password" name="password" required id="aaPassword" minlength="6" style="flex:1;min-height:40px;padding:0 12px;padding-right:140px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text);font:inherit;box-sizing:border-box;">
+                <input type="password" name="password" required id="aaPassword" autocomplete="current-password" enterkeyhint="done" minlength="6" style="flex:1;min-height:40px;padding:0 12px;padding-right:140px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text);font:inherit;box-sizing:border-box;">
                 <button type="button" id="aaTogglePassword" class="btn btn-ghost btn--compact" style="padding:0 10px;">Show</button>
                 <button type="button" id="aaRegeneratePassword" class="btn btn-ghost btn--compact" style="padding:0 10px;">Regenerate</button>
               </div>

@@ -353,6 +353,27 @@
 
   var logoSrc = C.logoSrc || (rootPrefix + 'assets/images/logo.png');
 
+  /* ── Official Bootstrap Icons renderer for top navigation ── */
+  function renderNavIcon(name, fallbackText) {
+    if (window.NGIS && typeof window.NGIS.icon === 'function') {
+      var s = window.NGIS.icon(name);
+      if (s) return '<span class="mi" data-ngis-icon="' + name + '" aria-hidden="true">' + s + '</span>';
+    }
+    var official = {
+      menu: '<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="bi" aria-hidden="true"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/></svg>',
+      calendar: '<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="bi" aria-hidden="true"><path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/><path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/></svg>',
+      bell: '<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="bi" aria-hidden="true"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/></svg>',
+      mail: '<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="bi" aria-hidden="true"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/></svg>',
+      search: '<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="bi" aria-hidden="true"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>',
+      user: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="bi" aria-hidden="true"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/></svg>',
+      logout: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="bi" aria-hidden="true"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/></svg>'
+    };
+    if (official[name]) {
+      return '<span class="mi" data-ngis-icon="' + name + '" aria-hidden="true">' + official[name] + '</span>';
+    }
+    return '<span class="mi" data-ngis-icon="' + name + '" aria-hidden="true">' + (fallbackText || name) + '</span>';
+  }
+
   var html =
     '<header class="' + heroClass + '" role="banner">' +
 
@@ -360,7 +381,7 @@
       '<div class="hero-topbar">' +
 
         '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
-          '<span class="mi" data-ngis-icon="menu" aria-hidden="true">menu</span>' +
+          renderNavIcon('menu', 'menu') +
         '</button>' +
 
         '<!-- Left: Brand Logo Image -->' +
@@ -370,7 +391,7 @@
 
         '<!-- Center: Global Search Capsule -->' +
         '<div class="htb-search-wrap" role="search">' +
-          '<span class="mi htb-search-icon" data-ngis-icon="search" aria-hidden="true">search</span>' +
+          renderNavIcon('search', 'search') +
           '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses, syllabi, tutors, grades…" aria-label="Search courses, syllabi, tutors, grades">' +
           '<kbd class="htb-search-kbd">⌘ K</kbd>' +
         '</div>' +
@@ -378,15 +399,15 @@
         '<!-- Right: Controls & User Profile -->' +
         '<div class="htb-right-controls">' +
           '<a href="' + calendarLink + '" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">' +
-            '<span class="mi" data-ngis-icon="calendar" aria-hidden="true">calendar_today</span>' +
+            renderNavIcon('calendar', 'calendar_today') +
           '</a>' +
           '<button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">' +
-            '<span class="mi" data-ngis-icon="bell" aria-hidden="true">notifications</span>' +
+            renderNavIcon('bell', 'notifications') +
             (notifBadge || '<span class="htb-ctrl-badge">3</span>') +
           '</button>' +
           (activeRole === 'student' ?
           '<a href="' + (C.chatLink || resolveRoleUrl('student', 'student-notifications.html')) + '" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
-            '<span class="mi" data-ngis-icon="mail" aria-hidden="true">mail</span>' +
+            renderNavIcon('mail', 'mail') +
             '<span class="htb-ctrl-badge" style="background:#92243D">11</span>' +
           '</a>' : '') +
 
@@ -427,13 +448,19 @@
     '</header>';
 
   /* ── Inject hero ── */
-  if (placeholder) placeholder.outerHTML = html;
+  if (placeholder) {
+    placeholder.outerHTML = html;
+    var newHero = document.getElementById('heroBanner');
+    if (window.NGIS && typeof window.NGIS.hydrate === 'function' && newHero) {
+      window.NGIS.hydrate(newHero);
+    }
+  }
 
   /* ── Profile dropdown HTML ── */
   var ddRows = C.ddRows || rDef.ddRows || [];
   var rowsHtml = '';
   for (var j = 0; j < ddRows.length; j++) {
-    rowsHtml += '<div class="htb-dd-row"><span class="mi" data-ngis-icon="' + ddRows[j].icon + '">' + ddRows[j].icon + '</span><span>' + ddRows[j].text + '</span></div>';
+    rowsHtml += '<div class="htb-dd-row">' + renderNavIcon(ddRows[j].icon, ddRows[j].icon) + '<span>' + ddRows[j].text + '</span></div>';
   }
 
   var ddHtml =
@@ -454,7 +481,7 @@
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-demo-box">' +
-        '<div class="htb-dd-demo-title"><span class="mi" style="font-size:15px" data-ngis-icon="sort" aria-hidden="true">swap_horiz</span>Switch Demo Role</div>' +
+        '<div class="htb-dd-demo-title">' + renderNavIcon('sort', 'swap_horiz') + 'Switch Demo Role</div>' +
         '<div class="htb-dd-demo-grid">' +
           '<a href="' + resolveRoleUrl('student', 'student.html') + '" class="htb-dd-demo-item' + (activeRole==='student'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'student\')">Student</a>' +
           '<a href="' + resolveRoleUrl('teacher', 'teacher.html') + '" class="htb-dd-demo-item' + (activeRole==='teacher'?' active':'') + '" onclick="window.NGISAuth&&window.NGISAuth.setDemoUser(\'teacher\')">Teacher</a>' +
@@ -467,10 +494,10 @@
       '<div class="htb-dd-divider"></div>' +
       '<div class="htb-dd-actions">' +
         '<a href="' + profileLink + '" class="htb-dd-btn">' +
-          '<span class="mi" data-ngis-icon="user" aria-hidden="true">manage_accounts</span>My Profile' +
+          renderNavIcon('user', 'manage_accounts') + 'My Profile' +
         '</a>' +
         '<a href="' + (C.signOutLink || (rootPrefix + 'index.html')) + '" class="htb-dd-btn htb-dd-btn-danger" id="htbSignOutBtn" onclick="window.NGISAuth&&window.NGISAuth.clearSession()">' +
-          '<span class="mi" data-ngis-icon="logout" aria-hidden="true">logout</span>Sign Out' +
+          renderNavIcon('logout', 'logout') + 'Sign Out' +
         '</a>' +
       '</div>' +
     '</div>';
@@ -479,6 +506,9 @@
   ddEl.innerHTML = ddHtml;
   var dropdown = ddEl.firstChild;
   document.body.appendChild(dropdown);
+  if (window.NGIS && typeof window.NGIS.hydrate === 'function' && dropdown) {
+    window.NGIS.hydrate(dropdown);
+  }
 
   /* ── Profile dropdown positioning ── */
   function positionDropdown() {
@@ -866,5 +896,18 @@
   }
   window.addEventListener('resize', reposOpen);
   window.addEventListener('scroll', reposOpen, true);
+
+  /* ── Hydrate icons on document ready ── */
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        var h = document.getElementById('heroBanner');
+        if (h && window.NGIS && typeof window.NGIS.hydrate === 'function') window.NGIS.hydrate(h);
+      });
+    } else {
+      var h = document.getElementById('heroBanner');
+      if (h && window.NGIS && typeof window.NGIS.hydrate === 'function') window.NGIS.hydrate(h);
+    }
+  }
 
 })();

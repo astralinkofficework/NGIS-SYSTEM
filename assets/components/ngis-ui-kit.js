@@ -292,6 +292,9 @@
   /* ── 7. Accessible Confirmation Dialog (replaces window.confirm) ── */
   function confirmAction(opts) {
     var o = opts || {};
+    if (global.NGIS_UX && typeof global.NGIS_UX.confirm === "function") {
+      return global.NGIS_UX.confirm(o);
+    }
     if (global.NGISCancelDialog && typeof global.NGISCancelDialog.open === "function") {
       global.NGISCancelDialog.open({
         title: o.title || "Confirm Action",

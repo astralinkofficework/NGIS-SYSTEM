@@ -185,6 +185,7 @@
   function wireSearch() {
     document.querySelectorAll("input").forEach(input => {
       if (input.type === "checkbox" || input.type === "radio" || input.type === "password") return;
+      if (input.getAttribute("data-ngis-search-skip") === "true" || input.getAttribute("data-custom-search") === "true") return;
       const ph = (input.placeholder || "").toLowerCase();
       if (!ph.includes("search") && input.type !== "search") return;
 
@@ -195,7 +196,7 @@
         tbl = el.querySelector("table");
         el = el.parentElement;
       }
-      if (!tbl) return;
+      if (!tbl || tbl.getAttribute("data-custom-search") === "true") return;
 
       let noResultRow = null;
 
@@ -203,23 +204,41 @@
         const q = input.value.toLowerCase().trim();
         let visible = 0;
         tbl.querySelectorAll("tbody tr").forEach(row => {
-          if (row === noResultRow) return;
+          if (row === noResultRow || row.classList.contains("ngis-empty-row")) return;
           const match = !q || row.textContent.toLowerCase().includes(q);
           row.style.display = match ? "" : "none";
           if (match) visible++;
         });
 
-        /* no-result placeholder */
+        /* no-result placeholder: use standardized NGIS_EMPTY if available */
         if (!noResultRow) {
-          noResultRow = document.createElement("tr");
-          noResultRow.innerHTML = `<td colspan="20" style="text-align:center;padding:24px;color:var(--muted);font-size:13px">
-            <span class="material-symbols-outlined" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4">search_off</span>
-            No matching records found
-          </td>`;
+          if (window.NGIS_EMPTY && typeof window.NGIS_EMPTY.buildTableRow === "function") {
+            const cols = tbl.querySelectorAll("thead th").length || 8;
+            const dummy = document.createElement("tbody");
+            dummy.innerHTML = window.NGIS_EMPTY.buildTableRow({
+              type: "no-results",
+              colspan: cols,
+              onResetAction: () => {
+                input.value = "";
+                input.dispatchEvent(new Event("input"));
+              }
+            });
+            noResultRow = dummy.firstElementChild;
+          } else {
+            noResultRow = document.createElement("tr");
+            noResultRow.className = "ngis-empty-row";
+            noResultRow.innerHTML = `<td colspan="20" style="text-align:center;padding:32px 24px;color:var(--muted);font-size:13px;font-weight:400">
+              <span class="material-symbols-outlined" style="font-size:32px;display:block;margin-bottom:8px;opacity:.4">search_off</span>
+              No matching records found
+            </td>`;
+          }
           noResultRow.style.display = "none";
-          tbl.querySelector("tbody").appendChild(noResultRow);
+          const tbody = tbl.querySelector("tbody");
+          if (tbody) tbody.appendChild(noResultRow);
         }
-        noResultRow.style.display = visible === 0 && q ? "" : "none";
+        if (noResultRow) {
+          noResultRow.style.display = visible === 0 && q ? "" : "none";
+        }
       });
     });
   }

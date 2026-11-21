@@ -292,7 +292,7 @@
 
   gap: 16px;
 
-  padding: max(12px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) 12px max(24px, env(safe-area-inset-left, 0px));
+  padding: max(12px, env(safe-area-inset-top, 0px)) max(var(--page-pad-x, 32px), env(safe-area-inset-right, 0px)) 12px max(var(--page-pad-x, 32px), env(safe-area-inset-left, 0px));
 
   min-height: calc(58px + env(safe-area-inset-top, 0px));
 
@@ -350,56 +350,15 @@
 
 
 
-/* Straight continuous divider line under hero top bar — spaced, does not span full width */
-
-.hero-topbar::after {
-
-  content: '';
-
-  position: absolute;
-
-  bottom: 0;
-
-  left: 24px;
-
-  right: 24px;
-
-  width: auto;
-
-  height: 1px;
-
-  background: rgba(0, 0, 0, 0.08);
-
-  border-radius: 999px;
-
-  pointer-events: none;
-
-  transition: background 0.2s ease, left 0.2s ease, right 0.2s ease;
-
-}
-
-
-
-@media (min-width: 1024px) {
-
-  .hero-topbar::after {
-
-    left: 28px;
-
-    right: 28px;
-
-  }
-
-}
-
-
-
+/* Straight continuous divider line under hero top bar — disabled for seamless transparent navbar */
+.hero-topbar::after,
 .hero.hero-main .hero-topbar::after,
-
-.hero:has(.hero-body) .hero-topbar::after {
-
-  background: rgba(255, 255, 255, 0.18) !important;
-
+.hero:has(.hero-body) .hero-topbar::after,
+[data-theme="dark"] .hero-topbar::after,
+[data-theme="dark"] .hero.hero-main .hero-topbar::after,
+[data-theme="dark"] .hero:has(.hero-body) .hero-topbar::after {
+  content: none !important;
+  display: none !important;
 }
 
 
@@ -989,129 +948,184 @@
 
 
 .htb-ctrl-badge,
-
 .htb-badge {
-
   position: absolute;
-
   top: -2px;
-
   right: -2px;
-
   min-width: 17px;
-
   height: 17px;
-
   padding: 0 4px;
-
   border-radius: 999px;
-
   background: #176B45;
-
   color: #ffffff;
-
   font-size: 9.5px;
-
-  font-weight: 400;
-
+  font-weight: 500;
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
-  border: 2px solid #ffffff;
-
+  border: 2px solid var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
   line-height: 1;
-
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-
+  pointer-events: none;
 }
 
-
+[data-theme="dark"] .htb-ctrl-badge,
+[data-theme="dark"] .htb-badge {
+  border-color: #0F172A !important;
+}
 
 .htb-ctrl-divider {
-
   width: 1px;
-
   height: 22px;
-
   background: rgba(0, 0, 0, 0.08);
-
   margin: 0 4px;
-
   flex-shrink: 0;
-
 }
 
-
-
-.hero.hero-main .htb-ctrl-btn,
-
-.hero:has(.hero-body) .htb-ctrl-btn {
-
-  border: none !important;
-
+/* ── Top Navigation Controls Ink & Transparency ── */
+.htb-ctrl-btn,
+.hero-topbar .htb-ctrl-btn,
+.hero:not(.hero-main) .htb-ctrl-btn,
+.hero-subpage .htb-ctrl-btn,
+.hero-transparent .htb-ctrl-btn,
+.ngis-sticky-fixed .htb-ctrl-btn,
+.htb-hamburger,
+#htbHamburger {
+  color: var(--ngis-sticky-text, #29352E) !important;
   background: transparent !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.18s ease;
+}
 
+.htb-ctrl-btn:hover,
+.hero-topbar .htb-ctrl-btn:hover,
+.hero:not(.hero-main) .htb-ctrl-btn:hover,
+.hero-subpage .htb-ctrl-btn:hover,
+.hero-transparent .htb-ctrl-btn:hover,
+.ngis-sticky-fixed .htb-ctrl-btn:hover,
+.htb-hamburger:hover,
+#htbHamburger:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #17201B !important;
+}
+
+.htb-ctrl-btn:active,
+.hero-topbar .htb-ctrl-btn:active,
+.hero:not(.hero-main) .htb-ctrl-btn:active,
+.hero-subpage .htb-ctrl-btn:active,
+.hero-transparent .htb-ctrl-btn:active,
+.ngis-sticky-fixed .htb-ctrl-btn:active,
+.htb-hamburger:active,
+#htbHamburger:active {
+  background: rgba(0, 0, 0, 0.1) !important;
+  color: #000000 !important;
+}
+
+/* Dark mode ink */
+[data-theme="dark"] .htb-ctrl-btn,
+[data-theme="dark"] .hero-topbar .htb-ctrl-btn,
+[data-theme="dark"] .hero:not(.hero-main) .htb-ctrl-btn,
+[data-theme="dark"] .hero-subpage .htb-ctrl-btn,
+[data-theme="dark"] .hero-transparent .htb-ctrl-btn,
+[data-theme="dark"] .ngis-sticky-fixed .htb-ctrl-btn,
+[data-theme="dark"] .htb-hamburger,
+[data-theme="dark"] #htbHamburger {
+  color: #F8FAFC !important;
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-theme="dark"] .htb-ctrl-btn:hover,
+[data-theme="dark"] .hero-topbar .htb-ctrl-btn:hover,
+[data-theme="dark"] .hero:not(.hero-main) .htb-ctrl-btn:hover,
+[data-theme="dark"] .hero-subpage .htb-ctrl-btn:hover,
+[data-theme="dark"] .hero-transparent .htb-ctrl-btn:hover,
+[data-theme="dark"] .ngis-sticky-fixed .htb-ctrl-btn:hover,
+[data-theme="dark"] .htb-hamburger:hover,
+[data-theme="dark"] #htbHamburger:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #FFFFFF !important;
+}
+
+.hero.hero-main:not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn,
+.hero:has(.hero-body):not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn {
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  background: transparent !important;
   color: #ffffff !important;
-
 }
 
-.hero.hero-main .htb-ctrl-btn:hover,
-
-.hero:has(.hero-body) .htb-ctrl-btn:hover {
-
+.hero.hero-main:not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn:hover,
+.hero:has(.hero-body):not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
 }
 
-.hero.hero-main .htb-ctrl-btn:active,
-
-.hero.hero-main .htb-ctrl-btn.active,
-
-.hero:has(.hero-body) .htb-ctrl-btn:active,
-
-.hero:has(.hero-body) .htb-ctrl-btn.active {
-
+.hero.hero-main:not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn:active,
+.hero.hero-main:not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn.active,
+.hero:has(.hero-body):not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn:active,
+.hero:has(.hero-body):not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-btn.active {
   background: rgba(255, 255, 255, 0.26) !important;
-
   color: #ffffff !important;
-
 }
 
 .hero.hero-main .htb-ctrl-btn .material-symbols-outlined,
-
 .hero.hero-main .htb-ctrl-btn .mi,
-
 .hero:has(.hero-body) .htb-ctrl-btn .material-symbols-outlined,
-
 .hero:has(.hero-body) .htb-ctrl-btn .mi {
-
-  font-size: 22px !important;
-
+  font-size: 20px !important;
 }
 
-.hero.hero-main .htb-ctrl-badge,
-
-.hero.hero-main .htb-badge,
-
-.hero:has(.hero-body) .htb-ctrl-badge,
-
-.hero:has(.hero-body) .htb-badge {
-
+.hero.hero-main:not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-badge,
+.hero.hero-main:not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-badge,
+.hero:has(.hero-body):not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-badge,
+.hero:has(.hero-body):not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-badge {
   top: 1px !important;
-
   right: 1px !important;
-
   border: 2px solid #176B45 !important;
-
 }
 
-.hero.hero-main .htb-ctrl-divider,
-
-.hero:has(.hero-body) .htb-ctrl-divider {
-
+.hero.hero-main:not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-divider,
+.hero:has(.hero-body):not(:has(.ngis-sticky-fixed)) .hero-topbar:not(.ngis-sticky-fixed) .htb-ctrl-divider {
   background: rgba(255, 255, 255, 0.25) !important;
+}
 
+/* High-specificity dark ink for scrolled sticky topbar across all portals */
+html body .hero-topbar.ngis-sticky-fixed .htb-ctrl-btn,
+html body .ngis-sticky-fixed .htb-ctrl-btn,
+html body .hero-topbar.ngis-sticky-fixed #htbHamburger,
+html body .ngis-sticky-fixed #htbHamburger {
+  color: #29352E !important;
+  background: transparent !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+html body .hero-topbar.ngis-sticky-fixed .htb-ctrl-badge,
+html body .ngis-sticky-fixed .htb-ctrl-badge {
+  border-color: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+}
+
+html body .hero-topbar.ngis-sticky-fixed .htb-chip-name,
+html body .ngis-sticky-fixed .htb-chip-name {
+  color: #29352E !important;
+}
+
+html[data-theme="dark"] body .hero-topbar.ngis-sticky-fixed .htb-ctrl-btn,
+html[data-theme="dark"] body .ngis-sticky-fixed .htb-ctrl-btn,
+html[data-theme="dark"] body .hero-topbar.ngis-sticky-fixed #htbHamburger,
+html[data-theme="dark"] body .ngis-sticky-fixed #htbHamburger {
+  color: #F8FAFC !important;
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+html[data-theme="dark"] body .hero-topbar.ngis-sticky-fixed .htb-ctrl-badge,
+html[data-theme="dark"] body .ngis-sticky-fixed .htb-ctrl-badge {
+  border-color: #0F172A !important;
+}
+
+html[data-theme="dark"] body .hero-topbar.ngis-sticky-fixed .htb-chip-name,
+html[data-theme="dark"] body .ngis-sticky-fixed .htb-chip-name {
+  color: #F8FAFC !important;
 }
 
 
@@ -2965,26 +2979,11 @@ body[data-page="announcements"] #htbHamburger {
 
 }
 
-[data-theme="dark"] .hero-topbar::after {
-
-  background: rgba(255, 255, 255, 0.08) !important;
-
-}
-
-[data-theme="dark"] .hero.hero-main .hero-topbar,
-
-[data-theme="dark"] .hero:has(.hero-body) .hero-topbar {
-
-  border-bottom: none !important;
-
-}
-
+[data-theme="dark"] .hero-topbar::after,
 [data-theme="dark"] .hero.hero-main .hero-topbar::after,
-
 [data-theme="dark"] .hero:has(.hero-body) .hero-topbar::after {
-
-  background: rgba(255, 255, 255, 0.16) !important;
-
+  content: none !important;
+  display: none !important;
 }
 
 [data-theme="dark"] .hero:not(.hero-main):not(:has(.hero-body)) .htb-brand-title,
@@ -3653,7 +3652,7 @@ body[data-page="announcements"] #htbHamburger {
 
 /* Landing hero matches standard Ocean Teal */
 
-.hero-body { padding: 18px 28px 84px !important; min-height: 0; }
+.hero-body { padding: 18px max(var(--page-pad-x, 32px), env(safe-area-inset-left, 0px)) 84px !important; min-height: 0; }
 
 .hero-date { margin-bottom: 4px; font-size: 12px; color: #ffffff !important; }
 
@@ -3727,16 +3726,16 @@ body[data-page="announcements"] #htbHamburger {
    load order — applies to Admin, Teacher, Principal, Student, Staff.
    ══════════════════════════════════════════════════════════════ */
 
-/* Row: one line, never wraps, children allowed to shrink */
-.hero .hero-topbar {
-  display: flex !important;
-  align-items: center !important;
-  flex-wrap: nowrap !important;
-  justify-content: space-between !important;
-  gap: 14px !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-  overflow: visible !important;
+/* Row: one line, never wraps, children allowed to shrink - only for legacy standalone pages without master navbar */
+body:not(:has(#ngisGlobalNavbar)) .hero .hero-topbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
 }
 .hero .hero-topbar > * { min-width: 0; }
 

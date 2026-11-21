@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NGIS — Global UX Writing, Dialogs &amp; Interaction System</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  
+  <!-- Core NGIS Styles -->
+  <link rel="stylesheet" href="../../assets/css/app.css?v=3.0" />
+  <link rel="stylesheet" href="../../assets/css/design-system.css" />
+  <link rel="stylesheet" href="../../assets/css/interactions.css" />
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2" />
+  
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    
+    .main {
+      padding: 24px 20px 80px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    body, h1, h2, h3, h4, h5, h6, button, input, select, textarea {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 400;
+    }
+    h1, h2, h3, h4, .font-medium, strong, b {
+      font-weight: 500 !important;
+    }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    @media (max-width: 640px) {
+      .main {
+        padding: 16px 10px 60px !important;
+      }
+      .demo-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+      .demo-card {
+        padding: 16px 14px !important;
+      }
+      .demo-btn {
+        font-size: 12.5px;
+        padding: 7px 12px;
+        min-height: 36px;
+      }
+    }
+    
+    .demo-card {
+      background: var(--card-bg, #ffffff);
+      border: 1px solid var(--border, #e2e8f0);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .demo-card-head {
+      border-bottom: 1px solid var(--border, #f1f5f9);
+      padding-bottom: 12px;
+    }
+    
+    .demo-card-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text, #0f172a);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .demo-card-desc {
+      font-size: 12.5px;
+      color: var(--muted, #64748b);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    
+    .demo-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .demo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      transition: all 0.15s ease;
+      min-height: 38px;
+    }
+    
+    .demo-btn:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+    
+    .demo-btn.is-danger {
+      background: #fef2f2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+    .demo-btn.is-danger:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+    }
+    
+    .demo-btn.is-primary {
+      background: #0f5132;
+      color: #ffffff;
+      border-color: #0f5132;
+    }
+    .demo-btn.is-primary:hover {
+      background: #146c43;
+    }
+    
+    .demo-console {
+      background: #0f172a;
+      color: #94a3b8;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+    }
+    .demo-console span.res {
+      color: #38bdf8;
+      font-weight: 500;
+      margin-left: 6px;
+    }
+  </style>
+  
+  <!-- Icon engine & UX Core -->
+  <script src="../../assets/js/action-icons.js?v=1.13.2"></script>
+  <script src="../../assets/js/ux-system.js"></script>
+</head>
+<body data-page="shared" data-role="shared">
+  <main class="main" style="max-width:1280px;margin:0 auto;">
+    
+    <!-- Header Section with Accessible Mobile Navigation Trigger -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button type="button" class="hamburger-btn mobile-hamburger-btn" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" style="display:none;width:40px;height:40px;border-radius:10px;border:1px solid #e2e8f0;background:#ffffff;align-items:center;justify-content:center;cursor:pointer;">
+          <span data-ngis-icon="menu"></span>
+        </button>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="badge" style="background:#e2f4ea;color:#0f5132;font-weight:500;padding:4px 10px;border-radius:6px;font-size:12px;">NGIS Core Standards</span>
+            <span style="font-size:12px;color:#64748b;">v3.2 Production</span>
+          </div>
+          <h1 style="font-size:24px;font-weight:500;color:#0f172a;margin:6px 0 2px;">Global UX Writing &amp; Interaction System</h1>
+          <p style="font-size:13.5px;color:#64748b;margin:0;">Universal confirmation dialogs, intelligent tooltips, action-oriented notifications, and accessible feedback.</p>
+        </div>
+      </div>
+      
+      <div style="display:flex;gap:10px;align-items:center;">
+        <a href="../../index.html" class="demo-btn">
+          <span data-ngis-icon="back"></span> Return to Portal Home
+        </a>
+      </div>
+    </div>
+
+    <!-- Live Event Log Console -->
+    <div class="demo-console" id="demoConsole" aria-live="polite">
+      System Ready. Click any interaction component below to preview real-time UX behavior.
+    </div>
+
+    <!-- Main Showcase Grid -->
+    <div class="demo-grid">
+
+      <!-- SECTION 02: INTELLIGENT CONFIRMATION DIALOGS -->
+      <div class="demo-card" style="grid-column: 1 / -1;">
+        <div class="demo-card-head">
+          <div class="demo-card-title">
+            <span data-ngis-icon="shield-exclamation" style="color:#0f5132;"></span>
+            <span>02 — Intelligent Confirmation Dialogs</span>
+          </div>
+          <p class="demo-card-desc">
+            Zero generic "Are you sure?" prompts. Every confirmation states the exact entity, what happens next, whether it is reversible, and uses action-oriented buttons. Automatically renders as a mobile bottom sheet on viewports &lt; 640px.
+          </p>
+        </div>
+
+        <div class="demo-actions">
+          <button type="button" class="demo-btn is-danger" id="btnDelStudent">
+            <span data-ngis-icon="delete"></span> Delete Student (Alice Hok)
+          </button>
+          <button type="button" class="demo-btn is-danger" id="btnDelAssignment">
+            <span data-ngis-icon="delete"></span> Delete Assignment (Integration Set 3)
+          </button>
+          <button type="button" class="demo-btn is-primary" id="btnPublishReport">
+            <span data-ngis-icon="send"></span> Publish Term Report (Grade 10)
+          </button>
+          <button type="button" class="demo-btn is-danger" id="btnRestrictAccount">
+            <span data-ngis-icon="lock"></span> Restrict Account (John Doe)
+          </button>
+          <button type="button" class="demo-btn" id="btnLogoutConfirm">
+            <span data-ngis-icon="logout"></span> Log Out Confirmation
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 03 & 04: PROFESSIONAL TOOLTIP SYSTEM -->
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div class="demo-card-title">
+            <span data-ngis-icon="info" style="color:#2563eb;"></span>
+            <span>03 &amp; 04 — Professional Semantic Tooltips</span>
+          </div>
+          <p class="demo-card-desc">
+            Tooltips describe functional actions, not visual shapes. Features 400ms hover delay, warm-grouping delay skipping, viewport collision prevention, keyboard focus support, and implemented keyboard shortcut chips (<kbd>Ctrl+K</kbd> / <kbd>Esc</kbd>).
+          </p>
+        </div>
+
+        <div class="demo-actions">
+          <button type="button" class="demo-btn" aria-label="Download original file">
+            <span data-ngis-icon="download"></span> Download
+          </button>
+          <button type="button" class="demo-btn" data-key-binding="ctrl+k" aria-label="Open command search">
+            <span data-ngis-icon="search"></span> Search
+          </button>
+          <button type="button" class="demo-btn" aria-label="More actions">
+            <span data-ngis-icon="more"></span> Options
+          </button>
+          <button type="button" class="demo-btn" data-key-binding="esc" aria-label="Close preview">
+            <span data-ngis-icon="close"></span> Close
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 08: SPECIFIC SUCCESS FEEDBACK -->
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div class="demo-card-title">
+            <span data-ngis-icon="checkCircle" style="color:#16a34a;"></span>
+            <span>08 — Specific Success Feedback</span>
+          </div>
+          <p class="demo-card-desc">
+            Replaces generic "Success" alerts with action-specific confirmations and an animated checkmark drawing transition.
+          </p>
+        </div>
+
+        <div class="demo-actions">
+          <button type="button" class="demo-btn" id="btnToastPublish">
+            Assignment Published
+          </button>
+          <button type="button" class="demo-btn" id="btnToastAttendance">
+            Attendance Saved
+          </button>
+          <button type="button" class="demo-btn" id="btnToastUpload">
+            Lesson Uploaded
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 09: ACTIONABLE ERROR MESSAGES & INLINE VALIDATION -->
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div class="demo-card-title">
+            <span data-ngis-icon="warning" style="color:#eab308;"></span>
+            <span>09 — Inline Form Validation &amp; Error Recovery</span>
+          </div>
+          <p class="demo-card-desc">
+            Constructive error feedback directly adjacent to the input field. Preserves user input and offers clear corrective action.
+          </p>
+        </div>
+
+        <form id="demoValidationForm" onsubmit="return false;" style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <label for="demoEmailInput" style="font-size:12.5px;font-weight:500;color:#334155;display:block;margin-bottom:4px;">Parent Guardian Email Address</label>
+            <input type="email" id="demoEmailInput" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" placeholder="parent@domain.com" style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid #cbd5e1;font-size:13px;" value="invalid-email@" />
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button type="button" class="demo-btn is-primary" id="btnTestValidate">Validate Field</button>
+            <button type="button" class="demo-btn" id="btnClearValidate">Reset Input</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- SECTION 11: DOUBLE-SUBMISSION LOCK & PRESS MOTION -->
+      <div class="demo-card">
+        <div class="demo-card-head">
+          <div class="demo-card-title">
+            <span data-ngis-icon="settings" style="color:#64748b;"></span>
+            <span>11 — Double-Submission Lock &amp; Scale Press</span>
+          </div>
+          <p class="demo-card-desc">
+            Guarantees asynchronous network actions cannot be submitted twice. Button scales to 0.97 on press and shows a progress state.
+          </p>
+        </div>
+
+        <div class="demo-actions">
+          <button type="button" class="demo-btn is-primary" id="btnAsyncSubmit">
+            <span data-ngis-icon="checkCircle"></span> Submit Grade Evaluations (Async)
+          </button>
+        </div>
+      </div>
+
+      <!-- SECTION 05: ACTION-ORIENTED NOTIFICATIONS -->
+      <div class="demo-card" style="grid-column: 1 / -1;">
+        <div class="demo-card-head" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div class="demo-card-title">
+              <span data-ngis-icon="bell" style="color:#0f5132;"></span>
+              <span>05 — Action-Oriented In-App Notifications</span>
+            </div>
+            <p class="demo-card-desc">
+              Every notification card explicitly states Trigger, Context, Impact, and an Actionable CTA button.
+            </p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button type="button" class="demo-btn" id="btnMarkAllRead">
+              Mark all as read
+            </button>
+            <select id="roleFilterSelect" class="select" style="font-size:12.5px;font-weight:500;padding:6px 28px 6px 12px;border-radius:8px;border:1px solid #cbd5e1;">
+              <option value="student">Student Portal</option>
+              <option value="teacher">Teacher Portal</option>
+              <option value="principal">Principal Portal</option>
+              <option value="admin">Admin Portal</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="demoNotifList" style="display:grid;gap:10px;">
+          <!-- Dynamically populated by NGIS_UX.notifications.render() -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Interactive Demo Script -->
+  <script>
+    window.PAGE = { role: "shared", active: "ux-demo" };
+
+    function initDemo() {
+      var consoleEl = document.getElementById("demoConsole");
+      function log(msg) {
+        if (!consoleEl) return;
+        var t = new Date().toLocaleTimeString();
+        consoleEl.innerHTML = "[" + t + "] " + msg;
+      }
+
+      // Initialize Notification List
+      if (window.NGIS_UX && window.NGIS_UX.notifications) {
+        window.NGIS_UX.notifications.render("#demoNotifList", "student");
+      }
+
+      var roleFilter = document.getElementById("roleFilterSelect");
+      if (roleFilter) {
+        roleFilter.addEventListener("change", function () {
+          var role = roleFilter.value;
+          if (window.NGIS_UX && window.NGIS_UX.notifications) {
+            window.NGIS_UX.notifications.render("#demoNotifList", role);
+            log("Switched notification view to: <span class='res'>" + role + " portal</span>");
+          }
+        });
+      }
+
+      var btnMarkAll = document.getElementById("btnMarkAllRead");
+      if (btnMarkAll) {
+        btnMarkAll.addEventListener("click", function () {
+          var role = roleFilter ? roleFilter.value : "student";
+          if (window.NGIS_UX && window.NGIS_UX.notifications) {
+            window.NGIS_UX.notifications.markAllAsRead(role);
+            window.NGIS_UX.notifications.render("#demoNotifList", role);
+            window.NGIS_UX.success("All " + role + " notifications marked as read.");
+            log("Marked all notifications as read for: <span class='res'>" + role + "</span>");
+          }
+        });
+      }
+
+      // 1. Delete Student Dialog
+      var btnDelStudent = document.getElementById("btnDelStudent");
+      if (btnDelStudent) {
+        btnDelStudent.addEventListener("click", async function () {
+          log("Opening Intelligent Dialog: Delete Student (Alice Hok)...");
+          var res = await window.NGIS_UX.dialog.deleteStudent({
+            name: "Alice Hok",
+            recordsCount: 14
+          });
+          log("Dialog resolved. Outcome: <span class='res'>" + (res ? "Confirmed Deletion" : "Action Cancelled") + "</span>");
+          if (res) window.NGIS_UX.success("Student profile Alice Hok was archived successfully.");
+        });
+      }
+
+      // 2. Delete Assignment Dialog
+      var btnDelAssignment = document.getElementById("btnDelAssignment");
+      if (btnDelAssignment) {
+        btnDelAssignment.addEventListener("click", async function () {
+          log("Opening Intelligent Dialog: Delete Assignment (Integration Set 3)...");
+          var res = await window.NGIS_UX.dialog.deleteAssignment({
+            title: "Integration Problems Set 3",
+            submissionsCount: 28
+          });
+          log("Dialog resolved. Outcome: <span class='res'>" + (res ? "Confirmed Deletion" : "Action Cancelled") + "</span>");
+          if (res) window.NGIS_UX.success("Assignment removed from syllabus.");
+        });
+      }
+
+      // 3. Publish Report Dialog
+      var btnPublishReport = document.getElementById("btnPublishReport");
+      if (btnPublishReport) {
+        btnPublishReport.addEventListener("click", async function () {
+          log("Opening Intelligent Dialog: Publish Term Report...");
+          var res = await window.NGIS_UX.dialog.publishReport({
+            reportName: "Grade 10 Mid-Term Evaluation",
+            recipientCount: "32"
+          });
+          log("Dialog resolved. Outcome: <span class='res'>" + (res ? "Report Published" : "Draft Kept") + "</span>");
+          if (res) window.NGIS_UX.success("Grade 10 Mid-Term Evaluation published to 32 students.");
+        });
+      }
+
+      // 4. Restrict Account Dialog
+      var btnRestrictAccount = document.getElementById("btnRestrictAccount");
+      if (btnRestrictAccount) {
+        btnRestrictAccount.addEventListener("click", async function () {
+          log("Opening Intelligent Dialog: Restrict Account...");
+          var res = await window.NGIS_UX.dialog.restrictAccount({
+            userName: "John Doe (Teacher)",
+            duration: "14 days"
+          });
+          log("Dialog resolved. Outcome: <span class='res'>" + (res ? "Account Restricted" : "Action Cancelled") + "</span>");
+          if (res) window.NGIS_UX.success("Account access for John Doe restricted for 14 days.");
+        });
+      }
+
+      // 5. Logout Dialog
+      var btnLogoutConfirm = document.getElementById("btnLogoutConfirm");
+      if (btnLogoutConfirm) {
+        btnLogoutConfirm.addEventListener("click", async function () {
+          log("Opening Intelligent Dialog: Logout confirmation...");
+          var res = await window.NGIS_UX.dialog.logout({
+            onConfirm: function () {
+              log("Logout confirmed by user.");
+              window.NGIS_UX.success("Signed out safely.");
+            }
+          });
+          log("Logout outcome: <span class='res'>" + (res ? "Logged Out" : "Stayed Signed In") + "</span>");
+        });
+      }
+
+      // Success Toasts
+      var btnToastPublish = document.getElementById("btnToastPublish");
+      if (btnToastPublish) {
+        btnToastPublish.addEventListener("click", function () {
+          window.NGIS_UX.success("Assignment published to Grade 10A");
+          log("Dispatched specific toast: <span class='res'>Assignment published to Grade 10A</span>");
+        });
+      }
+
+      var btnToastAttendance = document.getElementById("btnToastAttendance");
+      if (btnToastAttendance) {
+        btnToastAttendance.addEventListener("click", function () {
+          window.NGIS_UX.success("Attendance saved for 28 students");
+          log("Dispatched specific toast: <span class='res'>Attendance saved for 28 students</span>");
+        });
+      }
+
+      var btnToastUpload = document.getElementById("btnToastUpload");
+      if (btnToastUpload) {
+        btnToastUpload.addEventListener("click", function () {
+          window.NGIS_UX.success("Lesson material uploaded successfully");
+          log("Dispatched specific toast: <span class='res'>Lesson material uploaded successfully</span>");
+        });
+      }
+
+      // Inline Validation
+      var input = document.getElementById("demoEmailInput");
+      var btnValidate = document.getElementById("btnTestValidate");
+      var btnClear = document.getElementById("btnClearValidate");
+
+      if (btnValidate && input) {
+        btnValidate.addEventListener("click", function () {
+          var val = input.value.trim();
+          var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!re.test(val)) {
+            window.NGIS_UX.errors.setFieldError(input, "Enter a valid email address with a domain (e.g., guardian@example.com).");
+            log("Validation failed on email input. Preserved user input: <span class='res'>" + val + "</span>");
+          } else {
+            window.NGIS_UX.errors.clearFieldError(input);
+            window.NGIS_UX.success("Email address verified successfully.");
+            log("Validation passed for: <span class='res'>" + val + "</span>");
+          }
+        });
+      }
+
+      if (btnClear && input) {
+        btnClear.addEventListener("click", function () {
+          input.value = "";
+          window.NGIS_UX.errors.clearFieldError(input);
+          log("Reset email field.");
+        });
+      }
+
+      // Async submit lock
+      var btnAsync = document.getElementById("btnAsyncSubmit");
+      if (btnAsync) {
+        btnAsync.addEventListener("click", function () {
+          window.NGIS_UX.withSubmitLock(btnAsync, async function () {
+            log("Async submission started. Button locked against double-submission...");
+            await new Promise(r => setTimeout(r, 1600));
+            log("Async submission resolved. Releasing lock.");
+            return "Grade evaluations synchronized.";
+          }, "Synchronizing records...");
+        });
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initDemo);
+    } else {
+      initDemo();
+    }
+  </script>
+  </script>
+  <script src="../../assets/js/layout.js" defer></script>
+</body>
+</html>

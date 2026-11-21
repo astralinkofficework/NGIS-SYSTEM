@@ -38,7 +38,8 @@
     teacherSearchQ: '',
     assignmentSubjectId: null,
     toastTimer: [],
-    showAllTeachers: false
+    showAllTeachers: false,
+    classSetupExpanded: false
   };
 
   var rafPending = false;
@@ -812,8 +813,10 @@
       '</button>';
     }).join('');
 
-    // Allocation Table Rows for Column 2
-    var tableRows = classAssignments.map(function (a, idx) {
+    // Allocation Table Rows for Column 2 (Initial 6 rows with Show More/Less)
+    var isClassSetupExp = Boolean(local.classSetupExpanded);
+    var visibleAssignments = (isClassSetupExp || classAssignments.length <= 6) ? classAssignments : classAssignments.slice(0, 6);
+    var tableRows = visibleAssignments.map(function (a, idx) {
       var sub = subjects.filter(function (s) { return s.id === a.subject_id; })[0] || { name_kh: a.subject_id, name_en: 'Subject', code: 'SUB' };
       var tchr = teachers.filter(function (t) { return t.id === a.teacher_id; })[0] || { code: 'TR', name_kh: 'គ្រូ', name_en: 'Teacher', target: 17 };
       var tAssigned = load[tchr.id] || 0;
@@ -837,7 +840,7 @@
         '<td class="py-3 px-3.5 text-center text-slate-400 font-medium text-xs">' + rowNum + '</td>' +
         '<td class="py-3 px-3.5">' +
           '<div class="flex items-center gap-2.5">' +
-            '<span class="w-2.5 h-2.5 rounded-full ' + subTheme.dot + ' shrink-0"></span>' +
+
             '<div class="flex flex-col">' +
               '<span class="font-medium text-slate-900 text-[13px]">' + esc(subNameEn) + '</span>' +
               '<span class="text-[11px] text-slate-400 font-normal">' + esc(subTheme.discipline || 'Academic') + ' · Code: ' + esc(sub.code || sub.id) + '</span>' +
@@ -1100,6 +1103,14 @@
                     (tableRows || '<tr><td colspan="7" class="py-8 text-center text-slate-400">No subjects assigned yet. Click "+ Add Subject Allocation" to begin.</td></tr>') +
                   '</tbody>' +
                 '</table>' +
+                (classAssignments.length > 6 ? (
+                  '<div class="py-2.5 px-4 bg-slate-50/70 border-t border-slate-200/60 flex items-center justify-center">' +
+                    '<button type="button" class="text-xs font-medium text-[#176B45] hover:text-[#14532D] flex items-center gap-1.5 transition-colors cursor-pointer py-1.5 px-3 rounded-lg hover:bg-emerald-50/60" data-act="toggle-class-setup-rows">' +
+                      '<span>' + (isClassSetupExp ? 'Show Less (Showing all ' + classAssignments.length + ' allocations)' : 'Show More (' + (classAssignments.length - 6) + ' more allocations)') + '</span>' +
+                      '<span class="material-symbols-outlined text-[16px]">' + (isClassSetupExp ? 'expand_less' : 'expand_more') + '</span>' +
+                    '</button>' +
+                  '</div>'
+                ) : '') +
               '</div>' +
 
               // Table Footer Toolbar
@@ -4839,6 +4850,7 @@
       case 'modal-backdrop': local.modal = null; render(); break;
       case 'conflicts': local.modal = { type: 'conflicts' }; render(); break;
       case 'show-paste-help': local.modal = { type: 'paste-help' }; render(); break;
+      case 'toggle-class-setup-rows': local.classSetupExpanded = !local.classSetupExpanded; render(); break;
 
       // Data Entry tabs
       case 'set-datatab': local.dataTab = id; render(); break;

@@ -401,7 +401,7 @@ tailwind.config = {
         <button type="button" id="lfClearSearchBtn" class="hidden w-7 h-7 rounded-full flex items-center justify-center text-outline  flex-shrink-0 cursor-pointer" onclick="clearLfSearch()">
           <span data-ngis-icon="close" class="text-[16px]"></span>
         </button>
-        <button type="button" id="lfFilterToggleBtn" class="h-8 px-3 rounded-lg bg-surface-container-low text-on-surface text-[12px] font-medium flex items-center gap-1.5  flex-shrink-0 cursor-pointer transition-colors" title="Toggle quick status filter" onclick="toggleQuickFilters()">
+        <button type="button" id="lfFilterToggleBtn" class="h-8 px-3 rounded-lg bg-surface-container-low text-on-surface text-[12px] font-medium flex items-center gap-1.5  flex-shrink-0 cursor-pointer transition-colors" onclick="toggleQuickFilters()" aria-label="Toggle quick status filter">
           <span data-ngis-icon="settings" class="text-[16px]"></span>
           <span class="hidden sm:inline">Filter</span>
         </button>
@@ -559,12 +559,12 @@ tailwind.config = {
         </div>
 
         <div class="flex items-center gap-1 shrink-0 text-outline bg-surface-container-low rounded-xl p-1 ml-auto sm:ml-0">
-          <button id="viewBtnGrid" onclick="setViewMode('grid')" class="p-1 rounded bg-surface-container-lowest text-on-surface shadow-xs cursor-pointer" title="Grid View">
+          <button id="viewBtnGrid" onclick="setViewMode('grid')" class="p-1 rounded bg-surface-container-lowest text-on-surface shadow-xs cursor-pointer" aria-label="Grid View">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
             </svg>
           </button>
-          <button id="viewBtnList" onclick="setViewMode('list')" class="p-1 rounded  cursor-pointer" title="List View">
+          <button id="viewBtnList" onclick="setViewMode('list')" class="p-1 rounded  cursor-pointer" aria-label="List View">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path clip-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" fill-rule="evenodd"></path>
             </svg>
@@ -658,7 +658,7 @@ tailwind.config = {
 
 <!-- ═══════════════ FLOATING ACTION BUTTON (REPORT ITEM) ═══════════════ -->
 <div class="fixed bottom-6 md:bottom-8 right-5 md:right-8 z-40 flex items-center group">
-  <button type="button" onclick="openReportModal('lost')" aria-label="Report Lost or Found Item" title="Report Lost or Found Item" class="relative w-13 h-13 md:w-14 md:h-14 rounded-full bg-primary text-on-primary shadow-lg border-2 border-white flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-secondary/30 active:scale-95 transition-all cursor-pointer">
+  <button type="button" onclick="openReportModal('lost')" aria-label="Report Lost or Found Item" class="relative w-13 h-13 md:w-14 md:h-14 rounded-full bg-primary text-on-primary shadow-lg border-2 border-white flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-secondary/30 active:scale-95 transition-all cursor-pointer">
     <svg class="w-7 h-7 md:w-8 md:h-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 5v14M5 12h14"></path>
     </svg>
@@ -669,14 +669,14 @@ tailwind.config = {
 </div>
 
 <!-- ═══════════════ MODAL: REPORT AN ITEM ═══════════════ -->
-<div class="lf-modal-overlay" id="reportModal" onclick="if(event.target===this)closeReportModal()">
-  <div class="lf-modal p-5 sm:p-7 bg-surface-container-lowest border border-white">
-    <div class="flex items-center justify-between pb-4 border-b border-surface-container">
+<div class="lf-modal-overlay" id="reportModal" onclick="if(event.target===this)closeReportModal(false)">
+  <div class="lf-modal p-4 sm:p-7 bg-surface-container-lowest border border-white max-h-[90vh] max-h-[90dvh] overflow-y-auto flex flex-col">
+    <div class="flex items-center justify-between pb-4 border-b border-surface-container sticky top-0 bg-white dark:bg-slate-900 z-10 -mt-2 pt-2">
       <h2 class="text-lg font-medium text-on-surface flex items-center gap-2">
         <span class="material-symbols-outlined text-secondary">add_circle</span>
         Report an Item
       </h2>
-      <button onclick="closeReportModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-outline   cursor-pointer">
+      <button type="button" onclick="closeReportModal(false)" class="w-8 h-8 rounded-lg flex items-center justify-center text-outline hover:text-forest-800 transition cursor-pointer" aria-label="Close">
         <span data-ngis-icon="close" class="text-xl"></span>
       </button>
     </div>
@@ -1463,10 +1463,45 @@ function renderCards(items) {
 // ── Modals & Actions ──
 function openReportModal(defaultType = 'lost') {
   setReportMode(defaultType);
-  document.getElementById('reportModal').classList.add('show');
+  const m = document.getElementById('reportModal');
+  if (m) {
+    m.classList.add('show');
+    m.classList.add('open');
+    document.body.classList.add('modal-open');
+    document.body.style.overflow = 'hidden';
+  }
 }
-function closeReportModal() {
-  document.getElementById('reportModal').classList.remove('show');
+
+function closeReportModal(force) {
+  const title = document.getElementById('formTitle')?.value || '';
+  const desc = document.getElementById('formDescription')?.value || '';
+  if (!force && (title.trim() || desc.trim())) {
+    if (window.NGIS_UX && typeof window.NGIS_UX.confirm === 'function') {
+      window.NGIS_UX.confirm({
+        title: "Discard Item Report?",
+        description: "You have typed details for this lost & found report. If you close now, your draft will not be posted.",
+        consequence: "Entered item description and photos will be discarded.",
+        confirmLabel: "Discard Draft",
+        cancelLabel: "Keep Editing",
+        isDestructive: true,
+        isRecoverable: false,
+        icon: "trash3"
+      }).then(function(confirmed) {
+        if (confirmed) closeReportModal(true);
+      });
+      return;
+    } else {
+      const leave = window.confirm("You have entered item details. Discard and close?");
+      if (!leave) return;
+    }
+  }
+  const m = document.getElementById('reportModal');
+  if (m) {
+    m.classList.remove('show');
+    m.classList.remove('open');
+  }
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
   document.getElementById('lfReportForm').reset();
   removeSelectedPhoto();
 }
@@ -2023,11 +2058,11 @@ function renderStaffTable() {
       </td>
       <td class="py-3 px-3 table-actions text-right">
         <div class="action-group">
-          <button type="button" onclick="openDetailModal(${item.id})" class="action-icon-btn" title="Review Property Details &amp; Claims" aria-label="Review Property Details &amp; Claims">
+          <button type="button" onclick="openDetailModal(${item.id})" class="action-icon-btn" aria-label="Review Property Details &amp; Claims">
             <span data-ngis-icon="view"></span>
           </button>
           ${item.status !== 'returned' 
-            ? `<button type="button" onclick="openHandoverModal(${item.id})" class="action-icon-btn primary" title="Record Physical Handover" aria-label="Record Physical Handover">
+            ? `<button type="button" onclick="openHandoverModal(${item.id})" class="action-icon-btn primary" aria-label="Record Physical Handover">
                 <span data-ngis-icon="check"></span>
               </button>`
             : ''

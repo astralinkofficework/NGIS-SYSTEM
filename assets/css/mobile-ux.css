@@ -1,0 +1,420 @@
+/**
+ * ============================================================================
+ * NGIS ERP — Master Mobile UX & Native Interaction System v1.0
+ * New Gateway International School — Centralized Mobile UI/UX Engine
+ *
+ * Implements the 10 Golden Mobile UX Standards:
+ * 1. Prevent automatic iPhone input zoom (minimum 16px font-size on mobile)
+ * 2. Remove default mobile tap highlights (-webkit-tap-highlight-color: transparent)
+ * 3. Appropriate mobile keyboards & input modes
+ * 4. Prevent stuck hover effects (@media (hover: hover) & (pointer: fine))
+ * 5. Native OTP autofill & smart code pasting
+ * 6. Control overscroll behavior (containment on modals, drawers, dropdowns)
+ * 7. Correct email input behavior (autocapitalize none, spellcheck false)
+ * 8. Prevent accidental double-tap zoom (touch-action: manipulation)
+ * 9. Contextual keyboard return actions (enterkeyhint)
+ * 10. Native horizontal scroll snapping (scroll-snap-type: x mandatory)
+ * ============================================================================
+ */
+
+/* ============================================================================
+   1. PREVENT AUTOMATIC IPHONE INPUT ZOOM
+   iOS Safari automatically zooms into inputs when font-size < 16px on focus.
+   Enforce minimum 16px font-size across all mobile inputs, textareas & selects.
+   Pinch-to-zoom accessibility remains fully enabled.
+   ============================================================================ */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="time"],
+  input[type="month"],
+  input[type="week"],
+  input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="range"]):not([type="file"]):not([type="color"]),
+  select,
+  textarea,
+  .form-control,
+  .form-input,
+  .form-select,
+  .input-standard,
+  .search-input,
+  .ngis-search-input,
+  .ngis-search input,
+  .exw-roadmap-search,
+  .data-dictionary-search,
+  .table-search-input,
+  .pf2-input,
+  [data-role="input"] {
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+  }
+
+  /* Maintain comfortable 40-44px touch-accessible height for mobile inputs */
+  input[type="text"]:not(.input-compact),
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="search"],
+  select,
+  .form-control:not(.input-compact),
+  .form-input,
+  .input-standard {
+    min-height: 42px !important;
+  }
+}
+
+/* ============================================================================
+   2. REMOVE DEFAULT MOBILE TAP HIGHLIGHTS
+   Eliminate unwanted gray/blue tap overlays across interactive components.
+   Preserve visible :focus-visible and physical press feedback.
+   ============================================================================ */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+label,
+summary,
+[role="button"],
+[tabindex],
+.btn,
+.icon-btn,
+.card,
+.interactive-card,
+.card-clickable,
+.ngis-card,
+.nav-item,
+.nav-link,
+.tab,
+.tab-btn,
+.dropdown-item,
+.hamburger-btn,
+.mobile-hamburger-btn,
+.exw-roadmap-row,
+.pagination button,
+.pagination a {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Accessible focus outline preserved */
+:focus-visible {
+  outline: 2px solid var(--forest, #176B45) !important;
+  outline-offset: 2px !important;
+}
+
+/* ============================================================================
+   3. PREVENT ACCIDENTAL DOUBLE-TAP ZOOM & ELIMINATE 300MS TAP DELAY
+   Apply touch-action: manipulation to interactive controls.
+   Preserves normal vertical scrolling and user pinch-to-zoom.
+   ============================================================================ */
+button,
+[role="button"],
+.btn,
+.icon-btn,
+.hamburger-btn,
+.mobile-hamburger-btn,
+[data-action="toggle-sidebar"],
+a.nav-link,
+a.tab-btn,
+.tab,
+.tab-btn,
+.dropdown-item,
+.interactive-card,
+.card-clickable,
+.ngis-card[data-action],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+label.cursor-pointer,
+.pagination button,
+.pagination a,
+.touch-control {
+  touch-action: manipulation !important;
+}
+
+/* Minimum mobile touch targets (>= 44x44px, preferred 48x48px) */
+@media (max-width: 768px) {
+  .hamburger-btn,
+  .mobile-hamburger-btn,
+  [data-action="toggle-sidebar"] {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .icon-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  /* Spacing between interactive touch controls to avoid mis-taps */
+  .touch-gap,
+  .btn-group,
+  .actions-group {
+    gap: 8px !important;
+  }
+}
+
+/* ============================================================================
+   4. PREVENT STUCK HOVER EFFECTS ON TOUCH DEVICES
+   Restrict desktop transforms, shadows, and hover lifts to pointer-fine devices.
+   Reset stuck hover states on touch screens.
+   ============================================================================ */
+@media (hover: none) or (pointer: coarse) {
+  /* Cancel stuck desktop hover transforms & shadows */
+  .card:hover,
+  .interactive-card:hover,
+  .card-clickable:hover,
+  .ngis-card:hover,
+  .exw-roadmap-row:hover,
+  .table-row:hover,
+  tr:hover,
+  .nav-link:hover,
+  .dropdown-item:hover,
+  .hub-card:hover,
+  .dept-card:hover,
+  .module-card:hover,
+  [data-action]:hover {
+    transform: none !important;
+    box-shadow: inherit;
+  }
+
+  /* Clean, responsive physical active-press feedback on touch */
+  .btn:active,
+  .icon-btn:active,
+  .card-clickable:active,
+  .interactive-card:active,
+  .exw-roadmap-row:active,
+  .nav-link:active,
+  .tab-btn:active,
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.975) !important;
+    transition: transform 60ms ease-out !important;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Desktop-only subtle card lift & elevation */
+  .interactive-card:hover,
+  .card-clickable:hover,
+  a.card:hover,
+  a.hub-card:hover,
+  a.dept-card:hover,
+  a.module-card:hover {
+    transform: translateY(-2px) scale(1.01) !important;
+    box-shadow: var(--elevation-2, 0 4px 12px -2px rgba(15, 23, 42, 0.08)) !important;
+  }
+
+  .btn:hover:not(:disabled) {
+    filter: brightness(0.97);
+  }
+}
+
+/* ============================================================================
+   5. CONTROL OVERSCROLL BEHAVIOR & BACKGROUND SCROLL LOCK
+   Prevent unwanted scroll chaining between nested containers & body.
+   ============================================================================ */
+.modal,
+.modal-dialog,
+.modal-body,
+.dialog-body,
+[role="dialog"],
+.exw-modal-card,
+.ks-modal-body,
+.rp-modal-body,
+.sidebar,
+#mobileSidebar,
+.mobile-drawer,
+.drawer-content,
+.dropdown-menu,
+.ngis-dropdown-menu,
+.notification-panel,
+.notification-dropdown,
+.table-responsive,
+.ngis-table-wrap,
+.exw-table-wrap,
+.document-viewer,
+.scroll-container,
+.overflow-y-auto {
+  overscroll-behavior: contain !important;
+  overscroll-behavior-y: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+/* Background scroll lock when modal or mobile sidebar drawer is active */
+body.modal-open,
+body.sidebar-open,
+html.modal-open,
+html.sidebar-open {
+  overflow: hidden !important;
+  touch-action: none !important;
+  height: 100% !important;
+}
+
+/* ============================================================================
+   6. NATIVE HORIZONTAL SCROLL SNAPPING
+   Natural swipe-and-snap card carousels for dashboards, stats, departments,
+   announcements, and mobile tab bars.
+   ============================================================================ */
+.scroll-snap-x,
+.horizontal-cards-track,
+.mobile-cards-snap,
+.quick-links-scroll,
+.stats-scroll-snap,
+.dept-cards-snap,
+.announcements-snap,
+.mobile-tabs-snap {
+  display: flex !important;
+  flex-direction: row !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory !important;
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-x: contain !important;
+  gap: 12px !important;
+  padding-bottom: 8px !important;
+}
+
+.scroll-snap-item,
+.scroll-snap-x > *,
+.horizontal-cards-track > *,
+.mobile-cards-snap > *,
+.quick-links-scroll > *,
+.stats-scroll-snap > *,
+.dept-cards-snap > *,
+.announcements-snap > *,
+.mobile-tabs-snap > * {
+  scroll-snap-align: start !important;
+  scroll-snap-stop: normal !important;
+  flex-shrink: 0 !important;
+}
+
+/* Hide scrollbars on mobile snap carousels for native app aesthetic */
+@media (max-width: 768px) {
+  .scroll-snap-x::-webkit-scrollbar,
+  .horizontal-cards-track::-webkit-scrollbar,
+  .mobile-cards-snap::-webkit-scrollbar,
+  .quick-links-scroll::-webkit-scrollbar,
+  .stats-scroll-snap::-webkit-scrollbar,
+  .dept-cards-snap::-webkit-scrollbar,
+  .announcements-snap::-webkit-scrollbar,
+  .mobile-tabs-snap::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .scroll-snap-x,
+  .horizontal-cards-track,
+  .mobile-cards-snap,
+  .quick-links-scroll,
+  .stats-scroll-snap,
+  .dept-cards-snap,
+  .announcements-snap,
+  .mobile-tabs-snap {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+}
+
+/* ============================================================================
+   7. FORM VALIDATION & FIELD PRESENTATION ON MOBILE
+   Clean vertical stack, no clipped labels, no horizontal overflow.
+   ============================================================================ */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text, #1E293B);
+  margin-bottom: 2px;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: var(--color-muted, #64748B);
+  margin-top: 2px;
+}
+
+.form-error {
+  font-size: 12px;
+  color: var(--color-danger, #DC2626);
+  margin-top: 3px;
+}
+
+/* ============================================================================
+   8. SAFE AREA INSETS & NOTCH SUPPORT
+   Ensure fixed headers, bottom sheets, and appbars respect device notches.
+   ============================================================================ */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px) !important;
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left, 0px) !important;
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right, 0px) !important;
+}
+
+/* Sticky headers and mobile bottom appbars */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav,
+  .mobile-appbar-bottom {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ============================================================================
+   9. DARK MODE HARMONIZATION FOR MOBILE UX
+   ============================================================================ */
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] input[type="tel"],
+[data-theme="dark"] input[type="search"],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  color: #F8FAFC !important;
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748B !important;
+}
+
+[data-theme="dark"] :focus-visible {
+  outline-color: #38BDF8 !important;
+}

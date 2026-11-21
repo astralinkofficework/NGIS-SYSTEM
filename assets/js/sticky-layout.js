@@ -75,17 +75,45 @@
     });
   }
 
+  function getPageBackground() {
+    try {
+      var bodyStyle = window.getComputedStyle(document.body);
+      var bg = bodyStyle.backgroundColor;
+      if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') return bg;
+      var main = document.querySelector('main, .main');
+      if (main) {
+        var mBg = window.getComputedStyle(main).backgroundColor;
+        if (mBg && mBg !== 'rgba(0, 0, 0, 0)' && mBg !== 'transparent') return mBg;
+      }
+    } catch (e) {}
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    return isDark ? '#0F172A' : '#F7F9F7';
+  }
+
+  function applyHeaderSurface(isStuck) {
+    if (!header) return;
+    if (isStuck) {
+      var rootStyle = window.getComputedStyle(root);
+      var scrolledBg = rootStyle.getPropertyValue('--ngis-sticky-scrolled-surface').trim() || getPageBackground();
+      header.style.setProperty('background-color', scrolledBg, 'important');
+    } else {
+      header.style.setProperty('background-color', 'transparent', 'important');
+    }
+  }
+
   function updateStickiness() {
     if (!header || !spacer || isFullscreen()) return;
 
     /* Keep the measured trigger point in document coordinates. The spacer
        never moves when the header is fixed, so this is stable while scrolling. */
     var triggerTop = spacer.getBoundingClientRect().top + window.pageYOffset;
-    var shouldStick = window.pageYOffset >= triggerTop - 1;
+    /* Normal state when page is at the top (pageYOffset <= 8); sticks when scrolled */
+    var shouldStick = window.pageYOffset > 8 && (window.pageYOffset >= triggerTop - 1);
     if (shouldStick === stuck) return;
 
     stuck = shouldStick;
     header.classList.toggle('ngis-sticky-fixed', shouldStick);
+    applyHeaderSurface(shouldStick);
   }
 
   function retarget() {
@@ -130,11 +158,6 @@
       spacer.style.height = height + 'px';
     }
 
-    /* Inline !important is the final guard against legacy global sheets that
-       still force transparent headers on duplicate component loads. */
-    var rootStyle = window.getComputedStyle(root);
-    var surface = rootStyle.getPropertyValue('--ngis-sticky-surface').trim() || '#FFFFFF';
-    header.style.setProperty('background-color', surface, 'important');
     header.style.setProperty('background-image', 'none', 'important');
     header.style.setProperty('backdrop-filter', 'none', 'important');
     header.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
@@ -144,6 +167,7 @@
     root.style.setProperty('--ngis-sticky-width', width + 'px');
     applyFullscreenState();
     updateStickiness();
+    applyHeaderSurface(stuck);
   }
 
   function applyFullscreenState() {
@@ -209,6 +233,15 @@
 
   function boot() {
     if (!body) return;
+
+    if (document.getElementById('ngisGlobalNavbar')) {
+      body.classList.add('ngis-sticky-suspended');
+      var oldSpacers = document.querySelectorAll('.ngis-sticky-spacer');
+      for (var s = 0; s < oldSpacers.length; s++) {
+        oldSpacers[s].remove();
+      }
+      return;
+    }
 
     header = pickHeader();
     if (!header) {

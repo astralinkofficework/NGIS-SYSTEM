@@ -20,6 +20,9 @@
      * Open an honest, 1-tap confirmation dialog
      */
     open(options = {}) {
+      if (window.NGIS_UX && typeof window.NGIS_UX.confirm === "function") {
+        return window.NGIS_UX.confirm(options);
+      }
       const {
         title = "Confirm Action",
         description = "Please confirm that you want to proceed.",

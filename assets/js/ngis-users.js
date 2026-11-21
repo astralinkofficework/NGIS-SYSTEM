@@ -275,6 +275,10 @@
   }
 
   function statusIndicatorHtml(status) {
+    if (window.NGIS_STATUS) {
+      var mapped = status === 'none' ? 'not_assigned' : status;
+      return window.NGIS_STATUS.render(mapped, { variant: 'flat' });
+    }
     var s = status || 'none';
     var label = STATUS_LABEL[s] || s;
     return '<span class="smx-status-inline' + (s === 'none' ? ' is-none' : '') + '">' +
@@ -441,7 +445,7 @@
       sort: 'name',
       order: 'asc',
       page: 1,
-      pageSize: 25,
+      pageSize: 10,
       pages: 1,
       total: 0,
       summary: { total: 0, active: 0, pending: 0, locked: 0, suspended: 0, disabled: 0, withoutAccount: 0, withAccount: 0, campusesCount: 1 },
@@ -651,9 +655,9 @@
                   '</select></div>' +
                 '<div><label class="smx-more-pop-label" for="smx-pagesize">Rows per page</label>' +
                   '<select id="smx-pagesize" class="smx-select">' +
+                    '<option value="10"' + (state.pageSize === 10 ? ' selected' : '') + '>10 per page</option>' +
                     '<option value="25"' + (state.pageSize === 25 ? ' selected' : '') + '>25 per page</option>' +
                     '<option value="50"' + (state.pageSize === 50 ? ' selected' : '') + '>50 per page</option>' +
-                    '<option value="100"' + (state.pageSize === 100 ? ' selected' : '') + '>100 per page</option>' +
                   '</select></div>' +
               '</div>' +
             '</div>' +
@@ -800,12 +804,31 @@
       });
 
       var colSpan = cfg.columns.length + (cfg.hasBulk ? 1 : 0);
-      var rowsHtml = state.rows.length
-        ? state.rows.map(function (r) {
-            return '<tr class="' + (state.selected[r.person_id] ? 'is-selected' : '') + '" data-pid="' + esc(r.person_id) + '">' +
-              rowCellsHtml(r) + '</tr>';
-          }).join('')
-        : '<tr><td colspan="' + colSpan + '" class="smx-empty">No matching records in ' + esc(cfg.title) + '.</td></tr>';
+      var rowsHtml = '';
+      if (state.rows.length) {
+        rowsHtml = state.rows.map(function (r) {
+          return '<tr class="' + (state.selected[r.person_id] ? 'is-selected' : '') + '" data-pid="' + esc(r.person_id) + '">' +
+            rowCellsHtml(r) + '</tr>';
+        }).join('');
+      } else if (window.NGIS_EMPTY) {
+        var isFiltered = Boolean(state.q || (state.status && state.status !== 'all') || (state.campus && state.campus !== 'all') || (state.roleFilter && state.roleFilter !== 'all'));
+        if (isFiltered) {
+          rowsHtml = window.NGIS_EMPTY.buildTableRow(colSpan, {
+            heading: 'No matching results',
+            description: 'No ' + esc(cfg.recordNoun) + ' records match your active search or filters.',
+            illustration: window.NGIS_EMPTY.svgs.noSearch,
+            actionText: 'Clear Filters',
+            actionEvent: 'clear-filters',
+            actionClass: 'ngis-empty-btn-secondary',
+            actionIcon: 'x-circle'
+          });
+        } else {
+          var contextKey = cfg.type === 'student' ? 'students' : (cfg.type === 'teacher' ? 'teachers' : 'generic');
+          rowsHtml = window.NGIS_EMPTY.buildTableRow(colSpan, contextKey);
+        }
+      } else {
+        rowsHtml = '<tr><td colspan="' + colSpan + '" class="smx-empty">No matching records in ' + esc(cfg.title) + '.</td></tr>';
+      }
 
       return '<section class="smx-table-card" aria-label="' + esc(cfg.title) + ' table">' +
         '<div class="smx-table-scroll"><table class="smx-table">' +
@@ -890,7 +913,7 @@
       var sizeSel = q(root, '#smx-pagesize');
       if (sizeSel) {
         sizeSel.addEventListener('change', function (e) {
-          state.pageSize = parseInt(e.target.value, 10) || 25;
+          state.pageSize = parseInt(e.target.value, 10) || 10;
           state.page = 1;
           load({ keepToolbar: true });
         });
@@ -1396,7 +1419,7 @@
             row.name + ' · ' + ((row.account && row.account.username) || row.person_id),
             '<h3 class="smx-section-label">Recent Authentication Events</h3><div class="smx-activity">' + lh + '</div>' +
             '<h3 class="smx-section-label">Account Security Log</h3><div class="smx-activity">' + ah + '</div>',
-            '<button type="button" class="smx-btn primary" data-modal-close>Done</button>',
+            '<button type="button" class="smx-btn primary" data-modal-close>Close Audit Log</button>',
             true
           );
         });

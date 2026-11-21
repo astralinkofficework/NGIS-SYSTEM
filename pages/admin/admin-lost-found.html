@@ -328,9 +328,9 @@
     <header id="heroBanner" role="banner"></header>
 
     <!-- ═══ MANDATORY MOBILE / TABLET APP BAR (AGENTS.md CRITICAL RULE) ═══ -->
-    <header id="mobileMainAppbar" class="lg:hidden bg-white border-b border-slate-200 px-3 sm:px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
+    <header id="mobileMainAppbar" class="lg:hidden bg-transparent border-none px-3 sm:px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 shadow-xs no-print">
       <div class="flex items-center gap-2 min-w-0 flex-1">
-        <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 text-slate-700 hover:bg-slate-100 rounded-xl active:scale-95 transition flex items-center justify-center min-w-[40px] min-h-[40px] cursor-pointer shrink-0" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 text-slate-700 hover:bg-slate-100 rounded-xl active:scale-95 transition flex items-center justify-center min-w-[40px] min-h-[40px] cursor-pointer shrink-0" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
           <i class="ph ph-list text-xl"></i>
         </button>
         <div class="min-w-0">
@@ -362,11 +362,11 @@
         </div>
         <!-- Header Quick Action Group -->
         <div class="flex items-center gap-2.5 flex-wrap">
-          <button type="button" id="btnReload" class="btn-ngis-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors shadow-xs active:scale-95 min-h-[38px]" title="Refresh list">
+          <button type="button" id="btnReload" class="btn-ngis-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors shadow-xs active:scale-95 min-h-[38px]" aria-label="Refresh list">
             <span class="material-symbols-outlined text-[17px]">refresh</span>
             <span>Refresh</span>
           </button>
-          <button type="button" id="btnExportCsv" class="btn-ngis-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors shadow-xs active:scale-95 min-h-[38px]" title="Export registry as CSV">
+          <button type="button" id="btnExportCsv" class="btn-ngis-secondary inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors shadow-xs active:scale-95 min-h-[38px]" aria-label="Export registry as CSV">
             <span class="material-symbols-outlined text-[17px]">download</span>
             <span>Export CSV</span>
           </button>
@@ -1328,11 +1328,11 @@
               <!-- Actions -->
               <td class="py-3 pl-3 pr-4 text-right whitespace-nowrap">
                 <div class="inline-flex items-center gap-1">
-                  <button type="button" onclick="openDetailDrawer(${item.id})" class="px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-[#0F5132] hover:bg-slate-100 rounded-lg transition-colors active:scale-95" title="View details">
+                  <button type="button" onclick="openDetailDrawer(${item.id})" class="px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-[#0F5132] hover:bg-slate-100 rounded-lg transition-colors active:scale-95" aria-label="View details">
                     View
                   </button>
                   ${item.status !== 'returned' ? `
-                    <button type="button" onclick="openReturnModal(${item.id})" class="px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors active:scale-95" title="Handover item">
+                    <button type="button" onclick="openReturnModal(${item.id})" class="px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors active:scale-95" aria-label="Handover item">
                       Return
                     </button>
                   ` : ''}
@@ -1909,14 +1909,34 @@
       // Delete Current Report
       window.deleteCurrentReport = async function() {
         if (!currentDrawerItem) return;
-        if (!confirm(`Are you sure you want to permanently delete listing #${currentDrawerItem.refId}? This cannot be undone.`)) return;
+        const refId = currentDrawerItem.refId || currentDrawerItem.id;
+        let confirmed = false;
+        if (window.NGIS_UX && typeof window.NGIS_UX.confirm === 'function') {
+          confirmed = await window.NGIS_UX.confirm({
+            title: `Delete Listing #${refId}?`,
+            description: `This will permanently remove the lost & found report for "${currentDrawerItem.title || 'this item'}" from the campus directory.`,
+            consequence: "Students and campus security will no longer see this item in the claims registry.",
+            confirmLabel: "Delete Listing",
+            cancelLabel: "Keep Listing",
+            isDestructive: true,
+            isRecoverable: false,
+            icon: "trash3"
+          });
+        } else {
+          confirmed = confirm(`Delete listing #${refId}? This cannot be undone.`);
+        }
+        if (!confirmed) return;
 
         try {
           const res = await fetch(`/api/lost-found/${currentDrawerItem.id}`, {
             method: 'DELETE'
           });
           if (!res.ok) throw new Error('HTTP ' + res.status);
-          showToast('Listing removed successfully.');
+          if (window.NGIS_UX && typeof window.NGIS_UX.success === 'function') {
+            window.NGIS_UX.success(`Listing #${refId} removed successfully.`);
+          } else {
+            showToast('Listing removed successfully.');
+          }
           closeDetailDrawer();
           await loadData();
         } catch (err) {

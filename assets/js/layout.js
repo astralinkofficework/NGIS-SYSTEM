@@ -39,6 +39,57 @@
     }
   } catch (e) { /* icons fall back to ligature glyphs */ }
 
+  /* ── Shared Universal UX & Interaction Engine loader (idempotent) ── */
+  try {
+    if (!window.__NGIS_UX_SYSTEM__) {
+      window.__NGIS_UX_SYSTEM__ = true;
+      const _root = (window.location.pathname || "").indexOf("/pages/") !== -1 ? "../../" : "";
+      if (!window.NGIS_UX && !document.querySelector('script[src*="ux-system.js"]')) {
+        const _uxScript = document.createElement("script");
+        _uxScript.src = _root + "assets/js/ux-system.js?v=1.0";
+        _uxScript.defer = true;
+        document.head.appendChild(_uxScript);
+      }
+      if (!window.NGIS_STATUS && !document.querySelector('script[src*="ngis-status.js"]')) {
+        const _stScript = document.createElement("script");
+        _stScript.src = _root + "assets/js/ngis-status.js?v=1.0";
+        _stScript.defer = true;
+        document.head.appendChild(_stScript);
+      }
+      if (!window.NGIS_PAGINATION && !document.querySelector('script[src*="ngis-pagination.js"]')) {
+        const _pgScript = document.createElement("script");
+        _pgScript.src = _root + "assets/js/ngis-pagination.js?v=1.0";
+        _pgScript.defer = true;
+        document.head.appendChild(_pgScript);
+      }
+      if (!window.NGIS_EMPTY && !document.querySelector('script[src*="ngis-empty-state.js"]')) {
+        const _esScript = document.createElement("script");
+        _esScript.src = _root + "assets/js/ngis-empty-state.js?v=2.0";
+        _esScript.defer = true;
+        document.head.appendChild(_esScript);
+      }
+      if (!window.NGIS_MOBILE_UX && !document.querySelector('script[src*="mobile-ux.js"]')) {
+        const _mScript = document.createElement("script");
+        _mScript.src = _root + "assets/js/mobile-ux.js?v=1.0";
+        _mScript.defer = true;
+        document.head.appendChild(_mScript);
+      }
+      window.NGIS_MOBILE_HEADER = true;
+      if (!window.__NGIS_NAVBAR_INITIALIZED__ && !document.querySelector('script[src*="navbar.js"]')) {
+        const _navbarScript = document.createElement("script");
+        _navbarScript.src = _root + "assets/js/navbar.js?v=2.0";
+        _navbarScript.defer = true;
+        document.head.appendChild(_navbarScript);
+      }
+      if (!window.__NGIS_CHIP_NAV_INITIALIZED__ && !document.querySelector('script[src*="chip-nav.js"]')) {
+        const _chipScript = document.createElement("script");
+        _chipScript.src = _root + "assets/js/chip-nav.js?v=2.0";
+        _chipScript.defer = true;
+        document.head.appendChild(_chipScript);
+      }
+    }
+  } catch (e) { /* graceful fallback */ }
+
   /* Remembers which sidebar link the user clicked so the sidebar stays anchored
      to that exact section after navigation (matters when one page is reachable
      from more than one nav group). */
@@ -150,8 +201,6 @@
 
           { id:"lost-found", label:"Lost & Found", icon:"inventory_2", href:"pages/admin/admin-lost-found.html" },
 
-          { id:"reports",  label:"Academic Reports", icon:"assessment", href:"pages/admin/admin-reports.html" },
-
         ]},
 
         { id:"communication", label:"COMMUNICATION", icon:"campaign", links:[
@@ -174,7 +223,6 @@
             children: [
               { id: "dashboard-content-sys", label: "Dashboard Content", icon: "grid", href: "pages/admin/admin-dashboard-content.html" },
               { id: "school-information", label: "School Information & Settings", icon: "settings", href: "pages/admin/admin-school-information.html" },
-              { id: "sys-school-info", label: "School Profile (Legacy)", icon: "building", href: "pages/admin/admin-system-school-info.html" },
               { id: "sys-schedule", label: "Schedule", icon: "calendar", href: "pages/admin/admin-system-schedule.html" },
               { id: "sys-general-setting", label: "General Setting", icon: "tune", href: "pages/admin/admin-system-general-setting.html" },
             ]
@@ -216,33 +264,35 @@
 
       groups: [
 
-        { id:"overview", label:"Overview", icon:"dashboard", links:[
+        { id:"main", label:"Main", icon:"dashboard", links:[
 
-          { id:"dashboard",  label:"Home",                       icon:"home",           href:"pages/teacher/teacher.html", chevron:false },
-
-        ]},
-
-        { id:"teaching", label:"TEACHING", icon:"school", links:[
-
-          { id:"attendance", label:"Daily Attendance", icon:"how_to_reg", href:"pages/teacher/teacher-attendance.html" },
-
-          { id:"roster",     label:"Roster & Profiles",          icon:"badge",          href:"pages/teacher/teacher-roster.html" },
-
-          { id:"lessons",    label:"Lessons & Materials",        icon:"menu_book",      href:"pages/teacher/teacher-lessons.html" },
-
-          { id:"departments",label:"Department",                 icon:"apartment",      href:"pages/teacher/teacher-departments.html" },
-
-          { id:"calendar",   label:"Timetable",                  icon:"calendar_month", href:"pages/teacher/teacher-calendar.html" },
+          { id:"dashboard",  label:"Dashboard",                  icon:"home",           href:"pages/teacher/teacher.html", chevron:false },
 
         ]},
 
-        { id:"assessment", label:"ASSESSMENT", icon:"grading", links:[
+        { id:"academics", label:"ACADEMICS", icon:"school", links:[
 
-          { id:"gradebook",   label:"Gradebook & Marks",          icon:"fact_check",     href:"pages/teacher/teacher-gradebook.html" },
+          { id:"roster",     label:"Student Roster",             icon:"badge",          href:"pages/teacher/teacher-roster.html" },
 
-          { id:"submissions", label:"Assignments & Student Work", icon:"description",  href:"pages/teacher/teacher-submissions.html" },
+          { id:"attendance", label:"Daily Attendance",           icon:"attendance",     href:"pages/teacher/teacher-attendance.html" },
 
-          { id:"reports",     label:"Official Academic Reports",  icon:"assessment",   href:"pages/teacher/teacher-reports.html" },
+          { id:"submissions", label:"Assignments & Submissions", icon:"documents",      href:"pages/teacher/teacher-submissions.html" },
+
+          { id:"reports",     label:"Academic Reports",          icon:"grades",         href:"pages/teacher/teacher-reports.html" },
+
+          { id:"lessons",    label:"Learning Materials",         icon:"book",           href:"pages/teacher/teacher-lessons.html" },
+
+          { id:"exams",      label:"Examinations & Notices",     icon:"exams",          href:"pages/teacher/teacher-exams.html" },
+
+          { id:"calendar",   label:"Academic Calendar",          icon:"calendar",       href:"pages/teacher/teacher-calendar.html" },
+
+        ]},
+
+        { id:"campus-life", label:"CAMPUS LIFE", icon:"local_activity", links:[
+
+          { id:"services",       label:"Services Hub",              icon:"grid_view",     href:"pages/teacher/teacher-services.html" },
+
+          { id:"lost-found",     label:"Lost & Found",              icon:"inventory_2",   href:"pages/teacher/teacher-lost-found.html" },
 
         ]},
 
@@ -255,17 +305,11 @@
 
         ]},
 
-        { id:"campus-services", label:"CAMPUS & SERVICES", icon:"local_activity", links:[
-
-          { id:"services",       label:"Faculty Services Hub",      icon:"grid_view",     href:"pages/teacher/teacher-services.html" },
-
-          { id:"lost-found",     label:"Lost & Found",              icon:"inventory_2",   href:"pages/teacher/teacher-lost-found.html" },
-
-        ]},
-
         { id:"account-grp", label:"ACCOUNT", icon:"person", links:[
 
-          { id:"profile",       label:"Settings & Profile",       icon:"settings",      href:"pages/teacher/teacher-profile.html" },
+          { id:"notifications", label:"Notifications",           icon:"bell",           href:"pages/teacher/teacher-notifications.html" },
+
+          { id:"profile",       label:"My Profile",              icon:"settings",      href:"pages/teacher/teacher-profile.html" },
 
         ]},
 
@@ -539,13 +583,15 @@
 
     teacher: [
 
-      { id: "home", label: "Home", icon: "ph ph-house", href: "pages/teacher/teacher.html" },
+      { id: "home", label: "Home", icon: "home", href: "pages/teacher/teacher.html" },
 
-      { id: "classes", label: "Classes", icon: "ph ph-chalkboard-teacher", href: "pages/teacher/teacher-roster.html" },
+      { id: "roster", label: "Roster", icon: "badge", href: "pages/teacher/teacher-roster.html" },
 
-      { id: "submissions", label: "Work", icon: "ph ph-file-text", href: "pages/teacher/teacher-submissions.html" },
+      { id: "attendance", label: "Attendance", icon: "attendance", href: "pages/teacher/teacher-attendance.html" },
 
-      { id: "profile", label: "Profile", icon: "ph ph-user", href: "pages/teacher/teacher-profile.html" },
+      { id: "submissions", label: "Work", icon: "documents", href: "pages/teacher/teacher-submissions.html" },
+
+      { id: "profile", label: "Profile", icon: "person", href: "pages/teacher/teacher-profile.html" },
 
     ],
 
@@ -1299,7 +1345,7 @@
                 if (n.visible === false) return '';
                 const isNActive = isMatchingNavId(n.id, effectiveActive);
                 const nHref = buildPortalHref(n.href, role);
-                return `<a class="nav-link nav-nested-link ${isNActive ? "active" : ""}" href="${nHref}" data-raw-href="${esc(n.href || '')}"${isNActive ? ' aria-current="page"' : ''} title="${esc(n.subtitle || n.label)}" data-id="${n.id}">
+                return `<a class="nav-link nav-nested-link ${isNActive ? "active" : ""}" href="${nHref}" data-raw-href="${esc(n.href || '')}"${isNActive ? ' aria-current="page"' : ''} aria-label="${esc(n.subtitle || n.label)}" data-id="${n.id}">
                   <span class="nav-link-label">${esc(n.label)}</span>
                   ${n.badge ? `<span class="pill">${n.badge}</span>` : ""}
                 </a>`;
@@ -1307,7 +1353,7 @@
 
               return `
                 <div class="nav-nested-group${sub.collapsible ? ' collapsible' : ''}${isNestedActive ? ' expanded' : ''}" data-nested-id="${sub.id}">
-                  <button type="button" class="nav-nested-label" aria-expanded="${isNestedActive ? 'true' : 'false'}" title="${esc(sub.label)}">
+                  <button type="button" class="nav-nested-label" aria-expanded="${isNestedActive ? 'true' : 'false'}" aria-label="${esc(sub.label)}">
                     <span class="nav-link-label">${esc(sub.label)}</span>
                     <span class="material-symbols-outlined ngl-nestedchevron" data-ngis-icon="chevronDown" aria-hidden="true">expand_more</span>
                   </button>
@@ -1320,7 +1366,7 @@
             const isItemActive = isMatchingNavId(sub.id, effectiveActive);
             const chevronHtml = sub.hasChevron ? `<span class="material-symbols-outlined ngl-subchevron-static" data-ngis-icon="chevronDown" aria-hidden="true">expand_more</span>` : "";
             const subHref = buildPortalHref(sub.href, role);
-            return `<a class="nav-link nav-sub-link ${isItemActive ? "active" : ""}" href="${subHref}" data-raw-href="${esc(sub.href || '')}"${isItemActive ? ' aria-current="page"' : ''} title="${esc(sub.subtitle || sub.label)}" data-id="${sub.id}">
+            return `<a class="nav-link nav-sub-link ${isItemActive ? "active" : ""}" href="${subHref}" data-raw-href="${esc(sub.href || '')}"${isItemActive ? ' aria-current="page"' : ''} aria-label="${esc(sub.subtitle || sub.label)}" data-id="${sub.id}">
                ${renderNavIcon(sub.icon, "nav-link-icon")}
                <span class="nav-link-label">${esc(sub.label)}</span>
                ${sub.badge ? `<span class="pill">${sub.badge}</span>` : ""}
@@ -1332,7 +1378,7 @@
 
             <div class="nav-subgroup${l.collapsible ? ' collapsible' : ''}${isSubActive ? ' expanded' : ''}" data-subgroup-id="${l.id}">
 
-              <button type="button" class="nav-subgroup-label" aria-expanded="${isSubActive ? 'true' : 'false'}" title="${esc(l.label)}">
+              <button type="button" class="nav-subgroup-label" aria-expanded="${isSubActive ? 'true' : 'false'}" aria-label="${esc(l.label)}">
 
                 ${renderNavIcon(l.icon, "nav-link-icon")}
 
@@ -1354,7 +1400,7 @@
 
         const isTopActive = isMatchingNavId(l.id, effectiveActive);
         const topHref = buildPortalHref(l.href, role);
-        return `<a class="nav-link ${l.icon ? '' : 'no-icon'} ${isTopActive ? "active" : ""}" href="${topHref}" data-raw-href="${esc(l.href || '')}"${isTopActive?' aria-current="page"':''} title="${esc(l.subtitle || l.label)}" data-id="${l.id}">
+        return `<a class="nav-link ${l.icon ? '' : 'no-icon'} ${isTopActive ? "active" : ""}" href="${topHref}" data-raw-href="${esc(l.href || '')}"${isTopActive?' aria-current="page"':''} aria-label="${esc(l.subtitle || l.label)}" data-id="${l.id}">
 
            ${renderNavIcon(l.icon, "nav-link-icon")}
 
@@ -1382,7 +1428,7 @@
 
       if (g.collapsible) {
 
-        label = `<button type="button" class="nav-group-label" aria-expanded="${groupActive ? "true" : "false"}" title="${esc(g.label)}">${labelInner}</button>`;
+        label = `<button type="button" class="nav-group-label" aria-expanded="${groupActive ? "true" : "false"}" aria-label="${esc(g.label)}">${labelInner}</button>`;
 
         linksHtml = `<div class="nav-group-links"><div>${links}</div></div>`;
 
@@ -1445,7 +1491,7 @@
 
           </a>
 
-          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
+          <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
 
             <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
 
@@ -1457,7 +1503,7 @@
 
           </button>
 
-          <button class="sidebar-close-btn" id="sidebarCloseBtn" title="Close navigation" aria-label="Close navigation" type="button">
+          <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close navigation" type="button">
 
             <i class="ph ph-x text-lg" aria-hidden="true"></i>
 
@@ -1512,7 +1558,7 @@
 
       <header class="topbar" role="banner">
 
-        <button class="icon-btn menu-btn hamburger-btn mobile-hamburger-btn" id="menuBtn" data-action="toggle-sidebar" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false" title="Open navigation">
+        <button class="icon-btn menu-btn hamburger-btn mobile-hamburger-btn" id="menuBtn" data-action="toggle-sidebar" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
 
           <i class="ph ph-list text-xl" aria-hidden="true"></i>
 
@@ -2237,7 +2283,8 @@
 
         const hasActive = Boolean(g.querySelector('.nav-link.active'));
 
-        const shouldOpen = hasActive || (hasSavedGroups ? savedGroups.includes(gid) : (gid && legacySingle === gid));
+        // Dropdowns collapsed by default on load, only active page's group open
+        const shouldOpen = hasActive;
 
         setGroupExpanded(g, shouldOpen);
 
@@ -2339,7 +2386,8 @@
 
         const hasActiveSub = Boolean(sg.querySelector('.nav-link.active'));
 
-        const shouldOpen = hasActiveSub || savedSubs.includes(sgId);
+        // Dropdowns collapsed by default on load, only active page's immediate group open
+        const shouldOpen = hasActiveSub;
 
         setSubgroupExpanded(sg, shouldOpen);
 
@@ -2411,7 +2459,7 @@
 
         const hasActiveNested = Boolean(ng.querySelector('.nav-link.active'));
 
-        const shouldOpen = hasActiveNested || savedNested.includes(ngId);
+        const shouldOpen = hasActiveNested;
 
         setNestedExpanded(ng, shouldOpen);
 
@@ -2645,6 +2693,191 @@
 
 
 
+  /* ═══════════════════════════════════════════════════════════
+     Global Logout Confirmation & Modal Helpers
+     ═══════════════════════════════════════════════════════════ */
+  function closeModalElement(modal) {
+    if (!modal) return;
+    try {
+      if (window.NGIS_MODAL && typeof window.NGIS_MODAL.close === "function" && modal.classList.contains("ngis-modal-backdrop-root")) {
+        window.NGIS_MODAL.close(modal, true);
+      }
+    } catch (_) {}
+    modal.classList.remove("show", "open", "active", "flex");
+    modal.classList.add("hidden");
+    if (modal.style && modal.style.display && modal.style.display !== "none") {
+      modal.style.display = "none";
+    }
+    setTimeout(() => {
+      const remainingOpen = document.querySelector(".modal-overlay.show, .modal-overlay.open, .lf-modal-overlay.show, .lf-modal-overlay.open, .ngis-modal-active");
+      if (!remainingOpen) {
+        document.body.classList.remove("overflow-hidden", "modal-open", "ngis-modal-open");
+        document.documentElement.classList.remove("overflow-hidden", "modal-open", "ngis-modal-open");
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+      }
+    }, 50);
+  }
+  window.NGIS_closeModal = closeModalElement;
+
+  function showLogoutConfirmationModal(destUrl) {
+    if (window.NGIS_UX && typeof window.NGIS_UX.logout === "function") {
+      window.NGIS_UX.logout({ destUrl: destUrl });
+      return;
+    }
+
+    let existing = document.getElementById("ngisLogoutModal");
+    if (existing) {
+      existing.remove();
+    }
+
+    const modalHtml = `
+      <div id="ngisLogoutModal" class="ngis-dialog-backdrop is-visible" role="dialog" aria-modal="true" aria-labelledby="ngisLogoutTitle" style="z-index: 100000;">
+        <div class="fixed inset-0 cursor-pointer" data-close-modal="true"></div>
+        <div class="ngis-dialog-card ngis-dialog-card--destructive z-10" style="opacity: 1; transform: scale(1);">
+          <div class="ngis-dialog-header">
+            <div class="ngis-dialog-title-group">
+              <div class="ngis-dialog-icon-badge is-danger">
+                <span class="material-symbols-outlined text-xl" aria-hidden="true">logout</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <h2 id="ngisLogoutTitle" class="ngis-dialog-title">Log out of NGIS?</h2>
+                <span class="ngis-dialog-badge is-recoverable">Session closes safely</span>
+              </div>
+            </div>
+            <button type="button" class="ngis-dialog-close-btn" aria-label="Close dialog" data-close-modal="true">
+              &times;
+            </button>
+          </div>
+          <div class="ngis-dialog-body">
+            <p class="ngis-dialog-desc">You will need to sign in again to access your account.</p>
+            <div class="ngis-dialog-consequence">
+              <div class="ngis-dialog-consequence-title">What happens next:</div>
+              <div class="ngis-dialog-consequence-body">Your session on this device will be ended. Unsaved drafts were saved to your browser cache.</div>
+            </div>
+          </div>
+          <div class="ngis-dialog-footer">
+            <button type="button" id="ngisLogoutCancelBtn" class="ngis-btn ngis-btn-ghost ngis-dialog-cancel-btn">
+              Stay Signed In
+            </button>
+            <button type="button" id="ngisLogoutConfirmBtn" class="ngis-btn ngis-btn-danger ngis-dialog-confirm-btn">
+              Log Out
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    const modalEl = document.getElementById("ngisLogoutModal");
+    document.body.classList.add("modal-open");
+
+    const cancelBtn = document.getElementById("ngisLogoutCancelBtn");
+    const confirmBtn = document.getElementById("ngisLogoutConfirmBtn");
+
+    const dismiss = () => {
+      modalEl.remove();
+      document.body.classList.remove("modal-open");
+      document.body.style.overflow = "";
+    };
+
+    if (cancelBtn) cancelBtn.addEventListener("click", dismiss);
+    const backdropClose = modalEl.querySelectorAll("[data-close-modal='true']");
+    backdropClose.forEach(b => b.addEventListener("click", dismiss));
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", () => {
+        try {
+          if (window.NGISAuth && typeof window.NGISAuth.clearSession === "function") {
+            window.NGISAuth.clearSession();
+          } else {
+            localStorage.removeItem("ngis_token");
+            localStorage.removeItem("ngis_user");
+            localStorage.removeItem("ngis_active_portal");
+            localStorage.removeItem("ngis_session_mode");
+          }
+          sessionStorage.removeItem(CLICKED_NAV_KEY);
+        } catch (err) {}
+        window.location.href = destUrl || "../../index.html";
+      });
+    }
+  }
+  window.NGIS_showLogoutModal = showLogoutConfirmationModal;
+
+  function showOperationSuccessModal(options) {
+    options = options || {};
+    const message = options.message || options.title || "Changes saved successfully.";
+    if (window.NGIS_UX && typeof window.NGIS_UX.success === "function") {
+      window.NGIS_UX.success(message, options);
+      return { dismiss: function () {} };
+    }
+
+    let existing = document.getElementById("ngisOperationSuccessModal");
+    if (existing) existing.remove();
+
+    const title = options.title || "Changes Saved";
+    const duration = typeof options.duration === "number" ? options.duration : 2800;
+
+    const modalHtml = `
+      <div id="ngisOperationSuccessModal" role="dialog" aria-modal="true" class="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity" style="z-index: 10001;">
+        <div class="fixed inset-0 cursor-pointer" data-close-op-modal="true"></div>
+        <div class="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 text-center transform transition-all animate-scale-in">
+          <div class="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[#0F5132] dark:text-emerald-400 mx-auto flex items-center justify-center mb-3">
+            <svg class="w-7 h-7 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">${title}</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">${message}</p>
+          <button type="button" class="w-full py-2 px-4 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-normal transition cursor-pointer" data-close-op-modal="true">
+            Dismiss
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    const modalEl = document.getElementById("ngisOperationSuccessModal");
+
+    let timer = null;
+    const dismiss = () => {
+      if (timer) clearTimeout(timer);
+      if (modalEl && modalEl.parentNode) modalEl.remove();
+      if (typeof options.onDismiss === "function") options.onDismiss();
+    };
+
+    if (modalEl) {
+      modalEl.querySelectorAll("[data-close-op-modal='true']").forEach(btn => btn.addEventListener("click", dismiss));
+      if (duration > 0) {
+        timer = setTimeout(dismiss, duration);
+      }
+    }
+
+    return { dismiss };
+  }
+  window.NGIS_showOperationSuccess = showOperationSuccessModal;
+  window.showSuccessFeedback = showOperationSuccessModal;
+
+  // Global Escape key handler for open modals
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const logoutM = document.getElementById("ngisLogoutModal");
+      if (logoutM) {
+        logoutM.remove();
+        document.body.classList.remove("modal-open");
+        document.body.style.overflow = "";
+        return;
+      }
+      const visibleModal = document.querySelector(
+        ".modal-overlay.show, .modal-overlay.open, .lf-modal-overlay.show, .lf-modal-overlay.open, " +
+        ".fixed.inset-0:not(.hidden):not([style*='display: none']):not([style*='display:none'])"
+      );
+      if (visibleModal) {
+        closeModalElement(visibleModal);
+      }
+    }
+  });
+
     // Click handler on sidebar links to capture scroll position, clicked item, and sign-out state
 
     sidebar.addEventListener("click", (e) => {
@@ -2653,34 +2886,16 @@
 
       if (!link) return;
 
-      const isLogout = link.classList.contains("side-foot-signout") || (link.dataset && link.dataset.id === "logout");
+      const isLogout = link.classList.contains("side-foot-signout") || 
+                       (link.dataset && link.dataset.id === "logout") ||
+                       (link.getAttribute("data-purpose") === "sign-out-button");
 
       if (isLogout) {
-
-        try {
-
-          if (window.NGISAuth && typeof window.NGISAuth.clearSession === "function") {
-
-            window.NGISAuth.clearSession();
-
-          } else {
-
-            localStorage.removeItem("ngis_token");
-
-            localStorage.removeItem("ngis_user");
-
-            localStorage.removeItem("ngis_active_portal");
-
-            localStorage.removeItem("ngis_session_mode");
-
-          }
-
-          sessionStorage.removeItem(CLICKED_NAV_KEY);
-
-        } catch (err) {}
-
+        e.preventDefault();
+        e.stopPropagation();
+        var targetHref = link.getAttribute("href") || (typeof _P !== "undefined" ? _P + "index.html" : "../../index.html");
+        showLogoutConfirmationModal(targetHref);
         return;
-
       }
 
       try {
@@ -2781,7 +2996,7 @@
 
       collapseBtn = el(`
 
-        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
+        <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar" type="button" data-purpose="sidebar-collapse-button">
 
           <svg class="side-collapse-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
 
@@ -2809,7 +3024,7 @@
 
       expandBtn = el(`
 
-        <button class="sidebar-expand-btn" id="sidebarExpandBtn" title="Open navigation" aria-label="Open menu" data-action="toggle-sidebar" type="button">
+        <button class="sidebar-expand-btn" id="sidebarExpandBtn" aria-label="Open menu" data-action="toggle-sidebar" type="button">
 
           <svg class="side-expand-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 
@@ -2870,14 +3085,15 @@
         document.body.classList.add('sidebar-collapsed');
 
         if (collapseBtn) {
-          collapseBtn.setAttribute('title', 'Expand sidebar');
+          collapseBtn.removeAttribute('title');
           collapseBtn.setAttribute('aria-label', 'Expand navigation');
           collapseBtn.setAttribute('aria-expanded', 'false');
         }
 
-        expandBtn.setAttribute('title', 'Expand sidebar');
-
-        expandBtn.setAttribute('aria-label', 'Expand navigation');
+        if (expandBtn) {
+          expandBtn.removeAttribute('title');
+          expandBtn.setAttribute('aria-label', 'Expand navigation');
+        }
 
         if (brandLogo && brandLogo.classList.contains('side-brand-logo-img')) {
 
@@ -2898,14 +3114,15 @@
         document.body.classList.remove('sidebar-collapsed');
 
         if (collapseBtn) {
-          collapseBtn.setAttribute('title', 'Collapse sidebar');
+          collapseBtn.removeAttribute('title');
           collapseBtn.setAttribute('aria-label', 'Collapse sidebar');
           collapseBtn.setAttribute('aria-expanded', 'true');
         }
 
-        expandBtn.setAttribute('title', 'Collapse sidebar');
-
-        expandBtn.setAttribute('aria-label', 'Collapse sidebar');
+        if (expandBtn) {
+          expandBtn.removeAttribute('title');
+          expandBtn.setAttribute('aria-label', 'Collapse sidebar');
+        }
 
         if (brandLogo && brandLogo.classList.contains('side-brand-logo-img') && brandLogo.dataset.origSrc) {
 
@@ -3080,23 +3297,14 @@
 
 
 
-    let bNav = document.getElementById("mobBottomNav");
-
-    if (!bNav) {
-
-      bNav = buildBottomNav(portalRole, active);
-
-      document.body.appendChild(bNav);
-
-    }
-
-
-
+    // Modern Expanding-Chip Bottom Navigation initialization
+    const legacyMobNav = document.getElementById("mobBottomNav");
+    if (legacyMobNav) legacyMobNav.remove();
     const legacyNav = document.getElementById("bottomnav");
-
     if (legacyNav) legacyNav.remove();
-
-    initBottomNav(bNav);
+    if (window.NGISChipNav && typeof window.NGISChipNav.init === "function") {
+      window.NGISChipNav.init();
+    }
 
 
 
@@ -3317,7 +3525,7 @@
 
         const hb = el(`
 
-          <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn icon-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+          <button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn icon-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
 
             <i class="ph ph-list text-xl"></i>
 
@@ -3343,7 +3551,7 @@
 
       document.querySelectorAll("#menuBtn, #htbHamburger, .htb-hamburger, .menu-btn, .hamburger-btn, [data-action='toggle-sidebar']").forEach(btn => {
 
-        if (btn.id === 'sidebarCollapseBtn' || btn.id === 'sidebarExpandBtn') return;
+        if (btn.id === 'sidebarCollapseBtn' || btn.id === 'sidebarExpandBtn' || btn.id === 'ngisMobileMenuBtn' || btn.closest('#ngisMobileHeader')) return;
 
         // Always ensure hamburger button is placed to the far left of its parent container
 
@@ -3523,18 +3731,33 @@
         return;
       }
 
-      const closeModal = e.target.closest("[data-close-modal], [data-dismiss='modal']");
+      // Universal Modal Close button delegation
+      const closeModal = e.target.closest(
+        "[data-close-modal], [data-dismiss='modal'], [data-dismiss], .modal-close, " +
+        "button[aria-label='Close'], button[title='Close'], button.btn-close, " +
+        ".btn-close-modal, [data-action='close-modal'], button:has([data-ngis-icon='close']), " +
+        "button:has(.ph-x), button:has(.ph-x-bold)"
+      );
 
       if (closeModal) {
-
         e.preventDefault();
-
-        const modal = closeModal.closest(".modal-overlay, .modal");
-
-        if (modal) modal.classList.remove("show", "open");
-
+        e.stopPropagation();
+        const modal = closeModal.closest(
+          ".modal-overlay, .modal, .lf-modal-overlay, .ngis-modal-backdrop-root, " +
+          ".fixed.inset-0, [role='dialog'], [data-modal]"
+        );
+        if (modal) closeModalElement(modal);
         return;
+      }
 
+      // Universal backdrop click delegation:
+      const backdropEl = e.target.closest(".modal-overlay, .lf-modal-overlay, .ngis-modal-backdrop-root, .fixed.inset-0");
+      if (backdropEl && (e.target === backdropEl || e.target.getAttribute("data-modal-backdrop") === "true" || e.target.classList.contains("modal-backdrop") || e.target.classList.contains("ngis-modal-backdrop"))) {
+        if (!e.target.closest("button, a, input, select, textarea, .modal, .lf-modal, .ngis-modal-box, .um-panel, .card, [role='document'], [role='dialog']")) {
+          e.preventDefault();
+          closeModalElement(backdropEl);
+          return;
+        }
       }
 
     });
@@ -3858,15 +4081,17 @@
     return String((label ? label.textContent : node.textContent) || '').replace(/\s+/g, ' ').trim();
   }
 
-  /* Accessibility: tooltips for the collapsed rail, semantic states for
-     active rows and expandable groups. Idempotent — safe after a re-render. */
+  /* Accessibility: semantic states for active rows and expandable groups;
+     strips unnecessary hover tooltips and title popups. Idempotent — safe after a re-render. */
   function decorate() {
     if (!sidebar) return;
     var rows = sidebar.querySelectorAll('.nav-link, .nav-subgroup-label, .nav-nested-label, .nav-group-label');
     Array.prototype.forEach.call(rows, function (row) {
       var text = labelOf(row);
       if (!text) return;
-      if (!row.getAttribute('title')) row.setAttribute('title', text);
+      row.removeAttribute('title');
+      row.removeAttribute('data-tooltip');
+      row.removeAttribute('data-title');
       if (/^(A|BUTTON)$/.test(row.tagName) && !row.getAttribute('aria-label')) {
         row.setAttribute('aria-label', text);
       }
@@ -4168,7 +4393,21 @@
     document.head.appendChild(kitScript);
   }
 
-  /* Global Skeleton Loading System bridge */
+/* Global Motion Design, Animation & GSAP Micro-Interaction System bridge */
+  if (!window.NGIS_MOTION) {
+    var motionScript = document.createElement('script');
+    motionScript.src = (function() {
+      var currentScript = document.currentScript;
+      if (currentScript && currentScript.src) {
+        return currentScript.src.replace(/layout\.js.*$/, 'motion.js');
+      }
+      return '../../assets/js/motion.js';
+    })();
+    motionScript.defer = true;
+    document.head.appendChild(motionScript);
+  }
+
+    /* Global Skeleton Loading System bridge */
   if (!window.NGIS_SKELETON) {
     var skScript = document.createElement('script');
     skScript.src = (function() {

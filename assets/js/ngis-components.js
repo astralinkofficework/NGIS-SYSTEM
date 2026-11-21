@@ -71,6 +71,18 @@
 
   /* ── Confirm dialog ── */
   function confirmDialog(options) {
+    if (window.NGIS_UX && typeof window.NGIS_UX.confirm === "function") {
+      return window.NGIS_UX.confirm({
+        title: options.title,
+        description: options.description || options.desc,
+        consequence: options.consequence,
+        confirmLabel: options.confirmLabel,
+        cancelLabel: options.cancelLabel,
+        isDestructive: options.kind === "danger" || Boolean(options.isDestructive),
+        onConfirm: options.onConfirm,
+        onCancel: options.onCancel
+      });
+    }
     options = options || {};
     var kind = options.kind || "neutral"; // neutral | danger | warning | success | info
     var title = esc(options.title || "Confirm");

@@ -80,6 +80,20 @@
 ):not(:disabled):not(.disabled):not([aria-disabled="true"]):active {
   opacity: .88;
 }
+
+/* Strictly preserve 100% opacity on all cards during active/pressed state */
+a[class*="card"]:not(:disabled):active,
+.hub-card:active,
+.dept-card:active,
+.portal-card:active,
+.module-card:active,
+.interactive-card:active,
+.card:active,
+.card-hover:active,
+.exw-roadmap-row:active,
+.exw-timeline-card:active {
+  opacity: 1 !important;
+}
 @media (prefers-reduced-motion: reduce) {
   :where(.lms-tactile, a[href], button, input[type="button"], input[type="submit"], input[type="reset"],
          [role="button"], [role="link"], [role="menuitem"], [onclick], [tabindex="0"], summary,
@@ -134,7 +148,7 @@
 /* Form field inputs - Explicitly exclude all search capsules, search inputs, ngx
    inline-editable text and the self-themed registration wizard fields (.nrg-*) */
 select:not(.nrg-select),
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input),
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input):not(.exw-roadmap-search),
 textarea,
 .score-cell-input,
 .edit-cell,
@@ -148,7 +162,7 @@ textarea,
 }
 
 select:not(.nrg-select):hover,
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input):hover,
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input):not(.exw-roadmap-search):hover,
 textarea:hover,
 .score-cell-input:hover,
 .edit-cell:hover {
@@ -157,7 +171,7 @@ textarea:hover,
 }
 
 select:not(.nrg-select):focus,
-input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input):focus,
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input):not(.exw-roadmap-search):focus,
 textarea:focus,
 .score-cell-input:focus,
 .edit-cell:focus {
@@ -381,7 +395,7 @@ body[data-portal="admin"] .req-table th,
 body[data-portal="admin"] .dept-table th,
 .class-table th,
 .sk-table th {
-  border-right: 1px solid #E1E9E3 !important;
+  border-right: none !important;
   border-bottom: 1px solid #E1E9E3 !important;
   font-size: 11px !important;
   font-weight: 500 !important;
@@ -411,7 +425,7 @@ body[data-portal="admin"] .req-table td,
 body[data-portal="admin"] .dept-table td,
 .class-table td,
 .sk-table td {
-  border-right: 1px solid #E1E9E3 !important;
+  border-right: none !important;
   border-bottom: 1px solid #E1E9E3 !important;
   font-size: 12.5px !important;
   color: #333333 !important;
@@ -987,11 +1001,11 @@ html body .nav-link.active, html body .nav-group-label {
 
 .htb-search-wrap input,
 .htb-search-wrap input.htb-search-input,
-.htb-search-input {
+.htb-search-input,
+#roadmapFilter,
+.exw-roadmap-search {
   border: none !important;
   border-width: 0 !important;
-  background: transparent !important;
-  background-color: transparent !important;
   box-shadow: none !important;
   outline: 0 !important;
   outline-width: 0 !important;
@@ -1024,10 +1038,10 @@ html body .nav-link.active, html body .nav-group-label {
 }
 
 .demo-pill:hover,
-.portal-card:hover,
+/* .portal-card:hover, */
 .stat-card:hover,
-.module-card:hover,
-.dept-card:hover,
+/* .module-card:hover, */
+/* .dept-card:hover, */
 .card:hover {
   background: #ffffff !important;
   border-color: #E1E9E3 !important;
@@ -1044,7 +1058,7 @@ html body .nav-link.active, html body .nav-group-label {
 
 
 /* NGIS Absolute Zero Colored Hover Overlay Rule */
-.demo-pill, .portal-card, .stat-card, .module-card, .dept-card, .card,
+.demo-pill, /* .portal-card, */ .stat-card, .module-card, .dept-card, .card,
 .card-hover, .card-hover-sm, .candidate-card, .club-card, .cert-card, .role-card,
 .news-card, .subj-card, .cal-card, .att-card, .ql-card, .pf-card, .task-card,
 .box, .container, .panel, .widget {
@@ -1054,10 +1068,10 @@ html body .nav-link.active, html body .nav-group-label {
   translate: none !important;
 }
 
-.demo-pill:hover, .portal-card:hover, .stat-card:hover, .module-card:hover,
-.dept-card:hover, .card:hover, .card-hover:hover, .card-hover-sm:hover, .candidate-card:hover,
-.club-card:hover, .cert-card:hover, .role-card:hover, .news-card:hover, .subj-card:hover,
-.cal-card:hover, .att-card:hover, .ql-card:hover, .pf-card:hover, .task-card:hover,
+.demo-pill:hover, /* .portal-card:hover, */ .stat-card:hover, /* .module-card:hover, */
+/* .dept-card:hover, */ .card:hover, /* .card-hover:hover, */ .card-hover-sm:hover, .candidate-card:hover,
+.club-card:hover, .cert-card:hover, .role-card:hover, .news-card:hover, /* .subj-card:hover, */
+.cal-card:hover, .att-card:hover, /* .ql-card:hover, */ .pf-card:hover, /* .task-card:hover, */
 .box:hover, .container:hover, .panel:hover, .widget:hover {
   background-color: #ffffff !important;
   border-color: #E1E9E3 !important;
@@ -1127,31 +1141,16 @@ html body .nav-link.active, html body .nav-group-label {
    background (dark highlight / KPI tiles) are never force-painted white — doing so made
    their white text disappear the moment the card was hovered, clicked or focused. */
 :where(
-  .card, .ws-card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
-  .lesson-card, .ann-card, .exam-card, .candidate-card, .club-card, .cert-card,
-  .portal-card, .role-card, .news-card, .subj-card, .cal-card, .att-card, .ql-card,
-  .pf-card, .task-card, .sh-card, .sh-stat-card, .card-hover, .card-hover-sm,
-  .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel, .ov-deadline-panel,
-  .ov-deadline-card, .ov-task-card, .dash-kpi-card, .sh-request-item,
-  .box, .panel, .widget, .demo-pill, [class~="card"], [class*="-card"]
+  .stat-card, .stat, .telemetry-card, .smx-kpi, .sh-stat-card,
+  .dash-kpi-card, .box, .panel, .widget
 ):not([style*="background"]):hover,
 :where(
-  .card, .ws-card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
-  .lesson-card, .ann-card, .exam-card, .candidate-card, .club-card, .cert-card,
-  .portal-card, .role-card, .news-card, .subj-card, .cal-card, .att-card, .ql-card,
-  .pf-card, .task-card, .sh-card, .sh-stat-card, .card-hover, .card-hover-sm,
-  .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel, .ov-deadline-panel,
-  .ov-deadline-card, .ov-task-card, .dash-kpi-card, .sh-request-item,
-  .box, .panel, .widget, .demo-pill, [class~="card"], [class*="-card"]
+  .stat-card, .stat, .telemetry-card, .smx-kpi, .sh-stat-card,
+  .dash-kpi-card, .box, .panel, .widget
 ):not([style*="background"]):active,
 :where(
-  .card, .ws-card, .module-card, .dept-card, .hub-card, .stat-card, .stat,
-  .lesson-card, .ann-card, .exam-card, .candidate-card, .club-card, .cert-card,
-  .portal-card, .role-card, .news-card, .subj-card, .cal-card, .att-card, .ql-card,
-  .pf-card, .task-card, .sh-card, .sh-stat-card, .card-hover, .card-hover-sm,
-  .ov-profile, .ov-upcoming, .ov-deadlines, .ov-inner-panel, .ov-deadline-panel,
-  .ov-deadline-card, .ov-task-card, .dash-kpi-card, .sh-request-item,
-  .box, .panel, .widget, .demo-pill, [class~="card"], [class*="-card"]
+  .stat-card, .stat, .telemetry-card, .smx-kpi, .sh-stat-card,
+  .dash-kpi-card, .box, .panel, .widget
 ):not([style*="background"]):focus {
   background: #ffffff !important;
   background-color: #ffffff !important;
@@ -1269,4 +1268,1255 @@ table tbody tr:hover td,
   background: transparent !important;
   box-shadow: none !important;
   transform: none !important;
+}
+
+/* D. Teacher Portal Selected Row Indicator (Section 14) */
+tr.selected-row,
+tr[data-selected="true"],
+.selected-record {
+  border-left: 3px solid #0F5132 !important;
+  background-color: transparent !important;
+}
+
+tr.selected-row td:first-child,
+tr[data-selected="true"] td:first-child {
+  border-left: 3px solid #0F5132 !important;
+}
+
+
+
+/* ==========================================================================
+   NGIS GLOBAL MOTION DESIGN & MICRO-INTERACTION SYSTEM (2026)
+   Tokens, Hardware-Accelerated Transforms, Card Lifts, Shake & Reduced Motion
+   ========================================================================== */
+
+:root {
+  --ngis-motion-duration-press: 100ms;
+  --ngis-motion-duration-hover: 180ms;
+  --ngis-motion-duration-tooltip: 120ms;
+  --ngis-motion-duration-dropdown: 180ms;
+  --ngis-motion-duration-modal-enter: 240ms;
+  --ngis-motion-duration-modal-exit: 180ms;
+  --ngis-motion-duration-sidebar: 260ms;
+  --ngis-motion-duration-height: 240ms;
+  --ngis-motion-duration-shake: 300ms;
+  --ngis-motion-duration-success: 400ms;
+  --ngis-motion-scale-press: 0.97;
+  --ngis-motion-scale-entrance: 0.97;
+  --ngis-motion-card-lift: -2.5px;
+  --ngis-motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ngis-motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ngis-motion-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* 1. Physical Press Feedback */
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+.icon-btn:active:not(:disabled),
+.tab-btn:active,
+.exw-tab:active,
+.exw-roadmap-tab:active,
+.hamburger-btn:active,
+.mobile-hamburger-btn:active,
+.htb-ctrl-btn:active,
+.action-btn:active,
+.pill-btn:active,
+[data-action]:active {
+  transform: scale(var(--ngis-motion-scale-press)) !important;
+  transition: transform var(--ngis-motion-duration-press) var(--ngis-motion-ease-out) !important;
+}
+
+/* 2. Subtle Card Hover Lift (Disabled on touch-only devices) */
+@media (hover: hover) and (pointer: fine) {
+  /* .card-hover:hover, */
+  /* .ql-card:hover, */
+  /* .module-card:hover, */
+  /* .dept-card:hover, */
+  /* .task-card:hover, */
+  /* .ann-card:hover, */
+  /* .exam-card:hover, */
+  .subject-card:hover,
+  .interactive-card:hover,
+  .exw-timeline-card:hover,
+  .ngis-card-lifted {
+    transform: translateY(var(--ngis-motion-card-lift)) scale(1.007) !important;
+    box-shadow: 0 8px 24px -4px rgba(15, 23, 20, 0.08), 0 2px 6px -2px rgba(15, 23, 20, 0.04) !important;
+    transition: transform var(--ngis-motion-duration-hover) var(--ngis-motion-ease-out),
+                box-shadow var(--ngis-motion-duration-hover) var(--ngis-motion-ease-out) !important;
+  }
+}
+
+/* 3. Subtle Horizontal Error Shake (3-5px over 300ms) */
+@keyframes ngis-error-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.ngis-shake {
+  animation: ngis-error-shake var(--ngis-motion-duration-shake) cubic-bezier(0.36, 0.07, 0.19, 0.97) both !important;
+}
+
+.ngis-error-static {
+  outline: 2px solid #ef4444 !important;
+  transition: outline 200ms ease;
+}
+
+/* 4. Scale 0.97 Entrances and Exits */
+@keyframes ngis-scale-enter {
+  0% { opacity: 0; transform: scale(var(--ngis-motion-scale-entrance)) translateY(6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes ngis-scale-exit {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(var(--ngis-motion-scale-entrance)) translateY(6px); }
+}
+
+.ngis-scale-enter {
+  animation: ngis-scale-enter var(--ngis-motion-duration-dropdown) var(--ngis-motion-ease-out) forwards !important;
+}
+
+.ngis-scale-exit {
+  animation: ngis-scale-exit var(--ngis-motion-duration-dropdown) var(--ngis-motion-ease-in) forwards !important;
+}
+
+/* 5. Tooltip Styling Decommissioned */
+.ngis-motion-tooltip {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 6. Success Feedback Toast & Animated Checkmark */
+.ngis-success-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.ngis-success-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #dcfce7;
+  color: #166534;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  box-shadow: 0 10px 30px -4px rgba(22, 101, 52, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .ngis-success-pill {
+  background: #13241b;
+  border-color: #1e3a29;
+  color: #86efac;
+}
+
+.ngis-success-checkmark {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+/* 7. Full Accessibility & Prefers-Reduced-Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ngis-shake {
+    animation: none !important;
+  }
+  /* .card-hover:hover, */
+  /* .ql-card:hover, */
+  .interactive-card:hover,
+  .exw-timeline-card:hover,
+  .ngis-card-lifted {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ==========================================================================
+   NGIS UNIVERSAL DIALOG, TOOLTIP & UX INTERACTION DESIGN SYSTEM (2026)
+   ========================================================================== */
+.ngis-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.ngis-dialog-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ngis-dialog-backdrop.is-exiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ngis-dialog-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.05);
+  transform: scale(0.96) translateY(6px);
+  opacity: 0;
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), opacity 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ngis-dialog-backdrop.is-visible .ngis-dialog-card {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.ngis-dialog-backdrop.is-exiting .ngis-dialog-card {
+  transform: scale(0.97) translateY(4px);
+  opacity: 0;
+}
+
+.ngis-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ngis-dialog-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ngis-dialog-icon-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.ngis-dialog-icon-badge.is-primary {
+  background-color: #ecfdf5;
+  color: #0f5132;
+  border: 1px solid #d1fae5;
+}
+
+.ngis-dialog-icon-badge.is-danger {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fee2e2;
+}
+
+.ngis-dialog-title {
+  font-size: 17px;
+  font-weight: 500;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ngis-dialog-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.ngis-dialog-badge.is-recoverable {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.ngis-dialog-badge.is-irreversible {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.ngis-dialog-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  margin: -4px -4px 0 0;
+}
+
+.ngis-dialog-close-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.ngis-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ngis-dialog-desc {
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.55;
+  margin: 0;
+  font-weight: 400;
+}
+
+.ngis-dialog-consequence {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.ngis-dialog-consequence-title {
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+}
+
+.ngis-dialog-consequence-body {
+  color: #64748b;
+  font-weight: 400;
+}
+
+.ngis-dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.ngis-dialog-cancel-btn {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ngis-dialog-cancel-btn:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.ngis-dialog-confirm-btn {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ngis-dialog-confirm-btn.ngis-btn-primary {
+  background-color: #0f5132;
+  border: 1px solid #0f5132;
+  color: #ffffff;
+}
+
+.ngis-dialog-confirm-btn.ngis-btn-primary:hover {
+  background-color: #0a3d25;
+}
+
+.ngis-dialog-confirm-btn.ngis-btn-danger {
+  background-color: #dc2626;
+  border: 1px solid #dc2626;
+  color: #ffffff;
+}
+
+.ngis-dialog-confirm-btn.ngis-btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+@media (max-width: 640px) {
+  .ngis-dialog-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .ngis-dialog-card {
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+    padding: 20px 20px max(24px, env(safe-area-inset-bottom, 20px)) 20px;
+    transform: translateY(100%);
+  }
+  .ngis-dialog-backdrop.is-visible .ngis-dialog-card {
+    transform: translateY(0);
+  }
+  .ngis-dialog-backdrop.is-exiting .ngis-dialog-card {
+    transform: translateY(100%);
+  }
+  .ngis-dialog-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  .ngis-dialog-cancel-btn,
+  .ngis-dialog-confirm-btn {
+    width: 100%;
+    height: 42px;
+  }
+}
+
+[data-theme="dark"] .ngis-dialog-card {
+  background-color: #0f172a;
+  border-color: #1e293b;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .ngis-dialog-title { color: #f8fafc; }
+[data-theme="dark"] .ngis-dialog-desc { color: #94a3b8; }
+[data-theme="dark"] .ngis-dialog-consequence { background-color: #1e293b; border-color: #334155; }
+[data-theme="dark"] .ngis-dialog-consequence-title { color: #e2e8f0; }
+[data-theme="dark"] .ngis-dialog-consequence-body { color: #94a3b8; }
+[data-theme="dark"] .ngis-dialog-cancel-btn { background-color: #1e293b; border-color: #334155; color: #e2e8f0; }
+[data-theme="dark"] .ngis-dialog-cancel-btn:hover { background-color: #334155; color: #ffffff; }
+[data-theme="dark"] .ngis-dialog-close-btn:hover { background-color: #1e293b; color: #f8fafc; }
+
+/* Universal Tooltips Decommissioned & Suppressed */
+.ngis-universal-tooltip,
+#ngisGlobalTooltip,
+.has-tooltip::after,
+.has-tooltip::before,
+[role="tooltip"]:not(.modal-dialog):not(.dropdown-menu) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  content: none !important;
+}
+
+.ngis-success-toast-wrap {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100020;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.ngis-success-toast-item {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.96);
+  transition: opacity 220ms cubic-bezier(0.16, 1, 0.3, 1), transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+.ngis-success-toast-item.is-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.ngis-success-toast-item.is-exiting {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+}
+
+.ngis-success-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  background: #ffffff;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px -4px rgba(22, 101, 52, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.05);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.ngis-success-check-wrap {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  background-color: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ngis-success-check-svg {
+  color: #16a34a;
+}
+
+[data-theme="dark"] .ngis-success-pill {
+  background: #13241b;
+  border-color: #1e3a29;
+  color: #86efac;
+}
+
+[data-theme="dark"] .ngis-success-check-wrap {
+  background-color: #1e3a29;
+}
+
+.ngis-input-error {
+  border-color: #dc2626 !important;
+  background-color: #fff8f8 !important;
+}
+
+[data-theme="dark"] .ngis-input-error {
+  border-color: #ef4444 !important;
+  background-color: #241315 !important;
+}
+
+.ngis-inline-error {
+  font-size: 11.5px;
+  color: #dc2626;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+[data-theme="dark"] .ngis-inline-error {
+  color: #f87171;
+}
+
+.ngis-notification-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.ngis-notification-card:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+}
+
+.ngis-notification-card.is-unread {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.ngis-notification-card-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: #16a34a;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.ngis-notification-card-action {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #0f5132;
+  background-color: #e2f4ea;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  border: 1px solid #c2e8d4;
+  cursor: pointer;
+}
+
+.ngis-notification-card-action:hover {
+  background-color: #0f5132;
+  color: #ffffff;
+  border-color: #0f5132;
+}
+
+[data-theme="dark"] .ngis-notification-card {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+
+[data-theme="dark"] .ngis-notification-card:hover {
+  background-color: #1e293b;
+}
+
+[data-theme="dark"] .ngis-notification-card.is-unread {
+  background-color: #13241b;
+  border-color: #1e3a29;
+}
+
+[data-theme="dark"] .ngis-notification-card-action {
+  background-color: #1e3a29;
+  border-color: #2e593e;
+  color: #86efac;
+}
+
+[data-theme="dark"] .ngis-notification-card-action:hover {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+/* ============================================================================
+   NGIS ERP — GLOBAL STANDARDIZED PAGINATION & STATUS SYSTEM (SECTIONS 1–4)
+   ============================================================================ */
+
+/* ── 1. Global Standardized Pagination ── */
+.ngis-pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  background: var(--card-bg, #ffffff);
+  border-top: 1px solid var(--border, #e2e8f0);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ngis-pagination-summary {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--muted, #64748b);
+  line-height: 1.5;
+}
+
+.ngis-pagination-summary .font-medium {
+  font-weight: 500;
+  color: var(--text, #0f172a);
+}
+
+.ngis-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Base pagination button */
+.ngis-pag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.ngis-pag-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Previous button: neutral white/transparent */
+.ngis-pag-prev {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.ngis-pag-prev:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.ngis-pag-prev:disabled,
+.ngis-pag-prev.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+/* Next button: NGIS primary institutional green */
+.ngis-pag-next {
+  background: #0f5132;
+  color: #ffffff;
+  border: 1px solid #0f5132;
+}
+
+.ngis-pag-next:hover:not(:disabled) {
+  background: #146c43;
+  border-color: #146c43;
+}
+
+.ngis-pag-next:disabled,
+.ngis-pag-next.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #e2e8f0;
+  color: #94a3b8;
+  border-color: #cbd5e1;
+}
+
+/* Numerical Page Buttons */
+.ngis-pagination-numbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ngis-pag-number {
+  min-width: 36px;
+  height: 38px;
+  padding: 0 10px;
+  background: transparent;
+  color: #475569;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.ngis-pag-number:hover:not(.is-active) {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.ngis-pag-number.is-active {
+  background: #e2f4ea;
+  color: #0f5132;
+  border-color: #bbf7d0;
+  font-weight: 500;
+}
+
+.ngis-pag-ellipsis {
+  padding: 0 4px;
+  color: #94a3b8;
+  font-size: 13px;
+  user-select: none;
+}
+
+/* Progress Dots Mode (for multi-step flows) */
+.ngis-pagination-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.ngis-pag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ngis-pag-dot:hover:not(.is-active) {
+  background: #94a3b8;
+}
+
+.ngis-pag-dot.is-active {
+  width: 22px;
+  background: #0f5132;
+}
+
+/* Responsive mobile adjustments */
+@media (max-width: 640px) {
+  .ngis-pagination-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .ngis-pagination-summary {
+    text-align: center;
+  }
+  .ngis-pagination-controls {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .ngis-pag-prev,
+  .ngis-pag-next {
+    flex: 1;
+    min-height: 42px; /* iOS 44px touch target standard */
+  }
+  .ngis-pagination-numbers {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* ── 2. Centralized Status Indicators ── */
+.ngis-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.ngis-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.ngis-status-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Badge variant (soft tinted background pill) */
+.ngis-status-badge {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  min-height: 24px;
+}
+
+/* Color Tokens: Gray */
+.ngis-status-badge.ngis-status--gray {
+  background-color: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+/* Color Tokens: Amber / Orange */
+.ngis-status-badge.ngis-status--amber {
+  background-color: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+/* Color Tokens: Blue */
+.ngis-status-badge.ngis-status--blue {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+/* Color Tokens: Green */
+.ngis-status-badge.ngis-status--green {
+  background-color: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+/* Color Tokens: Red */
+.ngis-status-badge.ngis-status--red {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* Flat variant (dense tables: icon + colored text only, no pill box) */
+.ngis-status-flat {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.ngis-status-flat.ngis-status--gray { color: #64748b; }
+.ngis-status-flat.ngis-status--amber { color: #d97706; }
+.ngis-status-flat.ngis-status--blue { color: #2563eb; }
+.ngis-status-flat.ngis-status--green { color: #059669; }
+.ngis-status-flat.ngis-status--red { color: #dc2626; }
+
+/* Micro-interaction animations */
+@keyframes ngisStatusShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+.ngis-status-shake {
+  animation: ngisStatusShake 0.3s ease-in-out;
+}
+
+/* Dark mode token overrides */
+[data-theme="dark"] .ngis-pagination-wrapper {
+  background: #0f172a;
+  border-color: #1e293b;
+}
+
+[data-theme="dark"] .ngis-pag-prev {
+  background: #1e293b;
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .ngis-pag-prev:hover:not(:disabled) {
+  background: #334155;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ngis-pag-number {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .ngis-pag-number:hover:not(.is-active) {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .ngis-pag-number.is-active {
+  background: #13241b;
+  color: #86efac;
+  border-color: #1e3a29;
+}
+
+[data-theme="dark"] .ngis-status-badge.ngis-status--gray {
+  background-color: #1e293b;
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .ngis-status-badge.ngis-status--amber {
+  background-color: #2a1c0d;
+  color: #fcd34d;
+  border-color: #452a12;
+}
+
+[data-theme="dark"] .ngis-status-badge.ngis-status--blue {
+  background-color: #111e38;
+  color: #93c5fd;
+  border-color: #1e3a8a;
+}
+
+[data-theme="dark"] .ngis-status-badge.ngis-status--green {
+  background-color: #13241b;
+  color: #86efac;
+  border-color: #1e3a29;
+}
+
+[data-theme="dark"] .ngis-status-badge.ngis-status--red {
+  background-color: #2a1215;
+  color: #fca5a5;
+  border-color: #4c1d24;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GLOBAL EMPTY STATES & MISSING VALUES DESIGN SYSTEM
+   Standardized minimal filing cabinet, search empty, missing values
+   ══════════════════════════════════════════════════════════════ */
+.ngis-empty-row {
+  background: transparent !important;
+}
+
+.ngis-empty-row:hover {
+  background: transparent !important;
+}
+
+.ngis-empty-cell {
+  padding: 0 !important;
+  border: none !important;
+  text-align: center !important;
+  background: transparent !important;
+}
+
+.ngis-empty-state-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 44px 20px !important;
+  min-height: 240px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
+}
+
+.ngis-empty-illustration {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 14px !important;
+}
+
+.ngis-empty-illustration-svg {
+  width: 120px !important;
+  height: 120px !important;
+  max-width: 120px !important;
+  max-height: 120px !important;
+  display: block !important;
+  color: #94a3b8 !important;
+}
+
+.ngis-empty-heading {
+  font-size: 16px !important;
+  font-weight: 500 !important; /* STRICT NO BOLD */
+  color: #0f172a !important;
+  margin: 0 0 6px 0 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.ngis-empty-desc {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #64748b !important;
+  max-width: 440px !important;
+  margin: 0 auto 18px auto !important;
+  line-height: 1.45 !important;
+}
+
+.ngis-empty-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.ngis-empty-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  height: 36px !important;
+  padding: 0 16px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important; /* NO BOLD */
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+  box-sizing: border-box !important;
+}
+
+.ngis-empty-btn-primary {
+  background: #0f5132 !important;
+  background-color: #0f5132 !important;
+  color: #ffffff !important;
+  border: 1px solid #0f5132 !important;
+}
+
+.ngis-empty-btn-primary:hover {
+  background: #0c4128 !important;
+  background-color: #0c4128 !important;
+  border-color: #0c4128 !important;
+}
+
+.ngis-empty-btn-primary:active {
+  transform: scale(0.97) !important;
+}
+
+.ngis-empty-btn-secondary {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.ngis-empty-btn-secondary:hover {
+  background: #f8fafc !important;
+  background-color: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+
+.ngis-empty-btn-secondary:active {
+  transform: scale(0.97) !important;
+}
+
+/* Missing values */
+.ngis-missing-val {
+  color: #94a3b8 !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+}
+
+.ngis-missing-dash {
+  color: #cbd5e1 !important;
+  font-weight: 400 !important;
+}
+
+/* Flat & Badge Status indicators */
+.ngis-status-indicator {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important; /* STRICT NO BOLD */
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+
+.ngis-status-flat {
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.ngis-status-flat.ngis-status--gray { color: #64748b !important; }
+.ngis-status-flat.ngis-status--blue { color: #0284c7 !important; }
+.ngis-status-flat.ngis-status--green { color: #16a34a !important; }
+.ngis-status-flat.ngis-status--amber { color: #d97706 !important; }
+.ngis-status-flat.ngis-status--red { color: #dc2626 !important; }
+
+.ngis-status-badge {
+  padding: 4px 10px !important;
+  border-radius: 9999px !important;
+  border: 1px solid transparent !important;
+}
+
+.ngis-status-badge.ngis-status--gray {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.ngis-status-badge.ngis-status--blue {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border-color: #bfdbfe !important;
+}
+
+.ngis-status-badge.ngis-status--green {
+  background-color: #f0fdf4 !important;
+  color: #15803d !important;
+  border-color: #bbf7d0 !important;
+}
+
+.ngis-status-badge.ngis-status--amber {
+  background-color: #fffbeb !important;
+  color: #b45309 !important;
+  border-color: #fde68a !important;
+}
+
+.ngis-status-badge.ngis-status--red {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+  border-color: #fecaca !important;
+}
+
+/* Mobile empty state scaling */
+@media (max-width: 640px) {
+  .ngis-empty-state-wrap {
+    padding: 32px 16px !important;
+    min-height: 200px !important;
+  }
+  .ngis-empty-illustration-svg {
+    width: 96px !important;
+    height: 96px !important;
+    max-width: 96px !important;
+    max-height: 96px !important;
+  }
+  .ngis-empty-heading {
+    font-size: 15px !important;
+  }
+  .ngis-empty-desc {
+    font-size: 12.5px !important;
+    margin-bottom: 14px !important;
+  }
+  .ngis-empty-btn {
+    height: 34px !important;
+    padding: 0 14px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Dark mode for empty state */
+[data-theme="dark"] .ngis-empty-heading {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .ngis-empty-desc {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .ngis-empty-btn-secondary {
+  background: #1e293b !important;
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .ngis-empty-btn-secondary:hover {
+  background: #334155 !important;
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .ngis-empty-illustration-svg {
+  color: #64748b !important;
+}
+
+[data-theme="dark"] .ngis-missing-val {
+  color: #64748b !important;
+}
+
+[data-theme="dark"] .ngis-missing-dash {
+  color: #475569 !important;
 }

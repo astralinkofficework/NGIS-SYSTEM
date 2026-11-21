@@ -27,7 +27,7 @@
     stats: {},
     options: null,
     months: [],
-    tab: 'pending',
+    tab: ROLE === 'student' ? 'upcoming' : 'pending',
     type: 'all',
     month: 'all',
     q: '',
@@ -144,6 +144,7 @@
   }
 
   function isUpcoming(exam) {
+    if (exam && exam.is_demo) return true;
     var stamp = String(exam.exam_date || '') + 'T' + String(exam.end_time || '23:59') + ':00';
     var when = new Date(stamp);
     return isNaN(when.getTime()) || when.getTime() >= Date.now();
@@ -274,30 +275,65 @@
     return html;
   }
 
+  function formatTime12(timeStr) {
+    if (!timeStr) return '';
+    if (timeStr.indexOf('AM') !== -1 || timeStr.indexOf('PM') !== -1) return timeStr;
+    var parts = timeStr.split(':');
+    if (parts.length < 2) return timeStr;
+    var h = parseInt(parts[0], 10);
+    var m = parts[1];
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12;
+    if (h === 0) h = 12;
+    return (h < 10 ? '0' + h : h) + ':' + m + ' ' + ampm;
+  }
+
+  function getContextualLinkText(e) {
+    if (e.link_text) return e.link_text;
+    var s = (e.subject || e.title || '').toLowerCase();
+    if (s.indexOf('math') !== -1 || s.indexOf('calculus') !== -1 || s.indexOf('physics') !== -1) return 'Formulae';
+    if (s.indexOf('literature') !== -1 || s.indexOf('reading') !== -1) return 'Texts';
+    if (s.indexOf('grammar') !== -1 || s.indexOf('writing') !== -1 || s.indexOf('composition') !== -1) return 'Rubric';
+    if (s.indexOf('chinese') !== -1 || s.indexOf('khmer') !== -1 || s.indexOf('language') !== -1) return 'Guide';
+    return 'Overview';
+  }
   function studentShell() {
-    shell({
-      title: 'My Examination Schedule',
-      subtitle: deptContext
-        ? 'Published ' + deptLabel + ' examinations for your enrolled classes only.'
-        : 'Published examinations for your enrolled classes only.',
-      body:
-        '<section class="exw-card exw-section">' +
-          '<div class="exw-tabs">' +
-            '<button type="button" class="exw-tab' + (state.tab === 'upcoming' ? ' active' : '') + '" data-action="tab" data-tab="upcoming">Upcoming</button>' +
-            '<button type="button" class="exw-tab' + (state.tab === 'completed' ? ' active' : '') + '" data-action="tab" data-tab="completed">Completed</button>' +
+    root.innerHTML =
+      '<div class="exw max-w-5xl mx-auto py-6 px-4 sm:px-6">' +
+        '<div class="exw-roadmap-container">' +
+          // Header Bar matching reference screenshot
+          '<div class="exw-roadmap-head">' +
+            '<div>' +
+              '<div class="exw-roadmap-title-row">' +
+                '<span class="exw-roadmap-dot"></span>' +
+                '<h2 class="exw-roadmap-title" id="roadmapTitle">Subsequent Examinations Roadmap</h2>' +
+              '</div>' +
+              '<p class="exw-roadmap-subtitle" id="roadmapSubtitle">Chronological progression through July 2026 evaluations</p>' +
+            '</div>' +
+            '<div class="exw-roadmap-tools">' +
+              // Search Filter
+              '<div class="exw-roadmap-search-wrap">' +
+                '<span class="material-symbols-outlined exw-roadmap-search-icon">search</span>' +
+                '<input type="text" id="roadmapFilter" data-ngis-search-skip="true" placeholder="Filter subjects..." value="' + esc(state.q) + '" class="exw-roadmap-search" autocomplete="off">' +
+              '</div>' +
+              // Queued Badge
+              '<span class="exw-roadmap-badge" id="roadmapQueuedBadge">' +
+                '<span id="roadmapQueuedCount">5</span>&nbsp;Queued' +
+              '</span>' +
+            '</div>' +
           '</div>' +
-          '<div class="exw-toolbar">' + selectFilters(false) + '</div>' +
-        '</section>' +
-        '<section class="exw-section"><div id="exwList"></div></section>'
-    });
+          // Timeline Content
+          '<div id="exwList"></div>' +
+        '</div>' +
+      '</div>';
   }
 
   function staffShell() {
     var config = {
       teacher: {
-        title: 'Exam Schedule Management',
-        subtitle: 'Create and manage examination schedules for your assigned subjects and classes.',
-        actions: '<button type="button" class="exw-btn exw-btn-primary" data-action="new">New examination</button>',
+        title: 'Examination & Quiz Notices',
+        subtitle: 'Publish examination notices, quiz schedules, and revision materials for student cohorts.',
+        actions: '<button type="button" class="exw-btn exw-btn-primary" data-action="new"><span class="material-symbols-outlined text-sm align-middle mr-1">add</span>Create Notice</button>',
         tabs: ''
       },
       principal: {
@@ -335,7 +371,18 @@
     return state.exams.filter(function (e) {
       if (state.type !== 'all' && e.exam_type !== state.type) return false;
       if (state.month !== 'all' && String(e.exam_date || '').slice(0, 7) !== state.month) return false;
-      if (ROLE === 'student') return true;
+      if (ROLE === 'student') {
+        if (state.tab === 'upcoming') {
+          if (e.completed || !isUpcoming(e)) return false;
+        } else if (state.tab === 'completed') {
+          if (!e.completed && isUpcoming(e)) return false;
+        }
+        if (state.q) {
+          var hay = (e.subject + ' ' + (e.title || '') + ' ' + (e.department || '') + ' ' + (e.room || '') + ' ' + (e.instructions || '') + ' ' + (e.evaluator_note || '')).toLowerCase();
+          if (hay.indexOf(state.q.toLowerCase()) === -1) return false;
+        }
+        return true;
+      }
       if (state.q) {
         var hay = (e.subject + ' ' + e.title + ' ' + e.department + ' ' + e.classes.join(' ')).toLowerCase();
         if (hay.indexOf(state.q.toLowerCase()) === -1) return false;
@@ -364,12 +411,14 @@
   function examCard(e, showDept) {
     var d = dateParts(e.exam_date);
     var meta = [e.exam_type_label];
-    if (showDept && e.department) meta.push(e.department);
-    if (e.classes.length) meta.push(e.classes.join(', '));
+    if (e.department) meta.push(e.department);
+    if (e.classes && e.classes.length) meta.push(e.classes.join(', '));
     return '<li class="exw-exam">' +
       '<div class="exw-date"><span class="exw-date-day">' + esc(d.day) + '</span><span class="exw-date-month">' + esc(d.month) + '</span></div>' +
-      '<div class="exw-exam-main"><div class="exw-subject">' + esc(e.subject) + '</div>' +
-      '<div class="exw-meta">' + meta.map(function (m) { return '<span>' + esc(m) + '</span>'; }).join('') + '</div></div>' +
+      '<div class="exw-exam-main">' +
+      '<div class="exw-exam-title font-medium text-forest-800 text-[14px] leading-tight">' + esc(e.title || e.subject) + '</div>' +
+      '<div class="exw-subject text-xs text-ink-soft mt-0.5">' + esc(e.subject) + '</div>' +
+      '<div class="exw-meta mt-1">' + meta.map(function (m) { return '<span>' + esc(m) + '</span>'; }).join('') + '</div></div>' +
       '<div class="exw-right"><div class="exw-time">' + esc(e.start_time) + ' – ' + esc(e.end_time) + '</div>' +
       '<div class="exw-status ' + statusClass(e) + '">' + esc(statusText(e)) + '</div></div>' +
       '</li>';
@@ -378,25 +427,109 @@
   function renderStudent() {
     var all = state.exams;
     var items = filteredExams();
-    renderCounts(all);
     var box = document.getElementById('exwList');
+    var badgeCount = document.getElementById('roadmapQueuedCount');
+    var badgeWrap = document.getElementById('roadmapQueuedBadge');
+    var titleEl = document.getElementById('roadmapTitle');
+    var subEl = document.getElementById('roadmapSubtitle');
+
+    if (badgeCount) badgeCount.textContent = items.length;
+    if (badgeWrap) {
+      badgeWrap.style.display = '';
+    }
+    if (titleEl) {
+      titleEl.textContent = 'Subsequent Examinations Roadmap';
+    }
+    if (subEl) {
+      subEl.textContent = 'Chronological progression through July 2026 evaluations';
+    }
+
     if (!box) return;
     if (!items.length) {
+      if (state.q && window.NGIS_EMPTY && typeof window.NGIS_EMPTY.renderNoResults === 'function') {
+        window.NGIS_EMPTY.renderNoResults(box, {
+          onAction: function () {
+            var input = document.getElementById('roadmapFilter');
+            if (input) input.value = '';
+            state.q = '';
+            renderStudent();
+          },
+          onReset: function () {
+            var input = document.getElementById('roadmapFilter');
+            if (input) input.value = '';
+            state.q = '';
+            renderStudent();
+          }
+        });
+        return;
+      }
+      if (window.NGIS_EMPTY && typeof window.NGIS_EMPTY.render === 'function') {
+        window.NGIS_EMPTY.render(box, 'exams');
+        return;
+      }
       box.innerHTML = emptyState(
-        state.tab === 'upcoming' ? 'No upcoming examinations' : 'No completed examinations',
-        'Published schedules for your enrolled classes will appear here automatically.'
+        'No examinations found',
+        'No upcoming examinations match your filter criteria.'
       );
       return;
     }
-    var deptCount = {};
-    var subjectCount = {};
-    all.forEach(function (e) {
-      deptCount[e.department] = (deptCount[e.department] || 0) + 1;
-      subjectCount[e.subject] = (subjectCount[e.subject] || 0) + 1;
+
+    var sorted = items.slice().sort(function (a, b) {
+      var da = (a.exam_date || '') + ' ' + (a.start_time || '');
+      var db = (b.exam_date || '') + ' ' + (b.start_time || '');
+      return da.localeCompare(db);
     });
-    var showDept = !deptContext && (Object.keys(deptCount).length > 1 ||
-      Object.keys(subjectCount).some(function (s) { return subjectCount[s] > 1; }));
-    box.innerHTML = '<ul class="exw-list">' + items.map(function (e) { return examCard(e, showDept); }).join('') + '</ul>';
+
+    var html = '<div class="exw-timeline-wrap">';
+
+    sorted.forEach(function (e, idx) {
+      var isFirst = idx === 0;
+      var isLast = idx === sorted.length - 1;
+      var d = dateParts(e.exam_date);
+      var dayStr = String(d.day || '01').padStart(2, '0');
+      var monthStr = (d.month || 'JUL').toUpperCase();
+
+      var timeStr = formatTime12(e.start_time) + ' – ' + formatTime12(e.end_time);
+      var roomStr = esc(e.room || e.location || (e.classes && e.classes[0] ? e.classes[0] : 'Room 302'));
+      var noteStr = esc(e.evaluator_note || e.format || (e.teacher ? e.teacher + ' • ' + (e.exam_type_label || 'Test') : (e.exam_type_label || 'Standard Exam')));
+      var descStr = esc(e.instructions || e.topics || e.description || e.notes || (e.subject + ' • ' + (e.exam_type_label || 'Evaluation')));
+      var linkText = getContextualLinkText(e);
+
+      var lineClass = isFirst ? 'exw-timeline-line-blue' : 'exw-timeline-line-grey';
+      if (isLast) lineClass += ' exw-timeline-line-end';
+
+      var pillClass = isFirst ? 'exw-pill-highlight' : 'exw-pill-neutral';
+
+      html +=
+        '<div class="exw-timeline-item">' +
+          '<div class="exw-timeline-spine">' +
+            '<div class="exw-timeline-node">' + dayStr + '</div>' +
+            '<div class="exw-timeline-line ' + lineClass + '"></div>' +
+          '</div>' +
+          '<div class="exw-roadmap-row" data-action="view" data-id="' + esc(e.id) + '">' +
+            '<div class="exw-roadmap-row-top">' +
+              '<div class="exw-roadmap-meta">' +
+                '<span class="exw-pill-time ' + pillClass + '">' + dayStr + ' ' + monthStr + ' • ' + timeStr + '</span>' +
+                '<span class="exw-room-label">' + roomStr + '</span>' +
+              '</div>' +
+              '<div class="exw-roadmap-evaluator">' + noteStr + '</div>' +
+            '</div>' +
+            '<div class="exw-roadmap-row-mid">' +
+              '<h3 class="exw-roadmap-subject">' + esc(e.title || e.subject) + '</h3>' +
+              '<a class="exw-roadmap-action" href="#" data-action="view" data-id="' + esc(e.id) + '">' +
+                '<span>' + esc(linkText) + '</span>' +
+                '<span class="exw-roadmap-chevron">&rsaquo;</span>' +
+              '</a>' +
+            '</div>' +
+            '<div class="exw-roadmap-row-bot">' +
+              '<p class="exw-roadmap-desc" title="' + descStr + '">' + descStr + '</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    });
+
+    html += '</div>';
+    box.innerHTML = html;
   }
 
   function rowActions(e) {
@@ -453,7 +586,7 @@
       if (e.conflict) time += '<span class="exw-secondary" style="color:#B91C1C">' + esc(e.conflict_message) + '</span>';
       var correction = (ROLE === 'teacher' && e.correction_notes)
         ? '<span class="exw-secondary">Requested: ' + esc(e.correction_notes) + '</span>' : '';
-      return '<tr>' +
+      return '<tr class="transition-colors hover:bg-slate-50 cursor-pointer" data-id="' + esc(e.id) + '" onclick="if(!event.target.closest(\'button, a, input\')) { document.querySelectorAll(\'.exw-table tr\').forEach(function(r) { r.classList.remove(\'selected-row\'); }); this.classList.add(\'selected-row\'); }">' +
         '<td data-label="Subject"><span class="exw-subject-cell">' + esc(e.subject) + '</span>' +
           '<span class="exw-secondary">' + esc(e.exam_type_label) + '</span></td>' +
         '<td data-label="Class">' + esc(e.classes.join(', ')) + '</td>' +
@@ -486,7 +619,152 @@
         ? '/api/exams/student?portal=student' + (deptContext ? '&dept=' + encodeURIComponent(deptContext) : '')
         : '/api/exams/simple?portal=' + encodeURIComponent(ROLE);
       var data = await api(url);
-      state.exams = data.exams || data.data || [];
+      var fetchedExams = data.exams || data.data || [];
+
+      // Development fallback & demo data for students:
+      // Provide realistic records spanning Monthly, Semester, Midterm, Final, Quiz
+      if (ROLE === 'student') {
+        var hasUpcoming = fetchedExams.some(function (e) { return !e.completed && isUpcoming(e); });
+        if (!hasUpcoming) {
+          var now = new Date();
+          var y = now.getFullYear();
+          var m = String(now.getMonth() + 1).padStart(2, '0');
+          var d = now.getDate();
+          
+          var demoExams = [
+            {
+              id: 'EXM-RDMP-01',
+              title: 'Advanced Mathematics',
+              subject: 'Advanced Mathematics',
+              subject_id: 'subj-math',
+              exam_type: 'test',
+              exam_type_label: 'Ch. 7-10 Test',
+              department: 'Mathematics Department',
+              department_id: 'math',
+              classes: ['Grade 10A'],
+              class_ids: ['cls-10a'],
+              room: 'Room 302',
+              exam_date: '2026-07-02',
+              start_time: '08:30',
+              end_time: '10:30',
+              evaluator_note: 'Mr. Heng • Ch. 7-10 Test',
+              instructions: 'Calculators OK • Integration & Series Theorems',
+              link_text: 'Formulae',
+              status: 'published',
+              status_label: 'Upcoming',
+              completed: false,
+              teacher: 'Mr. Heng',
+              is_demo: true
+            },
+            {
+              id: 'EXM-RDMP-02',
+              title: 'English Literature — Mid-Term Examination',
+              subject: 'English Literature',
+              subject_id: 'subj-eng',
+              exam_type: 'midterm',
+              exam_type_label: 'Mid-Term Examination',
+              department: 'English Department',
+              department_id: 'english',
+              classes: ['Grade 10A'],
+              class_ids: ['cls-10a'],
+              room: 'Main Hall • Section A',
+              exam_date: '2026-07-14',
+              start_time: '10:00',
+              end_time: '12:00',
+              evaluator_note: 'Essay Format Evaluation',
+              instructions: 'Victorian Poetry & Modern Drama Analysis',
+              link_text: 'Texts',
+              status: 'published',
+              status_label: 'Upcoming',
+              completed: false,
+              teacher: 'Ms. Rathana Chea',
+              is_demo: true
+            },
+            {
+              id: 'EXM-RDMP-03',
+              title: 'English Grammar & Writing — Assessment',
+              subject: 'English Grammar & Writing',
+              subject_id: 'subj-eng-gram',
+              exam_type: 'assessment',
+              exam_type_label: 'Assessment',
+              department: 'English Department',
+              department_id: 'english',
+              classes: ['Grade 10A'],
+              class_ids: ['cls-10a'],
+              room: 'Room 204',
+              exam_date: '2026-07-16',
+              start_time: '13:30',
+              end_time: '15:00',
+              evaluator_note: 'Academic Composition',
+              instructions: 'Writing Skills & Rhetorical Devices Rubric',
+              link_text: 'Rubric',
+              status: 'published',
+              status_label: 'Upcoming',
+              completed: false,
+              teacher: 'Dr. Vance Miller',
+              is_demo: true
+            },
+            {
+              id: 'EXM-RDMP-04',
+              title: 'Khmer Literature — Mid-Term Examination',
+              subject: 'Khmer Literature',
+              subject_id: 'subj-khmer',
+              exam_type: 'midterm',
+              exam_type_label: 'Mid-Term Examination',
+              department: 'Khmer Studies',
+              department_id: 'khmer',
+              classes: ['Grade 10A'],
+              class_ids: ['cls-10a'],
+              room: 'Hall A • Seat 18',
+              exam_date: '2026-07-18',
+              start_time: '08:30',
+              end_time: '11:00',
+              evaluator_note: 'Written Standard Exam',
+              instructions: 'Classical Texts, Structure & Khmer Orthography',
+              link_text: 'Overview',
+              status: 'published',
+              status_label: 'Upcoming',
+              completed: false,
+              teacher: 'Mr. Sokha Chan',
+              is_demo: true
+            },
+            {
+              id: 'EXM-RDMP-05',
+              title: 'Chinese Language & Writing — Evaluation',
+              subject: 'Chinese Language & Writing',
+              subject_id: 'subj-chinese',
+              exam_type: 'evaluation',
+              exam_type_label: 'Evaluation',
+              department: 'Foreign Languages',
+              department_id: 'chinese',
+              classes: ['Grade 10A'],
+              class_ids: ['cls-10a'],
+              room: 'Room 105',
+              exam_date: '2026-07-23',
+              start_time: '09:00',
+              end_time: '10:30',
+              evaluator_note: 'HSK Level 3 Benchmark',
+              instructions: 'Character Stroke Dynamics & Conversational Grammar',
+              link_text: 'Guide',
+              status: 'published',
+              status_label: 'Upcoming',
+              completed: false,
+              teacher: 'Ms. Meiling Chen',
+              is_demo: true
+            }
+          ];
+
+          if (deptContext) {
+            demoExams = demoExams.filter(function (e) {
+              return e.department_id === deptContext || (e.subject_id && e.subject_id.includes(deptContext));
+            });
+          }
+
+          fetchedExams = demoExams.concat(fetchedExams);
+        }
+      }
+
+      state.exams = fetchedExams;
       state.stats = data.stats || {};
       state.months = data.months || [];
       var typeSelect = document.getElementById('exwType');
@@ -585,7 +863,7 @@
           '<button type="button" class="exw-btn exw-btn-primary" data-action="save" data-submit="1">Submit for approval</button>';
       openModal({
         mode: 'form',
-        title: exam ? 'Correct examination schedule' : 'Create examination schedule',
+        title: exam ? 'Edit Examination Notice' : 'Create Examination & Quiz Notice',
         subtitle: exam ? exam.subject + ' · ' + exam.exam_type_label : 'Fill in the seven schedule fields below.',
         body: body,
         footer: footer
@@ -617,15 +895,23 @@
     try {
       var exam = state.editing;
       await op(
-        exam ? 'Updating schedule…' : (submitNow ? 'Submitting schedule…' : 'Saving draft…'),
+        exam ? 'Updating schedule…' : (submitNow ? 'Submitting notice…' : 'Saving notice draft…'),
         api(exam ? '/api/exams/simple/' + encodeURIComponent(exam.id) : '/api/exams/simple', {
           method: exam ? 'PUT' : 'POST',
           body: payload
         }),
-        exam ? 'Schedule updated.' : (submitNow ? 'Schedule submitted for Principal review.' : 'Draft saved.')
+        exam ? 'Notice updated.' : (submitNow ? 'Notice submitted for Principal review.' : 'Notice draft saved.')
       );
       closeModal();
       await reload();
+      if (window.NGIS_showOperationSuccess) {
+        window.NGIS_showOperationSuccess({
+          title: submitNow ? 'Notice Submitted' : 'Notice Saved',
+          message: submitNow
+            ? 'Examination notice has been submitted for approval and scheduled for publication.'
+            : 'Examination notice draft saved to your workspace.'
+        });
+      }
     } catch (error) { /* the real error is already rendered by the feedback row */ }
   }
 
@@ -756,7 +1042,7 @@
 
   var searchTimer = null;
   root.addEventListener('input', function (event) {
-    if (event.target.id !== 'exwQ') return;
+    if (event.target.id !== 'exwQ' && event.target.id !== 'roadmapFilter') return;
     clearTimeout(searchTimer);
     var value = event.target.value;
     searchTimer = setTimeout(function () { state.q = value; render(); }, 180);

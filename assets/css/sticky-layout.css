@@ -1,9 +1,9 @@
 /* ============================================================================
-   NGIS shared sticky layout layer
+   NGIS shared sticky layout layer — Transparent & Seamless Navigation
    ----------------------------------------------------------------------------
-   One measured, opaque application header for every portal. The behaviour is
-   driven by assets/js/sticky-layout.js, which writes the real rendered header
-   height into --ngis-sticky-h. Do not hardcode pixel offsets in page CSS.
+   The top navbar visually blends into the surrounding application background.
+   Normal state: 100% transparent background, no borders, no shadows, no blur.
+   Scrolled state: Seamlessly matches the surrounding page background token.
    ========================================================================== */
 
 :root {
@@ -11,14 +11,16 @@
   --ngis-sticky-left: 0px;
   --ngis-sticky-width: 100%;
   --ngis-sticky-z: 50;
-  --ngis-sticky-surface: #FFFFFF;
-  --ngis-sticky-border: #E3E9E5;
+  --ngis-sticky-surface: transparent;
+  --ngis-sticky-scrolled-surface: var(--color-background, #F7F9F7);
+  --ngis-sticky-border: transparent;
   --ngis-sticky-text: #17201B;
 }
 
 html[data-theme="dark"] {
-  --ngis-sticky-surface: #0F172A;
-  --ngis-sticky-border: #334155;
+  --ngis-sticky-surface: transparent;
+  --ngis-sticky-scrolled-surface: #0F172A;
+  --ngis-sticky-border: transparent;
   --ngis-sticky-text: #F8FAFC;
 }
 
@@ -41,19 +43,20 @@ html.ngis-sticky-ready section {
   pointer-events: none;
 }
 
-/* The chosen header is always solid, flat and above page content. */
+/* Normal state: 100% transparent, seamless with surrounding page */
 .ngis-sticky-active {
   position: relative !important;
   top: auto !important;
   left: auto !important;
   z-index: var(--ngis-sticky-z) !important;
-  background: var(--ngis-sticky-surface) !important;
-  background-color: var(--ngis-sticky-surface) !important;
+  background: transparent !important;
+  background-color: transparent !important;
   background-image: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
-  border-bottom: 1px solid var(--ngis-sticky-border) !important;
+  border: none !important;
+  border-bottom: none !important;
   color: var(--ngis-sticky-text) !important;
   box-sizing: border-box !important;
   isolation: auto !important;
@@ -65,7 +68,7 @@ html.ngis-sticky-ready section {
   -webkit-backdrop-filter: none !important;
 }
 
-/* Fixed state is calculated from the header's own rendered box and position. */
+/* Fixed / Scrolled state: matches surrounding page background token */
 .ngis-sticky-active.ngis-sticky-fixed {
   position: fixed !important;
   top: 0 !important;
@@ -73,55 +76,101 @@ html.ngis-sticky-ready section {
   width: var(--ngis-sticky-width) !important;
   max-width: var(--ngis-sticky-width) !important;
   margin: 0 !important;
+  background: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-color: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-image: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
 }
 
-/* Legacy transparent-header rules use broad `header[role="banner"]` and
-   `header[class*="sticky"]` selectors with !important. Their source rules are
-   now excluded via :not(.ngis-sticky-active); this high-specificity surface
-   guard keeps the active header opaque even if a duplicate legacy sheet is
-   injected later by a component. */
-html body header.ngis-sticky-active,
-html body div.ngis-sticky-active,
-html body [data-ngis-sticky-header].ngis-sticky-active {
-  background: var(--ngis-sticky-surface) !important;
-  background-color: var(--ngis-sticky-surface) !important;
+html[data-theme="dark"] .ngis-sticky-active.ngis-sticky-fixed {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+}
+
+/* High-specificity transparent rule in normal state */
+html body header.ngis-sticky-active:not(.ngis-sticky-fixed),
+html body div.ngis-sticky-active:not(.ngis-sticky-fixed),
+html body [data-ngis-sticky-header].ngis-sticky-active:not(.ngis-sticky-fixed),
+html body .hero-topbar.ngis-sticky-active:not(.ngis-sticky-fixed) {
+  background: transparent !important;
+  background-color: transparent !important;
   background-image: none !important;
-  border-bottom: 1px solid var(--ngis-sticky-border) !important;
+  border: none !important;
+  border-bottom: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
 }
 
-/* Page-local app bars contain solid rows; never let translucent Tailwind
-   utilities (e.g. bg-slate-50/70) show scrolling content through the chrome. */
-.mobile-appbar.ngis-sticky-active > div,
-[data-purpose="mobile-header"].ngis-sticky-active > div,
-.htb-topbar-mobile.ngis-sticky-active > div {
-  background: var(--ngis-sticky-surface) !important;
-  background-color: var(--ngis-sticky-surface) !important;
+/* High-specificity scrolled state */
+html body header.ngis-sticky-active.ngis-sticky-fixed,
+html body div.ngis-sticky-active.ngis-sticky-fixed,
+html body [data-ngis-sticky-header].ngis-sticky-active.ngis-sticky-fixed,
+html body .hero-topbar.ngis-sticky-active.ngis-sticky-fixed {
+  background: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-color: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-image: none !important;
+  border-bottom: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body header.ngis-sticky-active.ngis-sticky-fixed,
+html[data-theme="dark"] body div.ngis-sticky-active.ngis-sticky-fixed,
+html[data-theme="dark"] body [data-ngis-sticky-header].ngis-sticky-active.ngis-sticky-fixed,
+html[data-theme="dark"] body .hero-topbar.ngis-sticky-active.ngis-sticky-fixed {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+}
+
+/* Mobile appbar child containers: transparent in normal state, page background when fixed */
+.mobile-appbar.ngis-sticky-active:not(.ngis-sticky-fixed) > div,
+[data-purpose="mobile-header"].ngis-sticky-active:not(.ngis-sticky-fixed) > div,
+.htb-topbar-mobile.ngis-sticky-active:not(.ngis-sticky-fixed) > div {
+  background: transparent !important;
+  background-color: transparent !important;
   background-image: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
 }
 
-/* Hero chrome paints the menu button white for the green hero. Once that same
-   bar becomes the opaque sticky surface, white-on-white makes it invisible.
-   Re-ink only controls inside the active sticky header. */
+.mobile-appbar.ngis-sticky-active.ngis-sticky-fixed > div,
+[data-purpose="mobile-header"].ngis-sticky-active.ngis-sticky-fixed > div,
+.htb-topbar-mobile.ngis-sticky-active.ngis-sticky-fixed > div {
+  background: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-color: var(--ngis-sticky-scrolled-surface, #F7F9F7) !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+}
+
+html[data-theme="dark"] .mobile-appbar.ngis-sticky-active.ngis-sticky-fixed > div,
+html[data-theme="dark"] [data-purpose="mobile-header"].ngis-sticky-active.ngis-sticky-fixed > div,
+html[data-theme="dark"] .htb-topbar-mobile.ngis-sticky-active.ngis-sticky-fixed > div {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+}
+
+/* Hero controls ink and contrast */
 .ngis-sticky-active .htb-hamburger,
 .ngis-sticky-active #htbHamburger {
   color: var(--ngis-sticky-text) !important;
-  background: #F1F5F9 !important;
-  border-color: var(--ngis-sticky-border) !important;
+  background: transparent !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 html[data-theme="dark"] .ngis-sticky-active .htb-hamburger,
 html[data-theme="dark"] .ngis-sticky-active #htbHamburger {
-  background: #1E293B !important;
-  border-color: #334155 !important;
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   color: #F8FAFC !important;
 }
 
-/* Horizontal page tabs stay reachable without growing the sticky stack. */
+/* Horizontal page tabs */
 .mobile-appbar.ngis-sticky-active > div:last-child,
 [data-purpose="mobile-header"].ngis-sticky-active > div:last-child {
   overflow-x: auto !important;
@@ -153,8 +202,7 @@ html body .hero-topbar.ngis-sticky-duplicate {
   display: none !important;
 }
 
-/* Fullscreen overlays own the viewport; normal sticky chrome is suspended and
-   restored by the shared controller. */
+/* Fullscreen overlays */
 body.ngis-sticky-suspended .ngis-sticky-active {
   visibility: hidden !important;
   pointer-events: none !important;
@@ -172,7 +220,7 @@ body.ngis-sticky-suspended .ngis-sticky-spacer {
   z-index: 600 !important;
 }
 
-/* Existing second-level sticky rails must sit below the measured app header. */
+/* Existing second-level sticky rails */
 html.ngis-sticky-ready .cms-nav,
 html.ngis-sticky-ready .cms-preview,
 html.ngis-sticky-ready .si-nav-card,
@@ -182,7 +230,7 @@ html.ngis-sticky-ready [data-ngis-sticky-subnav] {
   top: calc(var(--ngis-sticky-h) + 8px) !important;
 }
 
-/* Compact mobile chrome: one short action row plus a scrollable tab strip. */
+/* Compact mobile chrome */
 @media (max-width: 767.98px) {
   .mobile-appbar.ngis-sticky-active > div:first-child,
   [data-purpose="mobile-header"].ngis-sticky-active > div:first-child {
@@ -203,7 +251,7 @@ html.ngis-sticky-ready [data-ngis-sticky-subnav] {
   }
 }
 
-/* Tablet keeps the desktop title row, but it must not consume the viewport. */
+/* Tablet */
 @media (min-width: 768px) and (max-width: 1023.98px) {
   .mobile-appbar.ngis-sticky-active > div {
     padding-top: 6px !important;

@@ -202,9 +202,33 @@
       h += field('Khmer Full Name', 'nrg-khmer', input('nrg-khmer', 'text', form.khmerName, 'ឈ្មោះជាភាសាខ្មែរ'), { optional: true });
       h += genderField();
       h += field('Contact Email', 'nrg-email', input('nrg-email', 'email', form.email, 'e.g. s.meas@example.com'), { required: true });
-      h += field('Phone Number', 'nrg-phone', input('nrg-phone', 'tel', form.phone, 'e.g. +855 12 345 678'), { required: true });
-      h += field('Date of Birth', 'nrg-dob', input('nrg-dob', 'date', form.dob, ''));
-      h += field('Photo URL', 'nrg-photo', input('nrg-photo', 'url', form.photo, 'https://...'), { optional: true });
+      h += field('Phone Number', 'nrg-phone', input('nrg-phone', 'tel', form.phone, 'e.g. +855 12 345 678'), { optional: true });
+      h += field('Date of Birth', 'nrg-dob', input('nrg-dob', 'date', form.dob, ''), { optional: true });
+
+      // Direct Profile Picture File Upload from device with preview & fallback
+      var previewInner = form.photo
+        ? '<img src="' + esc(form.photo) + '" class="w-full h-full object-cover" alt="Profile preview">'
+        : '<span class="material-symbols-outlined text-slate-400" style="font-size:26px">account_circle</span>';
+
+      h += '<div class="nrg-field">' +
+        '<label class="nrg-label" for="nrg-photo-file">Profile Picture <span class="nrg-opt">(optional)</span></label>' +
+        '<div style="display:flex;align-items:center;gap:14px;margin-top:6px;">' +
+          '<div id="nrg-photo-preview" style="width:50px;height:50px;border-radius:50%;border:1px solid #CBD5E1;background:#F1F5F9;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">' +
+            previewInner +
+          '</div>' +
+          '<div style="display:flex;flex-direction:column;gap:5px;flex:1;">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<label for="nrg-photo-file" class="btn btn-secondary" style="font-size:12px;padding:5px 12px;border-radius:6px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;">' +
+                '<span class="material-symbols-outlined" style="font-size:16px">upload</span>Choose File' +
+              '</label>' +
+              (form.photo ? '<button type="button" id="nrg-photo-clear" class="btn btn-ghost" style="font-size:12px;padding:5px 10px;color:#DC2626;cursor:pointer;">Remove</button>' : '') +
+            '</div>' +
+            '<input type="file" id="nrg-photo-file" accept="image/jpeg,image/png,image/webp" style="display:none;">' +
+            '<input type="hidden" id="nrg-photo" value="' + esc(form.photo || '') + '">' +
+            '<span style="font-size:11px;color:#64748B;">PNG, JPG, or WebP direct from device.</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
       return h;
     }
 
@@ -868,7 +892,7 @@
         if ((v = val('nrg-dob')) !== null) form.dob = v;
         if ((v = val('nrg-email')) !== null) form.email = v;
         if ((v = val('nrg-phone')) !== null) form.phone = v;
-        if ((v = val('nrg-photo')) !== null) form.photo = v;
+        if ((v = val('nrg-photo')) !== null && v && !form.photo) form.photo = v;
         // institutional placement (same pane)
         if ((x = val('nrg-campus')) !== null) form.campus = x;
         if ((x = val('nrg-year')) !== null) form.academicYear = x;
@@ -1174,6 +1198,35 @@
           });
         };
       });
+
+      // Profile Picture Direct File Upload from device
+      var photoFileInput = q(shell, '#nrg-photo-file');
+      if (photoFileInput) {
+        photoFileInput.onchange = function (e) {
+          var file = e.target.files && e.target.files[0];
+          if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+              form.error = 'Image size must be under 5MB.';
+              render();
+              return;
+            }
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+              form.photo = evt.target.result;
+              form.error = '';
+              render();
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+      }
+      var photoClearBtn = q(shell, '#nrg-photo-clear');
+      if (photoClearBtn) {
+        photoClearBtn.onclick = function () {
+          form.photo = '';
+          render();
+        };
+      }
 
       // Multi-Department Academic Enrollment controls for students
       if (type === 'student' && step === 1) {

@@ -1,0 +1,1723 @@
+<!doctype html>
+<html lang="en" data-theme="light" class="h-full">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NGIS — Centralized Design System & UI Standardization Preview</title>
+
+  <!-- Google Fonts: Inter & Khmer (Strictly Light & Medium weights <= 500 per AGENTS.md) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Core NGIS Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css?v=3.2">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+  <link rel="stylesheet" href="../../assets/css/shared-components.css">
+
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+  <script src="../../assets/js/ngis-status.js" defer></script>
+  <script src="../../assets/js/ngis-empty-state.js?v=2.0" defer></script>
+  <script src="../../assets/js/mobile-ux.js?v=1.0" defer></script>
+  <script src="../../assets/js/mobile-nav.js?v=1.0" defer></script>
+
+  <style>
+    /* Strict NO BOLD per AGENTS.md */
+    *, b, strong, th, h1, h2, h3, h4, h5, h6 { font-weight: 400; }
+    .font-medium, th, h1, h2, h3, h4, [class*="font-medium"] { font-weight: 500 !important; }
+
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+    }
+
+    .preview-section {
+      margin-bottom: var(--space-10, 40px);
+      max-width: 100%;
+    }
+    .preview-header {
+      margin-bottom: var(--space-4, 16px);
+      padding-bottom: var(--space-2, 8px);
+      border-bottom: 1px solid var(--color-border, #E1E9E3);
+    }
+    .preview-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--color-text-heading, #29352E);
+      margin: 0 0 4px 0;
+    }
+    .preview-desc {
+      font-size: 13px;
+      color: var(--color-text-secondary, #64746A);
+      margin: 0;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--space-4, 16px);
+    }
+    .demo-box {
+      background: var(--color-surface, #FFFFFF);
+      border: 1px solid var(--color-border, #E1E9E3);
+      padding: var(--space-6, 24px);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3, 12px);
+      box-sizing: border-box;
+      max-width: 100%;
+      min-width: 0;
+    }
+    @media (max-width: 640px) {
+      .preview-grid {
+        grid-template-columns: 1fr;
+      }
+      .demo-box {
+        padding: var(--space-4, 16px);
+      }
+      .max-w-7xl {
+        overflow-x: hidden;
+        max-width: 100%;
+      }
+    }
+    .demo-badge-spec {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--color-text-muted, #8FA095);
+      background: #F8FAF8;
+      border: 1px solid var(--color-border, #E1E9E3);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm, 6px);
+      align-self: flex-start;
+      margin-top: 4px;
+    }
+    .touch-target-visualizer {
+      position: relative;
+      background: rgba(23, 107, 69, 0.08);
+      border: 1px dashed rgba(23, 107, 69, 0.4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body data-role="admin" data-portal="admin" class="min-h-screen bg-[#F7F9F7] font-sans text-slate-800 antialiased flex flex-col">
+  <main class="main flex-1 min-w-0 flex flex-col">
+    <!-- Mobile Appbar with Hamburger Navigation Button (AGENTS.md Critical Rule) -->
+    <header id="mobileMainAppbar" class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+      <div class="flex items-center gap-3 min-w-0">
+        <button type="button" class="hamburger-btn mobile-hamburger-btn p-1.5 -ml-1 text-slate-700 hover:bg-slate-100 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[44px] min-h-[44px]" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
+          <span data-ngis-icon="menu"></span>
+        </button>
+        <div class="min-w-0 truncate">
+          <h1 class="text-sm font-medium text-slate-900 leading-tight truncate">Design System Preview</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button type="button" id="themeToggleMobile" class="p-2 text-slate-600 hover:text-slate-900 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg" aria-label="Toggle theme">
+          <span data-ngis-icon="settings"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Master Preview Workspace Container -->
+    <div class="max-w-7xl mx-auto w-full py-8 px-4 sm:px-6 lg:px-8">
+      
+      <!-- Page Hero & Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-[#176B45]"></span>
+            <span class="text-xs font-medium uppercase tracking-wider text-[#176B45]">NGIS-SYSTEM Standard</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-medium text-slate-900 dark:text-white tracking-tight">Centralized UI & Design System Standardization</h1>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Single source of truth for 8-pt spacing, concentric corner radii, universal button sizes, accessible touch targets, and soft elevations.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="themeToggleBtn" class="btn btn-secondary btn-sm" aria-label="Toggle dark mode">
+            <span data-ngis-icon="settings"></span>
+            <span>Toggle Theme</span>
+          </button>
+          <a href="../../index.html" class="btn btn-primary btn-sm">
+            <span data-ngis-icon="dashboard"></span>
+            <span>Dashboard</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- ── SECTION 01: CONCENTRIC NESTED CORNER RADII (Section 03) ── -->
+      <section class="preview-section" id="sectionConcentricRadii">
+        <div class="preview-header">
+          <h2 class="preview-title">01. Mathematically Correct Nested Corner Radii</h2>
+          <p class="preview-desc">Inner radius = Outer radius &minus; Inset distance. Prevents visual distortion and pinched borders.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Case 1: Outer 24px, Inset 8px -> Inner 16px -->
+          <div class="demo-box concentric-container-24" style="background:#F1F5F9; border-radius:24px; padding:8px;">
+            <div class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 nested-card" style="border-radius:16px;">
+              <span class="text-xs font-medium text-slate-900 dark:text-white block">Outer 24px &rarr; Inner 16px</span>
+              <span class="text-[11px] text-slate-500 block mt-1">Inset: 8px (24 &minus; 8 = 16px)</span>
+              <div class="demo-badge-spec">--radius-container (24px) &rarr; --radius-xl (16px)</div>
+            </div>
+          </div>
+
+          <!-- Case 2: Outer 20px, Inset 8px -> Inner 12px -->
+          <div class="demo-box concentric-container-20" style="background:#F1F5F9; border-radius:20px; padding:8px;">
+            <div class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 nested-card" style="border-radius:12px;">
+              <span class="text-xs font-medium text-slate-900 dark:text-white block">Outer 20px &rarr; Inner 12px</span>
+              <span class="text-[11px] text-slate-500 block mt-1">Inset: 8px (20 &minus; 8 = 12px)</span>
+              <div class="demo-badge-spec">--radius-2xl (20px) &rarr; --radius-lg (12px)</div>
+            </div>
+          </div>
+
+          <!-- Case 3: Outer 16px, Inset 8px -> Inner 8px -->
+          <div class="demo-box concentric-card-16" style="background:#F1F5F9; border-radius:16px; padding:8px;">
+            <div class="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 nested-subcard" style="border-radius:8px;">
+              <span class="text-xs font-medium text-slate-900 dark:text-white block">Outer 16px &rarr; Inner 8px</span>
+              <span class="text-[11px] text-slate-500 block mt-1">Inset: 8px (16 &minus; 8 = 8px)</span>
+              <div class="demo-badge-spec">--radius-xl (16px) &rarr; --radius-md (8px)</div>
+            </div>
+          </div>
+
+          <!-- Case 4: Outer 12px, Inset 4px -> Inner 8px -->
+          <div class="demo-box concentric-card-12" style="background:#F1F5F9; border-radius:12px; padding:4px;">
+            <div class="p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 nested-chip" style="border-radius:8px;">
+              <span class="text-xs font-medium text-slate-900 dark:text-white block">Outer 12px &rarr; Inner 8px</span>
+              <span class="text-[11px] text-slate-500 block mt-1">Inset: 4px (12 &minus; 4 = 8px)</span>
+              <div class="demo-badge-spec">--radius-lg (12px) &rarr; --radius-md (8px)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Radius Token Scale Strip -->
+        <div class="mt-4 p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-wrap items-center gap-3">
+          <span class="text-xs font-medium text-slate-700 dark:text-slate-300">Centralized Radius Tokens:</span>
+          <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-xs">XS: 4px</span>
+          <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-sm">SM: 6px</span>
+          <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-md">MD: 8px</span>
+          <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-lg">LG: 12px</span>
+          <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-xl">XL: 16px</span>
+          <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-2xl">2XL: 20px</span>
+          <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-container">Container: 24px</span>
+          <span class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs radius-pill">Pill: 9999px</span>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ── SECTION 02: UNIVERSAL BUTTON SIZE SYSTEM (Section 06 & 07) ── -->
+      <section class="preview-section" id="sectionButtonSizes">
+        <div class="preview-header">
+          <h2 class="preview-title">02. Universal Button Size System & Balanced Padding</h2>
+          <p class="preview-desc">Exactly three text-button sizes + icon-only variant. Consistent height, typography, optical gaps, and padding.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Small Button -->
+          <div class="demo-box rounded-xl">
+            <span class="text-xs font-medium text-slate-900 dark:text-white">Small Button (.btn-sm)</span>
+            <p class="text-xs text-slate-500">Height: 36px | Font: 14px | Icon: 16px | Pad: 12px | Gap: 6px | Radius: 8px</p>
+            <div class="flex flex-wrap items-center gap-2 mt-2">
+              <button type="button" class="btn btn-primary btn-sm">
+                <span data-ngis-icon="add"></span>
+                <span>Add Record</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm">
+                <span data-ngis-icon="filter"></span>
+                <span>Filters</span>
+              </button>
+              <button type="button" class="icon-btn icon-btn-sm" aria-label="Edit">
+                <span data-ngis-icon="edit"></span>
+              </button>
+            </div>
+            <div class="demo-badge-spec">Usage: Compact desktop table actions, toolbar filters</div>
+          </div>
+
+          <!-- Medium Button (Standard) -->
+          <div class="demo-box rounded-xl">
+            <span class="text-xs font-medium text-slate-900 dark:text-white">Medium Button (Standard .btn / .btn-md)</span>
+            <p class="text-xs text-slate-500">Height: 40px | Font: 14px | Icon: 20px | Pad: 16px | Gap: 8px | Radius: 8px</p>
+            <div class="flex flex-wrap items-center gap-2 mt-2">
+              <button type="button" class="btn btn-primary btn-md">
+                <span data-ngis-icon="checkCircle"></span>
+                <span>Save Changes</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-md">
+                <span data-ngis-icon="close"></span>
+                <span>Cancel</span>
+              </button>
+              <button type="button" class="icon-btn" aria-label="Notifications">
+                <span data-ngis-icon="bell"></span>
+              </button>
+            </div>
+            <div class="demo-badge-spec">Usage: Standard forms, navigation, management workflows</div>
+          </div>
+
+          <!-- Large Button -->
+          <div class="demo-box rounded-xl">
+            <span class="text-xs font-medium text-slate-900 dark:text-white">Large Button (.btn-lg)</span>
+            <p class="text-xs text-slate-500">Height: 56px | Font: 16px | Icon: 24px | Pad: 24-32px | Gap: 8px | Radius: 12px</p>
+            <div class="flex flex-wrap items-center gap-2 mt-2">
+              <button type="button" class="btn btn-primary btn-lg">
+                <span data-ngis-icon="logout"></span>
+                <span>Submit Application</span>
+              </button>
+              <button type="button" class="icon-btn icon-btn-lg" aria-label="Settings">
+                <span data-ngis-icon="settings"></span>
+              </button>
+            </div>
+            <div class="demo-badge-spec">Usage: Major primary submissions, mobile CTA, authentication</div>
+          </div>
+        </div>
+
+        <!-- Button Variants Matrix (Section 08) -->
+        <div class="mt-6 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+          <h3 class="text-sm font-medium text-slate-900 dark:text-white mb-3">Unified Button Variants (Section 08)</h3>
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="button" class="btn btn-primary">
+              <span data-ngis-icon="add"></span>
+              <span>Primary Button</span>
+            </button>
+            <button type="button" class="btn btn-secondary">
+              <span data-ngis-icon="view"></span>
+              <span>Secondary Button</span>
+            </button>
+            <button type="button" class="btn btn-ghost">
+              <span data-ngis-icon="download"></span>
+              <span>Transparent / Ghost</span>
+            </button>
+            <button type="button" class="btn btn-danger">
+              <span data-ngis-icon="delete"></span>
+              <span>Destructive Action</span>
+            </button>
+            <button type="button" class="btn btn-primary" disabled>
+              <span data-ngis-icon="bookmark"></span>
+              <span>Disabled State</span>
+            </button>
+            <button type="button" class="btn btn-primary is-loading">
+              <span class="btn-text">Loading Action</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ── SECTION 03: ACCESSIBLE TOUCH TARGETS (Section 04) ── -->
+      <section class="preview-section" id="sectionTouchTargets">
+        <div class="preview-header">
+          <h2 class="preview-title">03. Accessible Touch Targets & Optical Alignment</h2>
+          <p class="preview-desc">Separates the visual icon size (16–20px) from its actual interactive surface (&ge;44–48px on mobile). Min 8px separation.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Visualizer 1: Icon inside expanded touch target -->
+          <div class="demo-box rounded-xl">
+            <span class="text-xs font-medium text-slate-900 dark:text-white">Touch Area vs. Visual Icon Area</span>
+            <p class="text-xs text-slate-500">Dashed boundary represents the 48 &times; 48px interactive touch area. The icon remains 20px.</p>
+            <div class="flex items-center gap-4 mt-2">
+              <div class="touch-target-visualizer w-12 h-12 rounded-lg">
+                <button type="button" class="icon-btn w-12 h-12 flex items-center justify-center bg-transparent border-0" aria-label="Search">
+                  <span data-ngis-icon="search" class="text-slate-700 dark:text-slate-300"></span>
+                </button>
+              </div>
+              <div class="touch-target-visualizer w-12 h-12 rounded-lg">
+                <button type="button" class="icon-btn w-12 h-12 flex items-center justify-center bg-transparent border-0" aria-label="Notifications">
+                  <span data-ngis-icon="bell" class="text-slate-700 dark:text-slate-300"></span>
+                </button>
+              </div>
+              <div class="touch-target-visualizer w-12 h-12 rounded-lg">
+                <button type="button" class="icon-btn w-12 h-12 flex items-center justify-center bg-transparent border-0" aria-label="Settings">
+                  <span data-ngis-icon="settings" class="text-slate-700 dark:text-slate-300"></span>
+                </button>
+              </div>
+            </div>
+            <div class="demo-badge-spec">Complies with WCAG 2.5.5 (44&times;44px min / 48&times;48px preferred)</div>
+          </div>
+
+          <!-- Visualizer 2: Accessible Checkbox & Radio Targets -->
+          <div class="demo-box rounded-xl">
+            <span class="text-xs font-medium text-slate-900 dark:text-white">Form Control Hit Surfaces</span>
+            <p class="text-xs text-slate-500">Checkboxes retain a crisp 18px footprint while expanding click surface to 44px on mobile devices.</p>
+            <div class="flex items-center gap-6 mt-2">
+              <label class="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                <input type="checkbox" checked class="form-checkbox">
+                <span>Enrolled Status</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                <input type="radio" name="demoRadio" checked class="form-radio">
+                <span>Semester 1</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm font-normal">
+                <input type="radio" name="demoRadio" class="form-radio">
+                <span>Semester 2</span>
+              </label>
+            </div>
+            <div class="demo-badge-spec">No accidental mis-clicks or clipped touch boundaries</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ── SECTION 04: SOFT SHADOW & ELEVATION SYSTEM (Section 09) ── -->
+      <section class="preview-section" id="sectionElevation">
+        <div class="preview-header">
+          <h2 class="preview-title">04. Soft Shadow & Elevation Levels</h2>
+          <p class="preview-desc">Soft, ambient multi-layer shadows establishing clear depth hierarchy without harsh black borders.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <!-- Level 0 -->
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl elevation-0">
+            <span class="text-xs font-medium text-slate-900 dark:text-white block">Level 0 — Flat</span>
+            <span class="text-[11px] text-slate-500 block mt-1">No shadow</span>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Standard content, data tables, and static canvas cards.</p>
+          </div>
+
+          <!-- Level 1 -->
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl elevation-1">
+            <span class="text-xs font-medium text-slate-900 dark:text-white block">Level 1 — Subtle</span>
+            <span class="text-[11px] text-slate-500 block mt-1">0 2px 8px rgba(0,0,0,0.04)</span>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Surfaces requiring slight background separation.</p>
+          </div>
+
+          <!-- Level 2 -->
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl elevation-2">
+            <span class="text-xs font-medium text-slate-900 dark:text-white block">Level 2 — Interactive</span>
+            <span class="text-[11px] text-slate-500 block mt-1">0 6px 18px rgba(0,0,0,0.07)</span>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Elevated interactive cards, hover states, dropdowns.</p>
+          </div>
+
+          <!-- Level 3 -->
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl elevation-3">
+            <span class="text-xs font-medium text-slate-900 dark:text-white block">Level 3 — Floating</span>
+            <span class="text-[11px] text-slate-500 block mt-1">0 12px 32px rgba(0,0,0,0.10)</span>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Popovers, floating action bars, selected overlays.</p>
+          </div>
+
+          <!-- Level 4 -->
+          <div class="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl elevation-4">
+            <span class="text-xs font-medium text-slate-900 dark:text-white block">Level 4 — Modal</span>
+            <span class="text-[11px] text-slate-500 block mt-1">0 20px 48px rgba(0,0,0,0.14)</span>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-2">Dialog windows, modal sheets, and system alerts.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ── SECTION 05: NATURAL HOVER & PRESS ANIMATION (Section 10) ── -->
+      <section class="preview-section" id="sectionAnimations">
+        <div class="preview-header">
+          <h2 class="preview-title">05. Natural Hover & Press Animations</h2>
+          <p class="preview-desc">Clickable cards gently lift (-2px, scale 1.01) with 0.97 press feedback. Original solid white background strictly preserved.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Interactive Card 1 -->
+          <div class="interactive-card p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col justify-between min-h-[140px]" id="demoInteractiveCard1">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-[#176B45]">ACADEMIC DEPARTMENT</span>
+                <span data-ngis-icon="chevronDown" class="-rotate-90 text-slate-400"></span>
+              </div>
+              <h3 class="text-base font-medium text-slate-900 dark:text-white">Mathematics Department</h3>
+              <p class="text-xs text-slate-500 mt-1">12 active courses &bull; 8 faculty members</p>
+            </div>
+            <div class="demo-badge-spec">Hover: -2px, scale 1.01 &bull; Active: scale 0.97</div>
+          </div>
+
+          <!-- Interactive Card 2 -->
+          <div class="interactive-card p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col justify-between min-h-[140px]" id="demoInteractiveCard2">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-[#176B45]">STUDENT DIRECTORY</span>
+                <span data-ngis-icon="chevronDown" class="-rotate-90 text-slate-400"></span>
+              </div>
+              <h3 class="text-base font-medium text-slate-900 dark:text-white">Grade 10 — Advanced Cohort</h3>
+              <p class="text-xs text-slate-500 mt-1">32 enrolled students &bull; 98.4% attendance</p>
+            </div>
+            <div class="demo-badge-spec">Preserves solid white background throughout</div>
+          </div>
+
+          <!-- Interactive Card 3 -->
+          <div class="interactive-card p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl flex flex-col justify-between min-h-[140px]" id="demoInteractiveCard3">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-[#176B45]">EXAMINATION ROADMAP</span>
+                <span data-ngis-icon="chevronDown" class="-rotate-90 text-slate-400"></span>
+              </div>
+              <h3 class="text-base font-medium text-slate-900 dark:text-white">July 2026 Mid-Term Schedule</h3>
+              <p class="text-xs text-slate-500 mt-1">5 scheduled examinations &bull; Room 302</p>
+            </div>
+            <div class="demo-badge-spec">No layout shift or competing CSS transforms</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ── SECTION 06: GLOBAL CARD ARCHITECTURE (Section 11) ── -->
+      <section class="preview-section" id="sectionCardArchitecture">
+        <div class="preview-header">
+          <h2 class="preview-title">06. Global Card Architecture</h2>
+          <p class="preview-desc">Standard internal hierarchy: Container, Header, Main information, Optional secondary details, Footer/action.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="ngis-card">
+            <header class="ngis-card-header">
+              <div>
+                <h3 class="text-sm font-medium text-slate-900 dark:text-white">Faculty Course Assignment</h3>
+                <p class="text-xs text-slate-500">Term 1 &bull; Academic Year 2026–2027</p>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-medium text-[#0F5132]">Active Term</span>
+            </header>
+            <div class="ngis-card-body">
+              <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                Faculty allocations have been completed for Grade 10 and Grade 11. All core syllabi and timetable slots have been aligned with classroom allocations in Sen Sok campus.
+              </p>
+              <div class="mt-4 p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg concentric-inner-8 flex items-center justify-between">
+                <span class="text-xs text-slate-600 dark:text-slate-400">Classroom Availability</span>
+                <span class="text-xs font-medium text-slate-900 dark:text-white">94% Allocated</span>
+              </div>
+            </div>
+            <footer class="ngis-card-footer">
+              <button type="button" class="btn btn-secondary btn-sm">Review Changes</button>
+              <button type="button" class="btn btn-primary btn-sm">Approve Assignment</button>
+            </footer>
+          </div>
+
+          <div class="ngis-card">
+            <header class="ngis-card-header">
+              <div>
+                <h3 class="text-sm font-medium text-slate-900 dark:text-white">Tuition & Operations Monitor</h3>
+                <p class="text-xs text-slate-500">Real-time status updates</p>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-xs font-medium text-blue-700">Verified</span>
+            </header>
+            <div class="ngis-card-body">
+              <div class="grid grid-cols-2 gap-4">
+                <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <span class="text-xs text-slate-500 block">Total Enrolled</span>
+                  <span class="text-lg font-medium text-slate-900 dark:text-white block mt-1">1,248</span>
+                </div>
+                <div class="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <span class="text-xs text-slate-500 block">Verified Staff</span>
+                  <span class="text-lg font-medium text-slate-900 dark:text-white block mt-1">94</span>
+                </div>
+              </div>
+              <p class="text-xs text-slate-500 mt-4 leading-normal">
+                All records verified against Cambodia Ministry of Education accreditation benchmarks.
+              </p>
+            </div>
+            <footer class="ngis-card-footer">
+              <button type="button" class="btn btn-primary btn-sm">Download Audit Report</button>
+            </footer>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ── SECTION 07: FORMS, DROPDOWNS & SEARCH FIELDS (Section 12) ── -->
+      <section class="preview-section" id="sectionForms">
+        <div class="preview-header">
+          <h2 class="preview-title">07. Forms, Dropdowns & Search Fields</h2>
+          <p class="preview-desc">Standardized 40px input heights, 8px radius, optically centered icons, balanced dropdown chevrons, and clear focus states.</p>
+        </div>
+
+        <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <!-- Standard Text Input -->
+            <div>
+              <label class="form-label" for="inputStandardSample">Student Full Name (Standard 40px)</label>
+              <input type="text" id="inputStandardSample" class="form-control" placeholder="Enter full name...">
+            </div>
+
+            <!-- Search Input with Leading Icon -->
+            <div>
+              <label class="form-label" for="searchSample">Search Query</label>
+              <div class="ngis-search-wrap">
+                <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                <input type="search" id="searchSample" class="form-control" placeholder="Search students, teachers, classes...">
+              </div>
+            </div>
+
+            <!-- Standard Select with Custom Chevron -->
+            <div>
+              <label class="form-label" for="selectSample">Campus Branch</label>
+              <select id="selectSample" class="form-control">
+                <option value="main">Sen Sok Campus (Main)</option>
+                <option value="tk">Toul Kork Campus</option>
+                <option value="chroy">Chroy Changvar Campus</option>
+              </select>
+            </div>
+
+            <!-- Compact Input -->
+            <div>
+              <label class="form-label" for="inputCompactSample">Academic Year (Compact 36px)</label>
+              <input type="text" id="inputCompactSample" class="form-control form-control-sm" value="2026–2027">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <!-- ── SECTION 08: DATA TABLES & ADMINISTRATIVE INTERFACES (Section 13) ── -->
+      <section class="preview-section" id="sectionTables">
+        <div class="preview-header">
+          <h2 class="preview-title">08. Data Tables & Administrative Interfaces</h2>
+          <p class="preview-desc">Consistent horizontal padding (16px), comfortable row heights, left-aligned headers, and vertically centered action buttons.</p>
+        </div>
+
+        <div class="ngis-table-wrap">
+          <table class="ngis-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Grade & Section</th>
+                <th>Status</th>
+                <th>Assigned Teacher</th>
+                <th>Attendance Rate</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 text-xs flex items-center justify-center font-medium">NH</span>
+                    <span class="font-medium text-slate-900 dark:text-white">Nrinphouneta Hok</span>
+                  </div>
+                </td>
+                <td>Grade 10 — A</td>
+                <td>
+                  <span class="ngis-status-indicator ngis-status-flat ngis-status--green">
+                    <span data-ngis-icon="checkCircle"></span>
+                    <span>Active</span>
+                  </span>
+                </td>
+                <td>Mr. Heng Chan</td>
+                <td>98.5%</td>
+                <td class="text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button type="button" class="icon-btn icon-btn-sm" aria-label="Preview">
+                      <span data-ngis-icon="view"></span>
+                    </button>
+                    <button type="button" class="icon-btn icon-btn-sm" aria-label="Edit">
+                      <span data-ngis-icon="edit"></span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs flex items-center justify-center font-medium">SR</span>
+                    <span class="font-medium text-slate-900 dark:text-white">Sophea Rith</span>
+                  </div>
+                </td>
+                <td>Grade 10 — B</td>
+                <td>
+                  <span class="ngis-status-indicator ngis-status-flat ngis-status--amber">
+                    <span data-ngis-icon="warning"></span>
+                    <span>Pending Review</span>
+                  </span>
+                </td>
+                <td>Ms. Rathana Chea</td>
+                <td>92.0%</td>
+                <td class="text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button type="button" class="icon-btn icon-btn-sm" aria-label="Preview">
+                      <span data-ngis-icon="view"></span>
+                    </button>
+                    <button type="button" class="icon-btn icon-btn-sm" aria-label="Edit">
+                      <span data-ngis-icon="edit"></span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs flex items-center justify-center font-medium">VM</span>
+                    <span class="font-medium text-slate-900 dark:text-white">Vannak Meas</span>
+                  </div>
+                </td>
+                <td>Grade 11 — A</td>
+                <td>
+                  <span class="ngis-status-indicator ngis-status-flat ngis-status--blue">
+                    <span data-ngis-icon="info"></span>
+                    <span>Processing</span>
+                  </span>
+                </td>
+                <td>Dr. Vance Miller</td>
+                <td>96.1%</td>
+                <td class="text-right">
+                  <div class="flex items-center justify-end gap-1">
+                    <button type="button" class="icon-btn icon-btn-sm" aria-label="Preview">
+                      <span data-ngis-icon="view"></span>
+                    </button>
+                    <button type="button" class="icon-btn icon-btn-sm" aria-label="Edit">
+                      <span data-ngis-icon="edit"></span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 09. Native Mobile UX Standards (10 Key Improvements) -->
+      <section class="preview-section" id="sectionMobileUX">
+        <div class="preview-header">
+          <h2 class="preview-title">09. Native Mobile UX Standards (10 Key Improvements)</h2>
+          <p class="preview-desc">Standardized mobile interaction patterns: iOS Safari auto-zoom prevention (&ge;16px inputs), tap highlight removal, contextual mobile keyboards, stuck hover elimination, OTP autofill, overscroll containment, double-tap prevention, and native scroll snapping.</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 1. Keyboards & Input Modes Showcase -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">1. Contextual Mobile Keyboards &amp; Auto-Zoom Prevention (&ge;16px on Mobile)</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">16px Minimum Protection</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Phone Keyboard -->
+              <div>
+                <label class="form-label" for="mobPhoneInput">Telephone Keyboard</label>
+                <input type="tel" id="mobPhoneInput" name="phone" inputmode="tel" autocomplete="tel" enterkeyhint="next" class="form-control" placeholder="+855 12 345 678">
+                <span class="form-hint">inputmode="tel", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Student ID Numeric Keyboard -->
+              <div>
+                <label class="form-label" for="mobIdInput">Student ID (Numeric Keypad)</label>
+                <input type="text" id="mobIdInput" name="student_id" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" class="form-control" placeholder="20260142">
+                <span class="form-hint">inputmode="numeric", text type for leading 0s</span>
+              </div>
+
+              <!-- Score / Decimal Keyboard -->
+              <div>
+                <label class="form-label" for="mobScoreInput">Grade / Score (Decimal Keyboard)</label>
+                <input type="text" id="mobScoreInput" name="grade_score" inputmode="decimal" enterkeyhint="next" class="form-control" placeholder="95.50">
+                <span class="form-hint">inputmode="decimal", enterkeyhint="next"</span>
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label class="form-label" for="mobEmailInput">Email (No Auto-Capitalize)</label>
+                <input type="email" id="mobEmailInput" name="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="form-control" placeholder="nrinphouneta@ngis.edu.kh">
+                <span class="form-hint">autocapitalize="none", spellcheck="false"</span>
+              </div>
+
+              <!-- Search Field -->
+              <div>
+                <label class="form-label" for="mobSearchInput">Search (Search Key on Keyboard)</label>
+                <div class="ngis-search-wrap">
+                  <span class="search-icon"><span data-ngis-icon="search"></span></span>
+                  <input type="search" id="mobSearchInput" name="search" inputmode="search" enterkeyhint="search" class="form-control" placeholder="Search records...">
+                </div>
+                <span class="form-hint">enterkeyhint="search", inputmode="search"</span>
+              </div>
+
+              <!-- General Text with Done -->
+              <div>
+                <label class="form-label" for="mobDoneInput">Final Form Field</label>
+                <input type="text" id="mobDoneInput" name="notes" enterkeyhint="done" class="form-control" placeholder="Optional notes...">
+                <span class="form-hint">enterkeyhint="done"</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. OTP Code Autofill & Smart Pasting -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">2. Native OTP Autofill &amp; Multi-Box Code Pasting</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">autocomplete="one-time-code"</span>
+            </div>
+            <p class="text-xs text-slate-500">Paste any 6-digit verification code into the first box or let iOS/Android autofill it directly from SMS.</p>
+            <div class="flex items-center gap-3">
+              <input type="text" maxlength="1" id="otpBox1" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox2" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox3" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <span class="text-slate-400 font-medium">—</span>
+              <input type="text" maxlength="1" id="otpBox4" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox5" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+              <input type="text" maxlength="1" id="otpBox6" class="w-12 h-12 text-center text-lg font-medium border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] outline-none" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*">
+            </div>
+          </div>
+
+          <!-- 3. Native Horizontal Scroll Snapping -->
+          <div class="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-medium text-slate-800 dark:text-slate-100">3. Native Horizontal Scroll Snapping</h3>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">scroll-snap-type: x mandatory</span>
+            </div>
+            <p class="text-xs text-slate-500">Swipe horizontally on touch screens. Each card snaps naturally into position without erratic free-scrolling.</p>
+            
+            <div class="scroll-snap-x py-2" id="demoScrollSnapTrack">
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-400">Card 01 • Mathematics</span>
+                  <span class="text-[11px] text-slate-400">Term 1</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Advanced Mathematics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Calculus &amp; Analytic Geometry evaluations.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-blue-700 dark:text-blue-400">Card 02 • English</span>
+                  <span class="text-[11px] text-slate-400">Mid-Term</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">English Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Victorian Poetry &amp; Rhetorical Devices.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-purple-700 dark:text-purple-400">Card 03 • Khmer</span>
+                  <span class="text-[11px] text-slate-400">Final</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Khmer Literature</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Classical Composition &amp; Orthography.</p>
+              </div>
+
+              <div class="scroll-snap-item w-[280px] p-4 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-medium text-amber-700 dark:text-amber-400">Card 04 • Science</span>
+                  <span class="text-[11px] text-slate-400">Lab Test</span>
+                </div>
+                <h4 class="text-sm font-medium text-slate-900 dark:text-white">Physics &amp; Mechanics</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Newtonian Mechanics &amp; Wave Dynamics.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </main>
+
+  <!-- Theme Toggle Controller -->
+  <script>
+    (function() {
+      var btn = document.getElementById('themeToggleBtn');
+      var mobBtn = document.getElementById('themeToggleMobile');
+      function toggle() {
+        var cur = document.documentElement.getAttribute('data-theme') || 'light';
+        var next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        document.body.setAttribute('data-theme', next);
+        try { localStorage.setItem('ngis-theme', next); } catch(e) {}
+      }
+      if (btn) btn.addEventListener('click', toggle);
+      if (mobBtn) mobBtn.addEventListener('click', toggle);
+    })();
+  </script>
+
+  <script src="../../assets/js/layout.js"></script>
+</body>
+</html>

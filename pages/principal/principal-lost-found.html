@@ -60,8 +60,8 @@
   <header id="heroBanner" role="banner"></header>
 
   <!-- Mandatory Mobile Navigation Bar (AGENTS.md) -->
-  <header class="lg:hidden bg-white border-b border-[#E1E9E3] px-4 py-2.5 flex items-center gap-2.5 sticky top-0 z-30 shadow-xs">
-    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+  <header class="lg:hidden bg-transparent border-none] px-4 py-2.5 flex items-center gap-2.5 sticky top-0 z-30 shadow-xs">
+    <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition-all" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
       <i class="ph ph-list text-xl"></i>
     </button>
     <span class="text-sm font-medium text-[#29352E]">Lost and Found Management</span>
@@ -74,7 +74,7 @@
         <h1 style="font-size:22px; color:var(--navy); margin:0; line-height:1.25;">Lost and Found Management</h1>
       </div>
       <div class="flex items-center gap-2">
-        <button class="btn-neutral" onclick="loadLostFound()" title="Reload list">
+        <button class="btn-neutral" onclick="loadLostFound()" aria-label="Reload list">
           <span data-ngis-icon="refresh" class="text-base"></span>
           <span>Reload</span>
         </button>
@@ -264,7 +264,7 @@
       </div>
 
       <div class="flex items-center justify-between pt-3 border-t border-[#E1E9E3] shrink-0">
-        <button type="button" onclick="deleteInappropriatePost()" class="btn-neutral !text-[#176B45] " title="Remove inappropriate post">
+        <button type="button" onclick="deleteInappropriatePost()" class="btn-neutral !text-[#176B45] " aria-label="Remove inappropriate post">
           <span data-ngis-icon="delete" class="text-base"></span>
           <span>Remove Post</span>
         </button>
@@ -442,7 +442,7 @@ function renderItems() {
             <span>Manage Listing</span>
           </button>
           ${!isReturned ? `
-            <button type="button" class="btn-burgundy" onclick="markAsReturned(${i.id})" title="Mark Returned to Student">
+            <button type="button" class="btn-burgundy" onclick="markAsReturned(${i.id})" aria-label="Mark Returned to Student">
               <span data-ngis-icon="check" class="text-base"></span>
               <span>Return</span>
             </button>
@@ -572,19 +572,32 @@ async function markAsReturned(id) {
 async function deleteInappropriatePost() {
   if (!activeItem) return;
   const id = activeItem.id;
+  const title = activeItem.title || "this listing";
 
-  if (window.NGISCancelDialog) {
-    const confirmed = await window.NGISCancelDialog.show({
+  let confirmed = false;
+  if (window.NGIS_UX && typeof window.NGIS_UX.confirm === "function") {
+    confirmed = await window.NGIS_UX.confirm({
+      title: "Remove Listing — " + title + "?",
+      description: "This post will be permanently deleted from the school board and student community feed for policy violation or inappropriate content.",
+      consequence: "The student listing will be revoked and cannot be recovered by the author.",
+      confirmLabel: "Remove Post",
+      cancelLabel: "Keep Post",
+      isDestructive: true,
+      isRecoverable: false,
+      icon: "trash3"
+    });
+  } else if (window.NGISCancelDialog) {
+    confirmed = await window.NGISCancelDialog.show({
       title: "Remove Listing",
       message: "Are you sure you want to remove this lost and found post? This will permanently delete the post from the school board.",
       confirmText: "Remove Post",
       cancelText: "Cancel",
       destructive: true
     });
-    if (!confirmed) return;
   } else {
-    if (!confirm("Are you sure you want to remove this post?")) return;
+    confirmed = confirm("Remove this post permanently?");
   }
+  if (!confirmed) return;
 
   try {
     const res = await fetch(`/api/lost-found/${id}`, {
@@ -592,10 +605,25 @@ async function deleteInappropriatePost() {
     });
     if (!res.ok) throw new Error();
     closeManageModal();
-    if (window.toast) window.toast("Inappropriate post removed", "success");
+    if (window.NGIS_UX && typeof window.NGIS_UX.success === "function") {
+      window.NGIS_UX.success("Listing removed from school board.");
+    } else if (window.toast) {
+      window.toast("Inappropriate post removed", "success");
+    }
     loadLostFound();
   } catch (e) {
-    alert("Unable to delete item");
+    if (window.NGIS_UX && typeof window.NGIS_UX.confirm === "function") {
+      window.NGIS_UX.confirm({
+        title: "Deletion Failed",
+        description: "Unable to delete this listing. Please check your network connection and administrator privileges.",
+        confirmLabel: "Close",
+        cancelLabel: "Try Again",
+        isDestructive: false,
+        icon: "exclamation-triangle"
+      });
+    } else {
+      alert("Unable to delete item");
+    }
   }
 }
 

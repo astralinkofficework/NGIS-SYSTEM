@@ -160,30 +160,35 @@
       lockScroll();
       activeModals.push({ backdrop: backdropEl, box: modalBox, options: options });
 
-      // Trigger smooth entrance animation
+      // Trigger smooth entrance animation with NGIS_MOTION or CSS fallback
       backdropEl.classList.remove("ngis-modal-exit");
       backdropEl.classList.add("ngis-modal-enter");
 
-      // Force layout reflow
-      void backdropEl.offsetWidth;
+      if (window.NGIS_MOTION && typeof window.NGIS_MOTION.modalEnter === 'function') {
+        window.NGIS_MOTION.modalEnter(backdropEl, modalBox, function () {
+          backdropEl.classList.add("ngis-modal-active");
+          backdropEl.classList.remove("ngis-modal-enter");
+        });
+      } else {
+        void backdropEl.offsetWidth;
+        requestAnimationFrame(function () {
+          backdropEl.classList.add("ngis-modal-active");
+          backdropEl.classList.remove("ngis-modal-enter");
+        });
+      }
 
-      requestAnimationFrame(function () {
-        backdropEl.classList.add("ngis-modal-active");
-        backdropEl.classList.remove("ngis-modal-enter");
-
-        // Focus first interactive element or close button
-        if (modalBox) {
-          var focusables = getFocusableElements(modalBox);
-          var firstInput = modalBox.querySelector('input:not([type="hidden"]), select, textarea');
-          if (firstInput && !options.noAutoFocus) {
-            firstInput.focus();
-          } else if (focusables.length) {
-            focusables[0].focus();
-          } else {
-            modalBox.focus();
-          }
+      // Focus first interactive element or close button
+      if (modalBox) {
+        var focusables = getFocusableElements(modalBox);
+        var firstInput = modalBox.querySelector('input:not([type="hidden"]), select, textarea');
+        if (firstInput && !options.noAutoFocus) {
+          firstInput.focus();
+        } else if (focusables.length) {
+          focusables[0].focus();
+        } else {
+          modalBox.focus();
         }
-      });
+      }
     },
 
     /**
@@ -206,8 +211,26 @@
 
       // Check for unsaved dirty changes if not forced
       if (!force && entry && entry.options && entry.options.confirmUnsaved && entry.box && isFormDirty(entry.box)) {
-        var leave = window.confirm("You have unsaved changes in this form. Discard changes and close?");
-        if (!leave) return;
+        if (window.NGIS_UX && typeof window.NGIS_UX.confirm === "function") {
+          window.NGIS_UX.confirm({
+            title: "Discard Unsaved Changes?",
+            description: "You have unsaved edits in this form. Closing will discard your pending modifications.",
+            consequence: "Unsaved form data will be permanently discarded.",
+            confirmLabel: "Discard Changes",
+            cancelLabel: "Keep Editing",
+            isDestructive: true,
+            isRecoverable: false,
+            icon: "exclamation-triangle"
+          }).then(function (confirmed) {
+            if (confirmed) {
+              close(backdropEl, true);
+            }
+          });
+          return;
+        } else {
+          var leave = window.confirm("You have unsaved changes in this form. Discard changes and close?");
+          if (!leave) return;
+        }
       }
 
       if (entryIdx !== -1) {
@@ -217,10 +240,7 @@
       backdropEl.classList.remove("ngis-modal-active");
       backdropEl.classList.add("ngis-modal-exit");
 
-      var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      var duration = prefersReducedMotion ? 10 : 180;
-
-      setTimeout(function () {
+      var cleanup = function () {
         if (backdropEl && backdropEl.parentNode) {
           backdropEl.parentNode.removeChild(backdropEl);
         }
@@ -230,7 +250,15 @@
         if (lastActiveElement && typeof lastActiveElement.focus === "function") {
           try { lastActiveElement.focus(); } catch (err) {}
         }
-      }, duration);
+      };
+
+      if (window.NGIS_MOTION && typeof window.NGIS_MOTION.modalExit === 'function') {
+        window.NGIS_MOTION.modalExit(backdropEl, entry ? entry.box : null, cleanup);
+      } else {
+        var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var duration = prefersReducedMotion ? 10 : 180;
+        setTimeout(cleanup, duration);
+      }
     },
 
     /**

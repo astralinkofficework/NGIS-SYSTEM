@@ -457,18 +457,36 @@
       }
 
       root.querySelectorAll('.btn-del-assign').forEach(function (btn) {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', async function () {
           var id = btn.getAttribute('data-id');
-          if (confirm('Are you sure you want to remove this teaching assignment?')) {
-            fetch('/api/teacher-mgmt/assignments/' + encodeURIComponent(id), { method: 'DELETE' })
-              .then(function (res) { return res.json(); })
-              .then(function (res) {
-                if (res.success) {
-                  toast('Teaching assignment removed.');
-                  fetchAssignments();
-                }
-              });
+          var confirmed = false;
+          if (window.NGIS_UX && typeof window.NGIS_UX.confirm === 'function') {
+            confirmed = await window.NGIS_UX.confirm({
+              title: "Remove Teaching Assignment?",
+              description: "This will remove the teacher from this subject section and recalculate faculty workload hours.",
+              consequence: "Students in this section will have an unassigned instructor until a replacement is assigned.",
+              confirmLabel: "Remove Assignment",
+              cancelLabel: "Keep Assignment",
+              isDestructive: true,
+              isRecoverable: false,
+              icon: "person-x"
+            });
+          } else {
+            confirmed = confirm("Remove this teaching assignment?");
           }
+          if (!confirmed) return;
+          fetch('/api/teacher-mgmt/assignments/' + encodeURIComponent(id), { method: 'DELETE' })
+            .then(function (res) { return res.json(); })
+            .then(function (res) {
+              if (res.success) {
+                if (window.NGIS_UX && typeof window.NGIS_UX.success === 'function') {
+                  window.NGIS_UX.success("Teaching assignment removed.");
+                } else {
+                  toast('Teaching assignment removed.');
+                }
+                fetchAssignments();
+              }
+            });
         });
       });
     }
