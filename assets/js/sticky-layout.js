@@ -92,13 +92,10 @@
 
   function applyHeaderSurface(isStuck) {
     if (!header) return;
-    if (isStuck) {
-      var rootStyle = window.getComputedStyle(root);
-      var scrolledBg = rootStyle.getPropertyValue('--ngis-sticky-scrolled-surface').trim() || getPageBackground();
-      header.style.setProperty('background-color', scrolledBg, 'important');
-    } else {
-      header.style.setProperty('background-color', 'transparent', 'important');
-    }
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var solidBg = isDark ? '#0F172A' : '#FFFFFF';
+    header.style.setProperty('background-color', solidBg, 'important');
+    header.style.setProperty('background', solidBg, 'important');
   }
 
   function updateStickiness() {
