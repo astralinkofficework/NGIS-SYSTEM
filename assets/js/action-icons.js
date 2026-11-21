@@ -302,15 +302,26 @@
   }
 
   /* ── 2. Hydration ─────────────────────────────────────────── */
+  /* Idempotent: an element already hydrated with the same icon+size is
+     skipped, so a full-document refresh() never rewrites the DOM. This
+     breaks the MutationObserver → refresh → innerHTML → MutationObserver
+     feedback loop that previously kept the main thread busy forever. */
   function hydrate(root) {
     root = root || document;
     var nodes = root.querySelectorAll ? root.querySelectorAll('[data-ngis-icon]') : [];
     for (var i = 0; i < nodes.length; i++) {
       var el = nodes[i];
-      var markup = svgMarkup(el.getAttribute('data-ngis-icon'), el.getAttribute('data-icon-size'));
+      var name = el.getAttribute('data-ngis-icon');
+      if (name === 'self') continue;
+      var size = el.getAttribute('data-icon-size') || 18;
+      var key = resolve(name);
+      if (!key) continue;
+      var stamp = key + ':' + size;
+      if (el.__ngisIconStamp === stamp) continue;
+      var markup = svgMarkup(key, size);
       if (!markup) continue;
-      if (el.getAttribute('data-ngis-icon') === 'self') continue;
       el.innerHTML = markup;
+      el.__ngisIconStamp = stamp;
     }
   }
 

@@ -112,7 +112,13 @@
     }
 
     var parent = input.parentElement;
-    if (!parent) return;
+    if (!parent) {
+      /* Mark as done even when skipped: leaving it un-marked would make
+         needsWork() report work forever, re-triggering the MutationObserver
+         scan on every mutation (perpetual main-thread churn). */
+      input.dataset[READY] = 'true';
+      return;
+    }
 
     var wrapper;
     var parentIsSearchShell = parent.matches(WRAPPER_SELECTOR);
@@ -259,7 +265,14 @@
   }
 
   function init() {
-    Array.prototype.forEach.call(candidates(), enhance);
+    Array.prototype.forEach.call(candidates(), function (input) {
+      try {
+        enhance(input);
+      } catch (_) {
+        /* Never let one broken input keep needsWork() true forever. */
+        try { input.dataset[READY] = 'true'; } catch (_e) {}
+      }
+    });
   }
 
   window.NGISSearch = {

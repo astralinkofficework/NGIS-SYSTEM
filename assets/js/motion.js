@@ -66,13 +66,25 @@
   /* ── 3. DYNAMIC GSAP LOADER & VENDOR REGISTRATION ── */
   var gsapReady = false;
   var gsapQueue = [];
+  var gsapLoadStarted = false;
 
   function onGSAPReady(fn) {
     if (gsapReady && window.gsap) {
       fn(window.gsap);
     } else {
       gsapQueue.push(fn);
+      ensureGSAP();
     }
+  }
+
+  /* Lazy GSAP: nothing on any page registers GSAP callbacks up-front, and
+     every consumer of window.gsap is feature-guarded with a CSS fallback,
+     so the 172KB core + 6 plugins are only fetched when something actually
+     asks for them. Previously this fired eagerly on every page load. */
+  function ensureGSAP() {
+    if (gsapReady || gsapLoadStarted) return;
+    gsapLoadStarted = true;
+    initGSAP();
   }
 
   function flushGSAPQueue() {
@@ -643,14 +655,14 @@
   if (!window.NGIS) window.NGIS = {};
   window.NGIS.motion = NGIS_MOTION;
 
-  // Initialize GSAP and global delegations when DOM is ready
+  // Initialize global delegations when DOM is ready.
+  // GSAP is lazy: see ensureGSAP() — it loads only when onGSAPReady()
+  // is called by a real consumer (nothing does today).
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () {
-      initGSAP();
       initGlobalDelegates();
     });
   } else {
-    initGSAP();
     initGlobalDelegates();
   }
 
