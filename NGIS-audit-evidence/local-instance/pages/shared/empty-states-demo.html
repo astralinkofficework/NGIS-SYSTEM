@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en" data-theme="light" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NGIS — Global Empty States & Status System Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/app.css?v=3.2">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+</head>
+<body data-role="admin" data-portal="admin" class="min-h-screen bg-[#F7F9F7] font-sans text-slate-800 antialiased flex flex-col">
+  <main class="main flex-1 min-w-0 flex flex-col p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+
+    <!-- Top App Bar & Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+      <div class="flex items-center gap-3">
+        <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 -ml-1 text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg active:scale-95 transition flex items-center justify-center min-w-[38px] min-h-[38px] lg:hidden" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
+          <span data-ngis-icon="menu"></span>
+        </button>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+            <h1 class="text-xl font-medium text-slate-900 dark:text-slate-100">Global Empty States & Status System</h1>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Interactive demonstration of standardized empty tables, contextual messaging, role-aware actions, missing cell values, and 5-variant status indicators.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <!-- Role Switcher -->
+        <div class="flex items-center gap-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 shadow-sm">
+          <span class="text-slate-500 dark:text-slate-400">View as:</span>
+          <select id="demoRoleSelect" class="bg-transparent border-none text-xs font-medium text-slate-800 dark:text-slate-200 outline-none cursor-pointer">
+            <option value="admin" selected>Administrator</option>
+            <option value="teacher">Teacher</option>
+            <option value="principal">Principal</option>
+            <option value="student">Student (Restricted)</option>
+            <option value="superadmin">Super Admin</option>
+          </select>
+        </div>
+        <!-- Theme Toggle -->
+        <button type="button" id="demoThemeToggle" class="px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition active:scale-95">
+          Toggle Dark Mode
+        </button>
+      </div>
+    </div>
+
+    <!-- Section 1: Interactive Table Data State Controller -->
+    <section class="mt-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div>
+          <h2 class="text-base font-medium text-slate-900 dark:text-slate-100">1. Global Table Data States</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Switch between data states to verify horizontal/vertical centering, column alignment preservation, and role-aware action buttons.</p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <button type="button" data-state="empty" class="demo-tab-btn active px-3 py-1.5 text-xs font-medium rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm transition">Empty Dataset</button>
+            <button type="button" data-state="search" class="demo-tab-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition">No Results</button>
+            <button type="button" data-state="loading" class="demo-tab-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition">Skeleton Loading</button>
+            <button type="button" data-state="error" class="demo-tab-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition">Request Error</button>
+            <button type="button" data-state="restricted" class="demo-tab-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition">Restricted</button>
+            <button type="button" data-state="populated" class="demo-tab-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition">Populated Data</button>
+          </div>
+          <!-- Context Selector for Empty Dataset -->
+          <div id="demoContextWrap" class="flex items-center gap-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5">
+            <span class="text-slate-500">Context:</span>
+            <select id="demoContextSelect" class="bg-transparent border-none text-xs font-medium text-slate-800 dark:text-slate-200 outline-none cursor-pointer">
+              <option value="students">Student Directory</option>
+              <option value="teachers">Teacher Directory</option>
+              <option value="attendance">Attendance Records</option>
+              <option value="assignments">Coursework Assignments</option>
+              <option value="lessons">Lesson Plans</option>
+              <option value="exams">Examinations</option>
+              <option value="reports">Academic Reports</option>
+              <option value="announcements">Announcements</option>
+              <option value="timetable">Master Timetable</option>
+              <option value="services">Service Requests</option>
+              <option value="lost_found">Lost & Found</option>
+              <option value="notifications">Notifications</option>
+              <option value="security_events">Security Events</option>
+              <option value="audit_logs">Audit Logs</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Demonstration Table -->
+      <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-medium">
+              <th class="py-3 px-4">Subject / Name</th>
+              <th class="py-3 px-4">Cohort / Class</th>
+              <th class="py-3 px-4">Assigned Faculty</th>
+              <th class="py-3 px-4">Document / Attachment</th>
+              <th class="py-3 px-4 text-center">Score / Count</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="demoTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+            <!-- Dynamically populated by demo script -->
+          </tbody>
+        </table>
+      </div>
+      <div id="demoStateInfo" class="mt-3 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
+        <span id="demoStateNote">Displaying Empty State with Monochrome Filing Cabinet illustration.</span>
+        <span id="demoActionStatus" class="font-medium text-emerald-600 dark:text-emerald-400"></span>
+      </div>
+    </section>
+
+    <!-- Section 2: Missing Individual Table Values Standard -->
+    <section class="mt-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+      <div class="pb-3 border-b border-slate-100 dark:border-slate-800">
+        <h2 class="text-base font-medium text-slate-900 dark:text-slate-100">2. Missing Individual Column Values Standard</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Distinguishes an empty dataset from a table with missing optional fields. Valid numeric zero is preserved; broken icons or undefined/null are forbidden.</p>
+      </div>
+      <div class="mt-4 overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 font-medium">
+              <th class="py-3 px-4">Student ID</th>
+              <th class="py-3 px-4">Full Name</th>
+              <th class="py-3 px-4">Class Section (Missing Assignment)</th>
+              <th class="py-3 px-4">Medical Form (Missing Document)</th>
+              <th class="py-3 px-4">Phone (Missing Personal)</th>
+              <th class="py-3 px-4 text-center">Violations (Valid Zero Preserved)</th>
+              <th class="py-3 px-4">Optional Note (Em Dash)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3 px-4 font-mono text-slate-700 dark:text-slate-300">STD-2026-001</td>
+              <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-100">Sokha Rathana</td>
+              <td class="py-3 px-4"><span class="ngis-missing-val">Not assigned</span></td>
+              <td class="py-3 px-4"><span class="text-slate-700 dark:text-slate-300">immunization_cert.pdf</span></td>
+              <td class="py-3 px-4"><span class="text-slate-700 dark:text-slate-300">+855 12 889 900</span></td>
+              <td class="py-3 px-4 text-center font-mono font-medium text-slate-800 dark:text-slate-200">0</td>
+              <td class="py-3 px-4"><span class="ngis-missing-dash">&mdash;</span></td>
+            </tr>
+            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3 px-4 font-mono text-slate-700 dark:text-slate-300">STD-2026-002</td>
+              <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-100">Serey Vathanak</td>
+              <td class="py-3 px-4"><span class="text-slate-700 dark:text-slate-300">Grade 10A</span></td>
+              <td class="py-3 px-4"><span class="ngis-missing-val">Not uploaded</span></td>
+              <td class="py-3 px-4"><span class="ngis-missing-val">Not provided</span></td>
+              <td class="py-3 px-4 text-center font-mono font-medium text-slate-800 dark:text-slate-200">2</td>
+              <td class="py-3 px-4"><span class="text-slate-600 dark:text-slate-400">Prefers afternoon labs</span></td>
+            </tr>
+            <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+              <td class="py-3 px-4 font-mono text-slate-700 dark:text-slate-300">STD-2026-003</td>
+              <td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-100">Dara Bopha</td>
+              <td class="py-3 px-4"><span class="text-slate-700 dark:text-slate-300">Grade 10B</span></td>
+              <td class="py-3 px-4"><span class="text-slate-700 dark:text-slate-300">id_passport.pdf</span></td>
+              <td class="py-3 px-4"><span class="ngis-missing-val">Not provided</span></td>
+              <td class="py-3 px-4 text-center font-mono font-medium text-slate-800 dark:text-slate-200">0</td>
+              <td class="py-3 px-4"><span class="ngis-missing-dash">&mdash;</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 3: Universal Status Indicator System (5 Semantic Variants) -->
+    <section class="mt-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+      <div class="pb-3 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-medium text-slate-900 dark:text-slate-100">3. Universal Status Indicator System</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">5 base semantic variants: Default (gray), Processing (blue), Success (green), Warning (amber), Error (red). Flat mode for dense tables; Badge mode for cards.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnLiveTransitionDemo" class="px-3 py-1.5 text-xs font-medium bg-[#0f5132] hover:bg-[#166534] text-white rounded-xl shadow-sm transition active:scale-95">
+            Test Live Transition (GSAP)
+          </button>
+        </div>
+      </div>
+
+      <!-- Semantic Grid -->
+      <div class="mt-5 grid grid-cols-1 md:grid-cols-5 gap-4">
+        <!-- Variant 1: Default (Gray) -->
+        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-medium text-slate-700 dark:text-slate-300">Default (Gray)</span>
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Neutral</span>
+          </div>
+          <div class="space-y-2.5">
+            <div><div class="text-[10px] text-slate-400 mb-1">Draft</div><div id="stat_draft"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Not Assigned</div><div id="stat_not_assigned"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Inactive</div><div id="stat_inactive"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Archived</div><div id="stat_archived"></div></div>
+          </div>
+        </div>
+
+        <!-- Variant 2: Processing (Blue) -->
+        <div class="p-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/30 dark:bg-blue-950/20">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-medium text-blue-800 dark:text-blue-300">Processing (Blue)</span>
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">Action</span>
+          </div>
+          <div class="space-y-2.5">
+            <div><div class="text-[10px] text-slate-400 mb-1">Processing</div><div id="stat_processing"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">In Review</div><div id="stat_in_review"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">In Progress</div><div id="stat_in_progress"></div></div>
+          </div>
+        </div>
+
+        <!-- Variant 3: Warning (Amber) -->
+        <div class="p-3.5 rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/30 dark:bg-amber-950/20">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-medium text-amber-800 dark:text-amber-300">Warning (Amber)</span>
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300">Caution</span>
+          </div>
+          <div class="space-y-2.5">
+            <div><div class="text-[10px] text-slate-400 mb-1">Pending</div><div id="stat_pending"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Late</div><div id="stat_late"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Needs Correction</div><div id="stat_needs_correction"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Due Soon</div><div id="stat_due_soon"></div></div>
+          </div>
+        </div>
+
+        <!-- Variant 4: Success (Green) -->
+        <div class="p-3.5 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/30 dark:bg-emerald-950/20">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-medium text-emerald-800 dark:text-emerald-300">Success (Green)</span>
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300">Resolved</span>
+          </div>
+          <div class="space-y-2.5">
+            <div><div class="text-[10px] text-slate-400 mb-1">Active</div><div id="stat_active"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Approved</div><div id="stat_approved"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Published</div><div id="stat_published"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Completed</div><div id="stat_completed"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Present</div><div id="stat_present"></div></div>
+          </div>
+        </div>
+
+        <!-- Variant 5: Error (Red) -->
+        <div class="p-3.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/30 dark:bg-rose-950/20">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-medium text-rose-800 dark:text-rose-300">Error (Red)</span>
+            <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-900 text-rose-700 dark:text-rose-300">Alert</span>
+          </div>
+          <div class="space-y-2.5">
+            <div><div class="text-[10px] text-slate-400 mb-1">Rejected</div><div id="stat_rejected"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Absent</div><div id="stat_absent"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Overdue</div><div id="stat_overdue"></div></div>
+            <div><div class="text-[10px] text-slate-400 mb-1">Restricted</div><div id="stat_restricted"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="../../assets/js/layout.js"></script>
+  <script src="../../assets/js/ngis-status.js"></script>
+  <script src="../../assets/js/ngis-empty-state.js"></script>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var currentRole = "admin";
+      var currentState = "empty";
+      var currentContext = "students";
+
+      var tbody = document.getElementById("demoTableBody");
+      var roleSelect = document.getElementById("demoRoleSelect");
+      var contextSelect = document.getElementById("demoContextSelect");
+      var contextWrap = document.getElementById("demoContextWrap");
+      var stateNote = document.getElementById("demoStateNote");
+      var actionStatus = document.getElementById("demoActionStatus");
+      var themeToggle = document.getElementById("demoThemeToggle");
+
+      // Populated mock records
+      var mockRecords = [
+        {
+          name: "Advanced Mathematics Mid-Term",
+          cohort: "Grade 10A",
+          teacher: "Mr. Heng",
+          doc: "calculus_syllabus.pdf",
+          score: 95,
+          status: "published"
+        },
+        {
+          name: "Victorian Poetry Analysis",
+          cohort: "Grade 10B",
+          teacher: "Ms. Rathana Chea",
+          doc: "essay_rubric.pdf",
+          score: 0,
+          status: "in_review"
+        },
+        {
+          name: "Khmer Literature Review",
+          cohort: "Grade 10A",
+          teacher: null, // missing assignment
+          doc: null,     // missing doc
+          score: 82,
+          status: "pending"
+        },
+        {
+          name: "Robotics Qualifying Round",
+          cohort: "All Campuses",
+          teacher: "Dr. Vance Miller",
+          doc: "circuit_rules.pdf",
+          score: 100,
+          status: "completed"
+        }
+      ];
+
+      function renderPopulated() {
+        if (!tbody) return;
+        tbody.innerHTML = mockRecords.map(function (r) {
+          var faculty = window.NGIS_EMPTY.cellValue(r.teacher, "assignment");
+          var docVal = window.NGIS_EMPTY.cellValue(r.doc, "document");
+          var scoreVal = window.NGIS_EMPTY.cellValue(r.score, "dash");
+          var statusHtml = window.NGIS_STATUS.render(r.status, { variant: "flat" });
+
+          return (
+            '<tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">' +
+              '<td class="py-3 px-4 font-medium text-slate-900 dark:text-slate-100">' + r.name + '</td>' +
+              '<td class="py-3 px-4 text-slate-700 dark:text-slate-300">' + r.cohort + '</td>' +
+              '<td class="py-3 px-4">' + faculty + '</td>' +
+              '<td class="py-3 px-4">' + docVal + '</td>' +
+              '<td class="py-3 px-4 text-center font-mono font-medium text-slate-800 dark:text-slate-200">' + scoreVal + '</td>' +
+              '<td class="py-3 px-4">' + statusHtml + '</td>' +
+              '<td class="py-3 px-4 text-right">' +
+                '<button type="button" class="px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition">Details</button>' +
+              '</td>' +
+            '</tr>'
+          );
+        }).join("");
+
+        if (window.NGIS && window.NGIS.hydrateIcons) {
+          window.NGIS.hydrateIcons(tbody);
+        }
+      }
+
+      function updateTableState() {
+        if (!tbody) return;
+
+        // Update body role attribute for permission checks
+        document.body.setAttribute("data-role", currentRole);
+        window.PAGE = { role: currentRole };
+
+        contextWrap.style.display = (currentState === "empty") ? "flex" : "none";
+
+        if (currentState === "empty") {
+          stateNote.textContent = "Displaying contextual Empty State (" + currentContext + "). Action CTA adjusts based on view role: " + currentRole + ".";
+          window.NGIS_EMPTY.render(tbody, {
+            key: currentContext,
+            colspan: 7,
+            onAction: function () {
+              actionStatus.textContent = "Action button clicked for " + currentContext + "!";
+              setTimeout(function () { actionStatus.textContent = ""; }, 3000);
+            }
+          });
+        } else if (currentState === "search") {
+          stateNote.textContent = "Displaying 'No matching results' search state with Clear Filters recovery CTA.";
+          window.NGIS_EMPTY.renderNoResults(tbody, {
+            colspan: 7,
+            onAction: function () {
+              actionStatus.textContent = "Filters cleared! Restoring populated data...";
+              setTimeout(function () {
+                currentState = "populated";
+                syncTabs();
+                renderPopulated();
+                actionStatus.textContent = "";
+              }, 600);
+            }
+          });
+        } else if (currentState === "loading") {
+          stateNote.textContent = "Displaying contextual skeleton table rows matching 7-column structure.";
+          window.NGIS_EMPTY.renderSkeleton(tbody, { cols: 7, rows: 5 });
+        } else if (currentState === "error") {
+          stateNote.textContent = "Displaying Request Failed state with Retry recovery button.";
+          window.NGIS_EMPTY.renderError(tbody, {
+            colspan: 7,
+            onAction: function () {
+              actionStatus.textContent = "Retrying network query...";
+              setTimeout(function () {
+                currentState = "populated";
+                syncTabs();
+                renderPopulated();
+                actionStatus.textContent = "Data reloaded successfully.";
+                setTimeout(function () { actionStatus.textContent = ""; }, 2500);
+              }, 700);
+            }
+          });
+        } else if (currentState === "restricted") {
+          stateNote.textContent = "Displaying Permission Restricted state (zero sensitive data exposed).";
+          window.NGIS_EMPTY.renderRestricted(tbody, { colspan: 7 });
+        } else if (currentState === "populated") {
+          stateNote.textContent = "Displaying 4 active records with standardized status indicators & missing value formatting.";
+          renderPopulated();
+        }
+
+        if (window.NGIS && window.NGIS.hydrateIcons) {
+          window.NGIS.hydrateIcons(tbody);
+        }
+      }
+
+      function syncTabs() {
+        document.querySelectorAll(".demo-tab-btn").forEach(function (btn) {
+          var s = btn.getAttribute("data-state");
+          if (s === currentState) {
+            btn.className = "demo-tab-btn active px-3 py-1.5 text-xs font-medium rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm transition";
+          } else {
+            btn.className = "demo-tab-btn px-3 py-1.5 text-xs font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition";
+          }
+        });
+      }
+
+      // Tab switcher listener
+      document.querySelectorAll(".demo-tab-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          currentState = btn.getAttribute("data-state");
+          syncTabs();
+          updateTableState();
+        });
+      });
+
+      // Role switcher listener
+      if (roleSelect) {
+        roleSelect.addEventListener("change", function () {
+          currentRole = roleSelect.value;
+          updateTableState();
+        });
+      }
+
+      // Context selector listener
+      if (contextSelect) {
+        contextSelect.addEventListener("change", function () {
+          currentContext = contextSelect.value;
+          if (currentState === "empty") updateTableState();
+        });
+      }
+
+      // Theme toggle listener
+      if (themeToggle) {
+        themeToggle.addEventListener("click", function () {
+          var curr = document.documentElement.getAttribute("data-theme") || "light";
+          var next = curr === "light" ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", next);
+        });
+      }
+
+      // Populate Section 3 Semantic Statuses
+      function populateStatuses() {
+        var statuses = [
+          "draft", "not_assigned", "inactive", "archived",
+          "processing", "in_review", "in_progress",
+          "pending", "late", "needs_correction", "due_soon",
+          "active", "approved", "published", "completed", "present",
+          "rejected", "absent", "overdue", "restricted"
+        ];
+        statuses.forEach(function (st) {
+          var container = document.getElementById("stat_" + st);
+          if (container && window.NGIS_STATUS) {
+            container.innerHTML =
+              '<div class="flex items-center gap-2">' +
+                window.NGIS_STATUS.render(st, { variant: "flat" }) +
+                '<span class="text-slate-300 dark:text-slate-700">|</span>' +
+                window.NGIS_STATUS.render(st, { variant: "badge" }) +
+              '</div>';
+          }
+        });
+        if (window.NGIS && window.NGIS.hydrateIcons) {
+          window.NGIS.hydrateIcons(document.body);
+        }
+      }
+
+      // Live status transition test
+      var transitionBtn = document.getElementById("btnLiveTransitionDemo");
+      if (transitionBtn) {
+        transitionBtn.addEventListener("click", function () {
+          var target = document.querySelector("#stat_in_review .ngis-status-indicator");
+          if (target && window.NGIS_STATUS) {
+            var curr = target.getAttribute("data-status");
+            var next = curr === "in_review" ? "approved" : (curr === "approved" ? "rejected" : "in_review");
+            window.NGIS_STATUS.transition(target, next);
+          }
+        });
+      }
+
+      // Initial execution
+      updateTableState();
+      populateStatuses();
+
+    })();
+  </script>
+</body>
+</html>

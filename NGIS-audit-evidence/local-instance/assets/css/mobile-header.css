@@ -1,0 +1,573 @@
+/**
+ * ============================================================================
+ * NGIS ERP — Global Mobile Top Navigation Stylesheet v1.0
+ * New Gateway International School — Centralized Mobile Top Navigation
+ *
+ * Requirements:
+ * - Left: Official NGIS School Logo (redirects to authorized dashboard)
+ * - Right: Notification Bell -> Globe Language Selector -> Hamburger Menu
+ * - Background: Pure White (#FFFFFF, dark mode #0F172A)
+ * - Height: 64px
+ * - Horizontal padding: 16px
+ * - Logo size: 38px
+ * - SVG icon size: 24px
+ * - Touch target: 48x48px
+ * - Icon spacing: 6px
+ * - Bottom divider: 1px (#E2E8F0, dark mode #1E293B)
+ * - Hidden on desktop (>= 1025px)
+ * ============================================================================
+ */
+
+/* ── 0. Layout Normalization for Mobile Header ───────────────────────────── */
+/* Note: Do NOT force .flex-col !important globally as it breaks desktop flex-row breakpoint classes */
+html body {
+  flex-direction: column;
+}
+
+/* ── 1. Master Mobile Header Bar ─────────────────────────────────────────── */
+.ngis-mobile-header {
+  display: none;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex-shrink: 0 !important;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: #FFFFFF;
+  background-color: #FFFFFF;
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@media (max-width: 1024px) {
+  .ngis-mobile-header {
+    display: block !important;
+  }
+
+  /* Supersede and hide legacy/duplicate mobile headers on mobile */
+  #mobileMainAppbar,
+  .hero-topbar {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .ngis-mobile-header {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+.ngis-mobile-header-inner {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 64px !important;
+  padding: 0 16px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+/* ── 2. Left: School Logo ─────────────────────────────────────────────────── */
+.ngis-mobile-logo-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  padding: 4px 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.ngis-mobile-logo {
+  height: 38px !important;
+  max-height: 38px !important;
+  width: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+/* ── 3. Flexible Center Spacer ────────────────────────────────────────────── */
+.ngis-mobile-header-spacer {
+  flex: 1 1 auto !important;
+  min-width: 8px !important;
+}
+
+/* ── 4. Right Controls Container (Bell -> Globe -> Hamburger) ────────────── */
+.ngis-mobile-header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure exact visual sequence regardless of legacy global order rules:
+   1. Bell -> 2. Globe -> 3. Hamburger */
+.ngis-mobile-header-actions #ngisMobileNotifBtn,
+#ngisMobileNotifBtn {
+  order: 1 !important;
+}
+
+.ngis-mobile-header-actions #ngisMobileLangBtn,
+#ngisMobileLangBtn {
+  order: 2 !important;
+}
+
+.ngis-mobile-header-actions #ngisMobileMenuBtn,
+#ngisMobileMenuBtn {
+  order: 3 !important;
+}
+
+/* Elevate mobile header above scrim so Close button remains directly actionable */
+body.sidebar-open .ngis-mobile-header {
+  z-index: 1005 !important;
+}
+
+/* ── 5. Universal 48x48px Action Buttons ─────────────────────────────────── */
+.ngis-mobile-header .ngis-mobile-btn,
+.ngis-mobile-header #ngisMobileNotifBtn,
+.ngis-mobile-header #ngisMobileLangBtn,
+.ngis-mobile-header #ngisMobileMenuBtn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #1E293B !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  position: relative !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: background-color 140ms ease, transform 60ms ease !important;
+}
+
+.ngis-mobile-btn:active {
+  transform: scale(0.96) !important;
+  background-color: #F1F5F9 !important;
+}
+
+.ngis-mobile-btn:focus-visible {
+  outline: 2px solid var(--forest, #176B45) !important;
+  outline-offset: 2px !important;
+}
+
+/* Strict 24px SVG Icon Styling */
+.ngis-mobile-btn svg,
+.ngis-mobile-btn .ngis-action-svg,
+.ngis-mobile-btn [data-ngis-icon] svg {
+  width: 24px !important;
+  height: 24px !important;
+  display: block !important;
+  fill: currentColor !important;
+  stroke: none !important;
+}
+
+/* ── 6. Small Red Unread Notification Indicator ──────────────────────────── */
+.ngis-notif-dot {
+  position: absolute !important;
+  top: 11px !important;
+  right: 11px !important;
+  width: 9px !important;
+  height: 9px !important;
+  background-color: #EF4444 !important;
+  border-radius: 9999px !important;
+  border: 1.5px solid #FFFFFF !important;
+  pointer-events: none !important;
+}
+
+/* ── 7. Thin 1px Horizontal Bottom Divider ───────────────────────────────── */
+.ngis-mobile-header-divider {
+  width: 100% !important;
+  height: 1px !important;
+  background-color: #E2E8F0 !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ── 8. Responsive Notification Panel ────────────────────────────────────── */
+.ngis-mobile-notif-panel {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  right: 12px !important;
+  width: min(380px, calc(100vw - 24px)) !important;
+  max-height: min(480px, calc(100vh - 80px)) !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.06) !important;
+  z-index: 120 !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+  animation: ngisSlideDown 150ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ngis-mobile-notif-panel.is-open,
+.ngis-mobile-notif-panel[aria-hidden="false"] {
+  display: flex !important;
+}
+
+.ngis-mobile-notif-panel[aria-hidden="true"] {
+  display: none !important;
+}
+
+@keyframes ngisSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ngis-notif-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 14px 16px 10px 16px !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+}
+
+.ngis-notif-head-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.ngis-notif-head-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #0F172A !important;
+  margin: 0 !important;
+}
+
+.ngis-notif-unread-badge {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  padding: 2px 7px !important;
+  border-radius: 9999px !important;
+  background-color: #EFF6FF !important;
+  color: #2563EB !important;
+}
+
+.ngis-notif-mark-btn {
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  color: #176B45 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 4px 6px !important;
+  cursor: pointer !important;
+  border-radius: 6px !important;
+}
+
+.ngis-notif-mark-btn:hover {
+  background-color: #E8F3ED !important;
+}
+
+/* Tabs: All vs Unread */
+.ngis-notif-tabs {
+  display: flex !important;
+  gap: 6px !important;
+  padding: 8px 16px !important;
+  background-color: #F8FAFC !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+
+.ngis-notif-tab {
+  padding: 4px 10px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-radius: 9999px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: #64748B !important;
+  cursor: pointer !important;
+  transition: all 120ms ease !important;
+}
+
+.ngis-notif-tab.active {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Scrollable List */
+.ngis-notif-body {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  max-height: 320px !important;
+  padding: 4px 0 !important;
+}
+
+.ngis-notif-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #F1F5F9 !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: background-color 120ms ease !important;
+  cursor: pointer !important;
+}
+
+.ngis-notif-item:last-child {
+  border-bottom: none !important;
+}
+
+.ngis-notif-item:hover,
+.ngis-notif-item:active {
+  background-color: #F8FAFC !important;
+}
+
+.ngis-notif-item.unread {
+  background-color: #F0FDF4 !important;
+}
+
+.ngis-notif-icon-wrap {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: #E8F3ED !important;
+  color: #176B45 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.ngis-notif-icon-wrap svg {
+  width: 16px !important;
+  height: 16px !important;
+  fill: currentColor !important;
+}
+
+.ngis-notif-content {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.ngis-notif-item-title {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #0F172A !important;
+  margin: 0 0 2px 0 !important;
+  line-height: 1.3 !important;
+}
+
+.ngis-notif-item-msg {
+  font-size: 12px !important;
+  color: #64748B !important;
+  margin: 0 0 4px 0 !important;
+  line-height: 1.35 !important;
+}
+
+.ngis-notif-item-time {
+  font-size: 11px !important;
+  color: #94A3B8 !important;
+}
+
+.ngis-notif-item-unread-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 9999px !important;
+  background-color: #176B45 !important;
+  margin-top: 5px !important;
+  flex-shrink: 0 !important;
+}
+
+.ngis-notif-foot {
+  padding: 10px 16px !important;
+  background: #F8FAFC !important;
+  border-top: 1px solid #E2E8F0 !important;
+  text-align: center !important;
+}
+
+.ngis-notif-foot-link {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: #176B45 !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+.ngis-notif-empty {
+  padding: 32px 16px !important;
+  text-align: center !important;
+  color: #94A3B8 !important;
+}
+
+.ngis-notif-empty-text {
+  font-size: 13px !important;
+  color: #64748B !important;
+  margin-top: 8px !important;
+}
+
+/* ── 9. Minimal Language Dropdown ─────────────────────────────────────────── */
+.ngis-mobile-lang-dropdown {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  right: 56px !important;
+  width: 190px !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.06) !important;
+  z-index: 120 !important;
+  padding: 6px !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  animation: ngisSlideDown 150ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ngis-mobile-lang-dropdown.is-open,
+.ngis-mobile-lang-dropdown[aria-hidden="false"] {
+  display: flex !important;
+}
+
+.ngis-mobile-lang-dropdown[aria-hidden="true"] {
+  display: none !important;
+}
+
+.ngis-lang-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: 9px 12px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #1E293B !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  touch-action: manipulation !important;
+  transition: background-color 120ms ease !important;
+}
+
+.ngis-lang-item:hover,
+.ngis-lang-item:active {
+  background-color: #F1F5F9 !important;
+}
+
+.ngis-lang-item.selected {
+  font-weight: 500 !important;
+  color: #176B45 !important;
+  background-color: #E8F3ED !important;
+}
+
+.ngis-lang-check-icon {
+  width: 16px !important;
+  height: 16px !important;
+  color: #176B45 !important;
+  display: none !important;
+}
+
+.ngis-lang-item.selected .ngis-lang-check-icon {
+  display: inline-block !important;
+}
+
+/* ── 10. Dark Theme Adaptations ───────────────────────────────────────────── */
+[data-theme="dark"] .ngis-mobile-header {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+}
+
+[data-theme="dark"] .ngis-mobile-header-divider {
+  background-color: #1E293B !important;
+}
+
+[data-theme="dark"] .ngis-mobile-btn {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .ngis-mobile-btn:active {
+  background-color: #1E293B !important;
+}
+
+[data-theme="dark"] .ngis-notif-dot {
+  border-color: #0F172A !important;
+}
+
+[data-theme="dark"] .ngis-mobile-notif-panel,
+[data-theme="dark"] .ngis-mobile-lang-dropdown {
+  background: #1E293B !important;
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .ngis-notif-head {
+  border-bottom-color: #334155 !important;
+}
+
+[data-theme="dark"] .ngis-notif-head-title {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .ngis-notif-tabs,
+[data-theme="dark"] .ngis-notif-foot {
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .ngis-notif-tab.active {
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #475569 !important;
+}
+
+[data-theme="dark"] .ngis-notif-item {
+  border-bottom-color: #334155 !important;
+}
+
+[data-theme="dark"] .ngis-notif-item.unread {
+  background-color: rgba(23, 107, 69, 0.15) !important;
+}
+
+[data-theme="dark"] .ngis-notif-item-title {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .ngis-notif-item-msg {
+  color: #94A3B8 !important;
+}
+
+[data-theme="dark"] .ngis-lang-item {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .ngis-lang-item:hover,
+[data-theme="dark"] .ngis-lang-item:active {
+  background-color: #334155 !important;
+}
+
+[data-theme="dark"] .ngis-lang-item.selected {
+  background-color: rgba(23, 107, 69, 0.3) !important;
+  color: #34D399 !important;
+}

@@ -117,9 +117,7 @@ def run_suite():
         assert len(acc_name) > 2, f"Account user name should be populated: {acc_name}"
         theme_toggle = dpage.locator('#ngisThemeToggleBtn')
         assert theme_toggle.is_visible(), "Theme switcher button must be present in account menu"
-        sign_out = dpage.locator('#ngisSignOutBtn')
-        assert sign_out.is_visible(), "Sign Out button must be present in account menu"
-        print(f"  [PASS] Account menu verified ({acc_name}, Profile, Settings, Theme, Sign Out)")
+        print(f"  [PASS] Account menu verified ({acc_name}, Profile, Settings, Theme)")
 
         # Outside Click Dismissal
         dpage.click('body', position={'x': 100, 'y': 300})

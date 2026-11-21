@@ -231,7 +231,7 @@
   function boot() {
     if (!body) return;
 
-    if (document.getElementById('ngisGlobalNavbar')) {
+    if (body.dataset.ngisNavbar === 'page' || document.getElementById('ngisGlobalNavbar')) {
       body.classList.add('ngis-sticky-suspended');
       var oldSpacers = document.querySelectorAll('.ngis-sticky-spacer');
       for (var s = 0; s < oldSpacers.length; s++) {

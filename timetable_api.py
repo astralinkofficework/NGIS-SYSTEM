@@ -78,7 +78,8 @@ def _actor() -> Optional[str]:
 
 
 MONITOR_ROLES = {"admin", "principal", "editor", "super_admin", "superadmin"}
-READONLY_TIMETABLE_ROLES = {"admin", "student", "teacher", "staff", "monitoring"}
+TIMETABLE_EDIT_ROLES = {"admin", "principal", "editor", "super_admin", "superadmin"}
+TIMETABLE_PUBLISH_ROLES = {"admin", "super_admin", "superadmin"}
 
 
 def _resolved_actor_role() -> str:
@@ -95,20 +96,36 @@ def _monitor_guard() -> Optional[Tuple[Response, int]]:
     roles may read monitoring data or dispatch reminders. Never rely on
     hidden buttons alone."""
     role = _resolved_actor_role()
-    if role not in MONITOR_ROLES:
+    if role and role not in MONITOR_ROLES:
         return _fail("សូមទោស — មានត្រណមតែ Admin/Principal ប៉ុណ្ណោះ", 403)
     return None
 
 
 def _builder_write_guard() -> Optional[Tuple[Response, int]]:
-    """Prevent read-only roles (including explicit admin monitoring) from
-    modifying drafts, assignments, or publishing timetables."""
+    """Allow authorized academic leaders (Principal, Admin, Super Admin)
+    to draft, edit, and manage timetable assignments."""
     role = _resolved_actor_role()
-    if role in READONLY_TIMETABLE_ROLES:
+    if role and role not in TIMETABLE_EDIT_ROLES:
         return _fail(
-            "Admin Timetable Monitoring is read-only. Timetable editing and publishing belong to the Principal Portal.",
+            "Timetable draft editing requires Principal, Admin or Super Admin authorization.",
             403,
             read_only=True,
+        )
+    return None
+
+
+def _builder_publish_guard() -> Optional[Tuple[Response, int]]:
+    """Final timetable review and publishing is strictly reserved for Admin
+    and Super Admin, ensuring executive oversight over live school schedules."""
+    from server import _academic_user
+    user = _academic_user()
+    if not user:
+        return _fail("Sign in to review or publish timetables.", 401)
+    if user.get("role") not in TIMETABLE_PUBLISH_ROLES:
+        return _fail(
+            "Final timetable publishing is restricted to Administration. Principals can submit drafts for approval.",
+            403,
+            publish_restricted=True,
         )
     return None
 
@@ -1021,6 +1038,79 @@ def reassign():
         return _fail(str(e), 500)
 
 
+# ── Draft & Approval Lifecycle ──────────────────────────────────────────────
+
+@timetable_bp.route("/submit-approval", methods=["POST"])
+def submit_approval():
+    """Principal submits active draft timetable for Admin review and approval."""
+    from server import _academic_user
+    user = _academic_user()
+    if not user:
+        return _fail("Sign in to submit a timetable draft.", 401)
+    if user.get("role") not in {"principal", *TIMETABLE_PUBLISH_ROLES}:
+        return _fail("Principal or Administration access is required.", 403)
+    body = _body()
+    submitted_by = user.get("name") or " ".join(
+        user.get(field, "") for field in ("firstName", "lastName")
+    ).strip() or user["id"]
+    note = body.get("note", "")
+    effective_from = body.get("effective_from")
+    try:
+        result = STORE.submit_for_approval(submitted_by=submitted_by, note=note,
+                                           effective_from=effective_from,
+                                           base_revision=body.get("base_revision"))
+        return _ok(submission=result)
+    except M.RevisionConflict as exc:
+        return _fail("The draft changed. Reload it before submitting.", 409,
+                     current_revision=exc.current_revision)
+    except Exception as e:
+        return _fail(str(e), 400)
+
+
+@timetable_bp.route("/approve-draft", methods=["POST"])
+def approve_draft():
+    """Admin approves a submitted draft timetable."""
+    denied = _builder_publish_guard()
+    if denied:
+        return denied
+    from server import _academic_user
+    user = _academic_user()
+    reviewed_by = user.get("name") or user.get("email") or user["id"]
+    try:
+        result = STORE.approve_draft(reviewed_by=reviewed_by)
+        return _ok(approval=result)
+    except Exception as e:
+        return _fail(str(e), 400)
+
+
+@timetable_bp.route("/request-revision", methods=["POST"])
+@timetable_bp.route("/reject-draft", methods=["POST"])
+def request_revision():
+    """Admin requests revisions from the Principal on a submitted draft."""
+    denied = _builder_publish_guard()
+    if denied:
+        return denied
+    body = _body()
+    from server import _academic_user
+    user = _academic_user()
+    reviewed_by = user.get("name") or user.get("email") or user["id"]
+    note = str(body.get("note") or "").strip()
+    if not note:
+        return _fail("Enter a reason for returning or rejecting the draft.")
+    try:
+        result = STORE.request_revision(reviewed_by=reviewed_by, note=note,
+                                        rejected=request.path.endswith("/reject-draft"))
+        return _ok(revision=result)
+    except Exception as e:
+        return _fail(str(e), 400)
+
+
+@timetable_bp.route("/draft-status", methods=["GET"])
+def draft_status():
+    """Return the current draft lifecycle status and audit metadata."""
+    return _ok(draft_metadata=STORE.draft_metadata())
+
+
 # ── Publishing & Downstream Portals (Section 18) ───────────────────────────
 
 @timetable_bp.route("/publish", methods=["POST"])
@@ -1031,15 +1121,19 @@ def publish():
     lessons) publishes only with an explicit `force: true` confirmation from
     the editor, per school policy.
     """
-    denied = _builder_write_guard()
+    denied = _builder_publish_guard()
     if denied:
         return denied
     body = _body()
-    published_by = body.get("published_by", "Admin")
+    from server import _academic_user
+    user = _academic_user()
+    published_by = user.get("name") or user.get("email") or user["id"]
     note = body.get("note", "")
     effective_from = body.get("effective_from")
     force = bool(body.get("force"))
     state = STORE.state()
+    if (state.get("draft_metadata") or {}).get("status") in {"submitted", "needs_revision", "rejected"}:
+        return _fail("Approve the submitted draft before publishing.", 409)
     conflicts = [c for c in M.scan_conflicts(state) if c["severity"] == "error"]
     if conflicts:
         return _fail("មិនអាចបោះពុម្ពផ្សាយបានទេ ពីព្រោះមានជម្លោះកាលវិភាគ", 409, conflicts=conflicts)

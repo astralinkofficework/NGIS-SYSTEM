@@ -1,0 +1,302 @@
+/* ══════════════════════════════════════
+   BASE — Reset, Design Tokens, Global
+   ══════════════════════════════════════ */
+
+/* Hide layout.js injected topbar — hero serves as the top nav */
+header.topbar { display: none !important }
+
+/* ── RESET ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box }
+
+/* ── DESIGN TOKENS ── */
+:root {
+  /* Foundation Palette */
+  --black:         #000000;
+  --charcoal-blue: #176B45;
+  --blue-slate:    #555555;
+  --light-blue:    #F7F9F7;
+  --ghost-white:   #F7F9F7;
+
+  /* Semantic Design Tokens */
+  --bg-primary:    var(--ghost-white);
+  --bg-secondary:  #ffffff;
+
+  --text-primary:   var(--black);
+  --text-secondary: var(--blue-slate);
+  --text-muted:     var(--blue-slate);
+
+  --border-color:   var(--light-blue);
+
+  --primary:        var(--charcoal-blue);
+  --primary-hover:  var(--blue-slate);
+  --primary-mid:    #176B45;
+  --primary-pale:   rgba(184, 219, 217, 0.22);
+  --accent:         var(--light-blue);
+  --accent-pale:    rgba(184, 219, 217, 0.22);
+  --primary-base:   var(--charcoal-blue);
+  --primary-accent: var(--blue-slate);
+  --canvas-bg:      var(--ghost-white);
+  --surface-card:   #ffffff;
+  --border-divider: var(--light-blue);
+
+  --sidebar-bg:     #ffffff;
+  --sidebar-text:   var(--charcoal-blue);
+
+  --card-bg:        #ffffff;
+  --input-bg:       #ffffff;
+
+  --button-primary:       var(--charcoal-blue);
+  --button-primary-hover: var(--blue-slate);
+
+  --focus-ring:     var(--light-blue);
+
+  /* Blues (Legacy aliases mapping to Charcoal Blue / Blue Slate) */
+  --blue:        var(--charcoal-blue);
+  --blue-mid:    var(--blue-slate);
+  --blue-light:  var(--light-blue);
+  --blue-pale:   rgba(184, 219, 217, 0.22);
+  --blue-border: var(--light-blue);
+
+  /* Status colours (subtle) */
+  --green:       #000000;
+  --green-pale:  rgba(46, 111, 94, 0.12);
+  --green-mid:   #000000;
+  --orange:      #000000;
+  --orange-pale: rgba(140, 98, 43, 0.12);
+  --red:         #176B45;
+  --red-pale:    rgba(150, 59, 59, 0.12);
+  --purple:      var(--charcoal-blue);
+  --purple-pale: rgba(47, 69, 80, 0.12);
+  --teal:        var(--charcoal-blue);
+  --teal-pale:   rgba(184, 219, 217, 0.22);
+
+  /* Typography */
+  --txt:  var(--black);
+  --txt2: var(--charcoal-blue);
+  --txt3: var(--blue-slate);
+  --txt4: #555555;
+
+  /* Surface */
+  --bg:   var(--ghost-white);
+  --card: #ffffff;
+  --bdr:  var(--light-blue);
+
+  /* Shape */
+  --r:    14px;
+  --r-sm: 10px;
+
+  /* Shadows */
+  --shadow:    0 1px 3px rgba(47, 69, 80, .05), 0 1px 2px rgba(0, 0, 0, .03);
+  --shadow-md: 0 4px 16px rgba(47, 69, 80, .08), 0 1px 4px rgba(0, 0, 0, .04);
+  --shadow-lg: 0 8px 32px rgba(47, 69, 80, .12), 0 2px 8px rgba(0, 0, 0, .05);
+}
+/* ── GLOBAL ── */
+html {
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  font-family: 'Plus Jakarta Sans', 'Plus Jakarta Sans', 'Kantumruy Pro', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #176B45; /* Matches teal header, prevents white flash during iOS rubber-band scroll */
+}
+@media (max-width: 480px) { html { font-size: 16px } }
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', 'Plus Jakarta Sans', 'Kantumruy Pro', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+b, strong, th { font-weight: 500; }
+h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+a     { text-decoration: none; color: inherit }
+button, input, select, textarea { font-family: inherit; cursor: pointer; border: none; background: none }
+img   { display: block }
+::-webkit-scrollbar       { width: 5px }
+::-webkit-scrollbar-thumb { background: #E1E9E3; border-radius: 4px }
+
+/* ── MATERIAL ICONS HELPER ── */
+.mi {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  font-size: inherit;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  user-select: none;
+}
+
+/* ══════════════════════════════════════
+   DASHBOARD LAYOUT — Grid Scaffolding
+   ══════════════════════════════════════ */
+
+.dash {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px 24px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Row grids */
+.row2 { display: grid; grid-template-columns: 1fr 1fr;         gap: 18px; align-items: start }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr;    gap: 18px; align-items: start }
+
+/* ── SHARED CARD HEADER (used by all row-2 / row-3 cards) ── */
+.sec-head {
+  padding: 14px 18px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--bdr);
+}
+.sec-head-l           { display: flex; align-items: center; gap: 7px }
+.sec-head-l .mi       { font-size: 18px; color: var(--blue-mid) }
+.sec-head-l h3        { font-size: 13.5px; font-weight: 400; color: var(--txt) }
+.sec-head-l .cnt      { font-size: 12px; color: var(--txt4); margin-left: 2px }
+.sec-link             { font-size: 12px; font-weight: 400; color: var(--blue-mid) }
+
+/* ══════════════════════════════════════════════════════════════
+   STUDENT PORTAL FULL-BLEED LAYOUT & SUBPAGE OVERLAP SCAFFOLDING
+   Matches Dashboard Structure (Teal Hero + Off-canvas Drawer)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Standard responsive sidebar integration */
+
+/* Subpage Content Container (Clean overlap with teal banner) */
+.subpage-container,
+.subpage-deck,
+body.student-dashboard .page,
+body[data-role="student"] .page,
+body.student-dashboard .page-container,
+body[data-role="student"] .page-container {
+  /* min(1280px, 100%): a plain 1280px max overflowed the main column
+     (viewport minus the fixed sidebar) between ~900px and 1536px viewports,
+     clipping right-edge content (buttons, table columns) on every subpage. */
+  max-width: min(1280px, 100%);
+  margin: -48px auto 48px auto !important;
+  padding: 0 24px;
+  position: relative;
+  z-index: 20;
+  box-sizing: border-box;
+}
+
+/* Clean White Card Surfaces matching reference design */
+body.student-dashboard .card,
+body[data-role="student"] .card,
+body.student-dashboard .stat,
+body[data-role="student"] .stat,
+body.student-dashboard .hub-card,
+body[data-role="student"] .hub-card,
+body.student-dashboard .portal-card,
+body[data-role="student"] .portal-card,
+body.student-dashboard .section-card,
+body[data-role="student"] .section-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(184, 219, 217, 0.45);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Dark Mode Token Alignment */
+[data-theme="dark"] body.student-dashboard,
+[data-theme="dark"] body[data-role="student"] {
+  background: #000000 !important;
+}
+
+[data-theme="dark"] body.student-dashboard .card,
+[data-theme="dark"] body[data-role="student"] .card,
+[data-theme="dark"] body.student-dashboard .stat,
+[data-theme="dark"] body[data-role="student"] .stat,
+[data-theme="dark"] body.student-dashboard .hub-card,
+[data-theme="dark"] body[data-role="student"] .hub-card,
+[data-theme="dark"] body.student-dashboard .portal-card,
+[data-theme="dark"] body[data-role="student"] .portal-card {
+  background: #000000 !important;
+  border-color: rgba(184, 219, 217, 0.18) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Strict Neutral Card States — Zero hover/touch overlay, tint, or glow */
+body.student-dashboard .card:hover,
+body[data-role="student"] .card:hover,
+body.student-dashboard .stat:hover,
+body[data-role="student"] .stat:hover,
+body.student-dashboard .card:active,
+body[data-role="student"] .card:active,
+body.student-dashboard .stat:active,
+body[data-role="student"] .stat:active,
+body.student-dashboard .card:focus,
+body[data-role="student"] .card:focus {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+  border-color: #E1E9E3 !important;
+  background-color: #ffffff !important;
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+body.student-dashboard table tbody tr:hover td, body[data-role="student"] table tbody tr:hover td { background: transparent !important; }
+
+[data-theme="dark"] body.student-dashboard table tbody tr:hover td, [data-theme="dark"] body[data-role="student"] table tbody tr:hover td { background: transparent !important; }
+
+/* Hide duplicate old mobile topbars when hero banner is present */
+.hero-topbar ~ .lg\:hidden,
+.hero ~ .lg\:hidden,
+#heroBanner ~ .lg\:hidden {
+  display: none !important;
+}
+
+
+/* ── STRICT: All Inner Sub-panels / Sub-cards must remain completely transparent with NO border lines ── */
+.ov-inner-panel,
+.ov-deadline-panel,
+.ov-panel-feed,
+body.student-dashboard .ov-inner-panel,
+body[data-role="student"] .ov-inner-panel,
+body.student-dashboard .ov-deadline-panel,
+body[data-role="student"] .ov-deadline-panel,
+[data-theme="dark"] body.student-dashboard .ov-inner-panel,
+[data-theme="dark"] body[data-role="student"] .ov-inner-panel,
+[data-theme="dark"] body.student-dashboard .ov-deadline-panel,
+[data-theme="dark"] body[data-role="student"] .ov-deadline-panel {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.ov-inner-head,
+.ov-deadline-head,
+body.student-dashboard .ov-inner-head,
+body[data-role="student"] .ov-inner-head,
+body.student-dashboard .ov-deadline-head,
+body[data-role="student"] .ov-deadline-head {
+  border-bottom: none !important;
+  border-top: none !important;
+  border: none !important;
+}
+
+.ov-inner-item,
+.ov-deadline-item,
+body.student-dashboard .ov-inner-item,
+body[data-role="student"] .ov-inner-item,
+body.student-dashboard .ov-deadline-item,
+body[data-role="student"] .ov-deadline-item {
+  border-bottom: none !important;
+  border-top: none !important;
+  border: none !important;
+}

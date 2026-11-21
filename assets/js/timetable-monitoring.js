@@ -41,7 +41,7 @@
 
   function fetchJSON(url, opts) {
     opts = opts || {};
-    opts.headers = Object.assign({}, actorHeaders(), opts.headers || {});
+    opts.headers = Object.assign({ 'Content-Type': 'application/json' }, actorHeaders(), opts.headers || {});
     return fetch(url, opts).then(function (res) {
       return res.json().then(function (body) { return { status: res.status, body: body }; });
     });
@@ -240,8 +240,183 @@
       state.summary = res.body.summary;
       state.meta = res.body.meta;
       renderSummary(); renderFilters(); renderTable();
+      loadDraftStatus();
     }).catch(function (err) {
       if (empty) empty.innerHTML = '<tr><td colspan="12" class="px-4 py-10 text-center text-xs text-rose-600">Failed to load monitoring data: ' + esc(err.message) + '</td></tr>';
+    });
+  }
+
+  /* ═══ principal draft review & approval workflow ═══ */
+  function loadDraftStatus() {
+    return fetchJSON(API + '/draft-status').then(function (res) {
+      if (res && res.body && res.body.draft_metadata) {
+        state.draftMetadata = res.body.draft_metadata;
+        renderDraftReviewBanner();
+      }
+    }).catch(function (e) {
+      console.warn('[Timetable Monitoring] Could not load draft status:', e);
+    });
+  }
+
+  function renderDraftReviewBanner() {
+    var sec = document.getElementById('principalRequestsSection');
+    if (!sec) return;
+    var meta = state.draftMetadata || { status: 'draft' };
+
+    if (meta.status === 'submitted') {
+      sec.className = 'p-4 bg-amber-50/90 border border-amber-300 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-3 shadow-xs';
+      sec.innerHTML =
+        '<div class="flex items-start gap-3">' +
+          '<div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">' +
+            '<span class="material-symbols-outlined text-xl">assignment_turned_in</span>' +
+          '</div>' +
+          '<div>' +
+            '<div class="text-xs font-medium text-amber-900 flex items-center gap-2 flex-wrap">' +
+              '<span>Principal Draft Submitted for Admin Review</span>' +
+              '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-200 text-amber-900 font-medium">Awaiting Publishing</span>' +
+            '</div>' +
+            '<p class="text-[11px] text-amber-800 mt-0.5">' +
+              esc(meta.submitted_by || 'Dr. Ly Bunheng (Principal)') + ' submitted the weekly timetable draft on ' + (meta.submitted_at ? new Date(meta.submitted_at).toLocaleDateString() : 'recently') + '.' +
+              (meta.submission_note ? ' Note: "' + esc(meta.submission_note) + '"' : '') +
+            '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2 shrink-0 flex-wrap">' +
+          '<button type="button" id="btnAdminCompareDraft" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">' +
+            '<span class="material-symbols-outlined text-[15px] text-slate-500">difference</span>' +
+            '<span>Compare Changes</span>' +
+          '</button>' +
+          '<button type="button" id="btnAdminRequestRevision" class="px-3 py-1.5 text-xs font-medium text-rose-700 bg-white hover:bg-rose-50 border border-rose-300 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">' +
+            '<span class="material-symbols-outlined text-[15px] text-rose-600">feedback</span>' +
+            '<span>Request Revision</span>' +
+          '</button>' +
+          '<button type="button" id="btnAdminApprovePublish" class="px-3.5 py-1.5 text-xs font-medium text-white bg-[#176B45] hover:bg-[#14532D] rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">' +
+            '<span class="material-symbols-outlined text-[15px]">rocket_launch</span>' +
+            '<span>Approve &amp; Publish</span>' +
+          '</button>' +
+        '</div>';
+
+      var btnComp = sec.querySelector('#btnAdminCompareDraft');
+      if (btnComp) btnComp.addEventListener('click', openCompareDiffModal);
+      var btnRev = sec.querySelector('#btnAdminRequestRevision');
+      if (btnRev) btnRev.addEventListener('click', promptRevisionRequest);
+      var btnApp = sec.querySelector('#btnAdminApprovePublish');
+      if (btnApp) btnApp.addEventListener('click', executeApproveAndPublish);
+    } else if (meta.status === 'needs_revision') {
+      sec.className = 'p-4 bg-rose-50/80 border border-rose-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs';
+      sec.innerHTML =
+        '<div class="flex items-center gap-3">' +
+          '<div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-800 flex items-center justify-center shrink-0">' +
+            '<span class="material-symbols-outlined text-xl">feedback</span>' +
+          '</div>' +
+          '<div>' +
+            '<div class="text-xs font-medium text-rose-900 flex items-center gap-2">' +
+              '<span>Revision Requested from Principal</span>' +
+              '<span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-200 text-rose-900 font-medium">Pending Update</span>' +
+            '</div>' +
+            '<p class="text-[11px] text-rose-700 mt-0.5">Awaiting revised draft from ' + esc(meta.submitted_by || 'Principal') + '. Note: "' + esc(meta.revision_note || 'Revisions required.') + '"</p>' +
+          '</div>' +
+        '</div>';
+    } else if (meta.status === 'approved') {
+      sec.className = 'p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs';
+      sec.innerHTML =
+        '<div class="flex items-center gap-3">' +
+          '<div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">' +
+            '<span class="material-symbols-outlined text-xl">check_circle</span>' +
+          '</div>' +
+          '<div>' +
+            '<div class="text-xs font-medium text-emerald-900 flex items-center gap-2">' +
+              '<span>Principal Draft Approved</span>' +
+              '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-200 text-emerald-900 font-medium">Ready to Publish</span>' +
+            '</div>' +
+            '<p class="text-[11px] text-emerald-700 mt-0.5">The draft schedule has been approved and is ready to be published to student and teacher portals.</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2 shrink-0">' +
+          '<button type="button" id="btnAdminApprovePublish" class="px-3.5 py-1.5 text-xs font-medium text-white bg-[#176B45] hover:bg-[#14532D] rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">' +
+            '<span class="material-symbols-outlined text-[15px]">rocket_launch</span>' +
+            '<span>Publish Timetable</span>' +
+          '</button>' +
+        '</div>';
+      var btnPub = sec.querySelector('#btnAdminApprovePublish');
+      if (btnPub) btnPub.addEventListener('click', executeApproveAndPublish);
+    } else {
+      sec.className = 'p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs';
+      sec.innerHTML =
+        '<div class="flex items-center gap-3">' +
+          '<div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">' +
+            '<span class="material-symbols-outlined text-xl">verified</span>' +
+          '</div>' +
+          '<div>' +
+            '<div class="text-xs font-medium text-slate-900 flex items-center gap-2">' +
+              '<span>Master Timetable Overview</span>' +
+              '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">Active Monitoring</span>' +
+            '</div>' +
+            '<p class="text-[11px] text-slate-500 mt-0.5">Principal can draft and propose weekly schedules. Administration reviews and publishes official timetables.</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="flex items-center gap-2 shrink-0">' +
+          '<a href="../principal/principal-timetable-builder.html" class="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition shadow-2xs flex items-center gap-1.5">' +
+            '<span class="material-symbols-outlined text-[15px] text-slate-500">grid_view</span>' +
+            '<span>Open Timetable Builder</span>' +
+          '</a>' +
+        '</div>';
+    }
+  }
+
+  function executeApproveAndPublish() {
+    if (!confirm('Approve and publish this timetable to live Student and Teacher portals?')) return;
+    return fetchJSON(API + '/publish', {
+      method: 'POST',
+      body: JSON.stringify({ published_by: 'Admin', note: 'Approved and published by School Administrator' })
+    }).then(function (res) {
+      if (res.status !== 200 || !res.body || !res.body.success) {
+        throw new Error(res.body && (res.body.message || res.body.error) || 'Publish failed');
+      }
+      if (window.NGISUI && window.NGISUI.toast) {
+        window.NGISUI.toast('Timetable approved and published successfully!', 'success');
+      } else {
+        alert('Timetable approved and published successfully!');
+      }
+      loadDraftStatus();
+      load();
+    }).catch(function (err) {
+      if (window.NGISUI && window.NGISUI.toast) {
+        window.NGISUI.toast('Error: ' + err.message, 'error');
+      } else {
+        alert('Error: ' + err.message);
+      }
+    });
+  }
+
+  function promptRevisionRequest() {
+    var note = prompt('Please specify revision instructions for the Principal:', 'Please adjust Friday afternoon science period allocations.');
+    if (!note) return;
+    return fetchJSON(API + '/request-revision', {
+      method: 'POST',
+      body: JSON.stringify({ reviewed_by: 'Admin', note: note })
+    }).then(function (res) {
+      if (res.status !== 200 || !res.body || !res.body.success) {
+        throw new Error(res.body && (res.body.message || res.body.error) || 'Revision request failed');
+      }
+      if (window.NGISUI && window.NGISUI.toast) {
+        window.NGISUI.toast('Revision request sent to Principal.', 'info');
+      } else {
+        alert('Revision request sent to Principal.');
+      }
+      loadDraftStatus();
+    }).catch(function (err) {
+      alert('Error: ' + err.message);
+    });
+  }
+
+  function openCompareDiffModal() {
+    return fetchJSON(API + '/publication/diff').then(function (res) {
+      var diff = res.body && res.body.diff || { changed: 0, changes: [] };
+      alert('Draft Changes vs Published Schedule:\nTotal changes: ' + diff.changed + ' periods\n' +
+        (diff.changes || []).slice(0, 5).map(function(c) { return '• ' + c.day + ' P' + c.period + ' (' + c.class_id + '): ' + c.kind; }).join('\n'));
+    }).catch(function (err) {
+      alert('Error: ' + err.message);
     });
   }
 
@@ -349,7 +524,7 @@
       ? d.activity_history.map(function (e) {
           var icon = e.type === 'publication' ? 'publish' : e.type === 'reminder' ? 'notifications_active' : 'edit_note';
           return '<li class="flex items-start gap-2.5 py-1.5 border-b border-slate-100 last:border-0">' +
-            '<span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[13px]">' + icon + '</span></span>' +
+            '<span class="w-6 h-6 flex items-center justify-center shrink-0 text-slate-500"><span class="material-symbols-outlined text-[13px]">' + icon + '</span></span>' +
             '<div class="min-w-0"><div class="text-[11px] text-slate-700">' + esc(e.action) + '</div>' +
             '<div class="text-[10px] text-slate-400">' + esc(e.actor) + ' · ' + fmtDate(e.at) + '</div></div></li>';
         }).join('')

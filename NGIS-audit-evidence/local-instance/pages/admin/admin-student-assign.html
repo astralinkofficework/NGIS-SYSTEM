@@ -1,0 +1,1390 @@
+<!doctype html>
+<html lang="en" data-theme="light" class="h-full">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS • Student Assign To Class &amp; Cohort Allocation | School Administration</title>
+
+<!-- Fonts: Strictly light & medium weights (NO BOLD FONTS per AGENTS.md) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<!-- Bootstrap Icons v1.13.2 (NGIS Official Standard) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<!-- Phosphor Icons for Mobile Hamburger Menu & Controls -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        colors: {
+          forest: {
+            50: '#F0FDF4',
+            100: '#DCFCE7',
+            200: '#BBF7D0',
+            500: '#22C55E',
+            700: '#15803D',
+            800: '#176B45', // Official NGIS Forest Green
+            900: '#14532D',
+            950: '#052E16'
+          },
+          brand: {
+            ngis: '#176B45',
+            ngisHover: '#14532D'
+          },
+          ink: { main: '#1A202C', light: '#4A5568', muted: '#718096' },
+          border: { subtle: '#E2E8F0', light: '#EDF2F7' }
+        },
+        fontFamily: {
+          sans: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace']
+        },
+        fontWeight: {
+          normal: '400',
+          medium: '500',
+          semibold: '500',
+          bold: '500',
+          extrabold: '500',
+          black: '500' // Rule: NO BOLD FONTS per AGENTS.md
+        }
+      }
+    }
+  };
+</script>
+
+<!-- NGIS Design System & Global Styles -->
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+
+<style>
+  /* Rule: NO BOLD FONTS. Maximum weight 500 across all UI (AGENTS.md) */
+  *, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div, select, input, label {
+    font-weight: 400;
+  }
+  .font-medium, th, h1, h2, h3, h4, [class*="font-semibold"], [class*="font-bold"] {
+    font-weight: 500 !important;
+  }
+
+  /* Custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 9999px;
+  }
+  [data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #334155;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
+
+  /* Smooth pulse animation */
+  .badge-pulse {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(1.15); }
+  }
+
+  /* Focus ring following NGIS Forest Green palette */
+  .ngis-focus:focus, .ngis-focus:focus-visible {
+    outline: none;
+    border-color: #176B45;
+    box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.16);
+  }
+  [data-theme="dark"] .ngis-focus:focus, [data-theme="dark"] .ngis-focus:focus-visible {
+    border-color: #4BB785;
+    box-shadow: 0 0 0 3px rgba(75, 183, 133, 0.22);
+  }
+
+  /* Toast Animation */
+  #ngisToast {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+</style>
+</head>
+
+<body data-role="admin" data-portal="admin" class="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-200 antialiased flex selection:bg-forest-100 selection:text-forest-800">
+
+<!-- Main Layout Structure -->
+<main class="main flex-1 min-w-0 flex flex-col">
+
+  <!-- Mandatory Mobile Appbar with Accessible Hamburger Menu (AGENTS.md Compliance) -->
+  <header class="mobile-appbar md:hidden flex items-center justify-between px-4 py-3 bg-transparent dark:bg-slate-900 border-none dark:border-slate-800 sticky top-0 z-30 min-h-[44px]">
+    <div class="flex items-center gap-3">
+      <button type="button" 
+              class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all flex items-center justify-center min-w-[40px] min-h-[40px]" 
+              data-action="toggle-sidebar" 
+              aria-label="Open menu" 
+              aria-expanded="false">
+        <i class="ph ph-list text-xl text-slate-700 dark:text-slate-300"></i>
+      </button>
+      <span class="text-xs font-medium text-forest-800 dark:text-forest-400 tracking-wide uppercase">Cohort Allocation</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-forest-50 dark:bg-forest-950/60 text-forest-800 dark:text-forest-400 border border-forest-100 dark:border-forest-900">
+        Academic 2025–26
+      </span>
+    </div>
+  </header>
+
+  <!-- Hero Banner Anchor -->
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- Workspace Container -->
+  <div class="page p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+
+    <!-- ==================== EXECUTIVE HEADER & ACTION BAR ==================== -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-forest-800 dark:text-forest-400 font-medium mb-1">
+          <i class="bi bi-diagram-3"></i>
+          <span>Academic Roster &amp; Section Registry</span>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-medium tracking-tight text-slate-900 dark:text-white">
+          Student Class Assignment
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          Assign students to classes and manage section capacity.
+        </p>
+      </div>
+
+      <!-- Actions & View Mode Switcher -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <!-- View Switcher Tabs -->
+        <div class="inline-flex p-1 bg-slate-200/70 dark:bg-slate-800 rounded-xl text-xs font-medium border border-slate-300/60 dark:border-slate-700 shadow-2xs" role="tablist" aria-label="Display View">
+          <button id="btnViewTable" type="button" onclick="switchView('table')" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-slate-900 dark:text-white bg-white dark:bg-slate-700 shadow-xs font-medium" role="tab" aria-selected="true">
+            <i class="bi bi-table text-xs"></i>
+            <span>Table View</span>
+          </button>
+          <button id="btnViewGrid" type="button" onclick="switchView('grid')" class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium" role="tab" aria-selected="false">
+            <i class="bi bi-grid-3x3-gap text-xs"></i>
+            <span>Capacity Grid</span>
+          </button>
+        </div>
+
+        <!-- Primary Action: Assign / Transfer Modal -->
+        <button onclick="openAssignModal()" type="button" class="inline-flex items-center gap-2 px-4 py-2 bg-forest-800 hover:bg-forest-900 dark:bg-forest-700 dark:hover:bg-forest-800 text-white text-xs sm:text-sm font-medium rounded-xl shadow-xs hover:shadow transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-800">
+          <i class="bi bi-arrow-left-right text-xs"></i>
+          <span>Assign / Transfer Student</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== QUICK KPI STATS & CAPACITY HEALTH ==================== -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+      <!-- KPI 1: Total Students -->
+      <div class="bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Total Students</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span class="text-xl sm:text-2xl font-medium text-slate-900 dark:text-white">240</span>
+          <span class="text-[11px] font-medium text-forest-800 dark:text-forest-400 bg-forest-50 dark:bg-forest-950/60 px-2 py-0.5 rounded-full border border-forest-100 dark:border-forest-900">100% Enrolled</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-2.5 overflow-hidden">
+          <div class="bg-forest-800 dark:bg-forest-500 h-1.5 rounded-full" style="width: 100%"></div>
+        </div>
+      </div>
+
+      <!-- KPI 2: Assigned To Sections -->
+      <div class="bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Assigned To Sections</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span class="text-xl sm:text-2xl font-medium text-slate-900 dark:text-white">234</span>
+          <span class="text-[11px] font-medium text-forest-800 dark:text-forest-400">97.5%</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-2.5 overflow-hidden">
+          <div class="bg-forest-700 dark:bg-forest-400 h-1.5 rounded-full" style="width: 97.5%"></div>
+        </div>
+      </div>
+
+      <!-- KPI 3: Pending Assignment -->
+      <div class="bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-xl border border-amber-200/90 dark:border-amber-900/60 bg-amber-50/20 dark:bg-amber-950/20 shadow-2xs">
+        <span class="text-[11px] font-medium text-amber-800 dark:text-amber-400 uppercase tracking-wider block">Pending Assignment</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span class="text-xl sm:text-2xl font-medium text-amber-900 dark:text-amber-300">6</span>
+          <span class="text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800/40">Action req.</span>
+        </div>
+        <div class="w-full bg-amber-100 dark:bg-amber-900/40 rounded-full h-1.5 mt-2.5 overflow-hidden">
+          <div class="bg-amber-500 h-1.5 rounded-full" style="width: 2.5%"></div>
+        </div>
+      </div>
+
+      <!-- KPI 4: Avg Class Load -->
+      <div class="bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
+        <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Avg Class Load</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span class="text-xl sm:text-2xl font-medium text-slate-900 dark:text-white">21.4</span>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400">Target: 25 max</span>
+        </div>
+        <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-2.5 overflow-hidden">
+          <div class="bg-sky-600 dark:bg-sky-400 h-1.5 rounded-full" style="width: 61%"></div>
+        </div>
+      </div>
+
+      <!-- KPI 5: Overcapacity Alert -->
+      <div class="col-span-2 md:col-span-4 lg:col-span-1 bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Overcapacity</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-rose-50 text-rose-700 border border-rose-200/60">Limit Alert</span>
+        </div>
+        <div class="mt-1">
+          <div class="flex items-baseline gap-1">
+            <span class="text-xl sm:text-2xl font-medium text-slate-900 dark:text-white">1</span>
+            <span class="text-xs text-slate-500 dark:text-slate-400">Section (10A)</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">37/35 Limit Exceeded (+2 overflow)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== FILTER TOOLBELT ==================== -->
+    <div class="bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+      <!-- Search Input -->
+      <div class="relative flex-1">
+        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <i class="bi bi-search text-xs"></i>
+        </div>
+        <input id="studentSearchInput" type="text" placeholder="Search student name, ID or advisor..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50/80 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus text-slate-800 dark:text-slate-100 placeholder-slate-400">
+      </div>
+
+      <!-- Dropdown Filters Group -->
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- Grade Filter -->
+        <select id="gradeFilter" class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus text-slate-700 dark:text-slate-200 font-medium">
+          <option value="all">All Grades (7-12)</option>
+          <option value="10" selected>Grade 10</option>
+          <option value="11">Grade 11</option>
+          <option value="12">Grade 12</option>
+          <option value="7">Grade 7</option>
+          <option value="8">Grade 8</option>
+          <option value="9">Grade 9</option>
+        </select>
+
+        <!-- Class Section Filter -->
+        <select id="classFilter" class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus text-slate-700 dark:text-slate-200 font-medium">
+          <option value="all">All Classes</option>
+          <option value="10A">10A (Overcapacity - 37)</option>
+          <option value="10B">10B (17/35)</option>
+          <option value="11A">11A (16/35)</option>
+          <option value="11B">11B (22/35)</option>
+          <option value="8B">8B (18/35)</option>
+        </select>
+
+        <!-- Capacity Alert Filter -->
+        <select id="statusFilter" class="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus text-slate-700 dark:text-slate-200 font-medium">
+          <option value="all">Status: All</option>
+          <option value="over">Over Capacity Only</option>
+          <option value="available">Has Open Seats</option>
+          <option value="unassigned">Unassigned Only</option>
+        </select>
+
+        <!-- Action Shortcuts -->
+        <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+        <button id="btnExportCsv" type="button" class="px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors flex items-center gap-1.5 shadow-2xs">
+          <i class="bi bi-download text-xs text-slate-500"></i>
+          <span>Export CSV</span>
+        </button>
+        <button id="btnAutoBalance" type="button" class="px-3 py-2 text-xs font-medium text-forest-800 dark:text-forest-400 bg-forest-50 dark:bg-forest-950/60 border border-forest-200 dark:border-forest-900 rounded-xl hover:bg-forest-100 dark:hover:bg-forest-950 transition-colors flex items-center gap-1.5 shadow-2xs">
+          <i class="bi bi-lightning-charge-fill text-xs text-forest-600"></i>
+          <span>Auto-Balance</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ==================== VIEW 1: STUDENT ASSIGNMENT TABLE VIEW ==================== -->
+    <section id="section-table-view" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+      <!-- Table Header & Live Sync Status -->
+      <div class="px-4 sm:px-6 py-3.5 border-b border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium text-slate-700 dark:text-slate-300 uppercase tracking-wider">Student Cohort List</span>
+          <span id="cohortCountText" class="text-xs text-slate-400">· Showing 9 of 240 active students</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <span class="w-2 h-2 rounded-full bg-forest-500"></span>
+          <span>All changes synced live to Academic Database</span>
+        </div>
+      </div>
+
+      <!-- Main Responsive Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-medium uppercase tracking-wider text-[11px]">
+              <th class="py-3.5 pl-4 sm:pl-6 pr-3 w-10" scope="col">
+                <input id="selectAllStudents" class="rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox" aria-label="Select all students">
+              </th>
+              <th class="py-3.5 px-3" scope="col">STUDENT ID</th>
+              <th class="py-3.5 px-3" scope="col">STUDENT NAME</th>
+              <th class="py-3.5 px-3" scope="col">GRADE / STREAM</th>
+              <th class="py-3.5 px-3" scope="col">CURRENT CLASS</th>
+              <th class="py-3.5 px-3" scope="col">ADVISOR</th>
+              <th class="py-3.5 px-3 text-center" scope="col">GPA</th>
+              <th class="py-3.5 px-3 text-center" scope="col">STATUS</th>
+              <th class="py-3.5 pr-4 sm:pr-6 pl-3 text-right" scope="col">ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody" class="divide-y divide-slate-100 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300">
+            <!-- Row 1: Chanthou Kim (8B) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0201" data-name="Chanthou Kim" data-grade="10" data-class="8B" data-status="available">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0201
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 font-medium flex items-center justify-center text-xs">
+                    CK
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Chanthou Kim</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">General English</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-slate-800 dark:text-slate-200">
+                  <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">8B</span>
+                  <span class="text-slate-400 font-normal ml-1">(18/35)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.90</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0201', 'Chanthou Kim', '8B')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors border border-transparent hover:border-forest-200" aria-label="Reassign or Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 2: Vannak Meas (10A - Overcapacity) -->
+            <tr class="student-row hover:bg-rose-50/40 dark:hover:bg-rose-950/30 transition-colors bg-rose-50/15 dark:bg-rose-950/10 group" data-id="2026-STD-0200" data-name="Vannak Meas" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0200
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-medium flex items-center justify-center text-xs">
+                    VM
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Vannak Meas</span>
+                    <span class="text-[10px] text-slate-400">Science Stream</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">STEM Honors</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.75</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                  Rebalance Opt.
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0200', 'Vannak Meas', '10A')" type="button" class="px-2.5 py-1 text-xs font-medium text-rose-700 dark:text-rose-400 hover:text-rose-900 hover:bg-rose-100/80 dark:hover:bg-rose-950/60 rounded-lg transition-colors inline-flex items-center gap-1">
+                  <i class="bi bi-box-arrow-right text-xs"></i>
+                  <span>Move</span>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 3: Nrinphouneta Hok (10A) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0142" data-name="Nrinphouneta Hok" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0142
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-medium flex items-center justify-center text-xs">
+                    NH
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Nrinphouneta Hok</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">General English</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.87</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0142', 'Nrinphouneta Hok', '10A')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors" aria-label="Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 4: Sophea Chan (10A) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0144" data-name="Sophea Chan" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0144
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-medium flex items-center justify-center text-xs">
+                    SC
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Sophea Chan</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">Social Studies</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.55</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0144', 'Sophea Chan', '10A')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors" aria-label="Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 5: Virak Heng (10A) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0145" data-name="Virak Heng" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0145
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-950/80 text-violet-700 dark:text-violet-300 font-medium flex items-center justify-center text-xs">
+                    VH
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Virak Heng</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">General English</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.65</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0145', 'Virak Heng', '10A')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors" aria-label="Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 6: Kosal Rith Mony (10A) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0148" data-name="Kosal Rith Mony" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0148
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 font-medium flex items-center justify-center text-xs">
+                    KM
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Kosal Rith Mony</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">General English</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.72</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0148', 'Kosal Rith Mony', '10A')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors" aria-label="Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 7: Sreylin Vuth (10A) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0151" data-name="Sreylin Vuth" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0151
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-pink-100 dark:bg-pink-950/80 text-pink-700 dark:text-pink-300 font-medium flex items-center justify-center text-xs">
+                    SV
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Sreylin Vuth</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">General English</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.92</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0151', 'Sreylin Vuth', '10A')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors" aria-label="Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 8: Heng Piseth (10A) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0155" data-name="Heng Piseth" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0155
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-cyan-100 dark:bg-cyan-950/80 text-cyan-800 dark:text-cyan-300 font-medium flex items-center justify-center text-xs">
+                    HP
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Heng Piseth</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">General English</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.45</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0155', 'Heng Piseth', '10A')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors" aria-label="Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 9: Emily Jenkins (10A) -->
+            <tr class="student-row hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group" data-id="2026-STD-0160" data-name="Emily Jenkins" data-grade="10" data-class="10A" data-status="over">
+              <td class="py-3.5 pl-4 sm:pl-6 pr-3">
+                <input class="student-checkbox rounded border-slate-300 dark:border-slate-700 text-forest-800 focus:ring-forest-800 h-4 w-4 cursor-pointer" type="checkbox">
+              </td>
+              <td class="py-3.5 px-3 font-mono text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                2026-STD-0160
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-medium flex items-center justify-center text-xs">
+                    EJ
+                  </div>
+                  <div>
+                    <span class="font-medium text-slate-900 dark:text-white block">Emily Jenkins</span>
+                    <span class="text-[10px] text-slate-400">Regular Entry</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <span class="font-medium text-slate-800 dark:text-slate-200">Grade 10</span>
+                <span class="text-[10px] text-slate-400 block">General English</span>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="text-xs font-medium text-rose-700 dark:text-rose-400">
+                  <span class="px-2 py-0.5 rounded bg-rose-100/70 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200/50">10A</span>
+                  <span class="text-rose-600 dark:text-rose-400 font-normal ml-1">(37/35 Full)</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3">
+                <div class="flex items-center gap-1.5 text-slate-800 dark:text-slate-200 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  <span>Dr. Sarah Jenkins</span>
+                </div>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="font-medium text-slate-900 dark:text-white px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs">3.98</span>
+              </td>
+              <td class="py-3.5 px-3 text-center">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-forest-700 dark:text-forest-400">
+                  <span class="w-1.5 h-1.5 rounded-full bg-forest-600"></span>
+                  Active
+                </span>
+              </td>
+              <td class="py-3.5 pr-4 sm:pr-6 pl-3 text-right">
+                <button onclick="quickTransferStudent('2026-STD-0160', 'Emily Jenkins', '10A')" type="button" class="p-1.5 text-slate-500 hover:text-forest-800 dark:hover:text-forest-400 hover:bg-forest-50 dark:hover:bg-forest-950/60 rounded-lg transition-colors" aria-label="Transfer Student">
+                  <i class="bi bi-arrow-left-right text-sm"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Bar -->
+      <div class="px-4 sm:px-6 py-3.5 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+        <div class="flex items-center gap-2">
+          <span>Rows per page:</span>
+          <select class="py-1 px-2 border border-slate-200 dark:border-slate-700 rounded-lg text-xs bg-slate-50 dark:bg-slate-800 font-medium text-slate-700 dark:text-slate-300 ngis-focus">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+            <option>100</option>
+          </select>
+          <span id="showingPaginationText">Showing 1 to 9 of 240 students</span>
+        </div>
+
+        <nav aria-label="Pagination" class="inline-flex items-center -space-x-px rounded-xl shadow-2xs border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden">
+          <button class="px-3 py-1.5 border-r border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40" disabled aria-label="Previous page">
+            <i class="bi bi-chevron-left text-xs"></i>
+          </button>
+          <button class="px-3 py-1.5 bg-forest-800 text-white font-medium text-xs">1</button>
+          <button class="px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-xs">2</button>
+          <button class="px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-xs">3</button>
+          <span class="px-2 py-1.5 text-slate-400 text-xs">…</span>
+          <button class="px-3 py-1.5 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium text-xs">24</button>
+          <button class="px-3 py-1.5 border-l border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700" aria-label="Next page">
+            <i class="bi bi-chevron-right text-xs"></i>
+          </button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: CLASS CAPACITY GRID VIEW ==================== -->
+    <section id="section-grid-view" class="space-y-4 hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h2 class="text-base font-medium text-slate-900 dark:text-white">All Sections Directory Grid</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Comprehensive overview of all school cohort sections and assigned master tutors.</p>
+        </div>
+        <div class="text-xs text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1.5 rounded-xl shadow-2xs self-start sm:self-auto">
+          Showing 20 active academic classes
+        </div>
+      </div>
+
+      <!-- Comprehensive Grid of Class Cards -->
+      <div id="capacityGridContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
+
+        <!-- Card: Grade 10A (Overcapacity) -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-rose-300 dark:border-rose-900/80 shadow-2xs transition-all hover:border-rose-400" data-code="10A" data-grade="10">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 10A</div>
+            <span class="text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 px-2 py-0.5 rounded-md border border-rose-200/50">37/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Sarah Jenkins</p>
+          <div class="w-full bg-rose-100 dark:bg-rose-950/40 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-rose-600 h-1.5 rounded-full" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 10B -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="10B" data-grade="10">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 10B</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">17/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Pov Sophea</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 48%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 11A -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="11A" data-grade="11">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 11A</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">16/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Ms. Rin Lina</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 45%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 11B -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="11B" data-grade="11">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 11B</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">22/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Sarah Jenkins</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-700 h-1.5 rounded-full" style="width: 63%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 11C -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="11C" data-grade="11">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 11C</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">4/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Muthukumaran Pakkirisamy</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-500 h-1.5 rounded-full" style="width: 12%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 12A -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="12A" data-grade="12">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 12A</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">20/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Ms. Rin Lina</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 57%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 12B -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="12B" data-grade="12">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 12B</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">18/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Sarah Jenkins</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 51%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 9A -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="9A" data-grade="9">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 9A</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">17/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Ms. Rin Lina</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 48%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 9B -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="9B" data-grade="9">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 9B</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">17/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Pov Sophea</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 48%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 9C -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="9C" data-grade="9">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 9C</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">3/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Ms. Rin Lina</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-500 h-1.5 rounded-full" style="width: 9%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 8A -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="8A" data-grade="8">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 8A</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">17/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Sarah Jenkins</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 48%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 8B -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="8B" data-grade="8">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 8B</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">18/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Pov Sophea</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 51%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 7A -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="7A" data-grade="7">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 7A</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">17/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Ms. Rin Lina</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 48%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 7B -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="7B" data-grade="7">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 7B</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">17/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Dr. Sarah Jenkins</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 48%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 12A (Section 2) -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="12A-2" data-grade="12">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 12A · Sec 2</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">20/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Mr. Chhem Sokha</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 57%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 12B (Section 2) -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="12B-2" data-grade="12">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 12B · Sec 2</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">18/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Mr. Chhem Sokha</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 51%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 11A (Section 2) -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="11A-2" data-grade="11">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 11A · Sec 2</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">16/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Mr. Chhem Sokha</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 45%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 11B (Section 2) -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="11B-2" data-grade="11">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 11B · Sec 2</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">22/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Mr. Chhem Sokha</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-700 h-1.5 rounded-full" style="width: 63%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 10A (Section 2 - Overcapacity) -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-rose-300 dark:border-rose-900/80 shadow-2xs transition-all hover:border-rose-400" data-code="10A-2" data-grade="10">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 10A · Sec 2</div>
+            <span class="text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/80 px-2 py-0.5 rounded-md border border-rose-200/50">37/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Mr. Chhem Sokha</p>
+          <div class="w-full bg-rose-100 dark:bg-rose-950/40 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-rose-600 h-1.5 rounded-full" style="width: 100%"></div>
+          </div>
+        </div>
+
+        <!-- Card: Grade 10B (Section 2) -->
+        <div class="class-grid-card bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs transition-all hover:border-forest-600" data-code="10B-2" data-grade="10">
+          <div class="flex justify-between items-start">
+            <div class="font-medium text-slate-900 dark:text-white text-sm">Grade 10B · Sec 2</div>
+            <span class="text-xs font-medium text-slate-600 dark:text-slate-400">17/35</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">Mr. Chhem Sokha</p>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 mt-3 overflow-hidden">
+            <div class="bg-forest-600 h-1.5 rounded-full" style="width: 48%"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ==================== ASSIGN / TRANSFER MODAL ==================== -->
+<div id="assign-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <!-- Backdrop with blur -->
+  <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" onclick="closeAssignModal()"></div>
+
+  <div class="fixed inset-0 z-10 overflow-y-auto flex items-center justify-center p-3 sm:p-4">
+    <div class="relative bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 transform transition-all my-auto">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-forest-50 dark:bg-forest-950/60 text-forest-800 dark:text-forest-400 flex items-center justify-center border border-forest-100 dark:border-forest-900">
+            <i class="bi bi-arrow-left-right text-sm"></i>
+          </div>
+          <div>
+            <h3 id="modal-title" class="text-base font-medium text-slate-900 dark:text-white">Student Class Transfer &amp; Assignment</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Update cohort placement and synchronize academic records.</p>
+          </div>
+        </div>
+        <button onclick="closeAssignModal()" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Close dialog">
+          <i class="bi bi-x-lg text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Form Content -->
+      <form class="space-y-4 pt-4" onsubmit="event.preventDefault(); handleTransferSubmit();">
+        <!-- Selected Student Info Card -->
+        <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] uppercase font-medium text-slate-400 block">Student Selected</span>
+            <span id="modal-student-name" class="text-sm font-medium text-slate-800 dark:text-slate-100">Chanthou Kim</span>
+            <span id="modal-student-id" class="text-xs text-slate-500 dark:text-slate-400 block font-mono">2026-STD-0201</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] uppercase font-medium text-slate-400 block">Current Class</span>
+            <span id="modal-current-class" class="text-xs font-medium text-forest-800 dark:text-forest-300 bg-forest-100/70 dark:bg-forest-950/80 px-2.5 py-0.5 rounded-full inline-block mt-0.5 border border-forest-200 dark:border-forest-800">8B (18/35)</span>
+          </div>
+        </div>
+
+        <!-- Target Grade & Target Section Picker -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Target Grade</label>
+            <select class="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus text-slate-800 dark:text-slate-200 font-medium py-2 px-2.5">
+              <option value="10">Grade 10 (Current)</option>
+              <option value="11">Grade 11</option>
+              <option value="12">Grade 12</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Destination Section</label>
+            <select id="modalDestinationSelect" class="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus text-slate-800 dark:text-slate-200 font-medium py-2 px-2.5">
+              <option value="10B">Grade 10B · (18 Open Seats)</option>
+              <option value="10C">Grade 10C · (14 Open Seats)</option>
+              <option value="11A">Grade 11A · (19 Open Seats)</option>
+              <option value="10A" disabled class="text-rose-400">Grade 10A · (Overcapacity 37/35 Full)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Effective Date -->
+        <div>
+          <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Effective Transfer Date</label>
+          <input type="date" value="2026-03-01" class="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus py-2 px-2.5 text-slate-700 dark:text-slate-200">
+        </div>
+
+        <!-- Administrative Note / Reason -->
+        <div>
+          <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Administrative Note / Reason</label>
+          <textarea rows="2" placeholder="e.g. Level load balancing, capacity leveling, or elective stream change..." class="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl ngis-focus text-slate-700 dark:text-slate-200 p-2.5 placeholder-slate-400"></textarea>
+        </div>
+
+        <!-- Auto Sync Callout -->
+        <div class="p-3 bg-forest-50/60 dark:bg-forest-950/40 border border-forest-100 dark:border-forest-900/60 rounded-xl text-[11px] text-forest-800 dark:text-forest-300 flex items-start gap-2">
+          <i class="bi bi-info-circle-fill text-forest-600 mt-0.5 shrink-0"></i>
+          <span>Class assignment automatically syncs student gradebook records, timetable schedule, and attendance ledger.</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-800">
+          <button onclick="closeAssignModal()" type="button" class="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-xl transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 text-xs font-medium text-white bg-forest-800 hover:bg-forest-900 dark:bg-forest-700 dark:hover:bg-forest-800 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 focus:ring-2 focus:ring-forest-800">
+            <i class="bi bi-check2 text-xs"></i>
+            <span>Confirm &amp; Update Allocation</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST FEEDBACK NOTIFICATION ==================== -->
+<div id="ngisToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] opacity-0 pointer-events-none px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-medium shadow-xl flex items-center gap-2 border border-slate-700">
+  <i id="toastIcon" class="bi bi-check-circle-fill text-forest-500"></i>
+  <span id="toastMsg">Student allocation updated successfully.</span>
+</div>
+
+<!-- Configuration for Hero and Layout Navigation -->
+<script>
+window.PAGE = {
+  role: "admin",
+  active: "student-assign"
+};
+
+window.HERO_CONFIG = {
+  name: "Mr. Heng Samnang",
+  id: "ADM-2026-001",
+  grade: "School Administrator",
+  avatar: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160",
+  avatarSm: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160",
+  title: "Student Assign To Class",
+  greeting: "Manage student cohort placements, homeroom allocations, and section transfers.",
+  badge: "STUDENT MANAGEMENT",
+  breadcrumbs: [{"label": "Student Management"}, {"label": "Student Assign To Class"}],
+  homeLink: "../../index.html",
+  signOutLink: "../../index.html",
+  profileLink: "admin-settings.html",
+  notifLink: "admin-logs.html",
+  notifCount: 3,
+  ddRows: [
+    { icon: 'school', text: 'NGIS Student Management' },
+    { icon: 'verified', text: 'School Administrator' },
+    { icon: 'calendar_today', text: 'Academic Year 2025–26' }
+  ]
+};
+</script>
+
+<!-- NGIS Layout & Hero Navigation Scripts -->
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<!-- Dashboard Interaction Logic -->
+<script>
+  // 1. View Mode Switcher
+  function switchView(viewMode) {
+    const tableView = document.getElementById('section-table-view');
+    const gridView = document.getElementById('section-grid-view');
+    const btnTable = document.getElementById('btnViewTable');
+    const btnGrid = document.getElementById('btnViewGrid');
+
+    if (viewMode === 'table') {
+      tableView.classList.remove('hidden');
+      gridView.classList.add('hidden');
+
+      btnTable.className = 'px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-slate-900 dark:text-white bg-white dark:bg-slate-700 shadow-xs font-medium';
+      btnGrid.className = 'px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium';
+      btnTable.setAttribute('aria-selected', 'true');
+      btnGrid.setAttribute('aria-selected', 'false');
+    } else {
+      tableView.classList.add('hidden');
+      gridView.classList.remove('hidden');
+
+      btnGrid.className = 'px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-slate-900 dark:text-white bg-white dark:bg-slate-700 shadow-xs font-medium';
+      btnTable.className = 'px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium';
+      btnGrid.setAttribute('aria-selected', 'true');
+      btnTable.setAttribute('aria-selected', 'false');
+    }
+  }
+
+  // 2. Modal Controls
+  function openAssignModal() {
+    const modal = document.getElementById('assign-modal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeAssignModal() {
+    const modal = document.getElementById('assign-modal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  // 3. Quick Student Transfer from Table Row
+  function quickTransferStudent(id, name, currentClass) {
+    const elId = document.getElementById('modal-student-id');
+    const elName = document.getElementById('modal-student-name');
+    const elClass = document.getElementById('modal-current-class');
+    if (elId) elId.textContent = id;
+    if (elName) elName.textContent = name;
+    if (elClass) elClass.textContent = currentClass + ' (Current Section)';
+    openAssignModal();
+  }
+
+  function handleTransferSubmit() {
+    showToast('Student allocation successfully updated in the NGIS Academic Registry!', 'success');
+    closeAssignModal();
+  }
+
+  // 4. Toast Helper
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('ngisToast');
+    const text = document.getElementById('toastMsg');
+    const icon = document.getElementById('toastIcon');
+    if (!toast || !text) return;
+
+    text.textContent = msg;
+    if (icon) {
+      icon.className = type === 'info' ? 'bi bi-info-circle-fill text-sky-400' :
+                       type === 'warn' ? 'bi bi-exclamation-triangle-fill text-amber-400' :
+                       'bi bi-check-circle-fill text-forest-500';
+    }
+
+    toast.classList.remove('opacity-0', 'pointer-events-none');
+    toast.classList.add('opacity-100');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => {
+      toast.classList.remove('opacity-100');
+      toast.classList.add('opacity-0', 'pointer-events-none');
+    }, 3200);
+  }
+
+  // 5. Interactive Filtering (Search, Grade, Class Section, Status)
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('studentSearchInput');
+    const gradeSelect = document.getElementById('gradeFilter');
+    const classSelect = document.getElementById('classFilter');
+    const statusSelect = document.getElementById('statusFilter');
+    const tableRows = document.querySelectorAll('.student-row');
+    const cohortCount = document.getElementById('cohortCountText');
+    const showingPaginationText = document.getElementById('showingPaginationText');
+
+    function applyFilters() {
+      const q = (searchInput?.value || '').toLowerCase().trim();
+      const grade = gradeSelect?.value || 'all';
+      const cls = classSelect?.value || 'all';
+      const status = statusSelect?.value || 'all';
+
+      let visible = 0;
+      tableRows.forEach(row => {
+        const text = (row.textContent || '').toLowerCase();
+        const rowGrade = row.dataset.grade;
+        const rowClass = row.dataset.class;
+        const rowStatus = row.dataset.status;
+
+        const matchQ = !q || text.includes(q);
+        const matchGrade = grade === 'all' || rowGrade === grade;
+        const matchClass = cls === 'all' || rowClass === cls;
+        const matchStatus = status === 'all' || rowStatus === status;
+
+        const isMatch = matchQ && matchGrade && matchClass && matchStatus;
+        row.style.display = isMatch ? '' : 'none';
+        if (isMatch) visible++;
+      });
+
+      if (cohortCount) cohortCount.textContent = `· Showing ${visible} of 240 active students`;
+      if (showingPaginationText) showingPaginationText.textContent = `Showing 1 to ${visible} of 240 students`;
+    }
+
+    searchInput?.addEventListener('input', applyFilters);
+    gradeSelect?.addEventListener('change', applyFilters);
+    classSelect?.addEventListener('change', applyFilters);
+    statusSelect?.addEventListener('change', applyFilters);
+
+    // Select All Checkbox
+    const selectAll = document.getElementById('selectAllStudents');
+    const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+    selectAll?.addEventListener('change', (e) => {
+      studentCheckboxes.forEach(cb => cb.checked = e.target.checked);
+    });
+
+    // Button Actions
+    document.getElementById('btnExportCsv')?.addEventListener('click', () => {
+      showToast('Exporting student cohort roster to CSV...', 'info');
+    });
+
+    document.getElementById('btnAutoBalance')?.addEventListener('click', () => {
+      showToast('Cohort balancing analysis complete: Grade 10A (+2 overflow) flagged for rebalance.', 'warn');
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAssignModal();
+    });
+
+    // Click on class grid card filters the table view
+    document.querySelectorAll('.class-grid-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const code = card.dataset.code.replace('-2', '');
+        if (classSelect) {
+          classSelect.value = code;
+          applyFilters();
+          switchView('table');
+          showToast(`Filtered students in class section ${code}`, 'info');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

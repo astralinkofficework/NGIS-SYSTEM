@@ -847,6 +847,13 @@ def publish_timetable(state: Dict[str, Any], published_by: str = "Admin", note: 
         "stats": statistics(state),
     }
     state["published"] = snapshot
+    state["draft_metadata"] = {
+        "status": "published",
+        "published_at": snapshot["published_at"],
+        "published_by": published_by,
+        "version": next_ver,
+        "note": note,
+    }
     pub_history = state.setdefault("published_history", [])
     pub_history.append({
         "version": next_ver,
@@ -861,6 +868,50 @@ def publish_timetable(state: Dict[str, Any], published_by: str = "Admin", note: 
         "snapshot": deepcopy(snapshot),
     })
     return snapshot
+
+
+def submit_draft_for_approval(state: Dict[str, Any], submitted_by: str = "Dr. Ly Bunheng (Principal)",
+                              note: str = "", effective_from: Optional[str] = None) -> Dict[str, Any]:
+    """Principal submits active draft timetable for Admin review and approval."""
+    conflicts = [c for c in scan_conflicts(state) if c["severity"] == "error"]
+    if conflicts:
+        raise ValueError(f"Cannot submit draft with {len(conflicts)} blocking conflict(s)")
+    meta = {
+        "status": "submitted",
+        "submitted_by": submitted_by,
+        "submitted_at": utc_now(),
+        "submission_note": note,
+        "effective_from": effective_from or utc_now()[:10],
+        "stats": statistics(state),
+    }
+    state["draft_metadata"] = meta
+    return meta
+
+
+def request_draft_revision(state: Dict[str, Any], reviewed_by: str = "Admin", note: str = "") -> Dict[str, Any]:
+    """Admin returns draft to Principal with revision requests."""
+    meta = state.get("draft_metadata") or {}
+    if meta.get("status") != "submitted":
+        raise ValueError("Only a submitted draft can be returned for revision.")
+    meta["status"] = "needs_revision"
+    meta["reviewed_by"] = reviewed_by
+    meta["reviewed_at"] = utc_now()
+    meta["revision_note"] = note
+    state["draft_metadata"] = meta
+    return meta
+
+
+def approve_draft(state: Dict[str, Any], reviewed_by: str = "Admin") -> Dict[str, Any]:
+    """Admin formally approves a submitted draft timetable."""
+    meta = state.get("draft_metadata") or {}
+    if meta.get("status") != "submitted":
+        raise ValueError("Only a submitted draft can be approved.")
+    meta["status"] = "approved"
+    meta["reviewed_by"] = reviewed_by
+    meta["reviewed_at"] = utc_now()
+    state["draft_metadata"] = meta
+    return meta
+
 
 
 def diff_publication(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -1452,6 +1503,49 @@ class TimetableStore:
     def class_timetable(self, class_id_or_display: str, use_published: bool = True) -> Dict[str, Any]:
         with self._lock:
             return get_class_timetable(self._state, class_id_or_display, use_published=use_published)
+
+    def submit_for_approval(self, submitted_by: str = "Dr. Ly Bunheng (Principal)", note: str = "",
+                            effective_from: Optional[str] = None,
+                            base_revision: Optional[int] = None) -> Dict[str, Any]:
+        with self._lock:
+            revision = int(self._state.get("revision", 0))
+            if base_revision is not None and base_revision != revision:
+                raise RevisionConflict(revision)
+            if (self._state.get("draft_metadata") or {}).get("status") in {"submitted", "approved"}:
+                raise ValueError("This draft is already in review.")
+            result = submit_draft_for_approval(self._state, submitted_by=submitted_by, note=note,
+                                               effective_from=effective_from)
+            self._state["revision"] = int(self._state.get("revision", 0)) + 1
+            self._state["updated_at"] = utc_now()
+            self._log("ដាក់ស្នើកាលវិភាគដើម្បីអនុម័ត", {"submitted_by": submitted_by})
+            self._persist()
+            return result
+
+    def approve_draft(self, reviewed_by: str = "Admin") -> Dict[str, Any]:
+        with self._lock:
+            result = approve_draft(self._state, reviewed_by=reviewed_by)
+            self._state["revision"] = int(self._state.get("revision", 0)) + 1
+            self._state["updated_at"] = utc_now()
+            self._log("អនុម័តកាលវិភាគព្រាង", {"reviewed_by": reviewed_by})
+            self._persist()
+            return result
+
+    def request_revision(self, reviewed_by: str = "Admin", note: str = "",
+                         rejected: bool = False) -> Dict[str, Any]:
+        with self._lock:
+            result = request_draft_revision(self._state, reviewed_by=reviewed_by, note=note)
+            if rejected:
+                result["status"] = "rejected"
+            self._state["revision"] = int(self._state.get("revision", 0)) + 1
+            self._state["updated_at"] = utc_now()
+            self._log("Reject timetable draft" if rejected else "ស្នើសុំកែប្រែកាលវិភាគព្រាង",
+                      {"reviewed_by": reviewed_by, "note": note})
+            self._persist()
+            return result
+
+    def draft_metadata(self) -> Dict[str, Any]:
+        with self._lock:
+            return deepcopy(self._state.get("draft_metadata") or {"status": "draft"})
 
     def reset(self) -> Dict[str, Any]:
         with self._lock:

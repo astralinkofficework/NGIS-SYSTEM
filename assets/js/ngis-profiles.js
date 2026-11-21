@@ -473,7 +473,7 @@
         '        <span class="text-[11px] sm:text-xs font-medium ' + (total > 0 ? 'text-emerald-700' : 'text-slate-400') + '">' + (total > 0 ? (activePct + '% Active') : '0 Active') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 text-[#176B45] flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">badge</span>',
         '    </div>',
         '  </div>',
@@ -489,7 +489,7 @@
         '        <span class="text-[11px] sm:text-xs font-normal text-slate-400">' + (total > 0 ? 'Target: 100%' : 'No records') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 text-[#176B45] flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">verified</span>',
         '    </div>',
         '  </div>',
@@ -520,7 +520,7 @@
           : '        <span class="text-[11px] sm:text-xs font-medium text-emerald-700">All Cleared</span>'),
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg ' + (pendRecords > 0 ? 'bg-rose-100/90 text-[#991b1b]' : 'bg-emerald-50 text-[#176B45]') + ' flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 ' + (pendRecords > 0 ? 'text-[#991b1b]' : 'text-[#176B45]') + ' flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">' + (pendRecords > 0 ? 'pending_actions' : 'check_circle') + '</span>',
         '    </div>',
         '  </div>',
@@ -535,7 +535,7 @@
         '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + pubRecords + '<span class="text-sm font-normal text-slate-400"> recs</span></span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 text-[#176B45] flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">publish</span>',
         '    </div>',
         '  </div>',
@@ -560,7 +560,7 @@
         '        <span class="text-[11px] sm:text-xs font-medium ' + (total > 0 ? 'text-emerald-700' : 'text-slate-400') + '">' + (total > 0 ? '100% Active' : '0 Enrolled') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 text-[#176B45] flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">school</span>',
         '    </div>',
         '  </div>',
@@ -576,7 +576,7 @@
         '        <span class="text-[11px] sm:text-xs font-normal text-slate-400">' + (total > 0 ? '/ 4.00' : 'No records') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 text-[#176B45] flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">verified</span>',
         '    </div>',
         '  </div>',
@@ -606,7 +606,7 @@
           : '        <span class="text-[11px] sm:text-xs font-medium text-emerald-700">All Completed</span>'),
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg ' + (open > 0 ? 'bg-rose-100/90 text-[#991b1b]' : 'bg-emerald-50 text-[#176B45]') + ' flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 ' + (open > 0 ? 'text-[#991b1b]' : 'text-[#176B45]') + ' flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">' + (open > 0 ? 'pending_actions' : 'check_circle') + '</span>',
         '    </div>',
         '  </div>',
@@ -621,7 +621,7 @@
         '        <span class="text-2xl sm:text-3xl font-medium tracking-tight text-[#29352E]">' + (total > 0 ? (num(att, 1) + '%') : '—') + '</span>',
         '      </div>',
         '    </div>',
-        '    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-emerald-50 text-[#176B45] flex items-center justify-center shrink-0">',
+        '    <div class="w-8 h-8 sm:w-10 sm:h-10 text-[#176B45] flex items-center justify-center shrink-0">',
         '      <span class="material-symbols-outlined text-[18px] sm:text-[22px]">fact_check</span>',
         '    </div>',
         '  </div>',
@@ -1152,16 +1152,18 @@
           '</div>' +
         '</div>' +
         (p && !err ? (
-          '<nav aria-label="Student details tabs" class="flex items-center gap-1 sm:gap-2.5 lg:gap-3.5 mt-4 sm:mt-5 overflow-x-auto border-b border-slate-200 pf-scroll" id="pfTabBar">' +
+          '<div class="relative w-full overflow-hidden mt-4 sm:mt-5 border-b border-slate-200">' +
+          '<nav aria-label="Student details tabs" class="flex items-center gap-1 sm:gap-1.5 lg:gap-2 overflow-x-auto pf-scroll scrollbar-none select-none" id="pfTabBar" style="scrollbar-width:none;-ms-overflow-style:none;">' +
           TABS.map(function (t, i) {
             var isActive = i === state.tab;
-            return '<button type="button" class="tab-button text-xs sm:text-[13px] px-1 sm:px-1.5 pb-2.5 sm:pb-3 border-b-2 whitespace-nowrap transition-colors focus:outline-none cursor-pointer ' +
+            return '<button type="button" class="tab-button shrink-0 text-xs sm:text-[13px] px-1.5 sm:px-2 pb-2.5 sm:pb-3 border-b-2 whitespace-nowrap transition-colors focus:outline-none cursor-pointer ' +
               (isActive ? 'border-[#176B45] text-[#176B45] font-medium' : 'border-transparent text-slate-500 font-normal hover:text-slate-700 hover:border-slate-300') +
               '" data-tab="' + i + '">' + esc(t) +
               (i === DOCS_TAB_INDEX ? ' <span class="text-[11px] text-slate-400 font-normal ml-0.5" id="docsCountChip">' + ((p.documents || []).length) + '</span>' : '') +
               '</button>';
           }).join('') +
-          '</nav>'
+          '</nav>' +
+          '</div>'
         ) : '') +
       '</header>';
 
@@ -1404,7 +1406,7 @@
           var trRows = transcripts.map(function (t) {
             return '<div class="border border-dashed border-slate-200 rounded-2xl p-4 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">' +
               '<div class="flex items-center gap-3">' +
-                '<span class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[20px]">description</span></span>' +
+                '<span class="w-9 h-9 text-slate-500 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-[20px]">description</span></span>' +
                 '<div><p class="font-medium text-slate-800">' + esc(t.term || t.title || 'Official Transcript') + '</p>' +
                 '<p class="text-slate-400 text-[11px] font-normal">' + esc(t.fileName || 'Transcript record') + (t.generatedAt || t.createdAt ? ' • ' + esc(fmtDT(t.generatedAt || t.createdAt)) : '') + '</p></div>' +
               '</div>' +
@@ -1483,7 +1485,7 @@
               '<h3 class="text-xs font-medium uppercase tracking-wider text-slate-500">Recent Attendance Log</h3>' +
             '</div>' +
             '<div class="border border-dashed border-slate-200 rounded-2xl p-8 text-center">' +
-              '<div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-2"><span class="material-symbols-outlined text-xl">fact_check</span></div>' +
+              '<div class="w-10 h-10 text-slate-400 mx-auto flex items-center justify-center mb-2"><span class="material-symbols-outlined text-xl">fact_check</span></div>' +
               '<p class="text-sm font-medium text-slate-700">No attendance records yet</p>' +
               '<p class="text-xs text-slate-400 mt-1 font-normal">Daily rollcall and gate check-ins will appear here once recorded.</p>' +
             '</div>' +
@@ -1548,7 +1550,7 @@
               '</table>' +
             '</div>'
           : '<div class="border border-slate-200/80 rounded-2xl bg-slate-50/40 p-8 sm:p-12 text-center my-4 flex flex-col items-center justify-center">' +
-              '<div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3"><span class="material-symbols-outlined text-2xl">support_agent</span></div>' +
+              '<div class="w-12 h-12 text-slate-400 flex items-center justify-center mb-3"><span class="material-symbols-outlined text-2xl">support_agent</span></div>' +
               '<p class="text-sm text-slate-600 font-medium">This student has no service requests on file.</p>' +
               '<p class="text-xs text-slate-400 mt-1 max-w-sm font-normal">Counseling, academic support accommodations, IT requests, and transportation inquiries logged will appear here.</p>' +
             '</div>';
@@ -1567,15 +1569,15 @@
             '</div>' +
             '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
               '<div class="p-3.5 border border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-colors flex items-start gap-3">' +
-                '<div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">psychology</span></div>' +
+                '<div class="w-8 h-8 text-emerald-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">psychology</span></div>' +
                 '<div><p class="text-xs font-medium text-slate-900">Academic Guidance</p><p class="text-[11px] text-slate-400 mt-0.5 font-normal">Tutoring &amp; course advisement</p></div>' +
               '</div>' +
               '<div class="p-3.5 border border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-colors flex items-start gap-3">' +
-                '<div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">medical_services</span></div>' +
+                '<div class="w-8 h-8 text-sky-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">medical_services</span></div>' +
                 '<div><p class="text-xs font-medium text-slate-900">Health &amp; Wellness</p><p class="text-[11px] text-slate-400 mt-0.5 font-normal">Nurse pass &amp; care plans</p></div>' +
               '</div>' +
               '<div class="p-3.5 border border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-colors flex items-start gap-3">' +
-                '<div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">directions_bus</span></div>' +
+                '<div class="w-8 h-8 text-slate-700 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-lg">directions_bus</span></div>' +
                 '<div><p class="text-xs font-medium text-slate-900">Transportation &amp; Boarding</p><p class="text-[11px] text-slate-400 mt-0.5 font-normal">Bus route &amp; campus shuttle</p></div>' +
               '</div>' +
             '</div>' +
@@ -1654,7 +1656,7 @@
 
       if (!acts || !acts.length) {
         return '<div class="border border-dashed border-slate-200 rounded-2xl p-8 text-center">' +
-          '<div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-2"><span class="material-symbols-outlined text-xl">history</span></div>' +
+          '<div class="w-10 h-10 text-slate-400 mx-auto flex items-center justify-center mb-2"><span class="material-symbols-outlined text-xl">history</span></div>' +
           '<p class="text-sm font-medium text-slate-700">No recent activity</p>' +
           '<p class="text-xs text-slate-400 mt-1 font-normal">Audit trails and enrollment status changes are archived here.</p>' +
           '</div>';
@@ -1924,12 +1926,12 @@
     var wrap = document.createElement('div');
     wrap.innerHTML = [
       // Profile modal
-      '<div id="profileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-900/50 backdrop-blur-xs transition-opacity" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle" onclick="if(event.target===this)__ngisCloseProfile()">',
-      '  <div id="profileModalInner" class="w-full max-w-4xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[92vh] flex flex-col relative animate-fade-in"></div>',
+      '<div id="profileModal" class="hidden fixed inset-0 z-[2100] flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-900/50 backdrop-blur-xs transition-opacity" style="z-index: 2100 !important;" role="dialog" aria-modal="true" aria-labelledby="profileModalTitle" onclick="if(event.target===this)__ngisCloseProfile()">',
+      '  <div id="profileModalInner" class="w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[92vh] flex flex-col relative animate-fade-in" style="z-index: 2101 !important;"></div>',
       '</div>',
       // Add/edit form modal
-      '<div id="formModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" role="dialog" aria-modal="true" onclick="if(event.target===this)window.__ngisCloseForm()">',
-      '  <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[90vh] flex flex-col relative animate-fade-in">',
+      '<div id="formModal" class="hidden fixed inset-0 z-[2100] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" style="z-index: 2100 !important;" role="dialog" aria-modal="true" onclick="if(event.target===this)window.__ngisCloseForm()">',
+      '  <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[90vh] flex flex-col relative animate-fade-in" style="z-index: 2101 !important;">',
       '    <div class="px-6 sm:px-7 pt-6 pb-5 border-b border-[#E1E9E3] flex items-center justify-between">',
       '      <div class="flex items-center gap-2"><span class="material-symbols-outlined text-slate-400 text-[18px]">edit_note</span><h3 class="text-base font-medium text-slate-900" id="formTitle">Edit Record</h3></div>',
       '      <button type="button" onclick="window.__ngisCloseForm()" class="text-slate-400 hover:text-slate-600 rounded-lg p-1.5 hover:bg-slate-100 transition-colors cursor-pointer min-h-[36px] min-w-[36px] flex items-center justify-center" aria-label="Close modal">',
@@ -1947,7 +1949,7 @@
       '  </div>',
       '</div>',
       // Bulk Excel Import Modal
-      '<div id="excelImportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" role="dialog" aria-modal="true" onclick="if(event.target===this)window.__ngisCloseExcelModal()">',
+      '<div id="excelImportModal" class="hidden fixed inset-0 z-[2100] flex items-center justify-center p-4 sm:p-6 md:p-8 bg-slate-900/40 backdrop-blur-sm transition-opacity" style="z-index: 2100 !important;" role="dialog" aria-modal="true" onclick="if(event.target===this)window.__ngisCloseExcelModal()">',
       '  <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden max-h-[90vh] flex flex-col relative animate-fade-in">',
       '    <div class="px-6 sm:px-7 pt-6 pb-4 border-b border-[#E1E9E3] flex items-center justify-between">',
       '      <div class="flex items-center gap-2.5">',
@@ -1991,7 +1993,7 @@
       '  </div>',
       '</div>',
       // Confirm / reason dialog
-      '<div id="confirmModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-xs">',
+      '<div id="confirmModal" class="hidden fixed inset-0 z-[2100] flex items-center justify-center p-4 sm:p-6 bg-black/40 backdrop-blur-xs" style="z-index: 2100 !important;">',
       '  <div class="bg-white rounded-2xl shadow-sm border border-[#E1E9E3] max-w-md w-full p-6">',
       '    <h3 class="text-base font-medium text-[#29352E] mb-1.5"></h3>',
       '    <p class="text-sm text-slate-600 mb-4" id="cfMessage"></p>',

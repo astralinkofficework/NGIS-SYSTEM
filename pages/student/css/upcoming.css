@@ -1,56 +1,557 @@
-﻿/* ══════════════════════════════════════
-   UPCOMING CARD — Row 1 · Right Column
-   Events / Schedule / Assignments / Exams
-   ══════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   NGIS TASKS & DEADLINES COMPONENT
+   ManageBac-inspired Academic Task Workspace
+   Preserves NGIS Forest Green (#176B45), clean neutral surfaces,
+   unpainted 3D icons, and strict font-weight <= 500.
+   Full container-width responsive adaptation (Desktop, Tablet, Mobile).
+   ══════════════════════════════════════════════════════════════ */
 
-.up-card {
-  background: var(--card);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
+.workspace-tasks-card {
+  container-type: inline-size;
+  container-name: taskscard;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ── Header ── */
-.up-head {
-  padding: 16px 20px 12px;
+/* ── Card Header & Tabs Filter ── */
+.workspace-tasks-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--bdr);
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ngis-border-subtle, #E1E9E3);
 }
-.up-head-l        { display: flex; align-items: center; gap: 8px }
-.up-head-l .mi    { font-size: 18px; color: var(--blue-mid) }
-.up-head-l span   { font-size: 14px; font-weight: 400; color: var(--txt) }
-.up-viewall       { font-size: 12px; font-weight: 400; color: var(--blue-mid); cursor: pointer }
 
+.workspace-tasks-tabs {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #E1E9E3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  max-width: 100%;
+}
 
-/* ── 4-column inner grid ── */
-.up-cols { display: grid; grid-template-columns: repeat(4, 1fr) }
-.up-col  { padding: 14px 16px 10px; border-right: 1px solid var(--bdr) }
-.up-col:last-child { border-right: none }
+[data-theme="dark"] .workspace-tasks-tabs {
+  background: #111815;
+  border-color: #26332B;
+}
 
-.up-col-head       { display: flex; align-items: center; gap: 6px; margin-bottom: 10px }
-.up-col-head .mi   { font-size: 18px }
-.up-col-head span  { font-size: 12px; font-weight: 400; color: var(--txt) }
-
-/* ── Items ── */
-.up-item          { margin-bottom: 8px }
-.up-item-t        { font-size: 12px; font-weight: 400; color: var(--txt); line-height: 1.3; margin-bottom: 2px }
-.up-item-s        { font-size: 11px; color: var(--txt3); font-weight: 400 }
-.up-item-s.red    { color: #176B45;        font-weight: 400 }
-.up-item-s.orange { color: var(--orange);  font-weight: 400 }
-
-/* ── "View all" link per column ── */
-.up-col-link {
-  display: block;
-  width: 100%;
-  text-align: center;
+.workspace-task-tab {
+  padding: 4px 11px;
   font-size: 11.5px;
-  font-weight: 400;
-  color: var(--blue-mid);
-  padding: 6px;
-  border-radius: 6px;
-  margin-top: 6px;
-  transition: background .14s;
+  font-weight: 500;
+  color: #64746A;
+  background: transparent;
+  border: none;
+  border-right: 1px solid #E1E9E3;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1.3;
+  white-space: nowrap;
 }
 
+.workspace-task-tab:last-child {
+  border-right: none;
+}
+
+.workspace-task-tab:hover {
+  color: #176B45;
+  background: #F7F9F7;
+}
+
+.workspace-task-tab.active {
+  color: #176B45;
+  background: #F0FDF4;
+  box-shadow: inset 0 0 0 1px #176B45;
+}
+
+.workspace-task-tab.overdue-tab.active {
+  color: #DC2626;
+  background: #FEF2F2;
+  box-shadow: inset 0 0 0 1px #DC2626;
+}
+
+[data-theme="dark"] .workspace-task-tab {
+  color: #8FA095;
+  border-color: #26332B;
+}
+
+[data-theme="dark"] .workspace-task-tab:hover {
+  background: #18221D;
+  color: #52B788;
+}
+
+[data-theme="dark"] .workspace-task-tab.active {
+  background: #15221B;
+  color: #52B788;
+  box-shadow: inset 0 0 0 1px #52B788;
+}
+
+.workspace-task-overdue-pill {
+  background: #DC2626;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* ── Tasks List Container & Smooth Scrolling ── */
+.workspace-tasks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 520px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  padding: 2px 4px 6px 2px;
+}
+
+.workspace-tasks-container::-webkit-scrollbar {
+  width: 5px;
+}
+
+.workspace-tasks-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-tasks-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.workspace-tasks-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+[data-theme="dark"] .workspace-tasks-container::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+[data-theme="dark"] .workspace-tasks-container::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ── Task Card Row ── */
+.workspace-task-card-row {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #E1E9E3;
+  border-radius: 10px;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.workspace-task-card-row:hover {
+  border-color: #176B45;
+  background: #FAFCFA;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .workspace-task-card-row {
+  background: #111815;
+  border-color: #26332B;
+}
+
+[data-theme="dark"] .workspace-task-card-row:hover {
+  border-color: #52B788;
+  background: #15221B;
+}
+
+/* Top Header: 3D Icon + Title + Info Trigger */
+.workspace-task-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+}
+
+.workspace-task-icon-wrap {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+}
+
+.workspace-task-title-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.workspace-task-title-text {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #29352E;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.workspace-task-title-text:hover {
+  color: #176B45;
+}
+
+[data-theme="dark"] .workspace-task-title-text {
+  color: #F7F9F7;
+}
+
+[data-theme="dark"] .workspace-task-title-text:hover {
+  color: #52B788;
+}
+
+/* Info Trigger Button */
+.workspace-task-info-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #CBD5E1;
+  color: #64748B;
+  font-size: 10px;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.workspace-task-info-trigger:hover {
+  border-color: #176B45;
+  color: #176B45;
+  background: #ECFDF5;
+}
+
+/* Course Line */
+.workspace-task-course-line {
+  padding-left: 29px;
+  margin-top: -3px;
+  width: 100%;
+}
+
+.workspace-task-course {
+  font-size: 12px;
+  color: #64746A;
+  line-height: 1.35;
+  word-break: break-word;
+  display: block;
+}
+
+[data-theme="dark"] .workspace-task-course {
+  color: #8FA095;
+}
+
+/* Metadata & Action Row */
+.workspace-task-meta-action-row {
+  padding-left: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 3px;
+  border-top: 1px dashed #F1F5F9;
+  padding-top: 7px;
+}
+
+[data-theme="dark"] .workspace-task-meta-action-row {
+  border-top-color: #1E293B;
+}
+
+.workspace-task-meta-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11.5px;
+}
+
+.workspace-task-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #29352E;
+  font-weight: 500;
+  font-size: 11.5px;
+}
+
+[data-theme="dark"] .workspace-task-time {
+  color: #F7F9F7;
+}
+
+/* Assessment Tags (Removed colored pill badges as requested) */
+.workspace-task-tag {
+  display: none !important;
+}
+
+.workspace-task-overdue-pill {
+  display: none !important;
+}
+
+/* Status Text (Clean, unpainted, no pill badge) */
+.workspace-task-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 400;
+  background: transparent !important;
+  color: #64746A !important;
+  border: none !important;
+  line-height: 1.2;
+}
+
+.workspace-task-status-pending {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.workspace-task-status-pending::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #64748B;
+}
+
+.workspace-task-status-overdue {
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+.workspace-task-status-overdue::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #DC2626;
+}
+
+.workspace-task-status-graded {
+  background: #ECFDF5;
+  color: #176B45;
+}
+
+.workspace-task-status-graded::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #176B45;
+}
+
+[data-theme="dark"] .workspace-task-status-pending {
+  background: #1E293B;
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .workspace-task-status-overdue {
+  background: #3B1212;
+  color: #F87171;
+}
+
+[data-theme="dark"] .workspace-task-status-graded {
+  background: #0E281D;
+  color: #52B788;
+}
+
+/* Action Button Wrapper */
+.workspace-task-action-wrap {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+/* Submit Coursework Button */
+.workspace-task-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  background: #176B45;
+  color: #ffffff;
+  border: 1px solid #176B45;
+  cursor: pointer;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.workspace-task-submit-btn:hover {
+  background: #125638;
+  border-color: #125638;
+}
+
+.workspace-task-submit-btn:active {
+  transform: scale(0.98);
+}
+
+.workspace-task-submit-btn.btn-overdue {
+  background: #DC2626;
+  border-color: #DC2626;
+}
+
+.workspace-task-submit-btn.btn-overdue:hover {
+  background: #B91C1C;
+  border-color: #B91C1C;
+}
+
+.workspace-task-submit-btn.btn-graded {
+  background: #ffffff;
+  border: 1px solid #E1E9E3;
+  color: #29352E;
+}
+
+.workspace-task-submit-btn.btn-graded:hover {
+  background: #F7F9F7;
+  border-color: #176B45;
+  color: #176B45;
+}
+
+[data-theme="dark"] .workspace-task-submit-btn.btn-graded {
+  background: #111815;
+  border-color: #26332B;
+  color: #F7F9F7;
+}
+
+[data-theme="dark"] .workspace-task-submit-btn.btn-graded:hover {
+  background: #18221D;
+  border-color: #52B788;
+  color: #52B788;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONTAINER QUERIES: Adapt to card width, not just screen width!
+   ══════════════════════════════════════════════════════════════ */
+
+/* Wide Card Container (> 560px, e.g. full-width or single column) */
+@container taskscard (min-width: 560px) {
+  .workspace-task-card-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(170px, auto) auto;
+    align-items: center;
+    gap: 14px;
+    padding: 11px 16px;
+  }
+  .workspace-task-header {
+    grid-column: 1;
+  }
+  .workspace-task-course-line {
+    grid-column: 1;
+    padding-left: 29px;
+    margin-top: -4px;
+  }
+  .workspace-task-meta-action-row {
+    grid-column: 2 / span 2;
+    padding-left: 0;
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+    justify-content: flex-end;
+    gap: 14px;
+  }
+  .workspace-task-meta-group {
+    justify-content: flex-end;
+  }
+}
+
+/* Extra-Narrow Card Container (<= 340px, e.g. very narrow dashboard slot or small mobile screen) */
+@container taskscard (max-width: 340px) {
+  .workspace-task-course-line,
+  .workspace-task-meta-action-row {
+    padding-left: 0;
+  }
+  .workspace-task-meta-action-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .workspace-task-action-wrap {
+    width: 100%;
+    margin-left: 0;
+  }
+  .workspace-task-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .workspace-tasks-tabs {
+    width: 100%;
+  }
+  .workspace-task-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 5px 6px;
+    font-size: 11px;
+  }
+}
+
+/* Standard Media Query Fallback for Viewports <= 480px */
+@media (max-width: 480px) {
+  .workspace-task-card-row {
+    padding: 10px 12px;
+  }
+  .workspace-task-course-line,
+  .workspace-task-meta-action-row {
+    padding-left: 0;
+  }
+  .workspace-task-meta-action-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .workspace-task-action-wrap {
+    width: 100%;
+    margin-left: 0;
+  }
+  .workspace-task-submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 14px;
+    font-size: 12.5px;
+  }
+  .workspace-tasks-tabs {
+    width: 100%;
+  }
+  .workspace-task-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+}

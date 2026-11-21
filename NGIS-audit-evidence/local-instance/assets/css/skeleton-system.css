@@ -1,0 +1,362 @@
+/* ============================================================
+   NGIS Global Skeleton Loading System
+   Modern, subtle, responsive skeleton loading architecture.
+   Replaces full-page spinners, blocking overlays, and jarring loaders.
+   Strictly compliant with:
+   - NGIS Design System (Forest Green, Off-White, Mint, Subtle Hairlines)
+   - Zero layout shifts (CLS prevention)
+   - Low visual contrast, no flashing, prefers-reduced-motion
+   - High responsive density across Desktop, Tablet, and Mobile
+   ============================================================ */
+
+:root {
+  --sk-base: #EEF4F0;
+  --sk-highlight: rgba(255, 255, 255, 0.85);
+  --sk-border: #E1E9E3;
+  --sk-card-bg: #FFFFFF;
+  --sk-radius-xs: 4px;
+  --sk-radius-sm: 6px;
+  --sk-radius-md: 10px;
+  --sk-radius-lg: 16px;
+  --sk-radius-pill: 9999px;
+  --sk-speed: 1.5s;
+}
+
+/* Dark mode token overrides */
+[data-theme="dark"] {
+  --sk-base: #1E2922;
+  --sk-highlight: rgba(255, 255, 255, 0.08);
+  --sk-border: #2D3A31;
+  --sk-card-bg: #151D18;
+}
+
+/* ── 1. Shimmer Animation (Subtle, Non-Flashing) ───────────── */
+@keyframes ngisSkeletonShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.ngis-sk-shimmer,
+[data-skeleton] {
+  background-color: var(--sk-base) !important;
+  background-image: linear-gradient(
+    90deg,
+    var(--sk-base) 0%,
+    var(--sk-highlight) 50%,
+    var(--sk-base) 100%
+  ) !important;
+  background-size: 200% 100% !important;
+  background-repeat: no-repeat !important;
+  animation: ngisSkeletonShimmer var(--sk-speed) ease-in-out infinite !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .ngis-sk-shimmer,
+  [data-skeleton] {
+    animation: none !important;
+    background-image: none !important;
+    background-color: var(--sk-base) !important;
+  }
+}
+
+/* ── 2. Primitive Skeleton Elements ────────────────────────── */
+.ngis-sk-text {
+  height: 14px;
+  border-radius: var(--sk-radius-xs);
+  display: block;
+}
+
+.ngis-sk-text-xs {
+  height: 10px;
+  border-radius: var(--sk-radius-xs);
+  display: block;
+}
+
+.ngis-sk-text-sm {
+  height: 12px;
+  border-radius: var(--sk-radius-xs);
+  display: block;
+}
+
+.ngis-sk-text-lg {
+  height: 20px;
+  border-radius: var(--sk-radius-sm);
+  display: block;
+}
+
+.ngis-sk-text-xl {
+  height: 28px;
+  border-radius: var(--sk-radius-sm);
+  display: block;
+}
+
+.ngis-sk-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.ngis-sk-avatar-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.ngis-sk-avatar-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.ngis-sk-badge {
+  height: 22px;
+  width: 72px;
+  border-radius: var(--sk-radius-pill);
+  display: inline-block;
+}
+
+.ngis-sk-btn {
+  height: 38px;
+  width: 100px;
+  border-radius: var(--sk-radius-sm);
+  display: inline-block;
+}
+
+.ngis-sk-box {
+  border-radius: var(--sk-radius-sm);
+  display: block;
+}
+
+/* ── 3. Skeleton Card Container ────────────────────────────── */
+.ngis-sk-card {
+  background: var(--sk-card-bg);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ── 4. Dashboard Skeleton ─────────────────────────────────── */
+.ngis-sk-dashboard-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.ngis-sk-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ngis-sk-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ngis-sk-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.ngis-sk-kpi-card {
+  background: var(--sk-card-bg);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ngis-sk-dash-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .ngis-sk-dash-content-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* ── 5. Table & Directory Skeleton ─────────────────────────── */
+.ngis-sk-table-container {
+  background: var(--sk-card-bg);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius-lg);
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ngis-sk-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--sk-border);
+}
+
+.ngis-sk-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 240px;
+}
+
+.ngis-sk-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ngis-sk-table-head {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-background, #F7F9F7);
+  border-bottom: 1px solid var(--sk-border);
+  gap: 16px;
+}
+
+.ngis-sk-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--sk-border);
+  gap: 16px;
+  background: var(--sk-card-bg);
+}
+
+.ngis-sk-row:last-child {
+  border-bottom: none;
+}
+
+.ngis-sk-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-top: 1px solid var(--sk-border);
+  background: var(--color-background, #F7F9F7);
+}
+
+/* ── 6. Form Skeleton ──────────────────────────────────────── */
+.ngis-sk-form-container {
+  background: var(--sk-card-bg);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.ngis-sk-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .ngis-sk-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ngis-sk-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── 7. Profile Skeleton ───────────────────────────────────── */
+.ngis-sk-profile-header {
+  background: var(--sk-card-bg);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 640px) {
+  .ngis-sk-profile-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+  }
+}
+
+.ngis-sk-profile-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+/* ── 8. Cards / CMS Skeleton ───────────────────────────────── */
+.ngis-sk-card-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .ngis-sk-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .ngis-sk-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ── 9. Replacement of legacy jarring spinners and loading text ── */
+.cms-loading,
+.system-loading-spinner,
+.preloader,
+.loading-box-legacy {
+  display: none !important;
+}
+
+/* Inline small submit buttons maintain small spinners without layout jumps */
+.btn.is-loading,
+.ngis-btn.is-loading {
+  pointer-events: none;
+}
+

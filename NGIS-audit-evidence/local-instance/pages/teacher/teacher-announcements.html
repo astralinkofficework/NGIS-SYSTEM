@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NGIS — Announcements (redirecting…)</title>
+<!-- Legacy teacher announcements page. The Announcements module was
+     consolidated into ONE shared page + ONE backend feed (/api/news) used by
+     every portal. The old page exposed a client-side compose form to teachers,
+     which was an unauthorized publishing surface — announcement publishing is
+     Admin / Super Admin only (server-enforced on /api/news). This file only
+     preserves old links/bookmarks: it forwards the visitor to the shared
+     reader in the Teacher portal context. The ?portal hint selects UI context
+     only — permissions always come from the authenticated session. -->
+<link rel="canonical" href="../shared/announcements.html?portal=teacher"/>
+<meta http-equiv="refresh" content="0; url=../shared/announcements.html?portal=teacher"/>
+<script>
+(function () {
+  /* Preserve any deep-link parameters except portal/role, which this redirect
+     owns. Never widen permissions: the shared page derives them from session. */
+  try {
+    var p = new URLSearchParams(window.location.search || '');
+    p.delete('portal'); p.delete('role');
+    var qs = p.toString();
+    window.location.replace('../shared/announcements.html?portal=teacher' + (qs ? '&' + qs : ''));
+  } catch (e) {
+    window.location.replace('../shared/announcements.html?portal=teacher');
+  }
+})();
+</script>
+</head>
+<body style="font-family:system-ui,sans-serif;background:#f7f9f7;color:#176B45;display:grid;place-items:center;min-height:100vh;margin:0">
+<noscript><p>Redirecting to <a href="../shared/announcements.html?portal=teacher">Announcements</a>…</p></noscript>
+<p>Opening Announcements…</p>
+</body>
+</html>

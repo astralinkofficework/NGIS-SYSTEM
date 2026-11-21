@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>NGIS — Mathematics Library</title>
+<meta name="description" content="Browse courses, lessons, worksheets, and digital learning resources from New Gateway International School.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="css/lessons.css">
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+</head>
+<body data-page="lessons">
+
+<main class="main">
+
+  <header id="heroBanner" role="banner"></header>
+
+  <div class="page">
+
+    <!-- Subject Switcher Bar -->
+    <div class="oak-subject-bar">
+      <div class="oak-subj-selector">
+        <span class="oak-subj-badge">Subject Library</span>
+        <button class="oak-subj-select-btn" onclick="oakToggleSubjDropdown(event)" id="curSubjBreadcrumb" type="button" aria-haspopup="true">
+          <span class="material-symbols-outlined" id="curSubjIcon" style="color:#29352E; font-size:20px;">calculate</span>
+          <span id="curSubjName">MATHEMATICS</span>
+          <span style="font-size:18px; color:var(--muted)" data-ngis-icon="chevronDown"></span>
+        </button>
+
+        <!-- Subject Switcher Dropdown -->
+        <div class="oak-subj-dropdown" id="oakSubjDropdown">
+          <button class="oak-subj-item active" onclick="oakSwitchSubject('math')">
+            <span class="material-symbols-outlined" style="color:#29352E">calculate</span> Mathematics
+          </button>
+          <button class="oak-subj-item" onclick="oakSwitchSubject('physics')">
+            <span class="material-symbols-outlined" style="color:#000000">bolt</span> Physics
+          </button>
+          <button class="oak-subj-item" onclick="oakSwitchSubject('chemistry')">
+            <span class="material-symbols-outlined" style="color:#000000">science</span> Chemistry
+          </button>
+          <button class="oak-subj-item" onclick="oakSwitchSubject('biology')">
+            <span class="material-symbols-outlined" style="color:#000000">biotech</span> Biology
+          </button>
+          <button class="oak-subj-item" onclick="oakSwitchSubject('english')">
+            <span class="material-symbols-outlined" style="color:#176B45">menu_book</span> English
+          </button>
+          <button class="oak-subj-item" onclick="oakSwitchSubject('history')">
+            <span class="material-symbols-outlined" style="color:#176B45">history_edu</span> History
+          </button>
+          <button class="oak-subj-item" onclick="oakSwitchSubject('geography')">
+            <span class="material-symbols-outlined" style="color:#176B45">public</span> Geography
+          </button>
+          <button class="oak-subj-item" onclick="oakSwitchSubject('cs')">
+            <span class="material-symbols-outlined" style="color:#29352E">laptop_code</span> Computer Science
+          </button>
+        </div>
+      </div>
+    </div>
+
+  <!-- Filter & View Controls Toolbar -->
+  <div class="oak-toolbar">
+    <!-- Search / Filter input -->
+    <div class="oak-filter-search-wrap ngis-search" style="max-width:420px">
+      <span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span>
+      <input type="text" class="ngis-search-input" id="oakFilterInput"
+        placeholder="Filter resources by title, topic, or format..."
+        aria-label="Filter resources"
+        oninput="oakSearchResources(this.value)">
+    </div>
+
+    <!-- Category Tabs & View Toggles -->
+    <div class="oak-filter-tabs-row">
+      <div class="oak-tabs-group" role="tablist">
+        <button class="oak-tab-btn active" id="tabAll" onclick="oakFilterTab('all')" role="tab" aria-selected="true">
+          <span class="material-symbols-outlined">apps</span> All Files
+        </button>
+        <button class="oak-tab-btn" id="tabDocs" onclick="oakFilterTab('documents')" role="tab" aria-selected="false">
+          Documents
+        </button>
+        <button class="oak-tab-btn" id="tabWorksheets" onclick="oakFilterTab('worksheets')" role="tab" aria-selected="false">
+          Worksheets
+        </button>
+        <button class="oak-tab-btn" id="tabNotes" onclick="oakFilterTab('notes')" role="tab" aria-selected="false">
+          Notes
+        </button>
+      </div>
+
+      <!-- View Switchers -->
+      <div class="oak-view-toggles">
+        <button class="oak-view-btn" id="oakViewListBtn" onclick="oakSetView('list')" aria-label="List view">
+          <span data-ngis-icon="list"></span>
+        </button>
+        <button class="oak-view-btn active" id="oakViewGridBtn" onclick="oakSetView('grid')" aria-label="Grid view">
+          <span data-ngis-icon="grid"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Count & Sort Bar -->
+  <div class="oak-summary-bar">
+    <div class="oak-summary-count">
+      SHOWING <span id="oakResCount">6</span> LEARNING MATERIALS
+    </div>
+    <button class="oak-sort-btn" id="oakSortBtn" onclick="oakToggleSort()">
+      <span>Sort by Date</span>
+      <span data-ngis-icon="sort"></span>
+    </button>
+  </div>
+
+  <!-- Cards Grid View -->
+  <div class="oak-grid" id="resourceGrid">
+    <!-- Populated dynamically by lessons.js -->
+  </div>
+
+  <!-- List View Container (toggled on demand) -->
+  <div class="oak-list" id="resourceList" style="display:none">
+    <!-- Populated dynamically by lessons.js -->
+  </div>
+
+  <!-- Empty State -->
+  <div class="oak-empty" id="resourceEmpty" style="display:none">
+    <span class="material-symbols-outlined">search_off</span>
+    <h3>No learning materials found</h3>
+    <p>Try adjusting your keyword filter or switching category tabs.</p>
+  </div>
+
+  </div><!-- /page -->
+</main><!-- /main -->
+
+<!-- ═══════════════ DOCUMENT PREVIEW MODAL ═══════════════ -->
+<div class="oak-preview-modal-overlay" id="oakPreviewModal" onclick="if(event.target===this)oakClosePreview()">
+  <div class="oak-preview-modal-card">
+    <div class="oak-prev-header">
+      <div class="oak-prev-title-wrap">
+        <div class="oak-banner-icon-badge type-pdf" id="oakModalIconBadge">
+          <span class="material-symbols-outlined">picture_as_pdf</span>
+        </div>
+        <div>
+          <div class="oak-prev-title" id="oakModalTitle">Introduction to Algebra</div>
+          <div class="oak-prev-sub" id="oakModalSub">Mr. Chea Sophea • Uploaded 10 Jan 2026 • 1.4 MB • 16 pages</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="oak-btn-preview" onclick="oakDownloadCurrent()" aria-label="Download PDF"><span data-ngis-icon="download"></span> Download</button>
+        <button class="oak-modal-close" onclick="oakClosePreview()" aria-label="Close"><span data-ngis-icon="close"></span></button>
+      </div>
+    </div>
+    <div class="oak-prev-body">
+      <!-- Formatted Reader Paper -->
+      <div class="oak-reader-paper">
+        <div style="text-align:center; margin-bottom:32px;">
+          <span class="oak-paper-dept" id="oakPaperDept">Academic Handout • Department of Mathematics</span>
+          <h2 class="oak-paper-title" id="oakPaperHeading">Linear &amp; Quadratic Systems Analysis</h2>
+          <div class="oak-paper-rule"></div>
+        </div>
+
+        <h3 class="oak-paper-subtitle" id="oakPaperSection1">1. Foundational Overview</h3>
+        <p class="oak-paper-text" id="oakPaperDesc">
+          An algebraic expression consists of constants, variables, and algebraic operations (addition, subtraction, multiplication, division, and exponentiation by an exponent that is a rational number). In single-variable polynomial rings, the roots of degree-two quadratics satisfy the discriminant criterion:
+        </p>
+
+        <div class="oak-paper-callout" id="oakPaperCallout">
+          x = (-b ± √(b² - 4ac)) / (2a)
+        </div>
+
+        <h3 class="oak-paper-subtitle" id="oakPaperSection2">2. Learning Objectives &amp; Study Guidance</h3>
+        <p class="oak-paper-text" id="oakPaperGuidance">
+          Review core definitions, active vocabulary, and analytical methodologies covered during class sessions. Complete accompanying practice items and verify your solutions.
+        </p>
+
+        <div class="oak-paper-tip">
+          <span class="material-symbols-outlined" style="font-size:24px;">lightbulb</span>
+          <div style="font-size:13px; color:inherit;">
+            <span style="font-weight: 500;">Study Recommendation:</span> Review the accompanying worksheet and attempt the self-assessment exercise prior to next week's seminar.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ INTERACTIVE QUIZ MODAL ═══════════════ -->
+<div class="oak-modal-overlay" id="oakQuizModal" onclick="if(event.target===this)oakCloseQuiz()">
+  <div class="oak-modal-card">
+    <div class="oak-modal-header">
+      <h3><span data-ngis-icon="task_alt" style="color:#000000">task_alt</span> Algebra Practice Worksheet</h3>
+      <button class="oak-modal-close" onclick="oakCloseQuiz()" aria-label="Close quiz"><span data-ngis-icon="close"></span></button>
+    </div>
+    <div class="oak-modal-body">
+      <div style="margin-bottom:16px; color:#176B45; font-size:13px;">
+        Test your algebra mastery with this interactive self-graded exercise set. Instant hints and solutions are validated automatically.
+      </div>
+      <div id="quizQuestionsContainer">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+    <div class="oak-modal-footer">
+      <div id="quizScoreText" style="font-size:13px; font-weight: 400; color:#176B45;">Score: 0 / 3 answered</div>
+      <button class="oak-btn-submit-quiz" onclick="oakSubmitQuiz()">Check Answers</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script>
+(function () {
+  try { var _t = localStorage.getItem('ngis-theme'); if (_t) document.documentElement.setAttribute('data-theme', _t); } catch (e) {}
+  var p = new URLSearchParams(window.location.search);
+  var saved = window.NGISAuth ? NGISAuth.getUser() : null;
+  var explicit = window.NGISAuth && NGISAuth.hasExplicitSession();
+  var reqRole = (p.get('portal') || p.get('role') || '').toLowerCase();
+  if (reqRole === 'super_admin') reqRole = 'superadmin';
+  var role = explicit && saved && saved.role
+    ? String(saved.portal || saved.role).toLowerCase()
+    : (reqRole || (window.NGISAuth ? NGISAuth.getRole() : '') || localStorage.getItem('ngis_active_portal') || 'student').toLowerCase();
+  if (role === 'super_admin') role = 'superadmin';
+  if (role === 'editor') role = 'admin';
+
+  window.PAGE = { role: role, active: 'lessons' };
+  if (saved) window.CURRENT_USER = saved;
+  document.body.classList.add('ready');
+
+  var deptLink = (role === 'admin' || role === 'superadmin')
+    ? '../admin/admin-departments.html'
+    : (role === 'principal')
+      ? '../principal/principal-departments.html'
+      : (role === 'teacher')
+        ? '../teacher/teacher-departments.html'
+        : ('departments.html?portal=' + encodeURIComponent(role));
+
+  var subjKey = (p.get('subject') || p.get('dept') || 'math').toLowerCase();
+  var subjTitleMap = {
+    math: 'Mathematics Library',
+    physics: 'Physics Library',
+    chemistry: 'Chemistry Library',
+    biology: 'Biology Library',
+    english: 'English Language Library',
+    history: 'History Library',
+    geography: 'Geography Library',
+    cs: 'Computer Science Library'
+  };
+  var subjName = subjTitleMap[subjKey] || (subjKey.charAt(0).toUpperCase() + subjKey.slice(1) + ' Library');
+  document.title = 'NGIS — ' + subjName;
+
+  window.HERO_CONFIG = {
+    role: role,
+    title: subjName,
+    greeting: 'Browse and download teacher-uploaded learning materials, worksheets, and lecture notes.',
+    breadcrumbs: [{ label: 'Departments', href: deptLink }, { label: subjName }]
+  };
+})();
+</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script src="js/lesson-data.js"></script>
+<script src="js/lessons.js"></script>
+</body>
+</html>

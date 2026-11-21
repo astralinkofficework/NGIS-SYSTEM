@@ -54,7 +54,7 @@
       const card = document.createElement("div");
       card.className = `ngis-state-card ngis-empty-state ${fullWidth ? "full-width" : ""} ${className}`;
       card.innerHTML = `
-        <div class="ngis-state-icon neutral" style="background:#F3F3F5; color:#333333; border:1px solid #E5E5E8; width:52px; height:52px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:14px;">
+        <div class="ngis-state-icon neutral" style="color:#333333; width:52px; height:52px; display:inline-flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:14px;">
           ${iconHtml}
         </div>
         <h3 class="ngis-state-title" style="font-size:16px; font-weight:500; color:#000000; margin-bottom:8px;">

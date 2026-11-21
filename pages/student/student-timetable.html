@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
 <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
 <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+<script src="../../assets/js/icons-3d.js?v=1.0" defer></script>
 <script src="../../assets/js/khmer-suite-data.js"></script>
 
 <style>
@@ -104,7 +105,7 @@
       <div class="card" id="wkttCard">
         <div class="wktt-head">
           <div>
-            <h3>Weekly Class Timetable</h3>
+            <h3 style="display:flex;align-items:center;gap:8px;"><img src="../../assets/images/icons-3d/timetable.png" width="22" height="22" class="ngis-3d-icon" alt="" aria-hidden="true"><span>Weekly Class Timetable</span></h3>
             <div class="wktt-sub" id="wkttSubtitle">Published weekly schedule · synced with the NGIS Timetable Registry</div>
           </div>
           <div class="wktt-meta" id="wkttMeta"></div>
@@ -124,7 +125,7 @@
 </div>
 </main>
 
-<script>window.PAGE = {"role":"student","active":"departments"};
+<script>window.PAGE = {"role":"student","active":"timetable"};
 window.HERO_CONFIG = {
   title: 'Class Timetable',
   greeting: 'Your recurring weekly class schedule — synced with the NGIS Timetable Registry',
@@ -138,8 +139,9 @@ window.HERO_CONFIG = {
   profileLink: 'student-profile.html',
   notifLink: 'student-notifications.html',
   notifCount: 3,
+  calendarLink: 'student-calendar.html',
   breadcrumbs: [
-    { label: 'Academic Departments', href: '../shared/departments.html?portal=student' },
+    { label: 'Dashboard', href: 'student.html' },
     { label: 'Class Timetable' }
   ],
   ddRows: [
@@ -426,13 +428,15 @@ window.HERO_CONFIG = {
     if (state.loading) return renderLoading();
 
     if (state.error === 'no-enrollment') {
-      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">person_off</span>' +
+      var iconHtml = window.NGIS3D ? NGIS3D.html('student-profile', {size:48, alt:''}) : '<span class="material-symbols-outlined">person_off</span>';
+      el.innerHTML = '<div class="wktt-state">' + iconHtml +
         '<div class="wktt-state-title">No enrollment record found</div>' +
         '<div class="wktt-state-sub">Your class enrollment could not be resolved from school records, so no timetable can be shown.</div></div>';
       return;
     }
     if (state.error === 'network') {
-      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">wifi_off</span>' +
+      var iconHtml = window.NGIS3D ? NGIS3D.html('alarm-clock', {size:48, alt:''}) : '<span class="material-symbols-outlined">wifi_off</span>';
+      el.innerHTML = '<div class="wktt-state">' + iconHtml +
         '<div class="wktt-state-title">Could not load the timetable</div>' +
         '<div class="wktt-state-sub">The timetable service is unreachable right now.</div>' +
         '<button type="button" class="wktt-day-btn" id="wkttRetry" style="margin-top:12px">Retry</button></div>';
@@ -443,7 +447,8 @@ window.HERO_CONFIG = {
 
     var publishedCount = state.entries.filter(function (e) { return e.published && e.lessons.length; }).length;
     if (!publishedCount) {
-      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">hourglass_empty</span>' +
+      var iconHtml = window.NGIS3D ? NGIS3D.html('calendar', {size:48, alt:''}) : '<span class="material-symbols-outlined">hourglass_empty</span>';
+      el.innerHTML = '<div class="wktt-state">' + iconHtml +
         '<div class="wktt-state-title">No published timetable yet</div>' +
         '<div class="wktt-state-sub">Your class schedule will appear here automatically once the school publishes it.</div></div>';
       return;
@@ -451,7 +456,8 @@ window.HERO_CONFIG = {
 
     var lessons = allLessons().filter(function (it) { return state.dayFilter === 'all' || it.lesson.day === state.dayFilter; });
     if (!lessons.length) {
-      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">event_busy</span>' +
+      var iconHtml = window.NGIS3D ? NGIS3D.html('empty-box', {size:48, alt:''}) : '<span class="material-symbols-outlined">event_busy</span>';
+      el.innerHTML = '<div class="wktt-state">' + iconHtml +
         '<div class="wktt-state-title">No classes scheduled</div>' +
         '<div class="wktt-state-sub">There are no lessons for this selection in the published schedule.</div></div>';
       return;

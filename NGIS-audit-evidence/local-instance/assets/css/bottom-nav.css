@@ -1,0 +1,311 @@
+/**
+ * ============================================================================
+ * NGIS ERP — Master Global Expanding-Chip Floating Bottom Navigation
+ * New Gateway International School · Modern Expanding-Chip Navigation System
+ *
+ * Requirements & Specifications:
+ * - Floating horizontal capsule container centered at bottom
+ * - Dimensions: Height 64px, Max-width 480px, Padding 8px, Margin 16px
+ * - Container radius: 999px (fully rounded capsule)
+ * - Clean white background (#FFFFFF) with subtle elevation shadow: 0 8px 24px rgba(0,0,0,0.08)
+ * - Dark theme support (#1E293B, border rgba(51,65,85,0.8), shadow 0 8px 24px rgba(0,0,0,0.35))
+ * - Inactive tabs: Compact 48x48px circle, neutral icon (#64748B), hidden text label
+ * - Active tab: Expands horizontally into rounded pill (height 48px, padding 0 16px, radius 999px)
+ *   with Forest Green (#176B45) brand background and pure white icon & text label
+ * - Smooth transition (180-240ms) for width, padding, opacity, and color
+ * - Strict AGENTS.md compliance: NO BOLD FONTS (font-weight <= 500), official Bootstrap SVGs
+ * - Tablet & Mobile (<= 1024px): Visible; Desktop (>= 1025px): Strictly hidden
+ * - Safe area support (env(safe-area-inset-bottom)), zero horizontal overflow
+ * - Page bottom clearance padding: 92px
+ * ============================================================================
+ */
+
+/* ── 1. Desktop Suppression & Legacy Cleanup ──────────────────────────────── */
+.bottomnav,
+.bottom-dock-nav,
+.mob-bottomnav:not(.ngis-chip-dock),
+#bottomnav,
+#mobBottomNav:not(.ngis-chip-dock),
+.mob-bn-shell,
+.mob-bn-glow,
+.mob-bn-slider {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+/* Strictly hide on desktop (>= 1025px) where full sidebar + topbar exist */
+@media (min-width: 1025px) {
+  .ngis-chip-dock,
+  #ngisChipDock {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/* Hide when virtual keyboard opens or screen height is very short */
+@media (max-height: 480px) {
+  .ngis-chip-dock,
+  #ngisChipDock {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+/* ── 2. Content Bottom Clearance (Prevents bottom dock obscuring content) ─── */
+@media (max-width: 1024px) {
+  body {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  main.main-content,
+  main.page,
+  main#mainContent,
+  .page-content,
+  .dashboard-container,
+  .workspace-canvas {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ── 3. Floating Capsule Container ────────────────────────────────────────── */
+.ngis-chip-dock {
+  display: block;
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(0);
+  width: calc(100% - 32px);
+  max-width: 480px;
+  height: 64px;
+  z-index: 90;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  box-sizing: border-box;
+  margin: 0 auto;
+  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 220ms ease,
+              visibility 220ms;
+  will-change: transform, opacity;
+}
+
+/* ── 4. Internal Track & Elevation Shell ───────────────────────────────────── */
+.ngis-chip-dock-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08),
+              0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .ngis-chip-dock-track {
+  background: #1E293B;
+  border-color: rgba(51, 65, 85, 0.9);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+              0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ── 5. Navigation Items & Morphing Chips ─────────────────────────────────── */
+.ngis-chip-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  min-height: 48px;
+  min-width: 48px;
+  width: 48px;
+  padding: 0;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #64748B;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+  transition: width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              padding 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 200ms ease,
+              color 200ms ease,
+              box-shadow 200ms ease,
+              transform 140ms ease;
+}
+
+/* Inactive Hover State */
+.ngis-chip-item:not(.is-active):hover {
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+[data-theme="dark"] .ngis-chip-item {
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .ngis-chip-item:not(.is-active):hover {
+  color: #F8FAFC;
+  background: #334155;
+}
+
+/* Accessible Keyboard Focus Ring */
+.ngis-chip-item:focus-visible {
+  outline: 2px solid var(--color-primary, #176B45);
+  outline-offset: 2px;
+}
+
+/* Press feedback */
+.ngis-chip-item:active {
+  transform: scale(0.96);
+}
+
+/* ── 6. SVG Icon Styling ─────────────────────────────────────────────────── */
+.ngis-chip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+}
+
+.ngis-chip-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  stroke: none;
+  display: block;
+}
+
+/* Notification badge dot */
+.ngis-chip-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #DC3545;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(220, 53, 69, 0.4);
+}
+
+[data-theme="dark"] .ngis-chip-dot {
+  border-color: #1E293B;
+}
+
+/* ── 7. Text Label (Collapsed for Inactive, Expanded for Active) ───────────── */
+.ngis-chip-label {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-primary, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: 13.5px;
+  font-weight: 500; /* Strict AGENTS.md requirement: NO BOLD FONTS */
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-left: 0;
+  pointer-events: none;
+  transition: max-width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 180ms ease,
+              margin-left 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── 8. Active Expanding Chip ─────────────────────────────────────────────── */
+.ngis-chip-item.is-active {
+  width: auto;
+  min-width: 48px;
+  padding: 0 16px;
+  background: var(--color-primary, #176B45) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 3px 12px rgba(23, 107, 69, 0.3);
+  cursor: default;
+}
+
+[data-theme="dark"] .ngis-chip-item.is-active {
+  background: #176B45 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 3px 12px rgba(23, 107, 69, 0.45);
+}
+
+.ngis-chip-item.is-active .ngis-chip-icon {
+  color: #FFFFFF;
+}
+
+.ngis-chip-item.is-active .ngis-chip-label {
+  max-width: 140px;
+  opacity: 1;
+  margin-left: 8px;
+  color: #FFFFFF;
+}
+
+/* ── 9. Collision Avoidance (Sidebar Drawer, Modals, Dialogs) ─────────────── */
+body.sidebar-open .ngis-chip-dock,
+body:has(#sidebar.open) .ngis-chip-dock,
+body:has(.scrim.show) .ngis-chip-dock,
+body.modal-open .ngis-chip-dock,
+body:has(.modal.show) .ngis-chip-dock,
+body:has(dialog[open]) .ngis-chip-dock,
+.ngis-chip-dock.is-hidden {
+  transform: translateX(-50%) translateY(calc(100% + 32px)) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden;
+}
+
+/* ── 10. Small Viewport Adaptation (320px - 360px) ────────────────────────── */
+@media (max-width: 360px) {
+  .ngis-chip-dock {
+    width: calc(100% - 16px);
+    margin: 0 8px;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+  .ngis-chip-dock-track {
+    padding: 6px;
+    gap: 2px;
+  }
+  .ngis-chip-item {
+    height: 44px;
+    min-height: 44px;
+    min-width: 42px;
+    width: 42px;
+  }
+  .ngis-chip-item.is-active {
+    padding: 0 12px;
+  }
+  .ngis-chip-label {
+    font-size: 12.5px;
+  }
+  .ngis-chip-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ── 11. Accessibility: Reduced Motion ────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ngis-chip-dock,
+  .ngis-chip-item,
+  .ngis-chip-label,
+  .ngis-chip-icon {
+    transition: none !important;
+    animation: none !important;
+  }
+}

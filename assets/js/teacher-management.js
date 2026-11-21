@@ -122,15 +122,15 @@
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Pending Verification</div><div class="text-xl font-medium text-[#D9741A] mt-0.5">' + pending + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-[#FEF0E3] text-[#D9741A] flex items-center justify-center"><span class="material-symbols-outlined text-lg">pending_actions</span></div>' +
+              '<div class="w-9 h-9 text-[#D9741A] flex items-center justify-center"><span class="material-symbols-outlined text-lg">pending_actions</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Approved Changes</div><div class="text-xl font-medium text-[#176B45] mt-0.5">' + approved + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified</span></div>' +
+              '<div class="w-9 h-9 text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Total Submissions</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + total + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">inventory_2</span></div>' +
+              '<div class="w-9 h-9 text-slate-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">inventory_2</span></div>' +
             '</div>' +
           '</div>' +
 
@@ -390,15 +390,15 @@
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Active Teaching Allocations</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalAssigned + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">assignment_ind</span></div>' +
+              '<div class="w-9 h-9 text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">assignment_ind</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Assigned Faculty</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalFaculty + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">groups</span></div>' +
+              '<div class="w-9 h-9 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">groups</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Heavy Workload Warnings</div><div class="text-xl font-medium ' + (heavyLoads > 0 ? 'text-[#D9741A]' : 'text-slate-800') + ' mt-0.5">' + heavyLoads + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-[#FEF0E3] text-[#D9741A] flex items-center justify-center"><span class="material-symbols-outlined text-lg">speed</span></div>' +
+              '<div class="w-9 h-9 text-[#D9741A] flex items-center justify-center"><span class="material-symbols-outlined text-lg">speed</span></div>' +
             '</div>' +
           '</div>' +
 
@@ -564,15 +564,15 @@
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Assigned Homerooms</div><div class="text-xl font-medium text-[#176B45] mt-0.5">' + assigned + ' / ' + state.records.length + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified_user</span></div>' +
+              '<div class="w-9 h-9 text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">verified_user</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Vacant Allocations</div><div class="text-xl font-medium ' + (vacant > 0 ? 'text-[#DC3545]' : 'text-slate-800') + ' mt-0.5">' + vacant + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-[#FDECEC] text-[#DC3545] flex items-center justify-center"><span class="material-symbols-outlined text-lg">notification_important</span></div>' +
+              '<div class="w-9 h-9 text-[#DC3545] flex items-center justify-center"><span class="material-symbols-outlined text-lg">notification_important</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Total Roster Enrollment</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalStudents + ' Students</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">school</span></div>' +
+              '<div class="w-9 h-9 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">school</span></div>' +
             '</div>' +
           '</div>' +
 
@@ -1119,15 +1119,15 @@
           '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Total Documented Hours</div><div class="text-xl font-medium text-slate-800 mt-0.5">' + totalHours + ' hrs</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">schedule</span></div>' +
+              '<div class="w-9 h-9 text-[#176B45] flex items-center justify-center"><span class="material-symbols-outlined text-lg">schedule</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Verified Contributions</div><div class="text-xl font-medium text-blue-600 mt-0.5">' + verifiedCount + ' / ' + state.records.length + '</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">check_circle</span></div>' +
+              '<div class="w-9 h-9 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">check_circle</span></div>' +
             '</div>' +
             '<div class="bg-white border border-slate-200 rounded-xl p-3.5 shadow-2xs flex items-center justify-between">' +
               '<div><div class="text-xs text-slate-400 font-medium">Extracurricular Areas</div><div class="text-xl font-medium text-purple-600 mt-0.5">5 Categories</div></div>' +
-              '<div class="w-9 h-9 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">category</span></div>' +
+              '<div class="w-9 h-9 text-purple-600 flex items-center justify-center"><span class="material-symbols-outlined text-lg">category</span></div>' +
             '</div>' +
           '</div>' +
 

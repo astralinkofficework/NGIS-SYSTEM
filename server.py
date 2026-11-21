@@ -9603,10 +9603,16 @@ def route_access_denied():
 
 # ── CATCH-ALL & STATIC SERVING ──
 
+@app.get('/pages/principal/principal-timetables.html')
+def redirect_principal_timetables():
+    target = '/pages/principal/principal-timetable-builder.html'
+    if request.query_string:
+        target += '?' + request.query_string.decode('latin-1')
+    return redirect(target, code=308)
+
+
 @app.route('/', defaults={'path': ''})
-
 @app.route('/<path:path>')
-
 def catch_all(path):
 
     if not path:

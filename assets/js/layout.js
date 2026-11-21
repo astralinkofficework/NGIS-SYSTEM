@@ -193,6 +193,8 @@
 
           { id:"timetables",  label:"Timetables",  icon:"calendar_view_week", href:"pages/admin/admin-timetables.html" },
 
+          { id:"calendar",    label:"Academic Calendar", icon:"calendar",      href:"pages/admin/admin-calendar.html" },
+
         ]},
 
         { id:"records", label:"INSTITUTIONAL RECORDS", icon:"folder_shared", links:[
@@ -331,8 +333,25 @@
 
         { id:"academics", label:"ACADEMICS", icon:"school", links:[
 
-          { id:"departments", label:"Academic Departments", icon:"apartment", href:"pages/shared/departments.html?portal=student" },
+          { id:"calendar", label:"Academic Calendar", icon:"calendar", href:"pages/student/student-calendar.html" },
 
+          { id:"timetable", label:"Class Timetable", icon:"calendar_view_week", href:"pages/student/student-timetable.html" },
+
+          {
+            id: "departments-drop",
+            label: "Academic Departments",
+            icon: "apartment",
+            collapsible: true,
+            children: [
+              { id: "departments", label: "All Departments", icon: "grid_view", href: "pages/shared/departments.html?portal=student" },
+              { id: "dept-khmer", label: "Khmer Studies", icon: "translate", href: "pages/shared/department.html?id=khmer&portal=student" },
+              { id: "dept-english", label: "English Language", icon: "menu_book", href: "pages/shared/department.html?id=english&portal=student" },
+              { id: "dept-chinese", label: "Chinese Language", icon: "public", href: "pages/shared/department.html?id=chinese&portal=student" },
+              { id: "dept-math", label: "Mathematics", icon: "calculate", href: "pages/shared/department.html?id=math&portal=student" },
+              { id: "dept-science", label: "Science & STEM", icon: "science", href: "pages/shared/department.html?id=science&portal=student" },
+              { id: "dept-social", label: "Social Studies", icon: "history_edu", href: "pages/shared/department.html?id=social&portal=student" }
+            ]
+          },
 
         ]},
 
@@ -378,14 +397,28 @@
         { id: "academic-oversight", label: "ACADEMIC OVERSIGHT", icon: "assignment", links: [
           { id: "attendance", label: "Attendance", icon: "how_to_reg", href: "pages/principal/principal-attendance.html" },
           { id: "classes", label: "Classes & Cohorts", icon: "class", href: "pages/principal/principal-classes.html" },
-          { id: "departments", label: "Academic Departments", icon: "apartment", href: "pages/principal/principal-departments.html" },
+          { id: "calendar", label: "Academic Calendar", icon: "calendar", href: "pages/principal/principal-calendar.html" },
+          {
+            id: "departments-drop",
+            label: "Academic Departments",
+            icon: "apartment",
+            collapsible: true,
+            children: [
+              { id: "departments", label: "All Departments", icon: "grid_view", href: "pages/principal/principal-departments.html" },
+              { id: "pdept-khm", label: "Khmer Studies", icon: "translate", href: "pages/principal/principal-departments.html?dept=dept-khm" },
+              { id: "pdept-eng", label: "English Dept", icon: "menu_book", href: "pages/principal/principal-departments.html?dept=dept-eng" },
+              { id: "pdept-chn", label: "Chinese Language", icon: "public", href: "pages/principal/principal-departments.html?dept=dept-chn" },
+              { id: "pdept-mat", label: "Mathematics", icon: "calculate", href: "pages/principal/principal-departments.html?dept=dept-mat" },
+              { id: "pdept-sci", label: "Science Wing", icon: "science", href: "pages/principal/principal-departments.html?dept=dept-sci" },
+              { id: "pdept-hum", label: "Humanities", icon: "history_edu", href: "pages/principal/principal-departments.html?dept=dept-hum" }
+            ]
+          },
           { id: "reports", label: "Student Results & Reports", icon: "assessment", href: "pages/principal/principal-reports.html" },
         ]},
         { id:"khmer-suite", label:"TIMETABLE MANAGEMENT", icon:"calendar_view_week", links:[
 
           { id:"ks-wizard", label:"Teacher Assignment", icon:"swap_horiz", href:"pages/principal/principal-teacher-class-assignment.html" },
           { id:"ks-builder", label:"Timetable Builder", icon:"grid_view", href:"pages/principal/principal-timetable-builder.html" },
-          { id:"ks-viewer", label:"Timetables Matrix", icon:"calendar_view_week", href:"pages/principal/principal-timetables.html" },
           { id:"ks-subjects", label:"Curriculum Subjects", icon:"menu_book", href:"pages/principal/principal-subjects.html" }
         ]},
         { id: "students-mgmt", label: "STUDENT MANAGEMENT", icon: "group", links: [
@@ -693,6 +726,7 @@
 
   const STAFF_ALLOWED_FILES = [
     "admin-services.html",
+    "admin-calendar.html",
     "admin-lost-found.html",
     "principal-lost-found.html",
     "admin-campuses.html",
@@ -703,7 +737,9 @@
   const PRINCIPAL_ADMIN_SHARED_FILES = [
     "admin-school-information.html",
     "admin-dashboard-content.html",
-    "admin-timetables.html"
+    "admin-timetables.html",
+    "admin-calendar.html",
+    "principal-calendar.html"
   ];
 
   function readStoredUser(key) {
@@ -1331,7 +1367,7 @@
 
       const links = g.links.map(l => {
 
-        if (l.visible === false) return '';
+        if (l.visible === false || l.id === 'logout') return '';
 
         if (l.children && l.children.length > 0) {
 
@@ -2822,7 +2858,7 @@
       <div id="ngisOperationSuccessModal" role="dialog" aria-modal="true" class="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity" style="z-index: 10001;">
         <div class="fixed inset-0 cursor-pointer" data-close-op-modal="true"></div>
         <div class="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 text-center transform transition-all animate-scale-in">
-          <div class="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-[#0F5132] dark:text-emerald-400 mx-auto flex items-center justify-center mb-3">
+          <div class="w-14 h-14 text-[#0F5132] dark:text-emerald-400 mx-auto flex items-center justify-center mb-3">
             <svg class="w-7 h-7 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>

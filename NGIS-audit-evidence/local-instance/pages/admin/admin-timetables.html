@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="shell-type" content="web_dashboard">
+<title>NGIS — Timetable Monitoring | System Admin</title>
+
+<!-- Fonts: Strictly 400 and 500 weights (NO BOLD FONTS rule) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Kantumruy+Pro:wght@400;500&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<!-- Phosphor Icons for Mobile Hamburger Navigation (AGENTS.md Critical Rule) -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS v3 with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: ['selector', '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#edf6f1',
+          100: '#d7ecdf',
+          500: '#176B45',
+          600: '#145939',
+          700: '#0f422b',
+          800: '#0b301f',
+          900: '#061d13'
+        },
+        forest: { 50: '#F0FDF4', 100: '#DCFCE7', 500: '#22C55E', 700: '#15803D', 800: '#176B45', 900: '#14532D' },
+        primary: "#29352E",
+        surface: "#F8FAFC",
+        outline: "#E1E9E3"
+      },
+      fontFamily: {
+        sans: ['Inter', 'Kantumruy Pro', '"Noto Sans Khmer"', 'sans-serif'],
+        khmer: ['Kantumruy Pro', '"Noto Sans Khmer"', 'sans-serif'],
+        display: ['Inter', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace']
+      },
+      fontWeight: {
+        normal: '400',
+        medium: '500'
+      }
+    }
+  }
+};
+</script>
+
+<!-- NGIS Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.1">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css?v=3.2">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+<script>try{var t=localStorage.getItem('ngis-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}</script>
+
+<!-- BEGIN: Custom Styles & Typography Guard -->
+<style>
+  html, body {
+    background: #F8FAFC;
+    color: #29352E;
+  }
+  [data-theme="dark"] html, [data-theme="dark"] body {
+    background: #0f172a;
+    color: #f1f5f9;
+  }
+  .main { min-height: 100vh; }
+  
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  
+  /* Strict Typography Guard: Maximum 500 weight across all elements */
+  body, h1, h2, h3, h4, h5, h6, p, span, button, input, select, textarea, label {
+    font-weight: 400;
+  }
+  .font-medium, h1, h2, h3, h4, h5, h6, th, dt, strong, b {
+    font-weight: 500 !important;
+  }
+  
+  /* Sticky column styling for horizontal scroll responsiveness */
+  .sticky-col-first {
+    position: sticky;
+    left: 0;
+    z-index: 20;
+    background-color: inherit;
+  }
+  .sticky-col-header {
+    position: sticky;
+    left: 0;
+    z-index: 30;
+  }
+  
+  /* Modal backdrop display guard */
+  #monDetailModal.open, #monDetailModal.is-open,
+  #monRemindModal.open, #monRemindModal.is-open {
+    display: flex !important;
+  }
+</style>
+<!-- END: Custom Styles & Typography Guard -->
+</head>
+
+<body data-role="admin" data-portal="admin" data-page="timetables" class="bg-[#F8FAFC] text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<main class="main flex-1 flex flex-col">
+
+  <!-- Authoritative NGIS Responsive Hero Banner & Desktop Topbar -->
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- Mandatory Mobile Responsive Hamburger Header (AGENTS.md Critical Rule) -->
+  <div class="md:hidden flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur border-b border-[#E1E9E3] sticky top-0 z-30 mb-2">
+    <div class="flex items-center gap-2.5">
+      <button data-action="toggle-sidebar" class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 transition active:scale-95 border border-[#E1E9E3]" aria-label="Open menu" aria-expanded="false">
+        <i class="ph ph-list text-xl"></i>
+      </button>
+      <div>
+        <span class="text-[10px] font-medium text-[#176B45] tracking-wider uppercase block">Academic Structure</span>
+        <h1 class="text-sm font-medium text-slate-900 leading-tight">Timetable Monitoring</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <button type="button" id="monRefreshMobile" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 border border-[#E1E9E3] transition active:scale-95" aria-label="Refresh Live Status">
+        <span class="material-symbols-outlined text-[18px]">refresh</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Page Content Container -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-6 pb-16 pt-2">
+
+    <!-- Operational Header & Breadcrumb Info -->
+    <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="inline-flex items-center gap-1.5 text-xs font-medium text-[#176B45] uppercase tracking-wider">
+            <span class="material-symbols-outlined text-[15px]">calendar_view_week</span>
+            Academic Structure • Timetable Oversight
+          </span>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-medium text-slate-900 tracking-tight hidden lg:block">Timetable Monitoring</h1>
+        <p class="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">
+          Read-only overview · Master timetable editing restricted to Principal roles
+        </p>
+      </div>
+      <div class="flex items-center gap-2 self-start sm:self-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+          Live Monitoring Active
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+          <span class="material-symbols-outlined text-[14px] text-slate-500">school</span>
+          ឆ្នាំសិក្សា ២០២៦–២០២៧
+        </span>
+      </div>
+    </section>
+
+    <!-- ── PRINCIPAL ADJUSTMENT REQUESTS INBOX (Academic Collaboration Master MVP) ── -->
+    <section id="principalRequestsSection" class="p-4 bg-amber-50/80 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-xl">assignment_return</span>
+        </div>
+        <div>
+          <div class="text-xs font-medium text-amber-900 flex items-center gap-2">
+            <span>Principal Academic Requests</span>
+            <span class="px-2 py-0.2 rounded-full text-[10px] bg-amber-200 text-amber-900 font-medium" id="prBadgeCount">2 Awaiting Review</span>
+          </div>
+          <p class="text-[11px] text-amber-700 mt-0.5">Dr. Ly Bunheng (Principal) submitted proposed timetable adjustments for Grade 10A Science and Grade 7B Physics.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button type="button" id="btnAdminReviewTimetableReq" class="px-3.5 py-2 text-xs font-medium text-amber-900 bg-white hover:bg-amber-100 border border-amber-300 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">rate_review</span>
+          <span>Review Proposed Shifts</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ── KPI SUMMARY CARDS (4 interactive metrics) ── -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="kpi-metrics-grid">
+      <!-- Metric 1: Total Classes -->
+      <div class="bg-white rounded-2xl border border-[#E1E9E3] p-4 sm:p-5 shadow-xs hover:border-[#176B45]/40 transition flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Classes</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-700">All Sections</span>
+        </div>
+        <div class="mt-3">
+          <div id="monKpiTotal" class="text-2xl sm:text-3xl font-medium text-slate-900 tracking-tight tabular-nums">12</div>
+          <p class="text-xs text-slate-400 font-normal mt-1 flex items-center gap-1">
+            Active class registry in system
+          </p>
+        </div>
+      </div>
+
+      <!-- Metric 2: Published -->
+      <div class="bg-white rounded-2xl border border-[#E1E9E3] p-4 sm:p-5 shadow-xs hover:border-[#176B45]/40 transition flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Published</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-[#176B45]">Active Live</span>
+        </div>
+        <div class="mt-3">
+          <div id="monKpiPublished" class="text-2xl sm:text-3xl font-medium text-slate-900 tracking-tight tabular-nums">0</div>
+          <p id="monKpiPublishedSub" class="text-xs text-slate-400 font-normal mt-1 truncate">
+            Live on teacher &amp; student portals
+          </p>
+        </div>
+      </div>
+
+      <!-- Metric 3: Draft / In Progress -->
+      <div class="bg-white rounded-2xl border border-[#E1E9E3] p-4 sm:p-5 shadow-xs hover:border-[#176B45]/40 transition flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">In Progress</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700">Review</span>
+        </div>
+        <div class="mt-3">
+          <div id="monKpiDraft" class="text-2xl sm:text-3xl font-medium text-slate-900 tracking-tight tabular-nums">0</div>
+          <p id="monKpiDraftSub" class="text-xs text-slate-400 font-normal mt-1 truncate">
+            No active drafts in review
+          </p>
+        </div>
+      </div>
+
+      <!-- Metric 4: Not Started -->
+      <div class="bg-white rounded-2xl border border-[#E1E9E3] p-4 sm:p-5 shadow-xs hover:border-[#176B45]/40 transition flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Not Started</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600">Pending</span>
+        </div>
+        <div class="mt-3">
+          <div id="monKpiNotStarted" class="text-2xl sm:text-3xl font-medium text-slate-900 tracking-tight tabular-nums">12</div>
+          <p class="text-xs text-slate-400 font-normal mt-1">
+            Timetable preparation required
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FILTERS & ACTIONS TOOLBAR ── -->
+    <section class="bg-white rounded-2xl border border-[#E1E9E3] p-4 sm:p-5 shadow-xs space-y-3" data-purpose="filters-toolbar">
+      <!-- Top Row Filters (6 columns) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Filter 1: Academic Year -->
+        <div>
+          <label for="monFilterYear" class="block text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">Academic Year</label>
+          <select id="monFilterYear" data-placeholder="Academic Year" disabled
+                  class="w-full text-xs bg-slate-50/80 border border-[#E1E9E3] rounded-xl px-2.5 py-2 font-khmer text-slate-700 focus:bg-white focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] transition-colors cursor-not-allowed">
+            <option>ឆ្នាំសិក្សា ២០២៦–២០២៧</option>
+          </select>
+        </div>
+        <!-- Filter 2: Campus -->
+        <div>
+          <label for="monFilterCampus" class="block text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">Campus</label>
+          <select id="monFilterCampus" data-placeholder="All Campuses"
+                  class="w-full text-xs bg-white border border-[#E1E9E3] rounded-xl px-2.5 py-2 text-slate-700 focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] transition-colors">
+            <option value="">All Campuses</option>
+          </select>
+        </div>
+        <!-- Filter 3: Department -->
+        <div>
+          <label for="monFilterDept" class="block text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">Department</label>
+          <select id="monFilterDept" data-placeholder="All Departments"
+                  class="w-full text-xs bg-white border border-[#E1E9E3] rounded-xl px-2.5 py-2 text-slate-700 focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] transition-colors">
+            <option value="">All Departments</option>
+          </select>
+        </div>
+        <!-- Filter 4: Grade -->
+        <div>
+          <label for="monFilterGrade" class="block text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">Grade Level</label>
+          <select id="monFilterGrade" data-placeholder="All Grades"
+                  class="w-full text-xs bg-white border border-[#E1E9E3] rounded-xl px-2.5 py-2 text-slate-700 focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] transition-colors">
+            <option value="">All Grades</option>
+          </select>
+        </div>
+        <!-- Filter 5: Publication Status -->
+        <div>
+          <label for="monFilterStatus" class="block text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">Status</label>
+          <select id="monFilterStatus" data-placeholder="All Statuses"
+                  class="w-full text-xs bg-white border border-[#E1E9E3] rounded-xl px-2.5 py-2 text-slate-700 focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] transition-colors">
+            <option value="">All Statuses</option>
+          </select>
+        </div>
+        <!-- Filter 6: Quick Class / Faculty Search -->
+        <div>
+          <label for="monSearch" class="block text-[11px] font-medium text-slate-500 uppercase tracking-wider mb-1">Keyword Search</label>
+          <div class="ngis-search"><span class="material-symbols-outlined ngis-search-icon" aria-hidden="true">search</span><input id="monSearch" type="search" placeholder="Search class or faculty…" autocomplete="off"
+                   class="w-full ngis-search-input"></div>
+        </div>
+      </div>
+
+      <!-- Filter Actions & Sort Controls -->
+      <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <label for="monFilterSort" class="text-xs text-slate-500 font-normal">Sort by:</label>
+          <select id="monFilterSort"
+                  class="text-xs font-medium bg-slate-50 border border-[#E1E9E3] rounded-lg py-1.5 pl-2.5 pr-7 text-slate-700 focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer">
+            <option value="attention">Attention Needed</option>
+            <option value="class_asc">Class Code (Ascending)</option>
+            <option value="class_desc">Class Code (Descending)</option>
+            <option value="completion_asc">Completion Rate (Low to High)</option>
+            <option value="completion_desc">Completion Rate (High to Low)</option>
+            <option value="recent">Recently Edited</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="monClearFilters" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition active:scale-95">
+            <span class="material-symbols-outlined text-[15px] text-slate-500">filter_alt_off</span>
+            <span>Clear Filters</span>
+          </button>
+          <button type="button" id="monExport" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-[#E1E9E3] hover:bg-slate-50 rounded-xl shadow-2xs transition active:scale-95">
+            <span class="material-symbols-outlined text-[15px] text-slate-500">download</span>
+            <span>Export CSV</span>
+          </button>
+          <button type="button" id="monRefresh" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#176B45] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition active:scale-95">
+            <span class="material-symbols-outlined text-[15px] text-[#176B45]">refresh</span>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CLASS TIMETABLE STATUS DATA TABLE CARD ── -->
+    <section class="bg-white rounded-2xl border border-[#E1E9E3] shadow-xs overflow-hidden" data-purpose="class-timetable-table">
+      <!-- Table Header Banner -->
+      <div class="px-5 py-4 border-b border-[#E1E9E3] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-slate-50/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">table_chart</span>
+          </div>
+          <div>
+            <h2 class="text-sm font-medium text-slate-900 leading-tight">Class Timetable Status Registry</h2>
+            <p class="text-[11px] text-slate-500 font-normal">Official monitoring roster across 12 academic sections</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] text-slate-400 font-normal hidden sm:inline flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px] text-slate-400">info</span>
+            Read-only oversight · Principal manages timetable preparation
+          </span>
+        </div>
+      </div>
+
+      <!-- Responsive Table Container with Sticky First Column -->
+      <div id="monTableWrap" class="overflow-x-auto">
+        <table id="monTable" class="w-full text-left border-collapse text-xs whitespace-nowrap min-w-[1100px]">
+          <thead>
+            <tr class="bg-slate-50 text-[11px] font-medium text-slate-500 uppercase tracking-wider border-b border-[#E1E9E3]">
+              <th class="py-3.5 pl-4 sm:pl-6 pr-4 sticky-col-header bg-slate-50 min-w-[180px] font-medium" scope="col">Class &amp; Cohort</th>
+              <th class="px-4 py-3.5 min-w-[130px] font-medium" scope="col">Campus</th>
+              <th class="px-4 py-3.5 min-w-[130px] font-medium" scope="col">Department</th>
+              <th class="px-4 py-3.5 min-w-[160px] font-medium" scope="col">Responsible Faculty</th>
+              <th class="px-4 py-3.5 min-w-[150px] font-medium" scope="col">Completion</th>
+              <th class="px-4 py-3.5 min-w-[90px] font-medium" scope="col">Draft</th>
+              <th class="px-4 py-3.5 min-w-[140px] font-medium" scope="col">Publication Status</th>
+              <th class="px-4 py-3.5 min-w-[130px] font-medium hidden xl:table-cell" scope="col">Last Edited By</th>
+              <th class="px-4 py-3.5 min-w-[110px] font-medium hidden xl:table-cell" scope="col">Last Edited</th>
+              <th class="px-4 py-3.5 min-w-[120px] font-medium hidden lg:table-cell" scope="col">Published By</th>
+              <th class="px-4 py-3.5 min-w-[110px] font-medium hidden lg:table-cell" scope="col">Published At</th>
+              <th class="pr-4 sm:pr-6 pl-4 py-3.5 text-right min-w-[110px] font-medium" scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="monTableBody" class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td colspan="12" class="px-4 py-12 text-center text-xs text-slate-400">
+                <span class="material-symbols-outlined text-3xl block mb-2 text-slate-300">hourglass_top</span>
+                Loading monitoring data…
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination & Row Summary Controls -->
+      <div id="monPagination" class="px-5 py-3 border-t border-[#E1E9E3] flex flex-wrap items-center justify-between gap-4 bg-slate-50/50">
+        <span id="monPageInfo" class="text-xs text-slate-500 font-normal">Showing 1 to 10 of 12 classes</span>
+        <div class="flex items-center gap-1.5">
+          <button type="button" id="monPagePrev" disabled class="p-1.5 rounded-lg border border-[#E1E9E3] bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition active:scale-95" aria-label="Previous page">
+            <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+          </button>
+          <span id="monPageLabel" class="text-xs text-slate-600 font-normal px-2">Page 1 / 2</span>
+          <button type="button" id="monPageNext" class="p-1.5 rounded-lg border border-[#E1E9E3] bg-white text-slate-600 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 transition active:scale-95" aria-label="Next page">
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ── CLASS TIMETABLE & SCHEDULE MODAL (read-only) ── -->
+  <div id="monDetailModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-[#E1E9E3] w-full max-w-4xl max-h-[92vh] overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col">
+      <!-- Pinned green accent bar -->
+      <div class="h-1 bg-[#176B45] shrink-0"></div>
+      
+      <!-- Pinned Header -->
+      <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#E1E9E3] bg-slate-50/70 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 id="monDetailTitle" class="text-sm sm:text-base font-medium text-slate-900">Class Timetable Details</h3>
+              <span id="monDetailStatusBadge"></span>
+            </div>
+            <p id="monDetailSubtitle" class="text-[11px] text-slate-500 font-normal">Read-only monitoring &amp; weekly schedule preview</p>
+          </div>
+        </div>
+        <button type="button" data-close="monDetail" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition active:scale-95" aria-label="Close dialog">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Scrollable Body -->
+      <div id="monDetailBody" class="p-5 sm:p-6 overflow-y-auto text-xs space-y-4"></div>
+
+      <!-- Pinned Footer -->
+      <div class="px-5 sm:px-6 py-3.5 bg-slate-50 border-t border-[#E1E9E3] flex items-center justify-between shrink-0">
+        <div class="text-[11px] text-slate-500 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px] text-slate-400">lock</span>
+          <span>Master schedule editing is restricted to the Principal</span>
+        </div>
+        <button type="button" data-close="monDetail" class="px-4 py-2 rounded-xl border border-[#E1E9E3] bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium transition active:scale-95">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SEND REMINDER MODAL ── -->
+  <div id="monRemindModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-[#E1E9E3] w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col">
+      <!-- Pinned green accent bar -->
+      <div class="h-1 bg-[#176B45] shrink-0"></div>
+
+      <!-- Pinned Header -->
+      <div class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-[#E1E9E3] bg-slate-50/70 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[20px]">send</span>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-medium text-slate-900">Send Timetable Reminder</h3>
+            <p class="text-[11px] text-slate-500 font-normal">Delivered through the institutional notification system</p>
+          </div>
+        </div>
+        <button type="button" data-close="monRemind" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition active:scale-95" aria-label="Close dialog">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <input type="hidden" id="monRemindForce" value="false">
+
+      <!-- Modal Body -->
+      <div class="p-5 sm:p-6 space-y-4 text-xs overflow-y-auto">
+        <div class="p-3.5 rounded-xl border border-[#E1E9E3] bg-slate-50/80 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-slate-500 font-normal">Class:</span>
+            <span id="monRemindClass" class="text-xs text-slate-800 font-medium">—</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-slate-500 font-normal">Current Status:</span>
+            <span id="monRemindStatus" class="font-medium text-slate-800">—</span>
+          </div>
+          <div class="flex items-center justify-between text-[11px] pt-1.5 border-t border-slate-200/70">
+            <span class="text-slate-500 font-normal">Recipient:</span>
+            <span id="monRemindRecipient" class="text-emerald-800 font-medium">—</span>
+          </div>
+          <div class="flex items-center justify-between text-[11px]">
+            <span class="text-slate-500 font-normal">Deficiency:</span>
+            <span id="monRemindDeficiency" class="text-amber-700 font-medium">—</span>
+          </div>
+        </div>
+
+        <div id="monRemindCooldown" class="p-3.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 hidden space-y-1">
+          <div class="flex items-center gap-1.5 font-medium text-xs">
+            <span class="material-symbols-outlined text-[16px] text-amber-700">warning</span>
+            <span>Recent Reminder Notice</span>
+          </div>
+          <p id="monRemindCooldownText" class="text-[11px] font-normal leading-relaxed"></p>
+          <p class="text-[11px] text-amber-800 font-medium">Press Send Reminder again to confirm a duplicate notification.</p>
+        </div>
+
+        <div class="space-y-1.5">
+          <label for="monRemindDeadline" class="block font-medium text-slate-700 text-xs">Action Deadline (Optional)</label>
+          <input type="date" id="monRemindDeadline" class="w-full px-3 py-2 rounded-xl border border-[#E1E9E3] text-xs text-slate-800 focus:outline-none focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] font-normal"/>
+        </div>
+
+        <div class="space-y-1.5">
+          <label for="monRemindMessage" class="block font-medium text-slate-700 text-xs">Reminder Message (Optional — official note will be generated if left blank)</label>
+          <textarea id="monRemindMessage" rows="3" class="w-full p-3 rounded-xl border border-[#E1E9E3] text-xs text-slate-800 focus:outline-none focus:border-[#176B45] focus:ring-1 focus:ring-[#176B45] font-normal leading-relaxed" placeholder="e.g. Please finalize the class timetable preparation for Grade 10-A before the upcoming deadline."></textarea>
+        </div>
+      </div>
+
+      <!-- Pinned Footer -->
+      <div class="px-5 sm:px-6 py-4 bg-slate-50/70 border-t border-[#E1E9E3] flex items-center justify-end gap-2.5 shrink-0">
+        <button type="button" data-close="monRemind" class="px-4 py-2 rounded-xl border border-[#E1E9E3] bg-white hover:bg-slate-100 text-slate-700 text-xs font-medium transition active:scale-95">Cancel</button>
+        <button type="button" id="monRemindSubmit" class="px-4 py-2 rounded-xl bg-[#176B45] hover:bg-[#145939] text-white text-xs font-medium transition shadow-sm flex items-center gap-1.5 active:scale-95">
+          <span class="material-symbols-outlined text-[15px]">send</span>
+          <span>Send Reminder</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Host -->
+  <div id="monToast" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+</main>
+
+<!-- Scripts -->
+<script>
+  window.PAGE = { role: 'admin', active: 'timetables' };
+  window.HERO_CONFIG = {
+    role: 'admin', active: 'timetables', isDashboard: false,
+    name: 'Mr. Heng Samnang', id: 'ADM-2024-001', grade: 'Super Administrator',
+    avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+    homeLink: '../../index.html', signOutLink: '../../index.html',
+    profileLink: 'admin-settings.html', notifLink: 'admin-logs.html', notifCount: 4,
+    title: 'Timetable Monitoring',
+    greeting: 'Monitor timetable preparation, draft progress, and publication across classes.',
+    breadcrumbs: [
+      { label: 'Administration', href: 'admin.html' },
+      { label: 'Timetable Monitoring' }
+    ],
+    ddRows: [
+      { icon: 'admin_panel_settings', text: 'School Administration' },
+      { icon: 'groups', text: '5,200 active users' },
+      { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+      { icon: 'verified', text: 'Principal Administrator' }
+    ]
+  };
+</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script>Protect.require(['admin', 'principal', 'editor']);</script>
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+<script src="../../assets/js/academic-requests.js"></script>
+<script src="../../assets/js/timetable-monitoring.js?v=2.0"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.TIMETABLE_MONITORING) {
+      window.TIMETABLE_MONITORING.init();
+    }
+    var rm = document.getElementById('monRefreshMobile');
+    if (rm) {
+      rm.addEventListener('click', function () {
+        if (window.TIMETABLE_MONITORING) window.TIMETABLE_MONITORING.refresh();
+      });
+    }
+
+    var btnReview = document.getElementById('btnAdminReviewTimetableReq');
+    if (btnReview) {
+      btnReview.addEventListener('click', function () {
+        AcademicRequests.openAdminReviewDrawer('AR-2026-0101');
+      });
+    }
+
+    // Auto-open if query param is set
+    var urlParams = new URLSearchParams(window.location.search);
+    var reqId = urlParams.get('req');
+    if (reqId) {
+      AcademicRequests.init().then(function () {
+        AcademicRequests.openAdminReviewDrawer(reqId);
+      });
+    }
+  });
+</script>
+</body>
+</html>

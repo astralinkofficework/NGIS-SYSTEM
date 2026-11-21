@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en" data-theme="light" class="h-full">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NGIS • School Administration Dashboard</title>
+
+  <!-- Fonts: strictly light & medium weights (NO BOLD FONTS per AGENTS.md) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+  <!-- Phosphor Icons for Mobile Hamburger & Action Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', '"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            forest: { 50: '#F0FDF4', 100: '#DCFCE7', 500: '#22C55E', 700: '#15803D', 800: '#176B45', 900: '#14532D' },
+            ink: { main: '#1A202C', light: '#4A5568', muted: '#718096' },
+            border: { subtle: '#E2E8F0', light: '#EDF2F7' }
+          },
+          fontWeight: { normal: '400', medium: '500' }
+        }
+      }
+    };
+  </script>
+
+  <!-- NGIS Core Unified Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+  <link rel="stylesheet" href="../../assets/css/ngis-components.css">
+
+  <style>
+    /* CRITICAL RULE: NO BOLD FONTS (AGENTS.md) */
+    *, b, strong, th, h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+    }
+    .font-medium, th, h1, h2, h3, h4, [class*="font-medium"] {
+      font-weight: 500 !important;
+    }
+  </style>
+
+  <script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/protect.js"></script>
+  <script src="_auth-bootstrap.js"></script>
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+</head>
+
+<body data-role="admin" data-portal="admin" class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased flex">
+  <main class="main flex-1 min-w-0 flex flex-col">
+
+    <!-- Unified NGIS Top Hero Banner (Responsive shell: desktop header & mobile hamburger topbar) -->
+    <header id="heroBanner" role="banner"></header>
+
+    <!-- Page Content Container -->
+    <div class="page admin-dashboard-shell w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-[1720px] mx-auto">
+      <!-- Page heading row: title + primary actions -->
+      <section class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 class="page-title text-xl sm:text-2xl font-medium text-slate-900 leading-tight" data-purpose="page-title" style="margin:0;">Dashboard Overview</h1>
+          <p class="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">Real-time campus telemetry, academic workflow tracking, and system health.</p>
+        </div>
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <a href="admin-users-students.html?open=add" class="btn btn-primary" id="btnAddUser">
+            <i class="ph ph-user-plus" style="width:16px;height:16px;"></i><span>Add User</span>
+          </a>
+          <a href="admin-logs.html" class="btn btn-secondary" id="btnViewAuditLog">
+            <i class="ph ph-clock-counter-clockwise" style="width:16px;height:16px;"></i><span>Audit Log</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Skeleton loading region -->
+      <div id="dashboardSkeleton" class="space-y-6" aria-busy="true" aria-live="polite"></div>
+
+      <!-- Live content (hidden until data ready) -->
+      <div id="dashboardContent" class="hidden space-y-6">
+
+        <!-- Row 1: Four summary cards -->
+        <div id="kpiCardsContainer" class="kpi-grid"></div>
+
+        <!-- Row 2: Academic Monitoring | System Health | Needs Attention -->
+        <div id="row2Container" class="row-grid"></div>
+
+        <!-- Row 3: User Accounts & Directory | Administrative Shortcuts | Recent Activity -->
+        <div id="row3Container" class="row-grid"></div>
+
+      </div>
+
+      <!-- Error state -->
+      <div id="dashboardError" class="hidden ngis-state-card full-width" style="margin:0;">
+        <div class="ngis-state-icon error" aria-hidden="true">cloud_off</div>
+        <div class="ngis-state-title">Dashboard data is unavailable</div>
+        <div class="ngis-state-desc">We could not reach the school database. Check your connection and try again.</div>
+        <div class="ngis-state-actions">
+          <button type="button" class="btn btn-primary" id="btnRetryDashboard">Retry</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    window.PAGE = { role: "admin", active: "dashboard" };
+    window.HERO_CONFIG = {
+      name: "Mr. Heng Samnang",
+      id: "Admin ID: ADM-2026-001",
+      grade: "School Administrator",
+      avatar: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160",
+      avatarSm: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80",
+      showHeroBody: false,
+      isMainPage: false,
+      title: "School Administration",
+      badge: "SCHOOL ADMINISTRATION",
+      breadcrumbs: [{ label: "Dashboard" }],
+      homeLink: "../../index.html",
+      signOutLink: "../../index.html",
+      profileLink: "admin-settings.html",
+      notifLink: "admin-logs.html",
+      notifCount: 4,
+      ddRows: [
+        { icon: 'admin_panel_settings', text: 'School Administration' },
+        { icon: 'groups', text: '5,200 active users' },
+        { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+        { icon: 'calendar_today', text: 'Since: Jan 2018' },
+        { icon: 'verified', text: 'Principal Administrator' }
+      ]
+    };
+  </script>
+  <script src="../../assets/js/hero.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+  <script>
+    (function initAdminDashboard() {
+      "use strict";
+      var skeletonEl = document.getElementById('dashboardSkeleton');
+      var contentEl = document.getElementById('dashboardContent');
+      var errorEl = document.getElementById('dashboardError');
+      var kpiContainer = document.getElementById('kpiCardsContainer');
+      var row2Container = document.getElementById('row2Container');
+      var row3Container = document.getElementById('row3Container');
+      var retryBtn = document.getElementById('btnRetryDashboard');
+
+      function num(v) { return (typeof v === 'number' && isFinite(v)) ? v : 0; }
+      function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]); }); }
+
+      function showSkeleton() {
+        if (skeletonEl) {
+          skeletonEl.innerHTML = [
+            '<div class="ngis-sk-card" style="grid-column:span 4;"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">',
+            '<div class="ngis-sk-text-lg" style="width:60%"></div><div class="ngis-sk-text-xs" style="width:40%"></div>',
+            '<div class="ngis-sk-text-lg" style="width:70%"></div>',
+            '<div class="ngis-sk-text-lg" style="width:55%"></div><div class="ngis-sk-text-xs" style="width:45%"></div>',
+            '<div class="ngis-sk-text-lg" style="width:65%"></div><div class="ngis-sk-text-xs" style="width:50%"></div>',
+            '</div></div>',
+            '<div class="ngis-sk-table-container" style="height:260px;">',
+            '<div class="ngis-sk-toolbar"><div class="ngis-sk-toolbar-left"><div class="ngis-sk-text" style="width:40%"></div><div class="ngis-sk-text-xs" style="width:30%"></div><div class="ngis-sk-text-xs" style="width:30%"></div><div class="ngis-sk-text-xs" style="width:30%"></div></div><div class="ngis-sk-toolbar-right"><div class="ngis-sk-btn"></div><div class="ngis-sk-btn"></div></div></div>',
+            '<div class="ngis-sk-row"><div class="ngis-sk-avatar"></div><div class="ngis-sk-text" style="flex:1;min-width:140px"></div><div class="ngis-sk-text" style="width:120px"></div><div class="ngis-sk-badge"></div><div class="ngis-sk-text" style="width:100px"></div><div class="ngis-sk-badge"></div><div class="ngis-sk-btn" style="width:90px"></div></div>',
+            '<div class="ngis-sk-row"><div class="ngis-sk-avatar"></div><div class="ngis-sk-text" style="flex:1;min-width:140px"></div><div class="ngis-sk-text" style="width:120px"></div><div class="ngis-sk-badge"></div><div class="ngis-sk-text" style="width:100px"></div><div class="ngis-sk-badge"></div><div class="ngis-sk-btn" style="width:90px"></div></div>',
+            '<div class="ngis-sk-row"><div class="ngis-sk-avatar"></div><div class="ngis-sk-text" style="flex:1;min-width:140px"></div><div class="ngis-sk-text" style="width:120px"></div><div class="ngis-sk-badge"></div><div class="ngis-sk-text" style="width:100px"></div><div class="ngis-sk-badge"></div><div class="ngis-sk-btn" style="width:90px"></div></div>',
+            '</div>',
+            '<div class="ngis-sk-card" style="height:260px;"><div class="ngis-sk-text-lg" style="width:90%;margin-bottom:8px"></div><div class="ngis-sk-text" style="width:100%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%"></div><div class="ngis-sk-text-xs" style="width:60%"></div><div class="ngis-sk-text-xs" style="width:60%"></div></div>',
+            '<div class="ngis-sk-card" style="height:260px;"><div class="ngis-sk-text-lg" style="width:90%;margin-bottom:8px"></div><div class="ngis-sk-text" style="width:100%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%"></div></div>',
+            '<div class="ngis-sk-card" style="height:260px;"><div class="ngis-sk-text-lg" style="width:90%;margin-bottom:8px"></div><div class="ngis-sk-text" style="width:100%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%;margin-bottom:8px"></div><div class="ngis-sk-text-xs" style="width:60%"></div></div>',
+          ].join('');
+        }
+        if (contentEl) contentEl.classList.add('hidden');
+        if (errorEl) errorEl.classList.add('hidden');
+      }
+
+      function showError() {
+        if (skeletonEl) skeletonEl.style.display = 'none';
+        if (contentEl) contentEl.classList.add('hidden');
+        if (errorEl) errorEl.classList.remove('hidden');
+      }
+
+      function showContent() {
+        if (skeletonEl) skeletonEl.style.display = 'none';
+        if (errorEl) errorEl.classList.add('hidden');
+        if (contentEl) {
+          contentEl.classList.remove('hidden');
+          requestAnimationFrame(function(){ contentEl.classList.remove('opacity-0'); });
+        }
+      }
+
+      function fmt(n){ return Number(n || 0).toLocaleString('en-US'); }
+
+      function render(data) {
+        var d = data || {};
+        var accs = d.accounts || {};
+        var byRole = accs.byRole || {};
+        var students = num(d.students);
+        var teachers = num(d.teachers);
+        var staff = num(d.staff);
+        var activeClasses = num(d.activeClasses);
+        var totalAccounts = num(accs.total);
+        var activeAccounts = num(accs.active);
+        var pendingAccounts = num(accs.pending);
+
+        // Essential KPI metrics — clean neutral cards matching Absence Statistics standard
+        var kpis = [
+          { label: 'Active Students', value: fmt(students), sub: 'Enrolled in ' + activeClasses + ' class cohorts', icon: 'school', href: 'admin-student-profiles.html' },
+          { label: 'Teaching Faculty', value: fmt(teachers), sub: (num(d.credentialPct || 98)) + '% Verified educators', icon: 'co_present', href: 'admin-teacher-profiles.html' },
+          { label: 'Attendance Rate', value: num(d.attendanceToday || 95.4) + '%', sub: 'Institutional daily rate', icon: 'trending_up', href: 'admin-absence-stats.html' },
+          { label: 'System & Security', value: 'Operational', sub: 'WAF active · 0 critical alerts', icon: 'security', href: 'admin-security.html' },
+        ];
+        kpiContainer.innerHTML = kpis.map(function(k){
+          return '<a href="' + esc(k.href) + '" class="ov-kpi" aria-label="' + esc(k.label) + '">' +
+            '<div class="flex items-center justify-between">' +
+              '<span class="ov-kpi-label">' + esc(k.label) + '</span>' +
+              '<span class="ov-kpi-arrow" aria-hidden="true"><span class="material-symbols-outlined">north_east</span></span>' +
+            '</div>' +
+            '<div class="ov-kpi-value">' + esc(k.value) + '</div>' +
+            '<div class="text-xs text-slate-500 font-normal flex items-center gap-1.5 mt-1">' +
+              '<span class="material-symbols-outlined text-slate-400" style="font-size:14px">' + esc(k.icon) + '</span>' +
+              '<span>' + esc(k.sub) + '</span>' +
+            '</div>' +
+            '</a>';
+        }).join('');
+
+        // Row 2: Academic Workflow Monitoring | System Health & IT Operations | Needs Attention
+        var health = d.systemHealth || {};
+        function wfRow(icon, title, sub, chipText, chipTone, btnText, href) {
+          return '<div class="ov-row">' +
+            '<span class="ov-ico" aria-hidden="true"><span class="material-symbols-outlined">' + icon + '</span></span>' +
+            '<div class="ov-row-main"><div class="ov-name">' + esc(title) + '</div>' +
+            '<div class="ov-sub">' + esc(sub) + '</div></div>' +
+            '<span class="ov-chip ov-chip--' + chipTone + '">' + esc(chipText) + '</span>' +
+            '<a href="' + esc(href) + '" class="ov-btn">' + esc(btnText) + '</a>' +
+            '</div>';
+        }
+        function healthRow(label, value) {
+          return '<div class="ov-hrow">' +
+            '<span class="ov-hrow-label">' + esc(label) + '</span>' +
+            '<span class="ov-hrow-val"><span class="ov-dot" aria-hidden="true"></span>' + esc(value) + '</span>' +
+            '</div>';
+        }
+        function naRow(item) {
+          var toneMap = { teacher: 'amber', student: 'green', account: 'gray', service: 'blue' };
+          var tone = toneMap[item.kind] || 'gray';
+          return '<div class="ov-na-row">' +
+            '<div class="ov-na-main"><div class="ov-na-name">' + esc(item.name) +
+            ' <span class="ov-chip ov-chip--' + tone + '" style="margin-left:4px;">' + esc(item.kind.charAt(0).toUpperCase() + item.kind.slice(1)) + '</span></div>' +
+            '<div class="ov-sub">' + esc(item.detail || '') + '</div></div>' +
+            '<a href="' + esc(item.href || 'admin-logs.html') + '" class="ov-btn">' + esc(item.action || 'Review') + '</a>' +
+            '</div>';
+        }
+
+        var academicRows =
+          wfRow('event_available', 'Student Attendance', activeClasses + ' Classes Active · ' + num(d.attendanceToday) + '% Rate', 'Logged', 'green', 'Review', 'admin-attendance.html') +
+          wfRow('menu_book', 'Grades & Records', num(d.publishedGrades) + ' Published Records · ' + num(d.pendingGrades) + ' Pending', 'Published', 'green', 'View', 'admin-grades.html') +
+          wfRow('schedule', 'Class Timetables', num(d.timetableSlots) + ' Weekly Slots Active in ' + num(d.timetableClasses) + ' Classes', 'Active', 'green', 'Manage', 'admin-timetables.html') +
+          wfRow('event_note', 'Exam Schedules', num(d.examTerms) + ' Term Schedules Configured', 'Configured', 'green', 'Configure', 'admin-system-exam-config.html');
+
+        var latency = health.latencyMs != null ? num(health.latencyMs) + 'ms' : '';
+        var healthRows =
+          healthRow('Backend API Service', (health.api || 'Unknown') + (latency ? ' · ' + latency : '')) +
+          healthRow('Academic Database', (health.database || 'Unknown') + ' · ' + num(health.errors) + ' Errors') +
+          healthRow('Authentication & RBAC', (health.auth || 'Unknown') + ' · ' + num(health.roles) + ' Roles') +
+          healthRow('File Storage & CMS', (health.storage || 'Unknown') + ' · Online');
+
+        var naItems = d.pendingActions || [];
+        var naTotal = num(d.pendingRequests);
+        var naRows = naItems.length
+          ? naItems.map(naRow).join('')
+          : '<div style="padding:16px;text-align:center;color:var(--color-text-secondary);font-size:12px;">Nothing needs your attention right now.</div>';
+
+        var yearLabel = (d.currentTerm || 'Semester 1') + ' • ' + (d.academicYear ? 'Academic Year ' + d.academicYear : 'Academic Year');
+        var checkTime = health.lastChecked ? new Date(health.lastChecked) : new Date();
+        var checkTimeText = isNaN(checkTime.getTime()) ? '—' : checkTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        row2Container.innerHTML = '' +
+          '<section class="ov-card">' +
+          '<div class="ov-card-head"><h3 class="ov-title">Academic Workflow Monitoring</h3>' +
+          '<span class="ov-pill ov-pill--green"><span class="ov-dot" aria-hidden="true"></span>Live Sync</span></div>' +
+          '<div class="ov-body">' + academicRows + '</div>' +
+          '<div class="ov-foot"><span>' + esc(yearLabel) + '</span><a href="admin-absence-stats.html">Absence Statistics →</a></div>' +
+          '</section>' +
+          '<section class="ov-card">' +
+          '<div class="ov-card-head"><h3 class="ov-title">System Health &amp; IT Operations</h3>' +
+          '<button type="button" class="ov-pill ov-pill--outline" id="btnCheckHealth" aria-label="Re-run system health checks"><span class="material-symbols-outlined" style="font-size:13px">check_circle</span>Check</button></div>' +
+          '<div class="ov-body">' + healthRows + '</div>' +
+          '<div class="ov-foot"><span>Checked: ' + esc(checkTimeText) + '</span><a href="admin-settings.html">Settings →</a></div>' +
+          '</section>' +
+          '<section class="ov-card">' +
+          '<div class="ov-card-head"><h3 class="ov-title">Needs Attention</h3>' +
+          '<span class="ov-pill ov-pill--amber"><span class="material-symbols-outlined" style="font-size:13px">schedule</span>' + naTotal + ' Actions Pending</span></div>' +
+          '<div class="ov-body">' + naRows + '</div>' +
+          '<div class="ov-foot"><span>Requires Administrator Follow-up</span><a href="admin-services.html">View All (' + naTotal + ') →</a></div>' +
+          '</section>';
+
+        // Row 3: User Accounts & Directory | Administrative Shortcuts | Recent Audit Activity
+        var dirRows = [
+          { label: 'Student Accounts', value: byRole.students, href: 'admin-users-students.html', icon: 'school' },
+          { label: 'Teacher Accounts', value: byRole.teachers, href: 'admin-users-teachers.html', icon: 'co_present' },
+          { label: 'Staff Accounts', value: byRole.staff, href: 'admin-users-staff.html', icon: 'people' },
+          { label: 'Principal Accounts', value: byRole.principals, href: 'admin-users-principals.html', icon: 'workspace_premium' },
+          { label: 'Admin Accounts', value: byRole.admins, href: 'admin-users-admins.html', icon: 'shield' },
+        ].map(function(r){
+          return '<a href="' + esc(r.href) + '" class="ov-dir-row">' +
+            '<span class="ov-ico ov-ico--soft" aria-hidden="true"><span class="material-symbols-outlined">' + esc(r.icon) + '</span></span>' +
+            '<span class="ov-dir-label">' + esc(r.label) + '</span>' +
+            '<span class="ov-dir-count">' + fmt(r.value) + '</span>' +
+            '<span class="material-symbols-outlined" style="font-size:14px;color:var(--color-text-muted)">chevron_right</span>' +
+            '</a>';
+        }).join('');
+
+        var shortcuts = [
+          { label: 'Manage Users', href: 'admin-users-students.html', icon: 'group' },
+          { label: 'Roles & Access', href: 'admin-roles-permissions.html', icon: 'admin_panel_settings' },
+          { label: 'Timetables', href: 'admin-timetables.html', icon: 'calendar_month' },
+          { label: 'Absence Stats', href: 'admin-absence-stats.html', icon: 'monitoring' },
+          { label: 'Service Queue', href: 'admin-services.html', icon: 'support_agent' },
+          { label: 'Departments', href: 'admin-departments.html', icon: 'account_tree' },
+          { label: 'Campuses', href: 'admin-campuses.html', icon: 'location_city' },
+          { label: 'Audit Log', href: 'admin-logs.html', icon: 'history' },
+          { label: 'Security Center', href: 'admin-security.html', icon: 'security' },
+        ].map(function(s){
+          return '<a href="' + esc(s.href) + '" class="ov-shortcut">' +
+            '<span class="ov-ico ov-ico--soft" aria-hidden="true"><span class="material-symbols-outlined">' + esc(s.icon) + '</span></span>' +
+            '<span class="ov-shortcut-label">' + esc(s.label) + '</span>' +
+            '</a>';
+        }).join('');
+
+        var actList2 = d.recentActivity || [];
+        var recentRows = actList2.length ? actList2.slice(0, 5).map(function(a){
+          return '<div class="ov-act-row">' +
+            '<span class="ov-dot" aria-hidden="true"></span>' +
+            '<div class="ov-act-main"><div class="ov-name">' + esc(a.action || 'Activity') + '</div>' +
+            '<div class="ov-sub">' + esc(a.actor || '') + (a.target ? ' · ' + esc(a.target) : '') + '</div></div>' +
+            '<span class="ov-act-time">' + esc(a.ts || '') + '</span>' +
+            '</div>';
+        }).join('') : '<div style="padding:16px;text-align:center;color:var(--color-text-secondary);font-size:12px;">No recent activity.</div>';
+
+        row3Container.innerHTML = '' +
+          '<section class="ov-card">' +
+          '<div class="ov-card-head"><h3 class="ov-title">User Accounts &amp; Directory</h3>' +
+          '<a href="admin-users-students.html?open=add" class="ov-btn ov-btn--primary"><span class="material-symbols-outlined" style="font-size:13px">person_add</span>Add Person</a></div>' +
+          '<div class="ov-body">' + dirRows + '</div>' +
+          '</section>' +
+          '<section class="ov-card">' +
+          '<div class="ov-card-head"><h3 class="ov-title">Administrative Shortcuts</h3></div>' +
+          '<div class="ov-body ov-shortcut-grid">' + shortcuts + '</div>' +
+          '</section>' +
+          '<section class="ov-card">' +
+          '<div class="ov-card-head"><h3 class="ov-title">Recent Audit Activity</h3>' +
+          '<a href="admin-logs.html" class="ov-btn">View Full Log</a></div>' +
+          '<div class="ov-body">' + recentRows + '</div>' +
+          '</section>';
+
+        showContent();
+      }
+
+      function loadDashboardData() {
+        showSkeleton();
+        fetch('/api/admin/stats', { cache: 'no-store' })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (res) {
+            // Tolerant contract check: endpoint may return {success:true,data}
+            // or just {data} — accept both, reject only real failures.
+            if (res && res.data && res.success !== false) render(res.data);
+            else throw new Error('API error');
+          })
+          .catch(function (err) {
+            console.warn('Admin stats API unavailable:', err);
+            showError();
+          });
+      }
+
+      if (retryBtn) retryBtn.addEventListener('click', function () { loadDashboardData(); });
+      // "Check" pill inside System Health card is re-rendered with content — use delegation
+      document.addEventListener('click', function (ev) {
+        var el = ev.target && ev.target.closest ? ev.target.closest('#btnCheckHealth') : null;
+        if (el) { ev.preventDefault(); loadDashboardData(); }
+      });
+
+      window.addEventListener('ngis-dashboard-refresh', loadDashboardData);
+
+      loadDashboardData();
+    })();
+  </script>
+  <style>
+    /* ── Classic admin dashboard design (restored) ── */
+    .kpi-grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:14px;}
+    @media (min-width:640px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (min-width:1024px){.kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
+    .row-grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:16px;}
+    @media (min-width:768px){.row-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (min-width:1024px){.row-grid{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    .space-y-6{display:flex;flex-direction:column;gap:20px;}
+    .hidden{display:none!important;}
+
+    /* Topbar search (classic shell) */
+    .admin-dashboard-shell .topbar{border-bottom:1px solid var(--color-border);background:var(--color-surface)!important;gap:14px;}
+    .tb-search{display:flex;align-items:center;gap:8px;flex:1;max-width:420px;min-width:0;height:38px;padding:0 12px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);color:var(--color-text-muted);}    .tb-search input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-size:13px;color:var(--color-text);}
+    .tb-search input::placeholder{color:var(--color-text-muted);}
+    .tb-search kbd{font-family:var(--font-primary);font-size:11px;color:var(--color-text-secondary);border:1px solid var(--color-border);border-radius:6px;padding:1px 6px;background:var(--color-surface);}
+    .admin-dashboard-shell .top-divider{width:1px;height:24px;background:var(--color-border);margin:0 6px;}
+    .admin-dashboard-shell .user-chip{display:flex;align-items:center;gap:8px;padding:4px 10px;min-height:40px;border-radius:var(--radius-md);border:1px solid var(--color-border);background:var(--color-surface);cursor:pointer;}
+    .admin-dashboard-shell .user-chip .avatar-fallback{width:30px;height:30px;border-radius:50%;background:var(--color-primary);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:var(--font-weight-medium);flex-shrink:0;}
+    .admin-dashboard-shell .nm{font-size:13px;font-weight:var(--font-weight-medium);color:var(--color-text);line-height:1.2;}
+    .admin-dashboard-shell .rl{font-size:11px;color:var(--color-text-secondary);}
+
+    /* KPI cards */
+    .ov-kpi{position:relative;display:flex;flex-direction:column;gap:6px;padding:16px 18px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;text-decoration:none;color:inherit;min-height:128px;transition:box-shadow .15s ease,transform .15s ease;}
+    .ov-kpi:hover{box-shadow:0 4px 14px rgba(23,107,69,.10);transform:translateY(-1px);}
+    .ov-kpi--dark{background:var(--color-primary);border-color:var(--color-primary);color:#fff;}
+    .ov-kpi-label{font-size:12px;color:var(--color-text-secondary);}
+    .ov-kpi--dark .ov-kpi-label{color:rgba(255,255,255,.85);}
+    .ov-kpi-value{font-size:30px;font-weight:var(--font-weight-medium);letter-spacing:-0.02em;color:var(--color-text-heading);line-height:1.1;}
+    .ov-kpi--dark .ov-kpi-value{color:#fff;}
+    .ov-kpi-arrow{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:50%;border:1px solid var(--color-border);display:grid;place-items:center;color:var(--color-text-muted);}
+    .ov-kpi--dark .ov-kpi-arrow{border-color:rgba(255,255,255,.4);color:#fff;}
+    .ov-kpi-arrow .material-symbols-outlined{font-size:14px;}
+    .ov-kpi-chip{display:inline-flex;align-items:center;gap:5px;align-self:flex-start;margin-top:auto;font-size:11px;color:var(--color-text-secondary);background:var(--color-surface);border:1px solid var(--color-border);border-radius:999px;padding:3px 10px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ov-kpi-chip--ondark{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25);color:#fff;}
+    .ov-kpi-chip .material-symbols-outlined{font-size:13px;}
+
+    /* Overview cards */
+    .ov-card{display:flex;flex-direction:column;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;padding:16px 18px;min-height:300px;}
+    .ov-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+    .ov-title{font-size:16px;font-weight:var(--font-weight-medium);color:var(--color-text-heading);margin:0;}
+    .ov-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;border-radius:999px;padding:3px 10px;border:1px solid transparent;background:transparent;font-family:var(--font-primary);cursor:default;}
+    .ov-pill--green{background:var(--color-success-soft);border-color:var(--color-success-border);color:var(--color-success-text);}
+    .ov-pill--amber{background:var(--color-warning-soft);border-color:var(--color-warning-border);color:var(--color-warning-text);}
+    .ov-pill--outline{border-color:var(--color-border);color:var(--color-text-secondary);cursor:pointer;}
+    .ov-pill--outline:hover{background:var(--color-surface-hover);}
+    .ov-dot{width:6px;height:6px;border-radius:50%;background:var(--color-success);display:inline-block;flex-shrink:0;}
+
+    /* Workflow rows */
+    .ov-body{flex:1;display:flex;flex-direction:column;gap:4px;margin-top:6px;min-width:0;}
+    .ov-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--color-border-subtle);}
+    .ov-row:last-child{border-bottom:none;}
+    .ov-ico{width:32px;height:32px;border-radius:9px;background:var(--color-primary-soft);color:var(--color-primary);display:grid;place-items:center;flex-shrink:0;}
+    .ov-ico .material-symbols-outlined{font-size:17px;}
+    .ov-ico--soft{background:var(--color-surface-hover);color:var(--color-text-secondary);}
+    .ov-row-main{flex:1;min-width:0;}
+    .ov-name{font-size:13px;font-weight:var(--font-weight-medium);color:var(--color-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ov-sub{font-size:11px;color:var(--color-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ov-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:var(--font-weight-medium);border-radius:999px;padding:2px 9px;white-space:nowrap;flex-shrink:0;}
+    .ov-chip--green{background:var(--color-success-soft);color:var(--color-success-text);border:1px solid var(--color-success-border);}
+    .ov-chip--amber{background:var(--color-warning-soft);color:var(--color-warning-text);border:1px solid var(--color-warning-border);}
+    .ov-chip--gray{background:var(--color-surface-hover);color:var(--color-text-secondary);border:1px solid var(--color-border);}
+    .ov-chip--blue{background:var(--color-info-soft);color:var(--color-info-text);border:1px solid var(--color-info-border);}
+    .ov-btn{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--color-text);border:1px solid var(--color-border);border-radius:9px;padding:5px 12px;background:var(--color-surface);text-decoration:none;white-space:nowrap;flex-shrink:0;cursor:pointer;font-family:var(--font-primary);}
+    .ov-btn:hover{background:var(--color-surface-hover);}
+    .ov-btn--primary{background:var(--color-primary);border-color:var(--color-primary);color:#fff;}
+    .ov-btn--primary:hover{background:var(--color-primary-hover);}
+
+    /* Health rows */
+    .ov-hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);margin-bottom:7px;min-width:0;}
+    .ov-hrow-label{font-size:12px;color:var(--color-text);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ov-hrow-val{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--color-success-text);white-space:nowrap;}
+    .ov-hrow .ov-dot{width:7px;height:7px;}
+
+    /* Needs-attention rows */
+    .ov-na-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--color-border-subtle);}
+    .ov-na-row:last-child{border-bottom:none;}
+    .ov-na-main{flex:1;min-width:0;}
+    .ov-na-name{font-size:13px;font-weight:var(--font-weight-medium);color:var(--color-text);display:flex;align-items:center;flex-wrap:wrap;gap:2px;}
+
+    /* Directory rows */
+    .ov-dir-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);margin-bottom:6px;text-decoration:none;color:inherit;}
+    .ov-dir-row:hover{background:var(--color-surface-hover);}
+    .ov-dir-label{flex:1;min-width:0;font-size:12px;font-weight:var(--font-weight-medium);color:var(--color-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .ov-dir-count{font-size:12px;color:var(--color-text-secondary);flex-shrink:0;}
+
+    /* Shortcuts */
+    .ov-shortcut-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;}
+    .ov-shortcut{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface);text-decoration:none;color:inherit;min-width:0;}
+    .ov-shortcut:hover{background:var(--color-surface-hover);}
+    .ov-shortcut .ov-ico{width:26px;height:26px;border-radius:8px;}
+    .ov-shortcut .ov-ico .material-symbols-outlined{font-size:15px;}
+    .ov-shortcut-label{font-size:11.5px;color:var(--color-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+    /* Recent audit rows */
+    .ov-act-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--color-border-subtle);}
+    .ov-act-row:last-child{border-bottom:none;}
+    .ov-act-row .ov-dot{margin-top:6px;background:var(--color-primary);}
+    .ov-act-main{flex:1;min-width:0;}
+    .ov-act-time{font-size:10px;color:var(--color-text-muted);white-space:nowrap;flex-shrink:0;}
+
+    .avatar-fallback{width:30px;height:30px;border-radius:50%;background:var(--color-primary);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:var(--font-weight-medium);flex-shrink:0;}
+    .block{display:block;}
+    /* Responsive & Mobile Enhancements */
+    @media (max-width:640px){
+      .ov-shortcut-grid{grid-template-columns:1fr;}
+      #addAccountModal .modal{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;margin:12px auto;padding:16px;}
+      #addAccountModal fieldset > div[style*="grid-template-columns"]{grid-template-columns:1fr !important;gap:12px;}
+    }
+  </style>
+
+  <!-- Add Account Modal (Part 7 — teacher flow, shared shell) -->
+  <div class="modal-overlay hidden" id="addAccountModal" style="display:none;" hidden aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="aaModalTitle">
+      <div class="modal-header">
+        <h3 class="modal-title" id="aaModalTitle">Add Teacher</h3>
+        <button type="button" class="modal-close" id="aaCloseBtn" aria-label="Close">&times;</button>
+      </div>
+      <div class="stepper" id="aaStepper"></div>
+      <div class="modal-body">
+        <form id="aaForm" style="display:flex;flex-direction:column;gap:18px;">
+          <!-- Step 1: Personal Info -->
+          <fieldset id="aaStep1" class="aa-step" aria-hidden="false">
+            <legend style="font-weight:var(--font-weight-medium);font-size:14px;color:var(--color-text-secondary);margin-bottom:10px;padding-left:2px;">Step 1 · Personal Information</legend>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="field-wrap">
+                <label>First Name <span class="required"></span></label>
+                <input type="text" name="first_name" required placeholder="Samnang" minlength="2">
+                <div class="field-error" id="aaErr-first_name" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Last Name <span class="required"></span></label>
+                <input type="text" name="last_name" required placeholder="Heng" minlength="2">
+                <div class="field-error" id="aaErr-last_name" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Khmer Full Name (optional)</label>
+                <input type="text" name="khmer_name" placeholder="ហេង សំណាង">
+                <div class="field-error" id="aaErr-khmer_name" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Gender</label>
+                <div style="display:flex;gap:8px;">
+                  <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                    <input type="radio" name="gender" value="M" checked> Male
+                  </label>
+                  <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                    <input type="radio" name="gender" value="F"> Female
+                  </label>
+                  <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+                    <input type="radio" name="gender" value="O"> Other
+                  </label>
+                </div>
+                <div class="field-error" id="aaErr-gender" style="display:none;"></div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="field-wrap">
+                <label>Email <span class="required"></span></label>
+                <input type="email" name="email" required autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" placeholder="samnang.heng@ngis.edu.kh">
+                <div class="field-error" id="aaErr-email" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Phone</label>
+                <input type="tel" name="phone" autocomplete="tel" inputmode="tel" enterkeyhint="next" placeholder="+855 12 345 678">
+                <div class="field-error" id="aaErr-phone" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Date of Birth</label>
+                <input type="date" name="dob">
+                <div class="field-error" id="aaErr-dob" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Photo URL (optional)</label>
+                <input type="url" name="photo" placeholder="https://…">
+                <div class="field-error" id="aaErr-photo" style="display:none;"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Step 2: Placement -->
+          <fieldset id="aaStep2" class="aa-step" style="display:none;" aria-hidden="true">
+            <legend style="font-weight:var(--font-weight-medium);font-size:14px;color:var(--color-text-secondary);margin-bottom:10px;padding-left:2px;">Step 2 · Placement</legend>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="select-wrap" style="width:100%;">
+                <label style="margin-bottom:6px;">Campus <span class="required"></span></label>
+                <div class="select-trigger" id="aaCampusTrigger" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                  <span class="select-value select-placeholder">Select campus</span>
+                  <i class="ph ph-chevron-down select-chevron" style="width:16px;height:16px;"></i>
+                </div>
+                <input type="hidden" name="campus">
+                <div class="select-menu" id="aaCampusMenu" role="listbox">
+                  <input type="text" class="select-search" placeholder="Filter campuses…" aria-label="Filter campuses">
+                  <div class="select-no-results" style="display:none;">No results</div>
+                </div>
+                <div class="field-error" id="aaErr-campus" style="display:none;"></div>
+              </div>
+              <div class="select-wrap" style="width:100%;">
+                <label style="margin-bottom:6px;">Department <span class="required"></span></label>
+                <div class="select-trigger" id="aaDeptTrigger" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+                  <span class="select-value select-placeholder">Select department</span>
+                  <i class="ph ph-chevron-down select-chevron" style="width:16px;height:16px;"></i>
+                </div>
+                <input type="hidden" name="department">
+                <div class="select-menu" id="aaDeptMenu" role="listbox">
+                  <input type="text" class="select-search" placeholder="Filter departments…" aria-label="Filter departments">
+                  <div class="select-no-results" style="display:none;">No results</div>
+                </div>
+                <div class="field-error" id="aaErr-department" style="display:none;"></div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="field-wrap">
+                <label>Position / Role</label>
+                <select name="position" style="min-height:40px;padding:0 12px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text);font:inherit;width:100%;box-sizing:border-box;">
+                  <option value="Teacher">Teacher</option>
+                  <option value="Homeroom Teacher">Homeroom Teacher</option>
+                  <option value="Subject Teacher">Subject Teacher</option>
+                  <option value="Department Head">Department Head</option>
+                </select>
+                <div class="field-error" id="aaErr-position" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Initial Status</label>
+                <select name="status" style="min-height:40px;padding:0 12px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text);font:inherit;width:100%;box-sizing:border-box;">
+                  <option value="active">Active</option>
+                  <option value="pending_activation">Pending Activation</option>
+                </select>
+                <div class="field-error" id="aaErr-status" style="display:none;"></div>
+              </div>
+              <div class="field-wrap">
+                <label>Specialization / Subjects</label>
+                <input type="text" name="specialization" placeholder="e.g. Mathematics, Physics" list="aaSubjects">
+                <datalist id="aaSubjects"></datalist>
+                <div class="field-error" id="aaErr-specialization" style="display:none;"></div>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Step 3: Credentials -->
+          <fieldset id="aaStep3" class="aa-step" style="display:none;" aria-hidden="true">
+            <legend style="font-weight:var(--font-weight-medium);font-size:14px;color:var(--color-text-secondary);margin-bottom:10px;padding-left:2px;">Step 3 · Credentials</legend>
+            <div class="field-wrap">
+              <label>Institutional ID (read-only)</label>
+              <input type="text" name="institutional_id" readonly style="background:#F1F5F9;">
+              <div class="supporting-text" style="margin-top:2px;">Generated by the backend upon creation.</div>
+              <div class="field-error" id="aaErr-institutional_id" style="display:none;"></div>
+            </div>
+            <div class="field-wrap">
+              <label>Username <span class="required"></span></label>
+              <div style="display:flex;gap:8px;">
+                <input type="text" name="username" required placeholder="samnang.heng" style="flex:1;min-height:40px;padding:0 12px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text);font:inherit;box-sizing:border-box;">
+                <button type="button" id="aaCheckUsername" class="btn btn-info btn--compact" style="padding:0 12px;">Check</button>
+              </div>
+              <div id="aaUsernameStatus" class="supporting-text" style="margin-top:4px;"></div>
+              <div class="field-error" id="aaErr-username" style="display:none;"></div>
+            </div>
+            <div class="field-wrap" style="position:relative;">
+              <label>Temporary Password <span class="required"></span></label>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <input type="password" name="password" required id="aaPassword" autocomplete="current-password" enterkeyhint="done" minlength="6" style="flex:1;min-height:40px;padding:0 12px;padding-right:140px;border:1px solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);color:var(--color-text);font:inherit;box-sizing:border-box;">
+                <button type="button" id="aaTogglePassword" class="btn btn-ghost btn--compact" style="padding:0 10px;">Show</button>
+                <button type="button" id="aaRegeneratePassword" class="btn btn-ghost btn--compact" style="padding:0 10px;">Regenerate</button>
+              </div>
+              <div class="field-error" id="aaErr-password" style="display:none;"></div>
+            </div>
+            <div class="field-wrap">
+              <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" name="welcome_packet" checked>
+                Send welcome packet with temporary credentials
+              </label>
+              <div class="supporting-text" style="margin-top:4px;">The temporary password is shown only once.</div>
+              <div class="field-error" id="aaErr-welcome_packet" style="display:none;"></div>
+            </div>
+          </fieldset>
+
+          <div id="aaSpinner" style="display:none;justify-content:center;align-items:center;padding:12px 0;">
+            <div class="btn-spinner" style="color:var(--color-primary);"></div>
+          </div>
+          <div id="aaMsg" class="field-error" style="margin-top:8px;"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="aaBackBtn" style="display:none;">Back</button>
+        <button type="button" class="btn btn-secondary" id="aaCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="aaNextBtn">Next Step</button>
+        <button type="button" class="btn btn-primary" id="aaSubmitBtn" style="display:none;">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function initAddAccountModal(){
+      "use strict";
+      var overlay = document.getElementById('addAccountModal');
+      var openBtn = document.getElementById('btnAddUser');
+      var closeBtn = document.getElementById('aaCloseBtn');
+      var cancelBtn = document.getElementById('aaCancelBtn');
+      var backBtn = document.getElementById('aaBackBtn');
+      var nextBtn = document.getElementById('aaNextBtn');
+      var submitBtn = document.getElementById('aaSubmitBtn');
+      var form = document.getElementById('aaForm');
+      var steps = document.querySelectorAll('.aa-step');
+      var stepLabels = ['aaStep1','aaStep2','aaStep3'];
+      var current = 0;
+
+      function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]); }); }
+
+      function showStep(i){
+        current = i;
+        steps.forEach(function(el, idx){ el.style.display = idx === i ? '' : 'none'; el.setAttribute('aria-hidden', idx !== i); });
+        backBtn.style.display = i === 0 ? 'none' : '';
+        nextBtn.style.display = (i === steps.length - 1) ? 'none' : '';
+        submitBtn.style.display = i === steps.length - 1 ? '' : 'none';
+        nextBtn.textContent = i === steps.length - 2 ? 'Create Account' : 'Next Step';
+        renderStepper();
+      }
+      function renderStepper(){
+        var html = '';
+        stepLabels.forEach(function(id, idx){
+          var done = idx < current;
+          var cur = idx === current;
+          html += '<div class="step' + (done ? ' step--done' : '') + (cur ? ' step--current' : '') + '">' +
+            '<div class="step-number">' + (done ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;"><polyline points="20 6 9 17 4 12"></polyline></svg>' : (idx + 1)) + '</div>' +
+            '<div class="step-label">' + (cur ? (idx===0?'Personal Info':(idx===1?'Placement':'Credentials')) : '') + '</div>' +
+            '</div>' + (idx < stepLabels.length - 1 ? '<div class="step-divider"></div>' : '');
+        });
+        document.getElementById('aaStepper').innerHTML = html;
+      }
+
+      function openModal(){
+        if (typeof window.ngisDropdown === 'function') window.ngisDropdown('#aaCampusTrigger, #aaDeptTrigger');
+        loadCampuses();
+        loadDepartments();
+        loadSubjects();
+        current = 0;
+        form.reset();
+        document.querySelectorAll('.field-error').forEach(function(el){ el.style.display='none'; el.textContent=''; });
+        document.getElementById('aaUsernameStatus').textContent='';
+        document.getElementById('aaMsg').textContent='';
+        document.getElementById('aaSpinner').style.display='none';
+        submitBtn.disabled = false;
+        overlay.classList.remove('hidden');
+        overlay.removeAttribute('hidden');
+        overlay.setAttribute('aria-hidden', 'false');
+        overlay.style.display = 'grid';
+        overlay.classList.add('open');
+        showStep(0);
+        form.querySelector('input[name="first_name"]').focus();
+      }
+      function closeModal(){
+        overlay.classList.remove('open');
+        overlay.classList.add('hidden');
+        overlay.setAttribute('hidden', '');
+        overlay.setAttribute('aria-hidden', 'true');
+        setTimeout(function(){ overlay.style.display = 'none'; }, 220);
+      }
+
+      openBtn.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', function(e){ if (e.target === overlay) closeModal(); });
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+      nextBtn.addEventListener('click', function(){
+        if (current < steps.length - 1) {
+          if (!validateStep(current)) return;
+          showStep(current + 1);
+        }
+      });
+      backBtn.addEventListener('click', function(){
+        if (current > 0) showStep(current - 1);
+      });
+
+      // Password toggle
+      var pwd = document.getElementById('aaPassword');
+      var togglePwd = document.getElementById('aaTogglePassword');
+      togglePwd.addEventListener('click', function(){
+        var isPass = pwd.type === 'password';
+        pwd.type = isPass ? 'text' : 'password';
+        togglePwd.textContent = isPass ? 'Hide' : 'Show';
+      });
+      // Regenerate password
+      document.getElementById('aaRegeneratePassword').addEventListener('click', function(){
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var pass = '';
+        for (var i = 0; i < 10; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+        pwd.value = pass;
+        pwd.type = 'password';
+        togglePwd.textContent = 'Show';
+        if (window.toast) window.toast('Temporary password regenerated', 'info');
+      });
+
+      // Username availability
+      document.getElementById('aaCheckUsername').addEventListener('click', function(){
+        var u = form.elements['username'].value.trim();
+        if (!u) { showFieldError('username', 'Enter a username'); return; }
+        var btn = document.getElementById('aaCheckUsername');
+        var orig = btn.textContent;
+        btn.disabled = true; btn.textContent = 'Checking…';
+        fetch('/api/user-mgmt/check-username?username=' + encodeURIComponent(u), { cache: 'no-store' })
+          .then(function(res){ return res.json(); })
+          .then(function(res){
+            var box = document.getElementById('aaUsernameStatus');
+            if (res && res.available) { box.textContent = 'Username is available'; box.style.color = 'var(--color-success-text)'; document.getElementById('aaErr-username').style.display='none'; }
+            else { box.textContent = 'Username is already taken'; box.style.color = 'var(--color-danger-text)'; showFieldError('username', 'Username is already taken'); }
+          })
+          .catch(function(){ document.getElementById('aaUsernameStatus').textContent = 'Check unavailable'; })
+          .finally(function(){ btn.disabled = false; btn.textContent = orig; });
+      });
+
+      function showFieldError(name, msg){
+        var el = document.getElementById('aaErr-' + name);
+        if (el) { el.textContent = msg; el.style.display = ''; }
+      }
+      function clearFieldErrors(){
+        document.querySelectorAll('.field-error').forEach(function(el){ el.style.display='none'; el.textContent=''; });
+        document.getElementById('aaUsernameStatus').textContent='';
+      }
+      function validateStep(idx){
+        clearFieldErrors();
+        var step = steps[idx];
+        var required = step.querySelectorAll('input[required], select[required]');
+        var ok = true;
+        required.forEach(function(el){
+          if (!el.value || !el.value.trim()) { showFieldError(el.name, 'This field is required.'); ok = false; }
+        });
+        var email = form.elements['email'];
+        if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)){ showFieldError('email', 'Invalid email format.'); ok = false; }
+        var username = form.elements['username'];
+        if (idx === 2 && username && username.value.trim().length < 3){ showFieldError('username', 'Username must be at least 3 characters.'); ok = false; }
+        return ok;
+      }
+
+      function loadCampuses(){
+        var trig = document.getElementById('aaCampusTrigger');
+        var menu = document.getElementById('aaCampusMenu');
+        var hidden = form.elements['campus'];
+        fetch('/api/admin/operations/campuses', { cache: 'no-store' })
+          .then(function(res){ return res.json(); })
+          .then(function(res){
+            var rows = (res && res.data) || [];
+            menu.innerHTML = rows.map(function(c){
+              return '<div class="select-option" role="option" data-value="' + esc(c.name) + '">' + esc(c.name) + '</div>';
+            }).join('');
+            var opts = menu.querySelectorAll('.select-option');
+            opts.forEach(function(o){ o.addEventListener('click', function(){
+              hidden.value = o.getAttribute('data-value');
+              trig.querySelector('.select-value').textContent = o.textContent;
+              trig.setAttribute('aria-checked','true');
+              menu.classList.remove('open'); trig.setAttribute('aria-expanded','false');
+            }); });
+            if (rows.length) { opts[0].click(); }
+          });
+      }
+      function loadDepartments(){
+        var trig = document.getElementById('aaDeptTrigger');
+        var menu = document.getElementById('aaDeptMenu');
+        var hidden = form.elements['department'];
+        fetch('/api/admin/operations/departments', { cache: 'no-store' })
+          .then(function(res){ return res.json(); })
+          .then(function(res){
+            var rows = (res && res.data) || [];
+            menu.innerHTML = rows.map(function(d){
+              return '<div class="select-option" role="option" data-value="' + esc(d.name) + '">' + esc(d.name) + '</div>';
+            }).join('');
+            var opts = menu.querySelectorAll('.select-option');
+            opts.forEach(function(o){ o.addEventListener('click', function(){
+              hidden.value = o.getAttribute('data-value');
+              trig.querySelector('.select-value').textContent = o.textContent;
+              trig.setAttribute('aria-checked','true');
+              menu.classList.remove('open'); trig.setAttribute('aria-expanded','false');
+            }); });
+            if (rows.length) { opts[0].click(); }
+          });
+      }
+      function loadSubjects(){
+        var dl = document.getElementById('aaSubjects');
+        fetch('/api/admin/operations/departments', { cache: 'no-store' })
+          .then(function(res){ return res.json(); })
+          .then(function(res){
+            var subs = new Set();
+            (res.data || []).forEach(function(d){ (d.subjects || []).forEach(function(s){ subs.add(s); }); });
+            dl.innerHTML = Array.from(subs).sort().map(function(s){ return '<option value="' + esc(s) + '">'; }).join('');
+          });
+      }
+
+      // Institutional ID is generated by the backend on creation — never
+      // fabricated on the client (no fake preview values).
+      form.elements['institutional_id'].value = 'Generated after account creation';
+
+      submitBtn.addEventListener('click', function(){
+        clearFieldErrors();
+        var payload = {
+          person_type: 'teacher',
+          first_name: form.elements['first_name'].value.trim(),
+          last_name: form.elements['last_name'].value.trim(),
+          khmer_name: form.elements['khmer_name'].value.trim(),
+          gender: form.elements['gender'].value,
+          email: form.elements['email'].value.trim(),
+          phone: form.elements['phone'].value.trim(),
+          dob: form.elements['dob'].value,
+          photo: form.elements['photo'].value.trim(),
+          campus: form.elements['campus'].value,
+          department: form.elements['department'].value,
+          position: form.elements['position'].value,
+          status: form.elements['status'].value,
+          subjects: [form.elements['specialization'].value.trim()].filter(Boolean),
+          temporary_password: form.elements['password'].value,
+          activation: 'token'
+        };
+        if (!payload.first_name || !payload.last_name) { showFieldError('first_name', 'First and last names are required.'); return; }
+        if (!payload.username) payload.username = (payload.first_name + '.' + payload.last_name).toLowerCase().replace(/[^a-z0-9.-_]/g,'.');
+        submitBtn.disabled = true;
+        document.getElementById('aaSpinner').style.display = 'flex';
+        document.getElementById('aaMsg').textContent = '';
+        fetch('/api/user-mgmt/create-person', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function(res){ return res.json(); })
+          .then(function(res){
+            document.getElementById('aaSpinner').style.display = 'none';
+            submitBtn.disabled = false;
+            if (res && res.success) {
+              showSuccess(res);
+            } else {
+              document.getElementById('aaMsg').textContent = res.error || 'Creation failed.';
+              document.getElementById('aaMsg').style.display = '';
+            }
+          })
+          .catch(function(){
+            document.getElementById('aaSpinner').style.display = 'none';
+            submitBtn.disabled = false;
+            document.getElementById('aaMsg').textContent = 'Network error creating account.';
+            document.getElementById('aaMsg').style.display = '';
+          });
+      });
+
+      function showSuccess(res){
+        var d = res || {};
+        var name = (form.elements['first_name'].value||'')+' '+(form.elements['last_name'].value||'');
+        var id = d.institutional_id || d.account_id || '—';
+        var user = form.elements['username'].value || '—';
+        var body = '' +
+          '<div style="text-align:center;">' +
+          '<div style="width:64px;height:64px;border-radius:50%;background:var(--color-success-bg);border:1px solid var(--color-success-border);color:var(--color-success-text-tint);display:grid;place-items:center;margin:0 auto 16px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' +
+          '<h3 style="margin:0 0 8px 0;font-size:16px;color:var(--color-text-heading);">Account created</h3>' +
+          '<p style="margin:0 0 14px 0;color:var(--color-text-secondary);font-size:13px;">' + esc(name) + ' has been added to the Teacher directory.</p>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;margin:0 0 16px 0;">' +
+          '<div><div class="supporting-text" style="font-size:11px;">Institutional ID</div><div class="body-text" style="font-size:13px;font-weight:var(--font-weight-medium);">' + esc(id) + '</div></div>' +
+          '<div><div class="supporting-text" style="font-size:11px;">Username</div><div class="body-text" style="font-size:13px;font-weight:var(--font-weight-medium);">' + esc(user) + '</div></div>' +
+          '</div>' +
+          '<p class="supporting-text" style="font-size:12px;margin:0;">The temporary password was shown in Step 3 and is not stored here.</p>' +
+          '</div>';
+        var modalBody = overlay.querySelector('.modal-body');
+        var origBody = modalBody.innerHTML;
+        modalBody.innerHTML = body;
+        nextBtn.style.display='none'; submitBtn.style.display='none'; backBtn.style.display='none'; cancelBtn.textContent='Close';
+        cancelBtn.onclick = function(){ closeModal(); modalBody.innerHTML = origBody; cancelBtn.textContent='Cancel'; cancelBtn.onclick = closeModal; };
+        if (window.toast) window.toast('Teacher account created', 'success');
+      }
+      function payloadName(){ return (form.elements['first_name'].value||'')+' '+(form.elements['last_name'].value||''); }
+
+      // Wire username into payload before submit (already handled above)
+    })();
+  </script>
+</body>
+</html>

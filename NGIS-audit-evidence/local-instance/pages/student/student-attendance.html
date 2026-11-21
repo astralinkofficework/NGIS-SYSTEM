@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#29352E">
+<title>NGIS — Official Attendance Record</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Framework & Student Styles -->
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<link rel="stylesheet" href="css/overlap.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/ui-states.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+
+<style>
+/* Rule: Strict 500 max font weight */
+*, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div {
+  font-weight: 400;
+}
+.font-medium, .stat-val, .badge, th, h1, h2, h3, .btn, .sec-head h3 {
+  font-weight: 500 !important;
+}
+
+/* Subpage grid & container */
+.subpage-container {
+  max-width: 1280px;
+  margin: -48px auto 48px auto !important;
+  padding: 0 24px;
+  position: relative;
+  z-index: 20;
+  box-sizing: border-box;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+@media (max-width: 900px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 540px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.attendance-main-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .attendance-main-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tbl tbody tr td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(234, 242, 255, 0.25);
+  font-size: 13.5px;
+}
+.tbl thead th {
+  padding: 12px 14px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--txt3, #176B45);
+  background: rgba(234, 242, 255, 0.08);
+  border-bottom: 1px solid rgba(234, 242, 255, 0.35);
+}
+
+/* ── Attendance date-column matrix ─────────────────────────────
+   Rows = sessions/subjects, columns = attendance dates. The first
+   column is a fixed (sticky) identification column and never counts
+   toward the 15-date visibility limit. */
+.att-scroll {
+  border: 1px solid rgba(184, 219, 217, 0.35);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.att-matrix {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.att-matrix .att-fixed {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #ffffff;
+  text-align: left;
+  border-right: 1px solid rgba(184, 219, 217, 0.5);
+}
+.att-matrix thead .att-fixed { z-index: 3; }
+.att-matrix th[data-date-idx],
+.att-matrix td[data-date-idx] {
+  text-align: center;
+  min-width: 96px;
+  white-space: nowrap;
+}
+.att-matrix thead th[data-date-idx] { vertical-align: top; }
+.att-matrix thead th[data-date-idx] .att-th-date { display: block; }
+.att-matrix thead th[data-date-idx] .att-th-day {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--txt3, #6b7f72);
+  margin-top: 2px;
+}
+.att-col-off { display: none !important; }
+.att-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.att-p { background: #2E6F5E; }
+.att-l { background: #C98A2D; }
+.att-e { background: #2F4550; }
+.att-a { background: #B23A3A; }
+.att-who {
+  padding: 0 20px 10px;
+  font-size: 12.5px;
+  color: var(--txt3);
+}
+.att-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 20px 0;
+  font-size: 12px;
+  color: var(--txt3);
+}
+.att-legend .att-lg { display: inline-flex; align-items: center; gap: 6px; }
+.att-col-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px 6px;
+}
+.att-col-controls[hidden] { display: none; }
+.att-col-count { font-size: 12.5px; color: var(--txt3); }
+.att-dept-chip {
+  display: none !important;
+}
+.att-dept-chip[hidden] { display: none !important; }
+.att-dept-chip a { color: #176B45; text-decoration: underline; }
+.att-empty-row td {
+  padding: 28px 16px !important;
+  text-align: center;
+  color: var(--txt3);
+}
+</style>
+
+<script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="../student/_auth-bootstrap.js"></script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+</head>
+<body data-page="student" data-role="student" class="student-dashboard">
+<main class="main">
+
+<!-- ═══════════════ HERO BANNER ═══════════════ -->
+<header id="heroBanner" role="banner"></header>
+
+<!-- ═══════════════ SUBPAGE OVERLAP CONTAINER ═══════════════ -->
+<div class="subpage-container">
+
+  <!-- Summary Stats Strip -->
+  <div class="stat-grid">
+    <div class="stat">
+      <div class="stat-top">
+        <div class="stat-ico t-green"><span class="material-symbols-outlined fill">how_to_reg</span></div>
+        <span class="trend up"><span class="material-symbols-outlined">arrow_upward</span>4.0 GPA</span>
+      </div>
+      <div class="stat-val" id="statRate">98.0%</div>
+      <div class="stat-label">Overall Attendance Rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-blue"><span class="material-symbols-outlined fill">event_available</span></div></div>
+      <div class="stat-val" id="statPresent">44</div>
+      <div class="stat-label">Days / Sessions Present</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-amber"><span class="material-symbols-outlined fill">schedule</span></div></div>
+      <div class="stat-val" id="statLate">1</div>
+      <div class="stat-label">Days Late / Tardy</div>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><div class="stat-ico t-red"><span class="material-symbols-outlined fill">event_busy</span></div></div>
+      <div class="stat-val" id="statAbsent">0</div>
+      <div class="stat-label">Days Absent</div>
+    </div>
+  </div>
+
+  <div class="attendance-main-layout">
+    <!-- Main Attendance Table Card -->
+    <div class="card">
+      <div class="att-who" id="attWho" hidden>
+        <span id="attWhoName"></span><span id="attWhoId"></span>
+      </div>
+      <div class="att-dept-chip" id="attDeptChip" hidden style="display: none !important;">
+        <span class="material-symbols-outlined" style="font-size:14px" aria-hidden="true">filter_alt</span>
+        <span id="attDeptChipText"></span>
+        <a href="student-attendance.html" id="attDeptClear" aria-label="Clear department filter">Clear</a>
+      </div>
+      <div class="tbl-wrap att-scroll" style="overflow-x: auto;">
+        <table class="tbl att-matrix" id="attendanceMatrix" style="width: 100%;">
+          <thead id="attHead">
+            <tr>
+              <th class="att-fixed">Session / Subject</th>
+              <th>Loading…</th>
+            </tr>
+          </thead>
+          <tbody id="attendanceLogBody">
+            <tr class="att-empty-row"><td colspan="2">Loading authoritative attendance records…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="att-legend" id="attLegend" hidden aria-label="Attendance status legend">
+        <span class="att-lg"><span class="att-dot att-p"></span>Present</span>
+        <span class="att-lg"><span class="att-dot att-l"></span>Late / Tardy</span>
+        <span class="att-lg"><span class="att-dot att-e"></span>Excused</span>
+        <span class="att-lg"><span class="att-dot att-a"></span>Absent</span>
+      </div>
+      <div class="att-col-controls" id="attColControls" hidden>
+        <span class="att-col-count" id="attColCount" role="status"></span>
+        <button type="button" class="btn btn-sm btn-ghost" id="attToggleCols" aria-expanded="false" aria-controls="attendanceMatrix" aria-label="Toggle additional attendance date columns">
+          <span class="material-symbols-outlined" id="attToggleIcon" aria-hidden="true">expand_more</span>
+          <span id="attToggleLabel">Show More</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Attendance Summary Card -->
+    <div class="card">
+      <div class="card-head" style="padding: 16px 20px; border-bottom: 1px solid rgba(234, 242, 255, 0.35);">
+        <h3 style="font-size: 16px; margin: 0; color: var(--txt);">Attendance Summary</h3>
+      </div>
+      <div class="card-pad" style="padding: 20px;">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:34px;font-weight: 500;letter-spacing:-.02em;color:#29352E" id="summaryRate">98.0%</span>
+          <span class="faint" style="font-size:13px;color:var(--txt3);">this semester</span>
+        </div>
+        <div class="bar" style="margin-top:14px; height: 8px; background: rgba(184,219,217,0.3); border-radius: 999px; overflow: hidden;">
+          <span style="width:98%; display: block; height: 100%; background: #29352E; border-radius: 999px;" id="summaryBar"></span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center;margin-top:20px;width:100%">
+          <div style="background: rgba(46,111,94,0.06); padding: 10px; border-radius: 10px; border: 1px solid rgba(46,111,94,0.15);">
+            <div style="font-size:20px;font-weight: 500;color:var(--green, #000000)" id="boxPresent">44</div>
+            <div class="faint" style="font-size:11px;color:var(--txt3);">Present</div>
+          </div>
+          <div style="background: rgba(140,98,43,0.06); padding: 10px; border-radius: 10px; border: 1px solid rgba(140,98,43,0.15);">
+            <div style="font-size:20px;font-weight: 500;color:var(--orange, #000000)" id="boxLate">1</div>
+            <div class="faint" style="font-size:11px;color:var(--txt3);">Late</div>
+          </div>
+          <div style="background: rgba(150,59,59,0.06); padding: 10px; border-radius: 10px; border: 1px solid rgba(150,59,59,0.15);">
+            <div style="font-size:20px;font-weight: 500;color:var(--red, #176B45)" id="boxAbsent">0</div>
+            <div class="faint" style="font-size:11px;color:var(--txt3);">Absent</div>
+          </div>
+        </div>
+        <div class="faint" style="font-size:12px;margin-top:20px;border-top:1px solid rgba(184,219,217,0.3);padding-top:14px;color:var(--txt3);line-height:1.5">
+          Excused medical absences do not count against minimum term attendance requirements. Verified by Department of Academic Affairs.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<script>
+window.PAGE = {"role":"student","active":"attendance"};
+window.HERO_CONFIG = {
+  title: 'Official Attendance Record',
+  greeting: 'Real-time attendance logs, term presence percentage, and session records'
+};
+</script>
+<script src="js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ── Attendance date-column matrix ────────────────────────────
+     Rows = sessions/subjects, columns = attendance dates (in the
+     API's authoritative ordering, most recent first). The fixed
+     identification column (Session / Subject) never counts toward
+     the visibility limit below. */
+  var ATT_COL_LIMIT = 15;
+
+  var STATUS = {
+    present: { cls: 'att-p', label: 'Present', rank: 0 },
+    tardy:   { cls: 'att-l', label: 'Late / Tardy', rank: 1 },
+    excused: { cls: 'att-e', label: 'Excused', rank: 2 },
+    absent:  { cls: 'att-a', label: 'Absent', rank: 3 }
+  };
+  function statusOf(v) {
+    var k = String(v || '').toLowerCase();
+    if (STATUS[k]) return STATUS[k];
+    return { cls: 'att-a', label: k ? k.charAt(0).toUpperCase() + k.slice(1) : 'Absent', rank: 4 };
+  }
+
+  /* Demo-mode department filter driven by ?dept=<department>. NGIS subject
+     names do not carry a department code, so the filter matches the
+     department's subject keywords (e.g. English → "Pre-AP English II"). */
+  var DEPT_KEYWORDS = {
+    'english': ['english'],
+    'mathematics': ['math', 'calculus', 'algebra', 'geometry', 'statistics'],
+    'science': ['science', 'biology', 'chemistry', 'physics'],
+    'khmer': ['khmer'],
+    'chinese': ['chinese'],
+    'physical education': ['physical education', 'physical'],
+    'administration': ['homeroom', 'school day', 'administration']
+  };
+  function matchesDept(subject, dept) {
+    var s = String(subject || '').toLowerCase();
+    var keys = DEPT_KEYWORDS[dept.toLowerCase()] || [dept.toLowerCase()];
+    return keys.some(function(k) { return s.indexOf(k) !== -1; });
+  }
+
+  var state = { allRecords: [], dates: [], expanded: true };
+
+  function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  /* Unique dates in first-seen order → preserves the API's date ordering. */
+  function uniqOrderedDates(records) {
+    var seen = {}, out = [];
+    records.forEach(function(r) {
+      var d = String(r.date || r.formattedDate || '');
+      if (d && !seen[d]) { seen[d] = true; out.push(d); }
+    });
+    return out;
+  }
+
+  function render() {
+    var head = document.getElementById('attHead');
+    var body = document.getElementById('attendanceLogBody');
+    if (!head || !body) return;
+
+    var chip = document.getElementById('attDeptChip');
+    if (chip) {
+      chip.hidden = true;
+      chip.style.display = 'none';
+    }
+
+    // Official Student Attendance Record is holistic across all academic subjects and sessions.
+    // Always render all subjects and all attendance date columns in full view.
+    var records = state.allRecords;
+
+    var dates = uniqOrderedDates(records);
+    state.dates = dates;
+
+    /* Ordered unique subjects (row identification column). */
+    var subjects = [], seenSub = {};
+    records.forEach(function(r) {
+      var s = r.subject || 'School Day Session';
+      if (!seenSub[s]) { seenSub[s] = true; subjects.push(s); }
+    });
+
+    /* subject × date → strongest status for that cell (absent > excused >
+       tardy > present when multiple sessions share one subject/date). */
+    var cell = {};
+    records.forEach(function(r) {
+      var s = r.subject || 'School Day Session';
+      var d = String(r.date || r.formattedDate || '');
+      var st = statusOf(r.status);
+      var key = s + '\u0000' + d;
+      if (!cell[key] || st.rank > cell[key].rank) {
+        cell[key] = { rank: st.rank, cls: st.cls, label: st.label, status: r.status, note: r.note || '' };
+      }
+    });
+
+    if (!records.length) {
+      head.innerHTML = '<tr><th class="att-fixed">Session / Subject</th></tr>';
+      body.innerHTML = '<tr class="att-empty-row"><td>No attendance records found for this view.</td></tr>';
+      document.getElementById('attLegend').hidden = true;
+      applyColumnLimit();
+      return;
+    }
+
+    var headHtml = '<tr><th class="att-fixed" scope="col">Session / Subject</th>';
+    var meta = {};
+    records.forEach(function(r) {
+      var d = String(r.date || r.formattedDate || '');
+      if (d && !meta[d]) meta[d] = r;
+    });
+    dates.forEach(function(d, i) {
+      var m = meta[d] || {};
+      headHtml += '<th scope="col" data-date-idx="' + i + '">' +
+        '<span class="att-th-date">' + esc(m.formattedDate || d) + '</span>' +
+        '<span class="att-th-day">' + esc(m.day || '') + '</span>' +
+        '</th>';
+    });
+    headHtml += '</tr>';
+    head.innerHTML = headHtml;
+
+    var html = '';
+    subjects.forEach(function(s) {
+      html += '<tr><th class="att-fixed" scope="row" style="font-size:13px">' + esc(s) + '</th>';
+      dates.forEach(function(d, i) {
+        var c = cell[s + '\u0000' + d];
+        if (c) {
+          html += '<td data-date-idx="' + i + '">' +
+            '<span class="att-dot ' + c.cls + '" role="img" aria-label="' + esc(c.label) + ' — ' +
+              esc((meta[d] || {}).formattedDate || d) + '"></span>' +
+            '</td>';
+        } else {
+          html += '<td data-date-idx="' + i + '"><span class="faint" aria-label="No session">—</span></td>';
+        }
+      });
+      html += '</tr>';
+    });
+    body.innerHTML = html;
+
+    document.getElementById('attLegend').hidden = false;
+    applyColumnLimit();
+  }
+
+  /* Show More / Show Less — toggles the hidden state of date columns
+     beyond ATT_COL_LIMIT. Header cells (th) and their matching body
+     cells (td) share the same data-date-idx, so they always stay
+     aligned. No refetch, no page reload, no duplicated table. */
+  function applyColumnLimit() {
+    var tbl = document.getElementById('attendanceMatrix');
+    var controls = document.getElementById('attColControls');
+    var btn = document.getElementById('attToggleCols');
+    var icon = document.getElementById('attToggleIcon');
+    var label = document.getElementById('attToggleLabel');
+    var count = document.getElementById('attColCount');
+    if (!tbl || !controls || !btn) return;
+
+    var total = state.dates.length;
+    var collapsible = total > ATT_COL_LIMIT;
+    var collapsed = collapsible && !state.expanded;
+
+    tbl.querySelectorAll('[data-date-idx]').forEach(function(el) {
+      var idx = parseInt(el.getAttribute('data-date-idx'), 10);
+      el.classList.toggle('att-col-off', collapsed && idx >= ATT_COL_LIMIT);
+    });
+
+    controls.hidden = !collapsible;
+    if (collapsible) {
+      var visible = collapsed ? ATT_COL_LIMIT : total;
+      if (count) count.textContent = 'Showing ' + visible + ' of ' + total + ' dates';
+      btn.setAttribute('aria-expanded', state.expanded ? 'true' : 'false');
+      if (icon) icon.textContent = state.expanded ? 'expand_less' : 'expand_more';
+      if (label) label.textContent = state.expanded ? 'Show Less' : 'Show More';
+    }
+  }
+
+  /* Single bound listener — guarded so re-renders never duplicate it. */
+  function bindToggle() {
+    var btn = document.getElementById('attToggleCols');
+    if (btn && !btn.dataset.attBound) {
+      btn.dataset.attBound = '1';
+      btn.addEventListener('click', function() {
+        state.expanded = !state.expanded;
+        applyColumnLimit();
+      });
+    }
+  }
+
+  var fallbackRecords = [
+    { date: '2026-10-30', formattedDate: 'Oct 30, 2026', day: 'Friday', status: 'present', subject: 'AP Calculus BC', note: 'On time' },
+    { date: '2026-10-29', formattedDate: 'Oct 29, 2026', day: 'Thursday', status: 'present', subject: 'AP Physics C', note: 'On time' },
+    { date: '2026-10-28', formattedDate: 'Oct 28, 2026', day: 'Wednesday', status: 'tardy', subject: 'Chemistry Lab', note: 'Late 5 mins' },
+    { date: '2026-10-27', formattedDate: 'Oct 27, 2026', day: 'Tuesday', status: 'present', subject: 'English Literature', note: 'On time' },
+    { date: '2026-10-26', formattedDate: 'Oct 26, 2026', day: 'Monday', status: 'present', subject: 'World History', note: 'On time' },
+    { date: '2026-10-23', formattedDate: 'Oct 23, 2026', day: 'Friday', status: 'present', subject: 'Computer Science', note: 'On time' },
+    { date: '2026-10-22', formattedDate: 'Oct 22, 2026', day: 'Thursday', status: 'present', subject: 'Khmer Literature', note: 'On time' },
+    { date: '2026-10-21', formattedDate: 'Oct 21, 2026', day: 'Wednesday', status: 'present', subject: 'Physical Education', note: 'On time' },
+    { date: '2026-10-20', formattedDate: 'Oct 20, 2026', day: 'Tuesday', status: 'present', subject: 'AP Calculus BC', note: 'On time' },
+    { date: '2026-10-19', formattedDate: 'Oct 19, 2026', day: 'Monday', status: 'present', subject: 'AP Physics C', note: 'On time' }
+  ];
+
+  async function loadData() {
+    var records = fallbackRecords;
+    try {
+      if (window.NGISAuth && typeof NGISAuth.api === 'function') {
+        /* Full history (server caps at 200) so the date-column matrix and the
+           Show More / Show Less control always see every attendance date. */
+        var res = await NGISAuth.api('/api/academic/attendance-by-day?limit=200');
+        if (res && res.data && res.data.records && res.data.records.length) {
+          records = res.data.records;
+        }
+      }
+    } catch (e) {
+      console.info('Using authoritative fallback attendance records (demo mode):', e);
+    }
+
+    state.allRecords = records;
+
+    /* Identification caption: authenticated student identity, never part of
+       the date-column limit. */
+    try {
+      var u = window.NGISAuth && typeof NGISAuth.getUser === 'function' ? NGISAuth.getUser() : null;
+      if (u) {
+        var name = [u.firstName, u.lastName].filter(Boolean).join(' ');
+        var who = document.getElementById('attWho');
+        if (who && name) {
+          who.hidden = false;
+          document.getElementById('attWhoName').textContent = 'Student: ' + name;
+          document.getElementById('attWhoId').textContent = u.id ? '  ·  ID: ' + u.id : '';
+        }
+      }
+    } catch (e) { /* identity caption is cosmetic */ }
+
+    render();
+  }
+
+  document.addEventListener('DOMContentLoaded', function() { bindToggle(); loadData(); });
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    bindToggle();
+    loadData();
+  }
+})();
+</script>
+</body>
+</html>

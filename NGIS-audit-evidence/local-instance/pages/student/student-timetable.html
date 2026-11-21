@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NGIS · Class Timetable</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/app.css?v=3.0">
+<link rel="stylesheet" href="../../assets/css/mvp-redesign.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/overlap.css">
+<link rel="stylesheet" href="css/responsive.css">
+<link rel="stylesheet" href="../../assets/css/interactions.css">
+<link rel="stylesheet" href="../../assets/css/ui-states.css">
+<link rel="stylesheet" href="../../assets/css/design-system.css">
+<link rel="stylesheet" href="../../assets/css/hero.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<script>try{var t=localStorage.getItem('ngis-theme')||'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}</script>
+
+<!-- NGIS global action-icon engine -->
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+<script src="../../assets/js/khmer-suite-data.js"></script>
+
+<style>
+/* ── Weekly Class Timetable — same visual language as student-calendar.html ── */
+.wktt-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:16px 20px; }
+.wktt-head h3 { font-size:16px; margin:0; color:var(--text); }
+.wktt-sub { font-size:12px; color:var(--muted); margin-top:2px; }
+.wktt-meta { display:flex; gap:6px; flex-wrap:wrap; align-items:center; justify-content:flex-end; }
+.wktt-chip { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; padding:3px 9px; border-radius:999px; background:var(--surface-2,#F1F5F9); color:var(--text-secondary,#64746A); }
+.wktt-chip.green { background:transparent; color:var(--color-success-text,#176B45); }
+.wktt-chip .material-symbols-outlined { font-size:14px; }
+.wktt-link,
+.wktt-action { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:500; color:var(--primary,#176B45); text-decoration:none; padding:6px 10px; border-radius:8px; border:0; background:transparent; font-family:inherit; cursor:pointer; }
+.wktt-link:hover,
+.wktt-action:hover { text-decoration:underline; }
+.wktt-link:focus-visible,
+.wktt-action:focus-visible { outline:2px solid var(--primary,#176B45); outline-offset:2px; }
+.wktt-action[disabled] { opacity:.55; cursor:not-allowed; text-decoration:none; }
+.wktt-toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:0 20px 12px; }
+.wktt-days { display:flex; gap:12px; flex-wrap:wrap; }
+.wktt-day-btn { position:relative; border:0; background:transparent; color:var(--text-secondary,#64746A); font-family:inherit; font-size:12px; font-weight:400; padding:5px 2px 8px; border-radius:0; cursor:pointer; transition:color 150ms ease,opacity 120ms ease; }
+.wktt-day-btn::after { content:""; position:absolute; left:2px; right:2px; bottom:2px; height:2px; border-radius:2px; background:transparent; transition:background-color 150ms ease; }
+.wktt-day-btn:hover { color:var(--text,#29352E); }
+.wktt-day-btn[aria-pressed="true"] { background:transparent; color:var(--primary,#176B45); }
+.wktt-day-btn[aria-pressed="true"]::after { background:var(--primary,#176B45); }
+.wktt-day-btn:active { opacity:.82; }
+.wktt-day-btn:focus-visible { outline:2px solid var(--primary,#176B45); outline-offset:2px; }
+.wktt-week { font-size:12px; color:var(--muted); }
+.wktt-body { padding:0 20px 20px; }
+.wktt-day-group { margin-top:6px; }
+.wktt-day-head { display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:500; color:var(--text,#29352E); padding:10px 12px; border-radius:8px; background:transparent; }
+.wktt-day-head.today { background:transparent; box-shadow:inset 2px 0 0 var(--primary,#176B45); }
+.wktt-day-head .wktt-today-tag { font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.04em; background:var(--primary,#176B45); color:#fff; padding:1px 7px; border-radius:999px; }
+.wktt-row { display:grid; grid-template-columns:130px minmax(0,1fr) 110px 170px; gap:10px; align-items:center; padding:9px 12px; border-top:1px solid var(--border-subtle,#EEF4F0); font-size:13px; }
+.wktt-row:first-of-type { border-top:0; }
+.wktt-time { font-size:12px; color:var(--text-secondary,#64746A); font-variant-numeric:tabular-nums; }
+.wktt-subject { font-weight:500; color:var(--text,#29352E); display:flex; align-items:center; gap:6px; min-width:0; }
+.wktt-subject .wktt-code { font-size:10px; padding:1px 6px; border-radius:5px; font-weight:500; flex-shrink:0; }
+.wktt-class, .wktt-teacher { color:var(--text-secondary,#64746A); font-size:12.5px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.wktt-note { font-size:12px; color:var(--muted); padding:8px 12px; }
+.wktt-state { text-align:center; padding:48px 20px; color:var(--muted,#8FA095); }
+.wktt-state .material-symbols-outlined { font-size:36px; color:#B9C7BD; }
+.wktt-state-title { margin-top:8px; font-weight:500; color:var(--text,#29352E); font-size:14px; }
+.wktt-state-sub { margin-top:4px; font-size:13px; }
+.wktt-spinner { width:22px; height:22px; margin:0 auto; border-radius:50%; border:2.5px solid #E1E9E3; border-top-color:var(--primary,#176B45); animation:wkttSpin .8s linear infinite; }
+@keyframes wkttSpin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .wktt-spinner { animation:none; } }
+@media (max-width:767px) {
+  .wktt-head { padding:14px 14px; }
+  .wktt-meta { justify-content:flex-start; }
+  .wktt-row { grid-template-columns:1fr; gap:3px; padding:10px 4px; }
+  .wktt-time { font-weight:500; color:var(--text,#29352E); font-size:12.5px; }
+  .wktt-class, .wktt-teacher { white-space:normal; overflow:visible; }
+  .wktt-teacher::before { content:'Teacher: '; color:var(--muted,#8FA095); }
+  .wktt-toolbar { flex-direction:column; align-items:stretch; padding-left:14px; padding-right:14px; }
+  .wktt-body { padding:0 14px 16px; }
+}
+@media (min-width:768px) and (max-width:1023px) {
+  .wktt-row { grid-template-columns:110px minmax(0,1fr) 90px 140px; }
+}
+@media print {
+  .wktt-toolbar, .wktt-action, .wktt-link { display:none !important; }
+  .wktt-head { padding:0 0 10px; }
+  .wktt-body { padding:0; }
+}
+</style>
+</head>
+<body data-page="student" data-role="student" class="student-dashboard">
+<main class="main">
+<header id="heroBanner" role="banner"></header>
+<div class="subpage-container">
+
+  <div class="col-main mt4 anim-up">
+    <div class="stack" style="width:100%">
+
+      <!-- Published weekly class timetable, reached from Academic Departments -->
+      <div class="card" id="wkttCard">
+        <div class="wktt-head">
+          <div>
+            <h3>Weekly Class Timetable</h3>
+            <div class="wktt-sub" id="wkttSubtitle">Published weekly schedule · synced with the NGIS Timetable Registry</div>
+          </div>
+          <div class="wktt-meta" id="wkttMeta"></div>
+        </div>
+        <div class="wktt-toolbar">
+          <div class="wktt-days" id="wkttDays" role="group" aria-label="Filter by day"></div>
+          <div class="wktt-week" id="wkttWeek"></div>
+        </div>
+        <div class="wktt-body" id="wkttBody">
+          <div class="wktt-state"><div class="wktt-spinner"></div><div class="wktt-state-sub" style="margin-top:10px">Loading timetable…</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</main>
+
+<script>window.PAGE = {"role":"student","active":"departments"};
+window.HERO_CONFIG = {
+  title: 'Class Timetable',
+  greeting: 'Your recurring weekly class schedule — synced with the NGIS Timetable Registry',
+  name: 'Nrinphouneta Hok',
+  id: 'Student ID: 2026-STD-0142',
+  grade: 'Grade 10',
+  avatar: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=160',
+  avatarSm: 'https://images.pexels.com/photos/3785079/pexels-photo-3785079.jpeg?auto=compress&cs=tinysrgb&w=80',
+  homeLink: '../../index.html',
+  signOutLink: '../../index.html',
+  profileLink: 'student-profile.html',
+  notifLink: 'student-notifications.html',
+  notifCount: 3,
+  breadcrumbs: [
+    { label: 'Academic Departments', href: '../shared/departments.html?portal=student' },
+    { label: 'Class Timetable' }
+  ],
+  ddRows: [
+    { icon: 'school', text: 'Grade 10 — Science Stream' },
+    { icon: 'class', text: 'Class 10A' },
+    { icon: 'email', text: 'nrinphouneta@ngis.edu.kh' },
+    { icon: 'calendar_today', text: 'Enrolled: Sep 2024' },
+    { icon: 'emoji_events', text: 'GPA: 3.87 / 4.00' }
+  ]
+};</script>
+<script src="js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     Weekly Class Timetable — READ-ONLY
+     Reuses the published timetable APIs only:
+       · /api/students                     → real enrollment record
+       · /api/timetable/state              → class catalog (+ departments)
+       · /api/timetable/published/class/X  → OFFICIAL published lessons only
+                                             (404 when nothing is published —
+                                              the draft is never exposed)
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  var DAYS = ['ច័ន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+  var DAY_LABELS = { 'ច័ន្ទ':'Monday', 'អង្គារ':'Tuesday', 'ពុធ':'Wednesday', 'ព្រហស្បតិ៍':'Thursday', 'សុក្រ':'Friday', 'សៅរ៍':'Saturday' };
+  var DAY_SHORT = { 'ច័ន្ទ':'Mon', 'អង្គារ':'Tue', 'ពុធ':'Wed', 'ព្រហស្បតិ៍':'Thu', 'សុក្រ':'Fri', 'សៅរ៍':'Sat' };
+  var JS_DAY_TO_KHMER = { 1:'ច័ន្ទ', 2:'អង្គារ', 3:'ពុធ', 4:'ព្រហស្បតិ៍', 5:'សុក្រ', 6:'សៅរ៍' };
+
+  var PERIODS = {
+    'ព្រឹក': { 1:'07:00–07:50', 2:'07:55–08:45', 3:'09:05–09:55', 4:'10:00–10:50', 5:'10:55–11:45' },
+    'រសៀល': { 1:'13:00–13:50', 2:'13:55–14:45', 3:'15:05–15:55', 4:'16:00–16:50', 5:'16:55–17:45' }
+  };
+  var SHIFT_ORDER = { 'ព្រឹក': 0, 'រសៀល': 1 };
+
+  var params = new URLSearchParams(window.location.search);
+  var state = {
+    loading: true,
+    error: null,
+    entries: [],
+    deptFilter: params.get('dept') || 'all',
+    classFilter: params.get('class') || null,
+    dayFilter: 'all',
+    studentClassDisplay: null,
+    departmentLabel: params.get('dept') || ''
+  };
+
+  function KS() { return window.KSData || null; }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function to12h(range) {
+    var parts = String(range || '').split('–');
+    if (parts.length !== 2) return range || '';
+    function fmt(t) {
+      var m = t.trim().match(/^(\d{1,2}):(\d{2})$/);
+      if (!m) return { text:t, mer:'' };
+      var h = parseInt(m[1], 10), mm = m[2];
+      var mer = h >= 12 ? 'PM' : 'AM';
+      var h12 = h % 12 || 12;
+      return { text: h12 + ':' + mm, mer: mer };
+    }
+    var a = fmt(parts[0]), b = fmt(parts[1]);
+    if (!a.mer || !b.mer) return range;
+    return a.mer === b.mer ? a.text + ' – ' + b.text + ' ' + a.mer : a.text + ' ' + a.mer + ' – ' + b.text + ' ' + b.mer;
+  }
+
+  function bodyEl() { return document.getElementById('wkttBody'); }
+  function metaEl() { return document.getElementById('wkttMeta'); }
+
+  function resolveStudentId() {
+    var sid = params.get('student');
+    if (sid) return sid;
+    try {
+      var heroId = window.HERO_CONFIG && window.HERO_CONFIG.id;
+      if (heroId) {
+        var m = String(heroId).match(/(\d{4}-STD-\d+)/);
+        if (m) return m[1];
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  async function resolveEnrollment() {
+    var sid = resolveStudentId();
+    var classes = [];
+    try {
+      var res = await fetch('/api/timetable/state');
+      if (res.ok) {
+        var d = await res.json();
+        classes = (d.state && d.state.classes) || d.classes || [];
+      }
+    } catch (e) {}
+
+    /* A department card may link to a specific class. */
+    if (state.classFilter) {
+      var requested = classes.filter(function (c) {
+        return c.id === state.classFilter || String(c.display).replace(/\s+/g, '') === String(state.classFilter).replace(/\s+/g, '');
+      });
+      if (requested.length) return requested;
+    }
+
+    var classDisplay = null;
+    if (sid) {
+      try {
+        var sRes = await fetch('/api/students');
+        if (sRes.ok) {
+          var sData = await sRes.json();
+          var list = Array.isArray(sData) ? sData : (sData.data || []);
+          var stu = list.find(function (s) { return s.id === sid; });
+          if (stu && stu.class) classDisplay = String(stu.class).trim();
+        }
+      } catch (e) {}
+    }
+
+    var wanted = classDisplay ? [classDisplay] : [];
+    var enrolled = classes.filter(function (c) { return wanted.indexOf(String(c.display).trim()) !== -1; });
+    state.studentClassDisplay = classDisplay;
+    return enrolled;
+  }
+
+  async function loadTimetable() {
+    state.loading = true; state.error = null;
+    renderLoading();
+    try {
+      var enrolled = await resolveEnrollment();
+      if (!enrolled.length) {
+        state.entries = [];
+        state.error = 'no-enrollment';
+        state.loading = false;
+        render();
+        return;
+      }
+      var entries = await Promise.all(enrolled.map(async function (c) {
+        try {
+          var res = await fetch('/api/timetable/published/class/' + encodeURIComponent(c.id));
+          if (res.ok) {
+            var data = await res.json();
+            return { cls: c, dept: c.department || '', lessons: data.lessons || [], version: data.version || null, effectiveFrom: data.effective_from || null, published: true };
+          }
+          return { cls: c, dept: c.department || '', lessons: [], version: null, effectiveFrom: null, published: false };
+        } catch (e) {
+          return { cls: c, dept: c.department || '', lessons: [], version: null, effectiveFrom: null, published: false, fetchError: true };
+        }
+      }));
+      state.entries = entries;
+      state.loading = false;
+    } catch (e) {
+      state.loading = false;
+      state.error = 'network';
+    }
+    render();
+  }
+
+  function visibleEntries() {
+    return state.entries.filter(function (en) {
+      if (state.deptFilter !== 'all' && en.dept !== state.deptFilter) return false;
+      if (state.classFilter && en.cls.id !== state.classFilter && String(en.cls.display) !== state.classFilter) return false;
+      return true;
+    });
+  }
+
+  function allLessons() {
+    var out = [];
+    visibleEntries().forEach(function (en) {
+      en.lessons.forEach(function (l) { out.push({ lesson:l, cls:en.cls, dept:en.dept }); });
+    });
+    out.sort(function (a, b) {
+      var d = DAYS.indexOf(a.lesson.day) - DAYS.indexOf(b.lesson.day);
+      if (d !== 0) return d;
+      var s = (SHIFT_ORDER[a.lesson.shift] || 0) - (SHIFT_ORDER[b.lesson.shift] || 0);
+      if (s !== 0) return s;
+      return (a.lesson.period || 0) - (b.lesson.period || 0);
+    });
+    return out;
+  }
+
+  function isToday(khmerDay) { return JS_DAY_TO_KHMER[new Date().getDay()] === khmerDay; }
+
+  function liveSummary() {
+    var now = new Date();
+    var kh = JS_DAY_TO_KHMER[now.getDay()];
+    if (!kh) return 'Weekend · no classes';
+    var mins = now.getHours() * 60 + now.getMinutes();
+    var found = null;
+    Object.keys(SHIFT_ORDER).sort(function (a,b) { return SHIFT_ORDER[a] - SHIFT_ORDER[b]; }).forEach(function (shift) {
+      Object.keys(PERIODS[shift]).forEach(function (p) {
+        var bits = PERIODS[shift][p].split('–');
+        var start = parseInt(bits[0].split(':')[0], 10) * 60 + parseInt(bits[0].split(':')[1], 10);
+        var end = parseInt(bits[1].split(':')[0], 10) * 60 + parseInt(bits[1].split(':')[1], 10);
+        if (mins >= start && mins < end && !found) found = { shift:shift, period:parseInt(p, 10), time:PERIODS[shift][p] };
+      });
+    });
+    if (!found) return 'Outside class hours';
+    var lesson = allLessons().find(function (it) {
+      return it.lesson.day === kh && it.lesson.shift === found.shift && Number(it.lesson.period) === found.period;
+    });
+    if (!lesson) return 'Free period · ' + to12h(found.time);
+    var subject = KS() ? KS().toEnSubject(lesson.lesson.subject_name) : lesson.lesson.subject_name;
+    return subject + ' · ' + to12h(found.time);
+  }
+
+  function renderLoading() {
+    bodyEl().innerHTML = '<div class="wktt-state"><div class="wktt-spinner"></div><div class="wktt-state-sub" style="margin-top:10px">Loading timetable…</div></div>';
+  }
+
+  function renderMeta() {
+    var el = metaEl();
+    if (!el) return;
+    var chips = [];
+    var published = state.entries.filter(function (e) { return e.published; });
+    if (published.length) {
+      var v = published[0].version;
+      chips.push('<span class="wktt-chip green"><span class="material-symbols-outlined">verified</span>Published' + (v ? ' (v' + esc(v) + ')' : '') + '</span>');
+      if (published[0].effectiveFrom) chips.push('<span class="wktt-chip">Effective ' + esc(published[0].effectiveFrom) + '</span>');
+    }
+    if (state.entries.length) {
+      var clsNames = state.entries.map(function (e) { return e.cls.display; }).join(', ');
+      chips.push('<span class="wktt-chip"><span class="material-symbols-outlined">class</span>Class ' + esc(clsNames) + '</span>');
+      var depts = state.entries.map(function (e) { return e.dept; }).filter(Boolean);
+      if (depts.length) chips.push('<span class="wktt-chip">' + esc(depts.join(' · ')) + '</span>');
+    }
+    if (state.entries.length) chips.push('<span class="wktt-chip"><span class="material-symbols-outlined">schedule</span>' + esc(liveSummary()) + '</span>');
+    chips.push('<button type="button" class="wktt-action" data-action="export"><span class="material-symbols-outlined" style="font-size:14px">download</span>Export .ICS</button>');
+    chips.push('<button type="button" class="wktt-action" data-action="print"><span class="material-symbols-outlined" style="font-size:14px">print</span>Print</button>');
+    chips.push('<a class="wktt-link" href="../shared/departments.html?portal=student">Departments <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span></a>');
+    el.innerHTML = chips.join('');
+
+    el.querySelectorAll('[data-action="export"]').forEach(function (b) { b.addEventListener('click', exportICSFile); });
+    el.querySelectorAll('[data-action="print"]').forEach(function (b) { b.addEventListener('click', function () { window.print(); }); });
+  }
+
+  function renderDayChips() {
+    var wrap = document.getElementById('wkttDays');
+    if (!wrap) return;
+    var todayKh = JS_DAY_TO_KHMER[new Date().getDay()];
+    var html = '<button type="button" class="wktt-day-btn" data-day="all" aria-pressed="' + (state.dayFilter === 'all') + '">All days</button>';
+    DAYS.forEach(function (d) {
+      html += '<button type="button" class="wktt-day-btn" data-day="' + esc(d) + '" aria-pressed="' + (state.dayFilter === d) + '" aria-label="' + esc(DAY_LABELS[d]) + '">' + DAY_SHORT[d] + (d === todayKh ? ' ·' : '') + '</button>';
+    });
+    wrap.innerHTML = html;
+    wrap.querySelectorAll('.wktt-day-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.dayFilter = btn.getAttribute('data-day');
+        renderDayChips();
+        renderBody();
+      });
+    });
+  }
+
+  function renderWeekRange() {
+    var el = document.getElementById('wkttWeek');
+    if (!el) return;
+    var now = new Date();
+    var mon = new Date(now);
+    var dow = now.getDay();
+    mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+    var sat = new Date(mon);
+    sat.setDate(mon.getDate() + 5);
+    function f(d) { return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); }
+    el.textContent = 'This week · ' + f(mon) + ' – ' + f(sat) + ' · recurring schedule';
+  }
+
+  function renderSubtitle() {
+    var el = document.getElementById('wkttSubtitle');
+    if (!el) return;
+    var dept = state.departmentLabel || state.deptFilter;
+    var label = dept && dept !== 'all' ? ' · Department: ' + dept : '';
+    el.textContent = 'Published weekly schedule' + label + ' · synced with the NGIS Timetable Registry';
+  }
+
+  function deptChipsNeeded() {
+    var depts = {};
+    state.entries.forEach(function (e) { if (e.dept) depts[e.dept] = 1; });
+    return Object.keys(depts).length > 1;
+  }
+
+  function renderBody() {
+    var el = bodyEl();
+    if (!el) return;
+
+    if (state.loading) return renderLoading();
+
+    if (state.error === 'no-enrollment') {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">person_off</span>' +
+        '<div class="wktt-state-title">No enrollment record found</div>' +
+        '<div class="wktt-state-sub">Your class enrollment could not be resolved from school records, so no timetable can be shown.</div></div>';
+      return;
+    }
+    if (state.error === 'network') {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">wifi_off</span>' +
+        '<div class="wktt-state-title">Could not load the timetable</div>' +
+        '<div class="wktt-state-sub">The timetable service is unreachable right now.</div>' +
+        '<button type="button" class="wktt-day-btn" id="wkttRetry" style="margin-top:12px">Retry</button></div>';
+      var r = document.getElementById('wkttRetry');
+      if (r) r.addEventListener('click', loadTimetable);
+      return;
+    }
+
+    var publishedCount = state.entries.filter(function (e) { return e.published && e.lessons.length; }).length;
+    if (!publishedCount) {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">hourglass_empty</span>' +
+        '<div class="wktt-state-title">No published timetable yet</div>' +
+        '<div class="wktt-state-sub">Your class schedule will appear here automatically once the school publishes it.</div></div>';
+      return;
+    }
+
+    var lessons = allLessons().filter(function (it) { return state.dayFilter === 'all' || it.lesson.day === state.dayFilter; });
+    if (!lessons.length) {
+      el.innerHTML = '<div class="wktt-state"><span class="material-symbols-outlined">event_busy</span>' +
+        '<div class="wktt-state-title">No classes scheduled</div>' +
+        '<div class="wktt-state-sub">There are no lessons for this selection in the published schedule.</div></div>';
+      return;
+    }
+
+    var html = '';
+    if (deptChipsNeeded()) {
+      html += '<div class="wktt-days" style="padding-bottom:10px">';
+      html += '<button type="button" class="wktt-day-btn" data-dept="all" aria-pressed="' + (state.deptFilter === 'all') + '">All enrolled departments</button>';
+      Object.keys(state.entries.reduce(function (m, e) { if (e.dept) m[e.dept] = 1; return m; }, {})).forEach(function (dp) {
+        html += '<button type="button" class="wktt-day-btn" data-dept="' + esc(dp) + '" aria-pressed="' + (state.deptFilter === dp) + '">' + esc(dp) + '</button>';
+      });
+      html += '</div>';
+    }
+
+    var currentDay = null;
+    var multiDept = deptChipsNeeded();
+    lessons.forEach(function (it) {
+      var l = it.lesson;
+      if (l.day !== currentDay) {
+        if (currentDay !== null) html += '</div>';
+        currentDay = l.day;
+        html += '<div class="wktt-day-group">' +
+          '<div class="wktt-day-head' + (isToday(l.day) ? ' today' : '') + '">' +
+            esc(DAY_LABELS[l.day] || (KS() ? KS().toEnDay(l.day) : l.day)) +
+            (isToday(l.day) ? '<span class="wktt-today-tag">Today</span>' : '') +
+          '</div>';
+      }
+      var time = to12h((PERIODS[l.shift] || {})[l.period] || '');
+      var subject = KS() ? KS().toEnSubject(l.subject_name) : l.subject_name;
+      var teacher = KS() ? KS().toEnTeacher(l.teacher_name) : l.teacher_name;
+      var room = l.room ? (KS() ? KS().toEnRoom(l.room) : l.room) : '';
+      var color = l.color || '#176B45';
+      html += '<div class="wktt-row">' +
+        '<div class="wktt-time">' + esc(time) + '</div>' +
+        '<div class="wktt-subject"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(subject || '—') + '</span>' +
+          (l.subject_code ? '<span class="wktt-code" style="background:' + esc(color) + '22;color:' + esc(color) + '">' + esc(l.subject_code) + '</span>' : '') +
+        '</div>' +
+        '<div class="wktt-class">' + esc('Class ' + it.cls.display) + (multiDept && it.dept ? ' · ' + esc(it.dept) : '') + '</div>' +
+        '<div class="wktt-teacher">' + esc(teacher || '—') + (room ? ' · ' + esc(room) : '') + '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+
+    el.querySelectorAll('[data-dept]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.deptFilter = btn.getAttribute('data-dept');
+        state.departmentLabel = state.deptFilter;
+        renderSubtitle();
+        renderBody();
+      });
+    });
+  }
+
+  function exportICSFile() {
+    var lessons = allLessons();
+    if (!lessons.length) {
+      if (window.toast) window.toast('No published lessons available for export', 'info');
+      return;
+    }
+    var lines = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//NGIS Cambodian School ERP//Class Timetable//KM',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:NGIS Class Timetable'
+    ];
+    var dayOffsetMap = { 'ច័ន្ទ':0, 'អង្គារ':1, 'ពុធ':2, 'ព្រហស្បតិ៍':3, 'សុក្រ':4, 'សៅរ៍':5 };
+    lessons.forEach(function (it, idx) {
+      var l = it.lesson;
+      var time = (PERIODS[l.shift] || {})[l.period] || '07:00–07:50';
+      var times = time.split('–');
+      var s = times[0].split(':'), e = times[1].split(':');
+      var off = dayOffsetMap[l.day] || 0;
+      var dateDay = 7 + off;
+      var dateStr = '202609' + (dateDay < 10 ? '0' + dateDay : dateDay);
+      lines.push('BEGIN:VEVENT');
+      lines.push('UID:ngis-class-' + encodeURIComponent(it.cls.id) + '-' + idx + '@ngis.edu.kh');
+      lines.push('DTSTAMP:20260901T000000Z');
+      lines.push('DTSTART:' + dateStr + 'T' + s[0] + s[1] + '00');
+      lines.push('DTEND:' + dateStr + 'T' + e[0] + e[1] + '00');
+      lines.push('RRULE:FREQ=WEEKLY;COUNT=20');
+      lines.push('SUMMARY:' + (KS() ? KS().toEnSubject(l.subject_name) : l.subject_name) + ' (' + l.subject_code + ')');
+      lines.push('DESCRIPTION:Instructor: ' + (KS() ? KS().toEnTeacher(l.teacher_name) : l.teacher_name) + ' | Class: ' + it.cls.display);
+      lines.push('LOCATION:' + (KS() ? KS().toEnRoom(l.room) : l.room));
+      lines.push('END:VEVENT');
+    });
+    lines.push('END:VCALENDAR');
+    var blob = new Blob([lines.join('\r\n')], { type:'text/calendar;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'NGIS_Class_Timetable.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    if (window.toast) window.toast('Class timetable (.ICS) exported', 'success');
+  }
+
+  function render() {
+    renderSubtitle();
+    renderMeta();
+    renderDayChips();
+    renderWeekRange();
+    renderBody();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadTimetable);
+  else loadTimetable();
+})();
+</script>
+</body>
+</html>

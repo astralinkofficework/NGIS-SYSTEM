@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="en" data-theme="light" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NGIS • Departments | Academic Structure</title>
+
+  <!-- Typography & Icons (AGENTS.md Compliance: strictly font-weight <= 500) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          colors: {
+            forest: { 50: '#F0FDF4', 100: '#DCFCE7', 500: '#22C55E', 700: '#15803D', 800: '#176B45', 900: '#14532D' }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            khmer: ['"Noto Sans Khmer"', 'sans-serif']
+          },
+          fontWeight: { normal: '400', medium: '500' }
+        }
+      }
+    };
+  </script>
+
+  <!-- NGIS Design System & Global Stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/app.css">
+  <link rel="stylesheet" href="../../assets/css/hero.css">
+  <link rel="stylesheet" href="../../assets/css/interactions.css">
+  <link rel="stylesheet" href="../../assets/css/design-tokens.css">
+  <link rel="stylesheet" href="../../assets/css/shared-components.css">
+  <link rel="stylesheet" href="../../assets/css/design-system.css?v=1.5">
+  <link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+  <link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+  <script>try{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('ngis-theme','light');}catch(e){}</script>
+
+  <style>
+    /* Strict font-weight constraints (AGENTS.md: NO BOLD) */
+    * { font-weight: 400; }
+    b, strong, th, h1, h2, h3, h4, h5, h6, .font-medium { font-weight: 500 !important; }
+    
+    .dept-card {
+      background: #FFFFFF;
+      border: 1px solid #E1E9E3;
+      border-radius: 12px;
+      transition: box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .dept-card:hover {
+      border-color: #C8E3D3;
+      box-shadow: 0 4px 12px -2px rgba(23, 107, 69, 0.08);
+    }
+
+    /* ═══ RESPONSIVE MODAL SYSTEM ═══ */
+    #deptModal,
+    #deptDeleteModal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 100000 !important;
+      background: rgba(15, 23, 42, 0.6) !important;
+      backdrop-filter: blur(4px) !important;
+      -webkit-backdrop-filter: blur(4px) !important;
+      padding: 1rem !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.2s ease !important;
+    }
+    #deptModal.open,
+    #deptModal.show,
+    #deptDeleteModal.open,
+    #deptDeleteModal.show {
+      display: flex !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      visibility: visible !important;
+    }
+    .dept-modal-container {
+      width: 100% !important;
+      max-width: 32rem !important; /* 512px on desktop */
+      max-height: calc(100vh - 2rem) !important;
+      max-height: calc(100dvh - 2rem) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      background: #ffffff !important;
+      border-radius: 1.125rem !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+      border: 1px solid rgba(226, 232, 240, 0.9) !important;
+      overflow: hidden !important;
+      pointer-events: auto !important;
+      animation: deptModalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dept-delete-container {
+      max-width: 26rem !important; /* 416px on desktop */
+    }
+    @keyframes deptModalPop {
+      from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .dept-modal-body::-webkit-scrollbar {
+      width: 5px;
+    }
+    .dept-modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .dept-modal-body::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+
+    /* Modal Action Buttons (Override against ui-cleanup.css) */
+    #modalSubmitBtn {
+      background: #176B45 !important;
+      background-color: #176B45 !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+    #modalSubmitBtn:hover {
+      background: #125638 !important;
+      background-color: #125638 !important;
+    }
+    #delConfirmBtn {
+      background: var(--color-danger,#DC3545) !important;
+      background-color: var(--color-danger,#DC3545) !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+    #delConfirmBtn:hover {
+      background: #be123c !important;
+      background-color: #be123c !important;
+    }
+
+    /* Dark mode overrides for modals */
+    [data-theme="dark"] .dept-modal-container {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+    [data-theme="dark"] .dept-modal-container .modal-header,
+    [data-theme="dark"] .dept-modal-container .modal-footer {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+    }
+    [data-theme="dark"] .dept-modal-container input,
+    [data-theme="dark"] .dept-modal-container select {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+  </style>
+</head>
+
+<body data-role="admin" data-portal="admin" class="min-h-screen bg-[#F7F9F7] text-slate-800 antialiased flex flex-col font-sans">
+  <main class="main flex-1 min-w-0 flex flex-col">
+
+    <!-- ═══ Mandatory Mobile Appbar (AGENTS.md Critical Rule) ═══ -->
+    <header class="mobile-appbar lg:hidden flex items-center justify-between px-4 py-3 bg-transparent border-none] sticky top-0 z-30 min-h-[44px]">
+      <div class="flex items-center gap-3">
+        <button type="button"
+                class="hamburger-btn mobile-hamburger-btn p-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition flex items-center justify-center min-w-[40px] min-h-[40px]"
+                data-action="toggle-sidebar"
+                aria-label="Open menu"
+                aria-expanded="false">
+          <i class="ph ph-list text-xl"></i>
+        </button>
+        <h1 class="text-sm font-medium text-slate-900 truncate">Departments</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" id="mobileAddDeptBtn" class="px-3 py-1.5 rounded-lg bg-[#176B45] text-white text-xs font-medium active:scale-95 transition flex items-center gap-1.5">
+          <i class="ph ph-plus text-sm"></i>
+          <span>Add</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ═══ Desktop Topbar Anchor (Injected by layout.js) ═══ -->
+    <div id="heroBanner" class="hidden lg:block"></div>
+
+    <!-- ═══ Main Content Container ═══ -->
+    <div class="p-4 lg:p-6 max-w-[1720px] w-full mx-auto flex flex-col gap-5 pb-24">
+
+      <!-- Header Section: Clean Page Title & Action Controls (NO SUBTITLE PER USER DIRECTIVE) -->
+      <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+        <div>
+          <h1 class="text-2xl lg:text-[26px] font-medium text-slate-900 tracking-tight leading-tight hidden lg:block">Departments</h1>
+        </div>
+        <div class="flex items-center flex-wrap gap-2.5">
+          <button type="button" id="btnRefresh" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-[#E1E9E3] rounded-lg hover:bg-slate-50 active:scale-95 transition shadow-2xs">
+            <i class="ph ph-arrows-clockwise text-sm text-slate-500"></i>
+            <span>Refresh</span>
+          </button>
+          <button type="button" id="btnExport" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-[#E1E9E3] rounded-lg hover:bg-slate-50 active:scale-95 transition shadow-2xs">
+            <i class="ph ph-download-simple text-sm text-slate-500"></i>
+            <span>Export (CSV)</span>
+          </button>
+          <button type="button" id="btnAddDept" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#176B45] hover:bg-[#125638] rounded-lg active:scale-95 transition shadow-2xs">
+            <i class="ph ph-plus text-sm text-white"></i>
+            <span>Add Department</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- KPI Metrics Telemetry Cards (Real Dynamic Aggregations) -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4" data-purpose="department-metrics">
+        <!-- Card 1: Total Departments -->
+        <div class="dept-card p-4 sm:p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-500">Academic Departments</span>
+            <div class="w-8 h-8 rounded-lg bg-[#E8F3ED] flex items-center justify-center text-[#176B45]">
+              <i class="ph ph-buildings text-lg"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline justify-between">
+            <div class="text-2xl lg:text-3xl font-medium text-slate-900 tracking-tight" id="kpiTotalDepts">—</div>
+            <span class="text-xs font-normal text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200" id="kpiChipActive">—</span>
+          </div>
+          <div class="mt-1 text-[11px] text-slate-400">Total faculty divisions active</div>
+        </div>
+
+        <!-- Card 2: Assigned Faculty -->
+        <div class="dept-card p-4 sm:p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-500">Assigned Faculty</span>
+            <div class="w-8 h-8 rounded-lg bg-[#E8F3ED] flex items-center justify-center text-[#176B45]">
+              <i class="ph ph-chalkboard-teacher text-lg"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline justify-between">
+            <div class="text-2xl lg:text-3xl font-medium text-slate-900 tracking-tight" id="kpiTotalFaculty">—</div>
+            <span class="text-xs font-normal text-slate-500" id="kpiChipAvgFaculty">—</span>
+          </div>
+          <div class="mt-1 text-[11px] text-slate-400">Educators and department leads</div>
+        </div>
+
+        <!-- Card 3: Enrolled Students -->
+        <div class="dept-card p-4 sm:p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-500">Enrolled Students</span>
+            <div class="w-8 h-8 rounded-lg bg-[#E0F2FE] flex items-center justify-center text-[#0284C7]">
+              <i class="ph ph-student text-lg"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline justify-between">
+            <div class="text-2xl lg:text-3xl font-medium text-slate-900 tracking-tight" id="kpiTotalStudents">—</div>
+            <span class="text-xs font-medium text-slate-500">Enrolled</span>
+          </div>
+          <div class="mt-1 text-[11px] text-slate-400">Across all curriculum cohorts</div>
+        </div>
+
+        <!-- Card 4: Syllabus Compliance -->
+        <div class="dept-card p-4 sm:p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-medium uppercase tracking-wider text-slate-500">Syllabus Compliance</span>
+            <div class="w-8 h-8 rounded-lg bg-[#FEF3C7] flex items-center justify-center text-[#B45309]">
+              <i class="ph ph-certificate text-lg"></i>
+            </div>
+          </div>
+          <div class="mt-3 flex items-baseline justify-between">
+            <div class="text-2xl lg:text-3xl font-medium text-slate-900 tracking-tight" id="kpiAvgSyllabus">—</div>
+          </div>
+          <div class="mt-1 text-[11px] text-slate-400">Curriculum standard alignment</div>
+        </div>
+      </section>
+
+      <!-- Search & Filtering Toolbar -->
+      <section class="bg-white rounded-xl border border-[#E1E9E3] p-3 sm:p-4 shadow-2xs" data-purpose="filtering-controls">
+        <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          <!-- Search input -->
+          <div class="relative flex-1 min-w-[260px] max-w-xl">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <i class="ph ph-magnifying-glass text-base"></i>
+            </span>
+            <input class="w-full pl-9 pr-8 py-2 bg-white border border-[#E1E9E3] rounded-lg text-xs placeholder:text-slate-400 text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] transition min-h-[40px]"
+                   id="deptSearch"
+                   type="text"
+                   placeholder="Search department name, code, head, or room...">
+            <button class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#176B45]"
+                    id="clearSearch"
+                    type="button"
+                    aria-label="Clear search">
+              <i class="ph ph-x-circle text-base"></i>
+            </button>
+          </div>
+
+          <!-- Controls: Status Filter & Reset -->
+          <div class="flex items-center flex-wrap gap-2.5">
+            <div class="relative min-w-[140px]">
+              <select id="statusFilter" class="w-full text-xs py-2 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none">
+                <option value="ALL">All Statuses</option>
+                <option value="active">Active Only</option>
+                <option value="inactive">Inactive Only</option>
+              </select>
+              <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <i class="ph ph-caret-down text-xs"></i>
+              </span>
+            </div>
+
+            <div class="relative min-w-[160px]">
+              <select id="sortSelect" class="w-full text-xs py-2 pl-3 pr-8 rounded-lg border border-[#E1E9E3] bg-white text-slate-700 font-medium focus:ring-1 focus:ring-[#176B45] focus:border-[#176B45] cursor-pointer min-h-[40px] appearance-none">
+                <option value="name-asc">Name (A → Z)</option>
+                <option value="name-desc">Name (Z → A)</option>
+                <option value="faculty-desc">Faculty (High → Low)</option>
+                <option value="students-desc">Students (High → Low)</option>
+                <option value="compliance-desc">Syllabus (High → Low)</option>
+              </select>
+              <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <i class="ph ph-caret-down text-xs"></i>
+              </span>
+            </div>
+
+            <button type="button" id="btnResetFilters" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 border border-[#E1E9E3] rounded-lg hover:bg-slate-50 active:scale-95 transition min-h-[40px]">
+              <i class="ph ph-arrow-counter-clockwise text-xs"></i>
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+          <span id="resultCount">Showing 0 departments</span>
+          <span class="text-slate-400">Click any department row to view full details</span>
+        </div>
+      </section>
+
+      <!-- Skeleton Loading State -->
+      <div id="deptSkeleton" class="space-y-3" aria-busy="true" aria-live="polite">
+        <div class="bg-white rounded-xl border border-[#E1E9E3] p-4 space-y-3">
+          <div class="h-4 bg-slate-200 rounded animate-pulse w-1/4"></div>
+          <div class="space-y-2">
+            <div class="h-10 bg-slate-100 rounded-lg animate-pulse"></div>
+            <div class="h-10 bg-slate-100 rounded-lg animate-pulse"></div>
+            <div class="h-10 bg-slate-100 rounded-lg animate-pulse"></div>
+            <div class="h-10 bg-slate-100 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Department Data Table -->
+      <div id="deptTableCard" class="hidden bg-white rounded-xl border border-[#E1E9E3] shadow-2xs overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-[#E1E9E3] bg-[#F7F9F7] text-slate-600 font-medium">
+                <th class="py-3 px-4 w-10">
+                  <input type="checkbox" id="selectAllCb" class="rounded border-[#E1E9E3] text-[#176B45] focus:ring-[#176B45] w-4 h-4 cursor-pointer">
+                </th>
+                <th class="py-3 px-4">Department &amp; Code</th>
+                <th class="py-3 px-4">Head of Department</th>
+                <th class="py-3 px-4">Room &amp; Building</th>
+                <th class="py-3 px-4 text-center">Faculty</th>
+                <th class="py-3 px-4 text-center">Students</th>
+                <th class="py-3 px-4 text-center">Syllabus</th>
+                <th class="py-3 px-4 text-center">Status</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="deptTbody" class="divide-y divide-[#E1E9E3] text-slate-700"></tbody>
+          </table>
+        </div>
+
+        <!-- Empty State (When search yields no results) -->
+        <div id="deptEmpty" class="hidden py-14 px-4 text-center">
+          <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+            <i class="ph ph-buildings text-2xl"></i>
+          </div>
+          <h3 class="text-sm font-medium text-slate-800">No departments match your filters</h3>
+          <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Try clearing your search keyword or switching the status filter back to All Statuses.</p>
+          <button type="button" id="btnEmptyReset" class="mt-4 px-3.5 py-1.5 text-xs font-medium text-[#176B45] bg-[#E8F3ED] hover:bg-[#d8ebdff] rounded-lg transition">
+            Clear all filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Error State Card -->
+      <div id="deptError" class="hidden bg-white rounded-xl border border-rose-200 p-8 text-center">
+        <div class="w-12 h-12 rounded-full bg-rose-50 text-rose-600 mx-auto flex items-center justify-center mb-3">
+          <i class="ph ph-warning text-2xl"></i>
+        </div>
+        <h3 class="text-sm font-medium text-slate-800">Unable to load department directory</h3>
+        <p class="text-xs text-slate-500 mt-1">We couldn't connect to the backend server. Please verify your connection.</p>
+        <button type="button" id="btnRetry" class="mt-4 px-4 py-2 text-xs font-medium text-white bg-[#176B45] hover:bg-[#125638] rounded-lg transition shadow-xs">
+          Retry Loading
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       ADD / EDIT DEPARTMENT MODAL (Responsive Pinned Header/Footer Dialog)
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="deptModal" style="display:none;" hidden aria-hidden="true">
+    <div class="dept-modal-container" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      
+      <!-- Pinned Modal Header -->
+      <div class="modal-header shrink-0 flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50/80">
+        <div>
+          <h3 class="modal-title text-base font-medium text-slate-900 leading-tight" id="modalTitle">Add New Department</h3>
+          <p class="text-[11px] text-slate-500 mt-0.5" id="modalSubtitle">Configure academic department details and faculty assignments</p>
+        </div>
+        <button type="button" class="modal-close text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer" id="modalCloseBtn" aria-label="Close dialog">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Scrollable Modal Body Form -->
+      <form id="deptForm" class="dept-modal-body flex-1 overflow-y-auto p-5 space-y-4 text-xs font-normal">
+        <input type="hidden" id="deptIdInput" value="">
+        
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1" for="deptNameInput">Department Name <span class="text-rose-500">*</span></label>
+          <input type="text" id="deptNameInput" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="e.g. Science Department">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1" for="deptCodeInput">Department Code <span class="text-rose-500">*</span></label>
+            <input type="text" id="deptCodeInput" required class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 uppercase focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="e.g. SCI">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1" for="deptHeadInput">Head of Department</label>
+            <input type="text" id="deptHeadInput" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="e.g. Dr. Pov Sophea">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1" for="deptRoomInput">Building / Room</label>
+            <input type="text" id="deptRoomInput" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="e.g. Science Wing Lab 2">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1" for="deptEmailInput">Contact Email</label>
+            <input type="email" id="deptEmailInput" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" enterkeyhint="next" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="e.g. science.dept@ngis.edu.kh">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1" for="deptTeachersInput">Assigned Teachers</label>
+            <input type="number" id="deptTeachersInput" min="0" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="24">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1" for="deptStudentsInput">Enrolled Students</label>
+            <input type="number" id="deptStudentsInput" min="0" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="780">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1" for="deptCurriculumInput">Curriculum Framework</label>
+          <input type="text" id="deptCurriculumInput" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition" placeholder="e.g. Cambridge IGCSE & Advanced Science Practical Laboratories">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1" for="deptStatusInput">Status</label>
+          <select id="deptStatusInput" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white text-slate-800 focus:ring-2 focus:ring-[#176B45]/20 focus:border-[#176B45] transition cursor-pointer">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </form>
+
+      <!-- Pinned Modal Footer -->
+      <div class="modal-footer shrink-0 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 flex items-center justify-end gap-2.5">
+        <button type="button" class="btn btn-secondary px-4 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition cursor-pointer" id="modalCancelBtn">
+          Cancel
+        </button>
+        <button type="submit" form="deptForm" class="btn btn-primary px-4 py-2 text-xs font-medium text-white rounded-xl transition shadow-xs cursor-pointer" id="modalSubmitBtn">
+          Save Department
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       DELETE CONFIRMATION MODAL
+       ═══════════════════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="deptDeleteModal" style="display:none;" hidden aria-hidden="true">
+    <div class="dept-modal-container dept-delete-container" role="dialog" aria-modal="true" aria-labelledby="delModalTitle">
+      
+      <!-- Pinned Modal Header -->
+      <div class="modal-header shrink-0 flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50/80">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+          </div>
+          <div>
+            <h3 class="modal-title text-base font-medium text-slate-900 leading-tight" id="delModalTitle">Delete Department</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Permanent academic registry action</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer" id="delCloseBtn" aria-label="Close dialog">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <div class="p-5 text-xs text-slate-600 leading-relaxed space-y-2">
+        <p>Are you sure you want to delete <span class="font-medium text-slate-900" id="delDeptName">this department</span>?</p>
+        <p class="text-[11px] text-slate-400">This action will remove the department record and its associated curriculum mapping from the active academic registry.</p>
+      </div>
+
+      <div class="modal-footer shrink-0 px-5 py-3.5 border-t border-slate-100 bg-slate-50/90 flex items-center justify-end gap-2.5">
+        <button type="button" class="btn btn-secondary px-4 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-100 transition cursor-pointer" id="delCancelBtn">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger px-4 py-2 text-xs font-medium text-white rounded-xl transition shadow-xs cursor-pointer" id="delConfirmBtn">
+          Delete Department
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Shared Bootstrap & Layout Wiring -->
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/protect.js"></script>
+  <script src="_auth-bootstrap.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+
+  <!-- Desktop top navbar (hero shell) — same topbar as the admin dashboard -->
+  <script>
+    window.PAGE = { role: "admin", active: "departments" };
+  </script>
+  <script src="../../assets/js/hero.js"></script>
+
+  <!-- Departments Controller Script -->
+  <script>
+    (function () {
+      "use strict";
+
+      var state = {
+        all: [],
+        filtered: [],
+        search: '',
+        status: 'ALL',
+        sort: 'name-asc',
+        deleteTargetId: null
+      };
+
+      var $id = function (id) { return document.getElementById(id); };
+      var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]); }); };
+      var fmt = function (n) { return Number(n || 0).toLocaleString('en-US'); };
+
+      /* DOM Elements */
+      var skeletonEl = $id('deptSkeleton');
+      var tableCardEl = $id('deptTableCard');
+      var errorEl = $id('deptError');
+      var tbody = $id('deptTbody');
+      var emptyEl = $id('deptEmpty');
+      var resultCountEl = $id('resultCount');
+      var searchInput = $id('deptSearch');
+      var clearSearchBtn = $id('clearSearch');
+      var statusFilter = $id('statusFilter');
+      var sortSelect = $id('sortSelect');
+      var selectAllCb = $id('selectAllCb');
+
+      /* Modals */
+      var deptModal = $id('deptModal');
+      var deptForm = $id('deptForm');
+      var modalTitle = $id('modalTitle');
+      var modalCloseBtn = $id('modalCloseBtn');
+      var modalCancelBtn = $id('modalCancelBtn');
+      var modalSubmitBtn = $id('modalSubmitBtn');
+
+      var deptDeleteModal = $id('deptDeleteModal');
+      var delCloseBtn = $id('delCloseBtn');
+      var delCancelBtn = $id('delCancelBtn');
+      var delConfirmBtn = $id('delConfirmBtn');
+      var delDeptName = $id('delDeptName');
+
+      function showSkeleton() {
+        if (skeletonEl) skeletonEl.style.display = 'block';
+        if (tableCardEl) tableCardEl.classList.add('hidden');
+        if (errorEl) errorEl.classList.add('hidden');
+      }
+
+      function showContent() {
+        if (skeletonEl) skeletonEl.style.display = 'none';
+        if (errorEl) errorEl.classList.add('hidden');
+        if (tableCardEl) tableCardEl.classList.remove('hidden');
+      }
+
+      function showError() {
+        if (skeletonEl) skeletonEl.style.display = 'none';
+        if (tableCardEl) tableCardEl.classList.add('hidden');
+        if (errorEl) errorEl.classList.remove('hidden');
+      }
+
+      /* Modal Helpers */
+      function openModal(isEdit, dept) {
+        deptForm.reset();
+        if (isEdit && dept) {
+          modalTitle.textContent = 'Edit Department — ' + dept.name;
+          modalSubmitBtn.textContent = 'Save Changes';
+          $id('deptIdInput').value = dept.id;
+          $id('deptNameInput').value = dept.name || '';
+          $id('deptCodeInput').value = dept.code || '';
+          $id('deptHeadInput').value = dept.head || '';
+          $id('deptRoomInput').value = dept.room || '';
+          $id('deptEmailInput').value = dept.email || '';
+          $id('deptTeachersInput').value = dept.teachersCount || 0;
+          $id('deptStudentsInput').value = dept.studentsCount || 0;
+          $id('deptCurriculumInput').value = dept.curriculum || '';
+          $id('deptStatusInput').value = dept.status || 'active';
+        } else {
+          modalTitle.textContent = 'Add New Department';
+          modalSubmitBtn.textContent = 'Create Department';
+          $id('deptIdInput').value = '';
+          $id('deptStatusInput').value = 'active';
+        }
+        deptModal.classList.remove('hidden');
+        deptModal.removeAttribute('hidden');
+        deptModal.setAttribute('aria-hidden', 'false');
+        deptModal.style.display = 'flex';
+        deptModal.classList.add('open', 'show');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function(){ $id('deptNameInput').focus(); }, 100);
+      }
+
+      function closeModal() {
+        deptModal.classList.remove('open', 'show');
+        deptModal.classList.add('hidden');
+        deptModal.setAttribute('hidden', '');
+        deptModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(function(){ deptModal.style.display = 'none'; }, 200);
+      }
+
+      function openDeleteModal(id, name) {
+        state.deleteTargetId = id;
+        delDeptName.textContent = name;
+        deptDeleteModal.classList.remove('hidden');
+        deptDeleteModal.removeAttribute('hidden');
+        deptDeleteModal.setAttribute('aria-hidden', 'false');
+        deptDeleteModal.style.display = 'flex';
+        deptDeleteModal.classList.add('open', 'show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeDeleteModal() {
+        deptDeleteModal.classList.remove('open', 'show');
+        deptDeleteModal.classList.add('hidden');
+        deptDeleteModal.setAttribute('hidden', '');
+        deptDeleteModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(function(){ deptDeleteModal.style.display = 'none'; }, 200);
+        state.deleteTargetId = null;
+      }
+
+      /* Update KPI Cards */
+      function updateKPIs(data) {
+        var total = data.length;
+        var totalFaculty = 0;
+        var totalStudents = 0;
+        var totalCompliance = 0;
+        var activeCount = 0;
+
+        data.forEach(function (d) {
+          totalFaculty += (Number(d.teachersCount) || 0);
+          totalStudents += (Number(d.studentsCount) || 0);
+          totalCompliance += (Number(d.syllabusCompliance) || 0);
+          if (String(d.status || '').toLowerCase() === 'active') activeCount += 1;
+        });
+
+        var avgCompliance = total > 0 ? (totalCompliance / total).toFixed(1) : '100';
+        var avgFaculty = total > 0 ? Math.round(totalFaculty / total) : 0;
+
+        $id('kpiTotalDepts').textContent = total;
+        $id('kpiTotalFaculty').textContent = fmt(totalFaculty);
+        $id('kpiTotalStudents').textContent = fmt(totalStudents);
+        $id('kpiAvgSyllabus').textContent = avgCompliance + '%';
+        /* Real computed values — no hardcoded claims */
+        var chipActive = $id('kpiChipActive');
+        if (chipActive) chipActive.textContent = activeCount + '/' + total + ' active';
+        var chipAvgFaculty = $id('kpiChipAvgFaculty');
+        if (chipAvgFaculty) chipAvgFaculty.textContent = 'Avg ' + avgFaculty + ' faculty / dept';
+      }
+
+      /* Render Table */
+      function renderTable() {
+        var rows = state.filtered.slice();
+
+        /* Sort logic */
+        if (state.sort === 'name-asc') {
+          rows.sort(function(a,b){ return (a.name || '').localeCompare(b.name || ''); });
+        } else if (state.sort === 'name-desc') {
+          rows.sort(function(a,b){ return (b.name || '').localeCompare(a.name || ''); });
+        } else if (state.sort === 'faculty-desc') {
+          rows.sort(function(a,b){ return (b.teachersCount || 0) - (a.teachersCount || 0); });
+        } else if (state.sort === 'students-desc') {
+          rows.sort(function(a,b){ return (b.studentsCount || 0) - (a.studentsCount || 0); });
+        } else if (state.sort === 'compliance-desc') {
+          rows.sort(function(a,b){ return (b.syllabusCompliance || 0) - (a.syllabusCompliance || 0); });
+        }
+
+        if (rows.length === 0) {
+          tbody.innerHTML = '';
+          emptyEl.classList.remove('hidden');
+          resultCountEl.textContent = 'Showing 0 of ' + state.all.length + ' departments';
+          return;
+        }
+
+        emptyEl.classList.add('hidden');
+        resultCountEl.textContent = 'Showing ' + rows.length + ' of ' + state.all.length + ' departments';
+
+        tbody.innerHTML = rows.map(function (d) {
+          var initials = (d.head || 'NA').split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
+          var compliance = Number(d.syllabusCompliance || 100);
+          var compColor = compliance >= 98 ? 'bg-emerald-500' : (compliance >= 90 ? 'bg-amber-500' : 'bg-rose-500');
+          var compText = compliance >= 98 ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-amber-700 bg-amber-50 border-amber-200';
+
+          return '' +
+            '<tr class="hover:bg-slate-50/70 transition-colors group">' +
+            '  <td class="py-3 px-4">' +
+            '    <input type="checkbox" class="row-cb rounded border-[#E1E9E3] text-[#176B45] focus:ring-[#176B45] w-4 h-4 cursor-pointer" data-id="' + esc(d.id) + '">' +
+            '  </td>' +
+            '  <td class="py-3 px-4">' +
+            '    <div class="flex items-center gap-3">' +
+            '      <div class="w-9 h-9 rounded-lg bg-[#E8F3ED] text-[#176B45] flex items-center justify-center font-medium shrink-0">' +
+            '        <i class="ph ph-buildings text-lg"></i>' +
+            '      </div>' +
+            '      <div class="min-w-0">' +
+            '        <a href="admin-department-detail.html?id=' + encodeURIComponent(d.id) + '" class="font-medium text-slate-900 hover:text-[#176B45] transition truncate block">' + esc(d.name) + '</a>' +
+            '        <div class="flex items-center gap-1.5 mt-0.5">' +
+            '          <span class="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 uppercase tracking-wide border border-slate-200">' + esc(d.code) + '</span>' +
+            '          <span class="text-[11px] text-slate-400 truncate max-w-[200px]">' + esc((d.subjects || []).slice(0, 2).join(', ')) + '</span>' +
+            '        </div>' +
+            '      </div>' +
+            '    </div>' +
+            '  </td>' +
+            '  <td class="py-3 px-4">' +
+            '    <div class="flex items-center gap-2">' +
+            '      <div class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 text-[11px] font-medium flex items-center justify-center shrink-0">' + initials + '</div>' +
+            '      <div class="min-w-0">' +
+            '        <div class="text-xs font-medium text-slate-800 truncate">' + esc(d.head || 'Unassigned') + '</div>' +
+            '        <div class="text-[10px] text-slate-400 truncate">' + esc(d.headId || d.email || '—') + '</div>' +
+            '      </div>' +
+            '    </div>' +
+            '  </td>' +
+            '  <td class="py-3 px-4">' +
+            '    <div class="text-xs text-slate-700 truncate max-w-[180px]">' + esc(d.room || 'Building A') + '</div>' +
+            '  </td>' +
+            '  <td class="py-3 px-4 text-center font-medium text-slate-800">' +
+            '    <span class="inline-flex items-center gap-1 text-slate-700"><i class="ph ph-chalkboard-teacher text-slate-400"></i>' + fmt(d.teachersCount) + '</span>' +
+            '  </td>' +
+            '  <td class="py-3 px-4 text-center font-medium text-slate-800">' +
+            '    <span class="inline-flex items-center gap-1 text-slate-700"><i class="ph ph-student text-slate-400"></i>' + fmt(d.studentsCount) + '</span>' +
+            '  </td>' +
+            '  <td class="py-3 px-4 text-center">' +
+            '    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium border ' + compText + '">' +
+            '      <span class="w-1.5 h-1.5 rounded-full ' + compColor + '"></span>' + compliance + '%' +
+            '    </span>' +
+            '  </td>' +
+            '  <td class="py-3 px-4 text-center">' +
+            '    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium ' + (d.status === 'inactive' ? 'bg-slate-100 text-slate-600 border border-slate-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200') + '">' +
+            '      <span class="w-1.5 h-1.5 rounded-full ' + (d.status === 'inactive' ? 'bg-slate-400' : 'bg-[#176B45]') + '"></span>' +
+            '      <span>' + esc(d.status === 'inactive' ? 'Inactive' : 'Active') + '</span>' +
+            '    </span>' +
+            '  </td>' +
+            '  <td class="py-3 px-4 text-right">' +
+            '    <div class="inline-flex items-center gap-1.5">' +
+            '      <button type="button" class="btn-edit p-1.5 text-slate-500 hover:text-[#176B45] rounded-lg transition" aria-label="Edit Department" data-id="' + esc(d.id) + '">' +
+            '        <i class="ph ph-pencil-simple text-sm"></i>' +
+            '      </button>' +
+            '      <a href="admin-department-detail.html?id=' + encodeURIComponent(d.id) + '" class="p-1.5 text-slate-500 hover:text-[#176B45] rounded-lg transition" aria-label="View Department Workspace">' +
+            '        <i class="ph ph-arrow-square-out text-sm"></i>' +
+            '      </a>' +
+            '      <button type="button" class="btn-delete p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" aria-label="Delete Department" data-id="' + esc(d.id) + '" data-name="' + esc(d.name) + '">' +
+            '        <i class="ph ph-trash text-sm"></i>' +
+            '      </button>' +
+            '    </div>' +
+            '  </td>' +
+            '</tr>';
+        }).join('');
+
+        /* Wire action buttons in table */
+        tbody.querySelectorAll('.btn-edit').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var id = this.getAttribute('data-id');
+            var item = state.all.find(function(d){ return d.id === id; });
+            if (item) openModal(true, item);
+          });
+        });
+
+        tbody.querySelectorAll('.btn-delete').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var id = this.getAttribute('data-id');
+            var name = this.getAttribute('data-name');
+            openDeleteModal(id, name);
+          });
+        });
+      }
+
+      /* Apply Search and Filter */
+      function applyFilter() {
+        var q = state.search.trim().toLowerCase();
+        state.filtered = state.all.filter(function (d) {
+          var matchQ = !q ||
+            (d.name || '').toLowerCase().indexOf(q) !== -1 ||
+            (d.code || '').toLowerCase().indexOf(q) !== -1 ||
+            (d.head || '').toLowerCase().indexOf(q) !== -1 ||
+            (d.room || '').toLowerCase().indexOf(q) !== -1;
+          var matchStatus = state.status === 'ALL' || d.status === state.status;
+          return matchQ && matchStatus;
+        });
+        renderTable();
+      }
+
+      /* Fetch Data from Live API */
+      function loadDepartments() {
+        showSkeleton();
+        fetch('/api/departments', { cache: 'no-store' })
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then(function (res) {
+            if (res && res.status === 'success') {
+              state.all = res.data || [];
+              state.filtered = state.all.slice();
+              updateKPIs(state.all);
+              renderTable();
+              showContent();
+            } else {
+              throw new Error('Invalid response structure');
+            }
+          })
+          .catch(function (err) {
+            console.error('Error fetching departments:', err);
+            showError();
+          });
+      }
+
+      /* Save or Update Department */
+      deptForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var id = $id('deptIdInput').value;
+        var isEdit = Boolean(id);
+
+        var payload = {
+          name: $id('deptNameInput').value.trim(),
+          code: $id('deptCodeInput').value.trim().toUpperCase(),
+          head: $id('deptHeadInput').value.trim(),
+          room: $id('deptRoomInput').value.trim(),
+          email: $id('deptEmailInput').value.trim(),
+          teachersCount: parseInt($id('deptTeachersInput').value, 10) || 0,
+          studentsCount: parseInt($id('deptStudentsInput').value, 10) || 0,
+          curriculum: $id('deptCurriculumInput').value.trim(),
+          status: $id('deptStatusInput').value
+        };
+
+        modalSubmitBtn.disabled = true;
+        modalSubmitBtn.textContent = 'Saving...';
+
+        var url = isEdit ? ('/api/departments/' + encodeURIComponent(id)) : '/api/departments';
+        var method = isEdit ? 'PUT' : 'POST';
+
+        fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('Save failed');
+            return res.json();
+          })
+          .then(function () {
+            closeModal();
+            loadDepartments();
+          })
+          .catch(function (err) {
+            alert('Failed to save department: ' + err.message);
+          })
+          .finally(function () {
+            modalSubmitBtn.disabled = false;
+          });
+      });
+
+      /* Delete Department */
+      delConfirmBtn.addEventListener('click', function () {
+        if (!state.deleteTargetId) return;
+        delConfirmBtn.disabled = true;
+        delConfirmBtn.textContent = 'Deleting...';
+
+        fetch('/api/departments/' + encodeURIComponent(state.deleteTargetId), {
+          method: 'DELETE'
+        })
+          .then(function (res) {
+            if (!res.ok) throw new Error('Delete failed');
+            return res.json();
+          })
+          .then(function () {
+            closeDeleteModal();
+            loadDepartments();
+          })
+          .catch(function (err) {
+            alert('Failed to delete department: ' + err.message);
+          })
+          .finally(function () {
+            delConfirmBtn.disabled = false;
+            delConfirmBtn.textContent = 'Delete Department';
+          });
+      });
+
+      /* Wire Event Listeners */
+      searchInput.addEventListener('input', function (e) {
+        state.search = e.target.value;
+        clearSearchBtn.classList.toggle('hidden', !state.search);
+        applyFilter();
+      });
+
+      clearSearchBtn.addEventListener('click', function () {
+        state.search = '';
+        searchInput.value = '';
+        clearSearchBtn.classList.add('hidden');
+        applyFilter();
+      });
+
+      statusFilter.addEventListener('change', function (e) {
+        state.status = e.target.value;
+        applyFilter();
+      });
+
+      sortSelect.addEventListener('change', function (e) {
+        state.sort = e.target.value;
+        renderTable();
+      });
+
+      function resetAll() {
+        state.search = '';
+        state.status = 'ALL';
+        state.sort = 'name-asc';
+        searchInput.value = '';
+        clearSearchBtn.classList.add('hidden');
+        statusFilter.value = 'ALL';
+        sortSelect.value = 'name-asc';
+        applyFilter();
+      }
+
+      $id('btnResetFilters').addEventListener('click', resetAll);
+      $id('btnEmptyReset').addEventListener('click', resetAll);
+      $id('btnRefresh').addEventListener('click', loadDepartments);
+      $id('btnRetry').addEventListener('click', loadDepartments);
+
+      /* Modal openers & closers */
+      $id('btnAddDept').addEventListener('click', function () { openModal(false); });
+      $id('mobileAddDeptBtn').addEventListener('click', function () { openModal(false); });
+      modalCloseBtn.addEventListener('click', closeModal);
+      modalCancelBtn.addEventListener('click', closeModal);
+      deptModal.addEventListener('click', function (e) { if (e.target === deptModal) closeModal(); });
+
+      delCloseBtn.addEventListener('click', closeDeleteModal);
+      delCancelBtn.addEventListener('click', closeDeleteModal);
+      deptDeleteModal.addEventListener('click', function (e) { if (e.target === deptDeleteModal) closeDeleteModal(); });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeModal();
+          closeDeleteModal();
+        }
+      });
+
+      /* Select All Checkbox */
+      selectAllCb.addEventListener('change', function (e) {
+        tbody.querySelectorAll('.row-cb').forEach(function (cb) {
+          cb.checked = e.target.checked;
+        });
+      });
+
+      /* Export CSV */
+      $id('btnExport').addEventListener('click', function () {
+        var rows = state.filtered;
+        var headers = ['ID', 'Code', 'Department Name', 'Head of Department', 'Building / Room', 'Email', 'Assigned Teachers', 'Enrolled Students', 'Syllabus Compliance %', 'Status', 'Curriculum'];
+        var lines = [headers.join(',')].concat(rows.map(function (d) {
+          return [
+            d.id, d.code, d.name, d.head || '', d.room || '', d.email || '',
+            d.teachersCount || 0, d.studentsCount || 0, (d.syllabusCompliance || 0) + '%',
+            d.status || 'active', d.curriculum || ''
+          ].map(function (v) {
+            return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+          }).join(',');
+        }));
+
+        var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'ngis-departments.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      /* Initial Load */
+      loadDepartments();
+    })();
+  </script>
+</body>
+</html>

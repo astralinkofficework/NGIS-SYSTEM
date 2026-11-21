@@ -1,0 +1,395 @@
+/* ==========================================================================
+   NGIS Shared Search Design System
+   Single, unified, accessible visual pattern for search inputs across all portals.
+   Loaded after shared-components so this file governs all search input styling.
+   ========================================================================== */
+
+:root {
+  --ngis-search-border: #E1E9E3;
+  --ngis-search-border-hover: #CBD5CC;
+  --ngis-search-bg: #FFFFFF;
+  --ngis-search-text: #29352E;
+  --ngis-search-placeholder: #87958B;
+  --ngis-search-icon: #6B7B71;
+  --ngis-search-focus: #176B45;
+  --ngis-search-focus-ring: rgba(23, 107, 69, 0.12);
+  --ngis-search-radius: 10px;
+  --ngis-search-height: 42px;
+  --ngis-search-kbd-bg: #F8FAF8;
+}
+
+[data-theme="dark"] {
+  --ngis-search-border: #2D3A31;
+  --ngis-search-border-hover: #435247;
+  --ngis-search-bg: #1F2E26;
+  --ngis-search-text: #F7F9F7;
+  --ngis-search-placeholder: #9AAA9F;
+  --ngis-search-icon: #9AAA9F;
+  --ngis-search-focus: #4BB785;
+  --ngis-search-focus-ring: rgba(75, 183, 133, 0.20);
+  --ngis-search-kbd-bg: #25342B;
+}
+
+/* ── 1. CORE SEARCH CONTAINER (Owns the visual boundary) ──────────────── */
+.ngis-search,
+.htb-search-wrap.ngis-search,
+.sb-search-box.ngis-search,
+.search.ngis-search,
+.ann-search-input-wrap.ngis-search,
+.dir-search-wrap.ngis-search {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  height: var(--ngis-search-height, 42px);
+  min-height: var(--ngis-search-height, 42px);
+  padding: 0 12px !important;
+  background: var(--ngis-search-bg, #FFFFFF) !important;
+  border: 1px solid var(--ngis-search-border, #E1E9E3) !important;
+  border-radius: var(--ngis-search-radius, 10px) !important;
+  box-shadow: none !important;
+  color: var(--ngis-search-text, #29352E) !important;
+  box-sizing: border-box !important;
+  position: relative;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+/* Container Hover State */
+.ngis-search:hover,
+.htb-search-wrap.ngis-search:hover,
+.sb-search-box.ngis-search:hover,
+.search.ngis-search:hover {
+  border-color: var(--ngis-search-border-hover, #CBD5CC) !important;
+}
+
+/* Container Focus State (The ONLY visible focus ring) */
+.ngis-search:focus-within,
+.htb-search-wrap.ngis-search:focus-within,
+.sb-search-box.ngis-search:focus-within,
+.search.ngis-search:focus-within,
+.ann-search-input-wrap.ngis-search:focus-within,
+.dir-search-wrap.ngis-search:focus-within {
+  border-color: var(--ngis-search-focus, #176B45) !important;
+  box-shadow: 0 0 0 3px var(--ngis-search-focus-ring, rgba(23, 107, 69, 0.12)) !important;
+  outline: none !important;
+}
+
+/* High-contrast keyboard focus indicator (WCAG 2.4.11 / 2.4.7) */
+.ngis-search:has(:focus-visible),
+.htb-search-wrap.ngis-search:has(:focus-visible),
+.sb-search-box.ngis-search:has(:focus-visible) {
+  border-color: var(--ngis-search-focus, #176B45) !important;
+  box-shadow: 0 0 0 3px var(--ngis-search-focus-ring, rgba(23, 107, 69, 0.20)) !important;
+}
+
+/* ── 2. CHILD INPUT (Completely transparent, NO inner borders or rings) ── */
+.ngis-search input,
+.ngis-search input.ngis-search-input,
+.ngis-search input[type="search"],
+.ngis-search input[type="text"],
+.ngis-search .ngis-search-input,
+.htb-search-wrap input,
+.sb-search-box input,
+.search input,
+.hpd-search-input-wrap input {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  color: var(--ngis-search-text, #29352E) !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.4 !important;
+  text-overflow: ellipsis;
+  box-sizing: border-box !important;
+  border-radius: 0 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Zero inner borders or focus rings on ANY child state */
+.ngis-search input:hover,
+.ngis-search input:focus,
+.ngis-search input:focus-visible,
+.ngis-search input:active,
+.ngis-search input.ngis-search-input:hover,
+.ngis-search input.ngis-search-input:focus,
+.ngis-search input.ngis-search-input:focus-visible,
+.ngis-search input.ngis-search-input:active,
+.ngis-search .ngis-search-input:hover,
+.ngis-search .ngis-search-input:focus,
+.ngis-search .ngis-search-input:focus-visible,
+.ngis-search .ngis-search-input:active,
+.htb-search-wrap input:focus,
+.htb-search-wrap input:focus-visible,
+.sb-search-box input:focus,
+.sb-search-box input:focus-visible,
+.search input:focus,
+.search input:focus-visible {
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  outline: 0 !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+/* Placeholder styling */
+.ngis-search input::placeholder,
+.ngis-search input.ngis-search-input::placeholder,
+.ngis-search .ngis-search-input::placeholder,
+.htb-search-wrap input::placeholder,
+.sb-search-box input::placeholder,
+.search input::placeholder {
+  color: var(--ngis-search-placeholder, #87958B) !important;
+  opacity: 1 !important;
+  font-weight: 400 !important;
+}
+
+/* Native WebKit clear button suppression */
+.ngis-search input[type="search"]::-webkit-search-cancel-button,
+.ngis-search input[type="search"]::-webkit-search-decoration,
+.ngis-search input.ngis-search-input::-webkit-search-cancel-button,
+.ngis-search input.ngis-search-input::-webkit-search-decoration {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  display: none !important;
+}
+
+/* ── 3. SEARCH ICON (Bootstrap Icon / Action-Icons Engine) ─────────────── */
+.ngis-search > .ngis-search-icon,
+.ngis-search > span[data-ngis-icon],
+.ngis-search > [class*="material-symbols"],
+.ngis-search > [class*="ph-"],
+.ngis-search > span:first-child:not(input):not(button):not(kbd),
+.ngis-search > svg.ngis-search-icon,
+.htb-search-wrap > .htb-search-icon,
+.sb-search-box > .sb-search-icon {
+  flex: 0 0 18px !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  color: var(--ngis-search-icon, #6B7B71) !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+}
+
+.ngis-search > .ngis-search-icon svg,
+.ngis-search > span[data-ngis-icon] svg,
+.ngis-search svg {
+  width: 16px !important;
+  height: 16px !important;
+  display: block !important;
+  fill: currentColor !important;
+}
+
+/* ── 4. CLEAR BUTTON ──────────────────────────────────────────────────── */
+.ngis-search .ngis-search-clear,
+.ngis-search > button[aria-label*="Clear"],
+.ngis-search > button[aria-label*="clear"],
+.ngis-search > button[title*="Clear"],
+.ngis-search > button[title*="clear"],
+.ngis-search > #clearSearch,
+.ngis-search > #clearDeptSearch,
+.ngis-search > #clearSearchBtn,
+.ngis-search > #campusSearchClear,
+.ngis-search > #searchClearBtn {
+  flex: 0 0 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: var(--ngis-search-icon, #6B7B71) !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+
+.ngis-search .ngis-search-clear svg,
+.ngis-search > button[aria-label*="Clear"] svg,
+.ngis-search > button[aria-label*="clear"] svg {
+  width: 14px !important;
+  height: 14px !important;
+  display: block !important;
+  fill: currentColor !important;
+}
+
+.ngis-search .ngis-search-clear:hover,
+.ngis-search > button[aria-label*="Clear"]:hover,
+.ngis-search > button[aria-label*="clear"]:hover,
+.ngis-search > button[title*="Clear"]:hover,
+.ngis-search > button[title*="clear"]:hover {
+  color: var(--ngis-search-text, #29352E) !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="dark"] .ngis-search .ngis-search-clear:hover,
+[data-theme="dark"] .ngis-search > button[aria-label*="Clear"]:hover,
+[data-theme="dark"] .ngis-search > button[aria-label*="clear"]:hover,
+[data-theme="dark"] .ngis-search > button[title*="Clear"]:hover,
+[data-theme="dark"] .ngis-search > button[title*="clear"]:hover {
+  color: var(--ngis-search-text, #F7F9F7) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+
+.ngis-search .ngis-search-clear:focus-visible,
+.ngis-search > button[aria-label*="Clear"]:focus-visible,
+.ngis-search > button[aria-label*="clear"]:focus-visible {
+  outline: 2px solid var(--ngis-search-focus, #176B45) !important;
+  outline-offset: 1px !important;
+}
+
+/* Reveal clear button only when input has content */
+.ngis-search.has-value .ngis-search-clear,
+.ngis-search.has-value > button[aria-label*="Clear"],
+.ngis-search.has-value > button[aria-label*="clear"],
+.ngis-search.has-value > button[title*="Clear"],
+.ngis-search.has-value > button[title*="clear"],
+.ngis-search.has-value > #clearSearch,
+.ngis-search.has-value > #clearDeptSearch,
+.ngis-search.has-value > #clearSearchBtn,
+.ngis-search.has-value > #campusSearchClear,
+.ngis-search.has-value > #searchClearBtn {
+  display: inline-flex !important;
+}
+
+/* ── 5. KEYBOARD SHORTCUT BADGE (⌘K / /) ───────────────────────────────── */
+.ngis-search .ngis-search-kbd,
+.ngis-search kbd {
+  flex: 0 0 auto !important;
+  padding: 1px 6px !important;
+  border: 1px solid var(--ngis-search-border, #E1E9E3) !important;
+  border-radius: 5px !important;
+  background: var(--ngis-search-kbd-bg, #F8FAF8) !important;
+  color: var(--ngis-search-placeholder, #87958B) !important;
+  font-family: inherit !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+  position: static !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+/* ── 6. COMPONENT VARIANTS ────────────────────────────────────────────── */
+
+/* Compact variant (sidebar, modal filters, dense tables) */
+.ngis-search--compact,
+.sb-search-box.ngis-search {
+  --ngis-search-height: 36px;
+  min-height: 36px !important;
+  gap: 8px;
+  padding: 0 10px !important;
+  border-radius: 8px !important;
+}
+
+.ngis-search--compact > .ngis-search-icon,
+.sb-search-box.ngis-search > .sb-search-icon {
+  flex: 0 0 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 16px !important;
+}
+
+.ngis-search--compact input,
+.sb-search-box.ngis-search input {
+  font-size: 12.5px !important;
+}
+
+/* Hero / Topbar variant */
+.ngis-search--hero,
+.htb-search-wrap.ngis-search,
+.search.ngis-search {
+  --ngis-search-height: 42px;
+  border-radius: 10px !important;
+  max-width: 520px;
+}
+
+/* Disabled state */
+.ngis-search.is-disabled {
+  opacity: 0.55 !important;
+  pointer-events: none !important;
+}
+
+/* Loading state */
+.ngis-search.is-loading .ngis-search-icon {
+  animation: ngis-search-pulse 900ms ease-in-out infinite;
+}
+
+@keyframes ngis-search-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Empty results indicator */
+.ngis-search-empty {
+  padding: 24px 18px;
+  border: 1px dashed var(--ngis-search-border, #E1E9E3);
+  border-radius: var(--ngis-search-radius, 10px);
+  background: var(--ngis-search-bg, #FFFFFF);
+  color: var(--ngis-search-placeholder, #87958B);
+  font-size: 13px;
+  text-align: center;
+  margin: 12px 0;
+}
+
+/* ── 7. RESPONSIVE BEHAVIOR ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .ngis-search .ngis-search-kbd,
+  .ngis-search kbd {
+    display: none !important;
+  }
+  .search.ngis-search--hero {
+    max-width: none !important;
+    width: 100% !important;
+  }
+}

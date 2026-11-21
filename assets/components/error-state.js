@@ -67,7 +67,7 @@
       card.setAttribute("aria-live", "assertive");
 
       card.innerHTML = `
-        <div class="ngis-state-icon" style="background:#F3F3F5; color:${iconColor}; border:1px solid #E5E5E8; width:52px; height:52px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:14px;">
+        <div class="ngis-state-icon" style="color:${iconColor}; width:52px; height:52px; display:inline-flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:14px;">
           <i class="ph ${icon}"></i>
         </div>
         <div style="margin-bottom:8px;">

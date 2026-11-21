@@ -86,7 +86,7 @@
       "X-Actor": fullName,
       "X-Actor-Id": user.id || "ADM-2024-001",
       "X-Actor-Email": user.email || "admin@ngis.edu.kh",
-      "Authorization": `Bearer mock-jwt-token-${role}`,
+      "Authorization": window.NGISAuth?.getToken() ? `Bearer ${window.NGISAuth.getToken()}` : "",
     };
   }
 
@@ -245,12 +245,195 @@
       populateFilterDropdowns();
       renderTableRows();
       renderPaginationControls();
+      loadDraftStatus();
     } catch (err) {
       console.error("[Timetable Monitoring] Load error:", err);
       showToast(`Error loading monitoring records: ${err.message}`, "error");
       renderErrorState(err.message);
     } finally {
       state.isLoading = false;
+    }
+  }
+
+  // ── Principal Timetable Draft Review & Approval ──
+  async function loadDraftStatus() {
+    try {
+      const res = await fetch("/api/timetable/draft-status", { headers: getActorHeaders() });
+      if (res.ok) {
+        const json = await res.json();
+        state.draftMetadata = json.draft_metadata || { status: "draft" };
+        renderDraftReviewBanner();
+      }
+    } catch (e) {
+      console.warn("[Timetable Monitoring] Could not load draft status:", e);
+    }
+  }
+
+  function renderDraftReviewBanner() {
+    const sec = document.getElementById("principalRequestsSection");
+    if (!sec) return;
+    const meta = state.draftMetadata || { status: "draft" };
+
+    if (meta.status === "submitted") {
+      sec.className = "p-4 bg-amber-50/90 border border-amber-300 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-3 shadow-xs";
+      sec.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 flex items-center justify-center shrink-0 mt-0.5 text-amber-700">
+            <span class="material-symbols-outlined text-xl">assignment_turned_in</span>
+          </div>
+          <div>
+            <div class="text-xs font-medium text-amber-900 flex items-center gap-2 flex-wrap">
+              <span>Principal Draft Submitted for Admin Review</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-200 text-amber-900 font-medium">Awaiting Review</span>
+            </div>
+            <p class="text-[11px] text-amber-800 mt-0.5">
+              ${meta.submitted_by || "Dr. Ly Bunheng (Principal)"} submitted the weekly timetable draft on ${meta.submitted_at ? formatDate(meta.submitted_at) : "recently"}.
+              ${meta.submission_note ? `Note: "${meta.submission_note}"` : ""}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0 flex-wrap">
+          <button type="button" id="btnAdminCompareDraft" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px] text-slate-500">difference</span>
+            <span>Compare Changes</span>
+          </button>
+          <button type="button" id="btnAdminRequestRevision" class="px-3 py-1.5 text-xs font-medium text-rose-700 bg-white hover:bg-rose-50 border border-rose-300 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px] text-rose-600">feedback</span>
+            <span>Request Revision</span>
+          </button>
+          <button type="button" id="btnAdminApprovePublish" class="px-3.5 py-1.5 text-xs font-medium text-white bg-[#176B45] hover:bg-[#14532D] rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px]">rocket_launch</span>
+            <span>Approve Draft</span>
+          </button>
+          <button type="button" id="btnAdminRejectDraft" class="btn-secondary">Reject Draft</button>
+        </div>
+      `;
+
+      sec.querySelector("#btnAdminCompareDraft")?.addEventListener("click", openCompareDiffModal);
+      sec.querySelector("#btnAdminRequestRevision")?.addEventListener("click", promptRevisionRequest);
+      sec.querySelector("#btnAdminApprovePublish")?.addEventListener("click", approveDraft);
+      sec.querySelector("#btnAdminRejectDraft")?.addEventListener("click", () => promptRevisionRequest(true));
+    } else if (meta.status === "needs_revision" || meta.status === "rejected") {
+      sec.className = "p-4 bg-rose-50/80 border border-rose-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs";
+      sec.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 flex items-center justify-center shrink-0 text-rose-700">
+            <span class="material-symbols-outlined text-xl">feedback</span>
+          </div>
+          <div>
+            <div class="text-xs font-medium text-rose-900 flex items-center gap-2">
+              <span>${meta.status === "rejected" ? "Draft Rejected" : "Revision Requested from Principal"}</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-200 text-rose-900 font-medium">Pending Update</span>
+            </div>
+            <p class="text-[11px] text-rose-700 mt-0.5">Awaiting revised draft from ${meta.submitted_by || "Principal"}. Note: "${meta.revision_note || "Revisions required."}"</p>
+          </div>
+        </div>
+      `;
+    } else if (meta.status === "approved") {
+      sec.className = "p-4 bg-emerald-50/80 border border-emerald-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs";
+      sec.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 flex items-center justify-center shrink-0 text-emerald-700">
+            <span class="material-symbols-outlined text-xl">check_circle</span>
+          </div>
+          <div>
+            <div class="text-xs font-medium text-emerald-900 flex items-center gap-2">
+              <span>Principal Draft Approved</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-200 text-emerald-900 font-medium">Ready to Publish</span>
+            </div>
+            <p class="text-[11px] text-emerald-700 mt-0.5">The draft schedule has been approved and is ready to be published to student and teacher portals.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" id="btnAdminApprovePublish" class="px-3.5 py-1.5 text-xs font-medium text-white bg-[#176B45] hover:bg-[#14532D] rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px]">rocket_launch</span>
+            <span>Publish Timetable</span>
+          </button>
+        </div>
+      `;
+      sec.querySelector("#btnAdminApprovePublish")?.addEventListener("click", executeApproveAndPublish);
+    } else {
+      sec.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs";
+      sec.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 flex items-center justify-center shrink-0 text-emerald-700">
+            <span class="material-symbols-outlined text-xl">verified</span>
+          </div>
+          <div>
+            <div class="text-xs font-medium text-slate-900 flex items-center gap-2">
+              <span>Master Timetable Overview</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">Active Monitoring</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-0.5">Principal can draft and propose weekly schedules. Administration reviews and publishes official timetables.</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a href="../principal/principal-timetable-builder.html" class="px-3.5 py-1.5 text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition shadow-2xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[15px] text-slate-500">grid_view</span>
+            <span>Open Timetable Builder</span>
+          </a>
+        </div>
+      `;
+    }
+  }
+
+  async function executeApproveAndPublish() {
+    if (!confirm("Publish this approved timetable to Student and Teacher portals?")) return;
+    try {
+      const res = await fetch("/api/timetable/publish", {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": "application/json" }, getActorHeaders()),
+        body: JSON.stringify({ published_by: "Admin", note: "Approved and published by School Administrator" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error || "Publish failed");
+      showToast("Timetable published.", "success");
+      loadDraftStatus();
+      loadMonitoringData();
+    } catch (err) {
+      showToast(`Error: ${err.message}`, "error");
+    }
+  }
+
+  async function approveDraft() {
+    try {
+      const res = await fetch("/api/timetable/approve-draft", { method: "POST", headers: getActorHeaders() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Approval failed");
+      showToast("Draft approved. It is ready to publish.", "success");
+      await loadDraftStatus();
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  }
+
+  async function promptRevisionRequest(rejected = false) {
+    const note = prompt(rejected === true ? "Reason for rejecting this draft" : "Revision instructions for the Principal");
+    if (!note?.trim()) return;
+    try {
+      const res = await fetch(rejected === true ? "/api/timetable/reject-draft" : "/api/timetable/request-revision", {
+        method: "POST",
+        headers: Object.assign({ "Content-Type": "application/json" }, getActorHeaders()),
+        body: JSON.stringify({ reviewed_by: "Admin", note: note }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || data.error || "Revision request failed");
+      showToast(rejected === true ? "Draft rejected." : "Revision requested.", "info");
+      loadDraftStatus();
+    } catch (err) {
+      showToast(`Error: ${err.message}`, "error");
+    }
+  }
+
+  async function openCompareDiffModal() {
+    try {
+      const res = await fetch("/api/timetable/publication/diff", { headers: getActorHeaders() });
+      if (!res.ok) throw new Error("Could not load publication diff");
+      const data = await res.json();
+      const diff = data.diff || { changed: 0, changes: [] };
+      alert(`Draft Changes vs Published Schedule:\nTotal changes: ${diff.changed} periods\n${(diff.changes || []).slice(0, 5).map(c => `• ${c.day} P${c.period} (${c.class_id}): ${c.kind}`).join("\n")}`);
+    } catch (err) {
+      showToast(`Error: ${err.message}`, "error");
     }
   }
 
@@ -338,7 +521,7 @@
         <tr>
           <td colspan="12" class="px-6 py-12 text-center">
             <div class="max-w-sm mx-auto text-center space-y-3">
-              <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
+              <div class="w-12 h-12 flex items-center justify-center mx-auto text-slate-400">
                 <i class="ph ph-magnifying-glass text-2xl"></i>
               </div>
               <p class="text-sm font-medium text-slate-700">No matching classes found</p>

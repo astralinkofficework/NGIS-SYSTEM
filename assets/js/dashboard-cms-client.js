@@ -32,7 +32,8 @@
           if (heroTitle && data.hero.title) heroTitle.textContent = data.hero.title;
 
           var heroGreeting = document.querySelector('.hero-greeting');
-          if (heroGreeting && data.hero.greeting) heroGreeting.textContent = data.hero.greeting;
+          var greetText = data.hero.greeting || data.hero.description;
+          if (heroGreeting && greetText) heroGreeting.textContent = greetText;
 
           var heroDate = document.querySelector('.hero-date');
           if (heroDate) {

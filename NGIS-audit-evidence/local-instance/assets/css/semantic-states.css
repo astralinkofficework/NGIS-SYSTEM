@@ -1,0 +1,181 @@
+/* ============================================================
+   NGIS Semantic Urgency States — Global Status-Aware System
+   Phase 2/3/8/9 of the Master Urgency & Deadline Color spec.
+
+   Layered model (keep these separated):
+     1. Business status   → computed by each module's real logic
+     2. Urgency level     → NGISStates.classify() (semantic-states.js)
+                             normal | approaching | urgent | overdue |
+                             complete | closed
+     3. Visual            → the classes in this file ONLY
+     4. Permissions       → module logic decides which actions render
+
+   Rules:
+   - Solid fills use the base state token; small text uses the darker
+     -text variant (WCAG on white). Never hardcode hex here.
+   - Never color informational or completed content urgent.
+   - Buttons: solid fill, white text (red) / white text (orange, matches
+     .btn-accent brand convention), no decorative border, no hover
+     overlay, minimal shadow, visible :focus-visible outline preserved.
+   - State is never communicated by color alone: always pair with the
+     provided label text or an icon.
+   ============================================================ */
+
+/* ── 1. Status indicators (text + optional icon) ─────────────── */
+.ngis-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  background: none;
+  border: 0;
+}
+.ngis-state .material-symbols-outlined,
+.ngis-state [data-ngis-icon] { font-size: 15px; }
+
+.ngis-state--overdue   { color: var(--state-overdue-text); }
+.ngis-state--urgent    { color: var(--state-overdue-text); }
+.ngis-state--approaching { color: var(--state-warning-text); }
+.ngis-state--complete  { color: var(--state-complete-text); }
+.ngis-state--info      { color: var(--state-info-text); }
+.ngis-state--normal,
+.ngis-state--neutral   { color: var(--state-neutral-text); }
+.ngis-state--closed    { color: var(--state-neutral-text); }
+
+/* ── 2. Soft tint chips (when a filled pill is required) ─────── */
+.ngis-state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill, 999px);
+  background: none;
+  border: 0;
+}
+.ngis-state-chip--overdue     { background: var(--state-overdue-bg);   color: var(--state-overdue-text); }
+.ngis-state-chip--urgent      { background: var(--state-urgent-bg);    color: var(--state-urgent-text); }
+.ngis-state-chip--approaching { background: var(--state-warning-bg);   color: var(--state-warning-text); }
+.ngis-state-chip--complete    { background: var(--state-complete-bg);  color: var(--state-complete-text); }
+.ngis-state-chip--info        { background: var(--state-info-bg);      color: var(--state-info-text); }
+.ngis-state-chip--normal,
+.ngis-state-chip--neutral     { background: var(--state-neutral-bg);   color: var(--state-neutral-text); }
+.ngis-state-chip--closed      { background: var(--state-neutral-bg);   color: var(--state-neutral-text); }
+
+/* ── 3. Deadline dots (dashboards / timelines) ───────────────── */
+.ngis-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.ngis-dot--overdue     { background: var(--state-overdue); }
+.ngis-dot--urgent      { background: var(--state-overdue); }
+.ngis-dot--approaching { background: var(--state-warning); }
+.ngis-dot--complete    { background: var(--state-complete); }
+.ngis-dot--info        { background: var(--state-info); }
+.ngis-dot--normal,
+.ngis-dot--neutral     { background: var(--state-neutral); }
+
+/* ── 4. Status-aware action buttons ──────────────────────────── */
+/* Urgent primary action: solid red — for OVERDUE work that still
+   accepts action (e.g. late submission) or genuinely critical actions.
+   Higher specificity beats page-local single-class button styles. */
+button.ngis-btn-urgent,
+a.ngis-btn-urgent,
+.ngis-btn-urgent.ngis-btn-urgent {
+  background: var(--state-overdue) !important;
+  background-color: var(--state-overdue) !important;
+  color: #FFFFFF !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transition: background-color .15s ease !important;
+}
+button.ngis-btn-urgent:hover,
+a.ngis-btn-urgent:hover,
+.ngis-btn-urgent.ngis-btn-urgent:hover {
+  background: var(--color-danger-hover) !important;
+  background-color: var(--color-danger-hover) !important;
+}
+button.ngis-btn-urgent:disabled,
+.ngis-btn-urgent:disabled {
+  background: var(--state-overdue) !important;
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Warning primary action: solid orange — for APPROACHING deadlines
+   where the action itself is time-sensitive. White text matches the
+   established .btn-accent brand convention. */
+button.ngis-btn-warning,
+a.ngis-btn-warning,
+.ngis-btn-warning.ngis-btn-warning {
+  background: var(--state-warning) !important;
+  background-color: var(--state-warning) !important;
+  color: #FFFFFF !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  transition: background-color .15s ease !important;
+}
+button.ngis-btn-warning:hover,
+a.ngis-btn-warning:hover,
+.ngis-btn-warning.ngis-btn-warning:hover {
+  background: var(--color-warning-hover) !important;
+  background-color: var(--color-warning-hover) !important;
+}
+button.ngis-btn-warning:disabled,
+.ngis-btn-warning:disabled {
+  background: var(--state-warning) !important;
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Urgent buttons carry an icon when available (never color alone) */
+.ngis-btn-urgent [data-ngis-icon] svg,
+.ngis-btn-warning [data-ngis-icon] svg { width: 15px; height: 15px; }
+
+/* Keyboard focus rings are PRESERVED for state-aware buttons */
+button.ngis-btn-urgent:focus-visible,
+button.ngis-btn-warning:focus-visible,
+a.ngis-btn-urgent:focus-visible,
+a.ngis-btn-warning:focus-visible {
+  outline: 2px solid var(--state-overdue-text);
+  outline-offset: 2px;
+}
+
+/* ── 5. Complete state: no misleading urgency ──────────────────
+   Completed records must render their primary action (if any remains,
+   e.g. "View Feedback") in the complete/neutral presentation. */
+.ngis-state--complete + .ngis-btn-urgent,
+[data-ngis-state="complete"] .ngis-btn-urgent {
+  /* safety net: a completed record must never show an urgent button */
+  background: var(--state-complete) !important;
+  background-color: var(--state-complete) !important;
+}
+
+/* ── 6. Badge color corrections (app.css legacy) ───────────────
+   .badge.blue / .badge.info historically resolved to brand green,
+   making "Published" and "Graded" identical. Informational badges
+   are now genuinely blue. */
+.badge.blue, .badge.info {
+  background: var(--state-info-bg) !important;
+  color: var(--state-info-text) !important;
+}
+.badge.red {
+  background: var(--state-overdue-bg) !important;
+  color: var(--state-overdue-text) !important;
+}
+.badge.amber, .badge.yellow {
+  background: var(--state-warning-bg) !important;
+  color: #7C3D02 !important;
+}
+
+/* ── 7. Reduced motion: nothing here animates anyway ────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ngis-btn-urgent, .ngis-btn-warning { transition: none !important; }
+}

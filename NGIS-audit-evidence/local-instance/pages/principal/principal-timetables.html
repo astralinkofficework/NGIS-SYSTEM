@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Timetable Matrix · Academic Planning &amp; Oversight | NGIS</title>
+
+<!-- Fonts & Framework Styles -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/navbar.css">
+<link rel="stylesheet" href="../../assets/css/mobile-header.css">
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        colors: {
+          forest: { 50: '#F0FDF4', 100: '#DCFCE7', 500: '#22C55E', 700: '#15803D', 800: '#176B45', 900: '#125536' },
+          ink: { main: '#29352E', muted: '#64748B' }
+        },
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          khmer: ['"Noto Sans Khmer"', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  *, h1, h2, h3, h4, h5, h6, strong, b, th, button { font-weight: 400; }
+  .font-medium, th, .btn-action, .badge { font-weight: 500 !important; }
+  body { background-color: #F7F9F7; color: #29352E; font-family: 'Plus Jakarta Sans', sans-serif; }
+  
+  /* Matrix Grid Styling */
+  .timetable-cell {
+    min-height: 86px;
+    transition: all 0.15s ease;
+  }
+  .timetable-cell:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+</style>
+</head>
+
+<body data-page="principal-timetables" data-role="principal" class="bg-[#F7F9F7] text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Desktop Topbar Anchor -->
+  <div id="heroBanner" class="hidden lg:block"></div>
+
+  <!-- Mobile App Header (AGENTS.md Compliance: Hamburger Toggle) -->
+  <header class="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-[#E1E9E3] sticky top-0 z-40">
+    <div class="flex items-center gap-3">
+      <button type="button" class="hamburger-btn mobile-hamburger-btn w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-700 active:scale-95 transition"
+              data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">
+        <span class="material-symbols-outlined text-2xl">menu</span>
+      </button>
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-[#176B45] text-white flex items-center justify-center font-medium text-xs">NG</div>
+        <span class="text-sm font-medium text-slate-900">Timetable Matrix</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <a href="principal-requests.html" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 relative">
+        <span class="material-symbols-outlined text-xl">assignment_return</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main flex-1 p-4 lg:p-6 max-w-[1720px] w-full mx-auto flex flex-col gap-5 pb-24">
+
+    <!-- Page Header (Enterprise Left Aligned Title + Contextual Actions Right) -->
+    <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-[#176B45] font-medium mb-1">
+          <span class="material-symbols-outlined text-sm">school</span>
+          <span>Academic Planning &amp; Oversight</span>
+          <span class="text-slate-300">/</span>
+          <span class="text-slate-500">Master Schedule Matrix</span>
+        </div>
+        <h1 class="text-2xl lg:text-[28px] font-medium text-slate-900 tracking-tight leading-tight">Master Timetable Matrix</h1>
+        <p class="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">Read-only institutional schedule oversight across class cohorts, faculty allocations, and laboratory occupancy.</p>
+      </div>
+      <div class="flex items-center flex-wrap gap-2.5">
+        <!-- Live Current-Period Indicator -->
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Live Period: <strong>P5 (01:00 PM – 01:45 PM)</strong></span>
+        </div>
+
+        <button type="button" id="btnRequestSlotAdjust" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#176B45] hover:bg-[#125536] rounded-xl active:scale-95 transition shadow-2xs cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">swap_horiz</span>
+          <span>Propose Schedule Adjustment</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Matrix Filter Bar & Controls -->
+    <section class="p-4 bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- View Mode Switcher -->
+        <div class="inline-flex p-1 bg-slate-100 rounded-xl">
+          <button type="button" class="view-mode-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-white text-slate-900 shadow-2xs cursor-pointer" data-mode="class">Class Cohort</button>
+          <button type="button" class="view-mode-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition cursor-pointer" data-mode="teacher">Teacher View</button>
+          <button type="button" class="view-mode-btn px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 transition cursor-pointer" data-mode="room">Room &amp; Lab</button>
+        </div>
+
+        <!-- Cohort Select Dropdown -->
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-slate-500 font-medium">Cohort:</label>
+          <select id="selectCohort" class="text-xs px-3 py-1.5 border border-slate-200 rounded-xl bg-white text-slate-800 font-medium">
+            <option value="Grade 10A" selected>Grade 10A (Science Stream · 32 Students)</option>
+            <option value="Grade 10B">Grade 10B (General Stream · 30 Students)</option>
+            <option value="Grade 11A">Grade 11A (STEM Advanced · 28 Students)</option>
+            <option value="Grade 11B">Grade 11B (Mathematics · 31 Students)</option>
+            <option value="Grade 12A">Grade 12A (Graduating Cohort · 34 Students)</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-xs text-slate-500 font-medium">Campus:</label>
+          <span class="px-2.5 py-1 rounded-xl text-xs font-medium bg-slate-100 text-slate-700">Sensok Campus</span>
+        </div>
+      </div>
+
+      <!-- Week Navigation -->
+      <div class="flex items-center gap-2">
+        <button type="button" class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition cursor-pointer" aria-label="Previous week">
+          <span class="material-symbols-outlined text-base">chevron_left</span>
+        </button>
+        <span class="text-xs font-medium text-slate-800">Week 12 · Nov 17 – Nov 21, 2026</span>
+        <button type="button" class="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 transition cursor-pointer" aria-label="Next week">
+          <span class="material-symbols-outlined text-base">chevron_right</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- TIMETABLE MATRIX GRID -->
+    <section class="bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[980px]">
+          <thead>
+            <tr class="bg-[#F7F9F7] border-b border-[#E1E9E3] text-slate-500 text-xs font-medium">
+              <th class="py-3 px-3 w-28 text-center">Period / Time</th>
+              <th class="py-3 px-3 w-1/5">Monday</th>
+              <th class="py-3 px-3 w-1/5">Tuesday</th>
+              <th class="py-3 px-3 w-1/5">Wednesday</th>
+              <th class="py-3 px-3 w-1/5">Thursday</th>
+              <th class="py-3 px-3 w-1/5">Friday</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#E1E9E3] text-xs">
+            
+            <!-- Morning Period 1 -->
+            <tr>
+              <td class="py-3 px-3 text-center bg-slate-50/50 border-r border-[#E1E9E3]">
+                <div class="font-medium text-slate-800">P1</div>
+                <div class="text-[10px] text-slate-400">08:00–08:45</div>
+              </td>
+              <!-- Mon P1: Khmer Literature -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer" onclick="openLessonDetails('Khmer Literature', 'Mr. Heng Samnang', 'Grade 10A', 'Room 201', 'Monday', 1)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-amber-900">Khmer Literature</span>
+                    <span class="text-[10px] text-amber-700 font-mono">KHM-10</span>
+                  </div>
+                  <div class="text-[11px] text-amber-800 mt-1">Mr. Heng Samnang</div>
+                  <div class="text-[10px] text-amber-600 mt-0.5">Room 201</div>
+                </div>
+              </td>
+              <!-- Tue P1: Calculus -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-blue-50 border border-blue-200 cursor-pointer" onclick="openLessonDetails('Calculus I', 'Dr. Sarah Jenkins', 'Grade 10A', 'Room 304', 'Tuesday', 1)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-blue-900">Calculus I</span>
+                    <span class="text-[10px] text-blue-700 font-mono">MATH-10</span>
+                  </div>
+                  <div class="text-[11px] text-blue-800 mt-1">Dr. Sarah Jenkins</div>
+                  <div class="text-[10px] text-blue-600 mt-0.5">Room 304</div>
+                </div>
+              </td>
+              <!-- Wed P1: Physics -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-purple-50 border border-purple-200 cursor-pointer" onclick="openLessonDetails('Physics', 'Mr. Keo Piseth', 'Grade 10A', 'Science Lab 102', 'Wednesday', 1)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-purple-900">Physics</span>
+                    <span class="text-[10px] text-purple-700 font-mono">PHY-10</span>
+                  </div>
+                  <div class="text-[11px] text-purple-800 mt-1">Mr. Keo Piseth</div>
+                  <div class="text-[10px] text-purple-600 mt-0.5">Science Lab 102</div>
+                </div>
+              </td>
+              <!-- Thu P1: English -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer" onclick="openLessonDetails('English Composition', 'Ms. Sok Vanna', 'Grade 10A', 'Room 202', 'Thursday', 1)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-slate-800">English Comp</span>
+                    <span class="text-[10px] text-slate-500 font-mono">ENG-10</span>
+                  </div>
+                  <div class="text-[11px] text-slate-700 mt-1">Ms. Sok Vanna</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">Room 202</div>
+                </div>
+              </td>
+              <!-- Fri P1: Applied AI -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-blue-50 border border-blue-200 cursor-pointer" onclick="openLessonDetails('Applied AI & Ethics', 'Mr. Meng Roth', 'Grade 10A', 'Tech Studio 2', 'Friday', 1)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-blue-900">Applied AI</span>
+                    <span class="text-[10px] text-blue-700 font-mono">CS-10</span>
+                  </div>
+                  <div class="text-[11px] text-blue-800 mt-1">Mr. Meng Roth</div>
+                  <div class="text-[10px] text-blue-600 mt-0.5">Tech Studio 2</div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Morning Period 2 (Mon P2 has PENDING REQUEST BADGE!) -->
+            <tr>
+              <td class="py-3 px-3 text-center bg-slate-50/50 border-r border-[#E1E9E3]">
+                <div class="font-medium text-slate-800">P2</div>
+                <div class="text-[10px] text-slate-400">08:45–09:30</div>
+              </td>
+              <!-- Mon P2: Chemistry (HAS ACTIVE ADJUSTMENT REQUEST) -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-emerald-50 border border-emerald-300 relative cursor-pointer ring-2 ring-amber-400/80 shadow-xs" onclick="openLessonDetails('Chemistry', 'Ms. Kiry Sokha', 'Grade 10A', 'Lab 201', 'Monday', 2, 'AR-2026-0101')">
+                  <!-- Pending indicator pill -->
+                  <div class="absolute -top-2 right-2 px-1.5 py-0.2 rounded-full text-[9px] font-medium bg-amber-500 text-white shadow-xs">
+                    Pending Shift (AR-0101)
+                  </div>
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-emerald-900">Chemistry Lab</span>
+                    <span class="text-[10px] text-emerald-700 font-mono">CHEM-10</span>
+                  </div>
+                  <div class="text-[11px] text-emerald-800 mt-1">Ms. Kiry Sokha</div>
+                  <div class="text-[10px] text-emerald-600 mt-0.5">Lab 201 (Double Lab)</div>
+                </div>
+              </td>
+              <!-- Tue P2: History -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer" onclick="openLessonDetails('World History', 'Mr. Theara Vith', 'Grade 10A', 'Room 201', 'Tuesday', 2)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-slate-800">World History</span>
+                    <span class="text-[10px] text-slate-500 font-mono">HIS-10</span>
+                  </div>
+                  <div class="text-[11px] text-slate-700 mt-1">Mr. Theara Vith</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">Room 201</div>
+                </div>
+              </td>
+              <!-- Wed P2: Biology -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-emerald-50 border border-emerald-200 cursor-pointer" onclick="openLessonDetails('Biology', 'Coach Samreth Bora', 'Grade 10A', 'Lab 202', 'Wednesday', 2)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-emerald-900">Biology</span>
+                    <span class="text-[10px] text-emerald-700 font-mono">BIO-10</span>
+                  </div>
+                  <div class="text-[11px] text-emerald-800 mt-1">Coach Samreth Bora</div>
+                  <div class="text-[10px] text-emerald-600 mt-0.5">Lab 202</div>
+                </div>
+              </td>
+              <!-- Thu P2: Physical Ed -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-red-50 border border-red-200 cursor-pointer" onclick="openLessonDetails('Physical Education', 'Coach Samreth Bora', 'Grade 10A', 'Gymnasium', 'Thursday', 2)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-red-900">Physical Ed</span>
+                    <span class="text-[10px] text-red-700 font-mono">PE-10</span>
+                  </div>
+                  <div class="text-[11px] text-red-800 mt-1">Coach Samreth Bora</div>
+                  <div class="text-[10px] text-red-600 mt-0.5">Gymnasium Complex</div>
+                </div>
+              </td>
+              <!-- Fri P2: Khmer Comp -->
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer" onclick="openLessonDetails('Khmer Composition', 'Mr. Heng Samnang', 'Grade 10A', 'Room 201', 'Friday', 2)">
+                  <div class="flex justify-between items-start">
+                    <span class="font-medium text-amber-900">Khmer Comp</span>
+                    <span class="text-[10px] text-amber-700 font-mono">KHM-10</span>
+                  </div>
+                  <div class="text-[11px] text-amber-800 mt-1">Mr. Heng Samnang</div>
+                  <div class="text-[10px] text-amber-600 mt-0.5">Room 201</div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Recess Bar -->
+            <tr class="bg-slate-100/70 text-slate-500 text-[11px]">
+              <td colspan="6" class="py-1.5 px-4 text-center font-medium tracking-wide uppercase">
+                Morning Recess &amp; Break (09:30 AM – 09:45 AM)
+              </td>
+            </tr>
+
+            <!-- Period 3 & 4 (Midday) -->
+            <tr>
+              <td class="py-3 px-3 text-center bg-slate-50/50 border-r border-[#E1E9E3]">
+                <div class="font-medium text-slate-800">P3</div>
+                <div class="text-[10px] text-slate-400">09:45–10:30</div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-blue-50 border border-blue-200 cursor-pointer" onclick="openLessonDetails('Calculus I', 'Dr. Sarah Jenkins', 'Grade 10A', 'Room 304', 'Monday', 3)">
+                  <div class="font-medium text-blue-900">Calculus I</div>
+                  <div class="text-[11px] text-blue-800 mt-1">Dr. Sarah Jenkins</div>
+                  <div class="text-[10px] text-blue-600 mt-0.5">Room 304</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-purple-50 border border-purple-200 cursor-pointer" onclick="openLessonDetails('Physics Lab', 'Mr. Keo Piseth', 'Grade 10A', 'Science Lab 102', 'Tuesday', 3)">
+                  <div class="font-medium text-purple-900">Physics Lab</div>
+                  <div class="text-[11px] text-purple-800 mt-1">Mr. Keo Piseth</div>
+                  <div class="text-[10px] text-purple-600 mt-0.5">Science Lab 102</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer" onclick="openLessonDetails('Khmer Literature', 'Mr. Heng Samnang', 'Grade 10A', 'Room 201', 'Wednesday', 3)">
+                  <div class="font-medium text-amber-900">Khmer Literature</div>
+                  <div class="text-[11px] text-amber-800 mt-1">Mr. Heng Samnang</div>
+                  <div class="text-[10px] text-amber-600 mt-0.5">Room 201</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-blue-50 border border-blue-200 cursor-pointer" onclick="openLessonDetails('Calculus I', 'Dr. Sarah Jenkins', 'Grade 10A', 'Room 304', 'Thursday', 3)">
+                  <div class="font-medium text-blue-900">Calculus I</div>
+                  <div class="text-[11px] text-blue-800 mt-1">Dr. Sarah Jenkins</div>
+                  <div class="text-[10px] text-blue-600 mt-0.5">Room 304</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer" onclick="openLessonDetails('English Composition', 'Ms. Sok Vanna', 'Grade 10A', 'Room 202', 'Friday', 3)">
+                  <div class="font-medium text-slate-800">English Comp</div>
+                  <div class="text-[11px] text-slate-700 mt-1">Ms. Sok Vanna</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">Room 202</div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Lunch Interval -->
+            <tr class="bg-slate-100/70 text-slate-500 text-[11px]">
+              <td colspan="6" class="py-1.5 px-4 text-center font-medium tracking-wide uppercase">
+                Lunch &amp; Midday Rest (11:15 AM – 01:00 PM)
+              </td>
+            </tr>
+
+            <!-- Afternoon Period 5 (CURRENT LIVE PERIOD) -->
+            <tr class="bg-emerald-50/30">
+              <td class="py-3 px-3 text-center bg-emerald-100/50 border-r border-[#E1E9E3]">
+                <div class="font-medium text-emerald-900">P5 (LIVE)</div>
+                <div class="text-[10px] text-emerald-700 font-medium">01:00–01:45</div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-emerald-100/80 border border-emerald-300 cursor-pointer" onclick="openLessonDetails('Chemistry Review', 'Ms. Kiry Sokha', 'Grade 10A', 'Room 203', 'Monday', 5)">
+                  <div class="font-medium text-emerald-900">Chemistry Review</div>
+                  <div class="text-[11px] text-emerald-800 mt-1">Ms. Kiry Sokha</div>
+                  <div class="text-[10px] text-emerald-600 mt-0.5">Room 203</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer" onclick="openLessonDetails('Study Hall / Library', 'Staff Advisor', 'Grade 10A', 'Campus Library', 'Tuesday', 5)">
+                  <div class="font-medium text-slate-800">Library Period</div>
+                  <div class="text-[11px] text-slate-700 mt-1">Staff Advisor</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5">Campus Library</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-blue-50 border border-blue-200 cursor-pointer" onclick="openLessonDetails('Python Lab', 'Mr. Meng Roth', 'Grade 10A', 'Computer Lab 105', 'Wednesday', 5)">
+                  <div class="font-medium text-blue-900">Python Lab</div>
+                  <div class="text-[11px] text-blue-800 mt-1">Mr. Meng Roth</div>
+                  <div class="text-[10px] text-blue-600 mt-0.5">Computer Lab 105</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-amber-50 border border-amber-200 cursor-pointer" onclick="openLessonDetails('Khmer Grammar', 'Mr. Heng Samnang', 'Grade 10A', 'Room 201', 'Thursday', 5)">
+                  <div class="font-medium text-amber-900">Khmer Grammar</div>
+                  <div class="text-[11px] text-amber-800 mt-1">Mr. Heng Samnang</div>
+                  <div class="text-[10px] text-amber-600 mt-0.5">Room 201</div>
+                </div>
+              </td>
+              <td class="p-2">
+                <div class="timetable-cell p-3 rounded-xl bg-emerald-50 border border-emerald-200 cursor-pointer" onclick="openLessonDetails('Biology Lab', 'Coach Samreth Bora', 'Grade 10A', 'Lab 202', 'Friday', 5)">
+                  <div class="font-medium text-emerald-900">Biology Lab</div>
+                  <div class="text-[11px] text-emerald-800 mt-1">Coach Samreth Bora</div>
+                  <div class="text-[10px] text-emerald-600 mt-0.5">Lab 202</div>
+                </div>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Contextual Lesson Detail Drawer -->
+  <div id="lessonDetailDrawer" class="fixed inset-0 z-50 overflow-hidden flex justify-end hidden" role="dialog">
+    <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity" id="lddBackdrop"></div>
+    <div class="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col z-10 p-6 space-y-5 overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div>
+          <span class="text-[10px] font-mono text-slate-400" id="lddCode">SCI-CHEM10</span>
+          <h3 class="text-base font-medium text-slate-900 leading-tight" id="lddTitle">Chemistry Lab</h3>
+        </div>
+        <button type="button" id="lddCloseBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-700" id="lddContent">
+        <!-- Injected dynamically -->
+      </div>
+
+      <div class="pt-4 border-t border-slate-100 space-y-2">
+        <button type="button" id="lddAdjustBtn" class="w-full py-2.5 px-4 rounded-xl text-xs font-medium text-white bg-[#176B45] hover:bg-[#125536] transition flex items-center justify-center gap-2 cursor-pointer shadow-xs">
+          <span class="material-symbols-outlined text-[17px]">swap_horiz</span>
+          <span>Propose Schedule Adjustment</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global JavaScript Modules -->
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+  <script src="../../assets/js/academic-requests.js"></script>
+
+  <script>
+    var currentLessonContext = null;
+
+    function openLessonDetails(subject, teacher, className, room, day, period, pendingRequestId) {
+      currentLessonContext = {
+        subject: subject,
+        teacherName: teacher,
+        className: className,
+        room: room,
+        day: day,
+        period: period,
+        pendingRequestId: pendingRequestId
+      };
+
+      document.getElementById('lddCode').textContent = subject.toUpperCase().slice(0, 4) + '-10';
+      document.getElementById('lddTitle').textContent = subject;
+
+      var pendingNotice = pendingRequestId ?
+        '<div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-800">' +
+          '<div class="font-medium flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">pending</span><span>Adjustment Request Pending</span></div>' +
+          '<div class="text-[11px] text-amber-700 mt-1">Request ID: ' + pendingRequestId + ' is currently under review by Administration for slot rebalancing.</div>' +
+        '</div>' : '';
+
+      document.getElementById('lddContent').innerHTML =
+        pendingNotice +
+        '<div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">' +
+          '<div class="flex justify-between py-1 border-b border-slate-200"><span class="text-slate-400">Class Cohort:</span><span class="font-medium text-slate-800">' + className + '</span></div>' +
+          '<div class="flex justify-between py-1 border-b border-slate-200"><span class="text-slate-400">Faculty Instructor:</span><span class="font-medium text-slate-800">' + teacher + '</span></div>' +
+          '<div class="flex justify-between py-1 border-b border-slate-200"><span class="text-slate-400">Scheduled Day &amp; Slot:</span><span class="font-medium text-slate-800">' + day + ' · Period ' + period + '</span></div>' +
+          '<div class="flex justify-between py-1 border-b border-slate-200"><span class="text-slate-400">Allocated Space:</span><span class="font-medium text-slate-800">' + room + '</span></div>' +
+          '<div class="flex justify-between py-1"><span class="text-slate-400">Campus:</span><span class="font-medium text-slate-800">Sensok Campus</span></div>' +
+        '</div>' +
+        '<div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-200/60 text-emerald-800 text-[11px]">' +
+          '<strong>Academic Oversight Note:</strong> Live master timetable published by Administration. Any proposed changes are submitted as formal requests and will not affect the published schedule until approved.' +
+        '</div>';
+
+      var drawer = document.getElementById('lessonDetailDrawer');
+      drawer.classList.remove('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var drawer = document.getElementById('lessonDetailDrawer');
+      var closeBtn = document.getElementById('lddCloseBtn');
+      var backdrop = document.getElementById('lddBackdrop');
+      var adjustBtn = document.getElementById('lddAdjustBtn');
+
+      function closeDrawer() {
+        if (drawer) drawer.classList.add('hidden');
+      }
+
+      if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+      if (backdrop) backdrop.addEventListener('click', closeDrawer);
+
+      if (adjustBtn) {
+        adjustBtn.addEventListener('click', function () {
+          closeDrawer();
+          if (currentLessonContext) {
+            AcademicRequests.openRequestDrawer({
+              module: 'timetable',
+              affectedRecord: currentLessonContext,
+              prefill: {
+                title: 'Schedule Shift: ' + currentLessonContext.className + ' ' + currentLessonContext.subject,
+                reason: 'Pedagogical schedule adjustment requested by Principal.'
+              }
+            });
+          }
+        });
+      }
+
+      document.getElementById('btnRequestSlotAdjust').addEventListener('click', function () {
+        AcademicRequests.openRequestDrawer({
+          module: 'timetable',
+          affectedRecord: {
+            className: 'Grade 10A',
+            subject: 'Chemistry Lab',
+            teacherName: 'Ms. Kiry Sokha',
+            room: 'Lab 201',
+            day: 'Monday',
+            period: 2
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

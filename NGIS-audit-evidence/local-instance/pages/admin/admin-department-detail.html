@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="h-full">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>NGIS - Department Governance Portal</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+<!-- Phosphor Icons for Mobile/Sidebar -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+<!-- Tailwind CSS CDN with Forms & Container Queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['ui-monospace', 'monospace'],
+        },
+        colors: {
+          brand: {
+            50: '#f0fdf4',
+            100: '#dcfce7',
+            200: '#bbf7d0',
+            500: '#22c55e',
+            600: '#16a34a',
+            700: '#15803d',
+            800: '#166534',
+            900: '#0f5132',
+            950: '#072b1b',
+          },
+          primary: '#0f5132',
+          'primary-dark': '#0a3822',
+          'primary-light': '#16a34a',
+        }
+      }
+    }
+  };
+</script>
+
+<!-- NGIS Core Stylesheets -->
+<link rel="stylesheet" href="../../assets/css/app.css"/>
+<link rel="stylesheet" href="../../assets/css/hero.css"/>
+<link rel="stylesheet" href="../../assets/css/interactions.css?v=20261017b"/>
+<link rel="stylesheet" href="../../assets/css/design-system.css"/>
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2"/>
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css"/>
+
+<!-- Theme Bootstrap & Auth -->
+<script>try{var _t=localStorage.getItem('ngis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script src="../../assets/js/auth.js"></script>
+<script src="../../assets/js/protect.js"></script>
+<script src="_auth-bootstrap.js"></script>
+<script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+
+<style data-purpose="department-governance-layout">
+  /* Global typography constraint: Strict No Bold */
+  * {
+    font-weight: 400;
+  }
+  b, strong, th, h1, h2, h3, h4, h5, h6,
+  .font-medium, .font-semibold, .font-bold {
+    font-weight: 500 !important;
+  }
+
+  /* Custom clean scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  /* Brand Emerald Color Enforcement */
+  .bg-brand-900 { background-color: #0f5132 !important; }
+  .bg-brand-800 { background-color: #166534 !important; }
+  .text-brand-900 { color: #0f5132 !important; }
+  .border-brand-900 { border-color: #0f5132 !important; }
+
+  /* Dark mode overrides */
+  [data-theme="dark"] body {
+    background-color: #0b1120 !important;
+    color: #e2e8f0 !important;
+  }
+  [data-theme="dark"] .bg-white {
+    background-color: #111827 !important;
+  }
+  [data-theme="dark"] .bg-slate-50,
+  [data-theme="dark"] .bg-slate-50\/60,
+  [data-theme="dark"] .bg-slate-50\/80 {
+    background-color: #1f2937 !important;
+  }
+  [data-theme="dark"] .border-slate-200,
+  [data-theme="dark"] .border-slate-200\/80,
+  [data-theme="dark"] .border-slate-200\/90,
+  [data-theme="dark"] .border-slate-100 {
+    border-color: #374151 !important;
+  }
+  [data-theme="dark"] .text-slate-900 {
+    color: #f9fafb !important;
+  }
+  [data-theme="dark"] .text-slate-800 {
+    color: #f3f4f6 !important;
+  }
+  [data-theme="dark"] .text-slate-700 {
+    color: #e5e7eb !important;
+  }
+  [data-theme="dark"] .text-slate-600 {
+    color: #d1d5db !important;
+  }
+  [data-theme="dark"] .text-slate-500 {
+    color: #9ca3af !important;
+  }
+  [data-theme="dark"] .hover\:bg-slate-50:hover,
+  [data-theme="dark"] .hover\:bg-slate-50\/60:hover,
+  [data-theme="dark"] .hover\:bg-slate-50\/70:hover {
+    background-color: #1f2937 !important;
+  }
+  [data-theme="dark"] input,
+  [data-theme="dark"] select {
+    background-color: #1f2937 !important;
+    color: #f9fafb !important;
+    border-color: #4b5563 !important;
+  }
+</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen" data-role="admin" data-portal="admin">
+<main class="main">
+
+  <!-- NGIS Hero Banner Target -->
+  <header id="heroBanner" role="banner"></header>
+
+  <!-- Page Content Container -->
+  <div class="page w-full p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
+
+    <!-- Mobile Header with Mandatory Hamburger Button -->
+    <header class="lg:hidden flex items-center justify-between bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div class="flex items-center gap-3">
+        <button type="button" class="hamburger-btn mobile-hamburger-btn p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false">
+          <span data-ngis-icon="menu" class="text-xl"></span>
+        </button>
+        <div>
+          <span class="text-[11px] text-slate-400 dark:text-slate-500 block font-normal">Academic Governance</span>
+          <span class="text-sm font-medium text-slate-900 dark:text-white" id="mobDeptTitle">English Department</span>
+        </div>
+      </div>
+      <a href="admin-departments.html" class="px-2.5 py-1 text-xs text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-lg transition-colors">
+        Departments
+      </a>
+    </header>
+
+    <!-- BEGIN: Top Breadcrumb & Switcher -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+        <a href="admin-departments.html" class="hover:text-brand-900 dark:hover:text-emerald-400 transition-colors flex items-center gap-1">
+          <span data-ngis-icon="back"></span>
+          <span>Departments</span>
+        </a>
+        <span class="text-slate-300 dark:text-slate-700">/</span>
+        <span class="text-slate-800 dark:text-slate-200 font-medium" id="breadcrumbDeptName">English Department</span>
+        <span class="text-slate-300 dark:text-slate-700">/</span>
+        <span class="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">AY 2025-2026</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <!-- Department Switcher Dropdown -->
+        <div class="relative">
+          <select id="selectDepartmentSwitch" class="text-xs font-normal bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-900 text-slate-700 dark:text-slate-200 cursor-pointer shadow-xs">
+            <option value="english">English Department</option>
+            <option value="khmer">Khmer Department</option>
+            <option value="chinese">Chinese Department</option>
+            <option value="science">Science STEM Department</option>
+            <option value="mathematics">Mathematics Department</option>
+            <option value="humanities">Social Studies &amp; Humanities</option>
+          </select>
+        </div>
+        <button onclick="window.print()" class="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          <span data-ngis-icon="print"></span>
+          <span>Print Sheet</span>
+        </button>
+      </div>
+    </div>
+    <!-- END: Top Breadcrumb & Switcher -->
+
+    <!-- BEGIN: DepartmentHeroBanner -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 lg:p-7 shadow-xs">
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+        <div class="flex items-start space-x-4">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-800 flex items-center justify-center text-brand-900 dark:text-emerald-400 shrink-0 shadow-2xs" id="deptIconContainer">
+            <span class="material-symbols-outlined text-[28px]" id="deptIcon">menu_book</span>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="text-2xl font-medium text-slate-900 dark:text-white tracking-tight" id="deptTitle">English Department</h1>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300" id="deptAccreditationLabel">
+                MoEYS &amp; CAIE
+              </span>
+            </div>
+            <div class="text-sm font-medium text-emerald-800 dark:text-emerald-400" id="deptTitleKhmer">Language &amp; Literature Division</div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400 pt-1">
+              <span class="font-mono text-slate-400 dark:text-slate-500" id="deptCode">NGIS-DEPT-ENG-2026</span>
+              <span class="inline-flex items-center text-slate-500 dark:text-slate-400">
+                <svg class="w-3.5 h-3.5 mr-1 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span id="deptAccreditationText">Cambridge IGCSE &amp; MoEYS Accredited</span>
+              </span>
+              <span class="inline-flex items-center text-slate-500 dark:text-slate-400">
+                <svg class="w-3.5 h-3.5 mr-1 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                <span id="deptScope">Active across 4 Campuses (Sen Sok, Depo, Bak Touk, Main)</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Department Chair Micro-Card -->
+        <div class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700 rounded-xl p-3.5 flex items-center space-x-3.5 shrink-0 self-start lg:min-w-[280px]" id="deptHeadCard">
+          <div class="w-10 h-10 rounded-full bg-brand-800 text-white font-medium text-xs flex items-center justify-center shrink-0 overflow-hidden" id="deptHeadAvatarWrap">
+            <span id="deptHeadInitials">SJ</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <span class="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider block">Department Chair</span>
+            <div class="text-xs font-medium text-slate-900 dark:text-white truncate" id="deptHeadName">Dr. Sarah Jenkins</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400 font-mono" id="deptHeadOffice">Room 302 · Ext. 402</div>
+          </div>
+          <a class="p-1.5 text-slate-400 hover:text-brand-900 dark:hover:text-emerald-400 rounded-md hover:bg-white dark:hover:bg-slate-700 transition-colors" id="leadEmailLink" href="mailto:sarah.jenkins@ngis.edu.kh" aria-label="Contact Chair">
+            <span data-ngis-icon="mail" class="text-[16px]"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- END: DepartmentHeroBanner -->
+
+    <!-- BEGIN: ExecutiveKPISummary -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Card 1 -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-xs">
+        <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>Active Faculty</span>
+          <span class="material-symbols-outlined text-emerald-600 text-[20px]">groups</span>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-medium text-slate-900 dark:text-white" id="metricFaculty">42</span>
+          <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Educators</span>
+        </div>
+        <div class="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2">
+          <span class="inline-flex items-center text-emerald-700 dark:text-emerald-400 font-medium" id="metricFacultySub">
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            +3 this year
+          </span>
+          <span id="metricCampusesCount">4 campuses</span>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-xs">
+        <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>Total Enrolled</span>
+          <span class="material-symbols-outlined text-emerald-600 text-[20px]">school</span>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-medium text-slate-900 dark:text-white" id="metricStudents">1,742</span>
+          <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Pupils</span>
+        </div>
+        <div class="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2">
+          <span>Grades 10–12 Cohorts</span>
+          <span class="text-emerald-700 dark:text-emerald-400 font-medium">98.4% Retention</span>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-xs">
+        <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>Syllabus Compliance</span>
+          <span class="material-symbols-outlined text-emerald-600 text-[20px]">verified</span>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-medium text-emerald-800 dark:text-emerald-400" id="metricCompliance">94%</span>
+          <span class="text-xs font-medium text-slate-500 dark:text-slate-400">MoEYS / CAIE</span>
+        </div>
+        <div class="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2">
+          <span>100% Submitted Q1</span>
+          <span class="text-emerald-700 dark:text-emerald-400 font-medium">+6% vs Last Year</span>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-xs">
+        <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider mb-2">
+          <span>Active Sections</span>
+          <span class="material-symbols-outlined text-emerald-600 text-[20px]">calendar_today</span>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-medium text-slate-900 dark:text-white" id="metricSections">28</span>
+          <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Class Cohorts</span>
+        </div>
+        <div class="mt-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2">
+          <span id="metricLessonsScheduled">638 Lessons Scheduled</span>
+          <span class="text-emerald-700 dark:text-emerald-400 font-medium">100% Timetabled</span>
+        </div>
+      </div>
+    </div>
+    <!-- END: ExecutiveKPISummary -->
+
+    <!-- BEGIN: UnifiedTabNavSection -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden">
+      
+      <!-- Primary Navigation Tabs -->
+      <div class="border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 pt-2 bg-slate-50/60 dark:bg-slate-800/40">
+        <nav aria-label="Department sections" class="flex space-x-2 sm:space-x-8 overflow-x-auto" id="tabNav">
+          <button class="tab-button border-b-2 py-3.5 px-1 text-xs sm:text-sm whitespace-nowrap flex items-center space-x-2 border-brand-900 text-brand-900 dark:border-emerald-500 dark:text-emerald-400 font-medium" id="tabBtn-courses" onclick="switchTab('courses')">
+            <svg class="w-4 h-4 text-brand-900 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span>Courses &amp; Syllabi</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] bg-brand-100 dark:bg-emerald-950 text-brand-900 dark:text-emerald-300 font-medium" id="badgeCountCourses">12</span>
+          </button>
+          <button class="tab-button border-b-2 py-3.5 px-1 text-xs sm:text-sm font-medium hover:text-slate-900 dark:hover:text-white whitespace-nowrap flex items-center space-x-2 border-transparent text-slate-600 dark:text-slate-400" id="tabBtn-faculty" onclick="switchTab('faculty')">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span>Faculty Roster &amp; Distribution</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium" id="badgeCountFaculty">42</span>
+          </button>
+          <button class="tab-button border-b-2 py-3.5 px-1 text-xs sm:text-sm font-medium hover:text-slate-900 dark:hover:text-white whitespace-nowrap flex items-center space-x-2 border-transparent text-slate-600 dark:text-slate-400" id="tabBtn-sections" onclick="switchTab('sections')">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span>Class Sections</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium" id="badgeCountSections">28</span>
+          </button>
+          <button class="tab-button border-b-2 py-3.5 px-1 text-xs sm:text-sm font-medium hover:text-slate-900 dark:hover:text-white whitespace-nowrap flex items-center space-x-2 border-transparent text-slate-600 dark:text-slate-400" id="tabBtn-roadmap" onclick="switchTab('roadmap')">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span>Assessment &amp; Exam Roadmap</span>
+            <span class="px-2 py-0.5 rounded-full text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium" id="badgeCountRoadmap">8</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Utility Control Bar (Unified Search & Filtering) -->
+      <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
+        <div class="flex-1 max-w-md">
+          <div class="relative flex items-center">
+            <span class="absolute left-3.5 text-slate-400 pointer-events-none flex items-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </span>
+            <input class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-brand-700" id="tabFilterInput" placeholder="Filter by code, keyword, lead teacher, or cohort..." type="text"/>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2.5 flex-wrap sm:flex-nowrap">
+          <select id="filterGradeSelect" class="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg py-2 pl-3 pr-7 focus:ring-1 focus:ring-brand-700 shrink-0">
+            <option value="all">All Grades</option>
+            <option value="10">Grade 10</option>
+            <option value="11">Grade 11</option>
+            <option value="12">Grade 12</option>
+          </select>
+          <select id="filterCampusSelect" class="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-lg py-2 pl-3 pr-7 focus:ring-1 focus:ring-brand-700 shrink-0">
+            <option value="all">All Campuses</option>
+            <option value="Sen Sok">Sen Sok (Anchor)</option>
+            <option value="Depo">Depo Campus</option>
+            <option value="Bak Touk">Bak Touk Campus</option>
+            <option value="Main">Main Campus</option>
+          </select>
+          <button id="btnSyncMoEYS" class="inline-flex items-center px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg shadow-2xs transition-colors shrink-0" aria-label="Sync Curriculum Benchmarks">
+            <span data-ngis-icon="refresh" class="text-[14px] mr-1.5"></span>
+            <span>Sync MoEYS</span>
+          </button>
+          <button id="btnAddRecord" class="inline-flex items-center px-3.5 py-2 text-xs font-medium text-white bg-brand-900 hover:bg-brand-950 dark:bg-emerald-600 dark:hover:bg-emerald-700 rounded-lg shadow-2xs transition-colors shrink-0 whitespace-nowrap">
+            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            <span>Add Record</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- BEGIN: TAB 1: Courses & Syllabi -->
+      <div class="tab-pane block" id="tabContent-courses">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50/80 dark:bg-slate-800/80 text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="py-3 px-4 w-10 text-center" scope="col">
+                  <input class="rounded border-slate-300 dark:border-slate-600 text-brand-900 focus:ring-brand-900" type="checkbox" id="selectAllCourses"/>
+                </th>
+                <th class="py-3 px-4" scope="col">Code</th>
+                <th class="py-3 px-4" scope="col">Course Title &amp; Curriculum</th>
+                <th class="py-3 px-4" scope="col">Grade</th>
+                <th class="py-3 px-4" scope="col">Lead Faculty</th>
+                <th class="py-3 px-4" scope="col">Campus Availability</th>
+                <th class="py-3 px-4 text-right" scope="col">Enrolled</th>
+                <th class="py-3 px-4" scope="col">Syllabus Sync</th>
+                <th class="py-3 px-4 text-center" scope="col">Status</th>
+                <th class="py-3 px-4 text-right" scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="coursesTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Pagination -->
+        <div class="px-4 sm:px-6 py-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+          <div>
+            Showing <span id="coursesRange" class="font-medium text-slate-800 dark:text-slate-200">1 to 9</span> of <span id="coursesTotal" class="font-medium text-slate-800 dark:text-slate-200">9</span> courses
+          </div>
+          <div class="flex items-center space-x-1">
+            <button class="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-400 disabled:opacity-50" disabled="">Previous</button>
+            <button class="px-2.5 py-1 rounded bg-brand-900 dark:bg-emerald-600 text-white font-medium">1</button>
+            <button class="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">2</button>
+            <button class="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">Next</button>
+          </div>
+        </div>
+      </div>
+      <!-- END: TAB 1 -->
+
+      <!-- BEGIN: TAB 2: Faculty Roster & Distribution -->
+      <div class="tab-pane p-5 space-y-6 hidden" id="tabContent-faculty">
+        
+        <!-- Faculty Distribution Progress Bars -->
+        <div class="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-4 border border-slate-200/80 dark:border-slate-700">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-2">
+              <span class="material-symbols-outlined text-emerald-800 dark:text-emerald-400 text-base">domain</span>
+              <span class="text-xs font-medium text-slate-800 dark:text-slate-200 uppercase tracking-wider">Faculty Campus Distribution</span>
+            </div>
+            <span class="text-xs font-medium text-emerald-800 dark:text-emerald-400" id="distTotalTeachers">42 Teachers Total</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="campusBreakdownList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Faculty Directory Table -->
+        <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50/80 dark:bg-slate-800/80 text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="py-3 px-4" scope="col">Educator</th>
+                <th class="py-3 px-4" scope="col">Specialization &amp; Role</th>
+                <th class="py-3 px-4" scope="col">Primary Campus</th>
+                <th class="py-3 px-4 text-right" scope="col">Weekly Load</th>
+                <th class="py-3 px-4 text-center" scope="col">Office</th>
+                <th class="py-3 px-4 text-center" scope="col">Status</th>
+                <th class="py-3 px-4 text-right" scope="col">Contact</th>
+              </tr>
+            </thead>
+            <tbody id="facultyTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Coordination Channel Callout -->
+        <div class="p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-[20px]">forum</span>
+            </div>
+            <div>
+              <div class="text-xs font-medium text-slate-900 dark:text-white">Academic Coordination Hub</div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400">Synchronize curriculum delivery notes, share pacing adjustments, and message all active department teachers.</div>
+            </div>
+          </div>
+          <button onclick="if(window.toast)window.toast('Opening Academic Coordination Channel...','info');else alert('Opening Channel');" class="px-3.5 py-1.5 text-xs font-medium text-emerald-800 dark:text-emerald-300 bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-lg shadow-2xs transition-colors whitespace-nowrap">
+            Open Faculty Channel
+          </button>
+        </div>
+      </div>
+      <!-- END: TAB 2 -->
+
+      <!-- BEGIN: TAB 3: Class Sections -->
+      <div class="tab-pane hidden" id="tabContent-sections">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50/80 dark:bg-slate-800/80 text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="py-3 px-4" scope="col">Section</th>
+                <th class="py-3 px-4" scope="col">Course / Subject</th>
+                <th class="py-3 px-4" scope="col">Lead Teacher</th>
+                <th class="py-3 px-4" scope="col">Campus</th>
+                <th class="py-3 px-4" scope="col">Enrollment / Capacity</th>
+                <th class="py-3 px-4 text-center" scope="col">Room</th>
+                <th class="py-3 px-4 text-center" scope="col">Status</th>
+                <th class="py-3 px-4 text-right" scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="sectionsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- END: TAB 3 -->
+
+      <!-- BEGIN: TAB 4: Assessment & Exam Roadmap -->
+      <div class="tab-pane hidden" id="tabContent-roadmap">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+            <thead class="bg-slate-50/80 dark:bg-slate-800/80 text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="py-3 px-4" scope="col">Evaluation / Examination</th>
+                <th class="py-3 px-4" scope="col">Grade Cohort</th>
+                <th class="py-3 px-4" scope="col">Scheduled Window</th>
+                <th class="py-3 px-4" scope="col">Exam Hall &amp; Campus</th>
+                <th class="py-3 px-4" scope="col">Chief Moderator</th>
+                <th class="py-3 px-4 text-center" scope="col">Roadmap Status</th>
+                <th class="py-3 px-4 text-right" scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="roadmapTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- END: TAB 4 -->
+
+    </div>
+    <!-- END: UnifiedTabNavSection -->
+
+    <!-- BEGIN: QuickActionsFooterStrip -->
+    <div class="flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 pt-2">
+      <div class="flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>Curriculum Status: Fully synchronized with MoEYS National Guidelines</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <button id="btnAssignFaculty" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors font-medium">Assign Faculty</button>
+        <span>•</span>
+        <button id="btnExportDossier" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors font-medium">Export Dossier (PDF)</button>
+        <span>•</span>
+        <a href="admin-departments.html" class="hover:text-emerald-800 dark:hover:text-emerald-400 transition-colors font-medium">Back to All Departments</a>
+      </div>
+    </div>
+    <!-- END: QuickActionsFooterStrip -->
+
+  </div>
+</main>
+
+<!-- NGIS Page Identity & Hero Banner Data -->
+<script>
+window.PAGE = {"role":"admin","active":"departments"};
+(function() {
+  const p = new URLSearchParams(window.location.search);
+  const dKey = p.get('dept') || 'english';
+  const dNames = {
+    english: 'English Department',
+    khmer: 'Khmer Department',
+    chinese: 'Chinese Department',
+    science: 'Science STEM Department',
+    mathematics: 'Mathematics Department',
+    humanities: 'Social Studies & Humanities'
+  };
+  const dTitle = dNames[dKey] || 'Department Governance Hub';
+
+  window.HERO_CONFIG = {
+    name: 'Mr. Heng Samnang',
+    id: 'Admin ID: ADM-2026-001',
+    grade: 'School Administrator',
+    avatar: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=160',
+    avatarSm: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=80',
+    title: dTitle,
+    greeting: 'Curriculum governance, syllabus pacing, and multi-campus faculty roster.',
+    breadcrumbs: [
+      { label: 'Departments', href: 'admin-departments.html' },
+      { label: dTitle }
+    ],
+    homeLink: '../../index.html',
+    signOutLink: '../../index.html',
+    profileLink: 'admin-settings.html',
+    notifLink: 'admin-logs.html',
+    notifCount: 4,
+    ddRows: [
+      { icon: 'admin_panel_settings', text: 'School Administration' },
+      { icon: 'corporate_fare', text: '6 Academic Divisions' },
+      { icon: 'groups', text: '168 Faculty Staff' },
+      { icon: 'email', text: 'heng.samnang@ngis.edu.kh' },
+      { icon: 'verified', text: 'Gateway Academic Council' }
+    ]
+  };
+})();
+</script>
+
+<!-- Scripts -->
+<script src="../../assets/js/hero.js"></script>
+<script src="../../assets/js/layout.js"></script>
+
+<!-- Department Detail Interactive Data Engine -->
+<script>
+(function() {
+  // Comprehensive NGIS Department Database
+  const DEPARTMENTS_DATA = {
+    english: {
+      id: 'english',
+      name: 'English Department',
+      nameKh: 'Language & Literature Division',
+      icon: 'menu_book',
+      code: 'NGIS-DEPT-ENG-2026',
+      accreditation: 'Cambridge IGCSE & MoEYS Accredited',
+      accreditationLabel: 'MoEYS & CAIE',
+      scope: 'Active across 4 Campuses (Sen Sok, Depo, Bak Touk, Main)',
+      head: {
+        name: 'Dr. Sarah Jenkins',
+        initials: 'SJ',
+        role: 'Head of English Studies · PhD',
+        office: 'Room 302 • Ext. 402',
+        email: 's.jenkins@ngis.edu.kh',
+        avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=160'
+      },
+      metrics: {
+        faculty: '42',
+        facultySub: '+3 this academic year',
+        students: '1,742',
+        compliance: '94%',
+        sections: '28',
+        lessonsScheduled: '638 Lessons Scheduled'
+      },
+      campusDistribution: {
+        total: '42 Teachers Total',
+        items: [
+          { name: 'Sen Sok (Anchor Campus)', count: '18 teachers (43%)', pct: '43%', barClass: 'bg-primary' },
+          { name: 'Depo Campus', count: '12 teachers (29%)', pct: '29%', barClass: 'bg-primary-container' },
+          { name: 'Bak Touk Campus', count: '8 teachers (19%)', pct: '19%', barClass: 'bg-primary-container' },
+          { name: 'Main Campus', count: '4 teachers (9%)', pct: '9%', barClass: 'bg-primary-container' }
+        ]
+      },
+      courses: [
+        { code: 'ENG-101', title: 'English Literature & Composition', track: 'Cambridge IGCSE 0500 · 4 Credits', grade: 'Grade 10', faculty: 'Ms. Rin Sothea', initials: 'RS', campus: 'Sen Sok, Depo', enrolled: 420, sync: 92, status: 'Compliant' },
+        { code: 'ENG-201', title: 'Academic Writing & Rhetoric', track: 'AS Level General Paper 8021 · 4 Credits', grade: 'Grade 11', faculty: 'Dr. Sarah Jenkins', initials: 'SJ', campus: 'All Campuses', enrolled: 385, sync: 95, status: 'Compliant' },
+        { code: 'ENG-301', title: 'Victorian Poetry & Modern Drama', track: 'Cambridge A-Level 9695 · 5 Credits', grade: 'Grade 12', faculty: 'Mr. Kevin Jenkins', initials: 'KJ', campus: 'Sen Sok, Bak Touk', enrolled: 294, sync: 88, status: 'In Progress' },
+        { code: 'ESL-004', title: 'Advanced Language Prep (IELTS / SAT)', track: 'Collegiate Matriculation Track · 3 Credits', grade: 'Grades 11–12', faculty: 'Mr. Panha Vong', initials: 'PV', campus: 'All Campuses', enrolled: 643, sync: 97, status: 'Compliant' }
+      ],
+      facultyRoster: [
+        { name: 'Dr. Sarah Jenkins', id: 'TCH-2026-001', role: 'Department Head · English Literature', campus: 'Sen Sok', load: '18 hrs / wk', room: 'Rm 302', status: 'Active' },
+        { name: 'Ms. Rin Sothea', id: 'TCH-2026-004', role: 'Senior Lecturer · Academic Writing', campus: 'Sen Sok', load: '20 hrs / wk', room: 'Rm 304', status: 'Active' },
+        { name: 'Mr. Kevin Jenkins', id: 'TCH-2026-008', role: 'Lead Instructor · Poetry & Drama', campus: 'Bak Touk', load: '16 hrs / wk', room: 'Rm 201', status: 'Active' },
+        { name: 'Mr. Panha Vong', id: 'TCH-2026-012', role: 'IELTS / SAT Prep Coordinator', campus: 'Depo', load: '19 hrs / wk', room: 'Rm 105', status: 'Active' }
+      ],
+      sections: [
+        { code: '11-A', subject: 'Advanced English Literature', teacher: 'Dr. Sarah Jenkins', initials: 'SJ', campus: 'Sen Sok', room: '302', enrolled: 32, cap: 35, status: 'Active' },
+        { code: '11-B', subject: 'Academic Writing & Rhetoric', teacher: 'Ms. Rin Sothea', initials: 'RS', campus: 'Sen Sok', room: '304', enrolled: 29, cap: 35, status: 'Active' },
+        { code: '10-A', subject: 'English Composition & Prose', teacher: 'Mr. Kevin Jenkins', initials: 'KJ', campus: 'Depo', room: '108', enrolled: 35, cap: 35, status: 'Review' },
+        { code: '12-A', subject: 'AP English Literature & Analysis', teacher: 'Dr. Sarah Jenkins', initials: 'SJ', campus: 'Bak Touk', room: '401', enrolled: 31, cap: 35, status: 'Active' }
+      ],
+      roadmap: [
+        { title: 'Term 3 Midterm Examination — English Literature', grade: 'Grade 11', schedule: 'May 12, 2026 · 08:30–11:00', hall: 'Auditorium Hall A (Sen Sok)', moderator: 'Dr. Sarah Jenkins', status: 'Published' },
+        { title: 'Cambridge IGCSE Mock Speaking & Composition', grade: 'Grade 10', schedule: 'May 24, 2026 · 09:00–12:00', hall: 'Language Lab 1 & 2', moderator: 'Ms. Rin Sothea', status: 'In Review' },
+        { title: 'Term 2 Final Composition & Syntax Test', grade: 'Grade 12', schedule: 'June 04, 2026 · 09:00–11:30', hall: 'Exam Hall B (Bak Touk)', moderator: 'Mr. Kevin Jenkins', status: 'Published' }
+      ]
+    },
+    khmer: {
+      id: 'khmer',
+      name: 'Khmer Department',
+      nameKh: 'National Curriculum Division',
+      icon: 'translate',
+      code: 'NGIS-DEPT-KHM-2026',
+      accreditation: 'MoEYS National Curriculum Certified',
+      accreditationLabel: 'MoEYS National',
+      scope: 'Active across 4 Campuses (Sen Sok, Depo, Bak Touk, Main)',
+      head: {
+        name: 'Mr. Chea Sophea',
+        initials: 'CS',
+        role: 'Head of National Khmer Curriculum',
+        office: 'Room 205 • Ext. 312',
+        email: 's.chea@ngis.edu.kh',
+        avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=160'
+      },
+      metrics: {
+        faculty: '36',
+        facultySub: '+2 this academic year',
+        students: '1,890',
+        compliance: '98%',
+        sections: '32',
+        lessonsScheduled: '710 Lessons Scheduled'
+      },
+      campusDistribution: {
+        total: '36 Teachers Total',
+        items: [
+          { name: 'Sen Sok (Anchor Campus)', count: '14 teachers (39%)', pct: '39%', barClass: 'bg-primary' },
+          { name: 'Depo Campus', count: '11 teachers (31%)', pct: '31%', barClass: 'bg-primary-container' },
+          { name: 'Bak Touk Campus', count: '7 teachers (19%)', pct: '19%', barClass: 'bg-primary-container' },
+          { name: 'Main Campus', count: '4 teachers (11%)', pct: '11%', barClass: 'bg-primary-container' }
+        ]
+      },
+      courses: [
+        { code: 'KHM-101', title: 'Khmer Literature & Classical Poetry', track: 'MoEYS High School Standard · 4 Credits', grade: 'Grade 10', faculty: 'Mr. Chea Sophea', initials: 'CS', campus: 'All Campuses', enrolled: 450, sync: 98, status: 'Compliant' },
+        { code: 'KHM-201', title: 'National History & Khmer Culture', track: 'MoEYS Standard · 3 Credits', grade: 'Grade 11', faculty: 'Ms. Chan Sreymom', initials: 'CS', campus: 'Sen Sok, Depo', enrolled: 410, sync: 96, status: 'Compliant' },
+        { code: 'KHM-301', title: 'BacII National Exam Prep & Composition', track: 'MoEYS Graduation Track · 5 Credits', grade: 'Grade 12', faculty: 'Mr. Sok Panha', initials: 'SP', campus: 'All Campuses', enrolled: 390, sync: 99, status: 'Compliant' }
+      ],
+      facultyRoster: [
+        { name: 'Mr. Chea Sophea', id: 'TCH-2026-021', role: 'Department Head · Khmer Literature', campus: 'Sen Sok', load: '18 hrs / wk', room: 'Rm 205', status: 'Active' },
+        { name: 'Ms. Chan Sreymom', id: 'TCH-2026-024', role: 'Senior Lecturer · National History', campus: 'Depo', load: '19 hrs / wk', room: 'Rm 102', status: 'Active' }
+      ],
+      sections: [
+        { code: '10-A', subject: 'Khmer Literature & Classical Poetry', teacher: 'Mr. Chea Sophea', initials: 'CS', campus: 'Sen Sok', room: '205', enrolled: 34, cap: 35, status: 'Active' },
+        { code: '12-A', subject: 'BacII National Exam Preparation', teacher: 'Mr. Sok Panha', initials: 'SP', campus: 'Bak Touk', room: '301', enrolled: 35, cap: 35, status: 'Active' }
+      ],
+      roadmap: [
+        { title: 'National BacII Preparatory Mock Evaluation', grade: 'Grade 12', schedule: 'May 18, 2026 · 08:00–11:30', hall: 'Auditorium Hall B', moderator: 'Mr. Chea Sophea', status: 'Published' }
+      ]
+    },
+    chinese: {
+      id: 'chinese',
+      name: 'Chinese Department',
+      nameKh: 'East Asian Languages Division',
+      icon: 'language',
+      code: 'NGIS-DEPT-CHN-2026',
+      accreditation: 'HSK Standard & Confucius Institute Aligned',
+      accreditationLabel: 'HSK / Hanban',
+      scope: 'Active across 3 Campuses (Sen Sok, Depo, Bak Touk)',
+      head: {
+        name: 'Ms. Lin Wei',
+        initials: 'LW',
+        role: 'Director of Mandarin & HSK Programs',
+        office: 'Room 114 • Ext. 218',
+        email: 'w.lin@ngis.edu.kh',
+        avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=160'
+      },
+      metrics: {
+        faculty: '24',
+        facultySub: '+2 this academic year',
+        students: '1,120',
+        compliance: '91%',
+        sections: '18',
+        lessonsScheduled: '420 Lessons Scheduled'
+      },
+      campusDistribution: {
+        total: '24 Teachers Total',
+        items: [
+          { name: 'Sen Sok Campus', count: '11 teachers (46%)', pct: '46%', barClass: 'bg-primary' },
+          { name: 'Depo Campus', count: '8 teachers (33%)', pct: '33%', barClass: 'bg-primary-container' },
+          { name: 'Bak Touk Campus', count: '5 teachers (21%)', pct: '21%', barClass: 'bg-primary-container' }
+        ]
+      },
+      courses: [
+        { code: 'CHN-101', title: 'Mandarin Syntax & Pinyin Mastery', track: 'HSK 3 Standard · 4 Credits', grade: 'Grade 10', faculty: 'Ms. Lin Wei', initials: 'LW', campus: 'Sen Sok, Depo', enrolled: 310, sync: 94, status: 'Compliant' },
+        { code: 'CHN-201', title: 'Business Chinese & HSK 4 Certification', track: 'HSK 4 Standard · 4 Credits', grade: 'Grade 11', faculty: 'Mr. Liu Wei', initials: 'LW', campus: 'All Campuses', enrolled: 280, sync: 90, status: 'Compliant' }
+      ],
+      facultyRoster: [
+        { name: 'Ms. Lin Wei', id: 'TCH-2026-031', role: 'Head of Mandarin · HSK Lead', campus: 'Sen Sok', load: '18 hrs / wk', room: 'Rm 114', status: 'Active' }
+      ],
+      sections: [
+        { code: '10-C', subject: 'Mandarin Syntax & Pinyin', teacher: 'Ms. Lin Wei', initials: 'LW', campus: 'Sen Sok', room: '114', enrolled: 28, cap: 30, status: 'Active' }
+      ],
+      roadmap: [
+        { title: 'Official HSK Level 3 & 4 Simulation Exam', grade: 'Grades 10–11', schedule: 'June 10, 2026 · 09:00–12:00', hall: 'Confucius Hall', moderator: 'Ms. Lin Wei', status: 'Published' }
+      ]
+    },
+    science: {
+      id: 'science',
+      name: 'Science STEM Department',
+      nameKh: 'STEM & Scientific Inquiry Division',
+      icon: 'science',
+      code: 'NGIS-DEPT-SCI-2026',
+      accreditation: 'Cambridge IGCSE & MoEYS STEM Certified',
+      accreditationLabel: 'Cambridge STEM',
+      scope: 'Active across 4 Campuses (Sen Sok, Depo, Bak Touk, Main)',
+      head: {
+        name: 'Dr. Pov Sarun',
+        initials: 'PS',
+        role: 'Director of Natural Sciences & STEM Labs',
+        office: 'Science Lab 04 • Ext. 504',
+        email: 'pov.sarun@ngis.edu.kh',
+        avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=160'
+      },
+      metrics: {
+        faculty: '38',
+        facultySub: '+4 this academic year',
+        students: '1,680',
+        compliance: '96%',
+        sections: '26',
+        lessonsScheduled: '584 Lessons Scheduled'
+      },
+      campusDistribution: {
+        total: '38 Teachers Total',
+        items: [
+          { name: 'Sen Sok (Anchor Labs)', count: '16 teachers (42%)', pct: '42%', barClass: 'bg-primary' },
+          { name: 'Depo Campus', count: '10 teachers (26%)', pct: '26%', barClass: 'bg-primary-container' },
+          { name: 'Bak Touk Campus', count: '8 teachers (21%)', pct: '21%', barClass: 'bg-primary-container' },
+          { name: 'Main Campus', count: '4 teachers (11%)', pct: '11%', barClass: 'bg-primary-container' }
+        ]
+      },
+      courses: [
+        { code: 'SCI-101', title: 'General Biology & Cellular Ecology', track: 'Cambridge IGCSE 0610 · 4 Credits', grade: 'Grade 10', faculty: 'Ms. Dara Kunthea', initials: 'DK', campus: 'Sen Sok, Depo', enrolled: 390, sync: 95, status: 'Compliant' },
+        { code: 'SCI-201', title: 'Organic Chemistry & Thermodynamics', track: 'Cambridge AS-Level 9701 · 5 Credits', grade: 'Grade 11', faculty: 'Dr. Pov Sarun', initials: 'PS', campus: 'All Campuses', enrolled: 350, sync: 96, status: 'Compliant' },
+        { code: 'SCI-301', title: 'Advanced Quantum & Applied Physics', track: 'Cambridge A-Level 9702 · 5 Credits', grade: 'Grade 12', faculty: 'Dr. Lim Bunna', initials: 'LB', campus: 'Sen Sok, Bak Touk', enrolled: 280, sync: 92, status: 'Compliant' }
+      ],
+      facultyRoster: [
+        { name: 'Dr. Pov Sarun', id: 'TCH-2026-041', role: 'Department Head · Chemistry', campus: 'Sen Sok', load: '17 hrs / wk', room: 'Lab 04', status: 'Active' },
+        { name: 'Dr. Lim Bunna', id: 'TCH-2026-045', role: 'Lead Instructor · Physics', campus: 'Sen Sok', load: '18 hrs / wk', room: 'Lab 02', status: 'Active' }
+      ],
+      sections: [
+        { code: '11-B', subject: 'Organic Chemistry Practicum', teacher: 'Dr. Pov Sarun', initials: 'PS', campus: 'Sen Sok', room: 'Lab 04', enrolled: 29, cap: 32, status: 'Active' },
+        { code: '12-B', subject: 'Applied Robotics & Microcontrollers', teacher: 'Dr. Lim Bunna', initials: 'LB', campus: 'Sen Sok', room: 'Lab 02', enrolled: 28, cap: 30, status: 'Active' }
+      ],
+      roadmap: [
+        { title: 'Cambridge Practical Science Assessment (Chemistry & Physics)', grade: 'Grades 11–12', schedule: 'May 28, 2026 · 08:30–12:30', hall: 'Science Laboratory Suite A', moderator: 'Dr. Pov Sarun', status: 'Published' }
+      ]
+    },
+    mathematics: {
+      id: 'mathematics',
+      name: 'Mathematics Department',
+      nameKh: 'Mathematics & Analytics Division',
+      icon: 'calculate',
+      code: 'NGIS-DEPT-MTH-2026',
+      accreditation: 'Cambridge Assessment & MoEYS Advanced Aligned',
+      accreditationLabel: 'Cambridge Math',
+      scope: 'Active across 4 Campuses (Sen Sok, Depo, Bak Touk, Main)',
+      head: {
+        name: 'Mr. Sophea Chea',
+        initials: 'SC',
+        role: 'Dean of Pure & Applied Mathematics',
+        office: 'Room 310 • Ext. 310',
+        email: 'sophea.chea@ngis.edu.kh',
+        avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=160'
+      },
+      metrics: {
+        faculty: '34',
+        facultySub: '+2 this academic year',
+        students: '1,920',
+        compliance: '97%',
+        sections: '30',
+        lessonsScheduled: '680 Lessons Scheduled'
+      },
+      campusDistribution: {
+        total: '34 Teachers Total',
+        items: [
+          { name: 'Sen Sok (Anchor Campus)', count: '15 teachers (44%)', pct: '44%', barClass: 'bg-primary' },
+          { name: 'Depo Campus', count: '10 teachers (29%)', pct: '29%', barClass: 'bg-primary-container' },
+          { name: 'Bak Touk Campus', count: '6 teachers (18%)', pct: '18%', barClass: 'bg-primary-container' },
+          { name: 'Main Campus', count: '3 teachers (9%)', pct: '9%', barClass: 'bg-primary-container' }
+        ]
+      },
+      courses: [
+        { code: 'MTH-101', title: 'Algebra & Euclidean Geometry', track: 'Cambridge IGCSE 0580 · 4 Credits', grade: 'Grade 10', faculty: 'Mr. Sophea Chea', initials: 'SC', campus: 'All Campuses', enrolled: 480, sync: 98, status: 'Compliant' },
+        { code: 'MTH-201', title: 'Pure Mathematics & Calculus I', track: 'Cambridge AS-Level 9709 · 5 Credits', grade: 'Grade 11', faculty: 'Dr. Pov Chanthy', initials: 'PC', campus: 'All Campuses', enrolled: 420, sync: 96, status: 'Compliant' }
+      ],
+      facultyRoster: [
+        { name: 'Mr. Sophea Chea', id: 'TCH-2026-061', role: 'Department Head · Pure Math', campus: 'Sen Sok', load: '18 hrs / wk', room: 'Rm 310', status: 'Active' },
+        { name: 'Dr. Pov Chanthy', id: 'TCH-2026-064', role: 'Senior Lecturer · Statistics', campus: 'Depo', load: '19 hrs / wk', room: 'Rm 208', status: 'Active' }
+      ],
+      sections: [
+        { code: '11-A', subject: 'Pure Mathematics & Calculus I', teacher: 'Mr. Sophea Chea', initials: 'SC', campus: 'Sen Sok', room: '310', enrolled: 33, cap: 35, status: 'Active' }
+      ],
+      roadmap: [
+        { title: 'National Mathematics Olympiad Simulation', grade: 'Grades 10–12', schedule: 'June 02, 2026 · 08:30–11:30', hall: 'Main Auditorium', moderator: 'Mr. Sophea Chea', status: 'Published' }
+      ]
+    },
+    humanities: {
+      id: 'humanities',
+      name: 'Social Studies & Humanities',
+      nameKh: 'Humanities & Social Sciences Division',
+      icon: 'history_edu',
+      code: 'NGIS-DEPT-HUM-2026',
+      accreditation: 'MoEYS Civic Studies & Global Perspectives',
+      accreditationLabel: 'MoEYS & Global',
+      scope: 'Active across 3 Campuses (Sen Sok, Depo, Bak Touk)',
+      head: {
+        name: 'Dr. Dara Vin',
+        initials: 'DV',
+        role: 'Head of Social Sciences & Global Perspectives',
+        office: 'Room 214 • Ext. 214',
+        email: 'dara.vin@ngis.edu.kh',
+        avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=160'
+      },
+      metrics: {
+        faculty: '20',
+        facultySub: '+1 this academic year',
+        students: '1,340',
+        compliance: '93%',
+        sections: '20',
+        lessonsScheduled: '460 Lessons Scheduled'
+      },
+      campusDistribution: {
+        total: '20 Teachers Total',
+        items: [
+          { name: 'Sen Sok Campus', count: '9 teachers (45%)', pct: '45%', barClass: 'bg-primary' },
+          { name: 'Depo Campus', count: '6 teachers (30%)', pct: '30%', barClass: 'bg-primary-container' },
+          { name: 'Bak Touk Campus', count: '5 teachers (25%)', pct: '25%', barClass: 'bg-primary-container' }
+        ]
+      },
+      courses: [
+        { code: 'HUM-101', title: 'World Geography & Cultural Anthropology', track: 'Cambridge IGCSE 0460 · 4 Credits', grade: 'Grade 10', faculty: 'Dr. Dara Vin', initials: 'DV', campus: 'Sen Sok, Depo', enrolled: 340, sync: 94, status: 'Compliant' },
+        { code: 'HUM-201', title: 'Global Perspectives & Research', track: 'Cambridge AS-Level 9239 · 4 Credits', grade: 'Grade 11', faculty: 'Ms. Emily Vance', initials: 'EV', campus: 'All Campuses', enrolled: 310, sync: 92, status: 'Compliant' }
+      ],
+      facultyRoster: [
+        { name: 'Dr. Dara Vin', id: 'TCH-2026-081', role: 'Head of Humanities · Global Perspectives', campus: 'Sen Sok', load: '18 hrs / wk', room: 'Rm 214', status: 'Active' }
+      ],
+      sections: [
+        { code: '10-A', subject: 'World Geography & Anthropology', teacher: 'Dr. Dara Vin', initials: 'DV', campus: 'Sen Sok', room: '214', enrolled: 31, cap: 35, status: 'Active' }
+      ],
+      roadmap: [
+        { title: 'Global Perspectives Research Colloquium', grade: 'Grade 11', schedule: 'June 15, 2026 · 09:00–12:00', hall: 'Conference Hall C', moderator: 'Dr. Dara Vin', status: 'Published' }
+      ]
+    }
+  };
+
+  // URL routing query
+  const urlParams = new URLSearchParams(window.location.search);
+  const deptKey = (urlParams.get('dept') || 'english').toLowerCase();
+  const currentDept = DEPARTMENTS_DATA[deptKey] || DEPARTMENTS_DATA.english;
+
+
+
+  function renderCoursesTable(courses) {
+    const tbody = document.getElementById('coursesTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!courses || courses.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400">No courses matching your filter criteria.</td></tr>`;
+      return;
+    }
+
+    courses.forEach(c => {
+      const isCompliant = c.status === 'Compliant';
+      const statusHtml = isCompliant
+        ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>Compliant</span>`
+        : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300"><span class="w-1.5 h-1.5 rounded-full bg-amber-600 mr-1.5"></span>${c.status}</span>`;
+
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors';
+      tr.innerHTML = `
+        <td class="py-3 px-4 text-center">
+          <input class="rounded border-slate-300 dark:border-slate-600 text-brand-900 focus:ring-brand-900" type="checkbox"/>
+        </td>
+        <td class="py-3 px-4 font-mono font-medium text-slate-900 dark:text-white whitespace-nowrap">${c.code}</td>
+        <td class="py-3 px-4">
+          <div class="font-medium text-slate-900 dark:text-white">${c.title}</div>
+          <div class="text-[11px] text-emerald-800 dark:text-emerald-400 font-normal">${c.track}</div>
+        </td>
+        <td class="py-3 px-4 whitespace-nowrap">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">${c.grade}</span>
+        </td>
+        <td class="py-3 px-4 whitespace-nowrap">
+          <div class="flex items-center space-x-2">
+            <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-medium flex items-center justify-center">${c.initials}</span>
+            <span class="text-slate-700 dark:text-slate-300 font-normal">${c.faculty}</span>
+          </div>
+        </td>
+        <td class="py-3 px-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">${c.campus}</td>
+        <td class="py-3 px-4 text-right font-medium text-slate-800 dark:text-slate-200 whitespace-nowrap">${c.enrolled}</td>
+        <td class="py-3 px-4 whitespace-nowrap">
+          <div class="flex items-center space-x-2">
+            <div class="w-16 bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-emerald-700 dark:bg-emerald-500 h-1.5 rounded-full" style="width: ${c.sync}%"></div>
+            </div>
+            <span class="text-[11px] font-medium text-slate-700 dark:text-slate-300">${c.sync}%</span>
+          </div>
+        </td>
+        <td class="py-3 px-4 text-center whitespace-nowrap">${statusHtml}</td>
+        <td class="py-3 px-4 text-right whitespace-nowrap">
+          <div class="flex items-center justify-end space-x-1">
+            <button type="button" class="p-1 text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 rounded transition-colors" aria-label="View Syllabus" onclick="if(window.toast) window.toast('Viewing accredited syllabus for ${c.code}: ${c.title}', 'info')">
+              <span data-ngis-icon="view" class="text-[15px]"></span>
+            </button>
+            <button type="button" class="p-1 text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 rounded transition-colors" aria-label="Edit Syllabus Details" onclick="if(window.toast) window.toast('Opening syllabus editor for ${c.code}', 'info')">
+              <span data-ngis-icon="edit" class="text-[15px]"></span>
+            </button>
+            <button type="button" class="p-1 text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 rounded transition-colors" aria-label="Download Curriculum PDF" onclick="if(window.toast) window.toast('Exporting official curriculum PDF for ${c.code}', 'success')">
+              <span data-ngis-icon="download" class="text-[15px]"></span>
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    if (window.NGIS) window.NGIS.hydrate(tbody);
+
+    const coursesRange = document.getElementById('coursesRange');
+    const coursesTotal = document.getElementById('coursesTotal');
+    if (coursesRange) coursesRange.textContent = `1 to ${courses.length}`;
+    if (coursesTotal) coursesTotal.textContent = courses.length.toString();
+  }
+
+  function renderFacultyTable(faculty) {
+    const tbody = document.getElementById('facultyTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!faculty || faculty.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">No faculty members found.</td></tr>`;
+      return;
+    }
+
+    faculty.forEach(f => {
+      const initials = f.name.split(' ').map(n=>n[0]).slice(0,2).join('');
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors';
+      tr.innerHTML = `
+        <td class="py-3.5 px-4 whitespace-nowrap">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-emerald-800 text-white font-medium text-xs flex items-center justify-center shrink-0">
+              ${initials}
+            </div>
+            <div>
+              <div class="font-medium text-slate-900 dark:text-white">${f.name}</div>
+              <div class="text-[11px] font-mono text-slate-400 dark:text-slate-500">${f.id}</div>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-4 font-normal text-slate-800 dark:text-slate-200">${f.role}</td>
+        <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">${f.campus}</td>
+        <td class="py-3.5 px-4 font-normal text-slate-700 dark:text-slate-300 text-right whitespace-nowrap">${f.load}</td>
+        <td class="py-3.5 px-4 font-mono text-center text-slate-600 dark:text-slate-400 whitespace-nowrap">${f.room}</td>
+        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">Active</span>
+        </td>
+        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+          <a href="mailto:faculty@ngis.edu.kh" class="inline-flex p-1.5 text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-400 rounded transition-colors" aria-label="Send Email">
+            <span data-ngis-icon="mail" class="text-[15px]"></span>
+          </a>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    if (window.NGIS) window.NGIS.hydrate(tbody);
+  }
+
+  function renderSectionsTable(sections) {
+    const tbody = document.getElementById('sectionsTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!sections || sections.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-400">No active class sections found.</td></tr>`;
+      return;
+    }
+
+    sections.forEach(s => {
+      const pct = Math.round((s.enrolled / s.cap) * 100);
+      const isReview = s.status === 'Review';
+      const statusPill = isReview
+        ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300">Review</span>`
+        : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">Active</span>`;
+
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors';
+      tr.innerHTML = `
+        <td class="py-3.5 px-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">Section ${s.code}</td>
+        <td class="py-3.5 px-4 font-normal text-slate-800 dark:text-slate-200">${s.subject}</td>
+        <td class="py-3.5 px-4 whitespace-nowrap">
+          <div class="flex items-center space-x-2">
+            <span class="w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 text-[9px] font-medium flex items-center justify-center text-slate-700 dark:text-slate-300">${s.initials}</span>
+            <span class="text-slate-800 dark:text-slate-200">${s.teacher}</span>
+          </div>
+        </td>
+        <td class="py-3.5 px-4 font-normal text-slate-600 dark:text-slate-400 whitespace-nowrap">${s.campus}</td>
+        <td class="py-3.5 px-4 whitespace-nowrap">
+          <div class="flex items-center space-x-2">
+            <span class="font-normal text-slate-800 dark:text-slate-200">${s.enrolled}<span class="text-slate-400 font-normal">/${s.cap}</span></span>
+            <div class="w-16 bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-emerald-700 dark:bg-emerald-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        </td>
+        <td class="py-3.5 px-4 text-center font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">${s.room}</td>
+        <td class="py-3.5 px-4 text-center whitespace-nowrap">${statusPill}</td>
+        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+          <a href="admin-classes.html" class="px-2.5 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded transition-colors">
+            Manage
+          </a>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    if (window.NGIS) window.NGIS.hydrate(tbody);
+  }
+
+  function renderRoadmapTable(roadmap) {
+    const tbody = document.getElementById('roadmapTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (!roadmap || roadmap.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">No scheduled exams or evaluations on the roadmap.</td></tr>`;
+      return;
+    }
+
+    roadmap.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/50 transition-colors';
+      tr.innerHTML = `
+        <td class="py-3.5 px-4 font-medium text-slate-900 dark:text-white">${r.title}</td>
+        <td class="py-3.5 px-4 font-normal text-slate-700 dark:text-slate-300 whitespace-nowrap">${r.grade}</td>
+        <td class="py-3.5 px-4 font-normal text-slate-600 dark:text-slate-400 whitespace-nowrap">${r.schedule}</td>
+        <td class="py-3.5 px-4 text-slate-600 dark:text-slate-400">${r.hall}</td>
+        <td class="py-3.5 px-4 font-normal text-slate-800 dark:text-slate-200 whitespace-nowrap">${r.moderator}</td>
+        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+            ${r.status}
+          </span>
+        </td>
+        <td class="py-3.5 px-4 text-right whitespace-nowrap">
+          <button class="px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded border border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition-colors" onclick="if(window.toast) window.toast('Viewing assessment protocol for ${r.title}', 'info')">
+            Protocol
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderCampusDistribution(dist) {
+    const container = document.getElementById('campusBreakdownList');
+    const totalEl = document.getElementById('distTotalTeachers');
+    if (!container || !dist) return;
+    if (totalEl) totalEl.textContent = dist.total || '42 Teachers Total';
+
+    container.innerHTML = (dist.items || []).map(item => `
+      <div class="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200/80 dark:border-slate-700">
+        <div class="flex items-center justify-between text-xs mb-1.5">
+          <span class="font-medium text-slate-800 dark:text-slate-200 truncate">${item.name}</span>
+          <span class="font-medium text-emerald-800 dark:text-emerald-400 shrink-0 ml-2">${item.count}</span>
+        </div>
+        <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div class="h-full bg-emerald-700 dark:bg-emerald-500 rounded-full" style="width: ${item.pct};"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function populateDepartmentView(data) {
+    if (!data) return;
+
+    // Header & identity
+    const deptTitle = document.getElementById('deptTitle');
+    const deptTitleKhmer = document.getElementById('deptTitleKhmer');
+    const mobDeptTitle = document.getElementById('mobDeptTitle');
+    const breadcrumbDeptName = document.getElementById('breadcrumbDeptName');
+    const deptCode = document.getElementById('deptCode');
+    const deptAccreditationLabel = document.getElementById('deptAccreditationLabel');
+    const deptAccreditationText = document.getElementById('deptAccreditationText');
+    const deptScope = document.getElementById('deptScope');
+    const deptIcon = document.getElementById('deptIcon');
+
+    if (deptTitle) deptTitle.textContent = data.name;
+    if (deptTitleKhmer) deptTitleKhmer.textContent = data.nameKh;
+    if (mobDeptTitle) mobDeptTitle.textContent = data.name;
+    if (breadcrumbDeptName) breadcrumbDeptName.textContent = data.name;
+    if (deptCode) deptCode.textContent = data.code;
+    if (deptAccreditationLabel) deptAccreditationLabel.textContent = data.accreditationLabel || 'MoEYS & CAIE';
+    if (deptAccreditationText) deptAccreditationText.textContent = data.accreditation;
+    if (deptScope) deptScope.textContent = data.scope;
+    if (deptIcon) deptIcon.textContent = data.icon || 'menu_book';
+
+    // Head of Dept
+    const deptHeadName = document.getElementById('deptHeadName');
+    const deptHeadInitials = document.getElementById('deptHeadInitials');
+    const deptHeadOffice = document.getElementById('deptHeadOffice');
+    const leadEmailLink = document.getElementById('leadEmailLink');
+
+    if (deptHeadName) deptHeadName.textContent = data.head?.name || '';
+    if (deptHeadInitials) deptHeadInitials.textContent = data.head?.initials || 'DH';
+    if (deptHeadOffice) deptHeadOffice.textContent = data.head?.office || '';
+    if (leadEmailLink && data.head?.email) {
+      leadEmailLink.setAttribute('href', `mailto:${data.head.email}`);
+    }
+
+    // Metrics
+    const metricFaculty = document.getElementById('metricFaculty');
+    const metricFacultySub = document.getElementById('metricFacultySub');
+    const metricStudents = document.getElementById('metricStudents');
+    const metricCompliance = document.getElementById('metricCompliance');
+    const metricSections = document.getElementById('metricSections');
+    const metricLessonsScheduled = document.getElementById('metricLessonsScheduled');
+
+    if (metricFaculty) metricFaculty.textContent = data.metrics?.faculty || '42';
+    if (metricFacultySub) {
+      metricFacultySub.innerHTML = `
+        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+        ${data.metrics?.facultySub || '+3 this year'}
+      `;
+    }
+    if (metricStudents) metricStudents.textContent = data.metrics?.students || '1,742';
+    if (metricCompliance) metricCompliance.textContent = data.metrics?.compliance || '94%';
+    if (metricSections) metricSections.textContent = data.metrics?.sections || '28';
+    if (metricLessonsScheduled) metricLessonsScheduled.textContent = data.metrics?.lessonsScheduled || '638 Lessons Scheduled';
+
+    // Badges count on tabs
+    const badgeCountCourses = document.getElementById('badgeCountCourses');
+    const badgeCountFaculty = document.getElementById('badgeCountFaculty');
+    const badgeCountSections = document.getElementById('badgeCountSections');
+    const badgeCountRoadmap = document.getElementById('badgeCountRoadmap');
+    if (badgeCountCourses) badgeCountCourses.textContent = (data.courses?.length || 0).toString();
+    if (badgeCountFaculty) badgeCountFaculty.textContent = (data.facultyRoster?.length || 0).toString();
+    if (badgeCountSections) badgeCountSections.textContent = (data.sections?.length || 0).toString();
+    if (badgeCountRoadmap) badgeCountRoadmap.textContent = (data.roadmap?.length || 0).toString();
+
+    // Tables
+    renderCoursesTable(data.courses || []);
+    renderFacultyTable(data.facultyRoster || []);
+    renderSectionsTable(data.sections || []);
+    renderRoadmapTable(data.roadmap || []);
+
+    // Campus breakdown
+    renderCampusDistribution(data.campusDistribution);
+  }
+
+  // Tab switching function
+  window.switchTab = function(activeTabId) {
+    const tabs = ['courses', 'faculty', 'sections', 'roadmap'];
+
+    tabs.forEach(tab => {
+      const contentEl = document.getElementById(`tabContent-${tab}`);
+      const btnEl = document.getElementById(`tabBtn-${tab}`);
+
+      if (tab === activeTabId) {
+        if (contentEl) {
+          contentEl.classList.remove('hidden');
+          contentEl.classList.add('block');
+        }
+        if (btnEl) {
+          btnEl.classList.remove('border-transparent', 'text-slate-600', 'dark:text-slate-400');
+          btnEl.classList.add('border-brand-900', 'text-brand-900', 'dark:border-emerald-500', 'dark:text-emerald-400', 'font-medium');
+          const icon = btnEl.querySelector('svg');
+          if (icon) {
+            icon.classList.remove('text-slate-400');
+            icon.classList.add('text-brand-900', 'dark:text-emerald-400');
+          }
+          const badge = btnEl.querySelector('span:last-child');
+          if (badge) {
+            badge.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-400');
+            badge.classList.add('bg-brand-100', 'dark:bg-emerald-950', 'text-brand-900', 'dark:text-emerald-300');
+          }
+        }
+      } else {
+        if (contentEl) {
+          contentEl.classList.add('hidden');
+          contentEl.classList.remove('block');
+        }
+        if (btnEl) {
+          btnEl.classList.add('border-transparent', 'text-slate-600', 'dark:text-slate-400');
+          btnEl.classList.remove('border-brand-900', 'text-brand-900', 'dark:border-emerald-500', 'dark:text-emerald-400');
+          const icon = btnEl.querySelector('svg');
+          if (icon) {
+            icon.classList.add('text-slate-400');
+            icon.classList.remove('text-brand-900', 'dark:text-emerald-400');
+          }
+          const badge = btnEl.querySelector('span:last-child');
+          if (badge) {
+            badge.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-400');
+            badge.classList.remove('bg-brand-100', 'dark:bg-emerald-950', 'text-brand-900', 'dark:text-emerald-300');
+          }
+        }
+      }
+    });
+  };
+
+  // Department Switcher Dropdown
+  const deptSwitcher = document.getElementById('selectDepartmentSwitch');
+  if (deptSwitcher) {
+    deptSwitcher.value = deptKey;
+    deptSwitcher.addEventListener('change', function() {
+      const selected = this.value;
+      if (DEPARTMENTS_DATA[selected]) {
+        populateDepartmentView(DEPARTMENTS_DATA[selected]);
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('dept', selected);
+        window.history.pushState(null, '', newUrl.toString());
+      }
+    });
+  }
+
+  // Filter handlers
+  const filterInput = document.getElementById('tabFilterInput');
+  const gradeSelect = document.getElementById('filterGradeSelect');
+  const campusSelect = document.getElementById('filterCampusSelect');
+
+  function applyFilters() {
+    const term = (filterInput?.value || '').toLowerCase().trim();
+    const grade = (gradeSelect?.value || 'all');
+    const campus = (campusSelect?.value || 'all').toLowerCase();
+
+    // Determine which tab is active
+    const activePane = document.querySelector('.tab-pane.block') || document.querySelector('.tab-pane:not(.hidden)');
+    if (!activePane) return;
+
+    const rows = activePane.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const matchTerm = !term || text.includes(term);
+      const matchGrade = grade === 'all' || text.includes(`grade ${grade}`);
+      const matchCampus = campus === 'all' || text.includes(campus);
+
+      row.style.display = (matchTerm && matchGrade && matchCampus) ? '' : 'none';
+    });
+  }
+
+  if (filterInput) filterInput.addEventListener('input', applyFilters);
+  if (gradeSelect) gradeSelect.addEventListener('change', applyFilters);
+  if (campusSelect) campusSelect.addEventListener('change', applyFilters);
+
+  // Sync MoEYS button interaction
+  const btnSyncMoEYS = document.getElementById('btnSyncMoEYS');
+  if (btnSyncMoEYS) {
+    btnSyncMoEYS.addEventListener('click', function() {
+      const currentActive = DEPARTMENTS_DATA[deptSwitcher?.value || deptKey] || DEPARTMENTS_DATA.english;
+      const icon = this.querySelector('[data-ngis-icon="refresh"]');
+      if (icon) icon.classList.add('animate-spin');
+      setTimeout(() => {
+        if (icon) icon.classList.remove('animate-spin');
+        if (window.toast) {
+          window.toast(`Curriculum benchmarks synced with MoEYS National & Cambridge CAIE registry for ${currentActive.name}.`, 'success');
+        } else if (window.NGISUI) {
+          window.NGISUI.toast(`Curriculum benchmarks synced for ${currentActive.name}.`, 'success');
+        }
+      }, 600);
+    });
+  }
+
+  // Add Record Button
+  const btnAddRecord = document.getElementById('btnAddRecord');
+  if (btnAddRecord) {
+    btnAddRecord.addEventListener('click', () => {
+      const currentActive = DEPARTMENTS_DATA[deptSwitcher?.value || deptKey] || DEPARTMENTS_DATA.english;
+      if (window.toast) window.toast(`Opening new record creation modal for ${currentActive.name}...`, 'info');
+      else if (window.NGISUI) window.NGISUI.toast(`Registering record for ${currentActive.name}`, 'info');
+    });
+  }
+
+  // Assign faculty & export dossier buttons
+  const btnAssignFaculty = document.getElementById('btnAssignFaculty');
+  if (btnAssignFaculty) {
+    btnAssignFaculty.addEventListener('click', () => {
+      const currentActive = DEPARTMENTS_DATA[deptSwitcher?.value || deptKey] || DEPARTMENTS_DATA.english;
+      if (window.toast) window.toast(`Faculty allocation drawer opened for ${currentActive.name}.`, 'info');
+      else if (window.NGISUI) window.NGISUI.toast(`Faculty allocation opened for ${currentActive.name}`, 'info');
+    });
+  }
+
+  const btnExportDossier = document.getElementById('btnExportDossier');
+  if (btnExportDossier) {
+    btnExportDossier.addEventListener('click', () => {
+      const currentActive = DEPARTMENTS_DATA[deptSwitcher?.value || deptKey] || DEPARTMENTS_DATA.english;
+      if (window.toast) window.toast(`Exporting official ${currentActive.name} governance dossier to PDF...`, 'success');
+      else if (window.NGISUI) window.NGISUI.toast(`Exporting dossier to PDF`, 'success');
+    });
+  }
+
+  // Initial population
+  populateDepartmentView(currentDept);
+})();
+</script>
+
+</body>
+</html>

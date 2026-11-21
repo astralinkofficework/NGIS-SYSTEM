@@ -1384,14 +1384,32 @@
             '</div>' +
 
             '<!-- Draft / Published Status Badge -->' +
-            (isPublished
-              ? ('<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-[#176B45] border border-emerald-200/60 shrink-0">' +
+            (function () {
+              var dMeta = state.draft_metadata || {};
+              if (dMeta.status === 'submitted') {
+                return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-300 shrink-0">' +
+                  '<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>' +
+                  '<span>Submitted for Admin Approval</span></span>';
+              }
+              if (dMeta.status === 'needs_revision') {
+                return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-rose-50 text-rose-800 border border-rose-300 shrink-0">' +
+                  '<span class="material-symbols-outlined text-[14px]">feedback</span>' +
+                  '<span>Revision Requested</span></span>';
+              }
+              if (dMeta.status === 'approved') {
+                return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-300 shrink-0">' +
                   '<span class="material-symbols-outlined text-[14px]">verified</span>' +
-                  '<span>Published (v' + esc(state.published.version) + ')</span></span>')
-              : ('<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200/60 shrink-0">' +
-                  '<span class="material-symbols-outlined text-[14px]">edit_document</span>' +
-                  '<span>Draft</span></span>')
-            ) +
+                  '<span>Approved by Admin</span></span>';
+              }
+              if (isPublished) {
+                return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-[#176B45] border border-emerald-200/60 shrink-0">' +
+                  '<span class="material-symbols-outlined text-[14px]">verified</span>' +
+                  '<span>Published (v' + esc(state.published.version) + ')</span></span>';
+              }
+              return '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200/60 shrink-0">' +
+                '<span class="material-symbols-outlined text-[14px]">edit_document</span>' +
+                '<span>Draft</span></span>';
+            })() +
 
             saveStatusChipHtml(ctx.saveStatus, local.lastSavedAt) +
 
@@ -1441,11 +1459,17 @@
               '<span>History</span>' +
             '</button>' +
 
-            '<!-- Publish Timetable -->' +
-            '<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#176B45] text-white hover:bg-[#14532D] text-xs font-medium transition-all shadow-xs cursor-pointer" data-act="open-publish-modal" title="Publish official schedule to teacher and student portals">' +
-              '<span class="material-symbols-outlined text-[16px]">rocket_launch</span>' +
-              '<span>Publish Timetable</span>' +
-            '</button>' +
+            '<!-- Action: Submit for Approval (Principal) vs Publish Timetable (Admin) -->' +
+            (ROLE === 'principal'
+              ? ('<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#176B45] text-white hover:bg-[#14532D] text-xs font-medium transition-all shadow-xs cursor-pointer" data-act="open-submit-approval-modal" title="Submit completed timetable draft for Administration approval">' +
+                  '<span class="material-symbols-outlined text-[16px]">send</span>' +
+                  '<span>Submit for Approval</span>' +
+                '</button>')
+              : ('<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#176B45] text-white hover:bg-[#14532D] text-xs font-medium transition-all shadow-xs cursor-pointer" data-act="open-publish-modal" title="Publish official schedule to teacher and student portals">' +
+                  '<span class="material-symbols-outlined text-[16px]">rocket_launch</span>' +
+                  '<span>Publish Timetable</span>' +
+                '</button>')
+            ) +
           '</div>' +
         '</div>' +
 
@@ -1554,8 +1578,12 @@
           '<span class="material-symbols-outlined text-[16px]">visibility</span><span>Preview</span></button>' +
         '<button class="ks-btn" data-act="save-draft" title="Save Draft">' +
           '<span class="material-symbols-outlined text-[16px]">save</span><span>Save</span></button>' +
-        '<button class="ks-btn publish" data-act="open-publish-modal" title="Publish Timetable">' +
-          '<span class="material-symbols-outlined text-[16px]">rocket_launch</span><span>Publish</span></button>' +
+        (ROLE === 'principal'
+          ? ('<button class="ks-btn publish" data-act="open-submit-approval-modal" title="Submit Timetable for Approval">' +
+              '<span class="material-symbols-outlined text-[16px]">send</span><span>Submit</span></button>')
+          : ('<button class="ks-btn publish" data-act="open-publish-modal" title="Publish Timetable">' +
+              '<span class="material-symbols-outlined text-[16px]">rocket_launch</span><span>Publish</span></button>')
+        ) +
       '</div>';
 
     return '<div class="relative w-full pb-28 md:pb-12">' +
@@ -4717,6 +4745,56 @@
         '</div></div></div>';
     }
 
+    // 3a. Submit Draft for Admin Approval Modal (Principal Workflow)
+    if (m.type === 'submit-approval') {
+      var conflicts = E.conflicts().filter(function (c) { return c.severity === 'error'; });
+      var canSubmit = conflicts.length === 0;
+      var st = E.stats();
+      var inst = ctx.state.institution || {};
+      var today = new Date().toISOString().slice(0, 10);
+      var studentsAffected = (ctx.state.classes || []).reduce(function (sum, c) {
+        return sum + (parseInt(c.student_count, 10) || 0);
+      }, 0);
+
+      return '<div class="ks-backdrop" data-act="modal-backdrop"><div class="ks-modal" style="max-width:540px">' +
+        '<div class="ks-modal-head">' +
+          '<div class="ks-modal-title flex items-center gap-2"><span class="material-symbols-outlined text-[#176B45] text-[20px]">assignment_turned_in</span> Submit Timetable Draft for Approval</div>' +
+          '<button class="ks-close" data-act="modal-close"><span class="material-symbols-outlined text-[16px]">close</span></button>' +
+        '</div>' +
+        '<div class="ks-modal-body">' +
+          '<p style="font-size:13px;line-height:1.5;color:var(--ks-muted);margin-bottom:14px">' +
+            'Your draft schedule will be submitted to the School Administration for formal review and publishing. Once approved by the Admin, the schedule will go live for all faculty and students.' +
+          '</p>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;font-size:12px">' +
+            '<div class="ks-diff-stat"><div class="v">' + esc((ctx.state.classes || []).length) + '</div><div class="l">Classes Included</div></div>' +
+            '<div class="ks-diff-stat"><div class="v">' + esc((ctx.state.teachers || []).length) + '</div><div class="l">Faculty Allocated</div></div>' +
+            '<div class="ks-diff-stat"><div class="v">' + kh(st.placed || 0) + '</div><div class="l">Placed Periods</div></div>' +
+            '<div class="ks-diff-stat"><div class="v">' + kh(st.unassigned || 0) + '</div><div class="l">Unassigned Periods</div></div>' +
+          '</div>' +
+          (canSubmit ?
+            '<div class="ks-hint" style="background:#E8F3ED;border:1px solid #BEE1CE;border-radius:8px;padding:10px 12px;margin-bottom:14px;color:var(--ks-green)">' +
+              '<span class="material-symbols-outlined text-[16px] inline-block align-middle mr-1">check_circle</span>' +
+              '<span>Zero blocking conflicts detected. Draft is ready for administrative review.</span>' +
+            '</div>' :
+            '<div class="ks-hint" style="background:#FFECEB;border:1px solid #FFC9C6;border-radius:8px;padding:10px 12px;margin-bottom:14px;color:var(--ks-red)">' +
+              '<span class="material-symbols-outlined text-[16px] inline-block align-middle mr-1">error</span>' +
+              '<span>Cannot submit: ' + kh(conflicts.length) + ' schedule conflict' + (conflicts.length === 1 ? '' : 's') + ' must be resolved first.</span>' +
+            '</div>') +
+          '<div style="margin-bottom:12px">' +
+            '<label for="ks-submit-note" style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--ks-muted);margin-bottom:4px">Submission Note to Administration</label>' +
+            '<textarea id="ks-submit-note" rows="2" placeholder="e.g. Completed Term 1 schedule with updated Science lab period allocations and optimized teacher workload." ' +
+              'style="border:1px solid var(--ks-border);border-radius:10px;padding:8px 10px;font-size:12px;width:100%;background:var(--ks-surface);color:var(--ks-text);resize:none"></textarea>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:flex-end;gap:8px">' +
+            '<button class="ks-btn" data-act="modal-close">Cancel</button>' +
+            '<button class="ks-btn primary" data-act="execute-submit-approval" ' +
+              (canSubmit ? '' : 'disabled ') +
+              ' style="background:#176B45;border-color:#176B45">' +
+              '<span class="material-symbols-outlined text-[14px] mr-1">send</span> Submit for Approval</button>' +
+          '</div>' +
+        '</div></div></div>';
+    }
+
     // 3b. Draft vs Published diff modal
     if (m.type === 'publication-diff') {
       var diff = m.diff || { has_published: false, changed: 0, changes: [] };
@@ -5322,6 +5400,11 @@
         local.preview = !local.preview;
         render();
         break;
+      case 'open-submit-approval-modal': {
+        local.modal = { type: 'submit-approval' };
+        render();
+        break;
+      }
       case 'open-publish-modal': {
         local.modal = { type: 'publish-confirm' };
         render();
@@ -5403,6 +5486,20 @@
             } else {
               toast(err.message || 'Publishing error', 'error');
             }
+          });
+        break;
+      }
+      case 'execute-submit-approval': {
+        var subNoteInput = document.getElementById('ks-submit-note');
+        var subNote = subNoteInput ? subNoteInput.value.trim() : '';
+        E.submitForApproval(ROLE === 'principal' ? 'Dr. Ly Bunheng (Principal)' : 'Principal', subNote)
+          .then(function (res) {
+            local.modal = null;
+            toast('Draft timetable successfully submitted for Admin approval!', 'success');
+            render();
+          })
+          .catch(function (err) {
+            toast(err.message || 'Submission failed', 'error');
           });
         break;
       }
@@ -5653,11 +5750,13 @@
 
     E.on(scheduleRender);
     E.init().then(function () {
-      var grid = E.grid();
-      if (grid && Object.keys(grid).length <= 1) {
-        E.setCell('ច័ន្ទ|ព្រឹក|1|class_7A', { subject_id: 'sub_K', teacher_id: 't_K1' }, { replace: true, label: 'Initial schedule sample' });
-        E.setCell('អង្គារ|ព្រឹក|1|class_7A', { subject_id: 'sub_K', teacher_id: 't_K1' }, { replace: true, label: 'Initial schedule sample' });
-        E.setCell('ព្រហស្បតិ៍|ព្រឹក|1|class_7A', { subject_id: 'sub_K', teacher_id: 't_K1' }, { replace: true, label: 'Initial schedule sample' });
+      var requestedClass = new URLSearchParams(window.location.search).get('class');
+      if (requestedClass) {
+        var classKey = requestedClass.replace(/^Grade\s+/i, '').replace(/\s+/g, '').toLowerCase();
+        var selected = E.state().classes.find(function (cls) {
+          return cls.id === requestedClass || String(cls.display || '').replace(/\s+/g, '').toLowerCase() === classKey;
+        });
+        if (selected) local.selectedClass = selected.id;
       }
       local.targetKey = null;
       local.isMoveMode = false;

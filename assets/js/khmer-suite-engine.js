@@ -442,11 +442,10 @@
     setSaveStatus('saving');
     return fetch(API + '/state', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: requestHeaders(),
       // Concurrency guard: reject when another editor saved a newer revision.
       body: JSON.stringify({ state: state, label: 'រក្សាទុកដោយស្វ័យប្រវត្តិ',
-                             base_revision: state.revision }),
-      keepalive: true
+                             base_revision: state.revision })
     }).then(function (r) {
       if (r.status === 409) return r.json().then(function (j) {
         var err = new Error('save-conflict');
@@ -464,9 +463,7 @@
         return true;
       }).catch(function (err) {
         if (err && err.conflict) {
-          // Never silently overwrite the other editor's draft: surface the
-          // conflict and remember the server revision so a retry can succeed.
-          if (typeof err.serverRevision === 'number') state.revision = err.serverRevision;
+          // A retry must still require loading the newer server draft.
           setSaveStatus('conflict');
           return false;
         }
@@ -600,8 +597,15 @@
       });
   }
 
+  function requestHeaders() {
+    var headers = { 'Content-Type': 'application/json' };
+    var token = global.NGISAuth && global.NGISAuth.getToken();
+    if (token) headers.Authorization = 'Bearer ' + token;
+    return headers;
+  }
+
   function api(path, options) {
-    return fetch(API + path, Object.assign({ headers: { 'Content-Type': 'application/json' } }, options))
+    return fetch(API + path, Object.assign({ headers: requestHeaders() }, options))
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); });
   }
 
@@ -927,10 +931,67 @@
         if (published) {
           commit('បោះពុម្ពផ្សាយកាលវិភាគ v' + published.version, function (s) {
             s.published = published;
+            s.draft_metadata = { status: 'published', version: published.version };
           });
         }
         return res.data;
       });
+    },
+    submitForApproval: function (submittedBy, note, opts) {
+      opts = opts || {};
+      var errors = scanConflicts(state).filter(function (c) { return c.severity === 'error'; });
+      if (errors.length) return Promise.reject({ message: 'មានជម្លោះកាលវិភាគ ' + errors.length + ' ករណី', conflicts: errors });
+
+      return flushSave().then(function (saved) {
+        if (!saved) throw new Error('Save the latest draft before submitting it for approval.');
+        return api('/submit-approval', {
+        method: 'POST',
+        body: JSON.stringify({
+          submitted_by: submittedBy || 'Dr. Ly Bunheng (Principal)',
+          note: note || '',
+          effective_from: opts.effectiveFrom || null,
+          base_revision: state.revision
+        })
+        });
+      }).then(function (res) {
+        if (!res.ok) {
+          var body = res.data || {};
+          return Promise.reject({ message: body.message || body.error || 'Submission failed' });
+        }
+        var sub = (res.data && res.data.submission) || { status: 'submitted' };
+        state.draft_metadata = sub;
+        if (res.data.revision != null) state.revision = res.data.revision;
+        return res.data;
+      });
+    },
+    approveDraft: function (reviewedBy) {
+      return api('/approve-draft', {
+        method: 'POST',
+        body: JSON.stringify({ reviewed_by: reviewedBy || 'Admin' })
+      }).then(function (res) {
+        if (!res.ok) throw new Error((res.data && res.data.message) || 'Approval failed');
+        var app = (res.data && res.data.approval) || { status: 'approved' };
+        commit('អនុម័តកាលវិភាគព្រាង', function (s) {
+          s.draft_metadata = app;
+        });
+        return res.data;
+      });
+    },
+    requestRevision: function (reviewedBy, note) {
+      return api('/request-revision', {
+        method: 'POST',
+        body: JSON.stringify({ reviewed_by: reviewedBy || 'Admin', note: note || '' })
+      }).then(function (res) {
+        if (!res.ok) throw new Error((res.data && res.data.message) || 'Revision request failed');
+        var rev = (res.data && res.data.revision) || { status: 'needs_revision' };
+        commit('ស្នើសុំកែប្រែកាលវិភាគព្រាង', function (s) {
+          s.draft_metadata = rev;
+        });
+        return res.data;
+      });
+    },
+    draftMetadata: function () {
+      return (state && state.draft_metadata) || { status: 'draft' };
     },
     publicationStatus: function () {
       return api('/publication/status').then(function (res) {

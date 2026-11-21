@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Adjustment Requests · Academic Planning &amp; Oversight | NGIS</title>
+
+<!-- Fonts & Framework Styles -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=Noto+Sans+Khmer:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+
+<link rel="stylesheet" href="../../assets/css/app.css">
+<link rel="stylesheet" href="../../assets/css/navbar.css">
+<link rel="stylesheet" href="../../assets/css/mobile-header.css">
+<link rel="stylesheet" href="../../assets/css/action-icons.css?v=1.13.2">
+<link rel="stylesheet" href="../../assets/css/ui-cleanup.css">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: {
+      extend: {
+        colors: {
+          forest: { 50: '#F0FDF4', 100: '#DCFCE7', 500: '#22C55E', 700: '#15803D', 800: '#176B45', 900: '#125536' },
+          ink: { main: '#29352E', muted: '#64748B' }
+        },
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+          khmer: ['"Noto Sans Khmer"', 'sans-serif']
+        }
+      }
+    }
+  };
+</script>
+
+<style>
+  *, h1, h2, h3, h4, h5, h6, strong, b, th, button { font-weight: 400; }
+  .font-medium, th, .btn-action, .badge { font-weight: 500 !important; }
+  body { background-color: #F7F9F7; color: #29352E; font-family: 'Plus Jakarta Sans', sans-serif; }
+</style>
+</head>
+
+<body data-page="principal-requests" data-role="principal" class="bg-[#F7F9F7] text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Desktop Topbar Anchor -->
+  <div id="heroBanner" class="hidden lg:block"></div>
+
+  
+
+  <!-- Main Container -->
+  <main class="main flex-1 p-4 lg:p-6 max-w-[1720px] w-full mx-auto flex flex-col gap-5 pb-24">
+
+    <!-- Page Header (Enterprise Left Aligned Title + Contextual Actions Right) -->
+    <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-[#176B45] font-medium mb-1">
+          <span class="material-symbols-outlined text-sm">school</span>
+          <span>Academic Planning &amp; Oversight</span>
+          <span class="text-slate-300">/</span>
+          <span class="text-slate-500">Collaborative Queue</span>
+        </div>
+        <h1 class="text-2xl lg:text-[28px] font-medium text-slate-900 tracking-tight leading-tight">Academic Adjustment Requests</h1>
+        <p class="text-xs sm:text-sm text-slate-500 font-normal mt-0.5">Track, review, and collaborate with Administration on timetable shifts, faculty workload balancing, and curriculum revisions.</p>
+      </div>
+      <div class="flex items-center flex-wrap gap-2.5">
+        <button type="button" id="btnNewRequest" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-medium text-white bg-[#176B45] hover:bg-[#125536] rounded-xl active:scale-95 transition shadow-2xs cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">add_circle</span>
+          <span>New Adjustment Request</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- KPI Metric Strip (Dynamic Aggregations) -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div class="p-4 bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs">
+        <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span>Total Requests</span>
+          <span class="material-symbols-outlined text-slate-400 text-lg">folder_open</span>
+        </div>
+        <div class="text-2xl font-medium text-slate-900 tracking-tight" id="kpiTotal">4</div>
+        <div class="text-[11px] text-slate-400 mt-1">Academic Year 2025–26</div>
+      </div>
+      <div class="p-4 bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs">
+        <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span>Submitted / Under Review</span>
+          <span class="material-symbols-outlined text-amber-500 text-lg">pending</span>
+        </div>
+        <div class="text-2xl font-medium text-amber-600 tracking-tight" id="kpiPending">2</div>
+        <div class="text-[11px] text-slate-400 mt-1">Awaiting admin review</div>
+      </div>
+      <div class="p-4 bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs">
+        <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span>Accepted / In Progress</span>
+          <span class="material-symbols-outlined text-blue-500 text-lg">sync</span>
+        </div>
+        <div class="text-2xl font-medium text-blue-600 tracking-tight" id="kpiProgress">1</div>
+        <div class="text-[11px] text-slate-400 mt-1">Operationalizing in builder</div>
+      </div>
+      <div class="p-4 bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs">
+        <div class="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span>Completed &amp; Published</span>
+          <span class="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
+        </div>
+        <div class="text-2xl font-medium text-emerald-700 tracking-tight" id="kpiCompleted">1</div>
+        <div class="text-[11px] text-slate-400 mt-1">Live in published portals</div>
+      </div>
+    </section>
+
+    <!-- Filters & Search Toolbar -->
+    <section class="p-4 bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div class="flex items-center gap-2 flex-wrap">
+        <button type="button" class="filter-status-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-[#176B45] text-white transition cursor-pointer" data-status="all">All (4)</button>
+        <button type="button" class="filter-status-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer" data-status="submitted">Submitted</button>
+        <button type="button" class="filter-status-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer" data-status="under_review">Under Review</button>
+        <button type="button" class="filter-status-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer" data-status="accepted">Accepted</button>
+        <button type="button" class="filter-status-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer" data-status="completed">Completed</button>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="relative w-full md:w-64">
+          <span class="material-symbols-outlined text-[18px] text-slate-400 absolute left-3 top-1/2 -translate-y-1/2">search</span>
+          <input type="search" id="searchRequests" placeholder="Search requests..." class="w-full text-xs pl-9 pr-3 py-2 border border-slate-200 rounded-xl bg-white text-slate-800 placeholder-slate-400">
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Table / Request Cards Matrix -->
+    <section class="bg-white rounded-2xl border border-[#E1E9E3] shadow-2xs overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="border-b border-[#E1E9E3] bg-[#F7F9F7] text-slate-500 font-medium">
+              <th class="py-3 px-4">Request ID</th>
+              <th class="py-3 px-4">Module</th>
+              <th class="py-3 px-4">Summary &amp; Scope</th>
+              <th class="py-3 px-4">Priority</th>
+              <th class="py-3 px-4">Assigned Admin</th>
+              <th class="py-3 px-4">Status &amp; Lifecycle</th>
+              <th class="py-3 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="requestsTableBody" class="divide-y divide-[#E1E9E3] text-slate-700">
+            <!-- Dynamic rows injected here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global JavaScript Modules -->
+  <script src="../../assets/js/auth.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+  <script src="../../assets/js/action-icons.js?v=1.13.2" defer></script>
+  <script src="../../assets/js/academic-requests.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var currentFilter = 'all';
+
+      function renderTable() {
+        var tbody = document.getElementById('requestsTableBody');
+        var requests = AcademicRequests.getAll();
+
+        if (currentFilter !== 'all') {
+          requests = requests.filter(function (r) { return r.status === currentFilter; });
+        }
+
+        var searchVal = (document.getElementById('searchRequests').value || '').toLowerCase();
+        if (searchVal) {
+          requests = requests.filter(function (r) {
+            return (r.title || '').toLowerCase().includes(searchVal) ||
+                   (r.id || '').toLowerCase().includes(searchVal) ||
+                   (r.moduleLabel || '').toLowerCase().includes(searchVal);
+          });
+        }
+
+        if (requests.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400">No adjustment requests matching the filter.</td></tr>';
+          return;
+        }
+
+        var statusBadges = {
+          submitted: '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700 border border-blue-200">Submitted</span>',
+          under_review: '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">Under Review</span>',
+          accepted: '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Accepted</span>',
+          in_progress: '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-purple-50 text-purple-700 border border-purple-200">In Progress</span>',
+          completed: '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800 border border-emerald-300">Completed &amp; Published</span>',
+          declined: '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-red-50 text-red-700 border border-red-200">Declined</span>'
+        };
+
+        var priorityBadges = {
+          urgent: '<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-100 text-red-800 uppercase">Urgent</span>',
+          high: '<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-800 uppercase">High</span>',
+          medium: '<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700 uppercase">Medium</span>',
+          low: '<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-500 uppercase">Low</span>'
+        };
+
+        var html = '';
+        requests.forEach(function (r) {
+          html +=
+            '<tr class="hover:bg-slate-50/70 transition">' +
+              '<td class="py-3.5 px-4 font-medium text-slate-900">' + r.id + '</td>' +
+              '<td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded-lg text-[11px] bg-slate-100 text-slate-700 font-medium">' + (r.moduleLabel || r.module) + '</span></td>' +
+              '<td class="py-3.5 px-4">' +
+                '<div class="font-medium text-slate-900 leading-tight">' + r.title + '</div>' +
+                '<div class="text-[11px] text-slate-500 mt-0.5 truncate max-w-sm">' + (r.reason || '') + '</div>' +
+              '</td>' +
+              '<td class="py-3.5 px-4">' + (priorityBadges[r.priority] || r.priority) + '</td>' +
+              '<td class="py-3.5 px-4"><div class="font-medium text-slate-800">' + (r.assignedAdmin || 'Sok Panha Heng') + '</div><div class="text-[10px] text-slate-400">' + (r.campus || 'Sensok') + '</div></td>' +
+              '<td class="py-3.5 px-4">' + (statusBadges[r.status] || r.status) + '</td>' +
+              '<td class="py-3.5 px-4 text-right">' +
+                '<button type="button" class="btn-inspect px-2.5 py-1 text-xs font-medium text-[#176B45] hover:bg-[#E8F3ED] rounded-lg transition cursor-pointer" data-id="' + r.id + '">' +
+                  'Inspect' +
+                '</button>' +
+              '</td>' +
+            '</tr>';
+        });
+
+        tbody.innerHTML = html;
+
+        // Wire inspect buttons
+        tbody.querySelectorAll('.btn-inspect').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var rid = this.getAttribute('data-id');
+            // View request timeline & details
+            AcademicRequests.openAdminReviewDrawer(rid);
+          });
+        });
+      }
+
+      // Initial load
+      AcademicRequests.init().then(function () {
+        renderTable();
+      });
+
+      // Filter tabs
+      document.querySelectorAll('.filter-status-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.filter-status-btn').forEach(function (b) {
+            b.className = 'filter-status-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition cursor-pointer';
+          });
+          this.className = 'filter-status-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-[#176B45] text-white transition cursor-pointer';
+          currentFilter = this.getAttribute('data-status');
+          renderTable();
+        });
+      });
+
+      document.getElementById('searchRequests').addEventListener('input', renderTable);
+
+      document.getElementById('btnNewRequest').addEventListener('click', function () {
+        AcademicRequests.openRequestDrawer({
+          module: 'timetable',
+          affectedRecord: {
+            className: 'Grade 10A',
+            subject: 'Chemistry',
+            teacherName: 'Ms. Kiry Sokha',
+            room: 'Lab 201',
+            day: 'Monday',
+            period: 2
+          }
+        });
+      });
+
+      window.addEventListener('ngis:academic-request-updated', renderTable);
+    });
+  </script>
+</body>
+</html>

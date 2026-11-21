@@ -1,0 +1,1333 @@
+/**
+ * ============================================================================
+ * NGIS ERP — Master Global Responsive Navigation System v2.0
+ * New Gateway International School — Centralized Responsive Enterprise Navbar
+ *
+ * Requirements:
+ * - Desktop (>= 1025px): 72px height, 24px padding, single horizontal row:
+ *   [Logo] + [Sidebar Collapse] + [Long Search Bar (480-640px+)] + [Bell] + [Globe] + [Profile Chip]
+ * - Mobile (<= 768px): Two-row layout:
+ *   Row 1 (64px, 16px pad): [Logo] ... [Bell] + [Globe] + [Hamburger Menu]
+ *   Row 2 (56px, 16px pad): [Full-Width Global Search Bar (44px, 12px radius)]
+ * - Tablet (769px - 1024px): Fluid intermediate layout adapting gracefully
+ * - Search: Live autocomplete dropdown, keyboard nav (Ctrl+K, arrows, Esc), recent searches
+ * - Notifications: Live /api/notifications connection, unread badge, All/Unread tabs, mark read
+ * - Language: English, Khmer, Chinese with localStorage persistence and checkmarks
+ * - Profile: Avatar, active pip, role badge, account dropdown with settings/profile/sign-out
+ * - Strict AGENTS.md: NO BOLD FONTS (weight <= 500), official Bootstrap SVGs, accessible touch targets
+ * ============================================================================
+ */
+
+/* ── 0. Layout & Body Normalization ────────────────────────────────────────── */
+/* Note: Do NOT force .flex-col !important globally as it breaks desktop flex-row breakpoint classes */
+html, body {
+  overflow-x: clip !important;
+  max-width: 100vw !important;
+}
+html body {
+  flex-direction: column;
+}
+
+/* ── 1. Master Navbar Container ─────────────────────────────────────────────── */
+.ngis-navbar {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 95;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border-bottom: 1px solid #E1E9E3 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-top: env(safe-area-inset-top, 0px);
+  user-select: none;
+  transition: margin-left 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+              max-width 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 1025px) {
+  body:has(#sidebar) .ngis-navbar,
+  body.ngis-layout-ready .ngis-navbar,
+  .shell .ngis-navbar {
+    margin-left: 256px !important;
+    width: calc(100% - 256px) !important;
+    max-width: calc(100% - 256px) !important;
+    transition: margin-left 240ms cubic-bezier(0.16, 1, 0.3, 1),
+                width 240ms cubic-bezier(0.16, 1, 0.3, 1),
+                max-width 240ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  body.sidebar-collapsed .ngis-navbar,
+  body.sidebar-collapse .ngis-navbar,
+  body:has(#sidebar.collapsed) .ngis-navbar,
+  body:has(.sidebar.collapsed) .ngis-navbar,
+  html body.sidebar-collapsed .ngis-navbar {
+    margin-left: 72px !important;
+    width: calc(100% - 72px) !important;
+    max-width: calc(100% - 72px) !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ngis-navbar {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+[data-theme="dark"] .ngis-navbar {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+  border-bottom: 1px solid #1E293B !important;
+}
+
+/* Supersede and permanently hide legacy/duplicate topbars, spacers, and headers across all pages */
+html body .hero-topbar,
+html body .hero .hero-topbar,
+html body #heroBanner .hero-topbar,
+.hero .hero-topbar,
+.hero-topbar,
+.hero.hero-subpage,
+.hero.hero-transparent:not(:has(.hero-body)),
+.hero:not(.hero-main):not(:has(.hero-body)),
+#heroBanner:not(:has(.hero-body)),
+header.lg\:hidden:not(.ngis-navbar),
+header[class*="lg:hidden"]:not(.ngis-navbar),
+header[class*="md:hidden"]:not(.ngis-navbar),
+header.sticky.top-0:not(.ngis-navbar):not(.ngis-card-header):not([class*="shrink-0"]),
+header[class*="sticky top-0"]:not(.ngis-navbar):not(.ngis-card-header):not([class*="shrink-0"]),
+header[data-ngis-sticky-header]:not(.ngis-navbar),
+[data-ngis-sticky-header]:not(.ngis-navbar),
+.mobile-appbar:not(.ngis-navbar),
+#mobileMainAppbar,
+.htb-search-wrap,
+#htbSearchInput,
+.topbar:not(.ngis-navbar):not(.main-header),
+.ngis-sticky-spacer,
+div.ngis-sticky-spacer,
+.ngis-mobile-header {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  pointer-events: none !important;
+}
+
+/* Ensure hero-main (greeting banner on dashboards) starts cleanly below navbar */
+.hero.hero-main,
+.hero:has(.hero-body) {
+  margin: 0 !important;
+  padding: 0 !important;
+  border-top: none !important;
+}
+.hero.hero-main .hero-body,
+.hero:has(.hero-body) .hero-body {
+  padding-top: 24px !important;
+  /* padding-bottom intentionally not forced here: navbar.css outranks
+     hero.css / pages/*/css/responsive.css in the cascade (loaded via
+     design-system.css @import with higher specificity), and forcing a
+     24px reserve crushed the hero so the overlapping dashboard deck
+     covered the greeting text. The 84px reserve in hero.css (76–112px
+     per-portal overrides) owns the bottom padding. */
+}
+@media (max-width: 768px) {
+  .hero.hero-main .hero-body,
+  .hero:has(.hero-body) .hero-body {
+    padding-top: 16px !important;
+  }
+}
+
+/* Page content spacing below navbar: 24px desktop and 16px mobile across all portals */
+@media (min-width: 1025px) {
+  .main > div:first-child:not(.hero):not(.ngis-navbar),
+  .main > section:first-child:not(.hero):not(.ngis-navbar),
+  .main > .hero.hero-subpage + div,
+  .main > .hero.hero-subpage + section,
+  .main > #heroBanner + div,
+  .main > #heroBanner + section,
+  .main > .hero-transparent:not(:has(.hero-body)) + div,
+  .main > .hero-transparent:not(:has(.hero-body)) + section,
+  .main > header + div,
+  .main > header + section,
+  .main > header + main,
+  .main > .hero + div,
+  .main > .hero + section {
+    padding-top: 24px !important;
+  }
+}
+@media (max-width: 1024px) {
+  .main > div:first-child:not(.hero):not(.ngis-navbar),
+  .main > section:first-child:not(.hero):not(.ngis-navbar),
+  .main > .hero.hero-subpage + div,
+  .main > .hero.hero-subpage + section,
+  .main > #heroBanner + div,
+  .main > #heroBanner + section,
+  .main > .hero-transparent:not(:has(.hero-body)) + div,
+  .main > .hero-transparent:not(:has(.hero-body)) + section,
+  .main > header + div,
+  .main > header + section,
+  .main > header + main,
+  .main > .hero + div,
+  .main > .hero + section {
+    padding-top: 16px !important;
+  }
+}
+
+/* ── 2. Desktop & Tablet Row (Height 72px, Padding 24px) ───────────────────── */
+.ngis-nav-desktop-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  height: 72px !important;
+  padding: 0 24px !important;
+  gap: 16px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Left Group: Logo + Sidebar Collapse Button */
+.ngis-nav-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+.ngis-nav-logo-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  padding: 2px 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.ngis-nav-logo {
+  height: 38px !important;
+  max-height: 38px !important;
+  width: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+/* Sidebar Collapse/Expand Button (Desktop) */
+.ngis-nav-btn.ngis-nav-collapse-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border-radius: 10px !important;
+  border: 1px solid #E2E8F0 !important;
+  background: #FFFFFF !important;
+  color: #64748B !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  transition: all 140ms ease !important;
+  touch-action: manipulation !important;
+}
+
+[data-theme="dark"] .ngis-nav-btn.ngis-nav-collapse-btn {
+  border-color: #334155 !important;
+  background: #1E293B !important;
+  color: #94A3B8 !important;
+}
+
+.ngis-nav-btn.ngis-nav-collapse-btn:hover {
+  background: #F8FAFC !important;
+  color: #176B45 !important;
+  border-color: #CBD5E1 !important;
+}
+
+[data-theme="dark"] .ngis-nav-btn.ngis-nav-collapse-btn:hover {
+  background: #334155 !important;
+  color: #34D399 !important;
+}
+
+/* ── 3. Long Global Search Bar ─────────────────────────────────────────────── */
+.ngis-nav-search-wrap {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 1 540px !important;
+  max-width: 680px !important;
+  min-width: 260px !important;
+  height: 44px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  padding: 0 14px !important;
+  box-sizing: border-box !important;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+[data-theme="dark"] .ngis-nav-search-wrap {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+.ngis-nav-search-wrap:focus-within {
+  background: #FFFFFF !important;
+  border-color: #176B45 !important;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.12) !important;
+}
+
+[data-theme="dark"] .ngis-nav-search-wrap:focus-within {
+  background: #0F172A !important;
+  border-color: #34D399 !important;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2) !important;
+}
+
+.ngis-nav-search-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #94A3B8 !important;
+  margin-right: 10px !important;
+  flex-shrink: 0 !important;
+  pointer-events: none !important;
+}
+
+.ngis-nav-search-input,
+input[type="search"].ngis-nav-search-input {
+  flex: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: #1E293B !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.ngis-nav-search-input::-webkit-search-decoration,
+.ngis-nav-search-input::-webkit-search-cancel-button,
+.ngis-nav-search-input::-webkit-search-results-button,
+.ngis-nav-search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none !important;
+  display: none !important;
+}
+
+[data-theme="dark"] .ngis-nav-search-input {
+  color: #F8FAFC !important;
+}
+
+.ngis-nav-search-input::placeholder {
+  color: #94A3B8 !important;
+  font-weight: 400 !important;
+}
+
+/* Keyboard Shortcut Badge (Cmd+K / Ctrl+K) */
+.ngis-nav-search-kbd {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #64748B !important;
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 6px !important;
+  padding: 2px 6px !important;
+  line-height: 1.2 !important;
+  flex-shrink: 0 !important;
+  margin-left: 8px !important;
+  pointer-events: none !important;
+}
+
+[data-theme="dark"] .ngis-nav-search-kbd {
+  color: #94A3B8 !important;
+  background: #0F172A !important;
+  border-color: #475569 !important;
+}
+
+/* Clear Search Button */
+.ngis-nav-search-clear {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #94A3B8 !important;
+  cursor: pointer !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  margin-left: 6px !important;
+  flex-shrink: 0 !important;
+  transition: all 120ms ease !important;
+}
+
+.ngis-nav-search-clear:hover {
+  background: #E2E8F0 !important;
+  color: #1E293B !important;
+}
+
+[data-theme="dark"] .ngis-nav-search-clear:hover {
+  background: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+/* ── 4. Right Controls Group ───────────────────────────────────────────────── */
+.ngis-nav-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Universal Action Buttons (Bell, Globe, Hamburger) */
+.ngis-nav-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  max-width: 44px !important;
+  max-height: 44px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #1E293B !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  position: relative !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: background-color 140ms ease, transform 60ms ease !important;
+}
+
+[data-theme="dark"] .ngis-nav-btn {
+  color: #F8FAFC !important;
+}
+
+.ngis-nav-btn:hover {
+  background-color: #F1F5F9 !important;
+}
+
+[data-theme="dark"] .ngis-nav-btn:hover {
+  background-color: #1E293B !important;
+}
+
+.ngis-nav-btn:active {
+  transform: scale(0.96) !important;
+}
+
+/* Unread Notification Red Dot */
+.ngis-nav-notif-dot {
+  position: absolute !important;
+  top: 9px !important;
+  right: 9px !important;
+  width: 9px !important;
+  height: 9px !important;
+  background: #EF4444 !important;
+  border-radius: 50% !important;
+  border: 2px solid #FFFFFF !important;
+  box-sizing: content-box !important;
+  pointer-events: none !important;
+}
+
+[data-theme="dark"] .ngis-nav-notif-dot {
+  border-color: #0F172A !important;
+}
+
+/* Vertical Divider in Right Controls */
+.ngis-nav-divider-v {
+  width: 1px !important;
+  height: 28px !important;
+  background-color: #E2E8F0 !important;
+  margin: 0 4px !important;
+  flex-shrink: 0 !important;
+}
+
+[data-theme="dark"] .ngis-nav-divider-v {
+  background-color: #334155 !important;
+}
+
+/* ── 5. User Profile Chip & Account Dropdown ───────────────────────────────── */
+.ngis-nav-profile-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 4px 10px 4px 4px !important;
+  border-radius: 24px !important;
+  border: 1px solid #E2E8F0 !important;
+  background: #FFFFFF !important;
+  color: #1E293B !important;
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: all 140ms ease !important;
+}
+
+[data-theme="dark"] .ngis-nav-profile-chip {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+.ngis-nav-profile-chip:hover {
+  background: #F8FAFC !important;
+  border-color: #CBD5E1 !important;
+}
+
+[data-theme="dark"] .ngis-nav-profile-chip:hover {
+  background: #334155 !important;
+}
+
+.ngis-profile-avatar-wrap {
+  position: relative !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+}
+
+.ngis-profile-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.ngis-profile-pip {
+  position: absolute !important;
+  bottom: 0px !important;
+  right: 0px !important;
+  width: 8px !important;
+  height: 8px !important;
+  background: #10B981 !important;
+  border-radius: 50% !important;
+  border: 1.5px solid #FFFFFF !important;
+}
+
+[data-theme="dark"] .ngis-profile-pip {
+  border-color: #1E293B !important;
+}
+
+.ngis-profile-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
+}
+
+.ngis-profile-name {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #1E293B !important;
+  white-space: nowrap !important;
+  max-width: 140px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-theme="dark"] .ngis-profile-name {
+  color: #F8FAFC !important;
+}
+
+.ngis-profile-role {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  color: #176B45 !important;
+  white-space: nowrap !important;
+}
+
+[data-theme="dark"] .ngis-profile-role {
+  color: #34D399 !important;
+}
+
+.ngis-profile-caret {
+  display: inline-flex !important;
+  align-items: center !important;
+  color: #94A3B8 !important;
+  margin-left: 2px !important;
+}
+
+/* ── 6. Mobile Two-Row Layout Containers ──────────────────────────────────── */
+.ngis-nav-mobile-row1,
+.ngis-nav-mobile-row2 {
+  display: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.ngis-nav-mobile-row1 {
+  height: 64px !important;
+  padding: 0 16px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.ngis-nav-spacer {
+  flex: 1 1 auto !important;
+  min-width: 8px !important;
+}
+
+.ngis-nav-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure mobile actions sequence: Bell (1) -> Globe (2) -> Hamburger (3) */
+.ngis-nav-actions #ngisMobileNotifBtn { order: 1 !important; }
+.ngis-nav-actions #ngisMobileLangBtn { order: 2 !important; }
+.ngis-nav-actions #ngisMobileMenuBtn { order: 3 !important; }
+
+.ngis-nav-mobile-row2 {
+  height: 56px !important;
+  padding: 0 16px 12px 16px !important;
+  align-items: center !important;
+}
+
+.ngis-nav-mobile-row2 .ngis-nav-search-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 100% !important;
+}
+
+/* ── 7. Bottom Separator Divider ───────────────────────────────────────────── */
+.ngis-nav-bottom-divider {
+  display: block !important;
+  width: 100% !important;
+  height: 1px !important;
+  background-color: rgba(226, 232, 240, 0.6) !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+[data-theme="dark"] .ngis-nav-bottom-divider {
+  background-color: rgba(30, 41, 59, 0.6) !important;
+}
+
+/* ── 8. Responsive Breakpoints ────────────────────────────────────────────── */
+/* Mobile Viewports (<= 768px): Two-Row Mode */
+@media (max-width: 768px) {
+  .ngis-nav-desktop-row {
+    display: none !important;
+  }
+  .ngis-nav-mobile-row1 {
+    display: flex !important;
+  }
+  .ngis-nav-mobile-row2 {
+    display: flex !important;
+  }
+}
+
+/* Tablet Viewports (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .ngis-nav-desktop-row {
+    display: flex !important;
+    padding: 0 16px !important;
+    gap: 12px !important;
+  }
+  .ngis-nav-mobile-row1 {
+    display: none !important;
+  }
+  .ngis-nav-mobile-row2 {
+    display: none !important;
+  }
+  .ngis-profile-meta {
+    display: none !important;
+  }
+  .ngis-nav-search-wrap {
+    flex: 1 1 300px !important;
+    max-width: 480px !important;
+  }
+}
+
+/* Narrow Tablets (< 900px): Move search to row 2 gracefully */
+@media (min-width: 769px) and (max-width: 899px) {
+  .ngis-nav-desktop-row {
+    display: none !important;
+  }
+  .ngis-nav-mobile-row1 {
+    display: flex !important;
+  }
+  .ngis-nav-mobile-row2 {
+    display: flex !important;
+  }
+}
+
+/* Desktop Viewports (>= 1025px) */
+@media (min-width: 1025px) {
+  .ngis-nav-desktop-row {
+    display: flex !important;
+  }
+  .ngis-nav-mobile-row1 {
+    display: none !important;
+  }
+  .ngis-nav-mobile-row2 {
+    display: none !important;
+  }
+}
+
+/* ── 9. Global Search Results Dropdown ─────────────────────────────────────── */
+.ngis-search-dropdown {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-height: 440px !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 30px -6px rgba(15, 23, 42, 0.12), 0 6px 12px -4px rgba(15, 23, 42, 0.06) !important;
+  z-index: 150 !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  padding: 8px !important;
+  animation: ngisNavSlideDown 140ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ngis-search-dropdown.is-open,
+.ngis-search-dropdown[aria-hidden="false"] {
+  display: block !important;
+}
+
+[data-theme="dark"] .ngis-search-dropdown {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+  box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+@keyframes ngisNavSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ngis-search-section {
+  margin-bottom: 8px !important;
+}
+
+.ngis-search-section:last-child {
+  margin-bottom: 0 !important;
+}
+
+.ngis-search-section-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 6px 10px 4px 10px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #64748B !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+[data-theme="dark"] .ngis-search-section-header {
+  color: #94A3B8 !important;
+}
+
+.ngis-search-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  text-decoration: none !important;
+  color: #1E293B !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  transition: background-color 100ms ease !important;
+  box-sizing: border-box !important;
+}
+
+[data-theme="dark"] .ngis-search-item {
+  color: #F8FAFC !important;
+}
+
+.ngis-search-item:hover,
+.ngis-search-item.highlighted {
+  background: #F1F5F9 !important;
+}
+
+[data-theme="dark"] .ngis-search-item:hover,
+[data-theme="dark"] .ngis-search-item.highlighted {
+  background: #1E293B !important;
+}
+
+.ngis-search-item-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+.ngis-search-item-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: #E8F3ED !important;
+  color: #176B45 !important;
+  flex-shrink: 0 !important;
+}
+
+[data-theme="dark"] .ngis-search-item-icon {
+  background: rgba(52, 211, 153, 0.15) !important;
+  color: #34D399 !important;
+}
+
+.ngis-search-item-text {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+  line-height: 1.3 !important;
+}
+
+.ngis-search-item-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #1E293B !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-theme="dark"] .ngis-search-item-title {
+  color: #F8FAFC !important;
+}
+
+.ngis-search-item-title mark {
+  background: rgba(23, 107, 69, 0.15) !important;
+  color: #176B45 !important;
+  border-radius: 3px !important;
+  padding: 0 2px !important;
+}
+
+[data-theme="dark"] .ngis-search-item-title mark {
+  background: rgba(52, 211, 153, 0.25) !important;
+  color: #34D399 !important;
+}
+
+.ngis-search-item-meta {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  color: #64748B !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+[data-theme="dark"] .ngis-search-item-meta {
+  color: #94A3B8 !important;
+}
+
+.ngis-search-empty {
+  padding: 24px 16px !important;
+  text-align: center !important;
+  color: #64748B !important;
+  font-size: 13px !important;
+}
+
+/* ── 10. Notifications Panel Dropdown ──────────────────────────────────────── */
+.ngis-notif-panel {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  right: 24px;
+  width: min(390px, calc(100vw - 32px)) !important;
+  max-height: min(490px, calc(100vh - 90px)) !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 30px -6px rgba(15, 23, 42, 0.12), 0 6px 12px -4px rgba(15, 23, 42, 0.06) !important;
+  z-index: 150 !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+  flex-direction: column !important;
+  animation: ngisNavSlideDown 140ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ngis-notif-panel.is-open,
+.ngis-notif-panel[aria-hidden="false"] {
+  display: flex !important;
+}
+
+[data-theme="dark"] .ngis-notif-panel {
+  background: #0F172A !important;
+  background-color: #0F172A !important;
+  border-color: #334155 !important;
+  box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+@media (max-width: 768px) {
+  .ngis-notif-panel {
+    right: 12px !important;
+  }
+}
+
+.ngis-notif-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 14px 16px 10px 16px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="dark"] .ngis-notif-head {
+  border-color: #334155 !important;
+}
+
+.ngis-notif-head-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.ngis-notif-head-title {
+  margin: 0 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  color: #1E293B !important;
+}
+
+[data-theme="dark"] .ngis-notif-head-title {
+  color: #F8FAFC !important;
+}
+
+.ngis-notif-unread-badge {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #EF4444 !important;
+  background: #FEE2E2 !important;
+  padding: 1px 7px !important;
+  border-radius: 12px !important;
+}
+
+[data-theme="dark"] .ngis-notif-unread-badge {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #F87171 !important;
+}
+
+.ngis-notif-mark-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #176B45 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  padding: 4px 6px !important;
+  border-radius: 6px !important;
+  transition: background-color 120ms ease !important;
+}
+
+[data-theme="dark"] .ngis-notif-mark-btn {
+  color: #34D399 !important;
+}
+
+.ngis-notif-mark-btn:hover {
+  background: #E8F3ED !important;
+}
+
+.ngis-notif-tabs {
+  display: flex !important;
+  padding: 8px 16px !important;
+  gap: 8px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+
+[data-theme="dark"] .ngis-notif-tabs {
+  border-color: #334155 !important;
+}
+
+.ngis-notif-tab {
+  background: transparent !important;
+  border: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #64748B !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  transition: all 120ms ease !important;
+}
+
+.ngis-notif-tab.active {
+  background: #F1F5F9 !important;
+  color: #176B45 !important;
+}
+
+[data-theme="dark"] .ngis-notif-tab.active {
+  background: #1E293B !important;
+  color: #34D399 !important;
+}
+
+.ngis-notif-body {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  padding: 6px 8px !important;
+  max-height: 320px !important;
+}
+
+.ngis-notif-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  padding: 10px 12px !important;
+  border-radius: 10px !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  transition: background-color 100ms ease !important;
+}
+
+.ngis-notif-item:hover {
+  background: #F8FAFC !important;
+}
+
+[data-theme="dark"] .ngis-notif-item:hover {
+  background: #1E293B !important;
+}
+
+.ngis-notif-item.unread {
+  background: #F0FDF4 !important;
+}
+
+[data-theme="dark"] .ngis-notif-item.unread {
+  background: rgba(23, 107, 69, 0.15) !important;
+}
+
+.ngis-notif-item-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: #E8F3ED !important;
+  color: #176B45 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+[data-theme="dark"] .ngis-notif-item-icon {
+  background: rgba(52, 211, 153, 0.15) !important;
+  color: #34D399 !important;
+}
+
+.ngis-notif-item-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.ngis-notif-item-title {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #1E293B !important;
+  line-height: 1.3 !important;
+}
+
+[data-theme="dark"] .ngis-notif-item-title {
+  color: #F8FAFC !important;
+}
+
+.ngis-notif-item-msg {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: #64748B !important;
+  margin-top: 2px !important;
+  line-height: 1.35 !important;
+}
+
+[data-theme="dark"] .ngis-notif-item-msg {
+  color: #94A3B8 !important;
+}
+
+.ngis-notif-item-date {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 10px !important;
+  color: #94A3B8 !important;
+  margin-top: 4px !important;
+}
+
+.ngis-notif-foot {
+  padding: 10px 16px !important;
+  border-top: 1px solid #E2E8F0 !important;
+  text-align: center !important;
+  background: #FAFAFA !important;
+}
+
+[data-theme="dark"] .ngis-notif-foot {
+  background: #0B1120 !important;
+  border-color: #334155 !important;
+}
+
+.ngis-notif-foot-link {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #176B45 !important;
+  text-decoration: none !important;
+}
+
+[data-theme="dark"] .ngis-notif-foot-link {
+  color: #34D399 !important;
+}
+
+/* ── 11. Minimal Language Dropdown ─────────────────────────────────────────── */
+.ngis-lang-panel {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  right: 24px;
+  width: 190px !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 30px -6px rgba(15, 23, 42, 0.12), 0 6px 12px -4px rgba(15, 23, 42, 0.06) !important;
+  z-index: 150 !important;
+  padding: 6px !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  animation: ngisNavSlideDown 140ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ngis-lang-panel.is-open,
+.ngis-lang-panel[aria-hidden="false"] {
+  display: flex !important;
+}
+
+[data-theme="dark"] .ngis-lang-panel {
+  background: #0F172A !important;
+  border-color: #334155 !important;
+}
+
+@media (max-width: 768px) {
+  .ngis-lang-panel {
+    right: 56px !important;
+  }
+}
+
+.ngis-lang-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: 9px 12px !important;
+  border-radius: 8px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #1E293B !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  touch-action: manipulation !important;
+  transition: background-color 100ms ease !important;
+}
+
+[data-theme="dark"] .ngis-lang-item {
+  color: #F8FAFC !important;
+}
+
+.ngis-lang-item:hover,
+.ngis-lang-item.selected {
+  background: #F1F5F9 !important;
+}
+
+[data-theme="dark"] .ngis-lang-item:hover,
+[data-theme="dark"] .ngis-lang-item.selected {
+  background: #1E293B !important;
+}
+
+.ngis-lang-item.selected {
+  color: #176B45 !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="dark"] .ngis-lang-item.selected {
+  color: #34D399 !important;
+}
+
+.ngis-lang-check {
+  display: none !important;
+  color: #176B45 !important;
+}
+
+[data-theme="dark"] .ngis-lang-check {
+  color: #34D399 !important;
+}
+
+.ngis-lang-item.selected .ngis-lang-check {
+  display: inline-flex !important;
+}
+
+/* ── 12. User Profile Account Menu ─────────────────────────────────────────── */
+.ngis-account-panel {
+  display: none !important;
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  right: 24px;
+  width: 250px !important;
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 30px -6px rgba(15, 23, 42, 0.12), 0 6px 12px -4px rgba(15, 23, 42, 0.06) !important;
+  z-index: 150 !important;
+  padding: 8px !important;
+  flex-direction: column !important;
+  animation: ngisNavSlideDown 140ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.ngis-account-panel.is-open,
+.ngis-account-panel[aria-hidden="false"] {
+  display: flex !important;
+}
+
+[data-theme="dark"] .ngis-account-panel {
+  background: #0F172A !important;
+  border-color: #334155 !important;
+}
+
+.ngis-account-header {
+  padding: 10px 12px 8px 12px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  margin-bottom: 6px !important;
+}
+
+[data-theme="dark"] .ngis-account-header {
+  border-color: #334155 !important;
+}
+
+.ngis-account-name {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #1E293B !important;
+  line-height: 1.3 !important;
+}
+
+[data-theme="dark"] .ngis-account-name {
+  color: #F8FAFC !important;
+}
+
+.ngis-account-role {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  color: #64748B !important;
+  margin-top: 2px !important;
+}
+
+[data-theme="dark"] .ngis-account-role {
+  color: #94A3B8 !important;
+}
+
+.ngis-account-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 9px 12px !important;
+  border-radius: 8px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #1E293B !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  transition: background-color 100ms ease !important;
+}
+
+[data-theme="dark"] .ngis-account-link {
+  color: #F8FAFC !important;
+}
+
+.ngis-account-link:hover {
+  background: #F1F5F9 !important;
+}
+
+[data-theme="dark"] .ngis-account-link:hover {
+  background: #1E293B !important;
+}
+
+.ngis-account-link.sign-out {
+  color: #EF4444 !important;
+}
+
+[data-theme="dark"] .ngis-account-link.sign-out {
+  color: #F87171 !important;
+}
+
+.ngis-account-divider {
+  height: 1px !important;
+  background-color: #E2E8F0 !important;
+  margin: 6px 0 !important;
+}
+
+[data-theme="dark"] .ngis-account-divider {
+  background-color: #334155 !important;
+}
+
+/* ── 13. Elevate Navbar when Sidebar is Open on Mobile ─────────────────────── */
+body.sidebar-open .ngis-navbar {
+  z-index: 1005 !important;
+}

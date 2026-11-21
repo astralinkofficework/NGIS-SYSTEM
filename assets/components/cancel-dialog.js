@@ -49,7 +49,7 @@
       modal.innerHTML = `
         <div class="ngis-modal-box" style="background:var(--token-surface, #FFFFFF); border:1px solid var(--token-border, #E1E9E3); border-radius:14px; max-width:440px; width:92%; padding:24px; box-shadow:0 8px 30px rgba(0,0,0,0.12); margin:auto;">
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-            <div style="width:40px; height:40px; border-radius:10px; background:var(--token-canvas, #F7F9F7); border:1px solid var(--token-border, #E1E9E3); display:grid; place-items:center; color:${isDestructive ? 'var(--color-danger, #DC2626)' : 'var(--token-primary, #176B45)'}; font-size:20px; flex-shrink:0;">
+            <div style="width:40px; height:40px; display:grid; place-items:center; color:${isDestructive ? 'var(--color-danger, #DC2626)' : 'var(--token-primary, #176B45)'}; font-size:20px; flex-shrink:0;">
               <i class="ph ${isDestructive ? 'ph-trash' : 'ph-question'}"></i>
             </div>
             <div>

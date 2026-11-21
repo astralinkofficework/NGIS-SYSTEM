@@ -1,0 +1,2854 @@
+/* ============================================================
+   NGIS ERP — Master UI Cleanup & Consistency Fix
+   Removes all hover color overlays, fixes visual inconsistencies
+   ============================================================
+   
+   This stylesheet enforces:
+   1. NO colored hover backgrounds on cards, boxes, containers
+   2. NO scaling, zooming, lifting, bouncing, or animations on hover
+   3. Clean, static, professional interface
+   4. Consistent spacing, typography, and layout across all portals
+   
+   ============================================================ */
+
+/* ═══════════════════════════════════════════════════════════════
+   1. ZERO OUTLINES, BORDERS, OVERLAYS, HOVER EFFECTS, SHADOWS,
+      AND BACKGROUND COLOR CHANGES ACROSS ALL BUTTONS, CARDS,
+      AND CLICKABLE ELEMENTS
+   All elements use either pure white (#FFFFFF) or transparent
+   backgrounds that blend seamlessly with the parent background.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1.1 Universal Root Tokens & Variables ── */
+:root {
+  --token-shadow-none: none !important;
+  --token-shadow-card: none !important;
+  --token-shadow-float: none !important;
+  --token-shadow-dialog: none !important;
+  --token-shadow-dropdown: none !important;
+  --ngis-shadow-card: none !important;
+  --ngis-shadow-float: none !important;
+  --ngis-shadow-none: none !important;
+  --card-shadow: none !important;
+  --card-border: none !important;
+  --token-border: transparent !important;
+  --token-border-subtle: transparent !important;
+  --token-border-hover: transparent !important;
+  --token-border-focus: transparent !important;
+  --token-border-hairline: 0px solid transparent !important;
+  --token-focus-ring: transparent !important;
+  --token-surface: #FFFFFF !important;
+  --token-surface-hover: #FFFFFF !important;
+  --token-surface-selected: #FFFFFF !important;
+  --token-btn-primary-border: #176B45 !important;
+  --token-btn-primary-hover-border: #125638 !important;
+  --token-btn-primary-hover-bg: #125638 !important;
+  --token-btn-primary-bg: #176B45 !important;
+}
+
+/* ── 1.2 Universal Cards & Containers (Pure White, Zero Borders, Zero Shadows) ── */
+html:not([data-theme="dark"]) :is(
+  .card,
+  [class*="card"]:not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]),
+  [class*="-card"]:not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]),
+  [class*="card-"]:not(.card-pad):not(.card-head):not(.card-header):not(.card-body):not(.card-footer):not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]),
+  .module-card,
+  .stat-card,
+  .stat,
+  .dept-card,
+  .hub-card,
+  .lesson-card,
+  .ann-card,
+  .exam-card,
+  .rc-filecard,
+  .candidate-card,
+  .club-card,
+  .cert-card,
+  .portal-card,
+  .role-card,
+  .news-card,
+  .subj-card,
+  .cal-card,
+  .att-card,
+  .ql-card,
+  .pf-card,
+  .ov-profile,
+  .ov-upcoming,
+  .ov-deadlines,
+  .ov-inner-panel,
+  .ov-deadline-panel,
+  .sh-card,
+  .sh-stat-card,
+  .sh-request-item,
+  .task-card,
+  .quick,
+  .student-gov-card,
+  .ws-card,
+  .um-ops-card,
+  .telemetry-card,
+  .smx-card,
+  .smx-kpi,
+  .smx-stat-card,
+  .smx-dir-tile,
+  .smx-table-card,
+  .ks-card,
+  .ks-timetable-container,
+  .profile-card,
+  .widget-card,
+  .dash-card,
+  .feed-card,
+  .notice-card,
+  .kpi-card,
+  .kpi-tile,
+  .class-card,
+  .assignment-card,
+  .submission-card,
+  .grade-card,
+  .report-card,
+  .schedule-card
+) {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  border-image: none !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+/* Cards: Hover, Focus, Active, Selected MUST remain pure white with NO changes.
+   Generic [class*="card"] matches are guarded with :not([style*="background"]) so
+   intentional dark/inline-styled cards (KPI highlight tiles) never get force-painted
+   white — which made their white text vanish on hover, click or focus. */
+html:not([data-theme="dark"]) :is(
+  .card:hover,
+  .card:focus,
+  .card:focus-within,
+  .card:active,
+  .card.active,
+  .card[aria-selected="true"],
+  [class*="card"]:not([style*="background"]):not(.portal-card):not(.card-hover):not(.ql-card):not(.module-card):not(.dept-card):not(.hub-card):not(.lesson-card):not(.task-card):not(.ann-card):not(.exam-card):not(.subj-card):not(.exw-timeline-card):not(.exw-roadmap-row):not(.interactive-card):not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]):hover,
+  [class*="card"]:not([style*="background"]):not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]):focus,
+  [class*="card"]:not([style*="background"]):not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]):focus-within,
+  [class*="card"]:not([style*="background"]):not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]):active,
+  [class*="card"]:not([style*="background"]):not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"]).active,
+  [class*="card"]:not([style*="background"]):not([class*="-head"]):not([class*="-header"]):not([class*="-body"]):not([class*="-footer"]):not([class*="-content"]):not([class*="-inner"]):not([class*="-top"]):not([class*="-bottom"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-text"]):not([class*="-meta"]):not([class*="-action"]):not([class*="-chevron"]):not([class*="-acts"]):not([class*="-cat"]):not([class*="-arrow"]):not([class*="-pad"]):not([class*="-badge"]):not([class*="-icon"])[aria-selected="true"],
+  .stat-card:hover,
+  .stat:hover,
+  .rc-filecard:hover,
+  .candidate-card:hover,
+  .club-card:hover,
+  .cert-card:hover,
+  .role-card:hover,
+  .news-card:hover,
+  .cal-card:hover,
+  .att-card:hover,
+  .pf-card:hover,
+  .ov-profile:hover,
+  .ov-upcoming:hover,
+  .ov-deadlines:hover,
+  .ov-inner-panel:hover,
+  .ov-deadline-panel:hover,
+  .sh-card:hover,
+  .sh-stat-card:hover,
+  .quick:hover,
+  .student-gov-card:hover,
+  .ws-card:hover,
+  .um-ops-card:hover,
+  .telemetry-card:hover,
+  .smx-card:hover,
+  .smx-kpi:hover,
+  .smx-stat-card:hover,
+  .smx-dir-tile:hover,
+  .smx-table-card:hover,
+  .ngis-sm .smx-card:hover,
+  .ngis-sm .smx-table-card:hover,
+  .card:not(.portal-card):not(.card-hover):not(.ql-card):not(.module-card):not(.dept-card):not(.hub-card):not(.lesson-card):not(.task-card):not(.ann-card):not(.exam-card):not(.subj-card):not(.exw-timeline-card):not(.exw-roadmap-row):not(.interactive-card):hover,
+  .smx-card:hover,
+  .smx-table-card:hover,
+  .ks-card:hover,
+  .ks-timetable-container:hover
+) { {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* Card inner sections, bodies, headers, footers, titles, descriptions, wrappers:
+   Zero borders, fully transparent background so they cleanly inherit the card's background */
+.card-head,
+.card-header,
+.card-footer,
+.card-body,
+.card-content,
+.card-inner,
+.card-top,
+.card-bottom,
+.card-title,
+.card-desc,
+.card-text,
+.card-meta,
+.card-action,
+.card-chevron,
+.hub-card-top,
+.hub-card-body,
+.hub-card-footer,
+.hub-card-title,
+.hub-card-desc,
+.hub-card-action,
+.hub-card-chevron,
+.dept-card-top,
+.dept-card-body,
+.dept-card-footer,
+.dept-card-title,
+.dept-card-desc,
+.dept-card-meta,
+.module-card-body,
+.module-card-title,
+.module-card-desc,
+.module-card-arrow,
+.portal-card-body,
+.portal-card-title,
+.portal-card-desc,
+.portal-card-action,
+.ann-card-body,
+.ann-card-content,
+.ann-card-meta,
+.ann-card-desc,
+.ann-card-title,
+.ann-card-acts,
+.ann-card-cat,
+.exam-card-body,
+.lesson-card-meta,
+.role-card-header,
+.role-card-body,
+.news-card-body,
+.news-card-desc,
+.news-card-title,
+.ov-card-head,
+.ov-card-title,
+.page-card-head,
+.page-card-footer,
+.id-card-inner,
+.id-card-details-grid,
+.exw-roadmap-main,
+.exw-roadmap-meta,
+.exw-roadmap-row-top,
+.exw-roadmap-row-mid,
+.exw-roadmap-row-bot,
+[class*="card-body"],
+[class*="card-head"],
+[class*="card-header"],
+[class*="card-footer"],
+[class*="card-content"],
+[class*="card-title"],
+[class*="card-desc"],
+[class*="card-text"],
+[class*="card-meta"],
+[class*="card-inner"],
+[class*="-card-body"],
+[class*="-card-top"],
+[class*="-card-footer"],
+[class*="-card-title"],
+[class*="-card-desc"],
+html body .card-head,
+html body .card-header,
+html body .card-footer,
+html body .card-body,
+html body .card-content,
+html body .card-inner,
+html body .card-top,
+html body .card-bottom,
+html body .card-title,
+html body .card-desc,
+html body .card-text,
+html body .card-meta,
+html body .card-action,
+html body .card-chevron,
+html body .hub-card-top,
+html body .hub-card-body,
+html body .hub-card-footer,
+html body .hub-card-title,
+html body .hub-card-desc,
+html body .hub-card-action,
+html body .hub-card-chevron,
+html body .dept-card-top,
+html body .dept-card-body,
+html body .dept-card-footer,
+html body .dept-card-title,
+html body .dept-card-desc,
+html body .dept-card-meta,
+html body .module-card-body,
+html body .module-card-title,
+html body .module-card-desc,
+html body .module-card-arrow,
+html body .portal-card-body,
+html body .portal-card-title,
+html body .portal-card-desc,
+html body .portal-card-action,
+html body .ann-card-body,
+html body .ann-card-content,
+html body .ann-card-meta,
+html body .ann-card-desc,
+html body .ann-card-title,
+html body .ann-card-acts,
+html body .ann-card-cat,
+html body .exam-card-body,
+html body .lesson-card-meta,
+html body .role-card-header,
+html body .role-card-body,
+html body .news-card-body,
+html body .news-card-desc,
+html body .news-card-title,
+html body .ov-card-head,
+html body .ov-card-title,
+html body .page-card-head,
+html body .page-card-footer,
+html body .id-card-inner,
+html body .id-card-details-grid,
+html body .exw-roadmap-main,
+html body .exw-roadmap-meta,
+html body .exw-roadmap-row-top,
+html body .exw-roadmap-row-mid,
+html body .exw-roadmap-row-bot,
+html body [class*="card-body"],
+html body [class*="card-head"],
+html body [class*="card-header"],
+html body [class*="card-footer"],
+html body [class*="card-content"],
+html body [class*="card-title"],
+html body [class*="card-desc"],
+html body [class*="card-text"],
+html body [class*="card-meta"],
+html body [class*="card-inner"],
+html body [class*="-card-body"],
+html body [class*="-card-top"],
+html body [class*="-card-footer"],
+html body [class*="-card-title"],
+html body [class*="-card-desc"] {
+  border: none !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* ── 1.3 Universal Button Standard (Solid hierarchy, visible hover & pressed feedback) ── */
+button,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+.btn,
+.smx-btn,
+.rp-btn {
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+}
+
+/* Primary actions: Forest Green #176B45 with white readable text */
+.btn-primary,
+.smx-btn.primary,
+.smx-btn-primary-add,
+.rp-btn.primary,
+.ov-btn-main,
+.btn-gov-primary,
+button.btn-primary,
+html body .btn-primary,
+html body .smx-btn.primary,
+html body .smx-btn-primary-add,
+html body .rp-btn.primary {
+  background: #176B45 !important;
+  background-color: #176B45 !important;
+  border: 1px solid #176B45 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 1px 2px 0 rgba(23, 107, 69, 0.20) !important;
+  border-radius: 8px;
+}
+.btn-primary:hover:not(:disabled),
+.smx-btn.primary:hover:not(:disabled),
+.smx-btn-primary-add:hover:not(:disabled),
+.rp-btn.primary:hover:not(:disabled),
+.ov-btn-main:hover:not(:disabled),
+html body .btn-primary:hover:not(:disabled),
+html body .smx-btn.primary:hover:not(:disabled),
+html body .smx-btn-primary-add:hover:not(:disabled),
+html body .rp-btn.primary:hover:not(:disabled) {
+  background: #125638 !important;
+  background-color: #125638 !important;
+  border-color: #125638 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 6px 0 rgba(18, 86, 56, 0.3) !important;
+}
+.btn-primary:active:not(:disabled),
+.smx-btn.primary:active:not(:disabled),
+.smx-btn-primary-add:active:not(:disabled),
+.rp-btn.primary:active:not(:disabled),
+html body .btn-primary:active:not(:disabled),
+html body .smx-btn.primary:active:not(:disabled),
+html body .smx-btn-primary-add:active:not(:disabled),
+html body .rp-btn.primary:active:not(:disabled) {
+  background: #0D432B !important;
+  background-color: #0D432B !important;
+  transform: scale(0.98) !important;
+}
+.btn-primary *,
+.smx-btn.primary *,
+.smx-btn-primary-add *,
+.rp-btn.primary * {
+  color: #FFFFFF !important;
+  fill: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+/* Secondary actions: Neutral crisp surface, visible boundary */
+.btn-secondary,
+.smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost),
+.rp-btn:not(.primary):not(.danger):not(.is-active),
+.rp-btn-compare,
+button.btn-secondary,
+html body .btn-secondary,
+html body .rp-btn-compare {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #1E293B !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  border-radius: 8px;
+}
+.btn-secondary:hover:not(:disabled),
+.smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost):hover:not(:disabled),
+.rp-btn:not(.primary):not(.danger):not(.is-active):hover:not(:disabled),
+.rp-btn-compare:hover:not(:disabled),
+html body .btn-secondary:hover:not(:disabled),
+html body .rp-btn-compare:hover:not(:disabled) {
+  background: #F8FAFC !important;
+  background-color: #F8FAFC !important;
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+}
+.btn-secondary:active:not(:disabled),
+.smx-btn:active:not(:disabled),
+.rp-btn:active:not(:disabled),
+.rp-btn-compare:active:not(:disabled),
+html body .btn-secondary:active:not(:disabled),
+html body .rp-btn-compare:active:not(:disabled) {
+  background: #F1F5F9 !important;
+  background-color: #F1F5F9 !important;
+  transform: scale(0.98) !important;
+}
+
+/* Destructive actions: Red emphasis */
+.btn-danger,
+.btn-destructive,
+.smx-btn.danger,
+.rp-btn.danger,
+html body .btn-danger,
+html body .smx-btn.danger,
+html body .rp-btn.danger {
+  background: #FEF2F2 !important;
+  background-color: #FEF2F2 !important;
+  border: 1px solid #FECACA !important;
+  color: #DC2626 !important;
+  border-radius: 8px;
+}
+.btn-danger:hover:not(:disabled),
+.btn-destructive:hover:not(:disabled),
+.smx-btn.danger:hover:not(:disabled),
+.rp-btn.danger:hover:not(:disabled),
+html body .btn-danger:hover:not(:disabled),
+html body .smx-btn.danger:hover:not(:disabled),
+html body .rp-btn.danger:hover:not(:disabled) {
+  background: #FEE2E2 !important;
+  background-color: #FEE2E2 !important;
+  border-color: #F87171 !important;
+  color: #B91C1C !important;
+}
+.btn-danger:active:not(:disabled),
+.smx-btn.danger:active:not(:disabled),
+.rp-btn.danger:active:not(:disabled) {
+  transform: scale(0.98) !important;
+  background: #FECACA !important;
+}
+
+/* Warning & Accent actions */
+.btn-warning,
+.btn-accent,
+html body .btn-warning,
+html body .btn-accent {
+  background: #EA580C !important;
+  background-color: #EA580C !important;
+  border: 1px solid #EA580C !important;
+  color: #FFFFFF !important;
+  border-radius: 8px;
+}
+.btn-warning:hover:not(:disabled),
+.btn-accent:hover:not(:disabled),
+html body .btn-warning:hover:not(:disabled),
+html body .btn-accent:hover:not(:disabled) {
+  background: #C2410C !important;
+  border-color: #C2410C !important;
+  color: #FFFFFF !important;
+}
+
+/* Action Icon Buttons in Tables and Toolbars */
+.action-icon-btn,
+html body .action-icon-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.action-icon-btn:hover:not(:disabled),
+html body .action-icon-btn:hover:not(:disabled) {
+  background: #F1F5F9 !important;
+  background-color: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+  color: #0F172A !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+.action-icon-btn:active:not(:disabled),
+html body .action-icon-btn:active:not(:disabled) {
+  transform: scale(0.95) !important;
+  background: #E2E8F0 !important;
+}
+
+/* Global focus-visible indicator for keyboard accessibility */
+button:focus-visible,
+[role="button"]:focus-visible,
+input[type="button"]:focus-visible,
+input[type="submit"]:focus-visible,
+.btn:focus-visible,
+.smx-btn:focus-visible,
+.rp-btn:focus-visible,
+.action-icon-btn:focus-visible,
+html body button:focus-visible,
+html body .btn:focus-visible,
+html body .smx-btn:focus-visible,
+html body .rp-btn:focus-visible {
+  outline: 2px solid #176B45 !important;
+  outline-offset: 2px !important;
+}
+
+/* Global disabled state */
+button:disabled,
+button[disabled],
+button[aria-disabled="true"],
+.btn:disabled,
+.smx-btn:disabled,
+.rp-btn:disabled,
+.action-icon-btn:disabled,
+html body button:disabled,
+html body .btn:disabled,
+html body .smx-btn:disabled,
+html body .rp-btn:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  box-shadow: none !important;
+}
+
+/* ── 1.4 Universal Clickable Elements (Links, Navigation, Tabs, Filter Chips) ── */
+a:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]),
+a[href]:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]),
+[onclick]:not(.btn):not([class*="btn"]):not(button):not([role="button"]):not([class*="border"]):not([class*="bg-"]),
+.clickable:not(.btn):not([class*="btn"]),
+[class*="clickable"]:not(.btn):not([class*="btn"]),
+.nav-link,
+.nav-sub-link,
+.nav-nested-link,
+.nav-group-label-link,
+.nav-group.collapsible > .nav-group-label,
+.nav-subgroup-label,
+.nav-nested-label,
+.tab,
+.tabs-tab,
+.smx-tab,
+[role="tab"],
+[data-tab],
+.page-link,
+.pagination a,
+.filter-chip,
+.badge-clickable,
+[data-filter],
+summary,
+.dropdown-item,
+.menu-item,
+.side-foot-signout,
+.breadcrumb a {
+  border: none !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  border-image: none !important;
+  outline: none !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Clickable Elements: Hover, Focus, Active MUST remain unchanged.
+   Strictly exclude all cards and card containers from background transparency! */
+a:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):hover,
+a:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):focus,
+a:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):focus-visible,
+a:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):active,
+a[href]:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):hover,
+a[href]:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):focus,
+a[href]:not(.btn):not([class*="btn"]):not([class*="border"]):not([class*="bg-"]):not([role="button"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):active,
+[onclick]:not(.btn):not([class*="btn"]):not(button):not([role="button"]):not([class*="border"]):not([class*="bg-"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):hover,
+[onclick]:not(.btn):not([class*="btn"]):not(button):not([role="button"]):not([class*="border"]):not([class*="bg-"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):focus,
+[onclick]:not(.btn):not([class*="btn"]):not(button):not([role="button"]):not([class*="border"]):not([class*="bg-"]):not([class*="card"]):not([class*="-card"]):not(.card):not(.card-hover):not(.hub-card):not(.dept-card):not(.portal-card):not(.module-card):not(.interactive-card):not(.exw-roadmap-row):not(.exw-timeline-card):active,
+.clickable:hover,
+.clickable:focus,
+.clickable:active,
+.nav-link:hover,
+.nav-link:focus,
+.nav-link:active,
+.nav-sub-link:hover,
+.nav-nested-link:hover,
+.nav-group-label-link:hover,
+.nav-group.collapsible > .nav-group-label:hover,
+.nav-subgroup-label:hover,
+.nav-nested-label:hover,
+.tab:hover,
+.tab:focus,
+.tab:active,
+.tabs-tab:hover,
+.smx-tab:hover,
+.smx-tab:focus,
+.smx-tab:active,
+[role="tab"]:hover,
+[role="tab"]:focus,
+[role="tab"]:active,
+.filter-chip:hover,
+.filter-chip:focus,
+.filter-chip:active,
+.badge-clickable:hover,
+summary:hover,
+.dropdown-item:hover,
+.menu-item:hover,
+.side-foot-signout:hover,
+.breadcrumb a:hover,
+html body #sidebar .nav-link:hover,
+html body #sidebar.sidebar .nav-link:hover,
+html body #sidebar.sidebar .nav-link:not(.active):hover,
+html body #sidebar.sidebar .nav-subgroup-label:hover,
+html body #sidebar.sidebar .nav-nested-label:hover,
+html body #sidebar.sidebar .side-foot .nav-link:hover,
+html body #sidebar.sidebar .side-foot-signout:hover,
+body[data-role="principal"] .nav-link:hover,
+body[data-role="principal"] #sidebar .nav-link:hover,
+body[data-portal="principal"] .nav-link:hover,
+body[data-role="admin"] #sidebar .nav-link:hover,
+body[data-role="teacher"] #sidebar .nav-link:hover,
+body[data-role="student"] #sidebar .nav-link:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+/* Active & Selected Navigation/Tabs: Background transparent, cleanly indicated by color */
+.nav-link.active,
+.nav-link[aria-current="page"],
+html body #sidebar .nav-link.active,
+html body #sidebar .nav-link.nav-sub-link.active,
+html body #sidebar .nav-link.nav-nested-link.active,
+html body .sidebar .nav-link.active,
+html body .sidebar .nav-link.nav-sub-link.active,
+html body .sidebar .nav-link.nav-nested-link.active,
+#sidebar .nav-link.active,
+#sidebar .nav-link.nav-sub-link.active,
+#sidebar .nav-link.nav-nested-link.active,
+.tab.active,
+.tabs-tab.active,
+.smx-tab.active,
+[role="tab"][aria-selected="true"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-width: 0 !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  color: #176B45 !important;
+  font-weight: 500 !important;
+}
+
+/* Pagination active page indicator: Forest green fill with white text */
+.page-link.active,
+.pagination .active a,
+.pagination .active button {
+  background: #176B45 !important;
+  background-color: #176B45 !important;
+  border: 1px solid #176B45 !important;
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+}
+.nav-link.active .nav-link-label,
+.nav-link.active .nav-icon,
+.nav-link.active .nav-link-icon,
+#sidebar .nav-link.active .nav-link-label,
+#sidebar .nav-link.active .nav-link-icon,
+html body #sidebar .nav-link.active .nav-link-label,
+html body #sidebar .nav-link.nav-sub-link.active .nav-link-label,
+html body #sidebar .nav-link.nav-nested-link.active .nav-link-label,
+html body .sidebar .nav-link.active .nav-link-label,
+html body .sidebar .nav-link.nav-sub-link.active .nav-link-label,
+html body .sidebar .nav-link.nav-nested-link.active .nav-link-label,
+#sidebar .nav-link.nav-sub-link.active .nav-link-label,
+#sidebar .nav-link.nav-nested-link.active .nav-link-label {
+  color: #176B45 !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+html body #sidebar .nav-link.nav-sub-link.active,
+html body #sidebar .nav-link.nav-nested-link.active,
+html body .sidebar .nav-link.nav-sub-link.active,
+html body .sidebar .nav-link.nav-nested-link.active,
+#sidebar .nav-link.nav-sub-link.active,
+#sidebar .nav-link.nav-nested-link.active {
+  background: var(--token-surface-subtle, #E8F3ED) !important;
+  background-color: var(--token-surface-subtle, #E8F3ED) !important;
+  color: #176B45 !important;
+  border-radius: 8px !important;
+}
+
+/* ── 1.5 Strip All Pseudo-Element Overlays & Hover Backgrounds ── */
+:where(
+  button,
+  [role="button"],
+  a,
+  input[type="button"],
+  input[type="submit"],
+  .btn,
+  [class*="btn"],
+  .card,
+  [class*="card"],
+  .module-card,
+  .dept-card,
+  .hub-card,
+  .stat-card,
+  .stat,
+  .smx-card,
+  .smx-kpi,
+  .smx-stat-card,
+  .smx-dir-tile,
+  .ov-profile,
+  .ov-upcoming,
+  .ov-deadlines,
+  .ov-inner-panel,
+  .ov-deadline-panel,
+  .sh-card,
+  .sh-stat-card,
+  .task-card,
+  .student-gov-card,
+  .ws-card,
+  .um-ops-card,
+  .nav-link,
+  .nav-sub-link,
+  .nav-nested-link,
+  .nav-subgroup-label,
+  .tab,
+  .smx-tab,
+  .clickable,
+  [onclick]
+)::before,
+:where(
+  button,
+  [role="button"],
+  a,
+  input[type="button"],
+  input[type="submit"],
+  .btn,
+  [class*="btn"],
+  .card,
+  [class*="card"],
+  .module-card,
+  .dept-card,
+  .hub-card,
+  .stat-card,
+  .stat,
+  .smx-card,
+  .smx-kpi,
+  .smx-stat-card,
+  .smx-dir-tile,
+  .ov-profile,
+  .ov-upcoming,
+  .ov-deadlines,
+  .ov-inner-panel,
+  .ov-deadline-panel,
+  .sh-card,
+  .sh-stat-card,
+  .task-card,
+  .student-gov-card,
+  .ws-card,
+  .um-ops-card,
+  .nav-link,
+  .nav-sub-link,
+  .nav-nested-link,
+  .nav-subgroup-label,
+  .tab,
+  .smx-tab,
+  .clickable,
+  [onclick]
+)::after {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  filter: none !important;
+}
+
+/* ── 1.6 Legibility & High Contrast Color Preservation ──
+   Filled (solid-background) buttons ALWAYS use white text.
+   Root-cause fix: previously these were forced to their own
+   background color as text (#176B45 on #176B45 = invisible),
+   which caused load-order-dependent disappearing button labels. */
+.btn-primary,
+.btn-gov-primary,
+.btn-forest,
+[class*="bg-[#176B45]"],
+[class*="bg-[#0F5132]"],
+[class*="bg-[#0f5132]"],
+[class*="bg-emerald-600"],
+[class*="bg-emerald-700"],
+[class*="bg-emerald-800"],
+[class*="bg-emerald-900"],
+[class*="bg-green-600"],
+[class*="bg-green-700"],
+[class*="bg-green-800"] {
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+}
+
+.btn-danger,
+[class*="bg-red-600"],
+[class*="bg-red-700"],
+[class*="bg-red-800"],
+[class*="bg-rose-600"],
+[class*="bg-rose-700"],
+[class*="bg-rose-800"],
+.btn-destructive {
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+}
+
+.btn-accent,
+[class*="bg-orange-500"],
+[class*="bg-orange-600"],
+[class*="bg-orange-700"],
+[class*="bg-amber-500"],
+[class*="bg-amber-600"],
+[class*="bg-amber-700"] {
+  color: #FFFFFF !important;
+  font-weight: 500 !important;
+}
+
+/* ── 1.6.1 Light Tinted Badges, Icon Wrappers & Chips: High Contrast Guarantee ──
+   Light mint, amber, blue, purple, rose, slate backgrounds must NEVER force
+   white text or white icons. They must use high-contrast dark semantic colors. */
+[class*="bg-emerald-50"],
+[class*="bg-emerald-100"],
+[class*="bg-green-50"],
+[class*="bg-green-100"] {
+  color: #176B45 !important;
+}
+[class*="bg-amber-50"],
+[class*="bg-amber-100"],
+[class*="bg-yellow-50"],
+[class*="bg-yellow-100"] {
+  color: #B45309 !important;
+}
+[class*="bg-rose-50"],
+[class*="bg-rose-100"],
+[class*="bg-red-50"],
+[class*="bg-red-100"] {
+  color: #B91C1C !important;
+}
+[class*="bg-blue-50"],
+[class*="bg-blue-100"] {
+  color: #1D4ED8 !important;
+}
+[class*="bg-purple-50"],
+[class*="bg-purple-100"] {
+  color: #6D28D9 !important;
+}
+[class*="bg-slate-50"],
+[class*="bg-slate-100"],
+[class*="bg-gray-50"],
+[class*="bg-gray-100"] {
+  color: #334155 !important;
+}
+
+/* Child icons inside badges and stat card icon wrappers inherit their parent's color */
+[class*="bg-emerald-50"] .material-symbols-outlined,
+[class*="bg-emerald-50"] i,
+[class*="bg-emerald-50"] svg,
+[class*="bg-emerald-100"] .material-symbols-outlined,
+[class*="bg-emerald-100"] i,
+[class*="bg-emerald-100"] svg,
+[class*="bg-green-50"] .material-symbols-outlined,
+[class*="bg-green-50"] i,
+[class*="bg-green-50"] svg,
+[class*="bg-amber-50"] .material-symbols-outlined,
+[class*="bg-amber-50"] i,
+[class*="bg-amber-50"] svg,
+[class*="bg-amber-100"] .material-symbols-outlined,
+[class*="bg-amber-100"] i,
+[class*="bg-amber-100"] svg,
+[class*="bg-rose-50"] .material-symbols-outlined,
+[class*="bg-rose-50"] i,
+[class*="bg-rose-50"] svg,
+[class*="bg-red-50"] .material-symbols-outlined,
+[class*="bg-red-50"] i,
+[class*="bg-red-50"] svg,
+[class*="bg-blue-50"] .material-symbols-outlined,
+[class*="bg-blue-50"] i,
+[class*="bg-blue-50"] svg,
+[class*="bg-purple-50"] .material-symbols-outlined,
+[class*="bg-purple-50"] i,
+[class*="bg-purple-50"] svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+.btn-secondary,
+.btn-ghost,
+.btn-soft,
+.icon-btn,
+.action-btn,
+.action-icon-btn {
+  color: #29352E !important;
+  font-weight: 500 !important;
+}
+
+/* Inherit color into child icons */
+button i,
+button svg,
+button .material-symbols-outlined,
+button [class*="ph-"],
+.btn i,
+.btn svg,
+.btn .material-symbols-outlined,
+.btn [class*="ph-"],
+[role="button"] i,
+[role="button"] svg,
+[role="button"] .material-symbols-outlined,
+[role="button"] [class*="ph-"] {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* ── 1.7 Universal Tailwind Utility Overrides ── */
+.shadow,
+.shadow-none,
+.shadow-xs,
+.shadow-sm,
+.shadow-md,
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl,
+.shadow-inner,
+[class*="shadow-"],
+[class*="hover:shadow"] {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+}
+
+.card[class*="hover:bg-"]:not([style*="background"]),
+[class*="card"][class*="hover:bg-"]:not([style*="background"]) {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+/* Keep pointer cursor for clickable elements */
+a[href],
+button:not(:disabled),
+[role="button"],
+[onclick],
+.nav-link,
+.card,
+.btn {
+  cursor: pointer !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. FIX DUPLICATE HEADERS
+   Ensure only ONE main header per page
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Hide layout.js injected topbar ONLY when hero serves as the main header */
+body:has(#heroBanner .hero-topbar) header.topbar,
+body:has(#heroBanner .hero) header.topbar,
+.has-hero header.topbar {
+  display: none !important;
+}
+
+/* Ensure hero-topbar is the primary header */
+.hero-topbar {
+  display: flex !important;
+}
+
+/* Prevent modal/drawer headers from duplicating main header */
+.modal header.topbar,
+.drawer header.topbar,
+.ngis-modal-box header.topbar {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. CONSISTENT TYPOGRAPHY - NO BOLD FONTS
+   Maximum font-weight: 500 (medium)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Global no-bold policy */
+body,
+body * {
+  font-weight: 400 !important;
+}
+
+/* Headings, labels, badges use medium weight (500) */
+h1, h2, h3, h4, h5, h6,
+th, label, .font-medium,
+.badge, .stat-val, .hero-title,
+.nav-link.active, .nav-sub-link.active {
+  font-weight: 500 !important;
+}
+
+/* Override any bold declarations */
+b, strong,
+.font-bold, .font-extrabold, .font-semibold, .font-black,
+[class*="font-bold"], [class*="font-extrabold"], [class*="font-black"] {
+  font-weight: 500 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. CONSISTENT LAYOUT & SPACING
+   Standardized dimensions across all portals
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Unified Sidebar Width */
+  --sidebar-w: 280px;
+  --sidebar-w-collapsed: 68px;
+  
+  /* Unified Header Height */
+  --topbar-h: 64px;
+  --hero-topbar-h: 58px;
+  
+  /* 8-Point Unified Content & Page Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --content-padding-x: var(--page-pad-x, 32px);
+  --content-padding-y: var(--page-pad-y, 24px);
+  --card-padding: var(--card-pad, 24px);
+  --section-gap: var(--space-8, 32px);
+  
+  /* Unified Card Styling - No borders, no shadows */
+  --card-radius: 12px;
+  --card-border: 1px solid var(--color-border, #E1E9E3);
+  --card-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  
+  /* Unified Form Styling */
+  --input-border: 1px solid var(--color-border, #CBD5E1);
+  --input-radius: 8px;
+  --input-bg: #FFFFFF;
+  
+  /* Overlap Grid Margin */
+  --overlap-margin: -48px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --content-padding-x: var(--space-6, 24px);
+    --content-padding-y: var(--space-5, 20px);
+    --card-padding: var(--space-5, 20px);
+    --section-gap: var(--space-6, 24px);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --content-padding-x: var(--space-4, 16px);
+    --content-padding-y: var(--space-4, 16px);
+    --card-padding: var(--space-4, 16px);
+    --section-gap: var(--space-5, 20px);
+  }
+}
+
+/* Consistent sidebar across all portals (never block desktop collapsed rail or mobile drawer) */
+@media (min-width: 1025px) {
+  .sidebar:not(.collapsed) {
+    width: var(--sidebar-w) !important;
+    min-width: var(--sidebar-w) !important;
+  }
+  .sidebar.collapsed {
+    width: var(--sidebar-w-collapsed, 80px) !important;
+    min-width: var(--sidebar-w-collapsed, 80px) !important;
+  }
+}
+
+/* Consistent main content margins (docked layout only) */
+@media (min-width: 1025px) {
+  .main:not(.sidebar-collapsed) {
+    margin-left: var(--sidebar-w) !important;
+  }
+}
+
+/* Consistent card border-radius */
+.card,
+.stat-card,
+.module-card,
+.ov-profile,
+.ov-upcoming,
+.ov-deadlines,
+.stat {
+  border-radius: var(--card-radius) !important;
+}
+
+/* Consistent form field styling (ngx-inline-edit = quiet inline-editable text,
+   .nrg-input/.nrg-select = registration wizard fields, exempted) */
+select:not(.nrg-select),
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="search"]):not(.htb-search-input):not(#htbSearchInput):not(.search-input):not(.dir-search-input):not(.ann-search-input-wrap *):not(.tp-search-input):not([role="search"] *):not([data-no-border]):not(.ngx-inline-edit):not(.nrg-input):not(.ngis-search-input),
+textarea {
+  border: var(--input-border) !important;
+  border-radius: var(--input-radius) !important;
+  background-color: var(--input-bg) !important;
+}
+
+/* Hero Search Capsule Input - Must remain seamlessly transparent */
+.htb-search-wrap input,
+.htb-search-wrap input.htb-search-input,
+.htb-search-input,
+#htbSearchInput {
+  border: none !important;
+  border-width: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.htb-search-wrap input:hover,
+.htb-search-wrap input:focus,
+.htb-search-wrap input:active,
+.htb-search-input:hover,
+.htb-search-input:focus,
+.htb-search-input:active,
+#htbSearchInput:hover,
+#htbSearchInput:focus,
+#htbSearchInput:active {
+  border: none !important;
+  border-width: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+}
+
+/* Consistent dashboard overlap grid */
+.dash-overlap {
+  margin: var(--overlap-margin) auto 20px !important;
+  padding: 0 var(--content-padding-x) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. RESPONSIVE LAYOUT FIXES
+   Consistent breakpoints and mobile behavior
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Mobile breakpoint: 768px */
+@media (max-width: 768px) {
+  /* Hide desktop views */
+  .student-desktop-view,
+  .teacher-desktop-view,
+  .admin-desktop-view,
+  .principal-desktop-view {
+    display: none !important;
+  }
+  
+  /* Show mobile views */
+  .student-mobile-view,
+  .teacher-mobile-view,
+  .admin-mobile-view,
+  .principal-mobile-view {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Off-canvas sidebar on mobile (but never while the drawer is open) */
+  .sidebar:not(.open) {
+    transform: translateX(-100%) !important;
+  }
+  
+  /* Ensure hero-topbar provides the mobile navigation header */
+  .hero-topbar {
+    display: flex !important;
+  }
+  
+  /* Full-width content on mobile */
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* Desktop breakpoint: 769px and up */
+@media (min-width: 769px) {
+  /* Hide mobile views */
+  .student-mobile-view,
+  .teacher-mobile-view,
+  .admin-mobile-view,
+  .principal-mobile-view {
+    display: none !important;
+  }
+  
+  /* Show desktop views */
+  .student-desktop-view,
+  .teacher-desktop-view,
+  .admin-desktop-view,
+  .principal-desktop-view {
+    display: block !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. SCROLLBAR & VISUAL CLEANUP
+   Prevent unwanted borders and visual clutter
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Prevent unwanted scrollbars */
+html, body {
+  overflow-x: hidden !important;
+}
+
+/* Clean scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12) !important;
+  border-radius: 999px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. PORTAL-SPECIFIC OVERRIDES
+   Ensure consistency across all role portals
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Admin Portal */
+body[data-role="admin"],
+body[data-portal="admin"] {
+  /* Consistent admin styling */
+}
+
+/* Teacher Portal */
+body[data-role="teacher"] {
+  /* Consistent teacher styling */
+}
+
+/* Student Portal */
+body[data-role="student"],
+body.student-dashboard {
+  /* Consistent student styling */
+}
+
+/* Principal Portal */
+body[data-role="principal"] {
+  /* Consistent principal styling */
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. PREFERENCE REDUCED MOTION
+   Respect user's motion preferences
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+/* Schedule, Grading Queue, Feed & Task Items: No hover background/shadow changes */
+.ov-inner-item:hover,
+.ov-inner-item:active,
+.ov-deadline-item:hover,
+.ov-deadline-item:active,
+.feed-item:hover,
+.feed-item:active,
+.row-item:hover,
+.list-row:hover,
+.ngis-list-row:hover,
+.tt-slot-card:hover,
+.task-item:hover {
+  background-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  translate: none !important;
+  scale: 1 !important;
+}
+
+/* Table rows - zero hover backgrounds */
+.tbl tbody tr:hover td,
+table tbody tr:hover td,
+.sk-table tbody tr:hover td,
+.class-table tbody tr:hover td,
+.tp-table tbody tr:hover td,
+.tp-table tbody tr:hover {
+  background-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. DARK THEME COMPATIBILITY
+   Zero outlines, borders, shadows, with matching dark surfaces
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  --card-border: none !important;
+  --card-shadow: none !important;
+  --token-shadow-card: none !important;
+  --token-shadow-float: none !important;
+  --token-border: transparent !important;
+  --token-border-subtle: transparent !important;
+  /* Dark form-field variables (override the light :root block further below) */
+  --input-bg: #1F2E26 !important;
+  --input-border: 1.5px solid #2D3A31 !important;
+  --input-radius: 8px !important;
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] [class*="card"],
+html[data-theme="dark"] .card,
+html[data-theme="dark"] [class*="card"],
+body[data-theme="dark"] .card,
+body[data-theme="dark"] [class*="card"],
+html[data-theme="dark"] body .card,
+html[data-theme="dark"] body [class*="card"],
+html[data-theme="dark"] body [class*="-card"],
+html[data-theme="dark"] body [class*="card-"] {
+  background: #18231D !important;
+  background-color: #18231D !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .card:hover,
+[data-theme="dark"] [class*="card"]:hover,
+html[data-theme="dark"] .card:hover,
+html[data-theme="dark"] [class*="card"]:hover,
+body[data-theme="dark"] .card:hover,
+body[data-theme="dark"] [class*="card"]:hover,
+html[data-theme="dark"] body .card:hover,
+html[data-theme="dark"] body [class*="card"]:hover,
+html[data-theme="dark"] body [class*="-card"]:hover,
+html[data-theme="dark"] body [class*="card-"]:hover {
+  background: #18231D !important;
+  background-color: #18231D !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .sidebar .nav-link.active,
+html[data-theme="dark"] .sidebar .nav-link.active,
+body[data-theme="dark"] #sidebar .nav-link.active {
+  background: transparent !important;
+  color: #86EFAC !important;
+}
+
+[data-theme="dark"] .sidebar .nav-link.active .nav-link-label,
+[data-theme="dark"] .sidebar .nav-link.active .nav-link-icon,
+[data-theme="dark"] .sidebar .nav-link.active .nav-icon {
+  color: #86EFAC !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. ADMIN PORTAL MASTER RESPONSIVE LAYOUT SYSTEM
+   Full-width viewport filling, standardized padding,
+   contained responsive tables, responsive forms, fit modals
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 10.1 Application Shell & Viewport Filling ── */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  overflow-x: clip !important;
+}
+
+body[data-role="admin"] .shell,
+body[data-portal="admin"] .shell {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  flex: 1 1 auto !important;
+}
+
+body[data-role="admin"] .shell > .main,
+body[data-portal="admin"] .shell > .main {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+}
+
+/* Sidebar expansion / collapse geometry */
+@media (min-width: 1025px) {
+  body[data-role="admin"] .shell > .main,
+  body[data-portal="admin"] .shell > .main {
+    margin-left: 256px !important;
+    width: calc(100% - 256px) !important;
+  }
+  body[data-role="admin"].sidebar-collapsed .shell > .main,
+  body[data-role="admin"] .shell > .main.sidebar-collapsed,
+  body[data-portal="admin"].sidebar-collapsed .shell > .main,
+  body[data-portal="admin"] .shell > .main.sidebar-collapsed {
+    margin-left: 72px !important;
+    width: calc(100% - 72px) !important;
+  }
+}
+
+@media (max-width: 1024.98px) {
+  body[data-role="admin"] .shell > .main,
+  body[data-portal="admin"] .shell > .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* ── 10.2 Standardized Admin Page Content Containers & Padding ── */
+body[data-role="admin"] .page,
+body[data-role="admin"] .smx-page,
+body[data-role="admin"] .admin-desktop-view,
+body[data-role="admin"] .admin-news-page,
+body[data-role="admin"] #studentMgmtRoot,
+body[data-role="admin"] #teacherMgmtRoot,
+body[data-role="admin"] #systemMgmtRoot,
+body[data-role="admin"] #usersRoot,
+body[data-role="admin"] #rolesRoot,
+body[data-role="admin"] #dictRoot,
+body[data-role="admin"] #profilesRoot,
+body[data-portal="admin"] .page,
+body[data-portal="admin"] .smx-page,
+body[data-portal="admin"] .admin-desktop-view,
+body[data-portal="admin"] .admin-news-page,
+body[data-portal="admin"] #studentMgmtRoot,
+body[data-portal="admin"] #teacherMgmtRoot,
+body[data-portal="admin"] #systemMgmtRoot,
+body[data-portal="admin"] #usersRoot,
+body[data-portal="admin"] #rolesRoot,
+body[data-portal="admin"] #dictRoot,
+body[data-portal="admin"] #profilesRoot {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Standardized responsive padding across all portals & pages:
+   Mobile: 16px | Tablet: 24px | Desktop: 32px */
+@media (min-width: 1025px) {
+  .page,
+  .main > .page,
+  main.main > .page,
+  .hub-container,
+  .subpage-container,
+  .workspace-container,
+  #examsWorkspace > .exw,
+  .portal-container,
+  .student-page-content,
+  .tp-container,
+  .smx-users-page,
+  .admin-desktop-view,
+  .admin-news-page,
+  #studentMgmtRoot.page,
+  #teacherMgmtRoot.page,
+  #systemMgmtRoot.page,
+  #usersRoot.page,
+  #rolesRoot.page,
+  #dictRoot.page,
+  #profilesRoot.page,
+  body[data-role="admin"] .page,
+  body[data-role="teacher"] .page,
+  body[data-role="student"] .page,
+  body[data-role="principal"] .page {
+    padding: 24px 32px 64px !important;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .page,
+  .main > .page,
+  main.main > .page,
+  .hub-container,
+  .subpage-container,
+  .workspace-container,
+  #examsWorkspace > .exw,
+  .portal-container,
+  .student-page-content,
+  .tp-container,
+  .smx-users-page,
+  .admin-desktop-view,
+  .admin-news-page,
+  #studentMgmtRoot.page,
+  #teacherMgmtRoot.page,
+  #systemMgmtRoot.page,
+  #usersRoot.page,
+  #rolesRoot.page,
+  #dictRoot.page,
+  #profilesRoot.page,
+  body[data-role="admin"] .page,
+  body[data-role="teacher"] .page,
+  body[data-role="student"] .page,
+  body[data-role="principal"] .page {
+    padding: 20px 24px 48px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .page,
+  .main > .page,
+  main.main > .page,
+  .hub-container,
+  .subpage-container,
+  .workspace-container,
+  #examsWorkspace > .exw,
+  .portal-container,
+  .student-page-content,
+  .tp-container,
+  .smx-users-page,
+  .admin-desktop-view,
+  .admin-news-page,
+  #studentMgmtRoot.page,
+  #teacherMgmtRoot.page,
+  #systemMgmtRoot.page,
+  #usersRoot.page,
+  #rolesRoot.page,
+  #dictRoot.page,
+  #profilesRoot.page,
+  body[data-role="admin"] .page,
+  body[data-role="teacher"] .page,
+  body[data-role="student"] .page,
+  body[data-role="principal"] .page {
+    padding: 16px 16px max(108px, calc(92px + env(safe-area-inset-bottom, 0px))) !important;
+  }
+}
+
+/* ── 10.3 Universal Contained Tables & Data Grids ── */
+body[data-role="admin"] .tbl-wrap,
+body[data-role="admin"] .tbl-scroll,
+body[data-role="admin"] .sk-table-wrap,
+body[data-role="admin"] .smx-table-wrap,
+body[data-role="admin"] .smx-table-scroll,
+body[data-role="admin"] .table-scroll-wrap,
+body[data-role="admin"] .table-responsive,
+body[data-role="admin"] .overflow-x-auto,
+body[data-role="admin"] .page div:has(> table),
+body[data-role="admin"] .ngis-system-mgmt div:has(> table) {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  box-sizing: border-box !important;
+}
+
+body[data-role="admin"] table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+/* ── 10.4 Responsive Form Fields & Grid Stacking ── */
+@media (max-width: 640px) {
+  body[data-role="admin"] .grid-cols-3,
+  body[data-role="admin"] .grid-cols-4,
+  body[data-role="admin"] .grid-cols-5,
+  body[data-role="admin"] .grid-cols-6,
+  body[data-role="admin"] .sm\:grid-cols-2:not(.grid-cols-2),
+  body[data-role="admin"] .md\:grid-cols-2:not(.grid-cols-2),
+  body[data-role="admin"] .md\:grid-cols-3,
+  body[data-role="admin"] .md\:grid-cols-4,
+  body[data-role="admin"] .ops-cards-grid,
+  body[data-role="admin"] .student-gov-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  body[data-role="admin"] .ops-kpi-grid,
+  body[data-role="admin"] #kpiGrid,
+  body[data-role="admin"] [data-purpose="metrics-telemetry"],
+  body[data-role="admin"] [data-purpose="department-metrics"],
+  body[data-role="admin"] [data-purpose="kpi-metric-cards"],
+  body[data-role="admin"] .grid-cols-2,
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+body[data-role="admin"] input,
+body[data-role="admin"] select,
+body[data-role="admin"] textarea {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+}
+
+/* ── 10.5 Global Responsive Modals & Focused Dialog System ── */
+body.ngis-modal-open,
+html.ngis-modal-open {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
+.ngis-modal-backdrop,
+.modal-backdrop,
+.smx-modal-backdrop,
+.rp-modal-scrim,
+.id-modal-overlay.open,
+.id-modal-overlay.is-open,
+.id-modal-overlay.show,
+.stu-modal-overlay.open,
+.stu-modal-overlay.is-open,
+.stu-modal-overlay.show,
+.modal-overlay.open,
+.modal-overlay.is-open,
+.modal-overlay.show,
+.lf-modal-backdrop.open,
+.lf-modal-backdrop.is-open,
+.lf-modal-backdrop.show,
+.lf-modal-overlay.open,
+.lf-modal-overlay.is-open,
+.lf-modal-overlay.show,
+.srv-modal-backdrop,
+.si-modal-backdrop,
+.cms-modal-backdrop.open,
+.oak-modal-overlay.open,
+.oak-modal-overlay.is-open,
+.oak-modal-overlay.show,
+.oak-preview-modal-overlay.open,
+.oak-preview-modal-overlay.is-open,
+.oak-preview-modal-overlay.show,
+.news-modal-overlay,
+.smx-sheet-backdrop,
+[id$="Modal"].fixed.inset-0,
+[id$="modal"].fixed.inset-0,
+[id*="Modal"].fixed.inset-0,
+[id$="Backdrop"].fixed.inset-0 {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 2000 !important;
+  background: rgba(15, 23, 20, 0.45) !important;
+  background-color: rgba(15, 23, 20, 0.45) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 18px !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  box-sizing: border-box !important;
+}
+
+.ngis-modal-backdrop:hover,
+.modal-backdrop:hover,
+.smx-modal-backdrop:hover,
+.rp-modal-scrim:hover,
+.id-modal-overlay:hover,
+.lf-modal-backdrop:hover,
+.lf-modal-overlay:hover,
+.srv-modal-backdrop:hover,
+.si-modal-backdrop:hover,
+.cms-modal-backdrop:hover,
+.oak-modal-overlay:hover,
+.news-modal-overlay:hover,
+.smx-sheet-backdrop:hover,
+[id$="Modal"].fixed.inset-0:hover,
+[id$="modal"].fixed.inset-0:hover,
+[id*="Modal"].fixed.inset-0:hover,
+[id$="Backdrop"].fixed.inset-0:hover {
+  background: rgba(15, 23, 20, 0.45) !important;
+  background-color: rgba(15, 23, 20, 0.45) !important;
+}
+
+[id$="Modal"].fixed.inset-0.hidden,
+[id$="modal"].fixed.inset-0.hidden,
+[id*="Modal"].fixed.inset-0.hidden,
+.ngis-modal-backdrop.hidden,
+.modal-backdrop.hidden,
+.smx-modal-backdrop.hidden,
+.rp-modal-scrim.hidden,
+.id-modal-overlay:not(.open):not(.is-open):not(.show),
+.stu-modal-overlay:not(.open):not(.is-open):not(.show),
+.lf-modal-backdrop:not(.open):not(.is-open):not(.show),
+.lf-modal-overlay:not(.open):not(.is-open):not(.show),
+.id-modal-overlay.hidden,
+.stu-modal-overlay.hidden,
+.modal-overlay.hidden,
+.lf-modal-backdrop.hidden,
+.lf-modal-overlay.hidden,
+.srv-modal-backdrop.hidden,
+.si-modal-backdrop.hidden,
+.cms-modal-backdrop:not(.open),
+.cms-modal-backdrop.hidden,
+[id$="Backdrop"]:not(.open):not(.is-open):not(.show),
+.oak-modal-overlay:not(.open):not(.is-open):not(.show),
+.oak-preview-modal-overlay:not(.open):not(.is-open):not(.show),
+.oak-modal-overlay.hidden,
+.news-modal-overlay.hidden,
+.smx-sheet-backdrop.hidden,
+.modal-overlay[hidden],
+.modal-overlay[style*="display: none"],
+.modal-overlay[style*="display:none"],
+.modal-overlay:not(.open):not(.show):not(.is-open):not([open]):not(.active),
+.modal-backdrop[style*="display: none"],
+.modal-backdrop[style*="display:none"],
+.smx-modal-backdrop[style*="display: none"],
+.smx-modal-backdrop[style*="display:none"] {
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+[id$="Modal"].fixed.inset-0 > div,
+[id$="modal"].fixed.inset-0 > div,
+[id*="Modal"].fixed.inset-0 > div {
+  border-radius: 14px !important;
+  box-shadow: 0 20px 48px -12px rgba(15, 23, 20, 0.18), 0 0 0 1px rgba(15, 23, 20, 0.04) !important;
+  border: 1px solid var(--ngis-border, #E1E9E3) !important;
+}
+
+.modal,
+[class*="modal-dialog"],
+[class*="modal-card"],
+.stu-modal-card,
+.smx-modal,
+.smx-modal-box,
+.id-modal-card,
+.id-modal-container,
+.rp-modal,
+.ngis-modal,
+.ngis-modal-box,
+.lf-modal-panel,
+.lf-modal,
+.news-modal-container,
+.srv-modal-panel,
+.oak-modal-card {
+  width: min(100% - 32px, 580px);
+  max-width: 100% !important;
+  max-height: min(88vh, calc(100dvh - 32px)) !important;
+  background: #FFFFFF !important;
+  border: 1px solid var(--ngis-border, #E1E9E3) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 48px -12px rgba(15, 23, 20, 0.18), 0 0 0 1px rgba(15, 23, 20, 0.04) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  margin: auto !important;
+  box-sizing: border-box !important;
+  z-index: 2001 !important;
+}
+
+.smx-modal.wide,
+.ngis-modal.wide,
+[class*="modal-dialog"].wide,
+[class*="modal-card"].wide {
+  width: min(100% - 32px, 800px) !important;
+}
+
+.smx-modal.confirm,
+.modal-sm,
+.ngis-modal-sm {
+  width: min(100% - 32px, 420px) !important;
+}
+
+.smx-modal-body,
+.ngis-modal-body,
+.modal-body,
+.rp-modal-body,
+.id-modal-body {
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  flex: 1 1 auto !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+}
+
+.smx-modal-foot,
+.ngis-modal-foot,
+.modal-footer,
+.rp-modal-foot,
+.id-modal-footer {
+  position: sticky !important;
+  bottom: 0 !important;
+  background: #FFFFFF !important;
+  border-top: 1px solid var(--ngis-border, #E1E9E3) !important;
+  padding: 14px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  flex-shrink: 0 !important;
+  z-index: 10 !important;
+}
+
+/* ── 10.6 Responsive Toolbars & Filters ── */
+body[data-role="admin"] .sk-toolbar,
+body[data-role="admin"] .smx-toolbar,
+body[data-role="admin"] .filter-strip,
+body[data-role="admin"] .tp-filter-bar,
+body[data-role="admin"] .sk-title-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 10px 14px !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+body[data-role="admin"] .smx-search,
+body[data-role="admin"] .search-bar,
+body[data-role="admin"] .search-box {
+  min-width: 180px !important;
+  flex: 1 1 220px !important;
+  box-sizing: border-box !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   11. SEMANTIC BUTTON VARIANT RESTORATION (root-cause fix)
+   Section 1.3 strips background/border from ALL buttons — that erased
+   the fills of semantic variants, producing white text on white
+   surfaces (the reported "text disappears when I click/hover" bug).
+   This section restores the NGIS token fills AFTER the reset so the
+   variants always render correctly in every state, while the reset
+   keeps working for arbitrary/legacy buttons.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* 11.1 Primary (Forest Green fill, white text) */
+html body .btn-primary,
+html body .btn-gov-primary,
+html body .btn-forest,
+html body .ov-btn-main {
+  background: var(--color-primary, #176B45) !important;
+  background-color: var(--color-primary, #176B45) !important;
+  border: 1px solid var(--color-primary, #176B45) !important;
+  color: #FFFFFF !important;
+}
+html body .btn-primary:hover,
+html body .btn-gov-primary:hover,
+html body .btn-forest:hover,
+html body .ov-btn-main:hover {
+  background: var(--color-primary-hover, #125638) !important;
+  background-color: var(--color-primary-hover, #125638) !important;
+  color: #FFFFFF !important;
+}
+html body .btn-primary:active,
+html body .btn-primary.active,
+html body .btn-gov-primary:active,
+html body .btn-forest:active,
+html body .ov-btn-main:active {
+  background: var(--color-primary-pressed, #0D4029) !important;
+  background-color: var(--color-primary-pressed, #0D4029) !important;
+  color: #FFFFFF !important;
+}
+
+/* 11.2 Danger (red fill, white text) */
+html body .btn-danger,
+html body .btn-destructive {
+  background: var(--color-danger, #DC2626) !important;
+  background-color: var(--color-danger, #DC2626) !important;
+  border: 1px solid var(--color-danger, #DC2626) !important;
+  color: #FFFFFF !important;
+}
+html body .btn-danger:hover,
+html body .btn-destructive:hover {
+  background: var(--color-danger-hover, #B91C1C) !important;
+  background-color: var(--color-danger-hover, #B91C1C) !important;
+  color: #FFFFFF !important;
+}
+html body .btn-danger:active,
+html body .btn-danger.active,
+html body .btn-destructive:active {
+  background: #991B1B !important;
+  background-color: #991B1B !important;
+  color: #FFFFFF !important;
+}
+
+/* 11.3 Warning / Accent (amber fill, white text) */
+html body .btn-accent,
+html body .btn-warning {
+  background: var(--color-warning, #D97706) !important;
+  background-color: var(--color-warning, #D97706) !important;
+  border: 1px solid var(--color-warning, #D97706) !important;
+  color: #FFFFFF !important;
+}
+html body .btn-accent:hover,
+html body .btn-warning:hover {
+  background: var(--color-warning-hover, #B45309) !important;
+  background-color: var(--color-warning-hover, #B45309) !important;
+  color: #FFFFFF !important;
+}
+
+/* 11.4 Success */
+html body .btn-success {
+  background: var(--color-success, #176B45) !important;
+  background-color: var(--color-success, #176B45) !important;
+  color: #FFFFFF !important;
+}
+html body .btn-success:hover {
+  background: var(--color-success-hover, #125638) !important;
+  background-color: var(--color-success-hover, #125638) !important;
+  color: #FFFFFF !important;
+}
+
+/* 11.5 Secondary (white surface, subtle border, dark text) */
+html body .btn-secondary,
+html body .btn-gov-secondary {
+  background: var(--color-surface, #FFFFFF) !important;
+  background-color: var(--color-surface, #FFFFFF) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  color: var(--color-text, #29352E) !important;
+}
+html body .btn-secondary:hover,
+html body .btn-gov-secondary:hover,
+html body .btn-secondary:focus,
+html body .btn-gov-secondary:focus {
+  background: var(--color-primary-soft, #E8F3ED) !important;
+  background-color: var(--color-primary-soft, #E8F3ED) !important;
+  color: var(--color-primary, #176B45) !important;
+}
+
+/* 11.6 Soft (mint tint) */
+html body .btn-soft {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  color: var(--color-primary, #176B45) !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+}
+html body .btn-soft:hover {
+  background: #F7F9F7 !important;
+  background-color: #F7F9F7 !important;
+  color: var(--color-primary-hover, #125638) !important;
+}
+
+/* 11.7 Ghost / utility (transparent, muted text) */
+html body .btn-ghost,
+html body .btn-utility {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--color-text-secondary, #64746A) !important;
+}
+html body .btn-ghost:hover,
+html body .btn-utility:hover {
+  background: #F7F9F7 !important;
+  background-color: #F7F9F7 !important;
+  color: var(--color-primary, #176B45) !important;
+}
+
+/* 11.8 Text/icons inside filled buttons are ALWAYS white and visible */
+html body .btn-primary i,
+html body .btn-primary svg,
+html body .btn-primary span,
+html body .btn-danger i,
+html body .btn-danger svg,
+html body .btn-danger span,
+html body .btn-accent i,
+html body .btn-accent svg,
+html body .btn-accent span,
+html body .btn-warning i,
+html body .btn-warning svg,
+html body .btn-warning span,
+html body .btn-success i,
+html body .btn-success svg,
+html body .btn-success span {
+  color: #FFFFFF !important;
+}
+
+/* 11.9 Disabled buttons stay readable */
+html body .btn-primary:disabled,
+html body .btn-danger:disabled,
+html body .btn-accent:disabled,
+html body .btn-warning:disabled,
+html body .btn-success:disabled,
+html body .btn:disabled {
+  opacity: 0.55 !important;
+  cursor: not-allowed !important;
+}
+
+/* 11.10 Keyboard focus ring restored (the reset removed outlines) */
+html body .btn:focus-visible,
+html body button:focus-visible,
+html body [role="button"]:focus-visible {
+  outline: 2px solid var(--color-primary, #176B45) !important;
+  outline-offset: 2px !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   12. GLOBAL SELECT / DROPDOWN TRIGGER STANDARD (Part 9)
+   Every native select gets a visible chevron, a subtle border, a
+   consistent control height and readable dark text — in every portal.
+   Placed last so it wins over any earlier background resets that
+   stripped the chevron background-image.
+   ════════════════════════════════════════════════════════════════════ */
+html body select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-color: var(--color-surface, #FFFFFF) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364746A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+  background-size: 14px 14px !important;
+  border: 1px solid var(--color-border, #E1E9E3) !important;
+  border-radius: var(--radius-md, 8px) !important;
+  min-height: 40px !important;
+  padding: 0 34px 0 12px !important;
+  color: var(--color-text, #29352E) !important;
+  font-family: var(--font-primary) !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+}
+html body select:hover {
+  border-color: var(--color-primary, #176B45) !important;
+}
+html body select:focus {
+  border-color: var(--color-primary, #176B45) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.15) !important;
+}
+html body select:disabled {
+  background-color: #F1F5F9 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23A5B4AA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+  color: var(--color-text-muted, #8FA095) !important;
+  cursor: not-allowed !important;
+}
+html body select option {
+  background: var(--color-surface, #FFFFFF);
+  color: var(--color-text, #29352E);
+}
+
+/* ── 12.1 Restore Tailwind-utility filled buttons (pages using Tailwind CDN) ──
+   Section 1.3's transparent reset also hits <button> elements carrying
+   bg-[#176B45]-style utilities, producing invisible white-on-white buttons.
+   Restore the NGIS semantic fills for those utilities. */
+html body [class*="bg-[#176B45]"],
+html body [class*="bg-[#0F5132]"],
+html body [class*="bg-[#0f5132]"],
+html body [class*="bg-primary"],
+html body [class*="bg-emerald-700"],
+html body [class*="bg-emerald-600"] {
+  background-color: #176B45 !important;
+  color: #FFFFFF !important;
+}
+html body [class*="bg-[#176B45]"]:hover,
+html body [class*="bg-[#0F5132]"]:hover,
+html body [class*="bg-[#0f5132]"]:hover,
+html body [class*="bg-primary"]:hover,
+html body [class*="bg-emerald-700"]:hover,
+html body [class*="bg-emerald-600"]:hover {
+  background-color: #125638 !important;
+  color: #FFFFFF !important;
+}
+html body [class*="bg-emerald-500"] {
+  background-color: var(--color-primary, #176B45) !important;
+  color: #FFFFFF !important;
+}
+html body [class*="bg-rose-600"],
+html body [class*="bg-red-600"],
+html body [class*="bg-red-500"] {
+  background-color: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+html body [class*="bg-rose-600"]:hover,
+html body [class*="bg-red-600"]:hover,
+html body [class*="bg-red-500"]:hover {
+  background-color: #B91C1C !important;
+  color: #FFFFFF !important;
+}
+html body [class*="bg-amber-500"],
+html body [class*="bg-amber-600"],
+html body [class*="bg-orange-500"] {
+  background-color: #D97706 !important;
+  color: #FFFFFF !important;
+}
+html body [class*="bg-amber-500"]:hover,
+html body [class*="bg-amber-600"]:hover,
+html body [class*="bg-orange-500"]:hover {
+  background-color: #B45309 !important;
+  color: #FFFFFF !important;
+}
+
+/* ── 13. Mobile topbar fit (≤480px) ───────────────────────────────────
+   On very narrow screens the user-chip name/role text crowds the page
+   title. Keep the avatar + chevron, drop the text — the identity is
+   fully available in the account menu. */
+@media (max-width: 480px) {
+  html body .user-chip .nm,
+  html body .user-chip .rl {
+    display: none !important;
+  }
+  html body .user-chip {
+    gap: 4px !important;
+  }
+}
+
+/* ── 14. Master Mobile App Bar & iOS Safe-Area Architecture ────────────────
+   Ensures sticky mobile headers never overlap content, have 100% opaque solid
+   backgrounds, support safe-area insets (notches, Dynamic Island, home bar),
+   and suppress duplicate browser-injected select chevrons. */
+header.lg\:hidden,
+.mobile-appbar,
+.htb-topbar-mobile,
+[data-purpose="mobile-header"] {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 45 !important;
+  background-color: #FFFFFF !important;
+  padding-top: max(10px, env(safe-area-inset-top, 0px)) !important;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)) !important;
+  padding-right: max(16px, env(safe-area-inset-right, 0px)) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  isolation: isolate;
+}
+
+[data-theme="dark"] header.lg\:hidden,
+[data-theme="dark"] .mobile-appbar,
+[data-theme="dark"] .htb-topbar-mobile,
+[data-theme="dark"] [data-purpose="mobile-header"] {
+  background-color: #0F172A !important;
+  border-bottom-color: #334155 !important;
+}
+
+/* Eliminate duplicate dropdown chevrons from Tailwind forms plugin */
+select.appearance-none,
+select[class*="appearance-none"],
+select[class*="select-clean"] {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: none !important;
+}
+select::-ms-expand {
+  display: none !important;
+}
+
+/* Mobile KPI cards - Compact 2-column grid padding */
+@media (max-width: 639px) {
+  .telemetry-card,
+  [data-purpose*="metric"] > div,
+  [data-purpose*="kpi"] > div {
+    padding: 0.75rem 0.875rem !important;
+  }
+}
+
+/* ── Sidebar icons: always light weight (including active rows) ──
+   Official Bootstrap SVGs are unaffected; the rule also keeps the
+   Material Symbols ligature fallback (if any slot is unhydrated) at
+   weight 400 instead of inheriting the active row's 500 weight. */
+html body #sidebar.sidebar .nav-icon,
+html body #sidebar.sidebar .nav-link-icon,
+html body #sidebar.sidebar .nav-group-icon,
+html body #sidebar.sidebar .nav-link.active .nav-icon,
+html body #sidebar.sidebar .nav-link.active .nav-link-icon,
+html body #sidebar.sidebar .nav-link[aria-current="page"] .nav-icon,
+html body #sidebar.sidebar .side-foot .nav-icon {
+  font-weight: 400 !important;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+}
+
+
+/* ============================================================
+   ADMIN PORTAL MASTER STANDARDIZATION — SHARED ARCHITECTURE
+   ============================================================ */
+
+/* ── 1. Bulletproof Global Button Contrast & State System ── */
+/* Ensure zero disappearing buttons, zero white-on-white text */
+
+/* Base button rules across Admin Portal */
+body[data-role="admin"] button,
+body[data-portal="admin"] button,
+body[data-role="admin"] a.btn,
+body[data-portal="admin"] a.btn,
+body[data-role="admin"] .btn,
+body[data-portal="admin"] .btn,
+body[data-role="admin"] [role="button"],
+body[data-portal="admin"] [role="button"],
+body[data-role="admin"] .action-icon-btn,
+body[data-portal="admin"] .action-icon-btn,
+body[data-role="admin"] .smx-btn,
+body[data-portal="admin"] .smx-btn {
+  font-family: inherit;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+}
+
+/* Secondary & Neutral Buttons (White background with crisp slate text) */
+body[data-role="admin"] .btn-secondary,
+body[data-portal="admin"] .btn-secondary,
+body[data-role="admin"] .btn-neutral,
+body[data-portal="admin"] .btn-neutral,
+body[data-role="admin"] .btn-outline,
+body[data-portal="admin"] .btn-outline,
+body[data-role="admin"] .btn-default,
+body[data-portal="admin"] .btn-default,
+body[data-role="admin"] .btn-white,
+body[data-portal="admin"] .btn-white,
+body[data-role="admin"] button.btn-secondary,
+body[data-portal="admin"] button.btn-secondary,
+body[data-role="admin"] a.btn-secondary,
+body[data-portal="admin"] a.btn-secondary,
+body[data-role="admin"] .smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost),
+body[data-portal="admin"] .smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost),
+body[data-role="admin"] #btnViewAuditLog,
+body[data-portal="admin"] #btnViewAuditLog,
+body[data-role="admin"] .ov-btn:not(.ov-btn--primary),
+body[data-portal="admin"] .ov-btn:not(.ov-btn--primary) {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  color: #1E293B !important;
+  border: 1px solid #CBD5E1 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+body[data-role="admin"] .btn-secondary:hover:not(:disabled),
+body[data-portal="admin"] .btn-secondary:hover:not(:disabled),
+body[data-role="admin"] .btn-neutral:hover:not(:disabled),
+body[data-portal="admin"] .btn-neutral:hover:not(:disabled),
+body[data-role="admin"] .btn-outline:hover:not(:disabled),
+body[data-portal="admin"] .btn-outline:hover:not(:disabled),
+body[data-role="admin"] .btn-default:hover:not(:disabled),
+body[data-portal="admin"] .btn-default:hover:not(:disabled),
+body[data-role="admin"] .btn-white:hover:not(:disabled),
+body[data-portal="admin"] .btn-white:hover:not(:disabled),
+body[data-role="admin"] button.btn-secondary:hover:not(:disabled),
+body[data-portal="admin"] button.btn-secondary:hover:not(:disabled),
+body[data-role="admin"] a.btn-secondary:hover:not(:disabled),
+body[data-portal="admin"] a.btn-secondary:hover:not(:disabled),
+body[data-role="admin"] .smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost):hover:not(:disabled),
+body[data-portal="admin"] .smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost):hover:not(:disabled),
+body[data-role="admin"] #btnViewAuditLog:hover:not(:disabled),
+body[data-portal="admin"] #btnViewAuditLog:hover:not(:disabled),
+body[data-role="admin"] .ov-btn:not(.ov-btn--primary):hover:not(:disabled),
+body[data-portal="admin"] .ov-btn:not(.ov-btn--primary):hover:not(:disabled) {
+  background-color: #F8FAFC !important;
+  background: #F8FAFC !important;
+  color: #0F172A !important;
+  border-color: #94A3B8 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+body[data-role="admin"] .btn-secondary:active:not(:disabled),
+body[data-portal="admin"] .btn-secondary:active:not(:disabled),
+body[data-role="admin"] button.btn-secondary:active:not(:disabled),
+body[data-portal="admin"] button.btn-secondary:active:not(:disabled) {
+  background-color: #F1F5F9 !important;
+  background: #F1F5F9 !important;
+  color: #0F172A !important;
+  transform: scale(0.98) !important;
+}
+
+/* Secondary Buttons in Dark Mode */
+[data-theme="dark"] body[data-role="admin"] .btn-secondary,
+[data-theme="dark"] body[data-portal="admin"] .btn-secondary,
+[data-theme="dark"] body[data-role="admin"] button.btn-secondary,
+[data-theme="dark"] body[data-portal="admin"] button.btn-secondary,
+[data-theme="dark"] body[data-role="admin"] .smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost),
+[data-theme="dark"] body[data-portal="admin"] .smx-btn:not(.primary):not(.danger):not(.soft):not(.ghost) {
+  background-color: #1E293B !important;
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+[data-theme="dark"] body[data-role="admin"] .btn-secondary:hover:not(:disabled),
+[data-theme="dark"] body[data-portal="admin"] .btn-secondary:hover:not(:disabled),
+[data-theme="dark"] body[data-role="admin"] button.btn-secondary:hover:not(:disabled),
+[data-theme="dark"] body[data-portal="admin"] button.btn-secondary:hover:not(:disabled) {
+  background-color: #334155 !important;
+  background: #334155 !important;
+  color: #FFFFFF !important;
+  border-color: #475569 !important;
+}
+
+/* Ghost / Transparent / Subtle Action Buttons */
+body[data-role="admin"] .btn-ghost,
+body[data-portal="admin"] .btn-ghost,
+body[data-role="admin"] button.btn-ghost,
+body[data-portal="admin"] button.btn-ghost,
+body[data-role="admin"] .smx-btn.ghost,
+body[data-portal="admin"] .smx-btn.ghost,
+body[data-role="admin"] .action-icon-btn,
+body[data-portal="admin"] .action-icon-btn,
+body[data-role="admin"] table button:not(.btn-primary):not(.btn-danger),
+body[data-portal="admin"] table button:not(.btn-primary):not(.btn-danger),
+body[data-role="admin"] table .sk-action-btn,
+body[data-portal="admin"] table .sk-action-btn,
+body[data-role="admin"] table .icon-btn,
+body[data-portal="admin"] table .icon-btn {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: #475569 !important;
+  border: 1px solid transparent !important;
+}
+
+body[data-role="admin"] .btn-ghost:hover:not(:disabled),
+body[data-portal="admin"] .btn-ghost:hover:not(:disabled),
+body[data-role="admin"] button.btn-ghost:hover:not(:disabled),
+body[data-portal="admin"] button.btn-ghost:hover:not(:disabled),
+body[data-role="admin"] .smx-btn.ghost:hover:not(:disabled),
+body[data-portal="admin"] .smx-btn.ghost:hover:not(:disabled),
+body[data-role="admin"] .action-icon-btn:hover:not(:disabled),
+body[data-portal="admin"] .action-icon-btn:hover:not(:disabled),
+body[data-role="admin"] table button:not(.btn-primary):not(.btn-danger):hover:not(:disabled),
+body[data-portal="admin"] table button:not(.btn-primary):not(.btn-danger):hover:not(:disabled),
+body[data-role="admin"] table .sk-action-btn:hover:not(:disabled),
+body[data-portal="admin"] table .sk-action-btn:hover:not(:disabled),
+body[data-role="admin"] table .icon-btn:hover:not(:disabled),
+body[data-portal="admin"] table .icon-btn:hover:not(:disabled) {
+  background-color: #F1F5F9 !important;
+  background: #F1F5F9 !important;
+  color: #0F172A !important;
+  border-color: #E2E8F0 !important;
+}
+
+/* Ghost Buttons in Dark Mode */
+[data-theme="dark"] body[data-role="admin"] .btn-ghost,
+[data-theme="dark"] body[data-portal="admin"] .btn-ghost,
+[data-theme="dark"] body[data-role="admin"] .action-icon-btn,
+[data-theme="dark"] body[data-portal="admin"] .action-icon-btn,
+[data-theme="dark"] body[data-role="admin"] table button:not(.btn-primary):not(.btn-danger),
+[data-theme="dark"] body[data-portal="admin"] table button:not(.btn-primary):not(.btn-danger) {
+  color: #94A3B8 !important;
+}
+[data-theme="dark"] body[data-role="admin"] .btn-ghost:hover:not(:disabled),
+[data-theme="dark"] body[data-portal="admin"] .btn-ghost:hover:not(:disabled),
+[data-theme="dark"] body[data-role="admin"] .action-icon-btn:hover:not(:disabled),
+[data-theme="dark"] body[data-portal="admin"] .action-icon-btn:hover:not(:disabled),
+[data-theme="dark"] body[data-role="admin"] table button:not(.btn-primary):not(.btn-danger):hover:not(:disabled),
+[data-theme="dark"] body[data-portal="admin"] table button:not(.btn-primary):not(.btn-danger):hover:not(:disabled) {
+  background-color: #1E293B !important;
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+
+/* Pagination Buttons Standard */
+body[data-role="admin"] .pagination-btn,
+body[data-portal="admin"] .pagination-btn,
+body[data-role="admin"] .smx-pg-btn,
+body[data-portal="admin"] .smx-pg-btn,
+body[data-role="admin"] nav[aria-label*="agination"] button,
+body[data-portal="admin"] nav[aria-label*="agination"] button {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #334155 !important;
+  font-weight: 500 !important;
+  border-radius: 8px !important;
+  transition: all 0.15s ease !important;
+}
+
+body[data-role="admin"] .pagination-btn:hover:not(:disabled),
+body[data-portal="admin"] .pagination-btn:hover:not(:disabled),
+body[data-role="admin"] .smx-pg-btn:hover:not(:disabled),
+body[data-portal="admin"] .smx-pg-btn:hover:not(:disabled),
+body[data-role="admin"] nav[aria-label*="agination"] button:hover:not(:disabled) {
+  background-color: #F1F5F9 !important;
+  background: #F1F5F9 !important;
+  border-color: #94A3B8 !important;
+  color: #0F172A !important;
+}
+
+body[data-role="admin"] .pagination-btn.active,
+body[data-portal="admin"] .pagination-btn.active,
+body[data-role="admin"] .smx-pg-btn.active,
+body[data-portal="admin"] .smx-pg-btn.active,
+body[data-role="admin"] nav[aria-label*="agination"] button[aria-current="page"] {
+  background-color: #176B45 !important;
+  background: #176B45 !important;
+  border-color: #176B45 !important;
+  color: #FFFFFF !important;
+}
+
+/* ── 2. Standardized Search Bar Architecture ── */
+/* NOTE: the previous `div:has(> input[type="search"])` /
+   `div:has(> input[placeholder*="Search" i])` arms were removed.
+   They turned ANY block container that happens to hold a search input
+   into `display: inline-flex`, which shrinks it to content width and
+   makes full-width toolbars/search bars appear randomly centered.
+   Real search bars are wrapped in .ngis-search by ngis-search.js. */
+.smx-search,
+.ngis-search-capsule,
+.search-container,
+.tp-search-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.smx-search .smx-search-icon,
+.ngis-search-capsule .search-icon,
+.search-container .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748B !important;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  background: transparent !important;
+  border: none !important;
+}
+
+.smx-search input[type="search"],
+.smx-search input.smx-input,
+.ngis-search-capsule input,
+.search-container input,
+.tp-search-input {
+  padding-left: 38px !important;
+  padding-right: 14px !important;
+  height: 38px !important;
+  font-size: 13px !important;
+  border: 1px solid #CBD5E1 !important;
+  border-radius: 8px !important;
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  width: 100% !important;
+  outline: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.smx-search input[type="search"]:focus,
+.smx-search input.smx-input:focus,
+.ngis-search-capsule input:focus,
+.search-container input:focus,
+.tp-search-input:focus {
+  border-color: #176B45 !important;
+  box-shadow: 0 0 0 2px rgba(23, 107, 69, 0.15) !important;
+}
+
+[data-theme="dark"] .smx-search input[type="search"],
+[data-theme="dark"] .smx-search input.smx-input,
+[data-theme="dark"] .ngis-search-capsule input,
+[data-theme="dark"] .search-container input {
+  background-color: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+/* ── 3. Global Modal & Popup Stacking Fix (Sidebar Never Overlaps Modals) ── */
+.modal-backdrop,
+.modal-overlay,
+.dialog-backdrop,
+[data-purpose*="modal-backdrop"],
+.ngis-modal-backdrop,
+#aaBackdrop,
+#cmBackdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(15, 23, 42, 0.55) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+  backdrop-filter: blur(3px) !important;
+  z-index: 9990 !important;
+}
+
+.modal,
+.modal-dialog,
+.dialog-content,
+[data-purpose*="modal-dialog"],
+.ngis-modal,
+#aaModal,
+#cmModal,
+#modalAddClass,
+#modalAddCampus,
+#modalEditDept,
+#modalLostFound,
+#modalAssignFaculty,
+#reportModal,
+#returnModal {
+  z-index: 9999 !important;
+}
+
+/* Ensure mobile sidebar stays behind open modals */
+body.modal-open #sidebar,
+body.modal-open #sidebarDrawer,
+body:has(.modal:not(.hidden)) #sidebar,
+body:has(.modal-backdrop:not(.hidden)) #sidebar,
+body:has(#modalAddClass:not(.hidden)) #sidebar,
+body:has(#aaModal:not(.hidden)) #sidebar,
+body:has(#reportModal:not(.hidden)) #sidebar,
+body:has(#returnModal:not(.hidden)) #sidebar,
+body:has(#reportModal:not(.hidden)) #sidebarDrawer,
+body:has(#returnModal:not(.hidden)) #sidebarDrawer {
+  z-index: 50 !important;
+}
+
+/* Modal Internal Responsive Scrolling & Sizing */
+.modal-dialog,
+.modal-container,
+[data-purpose*="modal-container"] {
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  border-radius: 12px !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ── 4. Global Show More / Show Less Bottom Placement Standard ── */
+.show-more-bar,
+.expansion-control-container,
+[data-action="show-more-toggle"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  background: #F8FAFC;
+  border-top: 1px solid #E2E8F0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  margin-top: 0;
+}
+.show-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #176B45;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.show-more-btn:hover {
+  color: #125638;
+  text-decoration: underline;
+}
+[data-theme="dark"] .show-more-bar {
+  background: #1E293B;
+  border-top-color: #334155;
+}
+[data-theme="dark"] .show-more-btn {
+  color: #4ADE80;
+}
+
+
+/* Dashboard Overview Card Footer Layout */
+.ov-foot {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 12px 18px !important;
+  font-size: 12px !important;
+  color: #64748B !important;
+  border-top: 1px solid #F1F5F9 !important;
+  margin-top: auto !important;
+}
+.ov-foot a {
+  color: #176B45 !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+}
+.ov-foot a:hover {
+  text-decoration: underline !important;
+}
+[data-theme="dark"] .ov-foot {
+  border-top-color: #1E293B !important;
+  color: #94A3B8 !important;
+}
+[data-theme="dark"] .ov-foot a {
+  color: #4ADE80 !important;
+}
+
+
+/* ==========================================================================
+   NGIS Global Motion System — Subtle Card Lift Effect on Interactive Cards
+   ========================================================================== */
+/* ==========================================================================
+   GLOBAL CARD HOVER LIFT & ACTIVE SCALE (Universal Motion Engine Standards)
+   ========================================================================== */
+@media (hover: hover) and (pointer: fine) {
+  html body [class*="card"]:not(.stat-card):not(.stat):not(.smx-kpi):not(.telemetry-card):not(.student-gov-card):not([class*="-body"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-chevron"]):hover,
+  html body .portal-card:hover,
+  html body .card-hover:hover,
+  html body .hub-card:hover,
+  html body .ql-card:hover,
+  html body .module-card:hover,
+  html body .dept-card:hover,
+  html body .lesson-card:hover,
+  html body .task-card:hover,
+  html body .ann-card:hover,
+  html body .exam-card:hover,
+  html body .subj-card:hover,
+  html body .interactive-card:hover,
+  html body .exw-timeline-card:hover,
+  html body .exw-roadmap-row:hover,
+  html body .ngis-card-lifted {
+    transform: translateY(-2.5px) scale(1.007) !important;
+    box-shadow: 0 8px 24px -4px rgba(15, 23, 20, 0.08), 0 2px 6px -2px rgba(15, 23, 20, 0.04) !important;
+    transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+}
+
+/* ==========================================================================
+   GLOBAL CARD INTERACTION INVARIANT: 100% Background & Structure Preservation
+   ========================================================================== */
+
+/* 1. Complete Background Preservation: Never transparent, never fragmented */
+.card,
+.hub-card,
+.dept-card,
+.portal-card,
+.module-card,
+.lesson-card,
+.ann-card,
+.exam-card,
+.stat-card,
+.task-card,
+.ql-card,
+.sh-card,
+.interactive-card,
+.card-hover,
+.card-clickable,
+.exw-roadmap-row,
+.exw-timeline-card,
+a.hub-card,
+a.dept-card,
+a.portal-card,
+a.module-card,
+a.interactive-card,
+a[class*="card"]:not([class*="-body"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-chevron"]) {
+  background: var(--hub-card-bg, #ffffff) !important;
+  background-color: var(--hub-card-bg, #ffffff) !important;
+  opacity: 1 !important;
+}
+
+/* 2. Preserve solid background during EVERY interaction state in light mode */
+html:not([data-theme="dark"]) :is(
+  .hub-card:hover,
+  .hub-card:focus,
+  .hub-card:focus-visible,
+  .hub-card:active,
+  .dept-card:hover,
+  .dept-card:focus,
+  .dept-card:focus-visible,
+  .dept-card:active,
+  .portal-card:hover,
+  .portal-card:focus,
+  .portal-card:focus-visible,
+  .portal-card:active,
+  .module-card:hover,
+  .module-card:focus,
+  .module-card:focus-visible,
+  .module-card:active,
+  .lesson-card:hover,
+  .lesson-card:focus,
+  .lesson-card:active,
+  .card-hover:hover,
+  .card-hover:focus,
+  .card-hover:active,
+  .card-clickable:hover,
+  .card-clickable:focus,
+  .card-clickable:active,
+  .interactive-card:hover,
+  .interactive-card:focus,
+  .interactive-card:active,
+  a.hub-card:hover,
+  a.hub-card:focus,
+  a.hub-card:focus-visible,
+  a.hub-card:active,
+  a.dept-card:hover,
+  a.dept-card:focus,
+  a.dept-card:focus-visible,
+  a.dept-card:active,
+  a.portal-card:hover,
+  a.portal-card:focus,
+  a.portal-card:focus-visible,
+  a.portal-card:active,
+  a.module-card:hover,
+  a.module-card:focus,
+  a.module-card:focus-visible,
+  a.module-card:active,
+  a[class*="card"]:not([class*="-body"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-chevron"]):hover,
+  a[class*="card"]:not([class*="-body"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-chevron"]):focus,
+  a[class*="card"]:not([class*="-body"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-chevron"]):active
+) {
+  background: var(--hub-card-bg, #ffffff) !important;
+  background-color: var(--hub-card-bg, #ffffff) !important;
+  opacity: 1 !important;
+}
+
+/* 3. Dark Theme background preservation */
+html[data-theme="dark"] body .hub-card,
+html[data-theme="dark"] body .hub-card:hover,
+html[data-theme="dark"] body .hub-card:focus,
+html[data-theme="dark"] body .hub-card:active,
+html[data-theme="dark"] body a.hub-card,
+html[data-theme="dark"] body a.hub-card:hover,
+html[data-theme="dark"] body a.hub-card:focus,
+html[data-theme="dark"] body a.hub-card:active,
+[data-theme="dark"] .hub-card,
+[data-theme="dark"] .hub-card:hover,
+[data-theme="dark"] .hub-card:focus,
+[data-theme="dark"] .hub-card:active,
+[data-theme="dark"] a.hub-card,
+[data-theme="dark"] a.hub-card:hover,
+[data-theme="dark"] a.hub-card:focus,
+[data-theme="dark"] a.hub-card:active {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] body .dept-card,
+html[data-theme="dark"] body .dept-card:hover,
+html[data-theme="dark"] body .dept-card:focus,
+html[data-theme="dark"] body .dept-card:active,
+html[data-theme="dark"] body .portal-card,
+html[data-theme="dark"] body .portal-card:hover,
+html[data-theme="dark"] body .portal-card:focus,
+html[data-theme="dark"] body .portal-card:active,
+html[data-theme="dark"] body .module-card,
+html[data-theme="dark"] body .module-card:hover,
+html[data-theme="dark"] body .module-card:focus,
+html[data-theme="dark"] body .module-card:active,
+html[data-theme="dark"] body a[class*="card"]:not([class*="-body"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-chevron"]),
+[data-theme="dark"] .dept-card,
+[data-theme="dark"] .dept-card:hover,
+[data-theme="dark"] .dept-card:focus,
+[data-theme="dark"] .dept-card:active,
+[data-theme="dark"] .portal-card,
+[data-theme="dark"] .portal-card:hover,
+[data-theme="dark"] .portal-card:focus,
+[data-theme="dark"] .portal-card:active,
+[data-theme="dark"] .module-card,
+[data-theme="dark"] .module-card:hover,
+[data-theme="dark"] .module-card:focus,
+[data-theme="dark"] .module-card:active,
+[data-theme="dark"] a[class*="card"]:not([class*="-body"]):not([class*="-head"]):not([class*="-footer"]):not([class*="-title"]):not([class*="-desc"]):not([class*="-icon"]):not([class*="-badge"]):not([class*="-action"]):not([class*="-chevron"]) {
+  background: #0f172a !important;
+  background-color: #0f172a !important;
+  opacity: 1 !important;
+}
+
+/* 4. Subtle Press Scale (0.97) for interactive cards */
+html body .hub-card:active,
+html body .portal-card:active,
+html body .dept-card:active,
+html body .module-card:active,
+html body .lesson-card:active,
+html body .card-hover:active,
+html body .card-clickable:active,
+html body .interactive-card:active,
+html body a[class*="card"]:not(.stat-card):not(.telemetry-card):active {
+  transform: scale(0.97) !important;
+  transition: transform 100ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}

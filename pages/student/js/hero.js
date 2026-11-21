@@ -106,6 +106,8 @@
   };
 
   var currFile = (window.location.pathname.split('/').pop() || 'student.html').toLowerCase();
+  var dashboardHeader = document.body.dataset.ngisNavbar === 'page';
+  var headerAvatar = dashboardHeader ? '../../assets/images/dashboard-student-portrait.jpg' : STUDENT.avatarSm;
   var defaultInfo = pageTitles[currFile] || {
     title: C.title || 'Student Portal',
     greeting: C.greeting || C.subtitle || ('Hello, ' + firstName + '! Ready to learn today?')
@@ -117,7 +119,7 @@
 
   /* ── Build HTML ── */
   var html =
-    '<div class="hero hero-main">' +
+    '<div class="hero hero-main' + (dashboardHeader ? ' student-dashboard-hero' : '') + '">' +
 
       '<!-- ── Tier 1: Main Header Bar ── -->' +
       '<div class="hero-topbar">' +
@@ -130,35 +132,44 @@
         '<!-- Center: Global Search Capsule -->' +
         '<div class="htb-search-wrap" role="search">' +
           '<span class="mi htb-search-icon" data-ngis-icon="search" aria-hidden="true">search</span>' +
-          '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses," aria-label="Search courses">' +
+          '<input type="search" class="htb-search-input" id="htbSearchInput" placeholder="Search courses, syllabi, tutors, grades…" aria-label="Search courses, syllabi, tutors, grades">' +
+          '<kbd class="htb-search-kbd">⌘ K</kbd>' +
         '</div>' +
 
         '<!-- Right: Controls & User Profile -->' +
         '<div class="htb-right-controls">' +
-          '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation">' +
-            '<span class="mi" data-ngis-icon="menu" aria-hidden="true">menu</span>' +
-          '</button>' +
+          '<a href="student-calendar.html" class="htb-ctrl-btn" id="htbCalBtn" title="Calendar" aria-label="Calendar">' +
+            '<span class="mi" data-ngis-icon="calendar">calendar_today</span>' +
+          '</a>' +
 
           '<button type="button" id="htbNotifBtn" class="htb-ctrl-btn" title="Notifications" aria-label="Notifications">' +
-            '<span class="mi" data-ngis-icon="notifications" aria-hidden="true">notifications</span>' +
+            '<span class="mi" data-ngis-icon="notifications">notifications</span>' +
             '<span class="htb-ctrl-badge">3</span>' +
           '</button>' +
 
-          '<a href="student-notifications.html" class="htb-ctrl-btn" id="htbMsgBtn" title="Messages" aria-label="Messages">' +
-            '<span class="mi" data-ngis-icon="mail" aria-hidden="true">mail</span>' +
+          '<button type="button" id="htbMailBtn" class="htb-ctrl-btn" title="Messages" aria-label="Messages">' +
+            '<span class="mi" data-ngis-icon="mail">mail</span>' +
             '<span class="htb-ctrl-badge">11</span>' +
-          '</a>' +
+          '</button>' +
+
+          '<div class="htb-ctrl-divider" aria-hidden="true"></div>' +
 
           '<div class="htb-profile-chip" id="htbProfile" role="button" tabindex="0" aria-label="Account menu" aria-haspopup="true" aria-expanded="false">' +
             '<div class="htb-chip-avatar-wrap">' +
-              '<img class="htb-chip-avatar" src="' + STUDENT.avatarSm + '" alt="' + STUDENT.name + '">' +
+              '<img class="htb-chip-avatar" src="../../assets/images/dashboard-student-portrait.jpg" alt="' + STUDENT.name + '">' +
+              '<span class="htb-chip-pip" aria-label="Online"></span>' +
             '</div>' +
             '<div class="htb-chip-text">' +
               '<div class="htb-chip-name-row">' +
                 '<span class="htb-chip-name">' + STUDENT.name + '</span>' +
               '</div>' +
+              '<span class="htb-chip-meta">Grade 10</span>' +
             '</div>' +
           '</div>' +
+
+          '<button type="button" class="htb-hamburger hamburger-btn mobile-hamburger-btn" id="htbHamburger" data-action="toggle-sidebar" aria-label="Open menu" aria-expanded="false" title="Open navigation" data-sidebar-bound="true">' +
+            '<span class="mi" data-ngis-icon="menu" aria-hidden="true">menu</span>' +
+          '</button>' +
         '</div>' +
 
       '</div>' +
@@ -416,6 +427,15 @@
         notifPanel.classList.add('open');
         notifBtn.classList.add('active');
       }
+    });
+  }
+
+  /* ── Mail / Messages button ── */
+  var mailBtn = document.getElementById('htbMailBtn');
+  if (mailBtn) {
+    mailBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      window.location.href = notifLink;
     });
   }
 

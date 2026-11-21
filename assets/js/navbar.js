@@ -321,10 +321,6 @@
         '<button type="button" class="ngis-account-link" id="ngisThemeToggleBtn">' +
           iconSvg("theme") + '<span id="ngisThemeLabel">Dark Mode</span>' +
         '</button>' +
-        '<div class="ngis-account-divider"></div>' +
-        '<a href="' + rootPrefix + 'index.html" class="ngis-account-link sign-out" id="ngisSignOutBtn">' +
-          iconSvg("logout") + '<span>Sign Out</span>' +
-        '</a>' +
       '</div>';
 
     return header;
@@ -801,7 +797,7 @@
    * Mount Navbar into DOM
    */
   function mountNavbar() {
-    if (document.getElementById("ngisGlobalNavbar")) return;
+    if (document.body.dataset.ngisNavbar === "page" || document.getElementById("ngisGlobalNavbar")) return;
 
     var oldMobile = document.getElementById("ngisMobileHeader");
     if (oldMobile && oldMobile.parentNode) oldMobile.parentNode.removeChild(oldMobile);

@@ -1,0 +1,1067 @@
+/* NGIS Simplified Examination Scheduling Workspace
+   Shared by student, teacher, principal and admin portals.
+   Scope: .exw / .exw-modal-scrim only — no global resets. */
+
+:root {
+  --exw-forest: #176B45;
+  --exw-forest-dark: #125537;
+  --exw-forest-soft: #EEF6F1;
+  --exw-ink: #1E293B;
+  --exw-muted: #64748B;
+  --exw-line: #E2E8E8;
+  --exw-canvas: #F7F9F7;
+  --exw-white: #FFFFFF;
+  --exw-warn: var(--color-warning-text, #B45309);
+  --exw-danger: var(--color-danger-text, #B02A37);
+}
+
+/* Mobile app bar: the shared pages no longer load Tailwind, so define its
+   visibility and base styling here while keeping hero.js's lg:hidden hook. */
+html body header#mobileMainAppbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  border-bottom: 1px solid var(--exw-line);
+  padding: 10px 14px;
+}
+@media (min-width: 1024px) {
+  html body header#mobileMainAppbar { display: none !important; }
+}
+
+html body .exw {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px var(--page-pad-x, 32px) 64px;
+  color: var(--exw-ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+html body .exw *,
+html body .exw *::before,
+html body .exw *::after { box-sizing: border-box; }
+
+html body .exw h1,
+html body .exw h2,
+html body .exw h3,
+html body .exw p { margin: 0; }
+
+html body .exw .exw-page-title {
+  font-size: 21px;
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #14271D;
+}
+html body .exw .exw-page-sub {
+  margin-top: 5px;
+  color: var(--exw-muted);
+  font-size: 12.5px;
+}
+html body .exw .exw-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+html body .exw .exw-card {
+  background: var(--exw-white);
+  border: 1px solid var(--exw-line);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+html body .exw .exw-card-pad { padding: 18px; }
+html body .exw .exw-section + .exw-section { margin-top: 18px; }
+html body .exw .exw-section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #14271D;
+}
+html body .exw .exw-section-sub { font-size: 12px; color: var(--exw-muted); margin-top: 3px; }
+
+/* Compact counters — computed from returned records, never hardcoded. */
+html body .exw .exw-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+html body .exw .exw-count {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid var(--exw-line);
+  border-radius: 9px;
+  font-size: 12px;
+  color: var(--exw-muted);
+}
+html body .exw .exw-count-num { font-size: 16px; color: #14271D; font-weight: 500; }
+
+/* Toolbar / filters */
+html body .exw .exw-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 14px 16px;
+}
+html body .exw .exw-field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+html body .exw .exw-field-label { font-size: 11px; color: var(--exw-muted); }
+html body .exw .exw-field-grow { flex: 1 1 220px; }
+html body .exw .exw-input,
+html body .exw .exw-select {
+  width: 100%;
+  height: 38px;
+  padding: 0 11px;
+  color: var(--exw-ink);
+  background-color: #fff;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+html body .exw .exw-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+html body .exw .exw-input::placeholder { color: #94A3B8; }
+html body .exw .exw-input:hover,
+html body .exw .exw-select:hover { border-color: #94A3B8; }
+html body .exw .exw-input:focus,
+html body .exw .exw-select:focus {
+  border-color: var(--exw-forest);
+  box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.12);
+}
+html body .exw .exw-hint {
+  font-size: 11px;
+  color: var(--exw-muted);
+  border: 1px solid var(--exw-line);
+  border-radius: 5px;
+  padding: 1px 5px;
+  background: #F8FAF8;
+}
+
+/* Buttons — explicit overrides because the global ui-cleanup.css flattens buttons. */
+html body .exw button.exw-btn,
+html body .exw-modal-scrim button.exw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 13px;
+  border-radius: 8px;
+  border: 1px solid #CBD5E1;
+  background: #fff;
+  color: #26372D;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+html body .exw button.exw-btn:hover,
+html body .exw-modal-scrim button.exw-btn:hover { background: #F1F5F2; border-color: #94A3B8; }
+html body .exw button.exw-btn:focus-visible,
+html body .exw-modal-scrim button.exw-btn:focus-visible { outline: 2px solid var(--exw-forest); outline-offset: 2px; }
+html body .exw button.exw-btn-primary,
+html body .exw-modal-scrim button.exw-btn-primary {
+  background: var(--exw-forest) !important;
+  border-color: var(--exw-forest) !important;
+  color: #fff !important;
+}
+html body .exw button.exw-btn-primary:hover,
+html body .exw-modal-scrim button.exw-btn-primary:hover {
+  background: var(--exw-forest-dark) !important;
+  border-color: var(--exw-forest-dark) !important;
+}
+html body .exw button.exw-btn-danger { color: var(--exw-danger) !important; }
+html body .exw button.exw-btn-danger:hover { background: #FEF2F2 !important; border-color: #FCA5A5 !important; }
+html body .exw button.exw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+html body .exw button.exw-link {
+  border: 0;
+  background: transparent;
+  padding: 3px 4px;
+  color: var(--exw-forest);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+html body .exw button.exw-link:hover { text-decoration: underline; }
+html body .exw button.exw-link.exw-link-danger { color: var(--exw-danger); }
+
+/* Tabs */
+html body .exw .exw-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--exw-line);
+  padding: 0 16px;
+}
+html body .exw button.exw-tab {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  padding: 12px 4px 10px;
+  margin-right: 12px;
+  color: var(--exw-muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+html body .exw button.exw-tab:hover { color: var(--exw-forest); }
+html body .exw button.exw-tab.active { color: var(--exw-forest); border-bottom-color: var(--exw-forest); }
+
+/* Schedule cards */
+html body .exw .exw-list { display: flex; flex-direction: column; gap: 10px; padding: 0; margin: 0; list-style: none; }
+html body .exw .exw-exam {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--exw-line);
+  border-radius: 10px;
+  background: #fff;
+}
+html body .exw .exw-exam:hover { border-color: #B9CFC2; }
+html body .exw .exw-date {
+  text-align: center;
+  padding: 8px 4px;
+  border-radius: 8px;
+  background: var(--exw-forest-soft);
+  color: var(--exw-forest-dark);
+  line-height: 1.15;
+}
+html body .exw .exw-date-day { display: block; font-size: 21px; font-weight: 500; }
+html body .exw .exw-date-month { display: block; font-size: 11px; margin-top: 3px; text-transform: uppercase; }
+html body .exw .exw-exam-main { min-width: 0; }
+html body .exw .exw-subject {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #15291E;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+html body .exw .exw-meta { margin-top: 5px; color: var(--exw-muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+html body .exw .exw-meta span { white-space: nowrap; }
+html body .exw .exw-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+html body .exw .exw-time { font-size: 13px; color: #26372D; white-space: nowrap; }
+html body .exw .exw-status { font-size: 11.5px; color: var(--exw-muted); }
+html body .exw .exw-status::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #94A3B8;
+  margin-right: 6px;
+  vertical-align: 1px;
+}
+html body .exw .exw-status.is-published::before,
+html body .exw .exw-status.is-approved::before { background: var(--exw-forest); }
+html body .exw .exw-status.is-submitted::before { background: #D97706; }
+html body .exw .exw-status.is-conflict::before,
+html body .exw .exw-status.is-rejected::before { background: var(--exw-danger); }
+html body .exw .exw-inline-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+
+/* Data table (becomes stacked rows on small screens) */
+html body .exw .exw-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+html body .exw .exw-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: #F5F7F5;
+  color: #526158;
+  font-weight: 500;
+  border-bottom: 1px solid var(--exw-line);
+  white-space: nowrap;
+}
+html body .exw .exw-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #EEF2EF;
+  vertical-align: middle;
+  color: #26372D;
+}
+html body .exw .exw-table tr:last-child td { border-bottom: 0; }
+html body .exw .exw-table tbody tr:hover { background: #FAFCFA; }
+html body .exw .exw-table .exw-subject-cell { color: #15291E; font-weight: 500; }
+html body .exw .exw-table .exw-secondary { display: block; color: var(--exw-muted); font-size: 11px; margin-top: 2px; }
+
+html body .exw .exw-empty {
+  padding: 44px 20px;
+  text-align: center;
+  color: var(--exw-muted);
+}
+html body .exw .exw-empty-title { font-size: 14px; color: #26372D; }
+html body .exw .exw-empty-note { font-size: 12px; margin-top: 4px; }
+html body .exw .exw-note {
+  padding: 10px 14px;
+  border: 1px solid #FCD9A8;
+  background: #FFFBEF;
+  color: #8A5A0B;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+/* Vertical create / edit form */
+html body .exw .exw-form { display: flex; flex-direction: column; gap: 14px; }
+html body .exw .exw-form label.exw-label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #415249; }
+html body .exw .exw-form .exw-label-required { color: var(--exw-danger); }
+html body .exw .exw-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+html body .exw .exw-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  background: #fff;
+}
+html body .exw .exw-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #26372D;
+  cursor: pointer;
+}
+html body .exw .exw-check input { width: 15px; height: 15px; accent-color: var(--exw-forest); }
+html body .exw .exw-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--exw-line);
+}
+
+/* Modal — scrim is appended to document.body so the app shell dims correctly. */
+html body .exw-modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.36);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+html body .exw-modal-scrim.show { display: flex; }
+html body .exw-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: min(88vh, 820px);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #DCE5DF;
+  border-radius: 14px;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
+}
+html body .exw-modal.exw-modal-wide { max-width: 720px; }
+html body .exw-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--exw-line);
+}
+html body .exw-modal-title { font-size: 15px; font-weight: 500; color: #14271D; }
+html body .exw-modal-sub { font-size: 12px; color: var(--exw-muted); margin-top: 3px; }
+html body .exw-modal-body { padding: 18px; }
+html body .exw-modal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--exw-line);
+  background: #FCFDFC;
+}
+html body button.exw-modal-close {
+  border: 0;
+  background: transparent;
+  color: #64748B;
+  font-size: 20px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+html body button.exw-modal-close:hover { color: #14271D; }
+
+html body .exw-modal .exw-review-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid #F1F5F2;
+  font-size: 12.5px;
+}
+html body .exw-modal .exw-review-line span:first-child { color: var(--exw-muted); }
+html body .exw-modal .exw-review-line span:last-child { color: #1E293B; text-align: right; }
+
+html body .exw-activity { list-style: none; margin: 0; padding: 0; }
+html body .exw-activity li {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #F1F5F2;
+  font-size: 12px;
+}
+html body .exw-activity li:last-child { border-bottom: 0; }
+html body .exw-activity time { color: var(--exw-muted); }
+html body .exw-activity strong { font-weight: 500; color: #26372D; }
+html body .exw-activity p { margin-top: 2px; color: var(--exw-muted); }
+
+html body .exw-toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1500;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 11px 16px;
+  border-radius: 9px;
+  background: #173C2A;
+  color: #fff;
+  font-size: 12.5px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.2);
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+html body .exw-toast.show { opacity: 1; transform: translateY(0); }
+html body .exw-toast.is-error { background: #991B1B; }
+
+@media (max-width: 1024px) {
+  html body .exw { padding: 20px var(--page-pad-x, 24px) 48px; }
+}
+
+@media (max-width: 768px) {
+  html body .exw { padding: 16px 0 56px !important; }
+  html body .exw .exw-exam { grid-template-columns: 78px minmax(0, 1fr); }
+  html body .exw .exw-right { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+}
+
+@media (max-width: 760px) {
+  html body .exw .exw-table thead { display: none; }
+  html body .exw .exw-table,
+  html body .exw .exw-table tbody,
+  html body .exw .exw-table tr,
+  html body .exw .exw-table td { display: block; width: 100%; }
+  html body .exw .exw-table tr {
+    border: 1px solid var(--exw-line);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 6px 12px;
+    background: #fff;
+  }
+  html body .exw .exw-table td {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #F1F5F2;
+    text-align: left;
+  }
+  html body .exw .exw-table td:last-child { border-bottom: 0; }
+  html body .exw .exw-table td::before {
+    content: attr(data-label);
+    color: var(--exw-muted);
+    font-size: 11px;
+  }
+  html body .exw .exw-form-row { grid-template-columns: 1fr; }
+  html body .exw .exw-modal-scrim { padding: 8px; align-items: flex-end; }
+  html body .exw-modal { max-width: none; max-height: 92vh; border-radius: 14px 14px 0 0; }
+}
+
+@media (max-width: 480px) {
+  html body .exw .exw-toolbar { padding: 12px; gap: 10px; }
+  html body .exw .exw-field-grow { flex-basis: 100%; }
+  html body .exw .exw-exam { padding: 12px; gap: 10px; }
+  html body .exw .exw-date { padding: 7px 2px; }
+  html body .exw .exw-date-day { font-size: 18px; }
+  html body .exw .exw-inline-actions { justify-content: flex-start; }
+  html body .exw button.exw-btn { padding: 0 10px; }
+}
+
+/* ==========================================================================
+   SUBSEQUENT EXAMINATIONS ROADMAP (Pixel-Perfect Reference Architecture)
+   ========================================================================== */
+html body .exw-roadmap-container,
+html body .exw-roadmap-card {
+  background: #ffffff !important;
+  border-radius: 24px !important;
+  border: 1px solid #eef2f6 !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02) !important;
+  padding: 28px 32px 32px 32px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+html body .exw-roadmap-head {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 24px !important;
+  border-bottom: none !important;
+}
+
+html body .exw-roadmap-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+html body .exw-roadmap-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+  background-color: #0284c7 !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+}
+
+html body .exw-roadmap-title {
+  font-size: 18px !important;
+  font-weight: 500 !important; /* STRICT NO BOLD RULE */
+  color: #0f172a !important;
+  letter-spacing: -0.015em !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+}
+
+html body .exw-roadmap-subtitle {
+  font-size: 13px !important;
+  color: #64748b !important;
+  font-weight: 400 !important;
+  margin: 3px 0 0 0 !important;
+  line-height: 1.35 !important;
+}
+
+html body .exw-roadmap-tools {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+html body .exw-roadmap-search-wrap,
+html body .exw-roadmap-search-wrap.ngis-search {
+  position: relative !important;
+  width: 210px !important;
+  height: 36px !important;
+  flex-shrink: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 9999px !important;
+}
+
+html body .exw-roadmap-search-icon {
+  position: absolute !important;
+  left: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #94a3b8 !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  pointer-events: none !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+html body #roadmapFilter.exw-roadmap-search,
+html body .exw-roadmap-container input#roadmapFilter,
+html body .exw-roadmap-search {
+  width: 100% !important;
+  height: 36px !important;
+  padding: 0 16px 0 34px !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
+  background: #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
+  border: 1px solid transparent !important;
+  border-radius: 9999px !important;
+  color: #1e293b !important;
+  outline: none !important;
+  transition: all 0.15s ease !important;
+  box-sizing: border-box !important;
+}
+
+html body #roadmapFilter.exw-roadmap-search::placeholder,
+html body .exw-roadmap-container input#roadmapFilter::placeholder,
+html body .exw-roadmap-search::placeholder {
+  color: #94a3b8 !important;
+}
+
+html body #roadmapFilter.exw-roadmap-search:focus,
+html body .exw-roadmap-container input#roadmapFilter:focus,
+html body .exw-roadmap-search:focus {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12) !important;
+}
+
+html body .exw-roadmap-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 32px !important;
+  padding: 0 14px !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  background-color: #e0f2fe !important;
+  color: #0284c7 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  border: none !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Timeline Layout */
+html body .exw-timeline-wrap {
+  position: relative !important;
+}
+
+html body .exw-timeline-item {
+  display: flex !important;
+  align-items: stretch !important;
+  position: relative !important;
+  margin-bottom: 14px !important;
+}
+
+html body .exw-timeline-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+html body .exw-timeline-spine {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  margin-right: 18px !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  width: 30px !important;
+}
+
+html body .exw-timeline-node {
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 9999px !important;
+  background-color: #0b1329 !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  z-index: 2 !important;
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+  box-shadow: 0 1px 3px rgba(11, 19, 41, 0.15) !important;
+}
+
+/* Connecting spine line */
+html body .exw-timeline-line {
+  width: 2px !important;
+  position: absolute !important;
+  top: 32px !important;
+  bottom: -14px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 1 !important;
+}
+
+html body .exw-timeline-line.exw-timeline-line-blue {
+  background-color: #2563eb !important;
+}
+
+html body .exw-timeline-line.exw-timeline-line-grey {
+  background-color: #e2e8f0 !important;
+}
+
+html body .exw-timeline-line.exw-timeline-line-end {
+  bottom: auto !important;
+  height: 24px !important;
+  background: linear-gradient(to bottom, #e2e8f0, rgba(226, 232, 240, 0)) !important;
+}
+
+/* Examination Row Container */
+html body .exw-roadmap-row,
+html body .exw-timeline-card {
+  flex: 1 !important;
+  min-width: 0 !important;
+  border-radius: 12px !important;
+  background: #f8fafc !important;
+  background-color: #f8fafc !important;
+  border: 1px solid transparent !important;
+  padding: 10px 18px 12px 18px !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
+  cursor: pointer !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
+}
+
+html body .exw-roadmap-row:hover,
+html body .exw-timeline-card:hover {
+  background: #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  transform: translateY(-1.5px) !important;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+html body .exw-roadmap-row:active,
+html body .exw-timeline-card:active {
+  transform: scale(0.995) !important;
+}
+
+/* Tier 1: Row Top (Date Pill, Room, Evaluator) */
+html body .exw-roadmap-row-top {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-height: 20px !important;
+}
+
+html body .exw-roadmap-meta {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+/* Date/Time Pills */
+html body .exw-pill-time {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 2.5px 8px !important;
+  border-radius: 9999px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+  white-space: nowrap !important;
+  line-height: 1.25 !important;
+}
+
+html body .exw-pill-time.exw-pill-highlight {
+  background: #e0f2fe !important;
+  background-color: #e0f2fe !important;
+  color: #0284c7 !important;
+}
+
+html body .exw-pill-time.exw-pill-neutral {
+  background: #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
+  color: #64748b !important;
+}
+
+html body .exw-room-label {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: #64748b !important;
+  white-space: nowrap !important;
+}
+
+html body .exw-roadmap-evaluator,
+html body .exw-card-format {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: #94a3b8 !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+  flex-shrink: 0 !important;
+}
+
+/* Tier 2: Row Middle (Subject Title & Action Link) */
+html body .exw-roadmap-row-mid {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  width: 100% !important;
+  min-height: 22px !important;
+}
+
+html body .exw-roadmap-subject,
+html body .exw-card-title {
+  font-size: 15px !important;
+  font-weight: 500 !important; /* STRICT NO BOLD */
+  color: #0f172a !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.01em !important;
+  transition: color 0.15s ease !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+html body .exw-roadmap-row:hover .exw-roadmap-subject,
+html body .exw-timeline-card:hover .exw-card-title {
+  color: #2563eb !important;
+}
+
+html body .exw-roadmap-action,
+html body .exw-card-action {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: #0284c7 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  transition: color 0.15s ease, transform 0.15s ease !important;
+  flex-shrink: 0 !important;
+  text-align: right !important;
+}
+
+html body .exw-roadmap-row:hover .exw-roadmap-action,
+html body .exw-timeline-card:hover .exw-card-action {
+  color: #0369a1 !important;
+  transform: translateX(2px) !important;
+}
+
+html body .exw-roadmap-chevron {
+  font-size: 14px !important;
+  line-height: 1 !important;
+  font-weight: 500 !important;
+}
+
+/* Tier 3: Row Bottom (Syllabus Description) */
+html body .exw-roadmap-row-bot {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-height: 16px !important;
+}
+
+html body .exw-roadmap-desc,
+html body .exw-card-desc {
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  color: #64748b !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* ==========================================================================
+   RESPONSIVE MEDIA OVERRIDES (Placed after base styles so they take precedence)
+   ========================================================================== */
+@media (max-width: 768px) {
+  html body .exw-roadmap-head {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 20px !important;
+  }
+  html body .exw-roadmap-tools {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  html body .exw-roadmap-search-wrap {
+    flex: 1 !important;
+    width: auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body .exw-roadmap-container,
+  html body .exw-roadmap-card {
+    padding: 18px 16px 20px 16px !important;
+    border-radius: 18px !important;
+  }
+  html body .exw-roadmap-title-row {
+    align-items: flex-start !important;
+  }
+  html body .exw-roadmap-dot {
+    margin-top: 5px !important;
+  }
+  html body .exw-timeline-spine {
+    margin-right: 12px !important;
+    width: 26px !important;
+  }
+  html body .exw-timeline-node {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 11px !important;
+    margin-top: 2px !important;
+  }
+  html body .exw-timeline-line {
+    top: 28px !important;
+    bottom: -14px !important;
+  }
+  html body .exw-roadmap-row,
+  html body .exw-timeline-card {
+    padding: 10px 14px 12px 14px !important;
+    gap: 5px !important;
+  }
+  html body .exw-roadmap-row-top {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+  html body .exw-roadmap-row-mid {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  html body .exw-roadmap-subject,
+  html body .exw-card-title {
+    white-space: normal !important;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+  }
+  html body .exw-roadmap-desc,
+  html body .exw-card-desc {
+    white-space: normal !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+  html body .exw-roadmap-evaluator,
+  html body .exw-card-format {
+    font-size: 11.5px !important;
+  }
+  html body .exw-roadmap-action,
+  html body .exw-card-action {
+    font-size: 12px !important;
+  }
+}
+
+/* ==========================================================================
+   DARK MODE ADJUSTMENTS
+   ========================================================================== */
+html[data-theme="dark"] body .exw-roadmap-container,
+html[data-theme="dark"] body .exw-roadmap-card,
+[data-theme="dark"] .exw-roadmap-container,
+[data-theme="dark"] .exw-roadmap-card {
+  background: #0f172a !important;
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-head,
+[data-theme="dark"] .exw-roadmap-head {
+  border-color: #1e293b !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-title,
+[data-theme="dark"] .exw-roadmap-title {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-subtitle,
+[data-theme="dark"] .exw-roadmap-subtitle {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-search,
+[data-theme="dark"] .exw-roadmap-search {
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-search::placeholder,
+[data-theme="dark"] .exw-roadmap-search::placeholder {
+  color: #64748b !important;
+}
+
+html[data-theme="dark"] body .exw-timeline-node,
+[data-theme="dark"] .exw-timeline-node {
+  background-color: #1e293b !important;
+  box-shadow: 0 0 0 1px #334155 !important;
+}
+
+html[data-theme="dark"] body .exw-timeline-line.exw-timeline-line-grey,
+html[data-theme="dark"] body .exw-timeline-line.exw-timeline-line-end,
+[data-theme="dark"] .exw-timeline-line.exw-timeline-line-grey,
+[data-theme="dark"] .exw-timeline-line.exw-timeline-line-end {
+  background-color: #334155 !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-row,
+html[data-theme="dark"] body .exw-timeline-card,
+[data-theme="dark"] .exw-roadmap-row,
+[data-theme="dark"] .exw-timeline-card {
+  background: #1e293b !important;
+  background-color: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-row:hover,
+html[data-theme="dark"] body .exw-timeline-card:hover,
+[data-theme="dark"] .exw-roadmap-row:hover,
+[data-theme="dark"] .exw-timeline-card:hover {
+  background: #253347 !important;
+  background-color: #253347 !important;
+  border-color: #475569 !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-subject,
+html[data-theme="dark"] body .exw-card-title,
+[data-theme="dark"] .exw-roadmap-subject,
+[data-theme="dark"] .exw-card-title {
+  color: #f8fafc !important;
+}
+
+html[data-theme="dark"] body .exw-roadmap-desc,
+html[data-theme="dark"] body .exw-card-desc,
+[data-theme="dark"] .exw-roadmap-desc,
+[data-theme="dark"] .exw-card-desc {
+  color: #94a3b8 !important;
+}
+
+html[data-theme="dark"] body .exw-pill-time.exw-pill-neutral,
+[data-theme="dark"] .exw-pill-time.exw-pill-neutral {
+  background: #334155 !important;
+  background-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+
+html[data-theme="dark"] body .exw-room-label,
+[data-theme="dark"] .exw-room-label {
+  color: #94a3b8 !important;
+}

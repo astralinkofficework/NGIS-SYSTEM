@@ -6,6 +6,31 @@
 
 ---
 
+## Maintained Accent and Icon Standard (The Icon Carries The Color)
+
+Use Forest Green `--color-primary` for primary actions and `--color-icon-active` for selected or emphasized glyphs. Use `--color-surface`, `--color-background`, `--color-border` and the text tokens to establish hierarchy. Reserve semantic colors for named conditions and academic data encoding.
+
+**Core Rule**: Color the icon itself, not its background. Icons appear directly on the parent page or card surface. Alignment wrappers preserve consistent sizing and alignment without decorative rounded containers, colored circle pills, or background overlays.
+
+| Component | Treatment and rationale |
+| --- | --- |
+| Workspace and timetable KPI icons | `.smx-kpi-icon` and `.ks-kpi-icon` reserve consistent alignment space. The wrapper is transparent. A warning or error changes the glyph through a semantic foreground token. |
+| Telemetry and card icons | Neutral flex wrappers (`w-9 h-9 flex items-center justify-center shrink-0`) keep glyphs aligned. The wrapper is unpainted. Color is applied directly to the icon via text utility (`text-[#176B45]`, `text-amber-600`, `text-rose-600`). |
+| Notification lists | `.ngis-notif-item-icon` and `.ngis-notif-icon-wrap` use neutral glyphs. The row and unread indicator convey the interaction and unread state. |
+| Navigation | Color the active glyph and use a medium-weight selected label and `aria-current`. Keep keyboard focus visible on the interactive element. |
+| Action hierarchy | Use `.btn-primary` for the main action, `.btn-secondary` for a neutral bordered control and `.btn-ghost` for quiet actions. Use warning and destructive variants when an action carries that meaning. |
+| Status and academic data | A labeled status, a warning callout, or a timetable subject with a matching legend can carry a semantic tint. Pair color with text, iconography or another distinguishable cue. |
+
+Put icon treatment in the stylesheet that owns the component. Use inherited `color` with the existing SVG implementation. Alignment wrappers may reserve space for consistent placement and an anchored unread indicator. Buttons own their hit areas and focus treatments.
+
+For existing utility-based markup, keep its alignment utilities and use `.ngis-icon-slot` for the ordinary glyph color. Run `node tests/icon-surfaces.test.cjs` when changing these components.
+
+### 3D Illustrated Icon Integration (Icons8 3D Fluency Suite)
+For high-level academic concepts, dashboard quick action cards, empty states, and modal headers, use the 22-asset Icons8 3D Fluency collection stored in `assets/images/icons-3d/` with helper `assets/js/icons-3d.js`:
+- **Surface**: Background is strictly transparent (`background: transparent !important; border: none; box-shadow: none;`). No decorative colored circles or rounded boxes behind 3D icons.
+- **Sizing**: Quick action cards (28×28px), card section headers (22×22px), list items (20×20px), empty states (48–56px), modals (28×28px).
+- **Scope & Role Restriction**: Icons8 3D Fluency applies strictly to high-level academic concepts, empty states, and dashboard action cards in the **Student** and **Teacher** Portals. It is **forbidden** in the Admin, Principal, and Super Admin portals. Functional controls (buttons, forms, table actions, sidebar navigation) strictly retain official Bootstrap SVGs (`assets/js/action-icons.js`).
+
 ## Executive Summary
 This audit evaluated the entire NGIS Connected ERP platform across all four portal roles (**Admin**, **Teacher**, **Student**, **Principal**) against the 10 core design principles for modern, polished web applications. Reusable components were introduced in `assets/components/` and unified across `assets/js/layout.js`, `assets/js/ui-states.js`, and `assets/css/ui-states.css` to prevent future rule drift.
 
@@ -24,7 +49,7 @@ All 10 rules have been satisfied, verified, and locked in shared components with
 | **R5** | Forcing failed API call shows friendly error + Try again; real error in logs only | **PASSED** | Centralized `error-messages.js`, `error-boundary.js`, server Request IDs (`REQ-xxxx`), branded `404.html` |
 | **V1** | Spacing follows one scale, touch targets at least 44 px | **PASSED** | 4/8px spacing tokens, guaranteed `min-height: 44px` & `min-width: 44px` across all controls |
 | **V2** | Cards and inputs use thin borders; shadows only on floating layers | **PASSED** | Removed heavy `shadow-md`/`shadow-lg`/`shadow-xl`; modals use soft `0 4px 20px rgba(0,0,0,0.08)` |
-| **V3** | Only 3 core colours (60-30-10) appear, text contrast passes AA | **PASSED** | 60% Neutral (#F3F3F5/#FFFFFF), 30% Navy (#202F63) & Charcoal (#000000/#333333), 10% Burgundy (#92243D) |
+| **V3** | Single Brand Palette (60-30-10) appears, text contrast passes AA | **PASSED** | 60% Neutral Surfaces (#F7F9F7 / #FFFFFF), 30% Dark Charcoal (#29352E / #64746A), 10% Forest Green Accent (#176B45 / #0F5132) |
 | **V4** | No decorative background shapes or gratuitous gradients remain | **PASSED** | Removed pattern radial gradients, dark multi-stop gradients, and blurred cyan glow blobs |
 | **V5** | No more than two font families; weights strictly 400 and 500 | **PASSED** | Enforced Manrope/Inter; eliminated font-weight 600/700/800 per AGENTS.md mandate |
 

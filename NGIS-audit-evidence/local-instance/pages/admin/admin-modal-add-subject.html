@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NGIS Operations — Add New Subject</title>
+
+  <!-- Google Fonts: Inter & Kantumruy Pro for authentic bilingual Khmer/English typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Kantumruy+Pro:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap Icons v1.13.2 (NGIS Official Standard) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Tailwind CSS v3 CDN with forms & container queries -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              50: '#F0FDF4',
+              100: '#DCFCE7',
+              200: '#BBF7D0',
+              500: '#22C55E',
+              700: '#15803D',
+              800: '#176B45', // Official NGIS Forest Green
+              900: '#14532D',
+              950: '#052E16'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            khmer: ['"Kantumruy Pro"', 'Inter', 'sans-serif']
+          },
+          fontWeight: {
+            normal: '400',
+            medium: '500' // Rule: NO BOLD FONTS. Maximum weight 500 across all UI
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- NGIS Global & Clean UI Styling -->
+  <style>
+    /* Rule: NO BOLD FONTS (AGENTS.md Compliance) */
+    *, h1, h2, h3, h4, h5, h6, b, strong, th, td, button, span, div, select, input, label {
+      font-weight: 400;
+    }
+    .font-medium, th, h1, h2, h3, h4, [class*="font-semibold"], [class*="font-bold"] {
+      font-weight: 500 !important;
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    [data-theme="dark"] ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+
+    /* Subtle focus ring following NGIS Forest Green palette */
+    .ngis-focus:focus, .ngis-focus:focus-visible {
+      outline: none;
+      border-color: #176B45;
+      box-shadow: 0 0 0 3px rgba(23, 107, 69, 0.16);
+    }
+    [data-theme="dark"] .ngis-focus:focus, [data-theme="dark"] .ngis-focus:focus-visible {
+      border-color: #4BB785;
+      box-shadow: 0 0 0 3px rgba(75, 183, 133, 0.22);
+    }
+
+    /* Swatch ring animation */
+    .swatch-btn {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .swatch-btn:hover {
+      transform: scale(1.12);
+    }
+    .swatch-btn.active {
+      box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #176B45;
+    }
+    [data-theme="dark"] .swatch-btn.active {
+      box-shadow: 0 0 0 2px #1E293B, 0 0 0 4px #4BB785;
+    }
+
+    /* Loading spinner */
+    .btn-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast animation */
+    #ngisToast {
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-950 font-sans text-slate-800 dark:text-slate-200 antialiased h-screen w-full max-w-full overflow-hidden flex select-none">
+
+  <!-- ======================================================================
+       BACKGROUND APP CONTEXT SIMULATOR (Dimmed NGIS Admin Workspace)
+       ====================================================================== -->
+  <div class="hidden sm:flex flex-1 flex-col blur-[2px] opacity-40 pointer-events-none transition-all duration-300 w-full overflow-hidden" aria-hidden="true">
+    <!-- Header -->
+    <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-forest-800 text-white flex items-center justify-center font-medium text-base shadow-xs">
+          <i class="bi bi-mortarboard-fill"></i>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-medium text-slate-900 dark:text-white text-sm">NGIS Enterprise</span>
+          <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-forest-50 text-forest-800 border border-forest-100">Academics</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="h-8 w-60 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
+        <div class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden">
+      <aside class="w-60 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 space-y-2">
+        <div class="h-8 rounded-lg bg-slate-100 dark:bg-slate-800"></div>
+        <div class="h-8 rounded-lg bg-forest-50 text-forest-800"></div>
+        <div class="h-8 rounded-lg bg-slate-100 dark:bg-slate-800"></div>
+        <div class="h-8 rounded-lg bg-slate-100 dark:bg-slate-800"></div>
+      </aside>
+
+      <section class="flex-1 p-8 space-y-6 overflow-hidden">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-xl font-medium text-slate-900 dark:text-white">Academic Subjects</h1>
+            <p class="text-xs text-slate-500 mt-0.5">Manage curriculum standards, department structures, and teacher assignments</p>
+          </div>
+          <button class="bg-forest-800 text-white px-4 py-2 rounded-xl text-xs font-medium shadow-xs flex items-center gap-1.5">
+            <i class="bi bi-plus-lg"></i> Add Subject
+          </button>
+        </div>
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-3">
+          <div class="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
+          <div class="h-12 border-b border-slate-100 dark:border-slate-800"></div>
+          <div class="h-12 border-b border-slate-100 dark:border-slate-800"></div>
+          <div class="h-12 border-b border-slate-100 dark:border-slate-800"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       POPUP MODAL DIALOG OVERLAY (RESPONSIVE & FULLY ACCESSIBLE)
+       ====================================================================== -->
+  <div id="modalOverlay" class="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 md:p-6 bg-slate-900/50 backdrop-blur-xs overflow-y-auto animate-fade" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <!-- Modal Card Container (Full-screen mobile, elegant card desktop) -->
+    <div id="modalCard" class="bg-white dark:bg-slate-900 border-0 sm:border border-slate-200/90 dark:border-slate-800 w-full max-w-3xl flex flex-col h-full sm:h-auto sm:max-h-[92vh] sm:rounded-2xl shadow-2xl overflow-hidden transition-all duration-200">
+
+      <!-- ==================== MODAL HEADER ==================== -->
+      <header class="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <!-- Subject Icon Pill -->
+          <div class="w-10 h-10 rounded-xl bg-forest-50 dark:bg-forest-950/60 border border-forest-100 dark:border-forest-900 flex items-center justify-center text-forest-800 dark:text-forest-400 shrink-0">
+            <i class="bi bi-journal-bookmark-fill text-lg"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h2 id="modalTitle" class="text-base sm:text-lg font-medium text-slate-900 dark:text-white tracking-tight truncate">Add New Subject</h2>
+              <span class="hidden sm:inline-flex text-[11px] font-medium px-2 py-0.5 rounded-full bg-forest-50 dark:bg-forest-950/50 text-forest-800 dark:text-forest-400 border border-forest-100/80 dark:border-forest-900/50">
+                Curriculum
+              </span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Configure subject details, timetable allocations, and assigned faculty.</p>
+          </div>
+        </div>
+
+        <!-- Header Actions: Theme Toggle + Close Button -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button id="themeToggleBtn" type="button" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors" aria-label="Toggle dark/light theme">
+            <i class="bi bi-moon-stars text-sm"></i>
+          </button>
+          <button id="closeModalBtn" type="button" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors focus:ring-2 focus:ring-forest-800/30" aria-label="Close dialog">
+            <i class="bi bi-x-lg text-sm"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- ==================== MODAL BODY FORM (SCROLLABLE) ==================== -->
+      <form id="subjectForm" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-slate-50/50 dark:bg-slate-950/40" onsubmit="handleFormSubmit(event)">
+
+        <!-- Validation Summary Alert (Hidden by default) -->
+        <div id="validationAlert" class="hidden p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-xs text-rose-700 dark:text-rose-300 flex items-start gap-2.5">
+          <i class="bi bi-exclamation-triangle-fill text-rose-500 mt-0.5 shrink-0"></i>
+          <div id="validationAlertText">Please correct the highlighted errors before saving.</div>
+        </div>
+
+        <!-- SECTION 1: Subject Fundamentals -->
+        <section class="bg-white dark:bg-slate-900 rounded-xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-forest-50 dark:bg-forest-950/60 text-forest-800 dark:text-forest-400 text-xs font-medium border border-forest-100 dark:border-forest-900">1</span>
+              <h3 class="text-xs font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">Subject Information</h3>
+            </div>
+            <span class="text-[11px] text-slate-400 font-normal"><span class="text-rose-500">*</span> Required fields</span>
+          </div>
+
+          <!-- Two-Column Responsive Form Fields -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+            <!-- English Name -->
+            <div>
+              <label for="subjectNameEn" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Subject Name (English) <span class="text-rose-500">*</span>
+              </label>
+              <input id="subjectNameEn" type="text" required value="Mathematics" placeholder="e.g. Mathematics" class="w-full text-xs sm:text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 py-2 px-3 ngis-focus transition-all">
+            </div>
+
+            <!-- Khmer Name -->
+            <div>
+              <label for="subjectNameKh" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Subject Name (Khmer) <span class="text-slate-400 text-[11px] font-normal">(Optional)</span>
+              </label>
+              <input id="subjectNameKh" type="text" value="គណិតវិទ្យា" placeholder="e.g. គណិតវិទ្យា" class="w-full font-khmer text-xs sm:text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 py-2 px-3 ngis-focus transition-all">
+            </div>
+
+            <!-- Subject Code -->
+            <div>
+              <label for="subjectCode" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Subject Code <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <input id="subjectCode" type="text" required maxlength="10" value="MATH" placeholder="e.g. MATH-101" class="w-full uppercase font-mono text-xs sm:text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/60 text-slate-900 dark:text-white placeholder-slate-400 py-2 px-3 ngis-focus transition-all">
+              </div>
+            </div>
+
+            <!-- Short Name (Grid Label) -->
+            <div>
+              <label for="subjectShortName" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Short Name (Timetable Grid Label)
+              </label>
+              <input id="subjectShortName" type="text" value="Math" placeholder="Compact cell label" class="w-full text-xs sm:text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 py-2 px-3 ngis-focus transition-all">
+            </div>
+
+            <!-- Academic Department Dropdown -->
+            <div>
+              <label for="academicDept" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Academic Department <span class="text-rose-500">*</span>
+              </label>
+              <select id="academicDept" required class="w-full text-xs sm:text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white py-2 px-3 ngis-focus transition-all">
+                <option value="math" selected>Department of Mathematics</option>
+                <option value="science">Department of Natural Sciences</option>
+                <option value="khmer">Department of Khmer Studies</option>
+                <option value="languages">Department of Foreign Languages</option>
+                <option value="social">Department of Social Studies & Humanities</option>
+                <option value="ict">Department of ICT & Computer Science</option>
+              </select>
+            </div>
+
+            <!-- Lessons per week stepper -->
+            <div>
+              <label for="lessonsPerWeek" class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                Lessons per Week
+              </label>
+              <div class="flex items-center gap-2">
+                <input id="lessonsPerWeek" type="number" min="1" max="15" value="2" class="w-20 text-xs sm:text-sm text-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white py-2 px-2 ngis-focus">
+                <span class="text-xs text-slate-500 dark:text-slate-400">Periods (45 mins each)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Swatch & Status Strip -->
+          <div class="pt-3.5 border-t border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+            <!-- Timetable Accent Color -->
+            <div>
+              <label class="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Timetable Accent Color</label>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <!-- Native Color Picker & Hex Badge -->
+                <div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                  <input id="nativeColorPicker" type="color" value="#FED766" class="w-5 h-5 rounded cursor-pointer border-0 p-0 bg-transparent" aria-label="Choose custom color">
+                  <span id="colorHexDisplay" class="font-mono text-xs text-slate-700 dark:text-slate-300">#FED766</span>
+                </div>
+
+                <!-- Swatch Palette Presets -->
+                <div class="flex items-center gap-1.5 pl-1.5 border-l border-slate-200 dark:border-slate-700">
+                  <button type="button" class="swatch-btn active w-5 h-5 rounded-md bg-[#FED766]" data-color="#FED766" aria-label="Warm Gold"></button>
+                  <button type="button" class="swatch-btn w-5 h-5 rounded-md bg-[#93C5FD]" data-color="#93C5FD" aria-label="Soft Blue"></button>
+                  <button type="button" class="swatch-btn w-5 h-5 rounded-md bg-[#86EFAC]" data-color="#86EFAC" aria-label="Emerald Mint"></button>
+                  <button type="button" class="swatch-btn w-5 h-5 rounded-md bg-[#FCA5A5]" data-color="#FCA5A5" aria-label="Coral Rose"></button>
+                  <button type="button" class="swatch-btn w-5 h-5 rounded-md bg-[#C4B5FD]" data-color="#C4B5FD" aria-label="Lavender"></button>
+                  <button type="button" class="swatch-btn w-5 h-5 rounded-md bg-[#FDE047]" data-color="#FDE047" aria-label="Bright Amber"></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject Status Toggle -->
+            <div class="flex sm:justify-end">
+              <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+                <input id="subjectStatusToggle" type="checkbox" checked class="w-4 h-4 rounded text-forest-800 focus:ring-forest-800 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 transition">
+                <div>
+                  <span class="text-xs font-medium text-slate-800 dark:text-slate-200 block">Active Curriculum Status</span>
+                  <p class="text-[11px] text-slate-400">Available for current academic scheduling</p>
+                </div>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: Assigned Classes & Faculty Allocation -->
+        <section class="bg-white dark:bg-slate-900 rounded-xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3.5">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 gap-2">
+            <div class="flex items-center gap-2">
+              <span class="flex h-5 w-5 items-center justify-center rounded-full bg-forest-50 dark:bg-forest-950/60 text-forest-800 dark:text-forest-400 text-xs font-medium border border-forest-100 dark:border-forest-900">2</span>
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs font-medium uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Assigned Classes &amp; Faculty Allocation
+                </h3>
+                <span id="assignedCountBadge" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-forest-50 dark:bg-forest-950/60 text-forest-800 dark:text-forest-400 border border-forest-100 dark:border-forest-900">
+                  2 selected
+                </span>
+              </div>
+            </div>
+
+            <!-- Bulk Select Toggle -->
+            <button id="toggleSelectAllBtn" type="button" class="text-[11px] font-medium text-forest-800 dark:text-forest-400 hover:underline text-left sm:text-right">
+              Select All Classes
+            </button>
+          </div>
+
+          <!-- Filters Bar -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+            <div class="sm:col-span-4">
+              <select id="filterGrade" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-1.5 px-2.5 ngis-focus">
+                <option value="all">All Grade Levels</option>
+                <option value="7">Grade 7</option>
+                <option value="8">Grade 8</option>
+                <option value="9">Grade 9</option>
+              </select>
+            </div>
+            <div class="sm:col-span-4">
+              <select id="filterCampus" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 py-1.5 px-2.5 ngis-focus">
+                <option value="all">All Campuses</option>
+                <option value="sensok">Sensok Campus</option>
+                <option value="toulkork">Toul Kork Campus</option>
+              </select>
+            </div>
+            <div class="sm:col-span-4 relative">
+              <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                <i class="bi bi-search text-xs"></i>
+              </div>
+              <input id="classSearchInput" type="text" placeholder="Search class sections…" class="w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 py-1.5 pl-8 pr-2.5 ngis-focus">
+            </div>
+          </div>
+
+          <!-- Class Rows Matrix (Responsive Cards on Mobile, Table Rows on Tablet/Desktop) -->
+          <div id="classMatrixContainer" class="border border-slate-200 dark:border-slate-800 rounded-xl divide-y divide-slate-100 dark:divide-slate-800/80 overflow-hidden bg-slate-50/30 dark:bg-slate-900/40 max-h-64 sm:max-h-72 overflow-y-auto">
+
+            <!-- Row 1: Grade 7A -->
+            <div class="class-row p-3 sm:p-3.5 bg-forest-50/30 dark:bg-forest-950/20 hover:bg-forest-50/50 dark:hover:bg-forest-950/30 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3" data-grade="7" data-campus="sensok" data-label="Grade 7A">
+              <div class="flex items-center gap-3 min-w-[200px]">
+                <input id="class-7a" type="checkbox" checked class="class-checkbox w-4 h-4 rounded text-forest-800 focus:ring-forest-800 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+                <label for="class-7a" class="cursor-pointer select-none">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-sm text-slate-900 dark:text-white">Grade 7A</span>
+                    <span class="text-[11px] font-medium px-2 py-0.5 bg-amber-100/70 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 rounded-md border border-amber-200/50 dark:border-amber-800/40">Shift Morning</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Room 101 · Sensok · 32/35 Students</div>
+                </label>
+              </div>
+              <div class="flex items-center gap-2 flex-1 max-w-sm pl-7 md:pl-0">
+                <span class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">Teacher:</span>
+                <select class="teacher-select w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white py-1.5 px-2.5 ngis-focus">
+                  <option selected value="t1">H1 — Seng Daravuth (Full-time)</option>
+                  <option value="t2">H2 — Dr. Sarah Jenkins (Visiting)</option>
+                  <option value="t3">H3 — Chea Chanvatey (Full-time)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: Grade 7B -->
+            <div class="class-row p-3 sm:p-3.5 bg-forest-50/30 dark:bg-forest-950/20 hover:bg-forest-50/50 dark:hover:bg-forest-950/30 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3" data-grade="7" data-campus="sensok" data-label="Grade 7B">
+              <div class="flex items-center gap-3 min-w-[200px]">
+                <input id="class-7b" type="checkbox" checked class="class-checkbox w-4 h-4 rounded text-forest-800 focus:ring-forest-800 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+                <label for="class-7b" class="cursor-pointer select-none">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-sm text-slate-900 dark:text-white">Grade 7B</span>
+                    <span class="text-[11px] font-medium px-2 py-0.5 bg-sky-100/70 dark:bg-sky-950/50 text-sky-800 dark:text-sky-300 rounded-md border border-sky-200/50 dark:border-sky-800/40">Shift Afternoon</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Room 102 · Sensok · 30/35 Students</div>
+                </label>
+              </div>
+              <div class="flex items-center gap-2 flex-1 max-w-sm pl-7 md:pl-0">
+                <span class="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">Teacher:</span>
+                <select class="teacher-select w-full text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white py-1.5 px-2.5 ngis-focus">
+                  <option value="t1">H1 — Seng Daravuth (Full-time)</option>
+                  <option selected value="t2">H2 — Dr. Sarah Jenkins (Visiting)</option>
+                  <option value="t3">H3 — Chea Chanvatey (Full-time)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 3: Grade 8A -->
+            <div class="class-row p-3 sm:p-3.5 bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 opacity-70 hover:opacity-100" data-grade="8" data-campus="toulkork" data-label="Grade 8A">
+              <div class="flex items-center gap-3 min-w-[200px]">
+                <input id="class-8a" type="checkbox" class="class-checkbox w-4 h-4 rounded text-forest-800 focus:ring-forest-800 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+                <label for="class-8a" class="cursor-pointer select-none">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-sm text-slate-800 dark:text-slate-200">Grade 8A</span>
+                    <span class="text-[11px] font-medium px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md">Shift Morning</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Room 201 · Toul Kork · 28/35 Students</div>
+                </label>
+              </div>
+              <div class="flex items-center gap-2 flex-1 max-w-sm pl-7 md:pl-0">
+                <span class="text-xs text-slate-400 whitespace-nowrap">Teacher:</span>
+                <select disabled class="teacher-select w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/40 text-slate-400 py-1.5 px-2.5 cursor-not-allowed">
+                  <option>Select teacher after enabling class…</option>
+                  <option value="t1">H1 — Seng Daravuth (Full-time)</option>
+                  <option value="t2">H2 — Dr. Sarah Jenkins (Visiting)</option>
+                  <option value="t3">H3 — Chea Chanvatey (Full-time)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 4: Grade 8B -->
+            <div class="class-row p-3 sm:p-3.5 bg-white dark:bg-slate-900 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 opacity-70 hover:opacity-100" data-grade="8" data-campus="toulkork" data-label="Grade 8B">
+              <div class="flex items-center gap-3 min-w-[200px]">
+                <input id="class-8b" type="checkbox" class="class-checkbox w-4 h-4 rounded text-forest-800 focus:ring-forest-800 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800">
+                <label for="class-8b" class="cursor-pointer select-none">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-sm text-slate-800 dark:text-slate-200">Grade 8B</span>
+                    <span class="text-[11px] font-medium px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-md">Shift Afternoon</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Room 202 · Toul Kork · 29/35 Students</div>
+                </label>
+              </div>
+              <div class="flex items-center gap-2 flex-1 max-w-sm pl-7 md:pl-0">
+                <span class="text-xs text-slate-400 whitespace-nowrap">Teacher:</span>
+                <select disabled class="teacher-select w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/40 text-slate-400 py-1.5 px-2.5 cursor-not-allowed">
+                  <option>Select teacher after enabling class…</option>
+                  <option value="t1">H1 — Seng Daravuth (Full-time)</option>
+                  <option value="t2">H2 — Dr. Sarah Jenkins (Visiting)</option>
+                  <option value="t3">H3 — Chea Chanvatey (Full-time)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Empty Filter State (Hidden by default) -->
+            <div id="noMatchingClasses" class="hidden py-8 text-center text-slate-400 text-xs">
+              <i class="bi bi-search text-xl block mb-1 opacity-50"></i>
+              No class sections match the active filter criteria.
+            </div>
+          </div>
+        </section>
+      </form>
+
+      <!-- ==================== MODAL FOOTER ACTION BAR ==================== -->
+      <footer class="px-4 sm:px-6 py-3 sm:py-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 shrink-0">
+        <!-- Reset to defaults button -->
+        <button id="resetFormBtn" type="button" class="text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline underline-offset-4 decoration-slate-300 dark:decoration-slate-700 transition-colors text-center sm:text-left py-1">
+          <i class="bi bi-arrow-counterclockwise mr-1"></i>Reset to defaults
+        </button>
+
+        <!-- Primary Actions -->
+        <div class="flex items-center justify-end gap-2.5 w-full sm:w-auto">
+          <button id="cancelBtn" type="button" class="w-full sm:w-auto px-4 py-2 sm:py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs sm:text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus:ring-2 focus:ring-slate-300 dark:focus:ring-slate-700">
+            Cancel
+          </button>
+          <button id="submitBtn" type="button" onclick="document.getElementById('subjectForm').requestSubmit()" class="w-full sm:w-auto bg-forest-800 hover:bg-forest-900 dark:bg-forest-700 dark:hover:bg-forest-800 text-white px-5 sm:px-6 py-2 sm:py-2.5 rounded-xl font-medium text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 focus:ring-2 focus:ring-offset-2 focus:ring-forest-800">
+            <i id="submitBtnIcon" class="bi bi-check2 text-base"></i>
+            <span id="submitBtnText">Create Subject</span>
+          </button>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- ==================== TOAST FEEDBACK NOTIFICATION ==================== -->
+  <div id="ngisToast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] opacity-0 pointer-events-none px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-medium shadow-xl flex items-center gap-2 border border-slate-700">
+    <i id="toastIcon" class="bi bi-check-circle-fill text-forest-500"></i>
+    <span id="toastMsg">Subject created successfully.</span>
+  </div>
+
+  <!-- ======================================================================
+       INTERACTIVE BEHAVIOR LOGIC (Accessible, Polished & Framework-Agnostic)
+       ====================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Theme Management (Sync with NGIS Standard)
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const htmlEl = document.documentElement;
+      
+      try {
+        const savedTheme = localStorage.getItem('ngis-theme') || 'light';
+        htmlEl.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+      } catch(e) {}
+
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+          const current = htmlEl.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          const next = current === 'dark' ? 'light' : 'dark';
+          htmlEl.setAttribute('data-theme', next);
+          try { localStorage.setItem('ngis-theme', next); } catch(e) {}
+          updateThemeIcon(next);
+        });
+      }
+
+      function updateThemeIcon(theme) {
+        const icon = themeToggleBtn ? themeToggleBtn.querySelector('i') : null;
+        if (icon) {
+          icon.className = theme === 'dark' ? 'bi bi-sun text-sm' : 'bi bi-moon-stars text-sm';
+        }
+      }
+
+      // 2. Swatch Picker Synchronization
+      const swatches = document.querySelectorAll('.swatch-btn');
+      const nativePicker = document.getElementById('nativeColorPicker');
+      const hexLabel = document.getElementById('colorHexDisplay');
+
+      function setColor(hex) {
+        hex = hex.toUpperCase();
+        if (nativePicker) nativePicker.value = hex;
+        if (hexLabel) hexLabel.textContent = hex;
+        swatches.forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.color.toUpperCase() === hex);
+        });
+      }
+
+      swatches.forEach(btn => {
+        btn.addEventListener('click', () => setColor(btn.dataset.color));
+      });
+
+      if (nativePicker) {
+        nativePicker.addEventListener('input', (e) => setColor(e.target.value));
+      }
+
+      // 3. Class Rows Checkbox & Teacher Select Logic
+      const checkboxes = document.querySelectorAll('.class-checkbox');
+      const assignedCountBadge = document.getElementById('assignedCountBadge');
+      const toggleSelectAllBtn = document.getElementById('toggleSelectAllBtn');
+
+      function updateRowState(cb) {
+        const row = cb.closest('.class-row');
+        if (!row) return;
+        const select = row.querySelector('.teacher-select');
+
+        if (cb.checked) {
+          row.classList.add('bg-forest-50/30', 'dark:bg-forest-950/20');
+          row.classList.remove('opacity-70');
+          if (select) {
+            select.disabled = false;
+            select.classList.remove('bg-slate-100', 'dark:bg-slate-800/40', 'text-slate-400', 'cursor-not-allowed', 'border-slate-200');
+            select.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-900', 'dark:text-white', 'border-slate-300');
+          }
+        } else {
+          row.classList.remove('bg-forest-50/30', 'dark:bg-forest-950/20');
+          row.classList.add('opacity-70');
+          if (select) {
+            select.disabled = true;
+            select.classList.add('bg-slate-100', 'dark:bg-slate-800/40', 'text-slate-400', 'cursor-not-allowed', 'border-slate-200');
+            select.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-900', 'dark:text-white', 'border-slate-300');
+          }
+        }
+        updateCounter();
+      }
+
+      function updateCounter() {
+        const checkedCount = document.querySelectorAll('.class-checkbox:checked').length;
+        if (assignedCountBadge) {
+          assignedCountBadge.textContent = `${checkedCount} selected`;
+        }
+        if (toggleSelectAllBtn) {
+          const allCount = checkboxes.length;
+          toggleSelectAllBtn.textContent = checkedCount === allCount ? 'Deselect All' : 'Select All Classes';
+        }
+      }
+
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => updateRowState(cb));
+      });
+
+      if (toggleSelectAllBtn) {
+        toggleSelectAllBtn.addEventListener('click', () => {
+          const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+          checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+            updateRowState(cb);
+          });
+        });
+      }
+
+      // 4. Class Section Filtering (Search, Grade, Campus)
+      const filterGrade = document.getElementById('filterGrade');
+      const filterCampus = document.getElementById('filterCampus');
+      const classSearchInput = document.getElementById('classSearchInput');
+      const classRows = document.querySelectorAll('.class-row');
+      const noMatchingClasses = document.getElementById('noMatchingClasses');
+
+      function filterClasses() {
+        const q = (classSearchInput?.value || '').trim().toLowerCase();
+        const grade = filterGrade?.value || 'all';
+        const campus = filterCampus?.value || 'all';
+
+        let visibleCount = 0;
+        classRows.forEach(row => {
+          const rowGrade = row.dataset.grade;
+          const rowCampus = row.dataset.campus;
+          const rowText = (row.textContent || '').toLowerCase();
+
+          const matchesQ = !q || rowText.includes(q);
+          const matchesGrade = grade === 'all' || rowGrade === grade;
+          const matchesCampus = campus === 'all' || rowCampus === campus;
+
+          const visible = matchesQ && matchesGrade && matchesCampus;
+          row.style.display = visible ? '' : 'none';
+          if (visible) visibleCount++;
+        });
+
+        if (noMatchingClasses) {
+          noMatchingClasses.classList.toggle('hidden', visibleCount > 0);
+        }
+      }
+
+      if (filterGrade) filterGrade.addEventListener('change', filterClasses);
+      if (filterCampus) filterCampus.addEventListener('change', filterClasses);
+      if (classSearchInput) classSearchInput.addEventListener('input', filterClasses);
+
+      // 5. Code Field Auto-Uppercase
+      const codeInput = document.getElementById('subjectCode');
+      if (codeInput) {
+        codeInput.addEventListener('input', (e) => {
+          e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9_\-]/g, '');
+        });
+      }
+
+      // 6. Reset Form
+      const resetBtn = document.getElementById('resetFormBtn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          document.getElementById('subjectNameEn').value = 'Mathematics';
+          document.getElementById('subjectNameKh').value = 'គណិតវិទ្យា';
+          document.getElementById('subjectCode').value = 'MATH';
+          document.getElementById('subjectShortName').value = 'Math';
+          document.getElementById('academicDept').value = 'math';
+          document.getElementById('lessonsPerWeek').value = 2;
+          document.getElementById('subjectStatusToggle').checked = true;
+          setColor('#FED766');
+
+          checkboxes.forEach((cb, idx) => {
+            cb.checked = idx < 2;
+            updateRowState(cb);
+          });
+          filterClasses();
+          showToast('Form reset to default parameters', 'info');
+        });
+      }
+
+      // 7. Dialog Close & Keyboard Accessibility
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const modalOverlay = document.getElementById('modalOverlay');
+
+      function closeModal() {
+        showToast('Dialog dismissed', 'info');
+        if (modalOverlay) {
+          modalOverlay.style.opacity = '0';
+          setTimeout(() => { modalOverlay.style.display = 'none'; }, 200);
+        }
+      }
+
+      if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay && modalOverlay.style.display !== 'none') {
+          closeModal();
+        }
+      });
+
+      // 8. Toast Feedback Helper
+      window.showToast = function(msg, type = 'success') {
+        const toast = document.getElementById('ngisToast');
+        const icon = document.getElementById('toastIcon');
+        const text = document.getElementById('toastMsg');
+        if (!toast || !text) return;
+
+        text.textContent = msg;
+        if (icon) {
+          icon.className = type === 'error' ? 'bi bi-x-circle-fill text-rose-500' :
+                           type === 'info' ? 'bi bi-info-circle-fill text-sky-400' :
+                           'bi bi-check-circle-fill text-forest-500';
+        }
+
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          toast.classList.add('opacity-0', 'pointer-events-none');
+        }, 3200);
+      };
+
+      // 9. Form Submission Handler
+      window.handleFormSubmit = function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitBtnText');
+        const submitIcon = document.getElementById('submitBtnIcon');
+        const alertBox = document.getElementById('validationAlert');
+        const alertText = document.getElementById('validationAlertText');
+
+        const nameEn = document.getElementById('subjectNameEn').value.trim();
+        const code = document.getElementById('subjectCode').value.trim();
+        const checkedClasses = document.querySelectorAll('.class-checkbox:checked');
+
+        // Validation
+        if (!nameEn) {
+          alertBox.classList.remove('hidden');
+          alertText.textContent = 'Please enter a Subject Name in English.';
+          document.getElementById('subjectNameEn').focus();
+          return;
+        }
+        if (!code) {
+          alertBox.classList.remove('hidden');
+          alertText.textContent = 'Please provide an institutional Subject Code (e.g. MATH).';
+          document.getElementById('subjectCode').focus();
+          return;
+        }
+        if (checkedClasses.length === 0) {
+          alertBox.classList.remove('hidden');
+          alertText.textContent = 'Please select at least one class section for this curriculum subject.';
+          return;
+        }
+
+        alertBox.classList.add('hidden');
+
+        // Spinner state
+        if (submitBtn) submitBtn.disabled = true;
+        if (submitIcon) submitIcon.className = 'btn-spinner';
+        if (submitText) submitText.textContent = 'Saving…';
+
+        setTimeout(() => {
+          if (submitBtn) submitBtn.disabled = false;
+          if (submitIcon) submitIcon.className = 'bi bi-check2 text-base';
+          if (submitText) submitText.textContent = 'Create Subject';
+
+          showToast(`Subject "${nameEn}" (${code}) saved successfully to school database!`, 'success');
+          setTimeout(() => {
+            if (modalOverlay) {
+              modalOverlay.style.opacity = '0';
+              setTimeout(() => { modalOverlay.style.display = 'none'; }, 250);
+            }
+          }, 1200);
+        }, 750);
+      };
+    });
+  </script>
+</body>
+</html>
